@@ -371,7 +371,7 @@ The ``storeAs`` option has the following possible values:
 .. note::
 
     For backwards compatibility ``storeAs=dbRefWithDb`` is the default, but
-    ``storeAs=dbRef`` is the recommended setting.
+    ``storeAs=ref`` is the recommended setting.
 
 
 Cascading Operations
