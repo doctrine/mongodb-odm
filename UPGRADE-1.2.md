@@ -350,7 +350,7 @@ class MyRepository extends DocumentRepository
      */
     public function findByStatus(string $status): array
     {
-        return $this->findBy(['status' => 'pending']);
+        return $this->findBy(['status' => $status]);
     }
 
     public function findOneByEmail(string $email): ?Order
