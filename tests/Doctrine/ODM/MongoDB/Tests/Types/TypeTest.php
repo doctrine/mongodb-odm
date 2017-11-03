@@ -32,7 +32,7 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'binData' => array(Type::getType(Type::BINDATA), 'foobarbaz'),
             'binDataFunc' => array(Type::getType(Type::BINDATAFUNC), 'foobarbaz'),
             'binDataByteArray' => array(Type::getType(Type::BINDATABYTEARRAY), 'foobarbaz'),
-            'binDataUuid' => array(Type::getType(Type::BINDATAUUID), "7f1c6d80-3e0b-11e5-b8ed-0002a5d5c51b"),
+            'binDataUuid' => array(Type::getType(Type::BINDATAUUID), "testtesttesttest"),
             'binDataUuidRFC4122' => array(Type::getType(Type::BINDATAUUIDRFC4122), str_repeat('a', 16)),
             'binDataMD5' => array(Type::getType(Type::BINDATAMD5), md5('ODM')),
             'binDataCustom' => array(Type::getType(Type::BINDATACUSTOM), 'foobarbaz'),
@@ -54,17 +54,17 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function provideTypesForIdempotent()
     {
         return array(
-            array(Type::getType(Type::ID), new \MongoDB\BSON\ObjectId()),
-            array(Type::getType(Type::DATE), new \MongoDB\BSON\UTCDateTime()),
-            array(Type::getType(Type::TIMESTAMP), new \MongoDB\BSON\Timestamp(0, time())),
-            array(Type::getType(Type::BINDATA), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_GENERIC)),
-            array(Type::getType(Type::BINDATAFUNC), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_FUNCTION)),
-            array(Type::getType(Type::BINDATABYTEARRAY), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_OLD_BINARY)),
-            array(Type::getType(Type::BINDATAUUID), new \MongoDB\BSON\Binary("7f1c6d80-3e0b-11e5-b8ed-0002a5d5c51b", \MongoDB\BSON\Binary::TYPE_OLD_UUID)),
-            array(Type::getType(Type::BINDATAUUIDRFC4122), new \MongoDB\BSON\Binary(str_repeat('a', 16), \MongoDB\BSON\Binary::TYPE_UUID)),
-            array(Type::getType(Type::BINDATAMD5), new \MongoDB\BSON\Binary(md5('ODM'), \MongoDB\BSON\Binary::TYPE_MD5)),
-            array(Type::getType(Type::BINDATACUSTOM), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_USER_DEFINED)),
-            array(Type::getType(Type::OBJECTID), new \MongoDB\BSON\ObjectId()),
+            'id' => array(Type::getType(Type::ID), new \MongoDB\BSON\ObjectId()),
+            'date' => array(Type::getType(Type::DATE), new \MongoDB\BSON\UTCDateTime()),
+            'timestamp' => array(Type::getType(Type::TIMESTAMP), new \MongoDB\BSON\Timestamp(0, time())),
+            'binData' => array(Type::getType(Type::BINDATA), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_GENERIC)),
+            'binDataFunc' => array(Type::getType(Type::BINDATAFUNC), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_FUNCTION)),
+            'binDataByteArray' => array(Type::getType(Type::BINDATABYTEARRAY), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_OLD_BINARY)),
+            'binDataUuid' => array(Type::getType(Type::BINDATAUUID), new \MongoDB\BSON\Binary("testtesttesttest", \MongoDB\BSON\Binary::TYPE_OLD_UUID)),
+            'binDataUuidRFC4122' => array(Type::getType(Type::BINDATAUUIDRFC4122), new \MongoDB\BSON\Binary(str_repeat('a', 16), \MongoDB\BSON\Binary::TYPE_UUID)),
+            'binDataMD5' => array(Type::getType(Type::BINDATAMD5), new \MongoDB\BSON\Binary(md5('ODM'), \MongoDB\BSON\Binary::TYPE_MD5)),
+            'binDataCustom' => array(Type::getType(Type::BINDATACUSTOM), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_USER_DEFINED)),
+            'objectId' => array(Type::getType(Type::OBJECTID), new \MongoDB\BSON\ObjectId()),
         );
     }
 
