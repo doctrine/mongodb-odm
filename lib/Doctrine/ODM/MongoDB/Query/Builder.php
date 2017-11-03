@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use MongoDB\Driver\ReadPreference;
 
 /**
  * Query builder for ODM.
@@ -408,8 +409,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         }
 
         if ($this->class->readPreference && ! array_key_exists('readPreference', $query)) {
-            $query['readPreference'] = $this->class->readPreference;
-            $query['readPreferenceTags'] = $this->class->readPreferenceTags;
+            $query['readPreference'] = new ReadPreference($this->class->readPreference, $this->class->readPreferenceTags);
         }
 
         return new Query(

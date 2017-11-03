@@ -122,10 +122,8 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $coll = $this->dm->getDocumentCollection(DocumentWithReadPreference::class);
 
-        $this->assertEquals([
-            'type' => 'nearest',
-            'tagsets' => [ ['dc' => 'east'] ],
-        ], $coll->getReadPreference());
+        $this->assertSame(ReadPreference::RP_NEAREST, $coll->getReadPreference()->getMode());
+        $this->assertSame([['dc' => 'east']], $coll->getReadPreference()->getTagSets());
     }
 
     public function testDocumentLevelReadPreferenceIsAppliedInQueryBuilder()
@@ -135,27 +133,20 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getQuery()
             ->execute();
 
-        $this->assertReadPreferenceHint("nearest", $cursor->getHints());
+        $this->assertReadPreferenceHint(ReadPreference::RP_NEAREST, $cursor->getHints());
         $this->assertReadPreferenceTagsHint([ ['dc' => 'east'] ], $cursor->getHints());
-        $this->assertEquals([
-            'type' => 'nearest',
-            'tagsets' => [ ['dc' => 'east'] ],
-        ], $cursor->getReadPreference());
     }
 
     public function testDocumentLevelReadPreferenceCanBeOverriddenInQueryBuilder()
     {
         $cursor = $this->dm->getRepository(DocumentWithReadPreference::class)
             ->createQueryBuilder()
-            ->setReadPreference("secondary", [])
+            ->setReadPreference(new ReadPreference("secondary", []))
             ->getQuery()
             ->execute();
 
-        $this->assertReadPreferenceHint("secondary", $cursor->getHints());
+        $this->assertReadPreferenceHint(ReadPreference::RP_SECONDARY, $cursor->getHints());
         $this->assertReadPreferenceTagsHint([], $cursor->getHints());
-        $this->assertEquals([
-            'type' => 'secondary',
-        ], $cursor->getReadPreference());
     }
 
     private function assertReadPreferenceHint($readPreference, $hints)

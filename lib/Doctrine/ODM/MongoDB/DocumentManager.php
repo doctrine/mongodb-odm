@@ -31,6 +31,7 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
+use MongoDB\Driver\ReadPreference;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -343,17 +344,12 @@ class DocumentManager implements ObjectManager
         if ( ! isset($this->documentCollections[$className])) {
             $db = $this->getDocumentDatabase($className);
 
-            $this->documentCollections[$className] = $db->selectCollection($collectionName);
-        }
+            $options = [];
+            if ($metadata->readPreference !== null) {
+                $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
+            }
 
-        $collection = $this->documentCollections[$className];
-
-        if ($metadata->slaveOkay !== null) {
-            $collection->setSlaveOkay($metadata->slaveOkay);
-        }
-
-        if ($metadata->readPreference !== null) {
-            $collection->setReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
+            $this->documentCollections[$className] = $db->selectCollection($collectionName, $options);
         }
 
         return $this->documentCollections[$className];
