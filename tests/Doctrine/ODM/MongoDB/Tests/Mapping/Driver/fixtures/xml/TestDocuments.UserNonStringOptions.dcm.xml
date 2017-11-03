@@ -5,9 +5,9 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <document name="TestDocuments\UserNonStringOptions" require-indexes="true" slave-okay="false">
+    <document name="TestDocuments\UserNonStringOptions" slave-okay="false">
         <field name="id" id="true" />
-        <reference-one target-document="Documents\Profile" field="profile" simple="true" orphan-removal="true" />
-        <reference-many target-document="Documents\Group" field="groups" simple="false" orphan-removal="" limit="0" skip="2" />
+        <reference-one target-document="Documents\Profile" field="profile" store-as="id" orphan-removal="true" />
+        <reference-many target-document="Documents\Group" field="groups" orphan-removal="" limit="0" skip="2" />
     </document>
 </doctrine-mongo-mapping>

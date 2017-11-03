@@ -2063,8 +2063,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ( ! $class->isEmbeddedDocument) {
             if ($this->getDocumentState($document) == self::STATE_MANAGED) {
-                $id = $class->getDatabaseIdentifierValue($this->documentIdentifiers[$oid]);
-                $this->getDocumentPersister($class->name)->refresh($id, $document);
+                $this->getDocumentPersister($class->name)->refresh($document);
             } else {
                 throw new \InvalidArgumentException('Document is not MANAGED.');
             }

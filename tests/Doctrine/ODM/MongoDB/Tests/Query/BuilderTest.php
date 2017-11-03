@@ -220,16 +220,16 @@ class ChildA extends ParentClass
  */
 class ChildB extends ParentClass
 {
-    /** @ODM\ReferenceOne(targetDocument="Documents\Feature", simple=true) */
+    /** @ODM\ReferenceOne(targetDocument="Documents\Feature", storeAs="id") */
     public $featureSimple;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\Feature", simple=true) */
+    /** @ODM\ReferenceMany(targetDocument="Documents\Feature", storeAs="id") */
     public $featureSimpleMany;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\Feature", simple=true) */
+    /** @ODM\ReferenceOne(targetDocument="Documents\Feature", storeAs="id") */
     public $conflict;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\Feature", simple=true) */
+    /** @ODM\ReferenceMany(targetDocument="Documents\Feature", storeAs="id") */
     public $conflictMany;
 }
 

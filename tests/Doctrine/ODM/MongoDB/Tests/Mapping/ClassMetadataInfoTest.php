@@ -231,7 +231,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'simple' => true,
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
         ));
     }
 
@@ -247,7 +247,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'simple' => 'true',
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
         ));
     }
 
@@ -319,7 +319,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'simple' => true,
+            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
         );
 
         $cm->addInheritedAssociationMapping($mapping);
@@ -359,18 +359,6 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'type' => 'many',
             'sort' => array('foo' => 1)
         ));
-    }
-
-    public function testIncrementTypeAutomaticallyAssumesIncrementStrategy()
-    {
-        $cm = new ClassMetadataInfo('stdClass');
-        $cm->mapField([
-            'fieldName' => 'incrementField',
-            'type' => 'increment',
-        ]);
-
-        $mapping = $cm->fieldMappings['incrementField'];
-        $this->assertSame(ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT, $mapping['strategy']);
     }
 
     public function testSetShardKeyForClassWithoutInheritance()

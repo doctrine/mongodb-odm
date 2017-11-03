@@ -41,8 +41,6 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array(Type::getType(Type::FILE), new GridFSFile()),
             array(Type::getType(Type::HASH), array('foo' => 'bar')),
             array(Type::getType(Type::COLLECTION), array('foo', 'bar')),
-            array(Type::getType(Type::INCREMENT), 1),
-            array(Type::getType(Type::INCREMENT), 1.1),
             array(Type::getType(Type::OBJECTID), "507f1f77bcf86cd799439011"),
             array(Type::getType(Type::RAW), (object) array('foo' => 'bar')),
        );

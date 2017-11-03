@@ -51,7 +51,6 @@ abstract class Type
     const FILE = 'file';
     const HASH = 'hash';
     const COLLECTION = 'collection';
-    const INCREMENT = 'increment';
     const OBJECTID = 'object_id';
     const RAW = 'raw';
 
@@ -82,7 +81,6 @@ abstract class Type
         self::FILE => Types\FileType::class,
         self::HASH => Types\HashType::class,
         self::COLLECTION => Types\CollectionType::class,
-        self::INCREMENT => Types\IncrementType::class,
         self::OBJECTID => Types\ObjectIdType::class,
         self::RAW => Types\RawType::class,
     );

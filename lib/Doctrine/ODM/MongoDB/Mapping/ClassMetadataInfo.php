@@ -240,13 +240,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $shardKey;
 
     /**
-     * READ-ONLY: Whether or not queries on this document should require indexes.
-     *
-     * @deprecated property was deprecated in 1.2 and will be removed in 2.0
-     */
-    public $requireIndexes = false;
-
-    /**
      * READ-ONLY: The name of the document class.
      */
     public $name;
@@ -890,25 +883,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Set whether or not queries on this document should require indexes.
-     *
-     * @param bool $requireIndexes
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function setRequireIndexes($requireIndexes)
-    {
-        if ($requireIndexes) {
-            @trigger_error(
-                'requireIndexes was deprecated in version 1.2 and will be removed altogether in 2.0.',
-                E_USER_DEPRECATED
-            );
-        }
-
-        $this->requireIndexes = $requireIndexes;
-    }
-
-    /**
      * Returns the array of indexes for this Document.
      *
      * @return array $indexes The array of indexes.
@@ -1372,9 +1346,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['type']) && $mapping['type'] === 'file') {
             $mapping['file'] = true;
         }
-        if (isset($mapping['type']) && $mapping['type'] === 'increment') {
-            $mapping['strategy'] = self::STORAGE_STRATEGY_INCREMENT;
-        }
         if (isset($mapping['file']) && $mapping['file'] === true) {
             $this->file = $mapping['fieldName'];
             $mapping['name'] = 'file';
@@ -1405,16 +1376,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
         if ( ! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
-        }
-
-        // Synchronize the "simple" and "storeAs" mapping information for backwards compatibility
-        if (isset($mapping['simple']) && ($mapping['simple'] === true || $mapping['simple'] === 'true')) {
-            $mapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_ID;
-            @trigger_error('"simple" attribute of a reference is deprecated - use storeAs="id" instead.', E_USER_DEPRECATED);
-        }
-        // Provide the correct value for the "simple" field for backwards compatibility
-        if (isset($mapping['storeAs'])) {
-            $mapping['simple'] = $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID;
         }
 
         if (isset($mapping['reference'])
@@ -1512,7 +1473,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         switch (true) {
             case $mapping['type'] == 'int':
             case $mapping['type'] == 'float':
-            case $mapping['type'] == 'increment':
                 $defaultStrategy = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
                 break;
