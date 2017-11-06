@@ -7,8 +7,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use PHPUnit\Framework\TestCase;
 
-abstract class BaseTest extends \PHPUnit_Framework_TestCase
+abstract class BaseTest extends TestCase
 {
     /** @var DocumentManager */
     protected $dm;

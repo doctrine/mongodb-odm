@@ -167,7 +167,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm = new ClassMetadata('Documents\CmsUser');
         $cm->mapField(array('fieldName' => 'name'));
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
+        $this->expectException(\Doctrine\ODM\MongoDB\Mapping\MappingException::class);
         $cm->setDiscriminatorField('name');
     }
 
@@ -176,7 +176,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm = new ClassMetadata('Documents\CmsUser');
         $cm->setDiscriminatorField('name');
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\Mapping\MappingException');
+        $this->expectException(\Doctrine\ODM\MongoDB\Mapping\MappingException::class);
         $cm->mapField(array('fieldName' => 'name'));
     }
 

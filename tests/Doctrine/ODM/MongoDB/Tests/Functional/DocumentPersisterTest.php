@@ -585,7 +585,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testDocument = new $class();
         $testDocument->id = 12345;
         $this->uow->registerManaged($testDocument, 12345, array('id' => 12345));
-        $this->setExpectedException(\Doctrine\ODM\MongoDB\LockException::class);
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
         $testDocument->name = 'test';
         $this->dm->persist($testDocument);
         $this->dm->flush();

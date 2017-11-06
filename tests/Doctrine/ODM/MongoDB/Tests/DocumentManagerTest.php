@@ -72,8 +72,8 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testGetFilterCollection()
     {
         $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\FilterCollection', $this->dm->getFilterCollection());
-    }  
-    
+    }
+
     public function testGetPartialReference()
     {
         $id = new \MongoId();
@@ -128,7 +128,8 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testAffectedByErrorIfClosedException($methodName)
     {
-        $this->setExpectedException('Doctrine\ODM\MongoDB\MongoDBException', 'closed');
+        $this->expectException(\Doctrine\ODM\MongoDB\MongoDBException::class);
+        $this->expectExceptionMessage('closed');
 
         $this->dm->close();
         if ($methodName === 'flush') {

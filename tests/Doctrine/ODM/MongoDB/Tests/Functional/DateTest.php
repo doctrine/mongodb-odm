@@ -78,7 +78,7 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testOldDate()
     {
         if (PHP_INT_SIZE === 4) {
-            $this->setExpectedException("InvalidArgumentException");
+            $this->expectException(\InvalidArgumentException::class);
         }
 
         $user = new User();

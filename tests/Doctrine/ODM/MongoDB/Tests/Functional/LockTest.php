@@ -54,7 +54,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         // Now lets change a property and try and save it again
         $article->title = 'ok';
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\LockException');
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
 
         $this->dm->flush();
     }
@@ -133,7 +133,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         // Now lets change a property and try and save it again
         $article->title = 'ok';
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\LockException');
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
 
         $this->dm->flush();
     }
@@ -157,7 +157,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\LockException');
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
 
         $this->dm->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
@@ -170,7 +170,8 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\LockException', 'Document Documents\User is not versioned.');
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
+        $this->expectExceptionMessage('Document Documents\User is not versioned.');
 
         $this->dm->lock($user, LockMode::OPTIMISTIC);
     }
@@ -179,7 +180,8 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $article = new LockInt();
 
-        $this->setExpectedException('InvalidArgumentException', 'Document is not MANAGED.');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Document is not MANAGED.');
 
         $this->dm->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
@@ -244,7 +246,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $coll = $this->dm->getDocumentCollection(__NAMESPACE__.'\LockInt');
         $coll->update(array('_id' => new \MongoId($article->id)), array('locked' => LockMode::PESSIMISTIC_READ));
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\LockException');
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
 
         $this->dm->remove($article);
         $this->dm->flush();
@@ -261,7 +263,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $coll = $this->dm->getDocumentCollection(__NAMESPACE__.'\LockInt');
         $coll->update(array('_id' => new \MongoId($article->id)), array('locked' => LockMode::PESSIMISTIC_READ));
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\LockException');
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
 
         $article->title = 'changed';
         $this->dm->flush();
@@ -278,7 +280,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $coll = $this->dm->getDocumentCollection(__NAMESPACE__.'\LockInt');
         $coll->update(array('_id' => new \MongoId($article->id)), array('locked' => LockMode::PESSIMISTIC_WRITE));
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\LockException');
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
 
         $this->dm->remove($article);
         $this->dm->flush();
@@ -295,7 +297,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $coll = $this->dm->getDocumentCollection(__NAMESPACE__.'\LockInt');
         $coll->update(array('_id' => new \MongoId($article->id)), array('locked' => LockMode::PESSIMISTIC_WRITE));
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\LockException');
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
 
         $article->title = 'changed';
         $this->dm->flush();
@@ -312,7 +314,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $coll = $this->dm->getDocumentCollection(__NAMESPACE__.'\LockInt');
         $coll->update(array('_id' => new \MongoId($article->id)), array('locked' => LockMode::PESSIMISTIC_WRITE));
 
-        $this->setExpectedException('Doctrine\ODM\MongoDB\LockException');
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
 
         $this->dm->clear();
         $article = $this->dm->find(__NAMESPACE__.'\LockInt', $article->id);
@@ -358,13 +360,15 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testInvalidLockDocument()
     {
-        $this->setExpectedException('Doctrine\ODM\MongoDB\MongoDBException', 'Invalid lock field type string. Lock field must be int.');
+        $this->expectException(\Doctrine\ODM\MongoDB\MongoDBException::class);
+        $this->expectExceptionMessage('Invalid lock field type string. Lock field must be int.');
         $this->dm->getClassMetadata(__NAMESPACE__.'\InvalidLockDocument');
     }
 
     public function testInvalidVersionDocument()
     {
-        $this->setExpectedException('Doctrine\ODM\MongoDB\MongoDBException', 'Invalid version field type string. Version field must be int or date.');
+        $this->expectException(\Doctrine\ODM\MongoDB\MongoDBException::class);
+        $this->expectExceptionMessage('Invalid version field type string. Version field must be int or date.');
         $this->dm->getClassMetadata(__NAMESPACE__.'\InvalidVersionDocument');
     }
 
