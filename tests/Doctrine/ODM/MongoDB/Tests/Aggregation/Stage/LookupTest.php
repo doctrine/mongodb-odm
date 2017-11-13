@@ -8,11 +8,9 @@ use Documents\Sharded\ShardedOne;
 
 class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    /**
-     * @before
-     */
-    public function prepareTest()
+    public function setUp()
     {
+        parent::setUp();
         $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
         $this->insertTestData();
     }

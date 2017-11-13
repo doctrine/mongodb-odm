@@ -16,9 +16,6 @@ abstract class BaseTest extends TestCase
     /** @var UnitOfWork */
     protected $uow;
 
-    /**
-     * @before
-     */
     public function setUp()
     {
         $this->dm = $this->createTestDocumentManager();
