@@ -138,6 +138,9 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testLockVersionedDocument()
     {
         $article = new LockInt();

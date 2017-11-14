@@ -13,8 +13,13 @@ class QueryTest extends BaseTest
             ->exclude('comments')
             ->select('comments')
             ->selectSlice('comments', 0, 10);
+
         $query = $qb->getQuery();
-        $results = $query->execute();
+
+        $this->assertEquals(['comments' => ['$slice' => [0, 10]]], $query->getQuery()['select']);
+
+        $query = $qb->getQuery();
+        $query->execute();
     }
 
     public function testThatOrAcceptsAnotherQuery()

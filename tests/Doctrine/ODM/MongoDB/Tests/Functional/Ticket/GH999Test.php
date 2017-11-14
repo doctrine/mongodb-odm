@@ -16,6 +16,11 @@ class GH999Test extends BaseTest
         $document = new GH999Document('name');
         $this->dm->persist($document);
         $this->dm->flush();
+
+        $this->dm->clear();
+
+        $document = $this->dm->find(GH999Document::class, $document->getId());
+        $this->assertSame('name #changed', $document->getName());
     }
 }
 

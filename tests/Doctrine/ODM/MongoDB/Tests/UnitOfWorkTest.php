@@ -238,6 +238,9 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($updates[0] === $item);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testDoubleCommitWithChangeTrackingNotify()
     {
         $pb = $this->getMockPersistenceBuilder();
@@ -317,6 +320,9 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array(array('name' => 'd'), $c, 'b.c.d'), $unitOfWork->getParentAssociation($d));
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testPreUpdateTriggeredWithEmptyChangeset()
     {
         $this->dm->getEventManager()->addEventSubscriber(

@@ -155,15 +155,15 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->dm->flush();
         $this->dm->clear();
 
-        $accountId = $user->getAccount()->getId();
+        $this->assertNotNull($user->getAccount()->getId());
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
+        $this->assertInstanceOf(User::class, $user2);
     }
 
     public function testManyReference()

@@ -87,6 +87,9 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->eagerCursor(false);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testFieldPrimingCanBeToggled()
     {
         $this->dm->createQueryBuilder(User::class)
