@@ -911,11 +911,6 @@ that will be applied when querying for the annotated document.
     {
     }
 
-.. note::
-
-    This annotation can not be combined with ``slaveOkay``, such combination will
-    produce a ``MappingException`` error.
-
 .. _annotations_reference_reference_many:
 
 @ReferenceMany
