@@ -123,9 +123,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $this->addIndex($class, $index);
             }
         }
-        if (isset($documentAnnot->slaveOkay)) {
-            $class->setSlaveOkay($documentAnnot->slaveOkay);
-        }
         if (! empty($documentAnnot->readOnly)) {
             $class->markReadOnly();
         }

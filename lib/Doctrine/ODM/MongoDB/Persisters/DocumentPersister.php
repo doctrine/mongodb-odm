@@ -755,9 +755,6 @@ class DocumentPersister
             if (isset($mapping['skip'])) {
                 $cursor->skip($mapping['skip']);
             }
-            if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-                $cursor->slaveOkay(true);
-            }
             if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
                 $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
             }
@@ -817,9 +814,6 @@ class DocumentPersister
         }
         if (isset($mapping['skip'])) {
             $qb->skip($mapping['skip']);
-        }
-        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $qb->slaveOkay(true);
         }
         if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
             $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
@@ -881,9 +875,6 @@ class DocumentPersister
         }
         if (isset($mapping['skip'])) {
             $cursor->skip($mapping['skip']);
-        }
-        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $cursor->slaveOkay(true);
         }
         if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
             $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);

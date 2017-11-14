@@ -340,23 +340,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @deprecated in version 1.2 - use setReadPreference instead.
-     */
-    public function slaveOkay($bool = true)
-    {
-        if ($bool) {
-            @trigger_error(
-                sprintf('%s was deprecated in version 1.2 - use setReadPreference instead.', __METHOD__),
-                E_USER_DEPRECATED
-            );
-        }
-
-        return parent::slaveOkay($bool);
-    }
-
-    /**
      * Gets the Query executable.
      *
      * @param array $options
@@ -401,10 +384,6 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         if (isset($query['sort'])) {
             $query['sort'] = $documentPersister->prepareSortOrProjection($query['sort']);
-        }
-
-        if ($this->class->slaveOkay) {
-            $query['slaveOkay'] = $this->class->slaveOkay;
         }
 
         if ($this->class->readPreference && ! array_key_exists('readPreference', $query)) {

@@ -61,7 +61,6 @@
     <xs:attribute name="repository-class" type="xs:string"/>
     <xs:attribute name="inheritance-type" type="odm:inheritance-type"/>
     <xs:attribute name="change-tracking-policy" type="odm:change-tracking-policy" />
-    <xs:attribute name="slave-okay" type="xs:boolean" />
     <xs:attribute name="read-only" type="xs:boolean" />
   </xs:complexType>
 

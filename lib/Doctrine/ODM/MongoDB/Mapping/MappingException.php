@@ -406,16 +406,6 @@ class MappingException extends BaseMappingException
         return new self("Cannot use reference priming on '$fieldName' in class '$className'. Reference priming is only supported for inverse references");
     }
 
-    /**
-     * @param string $className
-     * @return MappingException
-     * @deprecated Method will be removed along with slaveOkay in version 2.0.
-     */
-    public static function canNotCombineReadPreferenceAndSlaveOkay($className)
-    {
-        return new self("Cannot use ReadPreference and SlaveOkay at the same time in class '$className'.");
-    }
-
     public static function connectFromFieldMustReferenceSameDocument($fieldName)
     {
         return new self("Cannot use field '$fieldName' as connectFromField in a \$graphLookup stage. Reference must target the document itself.");

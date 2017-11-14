@@ -12,13 +12,6 @@ use Documents\User;
 
 class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testSlaveOkayDefault()
-    {
-        $cm = new ClassMetadataInfo('stdClass');
-
-        $this->assertNull($cm->slaveOkay);
-    }
-
     public function testDefaultDiscriminatorField()
     {
         $cm = new ClassMetadataInfo('stdClass');

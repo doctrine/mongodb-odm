@@ -543,31 +543,6 @@ class Cursor implements CursorInterface
     }
 
     /**
-     * Wrapper method for MongoCursor::slaveOkay().
-     *
-     * @see CursorInterface::slaveOkay()
-     * @see http://php.net/manual/en/mongocursor.slaveokay.php
-     * @param boolean $ok
-     * @return $this
-     *
-     * @deprecated in version 1.2 - use setReadPreference on the query instead.
-     */
-    public function slaveOkay($ok = true)
-    {
-        $ok = (boolean) $ok;
-        if ($ok) {
-            @trigger_error(
-                sprintf('%s was deprecated in version 1.2 - use setReadPreference on the query instead.', __METHOD__),
-                E_USER_DEPRECATED
-            );
-        }
-
-        $this->baseCursor->slaveOkay($ok);
-        $this->unitOfWorkHints[Query::HINT_SLAVE_OKAY] = $ok;
-        return $this;
-    }
-
-    /**
      * Wrapper method for MongoCursor::snapshot().
      *
      * @see CursorInterface::snapshot()

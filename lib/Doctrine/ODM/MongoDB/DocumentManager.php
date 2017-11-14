@@ -348,10 +348,6 @@ class DocumentManager implements ObjectManager
 
         $collection = $this->documentCollections[$className];
 
-        if ($metadata->slaveOkay !== null) {
-            $collection->setSlaveOkay($metadata->slaveOkay);
-        }
-
         if ($metadata->readPreference !== null) {
             $collection->setReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
         }

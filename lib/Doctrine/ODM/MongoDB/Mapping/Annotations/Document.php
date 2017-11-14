@@ -32,7 +32,5 @@ final class Document extends AbstractDocument
     public $indexes = array();
     public $readOnly = false;
     public $shardKey;
-    /** @deprecated */
-    public $slaveOkay;
     public $writeConcern;
 }
