@@ -7,8 +7,9 @@ use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use PHPUnit\Framework\TestCase;
 
-class SchemaManagerTest extends \PHPUnit_Framework_TestCase
+class SchemaManagerTest extends TestCase
 {
     private $indexedClasses = array(
         \Documents\CmsAddress::class,

@@ -8,7 +8,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH1232Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testRemoveCausesErrors()
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testRemoveDoesNotCauseErrors()
     {
         $post = new GH1232Post();
         $this->dm->persist($post);

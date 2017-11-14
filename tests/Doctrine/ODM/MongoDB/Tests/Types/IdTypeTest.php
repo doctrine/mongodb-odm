@@ -3,8 +3,9 @@
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use Doctrine\ODM\MongoDB\Types\Type;
+use PHPUnit\Framework\TestCase;
 
-class IdTypeTest extends \PHPUnit_Framework_TestCase
+class IdTypeTest extends TestCase
 {
     public function testConvertToDatabaseValue()
     {

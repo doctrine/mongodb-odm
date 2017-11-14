@@ -209,6 +209,9 @@ class RequireIndexesTest extends BaseTest
         $query->execute();
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testForceDisableRequireIndexes()
     {
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument')
@@ -219,6 +222,9 @@ class RequireIndexesTest extends BaseTest
     }
 
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testRequireIndexesFalse()
     {
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\DoesNotRequireIndexesDocument')
@@ -227,6 +233,9 @@ class RequireIndexesTest extends BaseTest
         $query->execute();
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testRequireIndexesOnEmbeddedDocument()
     {
         $qb = $this->dm->createQueryBuilder('Doctrine\ODM\MongoDB\Tests\Functional\RequireIndexesDocument')

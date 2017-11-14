@@ -5,6 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use TestDocuments\PrimedCollectionDocument;
+use PHPUnit\Framework\TestCase;
 
 require_once 'fixtures/InvalidPartialFilterDocument.php';
 require_once 'fixtures/PartialFilterDocument.php';
@@ -13,7 +14,7 @@ require_once 'fixtures/User.php';
 require_once 'fixtures/EmbeddedDocument.php';
 require_once 'fixtures/QueryResultDocument.php';
 
-abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractDriverTest extends TestCase
 {
     protected $driver;
 
@@ -64,7 +65,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             'sparse' => true,
             'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['username']);
-        
+
         $this->assertEquals(array(
             array(
                 'keys' => array('username' => 1),

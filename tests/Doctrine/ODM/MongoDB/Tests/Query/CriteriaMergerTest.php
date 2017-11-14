@@ -3,8 +3,9 @@
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
+use PHPUnit\Framework\TestCase;
 
-class CriteriaMergerTest extends \PHPUnit_Framework_TestCase
+class CriteriaMergerTest extends TestCase
 {
     /**
      * @dataProvider provideMerge

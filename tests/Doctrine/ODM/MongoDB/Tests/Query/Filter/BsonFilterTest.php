@@ -26,9 +26,4 @@ class BsonFilterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $filter->setParameter('foo', null);
         $this->assertNull($filter->getParameter('foo'));
     }
- 
-    public function testCreateMockOfFilter()
-    {
-        $this->createMock('\Doctrine\ODM\MongoDB\Query\Filter\BsonFilter');
-    }
 }

@@ -95,7 +95,8 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user->username = 'domnikl';
         $user->status = 'developer';
 
-        $this->setExpectedException('InvalidArgumentException', 'Document has to be managed or scheduled for removal for single computation');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Document has to be managed or scheduled for removal for single computation');
         $this->dm->flush($user);
     }
 

@@ -9,6 +9,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 {
     abstract protected function _loadDriver();
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testLoadMapping()
     {
         $className = __NAMESPACE__.'\AbstractMappingDriverUser';

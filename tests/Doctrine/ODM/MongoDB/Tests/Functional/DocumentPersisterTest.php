@@ -458,7 +458,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->createMock('\MongoCollection');
-        $collection->expects($this->any())
+        $collection->expects($this->once())
             ->method('batchInsert')
             ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
 
@@ -482,7 +482,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->createMock('\MongoCollection');
-        $collection->expects($this->any())
+        $collection->expects($this->once())
             ->method('update')
             ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
 
@@ -529,7 +529,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->createMock('\MongoCollection');
-        $collection->expects($this->any())
+        $collection->expects($this->once())
             ->method('batchInsert')
             ->with($this->isType('array'), $this->equalTo(array('w' => 0)));
 
@@ -585,7 +585,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testDocument = new $class();
         $testDocument->id = 12345;
         $this->uow->registerManaged($testDocument, 12345, array('id' => 12345));
-        $this->setExpectedException(\Doctrine\ODM\MongoDB\LockException::class);
+        $this->expectException(\Doctrine\ODM\MongoDB\LockException::class);
         $testDocument->name = 'test';
         $this->dm->persist($testDocument);
         $this->dm->flush();

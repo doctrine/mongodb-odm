@@ -19,10 +19,12 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Symfony;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @group DDC-1418
  */
-abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractDriverTest extends TestCase
 {
     public function testFindMappingFile()
     {
@@ -47,10 +49,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindMappingFileNamespacedFoundFileNotFound()
     {
-        $this->setExpectedException(
-            'Doctrine\Common\Persistence\Mapping\MappingException',
-            "No mapping file found named"
-        );
+        $this->expectException(\Doctrine\Common\Persistence\Mapping\MappingException::class);
+        $this->expectExceptionMessage("No mapping file found named");
 
         $driver = $this->getDriver(array(
             'MyNamespace\MySubnamespace\Document' => $this->dir,
@@ -61,10 +61,8 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindMappingNamespaceNotFound()
     {
-        $this->setExpectedException(
-            'Doctrine\Common\Persistence\Mapping\MappingException',
-            "No mapping file found named 'Foo".$this->getFileExtension()."' for class 'MyOtherNamespace\MySubnamespace\Document\Foo'."
-        );
+        $this->expectException(\Doctrine\Common\Persistence\Mapping\MappingException::class);
+        $this->expectExceptionMessage("No mapping file found named 'Foo".$this->getFileExtension()."' for class 'MyOtherNamespace\MySubnamespace\Document\Foo'.");
 
         $driver = $this->getDriver(array(
             'MyNamespace\MySubnamespace\Document' => $this->dir,

@@ -603,6 +603,19 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test1->embedTwo = $secondEmbedded;
 
         $this->dm->persist($test1);
+
+        $this->dm->flush();
+
+        $test1Data = $this->dm->createQueryBuilder(ChangeEmbeddedWithNameAnnotationTest::class)
+            ->hydrate(false)
+            ->field('id')
+            ->equals($test1->id)
+            ->getQuery()
+            ->getSingleResult();
+
+        $this->assertInternalType('array', $test1Data);
+
+        $this->assertArrayHasKey('m_id', $test1Data['embedOne']);
     }
 }
 

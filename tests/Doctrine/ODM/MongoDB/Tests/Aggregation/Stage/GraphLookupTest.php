@@ -13,11 +13,9 @@ use Documents\User;
 
 class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    /**
-     * @before
-     */
-    public function prepareTest()
+    public function setUp()
     {
+        parent::setUp();
         $this->requireMongoDB34('$graphLookup tests require at least MongoDB 3.4.0');
     }
 

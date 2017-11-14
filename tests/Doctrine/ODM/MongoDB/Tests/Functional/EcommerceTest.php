@@ -80,14 +80,6 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(2, count($product->getOptions()));
     }
 
-    public function testDoesNotSaveTransientFields()
-    {
-        $product = $this->getProduct();
-
-        $product->selectOption('small');
-        $this->dm->flush();
-    }
-
     protected function getProduct()
     {
         $products = $this->dm->getRepository('Documents\Ecommerce\ConfigurableProduct')
