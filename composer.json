@@ -33,7 +33,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7.21|^6.4",
-        "symfony/yaml": "~2.3|~3.0|^4.0"
+        "symfony/yaml": "~2.3|~3.0|^4.0",
+        "jmikola/geojson": "^1.0"
     },
     "suggest": {
         "symfony/yaml": "Enables the YAML metadata mapping driver",
