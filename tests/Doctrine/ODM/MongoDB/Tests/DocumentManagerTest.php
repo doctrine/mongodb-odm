@@ -199,16 +199,6 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $dbRef);
         $this->assertArrayHasKey('id', $dbRef);
     }
-
-    private function getMockClassMetadataFactory()
-    {
-        return $this->createMock('Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory');
-    }
-
-    private function getMockCollection()
-    {
-        return $this->createMock('Doctrine\MongoDB\Collection');
-    }
 }
 
 /** @ODM\Document */

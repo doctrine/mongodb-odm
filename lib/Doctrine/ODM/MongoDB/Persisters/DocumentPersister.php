@@ -21,7 +21,6 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
@@ -860,7 +859,7 @@ class DocumentPersister
     /**
      * @param PersistentCollectionInterface $collection
      *
-     * @return CursorInterface
+     * @return Cursor
      */
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection)
     {

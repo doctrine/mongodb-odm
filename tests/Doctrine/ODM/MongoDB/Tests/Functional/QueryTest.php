@@ -346,7 +346,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $query = $qb->getQuery();
-        $this->assertInstanceOf(\Doctrine\MongoDB\IteratorAggregate::class, $query);
+        $this->assertInstanceOf(\IteratorAggregate::class, $query);
         foreach ($query as $article) {
             $this->assertEquals('Documents\Article', get_class($article));
         }

@@ -19,9 +19,6 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\MongoDB\Collection;
-use Doctrine\MongoDB\Connection;
-use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
@@ -295,10 +292,6 @@ class Cursor implements \Iterator
      */
     public function enableReferencePriming(array $primers, ReferencePrimer $referencePrimer)
     {
-        if ( ! $this->baseCursor instanceof BaseEagerCursor) {
-            throw new \BadMethodCallException("Can't enable reference priming when not using eager cursors.");
-        }
-
         $this->referencePrimer = $referencePrimer;
         $this->primers = $primers;
         return $this;

@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Cursor;
 use Documents\User;
+use MongoDB\Driver\Cursor as BaseCursor;
 
 class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -50,8 +51,8 @@ class CursorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->eagerCursor(true);
 
         $cursor = $qb->getQuery()->execute();
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\EagerCursor', $cursor);
-        $this->assertInstanceOf('Doctrine\MongoDB\EagerCursor', $cursor->getBaseCursor());
+        $this->assertInstanceOf(Cursor::class, $cursor);
+        $this->assertInstanceOf(BaseCursor::class, $cursor->getBaseCursor());
     }
 
     public function testPrimeEmptySingleResult()

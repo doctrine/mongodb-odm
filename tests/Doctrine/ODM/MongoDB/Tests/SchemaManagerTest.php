@@ -2,12 +2,14 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\MongoDB\ArrayIterator;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use MongoDB\Client;
+use MongoDB\Collection;
+use MongoDB\Database;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\TestCase;
 
@@ -125,7 +127,7 @@ class SchemaManagerTest extends TestCase
         $collection = $this->documentCollections[\Documents\CmsArticle::class];
         $collection->expects($this->once())
             ->method('listIndexes')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator([]))));
+            ->will($this->returnValue(new IndexInfoIteratorIterator(new \ArrayIterator([]))));
         $collection->expects($this->once())
             ->method('ensureIndex');
         $collection->expects($this->any())
@@ -152,7 +154,7 @@ class SchemaManagerTest extends TestCase
         ]];
         $collection->expects($this->once())
             ->method('getIndexInfo')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator($indexes))));
+            ->will($this->returnValue(new IndexInfoIteratorIterator(new \ArrayIterator($indexes))));
         $collection->expects($this->once())
             ->method('ensureIndex');
         $collection->expects($this->any())
@@ -457,7 +459,7 @@ class SchemaManagerTest extends TestCase
         $dbMock = $this->getMockDatabase();
         $dbMock->method('getName')->willReturn($dbName);
         $adminDBMock = $this->getMockDatabase();
-        $connMock = $this->getMockConnection();
+        $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
         $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
@@ -488,7 +490,7 @@ class SchemaManagerTest extends TestCase
         $dbMock = $this->getMockDatabase();
         $dbMock->method('getName')->willReturn($dbName);
         $adminDBMock = $this->getMockDatabase();
-        $connMock = $this->getMockConnection();
+        $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
         $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
@@ -515,7 +517,7 @@ class SchemaManagerTest extends TestCase
         $dbMock = $this->getMockDatabase();
         $dbMock->method('getName')->willReturn($dbName);
         $adminDBMock = $this->getMockDatabase();
-        $connMock = $this->getMockConnection();
+        $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
         $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
@@ -542,7 +544,7 @@ class SchemaManagerTest extends TestCase
             ->method('command')
             ->with(array('enableSharding' => 'db'))
             ->willReturn(array('ok' => 1));
-        $connMock = $this->getMockConnection();
+        $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
         $dbMock = $this->getMockDatabase();
@@ -564,7 +566,7 @@ class SchemaManagerTest extends TestCase
             ->method('command')
             ->with(array('enableSharding' => 'db'))
             ->willReturn(array('ok' => 0, 'code' => 666, 'errmsg' => 'Scary error'));
-        $connMock = $this->getMockConnection();
+        $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
         $dbMock = $this->getMockDatabase();
@@ -582,7 +584,7 @@ class SchemaManagerTest extends TestCase
             ->method('command')
             ->with(array('enableSharding' => 'db'))
             ->willReturn(array('ok' => 0, 'code' => 23, 'errmsg' => 'already enabled'));
-        $connMock = $this->getMockConnection();
+        $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
         $dbMock = $this->getMockDatabase();
@@ -594,12 +596,12 @@ class SchemaManagerTest extends TestCase
 
     private function getMockCollection()
     {
-        return $this->createMock('Doctrine\MongoDB\Collection');
+        return $this->createMock(Collection::class);
     }
 
     private function getMockDatabase()
     {
-        return $this->createMock('Doctrine\MongoDB\Database');
+        return $this->createMock(Database::class);
     }
 
     private function getMockDocumentManager()
@@ -633,8 +635,8 @@ class SchemaManagerTest extends TestCase
         return $uow;
     }
 
-    private function getMockConnection()
+    private function getMockClient()
     {
-        return $this->createMock('Doctrine\MongoDB\Connection');
+        return $this->createMock(Client::class);
     }
 }
