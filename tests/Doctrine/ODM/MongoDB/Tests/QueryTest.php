@@ -4,6 +4,13 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Documents\User;
+use MongoDB\Collection;
+use MongoDB\Database;
+use MongoDB\Driver\ReadPreference;
+use MongoDB\Model\CachingIterator;
 
 class QueryTest extends BaseTest
 {
@@ -373,6 +380,256 @@ class QueryTest extends BaseTest
         $this->assertTrue($this->uow->isInIdentityMap($p));
         $this->assertFalse($this->uow->isInIdentityMap($readOnly));
         $this->assertFalse($this->uow->isInIdentityMap($readOnly->pet));
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testConstructorShouldThrowExceptionForInvalidType()
+    {
+        new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
+    }
+
+    /**
+     * @dataProvider provideQueryTypesThatDoNotReturnAnIterator
+     * @expectedException BadMethodCallException
+     */
+    public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator($type, $method)
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->never())->method($method);
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, ['type' => $type], []);
+
+        $query->getIterator();
+    }
+
+    public function provideQueryTypesThatDoNotReturnAnIterator()
+    {
+        return [
+            [Query::TYPE_FIND_AND_UPDATE, 'findOneAndUpdate'],
+            [Query::TYPE_FIND_AND_REMOVE, 'findOneAndDelete'],
+            [Query::TYPE_INSERT, 'insertOne'],
+            [Query::TYPE_UPDATE, 'updateOne'],
+            [Query::TYPE_REMOVE, 'deleteOne'],
+            [Query::TYPE_COUNT, 'count'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideQueryTypesThatDoReturnAnIterator
+     * @expectedException \UnexpectedValueException
+     */
+    public function testGetIteratorShouldThrowExceptionAfterExecutingForTypesThatShouldReturnAnIteratorButDoNot($type, $method)
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
+            ->method($method)
+            ->will($this->returnValue(null));
+
+        // Create a query array with any fields that may be expected to exist
+        $queryArray = [
+            'type' => $type,
+            'query' => [],
+            'group' => ['keys' => [], 'initial' => [], 'reduce' => '', 'options' => []],
+            'mapReduce' => ['map' => '', 'reduce' => '', 'out' => ['inline' => true], 'options' => []],
+            'geoNear' => ['near' => [], 'options' => []],
+            'distinct' => 0,
+        ];
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+
+        $query->getIterator();
+    }
+
+    public function provideQueryTypesThatDoReturnAnIterator()
+    {
+        return [
+            // Skip Query::TYPE_FIND, since prepareCursor() would error first
+            [Query::TYPE_MAP_REDUCE, 'mapReduce'],
+            [Query::TYPE_DISTINCT, 'distinct'],
+            [Query::TYPE_GEO_NEAR, 'near'],
+        ];
+    }
+
+    public function testFindAndModifyOptionsAreRenamed()
+    {
+        $queryArray = [
+            'type' => Query::TYPE_FIND_AND_REMOVE,
+            'query' => ['type' => 1],
+            'select' => ['_id' => 1],
+        ];
+
+        $collection = $this->getMockCollection();
+        $collection
+            ->expects($this->at(0))
+            ->method('withOptions')
+            ->with(['readPreference' => new ReadPreference('primary')])
+            ->will($this->returnSelf());
+
+        $collection
+            ->expects($this->at(1))
+            ->method('findOneAndDelete')
+            ->with(['type' => 1], ['projection' => ['_id' => 1]]);
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+        $query->execute();
+    }
+
+    public function testMapReduceOptionsArePassed()
+    {
+        $map = 'function() { emit(this.a, 1); }';
+        $reduce = 'function(key, values) { return Array.sum(values); }';
+
+        $queryArray = [
+            'type' => Query::TYPE_MAP_REDUCE,
+            'mapReduce' => [
+                'map' => $map,
+                'reduce' => $reduce,
+                'out' => 'collection',
+                'options' => ['jsMode' => true],
+            ],
+            'limit' => 10,
+            'query' => ['type' => 1],
+        ];
+
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
+            ->method('mapReduce')
+            ->with($map, $reduce, 'collection', ['type' => 1], ['limit' => 10, 'jsMode' => true]);
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+        $query->execute();
+    }
+
+    public function testGeoNearOptionsArePassed()
+    {
+        $this->markTestSkipped('Not implemented');
+        $queryArray = [
+            'type' => Query::TYPE_GEO_NEAR,
+            'geoNear' => [
+                'near' => [1, 1],
+                'options' => ['spherical' => true],
+            ],
+            'limit' => 10,
+            'query' => ['type' => 1],
+        ];
+
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
+            ->method('near')
+            ->with([1, 1], ['type' => 1], ['num' => 10, 'spherical' => true]);
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+        $query->execute();
+    }
+
+    public function testWithPrimaryReadPreference()
+    {
+        $collection = $this->getMockCollection();
+
+        $collection
+            ->expects($this->at(0))
+            ->method('withOptions')
+            ->with(['readPreference' => new ReadPreference('primary')])
+            ->will($this->returnSelf());
+
+        $collection->expects($this->at(1))
+            ->method('findOneAndDelete')
+            ->with(['type' => 1], ['projection' => ['_id' => 1]]);
+
+        $queryArray = [
+            'type' => Query::TYPE_FIND_AND_REMOVE,
+            'query' => ['type' => 1],
+            'select' => ['_id' => 1],
+        ];
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+        $query->execute();
+    }
+
+    public function testWithReadPreference()
+    {
+        $collection = $this->getMockCollection();
+        $readPreference = new ReadPreference('secondary', [['dc' => 'east']]);
+
+        $collection
+            ->expects($this->never())
+            ->method('withOptions');
+
+        $collection
+            ->expects($this->once())
+            ->method('count')
+            ->with(['foo' => 'bar'])
+            ->will($this->returnValue(100));
+
+        $queryArray = [
+            'type' => Query::TYPE_COUNT,
+            'query' => ['foo' => 'bar'],
+            'readPreference' => $readPreference,
+        ];
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+
+        $this->assertEquals(100, $query->execute());
+    }
+
+    public function testCountWithOptions()
+    {
+        $collection = $this->getMockCollection();
+
+        $collection->expects($this->at(0))
+            ->method('count')
+            ->with(['foo' => 'bar'], ['skip' => 5])
+            ->will($this->returnValue(100));
+
+        $queryArray = [
+            'type' => Query::TYPE_COUNT,
+            'query' => ['foo' => 'bar'],
+            'skip' => 5,
+        ];
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+
+        $this->assertSame(100, $query->execute());
+    }
+
+    public function testEagerCursorPreparation()
+    {
+        $collection = $this->dm->getDocumentCollection(User::class);
+
+        $queryArray = [
+            'type' => Query::TYPE_FIND,
+            'query' => ['foo' => 'bar'],
+            'eagerCursor' => true,
+        ];
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+
+        $eagerCursor = $query->execute();
+
+        $this->assertInstanceOf(CachingIterator::class, $eagerCursor);
+    }
+
+    private function getMockCollection()
+    {
+        return $this->getMockBuilder(Collection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    private function getMockCursor()
+    {
+        return $this->getMockBuilder(\MongoDB\Driver\Cursor::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    private function getMockDatabase()
+    {
+        return $this->getMockBuilder(Database::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }
 
