@@ -3,6 +3,8 @@
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Documents\User;
 
 trait AggregationOperatorsProviderTrait
 {
@@ -598,5 +600,21 @@ trait AggregationOperatorsProviderTrait
                 'args' => [['$array1', '$array2'], true, ['a', 'b']],
             ],
         ];
+    }
+
+    protected function createExpr(): Expr
+    {
+        return new Expr($this->dm, new ClassMetadata(User::class));
+    }
+
+    protected function resolveArgs($args): array
+    {
+        if (is_array($args)) {
+            return $args;
+        } elseif ($args instanceof \Closure) {
+            return $args($this->createExpr());
+        }
+
+        throw new \InvalidArgumentException('Arguments for aggregation tests must be array or closure');
     }
 }
