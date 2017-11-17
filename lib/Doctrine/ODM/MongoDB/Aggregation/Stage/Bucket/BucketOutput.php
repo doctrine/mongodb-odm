@@ -17,19 +17,40 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
+namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 
-class Bucket extends AbstractBucket
+use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Doctrine\ODM\MongoDB\Aggregation\Expr;
+use Doctrine\ODM\MongoDB\Aggregation\Stage;
+
+/**
+ * Fluent interface for adding an output specification to a bucket stage.
+ *
+ * @author alcaeus <alcaeus@alcaeus.org>
+ * @since 1.5
+ */
+class BucketOutput extends AbstractOutput
 {
     /**
-     * @var array
+     * @param Builder $builder
+     * @param Stage\Bucket $bucket
      */
-    private $boundaries;
+    public function __construct(Builder $builder, Stage\Bucket $bucket)
+    {
+        parent::__construct($builder, $bucket);
+    }
 
     /**
-     * @var mixed
+     * An expression to group documents by. To specify a field path, prefix the
+     * field name with a dollar sign $ and enclose it in quotes.
+     *
+     * @param mixed|Expr $expression
+     * @return Stage\Bucket
      */
-    private $default;
+    public function groupBy($expression)
+    {
+        return $this->bucket->groupBy($expression);
+    }
 
     /**
      * An array of values based on the groupBy expression that specify the
@@ -42,12 +63,11 @@ class Bucket extends AbstractBucket
      *
      * @param array ...$boundaries
      *
-     * @return $this
+     * @return Stage\Bucket
      */
     public function boundaries(...$boundaries)
     {
-        $this->boundaries = $boundaries;
-        return $this;
+        return $this->bucket->boundaries(...$boundaries);
     }
 
     /**
@@ -57,42 +77,10 @@ class Bucket extends AbstractBucket
      *
      * @param mixed $default
      *
-     * @return $this
+     * @return Stage\Bucket
      */
     public function defaultBucket($default)
     {
-        $this->default = $default;
-        return $this;
-    }
-
-    /**
-     * A document that specifies the fields to include in the output documents
-     * in addition to the _id field. To specify the field to include, you must
-     * use accumulator expressions.
-     *
-     * @return Bucket\BucketOutput
-     */
-    public function output()
-    {
-        if (! $this->output) {
-            $this->output = new Bucket\BucketOutput($this->builder, $this);
-        }
-
-        return $this->output;
-    }
-
-    protected function getExtraPipelineFields()
-    {
-        $fields = ['boundaries' => $this->boundaries];
-        if ($this->default !== null) {
-            $fields['default'] = $this->default;
-        }
-
-        return $fields;
-    }
-
-    protected function getStageName()
-    {
-        return '$bucket';
+        return $this->bucket->defaultBucket($default);
     }
 }

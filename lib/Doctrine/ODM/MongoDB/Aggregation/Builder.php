@@ -507,8 +507,8 @@ class Builder
      */
     public function unwind($fieldName)
     {
-        $fieldName = $this->getDocumentPersister()->prepareFieldName($fieldName);
-        return parent::unwind($fieldName);
+        // Fixme: move field name translation to stage
+        return $this->addStage(new Stage\Unwind($this, $this->getDocumentPersister()->prepareFieldName($fieldName)));
     }
 
     /**

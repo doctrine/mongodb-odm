@@ -46,4 +46,14 @@ class OutTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $builder->getPipeline();
     }
+
+    public function testSubsequentOutStagesAreOverwritten()
+    {
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder
+            ->out('someCollection')
+            ->out('otherCollection');
+
+        $this->assertSame([['$out' => 'otherCollection']], $builder->getPipeline());
+    }
 }

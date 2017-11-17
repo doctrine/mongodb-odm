@@ -3,7 +3,10 @@
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Documents\GraphLookup\Airport;
 use Documents\GraphLookup\Employee;
 use Documents\GraphLookup\ReportingHierarchy;
@@ -13,10 +16,85 @@ use Documents\User;
 
 class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
+    use AggregationTestTrait;
+
     public function setUp()
     {
         parent::setUp();
         $this->requireMongoDB34('$graphLookup tests require at least MongoDB 3.4.0');
+    }
+
+    public function testGraphLookupStage()
+    {
+        $graphLookupStage = new GraphLookup($this->getTestAggregationBuilder(), 'employees', $this->dm, new ClassMetadata(User::class));
+        $graphLookupStage
+            ->startWith('$reportsTo')
+            ->connectFromField('reportsTo')
+            ->connectToField('name')
+            ->alias('reportingHierarchy');
+
+        $this->assertEquals(
+            ['$graphLookup' => [
+                'from' => 'employees',
+                'startWith' => '$reportsTo',
+                'connectFromField' => 'reportsTo',
+                'connectToField' => 'name',
+                'as' => 'reportingHierarchy',
+                'restrictSearchWithMatch' => (object) [],
+            ]],
+            $graphLookupStage->getExpression()
+        );
+    }
+
+    public function testGraphLookupFromBuilder()
+    {
+        $builder = $this->getTestAggregationBuilder();
+        $builder->graphLookup('employees')
+            ->startWith('$reportsTo')
+            ->connectFromField('reportsTo')
+            ->connectToField('name')
+            ->alias('reportingHierarchy');
+
+        $this->assertEquals(
+            [['$graphLookup' => [
+                'from' => 'employees',
+                'startWith' => '$reportsTo',
+                'connectFromField' => 'reportsTo',
+                'connectToField' => 'name',
+                'as' => 'reportingHierarchy',
+                'restrictSearchWithMatch' => (object) [],
+            ]]],
+            $builder->getPipeline()
+        );
+    }
+
+    public function testGraphLookupWithMatch()
+    {
+        $builder = $this->getTestAggregationBuilder();
+        $builder->graphLookup('employees')
+            ->startWith('$reportsTo')
+            ->restrictSearchWithMatch()
+            ->field('hobbies')
+            ->equals('golf')
+            ->connectFromField('reportsTo')
+            ->connectToField('name')
+            ->alias('reportingHierarchy')
+            ->maxDepth(1)
+            ->depthField('depth');
+
+        $this->assertSame(
+            [['$graphLookup' => [
+                'from' => 'employees',
+                'startWith' => '$reportsTo',
+                'connectFromField' => 'reportsTo',
+                'connectToField' => 'name',
+                'as' => 'reportingHierarchy',
+                'restrictSearchWithMatch' => ['hobbies' => 'golf'],
+                'maxDepth' => 1,
+                'depthField' => 'depth',
+            ]]],
+            $builder->getPipeline()
+        );
     }
 
     public function provideEmployeeAggregations()

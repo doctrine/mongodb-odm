@@ -21,28 +21,29 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-class SortByCount extends Stage
+/**
+ * Fluent interface for adding a $limit stage to an aggregation pipeline.
+ *
+ * @author alcaeus <alcaeus@alcaeus.org>
+ * @since 1.2
+ */
+class Limit extends Stage
 {
     /**
-     * @var string
+     * @var integer
      */
-    private $fieldName;
+    private $limit;
 
     /**
      * @param Builder $builder
-     * @param string $fieldName Expression to group by. To specify a field path,
-     * prefix the field name with a dollar sign $ and enclose it in quotes.
-     * The expression can not evaluate to an object.
+     * @param integer $limit
      */
-    public function __construct(Builder $builder, $fieldName, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, $limit)
     {
         parent::__construct($builder);
 
-        $documentPersister = $documentManager->getUnitOfWork()->getDocumentPersister($class->name);
-        $this->fieldName = '$' . $documentPersister->prepareFieldName(substr($fieldName, 1));
+        $this->limit = (integer) $limit;
     }
 
     /**
@@ -51,7 +52,7 @@ class SortByCount extends Stage
     public function getExpression()
     {
         return [
-            '$sortByCount' => $this->fieldName
+            '$limit' => $this->limit
         ];
     }
 }

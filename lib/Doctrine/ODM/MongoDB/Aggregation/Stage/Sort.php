@@ -21,28 +21,44 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-class SortByCount extends Stage
+/**
+ * Fluent interface for adding a $sort stage to an aggregation pipeline.
+ *
+ * @author alcaeus <alcaeus@alcaeus.org>
+ * @since 1.2
+ */
+class Sort extends Stage
 {
     /**
-     * @var string
+     * @var array
      */
-    private $fieldName;
+    private $sort = [];
 
     /**
      * @param Builder $builder
-     * @param string $fieldName Expression to group by. To specify a field path,
-     * prefix the field name with a dollar sign $ and enclose it in quotes.
-     * The expression can not evaluate to an object.
+     * @param array|string $fieldName Field name or array of field/order pairs
+     * @param int|string $order       Field order (if one field is specified)
      */
-    public function __construct(Builder $builder, $fieldName, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, $fieldName, $order = null)
     {
         parent::__construct($builder);
 
-        $documentPersister = $documentManager->getUnitOfWork()->getDocumentPersister($class->name);
-        $this->fieldName = '$' . $documentPersister->prepareFieldName(substr($fieldName, 1));
+        $allowedMetaSort = ['textScore'];
+
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+
+        foreach ($fields as $fieldName => $order) {
+            if (is_string($order)) {
+                if (in_array($order, $allowedMetaSort)) {
+                    $order = ['$meta' => $order];
+                } else {
+                    $order = strtolower($order) === 'asc' ? 1 : -1;
+                }
+            }
+
+            $this->sort[$fieldName] = $order;
+        }
     }
 
     /**
@@ -51,7 +67,7 @@ class SortByCount extends Stage
     public function getExpression()
     {
         return [
-            '$sortByCount' => $this->fieldName
+            '$sort' => $this->sort
         ];
     }
 }

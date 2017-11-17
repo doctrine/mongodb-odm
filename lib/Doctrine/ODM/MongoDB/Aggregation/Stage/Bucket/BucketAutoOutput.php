@@ -17,32 +17,49 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
+namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 
-class BucketAuto extends AbstractBucket
+use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Doctrine\ODM\MongoDB\Aggregation\Stage;
+
+/**
+ * Fluent interface for adding an output specification to a bucket stage.
+ *
+ * @author alcaeus <alcaeus@alcaeus.org>
+ * @since 1.5
+ */
+class BucketAutoOutput extends AbstractOutput
 {
     /**
-     * @var int
+     * @param Builder $builder
+     * @param Stage\BucketAuto $bucket
      */
-    private $buckets;
+    public function __construct(Builder $builder, Stage\BucketAuto $bucket)
+    {
+        parent::__construct($builder, $bucket);
+    }
 
     /**
-     * @var string
+     * An expression to group documents by. To specify a field path, prefix the
+     * field name with a dollar sign $ and enclose it in quotes.
+     *
+     * @return Stage\BucketAuto
      */
-    private $granularity;
+    public function groupBy($expression)
+    {
+        return $this->bucket->groupBy($expression);
+    }
 
     /**
-     * A positive 32-bit integer that specifies the number of buckets into which
-     * input documents are grouped.
+     * A positive 32-bit integer that specifies the number of buckets into which input documents are grouped.
      *
      * @param int $buckets
      *
-     * @return $this
+     * @return Stage\BucketAuto
      */
     public function buckets($buckets)
     {
-        $this->buckets = $buckets;
-        return $this;
+        return $this->bucket->buckets($buckets);
     }
 
     /**
@@ -52,42 +69,10 @@ class BucketAuto extends AbstractBucket
      *
      * @param string $granularity
      *
-     * @return $this
+     * @return Stage\BucketAuto
      */
     public function granularity($granularity)
     {
-        $this->granularity = $granularity;
-        return $this;
-    }
-
-    /**
-     * A document that specifies the fields to include in the output documents
-     * in addition to the _id field. To specify the field to include, you must
-     * use accumulator expressions.
-     *
-     * @return Bucket\BucketAutoOutput
-     */
-    public function output()
-    {
-        if (! $this->output) {
-            $this->output = new Bucket\BucketAutoOutput($this->builder, $this);
-        }
-
-        return $this->output;
-    }
-
-    protected function getExtraPipelineFields()
-    {
-        $fields = ['buckets' => $this->buckets];
-        if ($this->granularity !== null) {
-            $fields['granularity'] = $this->granularity;
-        }
-
-        return $fields;
-    }
-
-    protected function getStageName()
-    {
-        return '$bucketAuto';
+        return $this->bucket->granularity($granularity);
     }
 }

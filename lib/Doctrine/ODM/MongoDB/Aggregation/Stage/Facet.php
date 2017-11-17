@@ -19,37 +19,26 @@
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
-use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
-class Out extends Stage
+/**
+ * Fluent interface for adding a $facet stage to an aggregation pipeline.
+ *
+ * @author alcaeus <alcaeus@alcaeus.org>
+ * @since 1.5
+ */
+class Facet extends Stage
 {
     /**
-     * @var DocumentManager
+     * @var Builder[]
      */
-    private $dm;
+    private $pipelines = [];
 
     /**
      * @var string
      */
-    private $collection;
-
-    /**
-     * @param Builder $builder
-     * @param string $collection
-     * @param DocumentManager $documentManager
-     */
-    public function __construct(Builder $builder, $collection, DocumentManager $documentManager)
-    {
-        parent::__construct($builder);
-
-        $this->dm = $documentManager;
-        $this->out($collection);
-    }
+    private $field;
 
     /**
      * {@inheritdoc}
@@ -57,32 +46,44 @@ class Out extends Stage
     public function getExpression()
     {
         return [
-            '$out' => $this->collection
+            '$facet' => array_map(function (Builder $builder) { return $builder->getPipeline(); }, $this->pipelines),
         ];
     }
 
     /**
-     * {@inheritdoc}
+     * Set the current field for building the pipeline stage.
+     *
+     * @param string $field
+     *
+     * @return $this
      */
-    public function out($collection)
+    public function field($field)
     {
-        try {
-            $class = $this->dm->getClassMetadata($collection);
-        } catch (BaseMappingException $e) {
-            $this->collection = (string) $collection;
-            return $this;
-        }
-
-        $this->fromDocument($class);
+        $this->field = $field;
         return $this;
     }
 
-    private function fromDocument(ClassMetadata $classMetadata)
+    /**
+     * Use the given pipeline for the current field.
+     *
+     * @param Builder|Stage $builder
+     * @return $this
+     */
+    public function pipeline($builder)
     {
-        if ($classMetadata->isSharded()) {
-            throw MappingException::cannotUseShardedCollectionInOutStage($classMetadata->name);
+        if (! $this->field) {
+            throw new \LogicException(__METHOD__ . ' requires you set a current field using field().');
         }
 
-        $this->collection = $classMetadata->getCollection();
+        if ($builder instanceof Stage) {
+            $builder = $builder->builder;
+        }
+
+        if (! $builder instanceof Builder) {
+            throw new \InvalidArgumentException(__METHOD__ . ' expects either an aggregation builder or an aggregation stage.');
+        }
+
+        $this->pipelines[$this->field] = $builder;
+        return $this;
     }
 }
