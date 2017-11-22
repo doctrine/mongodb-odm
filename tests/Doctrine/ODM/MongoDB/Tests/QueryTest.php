@@ -416,42 +416,6 @@ class QueryTest extends BaseTest
         ];
     }
 
-    /**
-     * @dataProvider provideQueryTypesThatDoReturnAnIterator
-     * @expectedException \UnexpectedValueException
-     */
-    public function testGetIteratorShouldThrowExceptionAfterExecutingForTypesThatShouldReturnAnIteratorButDoNot($type, $method)
-    {
-        $collection = $this->getMockCollection();
-        $collection->expects($this->once())
-            ->method($method)
-            ->will($this->returnValue(null));
-
-        // Create a query array with any fields that may be expected to exist
-        $queryArray = [
-            'type' => $type,
-            'query' => [],
-            'group' => ['keys' => [], 'initial' => [], 'reduce' => '', 'options' => []],
-            'mapReduce' => ['map' => '', 'reduce' => '', 'out' => ['inline' => true], 'options' => []],
-            'geoNear' => ['near' => [], 'options' => []],
-            'distinct' => 0,
-        ];
-
-        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
-
-        $query->getIterator();
-    }
-
-    public function provideQueryTypesThatDoReturnAnIterator()
-    {
-        return [
-            // Skip Query::TYPE_FIND, since prepareCursor() would error first
-            [Query::TYPE_MAP_REDUCE, 'mapReduce'],
-            [Query::TYPE_DISTINCT, 'distinct'],
-            [Query::TYPE_GEO_NEAR, 'near'],
-        ];
-    }
-
     public function testFindAndModifyOptionsAreRenamed()
     {
         $queryArray = [
@@ -497,28 +461,6 @@ class QueryTest extends BaseTest
         $collection->expects($this->once())
             ->method('mapReduce')
             ->with($map, $reduce, 'collection', ['type' => 1], ['limit' => 10, 'jsMode' => true]);
-
-        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
-        $query->execute();
-    }
-
-    public function testGeoNearOptionsArePassed()
-    {
-        $this->markTestSkipped('Not implemented');
-        $queryArray = [
-            'type' => Query::TYPE_GEO_NEAR,
-            'geoNear' => [
-                'near' => [1, 1],
-                'options' => ['spherical' => true],
-            ],
-            'limit' => 10,
-            'query' => ['type' => 1],
-        ];
-
-        $collection = $this->getMockCollection();
-        $collection->expects($this->once())
-            ->method('near')
-            ->with([1, 1], ['type' => 1], ['num' => 10, 'spherical' => true]);
 
         $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
         $query->execute();

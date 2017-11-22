@@ -267,16 +267,6 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertArrayNotHasKey('hits', $user);
     }
 
-    public function testGroup()
-    {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->group(array('username' => 1), array('count' => 0))
-            ->reduce('function (obj, prev) { prev.count++; }');
-        $query = $qb->getQuery();
-        $result = $query->execute();
-        $this->assertEquals(array(array('username' => 'boo', 'count' => 1)), $result->toArray());
-    }
-
     public function testUnsetField()
     {
         $qb = $this->dm->createQueryBuilder()
