@@ -41,10 +41,6 @@ class DateTypeTest extends TestCase
 
     public function testConvertDateTimeImmutable()
     {
-        if (! class_exists('DateTimeImmutable')) {
-            $this->markTestSkipped('DateTimeImmutable class does not exist in your PHP version');
-        }
-
         $type = Type::getType(Type::DATE);
 
         $timestamp = 100000000.123;
@@ -139,12 +135,12 @@ class DateTypeTest extends TestCase
      */
     public function test32bit1900Date()
     {
-        if (PHP_INT_SIZE === 4) {
-            $type = Type::getType(Type::DATE);
-            $type->convertToDatabaseValue('1900-01-01');
-        } else {
+        if (PHP_INT_SIZE !== 4) {
             $this->markTestSkipped("Platform is not 32-bit");
         }
+
+        $type = Type::getType(Type::DATE);
+        $type->convertToDatabaseValue('1900-01-01');
     }
 
     public function test64bit1900Date()
