@@ -12,7 +12,7 @@ class GH385Test extends BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->upsert()
-            ->update()
+            ->updateOne()
             ->field('id')->equals($identifier)
             ->field('foo.bar.level3a')->inc(1)
             ->field('foo.bar.level3b')->inc(1);

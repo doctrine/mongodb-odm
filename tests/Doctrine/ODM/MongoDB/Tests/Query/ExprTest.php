@@ -145,7 +145,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testPreparePositionalOperator()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->field('phonenumbers.$.phonenumber')->equals('foo')
             ->field('phonenumbers.$')->set(array('phonenumber' => 'bar'));
 
@@ -180,7 +180,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testNewObjectIsPrepared()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->field('address.subAddress.subAddress.subAddress.test')->popFirst();
         $query = $qb->getQuery();
         $query = $query->getQuery();

@@ -21,8 +21,7 @@ class GH880Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $this->assertEquals(1, $c->category);
         }
         $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH880Document');
-        $query->update()
-            ->multiple(true)
+        $query->updateMany()
             ->field('category')->equals(1)
             ->field('category')->set(3)
             ->getQuery()

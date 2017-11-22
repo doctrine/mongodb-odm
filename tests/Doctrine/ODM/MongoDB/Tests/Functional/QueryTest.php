@@ -154,7 +154,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUpdateQuery()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->field('username')
             ->set('crap')
             ->equals('boo');
@@ -168,7 +168,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUpsertUpdateQuery()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->upsert(true)
             ->field('username')
             ->set('crap')
@@ -208,8 +208,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
-            ->multiple()
+            ->updateMany()
             ->field('username')->equals('multiple_test')
             ->field('username')->set('foo');
         $q = $qb->getQuery();
@@ -238,7 +237,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testIncUpdateQuery()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->field('hits')->inc(5)
             ->field('username')->equals('boo');
         $query = $qb->getQuery();
@@ -255,7 +254,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUnsetFieldUpdateQuery()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->field('hits')->unsetField()
             ->field('username')->equals('boo');
         $query = $qb->getQuery();
@@ -281,7 +280,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUnsetField()
     {
         $qb = $this->dm->createQueryBuilder()
-            ->update('Documents\User')
+            ->updateOne('Documents\User')
             ->field('nullTest')
             ->type('null')
             ->unsetField('nullTest');

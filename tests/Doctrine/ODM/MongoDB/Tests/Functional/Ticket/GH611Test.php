@@ -47,7 +47,7 @@ class GH611Test extends BaseTest
 
         // Update the embedded document's ID field via query builder
         $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH611Document')
-            ->update()
+            ->updateOne()
             ->field('id')->equals($documentId)
             ->field('embedded._id')->exists(false)
             ->field('embedded.id')->set(4)
@@ -64,7 +64,7 @@ class GH611Test extends BaseTest
 
         // Update the entire embedded document with an array via query builder
         $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH611Document')
-            ->update()
+            ->updateOne()
             ->field('id')->equals($documentId)
             ->field('embedded._id')->exists(false)
             ->field('embedded')->set(array('id' => 5, 'n' => 'c'))
@@ -81,7 +81,7 @@ class GH611Test extends BaseTest
 
         // Update the entire embedded document with an unmapped object via query builder
         $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH611Document')
-            ->update()
+            ->updateOne()
             ->field('id')->equals($documentId)
             ->field('embedded._id')->exists(false)
             ->field('embedded')->set((object) array('id' => 6, 'n' => 'd'))
@@ -98,7 +98,7 @@ class GH611Test extends BaseTest
 
         // Update the entire embedded document with a mapped object via query builder
         $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH611Document')
-            ->update()
+            ->updateOne()
             ->field('id')->equals($documentId)
             ->field('embedded._id')->exists(false)
             ->field('embedded')->set(new GH611EmbeddedDocument(7, 'e'))
