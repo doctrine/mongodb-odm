@@ -23,6 +23,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -868,7 +869,7 @@ class DocumentPersister
         $cursor = $this->dm->getRepository($mapping['targetDocument'])
             ->$repositoryMethod($collection->getOwner());
 
-        if ( ! $cursor instanceof \Iterable) {
+        if ( ! $cursor instanceof Iterator) {
             throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return an iterable object");
         }
 
