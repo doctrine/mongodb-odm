@@ -3,13 +3,16 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use MongoDB\Collection;
-use MongoDB\Driver\WriteResult;
-use MongoDB\UpdateResult;
 
 class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     private $class;
+
+    /**
+     * @var DocumentPersister
+     */
     private $documentPersister;
 
     public function setUp()
@@ -77,7 +80,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $sort = array('name' => -1);
 
         $cursor = $this->documentPersister->loadAll($criteria, $sort);
-        $documents = iterator_to_array($cursor, false);
+        $documents = $cursor->toArray();
 
         $this->assertInstanceOf($this->class, $documents[0]);
         $this->assertEquals('b', $documents[0]->name);
@@ -90,7 +93,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $sort = array('name' => -1);
 
         $cursor = $this->documentPersister->loadAll(array(), $sort, 1, 2);
-        $documents = iterator_to_array($cursor, false);
+        $documents = $cursor->toArray();
 
         $this->assertInstanceOf($this->class, $documents[0]);
         $this->assertEquals('b', $documents[0]->name);

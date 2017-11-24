@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\Cursor;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
@@ -53,7 +53,7 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $users = $query->execute();
 
-        $this->assertInstanceOf(Cursor::class, $users);
+        $this->assertInstanceOf(Iterator::class, $users);
         $this->assertCount(2, $users->toArray());
     }
 
@@ -427,93 +427,11 @@ class QueryTest extends BaseTest
         $collection = $this->getMockCollection();
         $collection
             ->expects($this->at(0))
-            ->method('withOptions')
-            ->with(['readPreference' => new ReadPreference('primary')])
-            ->will($this->returnSelf());
-
-        $collection
-            ->expects($this->at(1))
             ->method('findOneAndDelete')
             ->with(['type' => 1], ['projection' => ['_id' => 1]]);
 
         $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
         $query->execute();
-    }
-
-    public function testMapReduceOptionsArePassed()
-    {
-        $map = 'function() { emit(this.a, 1); }';
-        $reduce = 'function(key, values) { return Array.sum(values); }';
-
-        $queryArray = [
-            'type' => Query::TYPE_MAP_REDUCE,
-            'mapReduce' => [
-                'map' => $map,
-                'reduce' => $reduce,
-                'out' => 'collection',
-                'options' => ['jsMode' => true],
-            ],
-            'limit' => 10,
-            'query' => ['type' => 1],
-        ];
-
-        $collection = $this->getMockCollection();
-        $collection->expects($this->once())
-            ->method('mapReduce')
-            ->with($map, $reduce, 'collection', ['type' => 1], ['limit' => 10, 'jsMode' => true]);
-
-        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
-        $query->execute();
-    }
-
-    public function testWithPrimaryReadPreference()
-    {
-        $collection = $this->getMockCollection();
-
-        $collection
-            ->expects($this->at(0))
-            ->method('withOptions')
-            ->with(['readPreference' => new ReadPreference('primary')])
-            ->will($this->returnSelf());
-
-        $collection->expects($this->at(1))
-            ->method('findOneAndDelete')
-            ->with(['type' => 1], ['projection' => ['_id' => 1]]);
-
-        $queryArray = [
-            'type' => Query::TYPE_FIND_AND_REMOVE,
-            'query' => ['type' => 1],
-            'select' => ['_id' => 1],
-        ];
-
-        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
-        $query->execute();
-    }
-
-    public function testWithReadPreference()
-    {
-        $collection = $this->getMockCollection();
-        $readPreference = new ReadPreference('secondary', [['dc' => 'east']]);
-
-        $collection
-            ->expects($this->never())
-            ->method('withOptions');
-
-        $collection
-            ->expects($this->once())
-            ->method('count')
-            ->with(['foo' => 'bar'])
-            ->will($this->returnValue(100));
-
-        $queryArray = [
-            'type' => Query::TYPE_COUNT,
-            'query' => ['foo' => 'bar'],
-            'readPreference' => $readPreference,
-        ];
-
-        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
-
-        $this->assertEquals(100, $query->execute());
     }
 
     public function testCountWithOptions()
@@ -536,40 +454,9 @@ class QueryTest extends BaseTest
         $this->assertSame(100, $query->execute());
     }
 
-    public function testEagerCursorPreparation()
-    {
-        $collection = $this->dm->getDocumentCollection(User::class);
-
-        $queryArray = [
-            'type' => Query::TYPE_FIND,
-            'query' => ['foo' => 'bar'],
-            'eagerCursor' => true,
-        ];
-
-        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
-
-        $eagerCursor = $query->execute();
-
-        $this->assertInstanceOf(CachingIterator::class, $eagerCursor);
-    }
-
     private function getMockCollection()
     {
         return $this->getMockBuilder(Collection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    private function getMockCursor()
-    {
-        return $this->getMockBuilder(\MongoDB\Driver\Cursor::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    private function getMockDatabase()
-    {
-        return $this->getMockBuilder(Database::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

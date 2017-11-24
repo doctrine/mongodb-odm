@@ -19,6 +19,7 @@
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use GeoJson\Geometry\Point;
 
 /**
@@ -54,7 +55,7 @@ abstract class Stage
      * Executes the aggregation pipeline
      *
      * @param array $options
-     * @return \Traversable
+     * @return Iterator
      */
     public function execute($options = [])
     {

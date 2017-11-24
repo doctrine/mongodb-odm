@@ -2,6 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
+
 class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testGetPipeline()
@@ -164,7 +166,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->sort('numPosts', 'desc')
             ->execute();
 
-        $this->assertInstanceOf(\Doctrine\ODM\MongoDB\Cursor::class, $resultCursor);
+        $this->assertInstanceOf(Iterator::class, $resultCursor);
 
         $results = $resultCursor->toArray();
         $this->assertCount(2, $results);

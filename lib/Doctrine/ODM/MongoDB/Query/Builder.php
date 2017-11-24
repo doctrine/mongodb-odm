@@ -2062,7 +2062,7 @@ class Builder
     /**
      * Get Discriminator Values
      *
-     * @param \Iterator|array $classNames
+     * @param \Traversable $classNames
      * @return array an array of discriminatorValues (mixed type)
      * @throws \InvalidArgumentException if the number of found collections > 1
      */

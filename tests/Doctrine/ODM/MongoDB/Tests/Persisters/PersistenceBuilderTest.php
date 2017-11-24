@@ -2,9 +2,8 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
-use Doctrine\ODM\MongoDB\Cursor;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-
 use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\CmsArticle;
@@ -48,12 +47,8 @@ class PersistenceBuilderTest extends BaseTest
             ->field('test')->set('OK! TEST')
             ->field('id')->equals($id);
 
-        /**
-         * @var \Doctrine\ODM\MongoDB\Query\Query $query
-         * @var \Doctrine\ODM\MongoDB\Cursor $results
-         */
         $query = $qb->getQuery();
-        $results = $query->execute();
+        $query->execute();
 
         $this->dm->refresh($testCollection);
 
@@ -98,15 +93,11 @@ class PersistenceBuilderTest extends BaseTest
         $qb
             ->field('id')->in($ids)
             ->select('id')->hydrate(false);
-        /**
-         * @var \Doctrine\ODM\MongoDB\Query\Query $query
-         * @var \Doctrine\ODM\MongoDB\Cursor $results
-         */
         $query = $qb->getQuery();
         $debug = $query->debug('query');
         $results = $query->execute();
 
-        $this->assertInstanceOf(Cursor::class, $results);
+        $this->assertInstanceOf(Iterator::class, $results);
 
         $targetClass = $this->dm->getClassMetadata(SameCollection2::class);
         $identifier1 = $targetClass->getDatabaseIdentifierValue($ids[1]);
@@ -274,16 +265,12 @@ class PersistenceBuilderTest extends BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\CmsComment');
         $qb
             ->field('article.id')->in(array($articleId));
-        /**
-         * @var \Doctrine\ODM\MongoDB\Query\Query $query
-         * @var \Doctrine\ODM\MongoDB\Cursor $results
-         */
         $query = $qb->getQuery();
         $results = $query->execute();
 
-        $this->assertInstanceOf(Cursor::class, $results);
+        $this->assertInstanceOf(Iterator::class, $results);
 
-        $singleResult = $results->getSingleResult();
+        $singleResult = $query->getSingleResult();
         $this->assertInstanceOf(CmsComment::class, $singleResult);
 
         $this->assertEquals($commentId, $singleResult->id);

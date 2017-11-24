@@ -19,12 +19,14 @@
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
+use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use MongoDB\Collection;
-use MongoDB\Driver\Cursor as BaseCursor;
-use MongoDB\Driver\ReadPreference;
+use MongoDB\Driver\Cursor;
 use MongoDB\Operation\FindOneAndUpdate;
 
 
@@ -34,7 +36,7 @@ use MongoDB\Operation\FindOneAndUpdate;
  *
  * @since       1.0
  */
-class Query
+class Query implements \IteratorAggregate
 {
     const TYPE_FIND            = 1;
     const TYPE_FIND_AND_UPDATE = 2;
@@ -209,7 +211,7 @@ class Query
      * Execute the query and returns the results.
      *
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @return mixed
+     * @return Iterator|int|string|array
      */
     public function execute()
     {
@@ -219,29 +221,11 @@ class Query
             return $results;
         }
 
-        if ($results instanceof BaseCursor) {
-            $results = $this->makeCursor($results);
+        if ($results instanceof Cursor) {
+            $results = $this->makeIterator($results);
         }
 
         $uow = $this->dm->getUnitOfWork();
-
-        /* A geoNear command returns an ArrayIterator, where each result is an
-         * object with "dis" (computed distance) and "obj" (original document)
-         * properties. If hydration is enabled, eagerly hydrate these results.
-         *
-         * Other commands results are not handled, since their results may not
-         * resemble documents in the collection.
-         */
-        if ($this->query['type'] === self::TYPE_GEO_NEAR) {
-            foreach ($results as $key => $result) {
-                $document = $result['obj'];
-                if ($this->class->distance !== null) {
-                    $document[$this->class->distance] = $result['dis'];
-                }
-                $results[$key] = $uow->getOrCreateDocument($this->class->name, $document, $this->unitOfWorkHints);
-            }
-            $results->reset();
-        }
 
         /* If a single document is returned from a findAndModify command and it
          * includes the identifier field, attempt hydration.
@@ -413,41 +397,17 @@ class Query
         );
     }
 
-    private function makeCursor(BaseCursor $cursor)
+    private function makeIterator(Cursor $cursor): Iterator
     {
-        $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
-        $cursor->hydrate($this->hydrate);
-        $cursor->setHints($this->unitOfWorkHints);
-
-        if ( ! empty($this->primers)) {
-            $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
-            $cursor->enableReferencePriming($this->primers, $referencePrimer);
+        if ($this->hydrate && $this->class) {
+            $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->class, $this->unitOfWorkHints);
         }
 
-        return $cursor;
-    }
-
-    /**
-     * Prepare the Cursor returned by {@link Query::execute()}.
-     *
-     * This method will wrap the base Cursor with an ODM Cursor or EagerCursor,
-     * and set the hydrate option and UnitOfWork hints. This occurs in addition
-     * to any preparation done by the base Query class.
-     *
-     * @param BaseCursor $cursor
-     * @return Cursor
-     */
-    private function prepareCursor(BaseCursor $cursor)
-    {
-        // Convert the base Cursor into an ODM Cursor
-        $cursor = new Cursor($cursor, $this->dm->getUnitOfWork(), $this->class);
-
-        $cursor->hydrate($this->hydrate);
-        $cursor->setHints($this->unitOfWorkHints);
+        $cursor = new CachingIterator($cursor);
 
         if ( ! empty($this->primers)) {
             $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
-            $cursor->enableReferencePriming($this->primers, $referencePrimer);
+            $cursor = new PrimingIterator($cursor, $this->class, $referencePrimer, $this->primers, $this->unitOfWorkHints);
         }
 
         return $cursor;
@@ -481,9 +441,9 @@ class Query
      * (e.g. aggregate, inline mapReduce) may return an ArrayIterator. Other
      * commands and operations may return a status array or a boolean, depending
      * on the driver's write concern. Queries and some mapReduce commands will
-     * return a CursorInterface.
+     * return an Iterator.
      *
-     * @return mixed
+     * @return Iterator|string|int|array
      */
     public function runQuery()
     {
@@ -499,35 +459,27 @@ class Query
                     $queryOptions
                 );
 
-                return $this->prepareCursor($cursor);
+                return $this->makeIterator($cursor);
 
             case self::TYPE_FIND_AND_UPDATE:
                 $queryOptions = $this->getQueryOptions('select', 'sort', 'upsert');
                 $queryOptions = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
                 $queryOptions['returnDocument'] = ($this->query['new'] ?? false) ? FindOneAndUpdate::RETURN_DOCUMENT_AFTER : FindOneAndUpdate::RETURN_DOCUMENT_BEFORE;
 
-                $closure = function(Collection $collection) use ($options, $queryOptions) {
-                    return $collection->findOneAndUpdate(
-                        $this->query['query'],
-                        $this->query['newObj'],
-                        array_merge($options, $queryOptions)
-                    );
-                };
-
-                return $this->withPrimaryReadPreference($this->collection, $closure);
+                return $this->collection->findOneAndUpdate(
+                    $this->query['query'],
+                    $this->query['newObj'],
+                    array_merge($options, $queryOptions)
+                );
 
             case self::TYPE_FIND_AND_REMOVE:
                 $queryOptions = $this->getQueryOptions('select', 'sort');
                 $queryOptions = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
 
-                $closure = function(Collection $collection) use ($options, $queryOptions) {
-                    return $collection->findOneAndDelete(
-                        $this->query['query'],
-                        array_merge($options, $queryOptions)
-                    );
-                };
-
-                return $this->withPrimaryReadPreference($this->collection, $closure);
+                return $this->collection->findOneAndDelete(
+                    $this->query['query'],
+                    array_merge($options, $queryOptions)
+                );
 
             case self::TYPE_INSERT:
                 return $this->collection->insertOne($this->query['newObj'], $options);
@@ -550,54 +502,6 @@ class Query
             case self::TYPE_REMOVE:
                 return $this->collection->deleteMany($this->query['query'], $options);
 
-            case self::TYPE_GROUP:
-                // TODO: Handle running commands
-                throw new \Exception('Not implemented');
-                if ( ! empty($this->query['query'])) {
-                    $options['cond'] = $this->query['query'];
-                }
-
-                $collection = $this->collection;
-                $query = $this->query;
-
-                $closure = function(Collection $collection) use ($query, $options) {
-                    return $collection->group(
-                        $query['group']['keys'],
-                        $query['group']['initial'],
-                        $query['group']['reduce'],
-                        array_merge($options, $query['group']['options'])
-                    );
-                };
-
-                return $this->withReadPreference($collection, $closure);
-
-            case self::TYPE_MAP_REDUCE:
-                // TODO: Handle running commands
-                throw new \Exception('Not implemented');
-                if (isset($this->query['limit'])) {
-                    $options['limit'] = $this->query['limit'];
-                }
-
-                $collection = $this->collection;
-                $query = $this->query;
-
-                $closure = function(Collection $collection) use ($query, $options) {
-                    return $collection->mapReduce(
-                        $query['mapReduce']['map'],
-                        $query['mapReduce']['reduce'],
-                        $query['mapReduce']['out'],
-                        $query['query'],
-                        array_merge($options, $query['mapReduce']['options'])
-                    );
-                };
-
-                // Force a primary read preference if mapReduce is a write operation
-                $results = ((array) $this->query['mapReduce']['out'] !== ['inline' => true])
-                    ? $this->withPrimaryReadPreference($collection, $closure)
-                    : $this->withReadPreference($collection, $closure);
-
-                return ($results instanceof Cursor) ? $this->prepareCursor($results) : $results;
-
             case self::TYPE_DISTINCT:
                 $collection = $this->collection;
                 $query = $this->query;
@@ -608,26 +512,6 @@ class Query
                     array_merge($options, $this->getQueryOptions('readPreference'))
                 );
 
-            case self::TYPE_GEO_NEAR:
-                // TODO: Handle running commands
-                throw new \Exception('Not implemented');
-                if (isset($this->query['limit'])) {
-                    $options['num'] = $this->query['limit'];
-                }
-
-                $collection = $this->collection;
-                $query = $this->query;
-
-                $closure = function(Collection $collection) use ($query, $options) {
-                    return $collection->near(
-                        $query['geoNear']['near'],
-                        $query['query'],
-                        array_merge($options, $query['geoNear']['options'])
-                    );
-                };
-
-                return $this->withReadPreference($collection, $closure);
-
             case self::TYPE_COUNT:
                 $collection = $this->collection;
                 $query = $this->query;
@@ -637,37 +521,5 @@ class Query
                     array_merge($options, $this->getQueryOptions('hint', 'limit', 'skip', 'readPreference'))
                 );
         }
-    }
-
-    /**
-     * Executes a closure with a temporary primary read preference on a database
-     * or collection.
-     *
-     * @param Database|Collection $object
-     * @param \Closure            $closure
-     * @return mixed
-     */
-    private function withPrimaryReadPreference($object, \Closure $closure)
-    {
-        $this->query['readPreference'] = new ReadPreference(ReadPreference::RP_PRIMARY);
-
-        return $this->withReadPreference($object, $closure);
-    }
-
-    /**
-     * Executes a closure with a temporary read preference on a database or
-     * collection.
-     *
-     * @param Database|Collection $object
-     * @param \Closure            $closure
-     * @return mixed
-     */
-    private function withReadPreference($object, \Closure $closure)
-    {
-        if ( ! isset($this->query['readPreference'])) {
-            return $closure();
-        }
-
-        return $closure($object->withOptions(['readPreference' => $this->query['readPreference']]));
     }
 }

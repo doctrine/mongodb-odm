@@ -25,8 +25,8 @@ final class PrimingIteratorTest extends BaseTest
             ->method('primeReferences')
             ->with($class, $iterator, 'hits');
 
-        $this->assertCount(3, iterator_to_array($iterator));
-        $this->assertCount(3, iterator_to_array($iterator));
+        $this->assertCount(3, $iterator->toArray());
+        $this->assertCount(3, $iterator->toArray());
     }
 
     private function getIterator($items = null): \Iterator

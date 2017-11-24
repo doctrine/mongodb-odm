@@ -430,8 +430,8 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->toArray();
 
         $this->assertCount(2, $invokedArgs, 'Primer was invoked once for each referenced class.');
-        $this->assertArrayHasKey(Query::HINT_SLAVE_OKAY, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
-        $this->assertTrue($invokedArgs[0][3][Query::HINT_SLAVE_OKAY], 'Primer was invoked with UnitOfWork hints from original query.');
+        $this->assertArrayHasKey(Query::HINT_READ_PREFERENCE, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
+        $this->assertTrue($invokedArgs[0][3][Query::HINT_READ_PREFERENCE], 'Primer was invoked with UnitOfWork hints from original query.');
 
         $accountIds = array($account->getId());
         $groupIds = array($group1->getId(), $group2->getId());

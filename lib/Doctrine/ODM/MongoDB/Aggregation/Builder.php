@@ -19,12 +19,14 @@
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
-use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
+use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
 use GeoJson\Geometry\Point;
 use MongoDB\Collection;
-use MongoDB\Driver\Cursor as BaseCursor;
+use MongoDB\Driver\Cursor;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -168,7 +170,7 @@ class Builder
      * Executes the aggregation pipeline
      *
      * @param array $options
-     * @return \Traversable
+     * @return Iterator
      */
     public function execute($options = [])
     {
@@ -177,7 +179,7 @@ class Builder
 
         $cursor = $this->collection->aggregate($this->getPipeline(), $options);
 
-        return $this->prepareCursor($cursor);
+        return $this->prepareIterator($cursor);
     }
 
     /**
@@ -547,17 +549,21 @@ class Builder
     }
 
     /**
-     * @param BaseCursor $cursor
+     * @param Cursor $cursor
      *
-     * @return Cursor
+     * @return Iterator
      */
-    private function prepareCursor(BaseCursor $cursor)
+    private function prepareIterator(Cursor $cursor): Iterator
     {
         $class = null;
         if ($this->hydrationClass) {
             $class = $this->dm->getClassMetadata($this->hydrationClass);
         }
 
-        return new Cursor($cursor, $this->dm->getUnitOfWork(), $class);
+        if ($class) {
+            $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $class);
+        }
+
+        return new CachingIterator($cursor);
     }
 }

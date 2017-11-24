@@ -21,8 +21,9 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
+use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
@@ -39,6 +40,7 @@ use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Collection;
+use MongoDB\Driver\Cursor;
 use MongoDB\Driver\Exception\Exception as DriverException;
 
 /**
@@ -520,7 +522,7 @@ class DocumentPersister
      * @param array        $sort     Sort array for Cursor::sort()
      * @param integer|null $limit    Limit for Cursor::limit()
      * @param integer|null $skip     Skip for Cursor::skip()
-     * @return Cursor
+     * @return Iterator
      */
     public function loadAll(array $criteria = array(), array $sort = null, $limit = null, $skip = null)
     {
@@ -590,12 +592,12 @@ class DocumentPersister
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
      *
-     * @param \MongoDB\Driver\Cursor $baseCursor
-     * @return Cursor
+     * @param Cursor $baseCursor
+     * @return Iterator
      */
-    private function wrapCursor(\MongoDB\Driver\Cursor $baseCursor)
+    private function wrapCursor(Cursor $baseCursor): Iterator
     {
-        return new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
+        return new CachingIterator(new HydratingIterator($baseCursor, $this->dm->getUnitOfWork(), $this->class));
     }
 
     /**
@@ -860,7 +862,7 @@ class DocumentPersister
     /**
      * @param PersistentCollectionInterface $collection
      *
-     * @return Cursor
+     * @return \Iterator
      */
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection)
     {
