@@ -379,8 +379,8 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'jon'));
-        $this->assertSame(null, $user->getCount());
-        $this->assertSame(null, $user->getFloatCount());
+        $this->assertNull($user->getCount());
+        $this->assertNull($user->getFloatCount());
     }
 
     public function testTest()

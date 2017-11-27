@@ -63,7 +63,7 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class = $this->dm->getClassMetadata('Documents\User');
         $filterCollection = $this->dm->getFilterCollection();
 
-        $this->assertSame(array(), $filterCollection->getFilterCriteria($class));
+        $this->assertEmpty($filterCollection->getFilterCriteria($class));
 
         $filterCollection->enable('testFilter');
         $testFilter = $filterCollection->getFilter('testFilter');

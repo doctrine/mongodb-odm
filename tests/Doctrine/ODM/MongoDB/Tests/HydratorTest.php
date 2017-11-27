@@ -33,7 +33,7 @@ class HydratorTest extends BaseTest
         ));
 
         $this->assertEquals(1, $user->id);
-        $this->assertSame(null, $user->title);
+        $this->assertNull($user->title);
         $this->assertEquals('jon', $user->name);
         $this->assertInstanceOf('DateTime', $user->birthdate);
         $this->assertInstanceOf(__NAMESPACE__.'\HydrationClosureReferenceOne', $user->referenceOne);
@@ -44,7 +44,7 @@ class HydratorTest extends BaseTest
         $this->assertEquals('jon', $user->embedOne->name);
         $this->assertEquals('jon', $user->embedMany[0]->name);
     }
-    
+
     public function testReadOnly()
     {
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\HydrationClosureUser');
@@ -59,7 +59,7 @@ class HydratorTest extends BaseTest
                 ['name' => 'maciej']
             ],
         ], [ Query::HINT_READ_ONLY => true ]);
-        
+
         $this->assertFalse($this->uow->isInIdentityMap($user));
         $this->assertFalse($this->uow->isInIdentityMap($user->embedOne));
         $this->assertFalse($this->uow->isInIdentityMap($user->embedMany[0]));
@@ -77,7 +77,7 @@ class HydrationClosureUser
 
     /** @ODM\Field(type="string") */
     public $name;
-    
+
     /** @ODM\Field(type="date") */
     public $birthdate;
 
