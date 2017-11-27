@@ -546,22 +546,29 @@ class SchemaManager
 
         $try = 0;
         do {
-            $result = $this->runShardCollectionCommand($documentName);
-            $done = true;
+            try {
+                $result = $this->runShardCollectionCommand($documentName);
+                $done = true;
 
-            // Need to check error message because MongoDB 3.0 does not return a code for this error
-            if ($result['ok'] != 1 && strpos($result['errmsg'], 'please create an index that starts') !== false) {
-                // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
-                // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
-                if (isset($result['proposedKey'])) {
-                    $key = $result['proposedKey'];
-                } else {
-                    $key = $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
+                // Need to check error message because MongoDB 3.0 does not return a code for this error
+                if ($result['ok'] != 1 && strpos($result['errmsg'], 'please create an index that starts') !== false) {
+                    // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
+                    // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
+                    if (isset($result['proposedKey'])) {
+                        $key = $result['proposedKey'];
+                    } else {
+                        $key = $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
+                    }
+
+                    $this->dm->getDocumentCollection($documentName)->ensureIndex($key, $indexOptions);
+                    $done = false;
+                }
+            } catch (RuntimeException $e) {
+                if ($e->getCode() === 20 || $e->getMessage() == 'already sharded') {
+                    return;
                 }
 
-                $this->dm->getDocumentCollection($documentName)->ensureIndex($key, $indexOptions);
-                $done = false;
-                $try++;
+                throw $e;
             }
         } while (! $done && $try < 2);
 
