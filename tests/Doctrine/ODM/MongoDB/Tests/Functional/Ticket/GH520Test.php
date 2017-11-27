@@ -52,7 +52,7 @@ class GH520Test extends BaseTest
             ->field('ref')->exists(true)->prime($primer)
             ->getQuery();
 
-        $result = $query->getSingleResult();
+        $query->getSingleResult();
 
         $this->assertContains($document2->id, $primedIds);
         $this->assertNotContains($document4->id, $primedIds, 'getSingleResult() does not prime the entire dataset');

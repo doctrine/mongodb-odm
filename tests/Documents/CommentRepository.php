@@ -9,8 +9,9 @@ class CommentRepository extends DocumentRepository
 {
     public function findOneComment()
     {
-        return $this->getDocumentPersister()->loadAll([], ['date' => 'desc'], 1)
-            ->getSingleResult();
+        return $this->getDocumentPersister()
+            ->loadAll([], ['date' => 'desc'], 1)
+            ->current();
     }
 
     public function findManyComments()

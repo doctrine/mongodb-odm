@@ -316,13 +316,13 @@ class Query implements \IteratorAggregate
     /**
      * Execute the query and return the first result.
      *
-     * @see IteratorAggregate::getSingleResult()
      * @return array|object|null
      */
     public function getSingleResult()
     {
         $clonedQuery = clone $this;
-        return $clonedQuery->getIterator()->current();
+        $clonedQuery->query['limit'] = 1;
+        return $clonedQuery->getIterator()->current() ?: null;
     }
 
     /**
