@@ -39,7 +39,7 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('Doctrine\MongoDB\GridFSFile', $image->getFile());
         $this->assertFalse($image->getFile()->isDirty());
         $this->assertEquals(__DIR__ . '/file.txt', $image->getFile()->getFilename());
-        $this->assertTrue(file_exists($image->getFile()->getFilename()));
+        $this->assertFileExists($image->getFile()->getFilename());
         $this->assertEquals('These are the bytes...', $image->getFile()->getBytes());
 
         $image->setName('testing');
