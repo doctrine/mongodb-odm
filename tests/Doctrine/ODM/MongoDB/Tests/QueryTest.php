@@ -454,6 +454,24 @@ class QueryTest extends BaseTest
         $this->assertSame(100, $query->execute());
     }
 
+    public function testReadPreference()
+    {
+        $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
+            ->method('count')
+            ->with(['foo' => 'bar'], ['readPreference' => $readPreference])
+            ->will($this->returnValue(0));
+
+        $queryQrray = [
+            'type' => Query::TYPE_COUNT,
+            'query' => ['foo' => 'bar'],
+        ];
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryQrray, ['readPreference' => $readPreference]);
+        $query->execute();
+    }
+
     private function getMockCollection()
     {
         return $this->getMockBuilder(Collection::class)
