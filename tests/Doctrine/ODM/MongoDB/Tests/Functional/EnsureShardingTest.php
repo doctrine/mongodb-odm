@@ -30,6 +30,7 @@ class EnsureShardingTest extends BaseTest
 
     public function testEnsureShardingForCollectionWithDocuments()
     {
+        $this->markTestSkipped('Test does not pass due to https://github.com/mongodb/mongo-php-driver/issues/296');
         $class = \Documents\Sharded\ShardedOne::class;
         $collection = $this->dm->getDocumentCollection($class);
         $doc = array('title' => 'hey', 'k' => 'hi');
@@ -63,6 +64,7 @@ class EnsureShardingTest extends BaseTest
 
     public function testEnsureShardingForCollectionWithData()
     {
+        $this->markTestSkipped('Test does not pass due to https://github.com/mongodb/mongo-php-driver/issues/296');
         $document = new \Documents\Sharded\ShardedOne();
         $this->dm->persist($document);
         $this->dm->flush();
