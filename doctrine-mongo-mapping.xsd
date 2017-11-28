@@ -92,7 +92,6 @@
     <xs:attribute name="index" type="xs:boolean" />
     <xs:attribute name="index-name" type="xs:NMTOKEN" />
     <xs:attribute name="order" type="xs:NMTOKEN" />
-    <xs:attribute name="safe" type="xs:boolean" />
     <xs:attribute name="sparse" type="xs:boolean" />
     <xs:attribute name="unique" type="xs:boolean" />
   </xs:complexType>
@@ -337,7 +336,6 @@
     <xs:attribute name="name" type="xs:NMTOKEN"/>
     <xs:attribute name="drop-dups" type="xs:boolean"/>
     <xs:attribute name="background" type="xs:boolean"/>
-    <xs:attribute name="safe" type="xs:boolean"/>
     <xs:attribute name="unique" type="xs:boolean"/>
     <xs:attribute name="sparse" type="xs:boolean"/>
   </xs:complexType>

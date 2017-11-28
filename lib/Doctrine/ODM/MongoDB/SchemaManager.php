@@ -253,22 +253,8 @@ class SchemaManager
                 $keys = $index['keys'];
                 $options = $index['options'];
 
-                if ( ! isset($options['safe']) && ! isset($options['w'])) {
-                    $options['w'] = 1;
-                }
-
-                if (isset($options['safe']) && ! isset($options['w'])) {
-                    $options['w'] = is_bool($options['safe']) ? (integer) $options['safe'] : $options['safe'];
-                    unset($options['safe']);
-                }
-
                 if ( ! isset($options['timeout']) && isset($timeout)) {
                     $options['timeout'] = $timeout;
-                }
-
-                if (isset($options['w'])) {
-                    $options['writeConcern'] = new WriteConcern($options['w'], $options['wtimeout'] ?? 0);
-                    unset($options['w'], $options['wtimeout']);
                 }
 
                 $collection->createIndex($keys, $options);

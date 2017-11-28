@@ -231,9 +231,6 @@ class XmlDriver extends FileDriver
         if (isset($mapping['index-name'])) {
             $options['name'] = (string) $mapping['index-name'];
         }
-        if (isset($mapping['safe'])) {
-            $options['safe'] = (boolean) $mapping['safe'];
-        }
         if (isset($mapping['sparse'])) {
             $options['sparse'] = (boolean) $mapping['sparse'];
         }
@@ -371,9 +368,6 @@ class XmlDriver extends FileDriver
         }
         if (isset($attributes['name'])) {
             $options['name'] = (string) $attributes['name'];
-        }
-        if (isset($attributes['safe'])) {
-            $options['safe'] = ('true' === (string) $attributes['safe']);
         }
         if (isset($attributes['sparse'])) {
             $options['sparse'] = ('true' === (string) $attributes['sparse']);

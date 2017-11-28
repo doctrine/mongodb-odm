@@ -84,7 +84,6 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
-        $this->assertEquals(true, $indexes[0]['options']['safe']);
 
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UniqueOnDocumentTest');
         $indexes = $class->getIndexes();
@@ -113,7 +112,6 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
-        $this->assertEquals(true, $indexes[0]['options']['safe']);
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
@@ -234,7 +232,7 @@ class UniqueOnFieldTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") @ODM\UniqueIndex(safe=true) */
+    /** @ODM\Field(type="string") @ODM\UniqueIndex() */
     public $username;
 
     /** @ODM\Field(type="string") */
@@ -302,7 +300,7 @@ class UniqueSparseOnFieldTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") @ODM\UniqueIndex(safe=true, sparse=true) */
+    /** @ODM\Field(type="string") @ODM\UniqueIndex(sparse=true) */
     public $username;
 
     /** @ODM\Field(type="string") */

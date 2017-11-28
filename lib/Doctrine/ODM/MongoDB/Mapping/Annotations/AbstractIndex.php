@@ -27,7 +27,6 @@ abstract class AbstractIndex extends Annotation
     public $name;
     public $dropDups;
     public $background;
-    public $safe;
     public $expireAfterSeconds;
     public $order;
     public $unique = false;
