@@ -43,6 +43,7 @@ class DateType extends Type
             return $value;
         } elseif ($value instanceof \MongoDB\BSON\UTCDateTime) {
             $datetime = $value->toDateTime();
+            $datetime->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         } elseif (is_numeric($value)) {
             $seconds = $value;
             $microseconds = 0;
