@@ -189,10 +189,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFalse($groups->isInitialized());
 
         $groups->count();
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $groups->isEmpty();
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $groups = $user2->getGroups();
 
@@ -288,10 +288,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFalse($groups->isInitialized());
 
         $groups->count();
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $groups->isEmpty();
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $this->assertCount(2, $groups);
 

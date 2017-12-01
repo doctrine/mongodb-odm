@@ -25,14 +25,17 @@ class GH1572Test extends BaseTest
         $this->assertInstanceOf(PersistentCollectionInterface::class, $blog->allPosts);
         $this->assertFalse($blog->allPosts->isInitialized());
         $this->assertCount(4, $blog->allPosts);
+        $this->assertTrue($blog->allPosts->isInitialized());
 
         $this->assertInstanceOf(PersistentCollectionInterface::class, $blog->latestPosts);
         $this->assertFalse($blog->latestPosts->isInitialized());
         $this->assertCount(2, $blog->latestPosts);
+        $this->assertTrue($blog->latestPosts->isInitialized());
 
         $this->assertInstanceOf(PersistentCollectionInterface::class, $blog->latestPostsRepositoryMethod);
         $this->assertFalse($blog->latestPostsRepositoryMethod->isInitialized());
-        $this->assertCount(2, $blog->latestPostsRepositoryMethod);
+        $this->assertCount(4, $blog->latestPostsRepositoryMethod);
+        $this->assertTrue($blog->latestPostsRepositoryMethod->isInitialized());
     }
 }
 
@@ -48,7 +51,7 @@ class GH1572Blog
     /** @ODM\ReferenceMany(targetDocument="GH1572Post", mappedBy="blog", sort={"id"="asc"}, limit=2) */
     public $latestPosts = [];
 
-    /** @ODM\ReferenceMany(targetDocument="GH1572Post", repositoryMethod="getPostsForBlog", limit=2) */
+    /** @ODM\ReferenceMany(targetDocument="GH1572Post", repositoryMethod="getPostsForBlog") */
     public $latestPostsRepositoryMethod = [];
 }
 
