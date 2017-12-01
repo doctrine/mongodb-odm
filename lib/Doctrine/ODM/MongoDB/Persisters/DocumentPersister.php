@@ -25,6 +25,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -873,6 +874,14 @@ class DocumentPersister
 
         if ( ! $cursor instanceof Iterator) {
             throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return an iterable object");
+        }
+
+        if (!empty($mapping['prime'])) {
+            $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
+            $primers = array_combine($mapping['prime'], array_fill(0, count($mapping['prime']), true));
+            $class = $this->dm->getClassMetadata($mapping['targetDocument']);
+
+            $cursor = new PrimingIterator($cursor, $class, $referencePrimer, $primers, $collection->getHints());
         }
 
         return $cursor;
