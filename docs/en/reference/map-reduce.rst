@@ -58,7 +58,7 @@ of MongoDB via the ODM's query builder. Here is a simple map reduce example:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Documents\User')
+    $qb = $dm->createQueryBuilder('Documents\Event')
         ->field('type')
         ->equals('sale')
         ->map('function() { emit(this.user.$id, 1); }')
