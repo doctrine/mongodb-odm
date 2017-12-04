@@ -471,23 +471,7 @@ dependency to ODM. To do this, run the following command:
 
 ::
 
-    $ composer require "alcaeus/mongo-php-adapter"
-
-Next, manually add a ``provide`` section to your ``composer.json``:
-
-.. code-block:: json
-
-    "provide": {
-        "ext-mongo": "1.6.14"
-    }
-
-This section needs to be added to work around a composer issue with libraries
-providing platform packages (such as ``ext-mongo``). Now, you may install ODM as
-described above:
-
-::
-
-    $ composer require "doctrine/mongodb-odm"
+    $ composer config "platform.ext-mongo" "1.6.16" && composer require "alcaeus/mongo-php-adapter"
 
 .. _MongoDB: https://www.mongodb.com/
 .. _10gen: http://www.10gen.com
