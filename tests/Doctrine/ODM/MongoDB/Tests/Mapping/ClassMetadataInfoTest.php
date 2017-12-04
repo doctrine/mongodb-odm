@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Documents\Album;
 use Documents\SpecialUser;
 use Documents\User;
@@ -282,6 +283,19 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'type' => 'many',
             'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET,
         ));
+    }
+
+    public function testDefaultStorageStrategyOfEmbeddedDocumentFields()
+    {
+        $cm = new ClassMetadataInfo('stdClass');
+        $cm->isEmbeddedDocument = true;
+
+        $mapping = $cm->mapField(array(
+            'fieldName' => 'many',
+            'type' => 'many'
+        ));
+
+        self::assertEquals(CollectionHelper::DEFAULT_STRATEGY, $mapping['strategy']);
     }
 
     /**
