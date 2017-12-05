@@ -1430,7 +1430,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);
         }
 
-        if ($this->isEmbeddedDocument && $mapping['type'] === 'many' && CollectionHelper::isAtomic($mapping['strategy'])) {
+        if ($this->isEmbeddedDocument && $mapping['type'] === 'many' && isset($mapping['strategy']) && CollectionHelper::isAtomic($mapping['strategy'])) {
             throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
         }
 
