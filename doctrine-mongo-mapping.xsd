@@ -79,7 +79,7 @@
     </xs:sequence>
     <xs:attribute name="id" type="xs:boolean" default="false" />
     <xs:attribute name="name" type="xs:NMTOKEN" />
-    <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
+    <xs:attribute name="type" type="xs:NMTOKEN" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="set" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="embed" type="xs:boolean" />
