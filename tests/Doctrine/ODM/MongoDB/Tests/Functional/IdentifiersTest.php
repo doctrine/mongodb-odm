@@ -43,7 +43,7 @@ class IdentifiersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertTrue($user->getId() !== '');
+        $this->assertNotSame('', $user->getId());
     }
 
     public function testIdentityMap()

@@ -13,21 +13,21 @@ class LifecycleTest extends BaseTest
         $this->dm->persist($parent);
         $this->dm->flush();
 
-        $this->assertEquals(1, count($parent->getChildren()));
+        $this->assertCount(1, $parent->getChildren());
 
         $parent->setName('parent #changed');
 
         $this->dm->flush();
         $this->dm->flush();
 
-        $this->assertEquals(1, count($parent->getChildren()));
+        $this->assertCount(1, $parent->getChildren());
 
         $this->dm->clear();
 
         $parent = $this->dm->getRepository(__NAMESPACE__.'\ParentObject')->find($parent->getId());
         $this->assertNotNull($parent);
         $this->assertEquals('parent #changed', $parent->getName());
-        $this->assertEquals(1, count($parent->getChildren()));
+        $this->assertCount(1, $parent->getChildren());
         $this->assertEquals('changed', $parent->getChildEmbedded()->getName());
     }
 
@@ -45,7 +45,7 @@ class LifecycleTest extends BaseTest
 
         $parent = $this->dm->getRepository(__NAMESPACE__.'\ParentObject')->find($parent->getId());
         $this->assertNotNull($parent);
-        $this->assertEquals(1, count($parent->getChildren()));
+        $this->assertCount(1, $parent->getChildren());
     }
 }
 

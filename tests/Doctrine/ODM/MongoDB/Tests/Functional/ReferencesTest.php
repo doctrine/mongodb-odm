@@ -67,7 +67,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $profile = $user->getProfile();
 
-        $this->assertTrue($profile instanceof \Proxies\__CG__\Documents\Profile);
+        $this->assertInstanceOf(\Proxies\__CG__\Documents\Profile::class, $profile);
 
         $profile->getFirstName();
 
@@ -88,7 +88,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(get_class($user), $user->getId());
-        $this->assertTrue($user->getProfileNotify() instanceof \Doctrine\Common\Persistence\Proxy);
+        $this->assertInstanceOf(\Doctrine\Common\Persistence\Proxy::class, $user->getProfileNotify());
         $this->assertFalse($user->getProfileNotify()->__isInitialized());
 
         $user->getProfileNotify()->setLastName('Malarz');
@@ -177,9 +177,9 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $groups = $user->getGroups();
 
-        $this->assertTrue($groups instanceof PersistentCollection);
-        $this->assertTrue($groups[0]->getId() !== '');
-        $this->assertTrue($groups[1]->getId() !== '');
+        $this->assertInstanceOf(PersistentCollection::class, $groups);
+        $this->assertNotSame('', $groups[0]->getId());
+        $this->assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
@@ -198,9 +198,9 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $groups = $user2->getGroups();
 
-        $this->assertTrue($groups instanceof PersistentCollection);
-        $this->assertTrue($groups[0] instanceof Group);
-        $this->assertTrue($groups[1] instanceof Group);
+        $this->assertInstanceOf(PersistentCollection::class, $groups);
+        $this->assertInstanceOf(Group::class, $groups[0]);
+        $this->assertInstanceOf(Group::class, $groups[1]);
 
         $this->assertTrue($groups->isInitialized());
 
@@ -217,9 +217,9 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $groups = $user3->getGroups();
 
         $this->assertEquals('test', $groups[0]->getName());
-        $this->assertEquals(1, count($groups));
+        $this->assertCount(1, $groups);
     }
-    
+
     public function testFlushInitializesEmptyPersistentCollection()
     {
         $user = new User();
@@ -249,7 +249,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
-        
+
         $user = $this->dm->getRepository('Documents\User')->find($user->getId());
 
         $user->addGroup(new Group('Group 1'));
@@ -274,11 +274,11 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $groups = $user->getUniqueGroups();
-        $this->assertEquals(3, count($groups));
+        $this->assertCount(3, $groups);
 
-        $this->assertTrue($groups instanceof PersistentCollection);
-        $this->assertTrue($groups[0]->getId() !== '');
-        $this->assertTrue($groups[1]->getId() !== '');
+        $this->assertInstanceOf(PersistentCollection::class, $groups);
+        $this->assertNotSame('', $groups[0]->getId());
+        $this->assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
@@ -295,11 +295,11 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $groups->isEmpty();
         $this->assertFalse($groups->isInitialized());
 
-        $this->assertEquals(2, count($groups));
+        $this->assertCount(2, $groups);
 
-        $this->assertTrue($groups instanceof PersistentCollection);
-        $this->assertTrue($groups[0] instanceof Group);
-        $this->assertTrue($groups[1] instanceof Group);
+        $this->assertInstanceOf(PersistentCollection::class, $groups);
+        $this->assertInstanceOf(Group::class, $groups[0]);
+        $this->assertInstanceOf(Group::class, $groups[1]);
 
         $this->assertTrue($groups->isInitialized());
 
@@ -316,7 +316,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $groups = $user3->getUniqueGroups();
 
         $this->assertEquals('test', $groups[0]->getName());
-        $this->assertEquals(1, count($groups));
+        $this->assertCount(1, $groups);
     }
 
     public function testSortReferenceManyOwningSide()

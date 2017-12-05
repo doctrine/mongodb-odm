@@ -21,10 +21,10 @@ class GH245Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 		$user = $this->dm->find(get_class($order), $order->id);
 
-		$this->assertTrue(is_int($order->id));
+		$this->assertInternalType('int', $order->id);
 
 		$check = $this->dm->getDocumentCollection(get_class($orderLog))->findOne();
-		$this->assertTrue(is_int($check['order']['$id']));
+		$this->assertInternalType('int', $check['order']['$id']);
 	}
 }
 

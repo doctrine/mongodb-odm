@@ -29,7 +29,7 @@ class GH1294Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->equals(new \MongoRegex("/^bbb.*$/i"))
             ->getQueryArray();
 
-        $this->assertTrue(($res['_id'] instanceof \MongoRegex));
+        $this->assertInstanceOf(\MongoRegex::class, $res['_id']);
         $this->assertEquals('^bbb.*$', $res['_id']->regex);
         $this->assertEquals('i', $res['_id']->flags);
     }

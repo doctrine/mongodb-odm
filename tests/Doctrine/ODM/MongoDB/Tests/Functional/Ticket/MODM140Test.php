@@ -94,8 +94,8 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(array('name' => 'test'));
-        $this->assertEquals(1, count($test->level1));
-        $this->assertEquals(2, count($test->level1[0]->level2));
+        $this->assertCount(1, $test->level1);
+        $this->assertCount(2, $test->level1[0]->level2);
 
         $level1 = new EmbeddedTestLevel1();
         $level1->name = "test level 1 #2";
@@ -114,30 +114,30 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(array('name' => 'test'));
-        $this->assertEquals(2, count($test->level1));
-        $this->assertEquals(2, count($test->level1[0]->level2));
-        $this->assertEquals(2, count($test->level1[1]->level2));
+        $this->assertCount(2, $test->level1);
+        $this->assertCount(2, $test->level1[0]->level2);
+        $this->assertCount(2, $test->level1[1]->level2);
     }
-	
+
 }
 
 /** @ODM\Document */
-class Category 
+class Category
 {
 	/** @ODM\Id */
 	protected $id;
-	
+
 	/** @ODM\Field(type="string") */
 	public $name;
-	
+
 	/** @ODM\EmbedMany(targetDocument="Post") */
 	public $posts;
-	
+
 	public function __construct()
 	{
 		$this->posts = new ArrayCollection();
 	}
-	
+
 }
 
 /** @ODM\EmbeddedDocument */
@@ -145,7 +145,7 @@ class Post
 {
 	/** @ODM\EmbedMany(targetDocument="PostVersion") */
 	public $versions;
-	
+
 	/** @ODM\ReferenceMany(targetDocument="Comment") */
 	public $comments;
 
@@ -154,7 +154,7 @@ class Post
 		$this->versions = new ArrayCollection();
 		$this->comments = new ArrayCollection();
 	}
-	
+
 }
 
 /** @ODM\EmbeddedDocument */
@@ -162,12 +162,12 @@ class PostVersion
 {
 	/** @ODM\Field(type="string") */
 	public $name;
-	
+
 	public function __construct($name)
 	{
 		$this->name = $name;
 	}
-	
+
 }
 
 /** @ODM\Document */

@@ -49,19 +49,19 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(isset($indexes[3]['keys']['embedded_secondary.embeddedMany.name']));
         $this->assertEquals(1, $indexes[3]['keys']['embedded_secondary.embeddedMany.name']);
     }
-    
+
     public function testDiscriminatedEmbeddedIndexes()
     {
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\DocumentWithIndexInDiscriminatedEmbeds');
         $sm = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
-        
+
         $this->assertTrue(isset($indexes[0]['keys']['embedded.name']));
         $this->assertEquals(1, $indexes[0]['keys']['embedded.name']);
-        
+
         $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
         $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
-        
+
         $this->assertTrue(isset($indexes[2]['keys']['embedded.value']));
         $this->assertEquals(1, $indexes[2]['keys']['embedded.value']);
     }
@@ -217,7 +217,7 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes($className);
 
         $indexes = $this->dm->getSchemaManager()->getDocumentIndexes($className);
-        $this->assertFalse(empty($indexes[0]['options']['partialFilterExpression']));
+        $this->assertNotEmpty($indexes[0]['options']['partialFilterExpression']);
         $this->assertSame(array('counter' => array('$gt' => 5)), $indexes[0]['options']['partialFilterExpression']);
         $this->assertTrue($indexes[0]['options']['unique']);
     }
@@ -412,13 +412,13 @@ class DocumentWithIndexInDiscriminatedEmbeds
 {
     /** @ODM\Id */
     public $id;
-    
-    /** 
+
+    /**
      * @ODM\EmbedOne(
      *  discriminatorMap={
      *   "d1"="EmbeddedDocumentWithIndexes",
      *   "d2"="YetAnotherEmbeddedDocumentWithIndex",
-     * }) 
+     * })
      */
     public $embedded;
 }

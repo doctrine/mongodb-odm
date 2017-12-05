@@ -23,7 +23,7 @@ class MODM56Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals('Parent', $test['name']);
         $this->assertInstanceOf('\MongoDate', $test['updatedAt']);
-        $this->assertEquals(2, count($test['children']));
+        $this->assertCount(2, $test['children']);
         $this->assertEquals('Child One', $test['children'][0]['name']);
         $this->assertEquals('Child Two', $test['children'][1]['name']);
     }

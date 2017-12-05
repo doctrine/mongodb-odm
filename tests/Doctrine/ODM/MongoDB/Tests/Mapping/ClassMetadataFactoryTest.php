@@ -31,7 +31,7 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(array(), $cm1->parentClasses);
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm1->inheritanceType);
         $this->assertTrue($cm1->hasField('name'));
-        $this->assertEquals(4, count($cm1->fieldMappings));
+        $this->assertCount(4, $cm1->fieldMappings);
 
         // Go
         $cm1 = $cmf->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1');

@@ -47,7 +47,7 @@ class QueryTest extends BaseTest
         $users = $query->execute();
 
         $this->assertInstanceOf('Doctrine\MongoDB\CursorInterface', $users);
-        $this->assertEquals(2, count($users));
+        $this->assertCount(2, $users);
     }
 
     public function testReferences()
@@ -237,7 +237,7 @@ class QueryTest extends BaseTest
             ->field('_id')->in($ids);
         $query = $qb->getQuery();
         $results = $query->toArray();
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
     }
 
     public function testEmbeddedSet()
@@ -285,7 +285,7 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertTrue(array_key_exists('eO.eO.e1.eO.eP.pO._id', $debug));
+        $this->assertArrayHasKey('eO.eO.e1.eO.eP.pO._id', $debug);
         $this->assertEquals($mongoId, $debug['eO.eO.e1.eO.eP.pO._id']);
     }
 
@@ -362,14 +362,14 @@ class QueryTest extends BaseTest
         $p->pet = new Pet('Blackie', $p);
         $this->dm->persist($p);
         $this->dm->flush();
-        
+
         $readOnly = $this->dm->createQueryBuilder()
             ->find(Person::class)
             ->field('id')->equals($p->id)
             ->readOnly()
             ->getQuery()->getSingleResult();
-        
-        $this->assertTrue($p !== $readOnly);
+
+        $this->assertNotSame($p, $readOnly);
         $this->assertTrue($this->uow->isInIdentityMap($p));
         $this->assertFalse($this->uow->isInIdentityMap($readOnly));
         $this->assertFalse($this->uow->isInIdentityMap($readOnly->pet));

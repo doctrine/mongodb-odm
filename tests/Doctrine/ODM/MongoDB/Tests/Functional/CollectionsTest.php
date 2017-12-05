@@ -29,12 +29,12 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getDocumentCollection('Documents\Bars\Bar')->findOne();
-        $this->assertEquals(2, count($test['locations']));
+        $this->assertCount(2, $test['locations']);
 
         $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $this->assertNotNull($bar);
         $locations = $bar->getLocations();
-        $this->assertEquals(2, count($locations));
+        $this->assertCount(2, $locations);
         $this->assertEquals('changed', $locations[0]->getName());
 
         unset($locations[0], $locations[1]);
@@ -44,7 +44,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $this->assertNotNull($bar);
         $locations = $bar->getLocations();
-        $this->assertEquals(0, count($locations));
+        $this->assertCount(0, $locations);
 
         $bar->addLocation(new Location('West Nashville'));
         $bar->addLocation(new Location('East Nashville'));
@@ -57,17 +57,17 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertNotNull($bar);
         $locations = $bar->getLocations();
-        $this->assertEquals(3, count($locations));
+        $this->assertCount(3, $locations);
         $locations = $bar->getLocations();
         $locations->clear();
-        $this->assertEquals(0, count($locations));
+        $this->assertCount(0, $locations);
         $this->dm->flush();
         $this->dm->clear();
         $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
         $locations = $bar->getLocations();
-        $this->assertEquals(0, count($locations));
+        $this->assertCount(0, $locations);
         $this->dm->flush();
-        
+
         $bar->setLocations(new ArrayCollection([ new Location('Cracow') ]));
         $this->uow->computeChangeSets();
         $changeSet = $this->uow->getDocumentChangeSet($bar);
@@ -87,7 +87,7 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $coll->batchInsert($insert);
 
         $data = iterator_to_array($coll->find());
-        $this->assertEquals(3, count($data));
+        $this->assertCount(3, $data);
     }
 }
 

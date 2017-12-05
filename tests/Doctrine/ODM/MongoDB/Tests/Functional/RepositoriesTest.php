@@ -40,10 +40,10 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testFind()
     {
         $user2 = $this->repository->find($this->user->getId());
-        $this->assertTrue($this->user === $user2);
+        $this->assertSame($this->user, $user2);
 
         $user3 = $this->repository->findOneBy(array('username' => 'w00ting'));
-        $this->assertTrue($user2 === $user3);
+        $this->assertSame($user2, $user3);
     }
 
     public function testCriteria()

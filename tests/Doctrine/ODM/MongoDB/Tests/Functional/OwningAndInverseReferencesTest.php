@@ -68,7 +68,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
             ->getQuery()
             ->getSingleResult();
         $features = $product->features;
-        $this->assertEquals(2, count($features));
+        $this->assertCount(2, $features);
         $this->assertEquals('Pages', $features[0]->name);
         $this->assertEquals('Cover', $features[1]->name);
     }
@@ -92,15 +92,15 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
             ->getQuery()
             ->getSingleResult();
         $this->assertInstanceOf('Documents\BrowseNode', $root);
-        $this->assertEquals(2, count($root->children));
+        $this->assertCount(2, $root->children);
 
         unset($root->children[0]);
         $this->dm->flush();
 
-        $this->assertEquals(1, count($root->children));
+        $this->assertCount(1, $root->children);
 
         $this->dm->refresh($root);
-        $this->assertEquals(2, count($root->children));
+        $this->assertCount(2, $root->children);
     }
 
     public function testManyToMany()
@@ -115,7 +115,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(get_class($blogPost))->findOne();
-        $this->assertEquals(1, count($check['tags']));
+        $this->assertCount(1, $check['tags']);
 
         $check = $this->dm->getDocumentCollection('Documents\Tag')->findOne();
         $this->assertFalse(isset($check['blogPosts']));
@@ -123,7 +123,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
             ->getQuery()
             ->getSingleResult();
-        $this->assertEquals(1, count($blogPost->tags));
+        $this->assertCount(1, $blogPost->tags);
 
         $this->dm->clear();
 
@@ -163,7 +163,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertEquals(1, count($user->friendsWithMe));
+        $this->assertCount(1, $user->friendsWithMe);
         $this->assertEquals('jwage', $user->friendsWithMe[0]->name);
 
         $this->dm->clear();
@@ -173,7 +173,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertEquals(1, count($user->friendsWithMe));
+        $this->assertCount(1, $user->friendsWithMe);
         $this->assertEquals('jwage', $user->friendsWithMe[0]->name);
 
         $this->dm->clear();
@@ -183,11 +183,11 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertEquals(2, count($user->myFriends));
+        $this->assertCount(2, $user->myFriends);
         $this->assertEquals('fabpot', $user->myFriends[0]->name);
         $this->assertEquals('romanb', $user->myFriends[1]->name);
 
-        $this->assertEquals(2, count($user->friendsWithMe));
+        $this->assertCount(2, $user->friendsWithMe);
         $this->assertEquals('fabpot', $user->friendsWithMe[0]->name);
         $this->assertEquals('romanb', $user->friendsWithMe[1]->name);
 
@@ -232,7 +232,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
             ->getSingleResult();
         $this->assertEquals('Comment 1', $blogPost->firstComment->getText());
         $this->assertEquals('Comment 2', $blogPost->latestComment->getText());
-        $this->assertEquals(2, count($blogPost->last5Comments));
+        $this->assertCount(2, $blogPost->last5Comments);
 
         $this->assertEquals('Comment 2', $blogPost->last5Comments[0]->getText());
         $this->assertEquals('Comment 1', $blogPost->last5Comments[1]->getText());
@@ -251,7 +251,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
             ->getQuery()
             ->getSingleResult();
-        $this->assertEquals(2, count($blogPost->adminComments));
+        $this->assertCount(2, $blogPost->adminComments);
         $this->assertEquals('Comment 4 by admin', $blogPost->adminComments[0]->getText());
         $this->assertEquals('Comment 3 by admin', $blogPost->adminComments[1]->getText());
     }

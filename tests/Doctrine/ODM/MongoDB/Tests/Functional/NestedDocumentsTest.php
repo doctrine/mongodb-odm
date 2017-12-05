@@ -35,7 +35,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $doc = $this->dm->find(__NAMESPACE__.'\Order', $order->id);
         $this->assertInstanceOf(__NAMESPACE__.'\Order', $order);
-        $this->assertTrue(is_string($doc->product->id));
+        $this->assertInternalType('string', $doc->product->id);
         $this->assertEquals((string) $test['product']['_id'], $doc->product->id);
         $this->assertEquals('Order', $doc->title);
         $this->assertEquals('Product', $doc->product->title);
@@ -87,7 +87,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Child 1 Changed', $children[0]->getName());
         $this->assertEquals('Child 2 Changed', $children[0]->getChild(0)->getName());
         $this->assertEquals('Root Changed', $category->getName());
-        $this->assertEquals(2, count($category->getChildren()));
+        $this->assertCount(2, $category->getChildren());
     }
 
     public function testNestedReference()
@@ -102,7 +102,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository(__NAMESPACE__.'\Hierarchy')->findOneBy(array('name' => 'Root'));
- 
+
         $this->assertNotNull($test);
         $child1 = $test->getChild('Child 1')->setName('Child 1 Changed');
         $child2 = $test->getChild('Child 2')->setName('Child 2 Changed');

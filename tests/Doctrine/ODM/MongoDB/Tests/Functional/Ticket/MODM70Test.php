@@ -20,7 +20,7 @@ class MODM70Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 		$this->dm->refresh($avatar);
 
 		$parts = $avatar->getAvatarParts();
-		$this->assertEquals(2, count($parts));
+		$this->assertCount(2, $parts);
 		$this->assertEquals('#FFF', $parts[1]->getColor());
     }
 }

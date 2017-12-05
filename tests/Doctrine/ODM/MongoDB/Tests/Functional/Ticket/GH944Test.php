@@ -17,20 +17,20 @@ class GH944Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $d = $this->dm->find(get_class($d), $d->id);
-        $this->assertEquals(2, count($d->data));
+        $this->assertCount(2, $d->data);
         $d->removeByText('1');
-        $this->assertEquals(1, count($d->data));
+        $this->assertCount(1, $d->data);
         $this->dm->flush();
 
         $d = $this->dm->find(get_class($d), $d->id);
-        $this->assertEquals(1, count($d->data));
+        $this->assertCount(1, $d->data);
         $d->removeByText('2');
-        $this->assertEquals(0, count($d->data));
+        $this->assertCount(0, $d->data);
         $this->dm->flush();
         $this->dm->clear();
 
         $d = $this->dm->find(get_class($d), $d->id);
-        $this->assertEquals(0, count($d->data));
+        $this->assertCount(0, $d->data);
     }
 }
 

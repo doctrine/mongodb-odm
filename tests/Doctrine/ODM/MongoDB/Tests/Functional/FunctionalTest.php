@@ -78,7 +78,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($discriminator, $check['discriminator']);
         $this->assertEquals(3, $check['count']);
         $this->assertEquals(5, $check['hits']);
-        $this->assertEquals(2, count($check['groups']));
+        $this->assertCount(2, $check['groups']);
         $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
         $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
         $this->assertTrue(isset($check['username']));
@@ -94,7 +94,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($discriminator, $check['discriminator']);
         $this->assertEquals(3, $check['count']);
         $this->assertEquals(100, $check['hits']);
-        $this->assertEquals(2, count($check['groups']));
+        $this->assertCount(2, $check['groups']);
         $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
         $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
         $this->assertTrue(isset($check['username']));
@@ -181,7 +181,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Song #3', $test['songs'][1]['name']);
         $this->assertEquals('Song #4', $test['songs'][2]['name']);
         $this->assertEquals('Song #5', $test['songs'][3]['name']);
-        $this->assertEquals(4, count($test['songs']));
+        $this->assertCount(4, $test['songs']);
 
         $songs->clear();
         $this->dm->flush();
@@ -253,16 +253,16 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $coll = $this->dm->getDocumentCollection('Documents\User');
         $document = $coll->findOne(array('username' => 'joncolltest'));
-        $this->assertEquals(2, count($document['logs']));
+        $this->assertCount(2, $document['logs']);
 
         $document = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'joncolltest'));
-        $this->assertEquals(2, count($document->getLogs()));
+        $this->assertCount(2, $document->getLogs());
         $document->log(array('test'));
         $this->dm->flush();
         $this->dm->clear();
 
         $document = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'joncolltest'));
-        $this->assertEquals(3, count($document->getLogs()));
+        $this->assertCount(3, $document->getLogs());
         $document->setLogs(array('ok', 'test'));
         $this->dm->flush();
         $this->dm->clear();
@@ -282,7 +282,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'testing'));
-        $this->assertEquals(2, count($user->getPhonenumbers()));
+        $this->assertCount(2, $user->getPhonenumbers());
     }
 
     public function testIncrement()
@@ -426,8 +426,8 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->getSingleResult();
 
         $this->assertEquals(200000.00, $result['salary']);
-        $this->assertEquals(2, count($result['projects']));
-        $this->assertEquals(1, count($result['notes']));
+        $this->assertCount(2, $result['projects']);
+        $this->assertCount(1, $result['notes']);
         $this->assertEquals('Gave user 100k a year raise', $result['notes'][0]);
     }
 
@@ -700,15 +700,15 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
         $q = $qb->getQuery();
         $test = $q->execute();
-        $this->assertEquals(3, count($test));
+        $this->assertCount(3, $test);
 
         $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findAll();
-        $this->assertEquals(2, count($test));
+        $this->assertCount(2, $test);
 
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
         $query = $qb->getQuery();
         $test = $query->execute();
-        $this->assertEquals(2, count($test));
+        $this->assertCount(2, $test);
     }
 
     /**
@@ -753,8 +753,8 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $check->level1[1]);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $check->level1[1]->level2[0]);
         $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $check->level1[1]->level2[1]);
-        $this->assertEquals(2, count($check->level1));
-        $this->assertEquals(2, count($check->level1[1]->level2));
+        $this->assertCount(2, $check->level1);
+        $this->assertCount(2, $check->level1[1]->level2);
     }
 
     public function testEmbeddedInheritance()
@@ -782,7 +782,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test->oneLevel1->level2[] = $level2;
 
         // OK, there is one level2
-        $this->assertEquals(1, count($test->oneLevel1->level2));
+        $this->assertCount(1, $test->oneLevel1->level2);
 
         // save again
         $this->dm->flush();
@@ -792,7 +792,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0b', $test->id);
 
         // Uh oh, the level2 was not persisted!
-        $this->assertEquals(1, count($test->oneLevel1->level2));
+        $this->assertCount(1, $test->oneLevel1->level2);
     }
 
     public function testModifyGroupsArrayDirectly()
@@ -823,13 +823,13 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user->setGroups($groups);
 
-        $this->assertEquals(1, count($user->getGroups()));
+        $this->assertCount(1, $user->getGroups());
 
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->find('Documents\User', $user->getId());
-        $this->assertEquals(1, count($user->getGroups()));
+        $this->assertCount(1, $user->getGroups());
     }
 
     public function testReplaceEntireGroupsArray()
@@ -864,13 +864,13 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user->setGroups(array($group2));
 
-        $this->assertEquals(1, count($user->getGroups()));
+        $this->assertCount(1, $user->getGroups());
 
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->find('Documents\User', $user->getId());
-        $this->assertEquals(1, count($user->getGroups()));
+        $this->assertCount(1, $user->getGroups());
     }
 
     public function testFunctionalParentAssociations()

@@ -117,9 +117,9 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->persist($user);
 
         // Check
-        $this->assertEquals(0, count($userPersister->getInserts()));
-        $this->assertEquals(0, count($userPersister->getUpdates()));
-        $this->assertEquals(0, count($userPersister->getDeletes()));
+        $this->assertCount(0, $userPersister->getInserts());
+        $this->assertCount(0, $userPersister->getUpdates());
+        $this->assertCount(0, $userPersister->getDeletes());
         $this->assertTrue($this->uow->isInIdentityMap($user));
         // should no longer be scheduled for insert
         $this->assertTrue($this->uow->isScheduledForInsert($user));
@@ -131,9 +131,9 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->commit();
 
         // Check.
-        $this->assertEquals(1, count($userPersister->getInserts()));
-        $this->assertEquals(0, count($userPersister->getUpdates()));
-        $this->assertEquals(0, count($userPersister->getDeletes()));
+        $this->assertCount(1, $userPersister->getInserts());
+        $this->assertCount(0, $userPersister->getUpdates());
+        $this->assertCount(0, $userPersister->getDeletes());
 
         // should have an id
         $this->assertNotNull($user->id);
@@ -170,13 +170,13 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotNull($user->id);
         $this->assertNotNull($avatar->id);
 
-        $this->assertEquals(1, count($userPersister->getInserts()));
-        $this->assertEquals(0, count($userPersister->getUpdates()));
-        $this->assertEquals(0, count($userPersister->getDeletes()));
+        $this->assertCount(1, $userPersister->getInserts());
+        $this->assertCount(0, $userPersister->getUpdates());
+        $this->assertCount(0, $userPersister->getDeletes());
 
-        $this->assertEquals(1, count($avatarPersister->getInserts()));
-        $this->assertEquals(0, count($avatarPersister->getUpdates()));
-        $this->assertEquals(0, count($avatarPersister->getDeletes()));
+        $this->assertCount(1, $avatarPersister->getInserts());
+        $this->assertCount(0, $avatarPersister->getUpdates());
+        $this->assertCount(0, $avatarPersister->getDeletes());
     }
 
     public function testChangeTrackingNotify()
@@ -198,7 +198,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->persist($entity);
         $this->uow->commit();
 
-        $this->assertEquals(1, count($persister->getUpserts()));
+        $this->assertCount(1, $persister->getUpserts());
         $this->assertTrue($this->uow->isInIdentityMap($entity));
         $this->assertFalse($this->uow->isScheduledForDirtyCheck($entity));
 
@@ -218,7 +218,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->persist($item);
         $this->uow->commit();
 
-        $this->assertEquals(1, count($itemPersister->getUpserts()));
+        $this->assertCount(1, $itemPersister->getUpserts());
         $this->assertTrue($this->uow->isInIdentityMap($item));
         $this->assertFalse($this->uow->isScheduledForDirtyCheck($item));
 
@@ -234,8 +234,8 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $updates = $itemPersister->getUpdates();
 
-        $this->assertEquals(1, count($updates));
-        $this->assertTrue($updates[0] === $item);
+        $this->assertCount(1, $updates);
+        $this->assertSame($updates[0], $item);
     }
 
     /**

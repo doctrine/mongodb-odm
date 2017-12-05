@@ -79,7 +79,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(14, count($class->fieldMappings));
+        $this->assertCount(14, $class->fieldMappings);
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['version']));
         $this->assertTrue(isset($class->fieldMappings['lock']));
@@ -96,7 +96,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testAssociationMappings($class)
     {
-        $this->assertEquals(6, count($class->associationMappings));
+        $this->assertCount(6, $class->associationMappings);
         $this->assertTrue(isset($class->associationMappings['address']));
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
         $this->assertTrue(isset($class->associationMappings['groups']));
@@ -158,7 +158,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     public function testVersionFieldMappings($class)
     {
         $this->assertEquals('int', $class->fieldMappings['version']['type']);
-        $this->assertTrue(!empty($class->fieldMappings['version']['version']));
+        $this->assertNotEmpty($class->fieldMappings['version']['version']);
 
         return $class;
     }
@@ -170,7 +170,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     public function testLockFieldMappings($class)
     {
         $this->assertEquals('int', $class->fieldMappings['lock']['type']);
-        $this->assertTrue(!empty($class->fieldMappings['lock']['lock']));
+        $this->assertNotEmpty($class->fieldMappings['lock']['lock']);
 
         return $class;
     }
@@ -181,7 +181,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testAssocations($class)
     {
-        $this->assertEquals(14, count($class->fieldMappings));
+        $this->assertCount(14, $class->fieldMappings);
 
         return $class;
     }
@@ -193,7 +193,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     public function testOwningOneToOneAssocation($class)
     {
         $this->assertTrue(isset($class->fieldMappings['address']));
-        $this->assertTrue(is_array($class->fieldMappings['address']));
+        $this->assertInternalType('array', $class->fieldMappings['address']);
         // Check cascading
         $this->assertTrue($class->fieldMappings['address']['isCascadeRemove']);
         $this->assertFalse($class->fieldMappings['address']['isCascadePersist']);
@@ -329,13 +329,13 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
         $this->assertTrue(isset($indexes[0]['keys']['createdAt']));
         $this->assertEquals(1, $indexes[0]['keys']['createdAt']);
-        $this->assertTrue( ! empty($indexes[0]['options']));
+        $this->assertNotEmpty($indexes[0]['options']);
         $this->assertTrue(isset($indexes[0]['options']['expireAfterSeconds']));
         $this->assertSame(3600, $indexes[0]['options']['expireAfterSeconds']);
 
         $this->assertTrue(isset($indexes[1]['keys']['email']));
         $this->assertEquals(-1, $indexes[1]['keys']['email']);
-        $this->assertTrue( ! empty($indexes[1]['options']));
+        $this->assertNotEmpty($indexes[1]['options']);
         $this->assertTrue(isset($indexes[1]['options']['unique']));
         $this->assertEquals(true, $indexes[1]['options']['unique']);
         $this->assertTrue(isset($indexes[1]['options']['dropDups']));
@@ -343,13 +343,13 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
 
         $this->assertTrue(isset($indexes[2]['keys']['lock']));
         $this->assertEquals(1, $indexes[2]['keys']['lock']);
-        $this->assertTrue( ! empty($indexes[2]['options']));
+        $this->assertNotEmpty($indexes[2]['options']);
         $this->assertTrue(isset($indexes[2]['options']['partialFilterExpression']));
         $this->assertSame(array('version' => array('$gt' => 1), 'discr' => array('$eq' => 'default')), $indexes[2]['options']['partialFilterExpression']);
 
         $this->assertTrue(isset($indexes[3]['keys']['mysqlProfileId']));
         $this->assertEquals(-1, $indexes[3]['keys']['mysqlProfileId']);
-        $this->assertTrue( ! empty($indexes[3]['options']));
+        $this->assertNotEmpty($indexes[3]['options']);
         $this->assertTrue(isset($indexes[3]['options']['unique']));
         $this->assertEquals(true, $indexes[3]['options']['unique']);
         $this->assertTrue(isset($indexes[3]['options']['dropDups']));

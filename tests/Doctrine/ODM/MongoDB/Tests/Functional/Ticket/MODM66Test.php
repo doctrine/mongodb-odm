@@ -21,7 +21,7 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($a);
         $b = $a->getB()->toArray();
 
-        $this->assertEquals(2, count($b));
+        $this->assertCount(2, $b);
 
         $this->assertEquals(array(
             $b1->getId(), $b2->getId()
@@ -45,7 +45,7 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($a);
         $b = $a->getB()->toArray();
 
-        $this->assertEquals(2, count($b));
+        $this->assertCount(2, $b);
 
         $this->assertEquals(array(
             $b1->getId(), $b2->getId()
