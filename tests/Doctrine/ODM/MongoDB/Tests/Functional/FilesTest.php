@@ -88,9 +88,9 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(get_class($image))->findOne();
-        $this->assertFalse(isset($check['$pushAll']));
-        $this->assertTrue(isset($check['profiles']));
-        $this->assertEquals(1, count($check['profiles']));
+        $this->assertArrayNotHasKey('$pushAll', $check);
+        $this->assertArrayHasKey('profiles', $check);
+        $this->assertCount(1, $check['profiles']);
         $this->assertEquals($profile->getProfileId(), (string) $check['profiles'][0]['$id']);
     }
 
@@ -133,7 +133,7 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $image = $profile->getImage();
         $this->assertEquals('Test', $image->getName());
         $this->assertEquals(__DIR__ . '/FilesTest.php', $image->getFile()->getFilename());
-        $this->assertEquals(file_get_contents(__DIR__ . '/FilesTest.php'), $image->getFile()->getBytes());
+        $this->assertStringEqualsFile(__DIR__ . '/FilesTest.php', $image->getFile()->getBytes());
 
         $image->getFile()->setBytes('test');
         $this->dm->flush();
@@ -160,7 +160,7 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $test = $this->dm->getRepository(__NAMESPACE__.'\TestFile')->find($test->id);
         $this->assertNotNull($test);
-        $this->assertEquals(file_get_contents($path), $test->theFile->getBytes());
+        $this->assertStringEqualsFile($path, $test->theFile->getBytes());
     }
 
     public function testFilesEmptyQueryReturnsNull()

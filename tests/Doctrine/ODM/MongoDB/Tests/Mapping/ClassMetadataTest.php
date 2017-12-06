@@ -13,8 +13,8 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm = new ClassMetadata('Documents\CmsUser');
 
         // Test initial state
-        $this->assertTrue(count($cm->getReflectionProperties()) == 0);
-        $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
+        $this->assertCount(0, $cm->getReflectionProperties());
+        $this->assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
         $this->assertEquals('Documents\CmsUser', $cm->name);
         $this->assertEquals('Documents\CmsUser', $cm->rootDocumentName);
         $this->assertEquals(array(), $cm->subClasses);
@@ -35,26 +35,26 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cm->setCollectionCapped(true);
         $cm->setCollectionMax(1000);
         $cm->setCollectionSize(500);
-        $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
-        $this->assertEquals(1, count($cm->fieldMappings));
-        $this->assertEquals(1, count($cm->associationMappings));
+        $this->assertInternalType('array', $cm->getFieldMapping('phonenumbers'));
+        $this->assertCount(1, $cm->fieldMappings);
+        $this->assertCount(1, $cm->associationMappings);
 
         $serialized = serialize($cm);
         $cm = unserialize($serialized);
 
         // Check state
-        $this->assertTrue(count($cm->getReflectionProperties()) > 0);
+        $this->assertGreaterThan(0, $cm->getReflectionProperties());
         $this->assertEquals('Documents', $cm->namespace);
-        $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
+        $this->assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
         $this->assertEquals('Documents\CmsUser', $cm->name);
         $this->assertEquals('UserParent', $cm->rootDocumentName);
         $this->assertEquals(array('Documents\One', 'Documents\Two', 'Documents\Three'), $cm->subClasses);
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
         $this->assertEquals('Documents\UserRepository', $cm->customRepositoryClassName);
         $this->assertEquals('disc', $cm->discriminatorField);
-        $this->assertTrue(is_array($cm->getFieldMapping('phonenumbers')));
-        $this->assertEquals(1, count($cm->fieldMappings));
-        $this->assertEquals(1, count($cm->associationMappings));
+        $this->assertInternalType('array', $cm->getFieldMapping('phonenumbers'));
+        $this->assertCount(1, $cm->fieldMappings);
+        $this->assertCount(1, $cm->associationMappings);
         $this->assertEquals('customFileProperty', $cm->file);
         $this->assertEquals('customDistanceProperty', $cm->distance);
         $this->assertTrue($cm->slaveOkay);
@@ -120,7 +120,7 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         ));
 
         $assoc = $cm->fieldMappings['groups'];
-        $this->assertTrue(is_array($assoc));
+        $this->assertInternalType('array', $assoc);
     }
 
     /**

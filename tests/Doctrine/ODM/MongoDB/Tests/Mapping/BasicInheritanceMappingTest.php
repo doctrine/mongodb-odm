@@ -29,8 +29,8 @@ class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $class = $this->factory->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\DocumentSubClass');
 
-        $this->assertTrue(empty($class->subClasses));
-        $this->assertTrue(empty($class->parentClasses));
+        $this->assertEmpty($class->subClasses);
+        $this->assertEmpty($class->parentClasses);
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['name']));
     }
@@ -39,8 +39,8 @@ class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $class = $this->factory->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\DocumentSubClass2');
 
-        $this->assertTrue(empty($class->subClasses));
-        $this->assertTrue(empty($class->parentClasses));
+        $this->assertEmpty($class->subClasses);
+        $this->assertEmpty($class->parentClasses);
 
         $this->assertTrue(isset($class->fieldMappings['mapped1']));
         $this->assertTrue(isset($class->fieldMappings['mapped2']));

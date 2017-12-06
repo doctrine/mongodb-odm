@@ -70,7 +70,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0', $test->id);
-        $this->assertEquals(2, count($test->level1));
+        $this->assertCount(2, $test->level1);
         $this->assertEquals('changed', $test->level1[0]->name);
         $this->assertEquals('testing', $test->level1[1]->name);
 
@@ -78,7 +78,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertEquals(1, count($test->level1));
+        $this->assertCount(1, $test->level1);
     }
 
     public function testOneEmbedded()
@@ -412,7 +412,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $check = $this->dm->getDocumentCollection('Documents\User')->findOne();
         $this->assertEmpty($check['phonenumbers']);
-        $this->assertFalse(isset($check['address']));
+        $this->assertArrayNotHasKey('address', $check);
     }
 
     public function testRemoveAddDeepEmbedded()
@@ -560,7 +560,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear(); //get clean results from mongo
         $test1 = $this->dm->find(get_class($test1), $test1->id);
 
-        $this->assertEquals(1, count($test1->embedMany));
+        $this->assertCount(1, $test1->embedMany);
     }
 
     public function testReusedEmbeddedDocumentsAreClonedInFact()

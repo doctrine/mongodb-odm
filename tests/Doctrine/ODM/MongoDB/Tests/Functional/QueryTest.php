@@ -221,7 +221,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $q = $qb->getQuery();
         $users = array_values($q->execute()->toArray());
 
-        $this->assertEquals(4, count($users));
+        $this->assertCount(4, $users);
     }
 
     /**
@@ -265,7 +265,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->hydrate(false);
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
-        $this->assertFalse(isset($user['hits']));
+        $this->assertArrayNotHasKey('hits', $user);
     }
 
     public function testGroup()
@@ -332,7 +332,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         );
         $query = $qb->getQuery();
         $articles = array_values($query->execute()->toArray());
-        $this->assertEquals(2, count($articles));
+        $this->assertCount(2, $articles);
         $this->assertEquals('1985-09-02', $articles[0]->getCreatedAt()->format('Y-m-d'));
         $this->assertEquals('1985-09-03', $articles[1]->getCreatedAt()->format('Y-m-d'));
     }
@@ -346,7 +346,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $query = $qb->getQuery();
-        $this->assertTrue($query instanceof \Doctrine\MongoDB\IteratorAggregate);
+        $this->assertInstanceOf(\Doctrine\MongoDB\IteratorAggregate::class, $query);
         foreach ($query as $article) {
             $this->assertEquals('Documents\Article', get_class($article));
         }

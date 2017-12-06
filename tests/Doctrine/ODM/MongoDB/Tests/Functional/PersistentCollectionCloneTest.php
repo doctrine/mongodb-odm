@@ -51,7 +51,7 @@ class PersistentCollectionCloneTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $user1 = $this->dm->find(get_class($user1), $user1->id);
 
-        $this->assertEquals(2, count($user1->groups));
+        $this->assertCount(2, $user1->groups);
     }
 
     public function testClonePersistentCollectionAndShare()
@@ -67,8 +67,8 @@ class PersistentCollectionCloneTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user1 = $this->dm->find(get_class($user1), $user1->id);
         $user2 = $this->dm->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(2, count($user1->groups));
-        $this->assertEquals(2, count($user2->groups));
+        $this->assertCount(2, $user1->groups);
+        $this->assertCount(2, $user2->groups);
     }
 
     public function testCloneThenDirtyPersistentCollection()
@@ -88,8 +88,8 @@ class PersistentCollectionCloneTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user1 = $this->dm->find(get_class($user1), $user1->id);
         $user2 = $this->dm->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(3, count($user2->groups));
-        $this->assertEquals(2, count($user1->groups));
+        $this->assertCount(3, $user2->groups);
+        $this->assertCount(2, $user1->groups);
     }
 
     public function testNotCloneAndPassAroundFlush()
@@ -102,7 +102,7 @@ class PersistentCollectionCloneTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user2->groups = $user1->groups;
         $user2->groups->add($group3);
 
-        $this->assertEQuals(1, count($user1->groups->getInsertDiff()));
+        $this->assertCount(1, $user1->groups->getInsertDiff());
 
         $this->dm->persist($group3);
         $this->dm->flush();
@@ -111,7 +111,7 @@ class PersistentCollectionCloneTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user1 = $this->dm->find(get_class($user1), $user1->id);
         $user2 = $this->dm->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(3, count($user2->groups));
-        $this->assertEquals(3, count($user1->groups));
+        $this->assertCount(3, $user2->groups);
+        $this->assertCount(3, $user1->groups);
     }
 }

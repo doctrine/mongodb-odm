@@ -16,7 +16,7 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertTrue($user->getCreatedAt() instanceof \DateTime);
+        $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());
 
         $user->setCreatedAt('1985-09-01 00:00:00');
         $this->dm->flush();
@@ -25,7 +25,7 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = $this->dm->getRepository('Documents\User')->findOneByUsername('w00ting');
         $this->assertNotNull($user);
         $this->assertEquals('w00ting', $user->getUsername());
-        $this->assertTrue($user->getCreatedAt() instanceof \DateTime);
+        $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());
         $this->assertEquals('09/01/1985', $user->getCreatedAt()->format('m/d/Y'));
     }
 
@@ -93,10 +93,10 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getDocumentCollection('Documents\User')->findOne(array('username' => 'datetest2'));
-        $this->assertTrue(isset($test['createdAt']));
+        $this->assertArrayHasKey('createdAt', $test);
 
         $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'datetest2'));
-        $this->assertTrue($user->getCreatedAt() instanceof \DateTime);
+        $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());
         $this->assertEquals('1900-01-01', $user->getCreatedAt()->format('Y-m-d'));
     }
 }

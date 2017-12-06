@@ -25,6 +25,6 @@ class SimpleTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $test = $this->dm->getDocumentCollection('Documents\Bars\Bar')->findOne();
-        $this->assertEquals(2, count($test['locations']));
+        $this->assertCount(2, $test['locations']);
     }
 }

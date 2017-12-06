@@ -181,7 +181,7 @@ class PersistentCollectionTest extends BaseTest
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('offsetExists')->willReturn(false);
         $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
-        $this->assertFalse(isset($pcoll[0]));
+        $this->assertArrayNotHasKey(0, $pcoll);
     }
 
     public function testOffsetGetIsForwarded()

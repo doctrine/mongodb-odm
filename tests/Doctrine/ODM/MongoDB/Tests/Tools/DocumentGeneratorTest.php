@@ -204,9 +204,9 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/User.php");
         require $this->tmpDir . "/" . $this->namespace . "/User.php";
         $reflClass = new \ReflectionClass($metadata->name);
-        $this->assertSame($reflClass->hasProperty('address'), false);
-        $this->assertSame($reflClass->hasMethod('setAddress'), false);
-        $this->assertSame($reflClass->hasMethod('getAddress'), false);
+        $this->assertFalse($reflClass->hasProperty('address'));
+        $this->assertFalse($reflClass->hasMethod('setAddress'));
+        $this->assertFalse($reflClass->hasMethod('getAddress'));
     }
 
     public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses()
@@ -220,9 +220,9 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFileExists($this->tmpDir . "/" . $this->namespace . "/DDC2372Admin.php");
         require $this->tmpDir . "/" . $this->namespace . "/DDC2372Admin.php";
         $reflClass = new \ReflectionClass($metadata->name);
-        $this->assertSame($reflClass->hasProperty('address'), false);
-        $this->assertSame($reflClass->hasMethod('setAddress'), false);
-        $this->assertSame($reflClass->hasMethod('getAddress'), false);
+        $this->assertFalse($reflClass->hasProperty('address'));
+        $this->assertFalse($reflClass->hasMethod('setAddress'));
+        $this->assertFalse($reflClass->hasMethod('getAddress'));
     }
 
     /**

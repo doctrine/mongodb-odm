@@ -121,7 +121,7 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush($user);
 
         $this->assertTrue($this->dm->contains($otherUser), "Other user is contained in DocumentManager");
-        $this->assertTrue($otherUser->id > 0, "other user has an id");
+        $this->assertGreaterThan(0, $otherUser->id, "other user has an id");
     }
 
     public function testFlushAndCascadePersist()
@@ -145,7 +145,7 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush($user);
 
         $this->assertTrue($this->dm->contains($address), "Other user is contained in DocumentManager");
-        $this->assertTrue($address->id > 0, "other user has an id");
+        $this->assertGreaterThan(0, $address->id, "other user has an id");
     }
 
     public function testProxyIsIgnored()
@@ -170,7 +170,7 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush($user);
 
         $this->assertTrue($this->dm->contains($otherUser), "Other user is contained in DocumentManager");
-        $this->assertTrue($otherUser->id > 0, "other user has an id");
+        $this->assertGreaterThan(0, $otherUser->id, "other user has an id");
     }
 
     protected function assertSize($size)

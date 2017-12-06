@@ -96,10 +96,10 @@ class CommitImprovementTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertCount(1, $user->getPhonenumbers()); // so we got a number on postPersist
         $this->assertTrue($user->getPhonenumbers()->isDirty()); // but they should be dirty
-        
+
         $collection = $this->dm->getDocumentCollection(get_class($user));
         $inDb = $collection->findOne();
-        $this->assertTrue( ! isset($inDb['phonenumbers']), 'Collection modified in postPersist should not be in database without recomputing change set');
+        $this->assertArrayNotHasKey('phonenumbers', $inDb, 'Collection modified in postPersist should not be in database without recomputing change set');
 
         $this->dm->flush();
         $this->assertCount(2, $user->getPhonenumbers()); // so we got a number on postUpdate

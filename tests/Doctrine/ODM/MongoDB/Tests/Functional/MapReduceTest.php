@@ -143,7 +143,7 @@ class MapReduceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $cursor = $query->execute();
         $this->assertEquals(10, $cursor->count());
         $results = $cursor->toArray();
-        $this->assertTrue(is_array($results[0]));
+        $this->assertInternalType('array', $results[0]);
     }
 
     public function testMapReduce2()

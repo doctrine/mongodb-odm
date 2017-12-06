@@ -17,8 +17,8 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertTrue($user->getId() !== '');
-        $this->assertTrue($user->getProfile()->getProfileId() !== '');
+        $this->assertNotSame('', $user->getId());
+        $this->assertNotSame('', $user->getProfile()->getProfileId());
 
         $qb = $this->dm->createQueryBuilder('Documents\SpecialUser')
             ->field('id')
@@ -33,7 +33,7 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertEquals('Wage', $user->getProfile()->getLastName());
-        $this->assertTrue($user instanceof \Documents\SpecialUser);
+        $this->assertInstanceOf(\Documents\SpecialUser::class, $user);
     }
 
     public function testSingleCollectionInhertiance()

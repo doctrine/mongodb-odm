@@ -41,15 +41,15 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $product = $this->getProduct();
         $price =  $product->getOption('small')->getPrice(true);
         $currency = $price->getCurrency();
-        $this->assertTrue($currency instanceof Currency);
-        $this->assertEquals(3, count($product->getOptions()));
+        $this->assertInstanceOf(Currency::class, $currency);
+        $this->assertCount(3, $product->getOptions());
         $this->assertEquals(12.99, $product->getOption('small')->getPrice());
 
         $usdCurrency = $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(array('name' => 'USD'));
         $this->assertNotNull($usdCurrency);
         $usdCurrency->setMultiplier('2');
 
-        $this->assertTrue($product->getOption('small')->getStockItem() instanceof \Documents\Ecommerce\StockItem);
+        $this->assertInstanceOf(\Documents\Ecommerce\StockItem::class, $product->getOption('small')->getStockItem());
         $this->assertNotNull($product->getOption('small')->getStockItem()->getId());
         $this->assertEquals(12.99 * 2, $product->getOption('small')->getPrice());
     }
@@ -59,7 +59,7 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $product = $this->getProduct();
         $price =  $product->getOption('small')->getPrice(true);
         $currency = $price->getCurrency();
-        $this->assertTrue($currency instanceof Currency);
+        $this->assertInstanceOf(Currency::class, $currency);
         $this->assertNotNull($currency->getId());
         $this->assertEquals($currency, $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(array('name' => Currency::USD)));
     }
@@ -68,16 +68,16 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $product = $this->getProduct();
 
-        $this->assertEquals(3, count($product->getOptions()));
+        $this->assertCount(3, $product->getOptions());
         $product->removeOption('small');
-        $this->assertEquals(2, count($product->getOptions()));
+        $this->assertCount(2, $product->getOptions());
         $this->dm->flush();
         $this->dm->detach($product);
         unset($product);
         $this->assertFalse(isset($product));
 
         $product = $this->getProduct();
-        $this->assertEquals(2, count($product->getOptions()));
+        $this->assertCount(2, $product->getOptions());
     }
 
     protected function getProduct()

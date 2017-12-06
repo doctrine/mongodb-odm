@@ -16,7 +16,7 @@ class CollectionPersisterTest extends BaseTest
         $persister->delete($user->phonenumbers, array());
 
         $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
-        $this->assertFalse(isset($user['phonenumbers']), 'Test that the phonenumbers field was deleted');
+        $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
     }
 
     public function testDeleteEmbedMany()
@@ -26,7 +26,7 @@ class CollectionPersisterTest extends BaseTest
         $persister->delete($user->categories, array());
 
         $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
-        $this->assertFalse(isset($user['categories']), 'Test that the categories field was deleted');
+        $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
 
     public function testDeleteNestedEmbedMany()
@@ -98,7 +98,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
-        $this->assertEquals(4, count($check['phonenumbers']));
+        $this->assertCount(4, $check['phonenumbers']);
         $this->assertEquals((string) $check['phonenumbers'][2]['$id'], $user->phonenumbers[2]->id);
         $this->assertEquals((string) $check['phonenumbers'][3]['$id'], $user->phonenumbers[3]->id);
 
@@ -107,7 +107,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
-        $this->assertEquals(4, count($check['categories']));
+        $this->assertCount(4, $check['categories']);
 
         $user->categories[3]->children[0] = new CollectionPersisterCategory('Test');
         $user->categories[3]->children[1] = new CollectionPersisterCategory('Test');
@@ -116,8 +116,8 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
-        $this->assertEquals(2, count($check['categories'][3]['children']));
-        $this->assertEquals(2, count($check['categories'][3]['children']['1']['children']));
+        $this->assertCount(2, $check['categories'][3]['children']);
+        $this->assertCount(2, $check['categories'][3]['children']['1']['children']);
     }
 
     private function getTestUser($username)
@@ -342,6 +342,3 @@ class CollectionPersisterComment
     $this->by = $by;
   }
 }
-
-
-
