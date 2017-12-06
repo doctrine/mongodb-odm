@@ -412,7 +412,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $check = $this->dm->getDocumentCollection('Documents\User')->findOne();
         $this->assertEmpty($check['phonenumbers']);
-        $this->assertFalse(isset($check['address']));
+        $this->assertArrayNotHasKey('address', $check);
     }
 
     public function testRemoveAddDeepEmbedded()

@@ -128,7 +128,7 @@ class NestedDocumentsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('Child 3 Changed', $child3->getName());
 
         $test = $this->dm->getDocumentCollection(__NAMESPACE__.'\Hierarchy')->findOne(array('name' => 'Child 1 Changed'));
-        $this->assertFalse(isset($test['children']), 'Test empty array is not stored');
+        $this->assertArrayNotHasKey('children', $test, 'Test empty array is not stored');
     }
 }
 

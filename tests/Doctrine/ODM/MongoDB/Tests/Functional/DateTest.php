@@ -93,7 +93,7 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getDocumentCollection('Documents\User')->findOne(array('username' => 'datetest2'));
-        $this->assertTrue(isset($test['createdAt']));
+        $this->assertArrayHasKey('createdAt', $test);
 
         $user = $this->dm->getRepository('Documents\User')->findOneBy(array('username' => 'datetest2'));
         $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());

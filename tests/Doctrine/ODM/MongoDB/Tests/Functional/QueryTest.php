@@ -265,7 +265,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->hydrate(false);
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
-        $this->assertFalse(isset($user['hits']));
+        $this->assertArrayNotHasKey('hits', $user);
     }
 
     public function testGroup()

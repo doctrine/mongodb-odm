@@ -234,7 +234,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->unlock($article);
 
         $check = $this->dm->getDocumentCollection(get_class($article))->findOne();
-        $this->assertFalse(isset($check['locked']));
+        $this->assertArrayNotHasKey('locked', $check);
         $this->assertNull($article->locked);
     }
 
@@ -338,7 +338,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__.'\LockInt')->findOne();
         $this->assertEquals(2, $check['version']);
-        $this->assertFalse(isset($check['locked']));
+        $this->assertArrayNotHasKey('locked', $check);
         $this->assertEquals('test', $check['title']);
     }
 
@@ -357,7 +357,7 @@ class LockTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $check = $this->dm->getDocumentCollection(__NAMESPACE__.'\LockInt')->findOne();
         $this->assertEquals(2, $check['version']);
-        $this->assertFalse(isset($check['locked']));
+        $this->assertArrayNotHasKey('locked', $check);
         $this->assertEquals('test', $check['title']);
     }
 

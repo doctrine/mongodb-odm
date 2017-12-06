@@ -348,7 +348,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->uow->computeChangeSets();
         $changeset = $this->uow->getDocumentChangeSet($test);
-        $this->assertFalse(isset($changeset['notSaved']));
+        $this->assertArrayNotHasKey('notSaved', $changeset);
     }
 
     /**
@@ -563,7 +563,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->uow->computeChangeSets();
         $changeSet = $this->uow->getDocumentChangeSet($address);
 
-        $this->assertTrue(isset($changeSet['city']));
+        $this->assertArrayHasKey('city', $changeSet);
         $this->assertEquals('Nashville', $changeSet['city'][1]);
     }
 

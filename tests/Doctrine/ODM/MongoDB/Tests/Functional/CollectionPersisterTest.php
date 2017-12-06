@@ -16,7 +16,7 @@ class CollectionPersisterTest extends BaseTest
         $persister->delete($user->phonenumbers, array());
 
         $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
-        $this->assertFalse(isset($user['phonenumbers']), 'Test that the phonenumbers field was deleted');
+        $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
     }
 
     public function testDeleteEmbedMany()
@@ -26,7 +26,7 @@ class CollectionPersisterTest extends BaseTest
         $persister->delete($user->categories, array());
 
         $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
-        $this->assertFalse(isset($user['categories']), 'Test that the categories field was deleted');
+        $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
 
     public function testDeleteNestedEmbedMany()

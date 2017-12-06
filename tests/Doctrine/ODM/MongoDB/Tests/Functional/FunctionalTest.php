@@ -81,7 +81,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(2, $check['groups']);
         $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
         $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
-        $this->assertTrue(isset($check['username']));
+        $this->assertArrayHasKey('username', $check);
         $this->assertEquals('test', $check['username']);
 
         $user = new $className();
@@ -97,7 +97,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(2, $check['groups']);
         $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
         $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
-        $this->assertTrue(isset($check['username']));
+        $this->assertArrayHasKey('username', $check);
         $this->assertEquals('test', $check['username']);
     }
 

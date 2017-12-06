@@ -32,7 +32,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $this->assertEquals($customer->cart->id, $customer->cart->id);
 
         $check = $this->dm->getDocumentCollection(get_class($customer))->findOne();
-        $this->assertTrue(isset($check['cart']));
+        $this->assertArrayHasKey('cart', $check);
         $this->assertEquals('test', $check['cart']);
 
         $customer->cart = null;
@@ -41,7 +41,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(get_class($customer))->findOne();
-        $this->assertTrue(isset($check['cart']));
+        $this->assertArrayHasKey('cart', $check);
         $this->assertEquals('ok', $check['cart']);
 
         $customer = $this->dm->getRepository('Documents\Customer')->find($customer->id);
@@ -59,10 +59,10 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(get_class($product))->findOne();
-        $this->assertFalse(isset($check['tags']));
+        $this->assertArrayNotHasKey('tags', $check);
 
         $check = $this->dm->getDocumentCollection('Documents\Feature')->findOne();
-        $this->assertTrue(isset($check['product']));
+        $this->assertArrayHasKey('product', $check);
 
         $product = $this->dm->createQueryBuilder(get_class($product))
             ->getQuery()
@@ -85,7 +85,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
 
         $check = $this->dm->getDocumentCollection(get_class($node))->findOne(array('parent' => array('$exists' => false)));
         $this->assertNotNull($check);
-        $this->assertFalse(isset($check['children']));
+        $this->assertArrayNotHasKey('children', $check);
 
         $root = $this->dm->createQueryBuilder(get_class($node))
             ->field('children')->exists(false)
@@ -118,7 +118,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $this->assertCount(1, $check['tags']);
 
         $check = $this->dm->getDocumentCollection('Documents\Tag')->findOne();
-        $this->assertFalse(isset($check['blogPosts']));
+        $this->assertArrayNotHasKey('blogPosts', $check);
 
         $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
             ->getQuery()
@@ -156,7 +156,7 @@ class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
             ->hydrate(false)
             ->getQuery()
             ->getSingleResult();
-        $this->assertFalse(isset($check['friendsWithMe']));
+        $this->assertArrayNotHasKey('friendsWithMe', $check);
 
         $user = $this->dm->createQueryBuilder('Documents\FriendUser')
             ->field('name')->equals('fabpot')
