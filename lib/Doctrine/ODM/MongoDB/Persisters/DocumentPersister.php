@@ -570,8 +570,21 @@ class DocumentPersister
         foreach ($keys as $key) {
             $mapping = $this->class->getFieldMappingByDbFieldName($key);
             $this->guardMissingShardKey($document, $key, $data);
-            $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$mapping['fieldName']]);
-            $shardKeyQueryPart[$key] = $value;
+
+            if (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+                $reference = $this->prepareReference(
+                    $key,
+                    $data[$mapping['fieldName']],
+                    $mapping,
+                    false
+                );
+                foreach ($reference as $keyValue) {
+                    $shardKeyQueryPart[$keyValue[0]] = $keyValue[1];
+                }
+            } else {
+                $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$mapping['fieldName']]);
+                $shardKeyQueryPart[$key] = $value;
+            }
         }
 
         return $shardKeyQueryPart;

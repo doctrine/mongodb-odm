@@ -69,6 +69,26 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 
         $this->assertSame(array('_id' => $o->identifier), $shardKeyQuery);
     }
+
+    public function testShardByReference()
+    {
+        $o = new ShardedByReferenceOne();
+
+        $userId = new \MongoId();
+        $o->reference = new \Documents\User();
+        $o->reference->setId($userId);
+
+        $this->dm->persist($o->reference);
+
+        /** @var DocumentPersister $persister */
+        $persister = $this->uow->getDocumentPersister(get_class($o));
+
+        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method->setAccessible(true);
+        $shardKeyQuery = $method->invoke($persister, $o);
+
+        $this->assertSame(array('reference.$id' => $userId), $shardKeyQuery);
+    }
 }
 
 /**
@@ -120,4 +140,17 @@ class ShardedById
 {
     /** @ODM\Id */
     public $identifier;
+}
+
+/**
+ * @ODM\Document
+ * @ODM\ShardKey(keys={"reference"="asc"})
+ */
+class ShardedByReferenceOne
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\ReferenceOne(targetDocument="Documents\User") */
+    public $reference;
 }
