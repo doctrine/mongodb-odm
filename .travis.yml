@@ -24,6 +24,8 @@ matrix:
   include:
     - php: 5.6
       env: DRIVER_VERSION="1.6.7" COMPOSER_FLAGS="--prefer-lowest" SERVER_VERSION="3.2" KEY_ID="EA312927"
+    - php: 7.2
+      env: SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
 
 before_install:
   - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
