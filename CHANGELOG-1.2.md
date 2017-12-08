@@ -3,6 +3,16 @@ CHANGELOG for 1.2.x
 
 This changelog references the relevant changes done in 1.2 patch versions.
 
+1.2.1 (2017-12-08)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.2.1 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.2.1).
+
+* [#1681](https://github.com/doctrine/mongodb-odm/pull/1681) hardens checks for storage strategy when mapping relationships
+* [#1687](https://github.com/doctrine/mongodb-odm/pull/1687) fixes query preparation when using a reference as shard key
+* [#1688](https://github.com/doctrine/mongodb-odm/pull/1688) fixes the `pushAll` collection strategy when running on MongoDB 3.6
+
 1.2.0 (2017-10-24)
 ------------------
 
