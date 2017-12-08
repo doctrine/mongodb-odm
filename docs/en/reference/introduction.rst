@@ -284,24 +284,32 @@ this:
                 [changes] => 2
             )
     
-        [$pushAll] => Array
+        [$push] => Array
             (
                 [notes] => Array
                     (
-                        [0] => Gave user 100k a year raise
+                        [$each] => Array
+                            (
+                                [0] => Gave user 100k a year raise
+                            )
+
                     )
-    
+
                 [projects] => Array
                     (
-                        [0] => Array
+                        [$each] => Array
                             (
-                                [$ref] => projects
-                                [$id] => 4c0310718ead0e767e030000
-                                [$db] => my_db
+                                [0] => Array
+                                    (
+                                        [$ref] => projects
+                                        [$id] => 4c0310718ead0e767e030000
+                                        [$db] => my_db
+                                    )
+
                             )
-    
+
                     )
-    
+
             )
     
         [$set] => Array

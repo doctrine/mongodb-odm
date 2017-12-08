@@ -55,10 +55,10 @@ stored as a BSON array.
 pushAll
 -------
 
-The ``pushAll`` strategy uses MongoDB's `$pushAll`_ operator to insert
-elements into the array. MongoDB does not allow elements to be added and removed
-from an array in a single operation, so this strategy relies on multiple update
-queries to remove and insert elements (in that order).
+The ``pushAll`` strategy uses MongoDB's `$push`_ operator in combination with
+`$each`_ to insert elements into the array. MongoDB does not allow elements to
+be added and removed from an array in a single operation, so this strategy
+relies on multiple update queries to remove and insert elements (in that order).
 
 .. _atomic_set:
 
@@ -92,6 +92,7 @@ BSON array.
 
 .. _`$addToSet`: https://docs.mongodb.com/manual/reference/operator/update/addToSet/
 .. _`$inc`: https://docs.mongodb.com/manual/reference/operator/update/inc/
-.. _`$pushAll`: https://docs.mongodb.com/manual/reference/operator/update/pushAll/
+.. _`$push`: https://docs.mongodb.com/manual/reference/operator/update/push/
+.. _`$each`: https://docs.mongodb.com/manual/reference/operator/update/each/
 .. _`$set`: https://docs.mongodb.com/manual/reference/operator/update/set/
 .. _`$unset`: https://docs.mongodb.com/manual/reference/operator/update/unset/
