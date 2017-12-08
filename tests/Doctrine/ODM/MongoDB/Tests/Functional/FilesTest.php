@@ -88,7 +88,7 @@ class FilesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(get_class($image))->findOne();
-        $this->assertArrayNotHasKey('$pushAll', $check);
+        $this->assertArrayNotHasKey('$push', $check);
         $this->assertArrayHasKey('profiles', $check);
         $this->assertCount(1, $check['profiles']);
         $this->assertEquals($profile->getProfileId(), (string) $check['profiles'][0]['$id']);

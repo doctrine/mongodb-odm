@@ -200,21 +200,29 @@ class CollectionPersister
         }
 
         $mapping = $coll->getMapping();
+
+        switch ($mapping['strategy']) {
+            case ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL:
+                $operator = 'push';
+                break;
+
+            case ClassMetadataInfo::STORAGE_STRATEGY_ADD_TO_SET:
+                $operator = 'addToSet';
+                break;
+
+            default:
+                throw new \LogicException("Invalid strategy {$mapping['strategy']} given for insertElements");
+        }
+
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
 
-        $pb = $this->pb;
-
         $callback = isset($mapping['embedded'])
-            ? function($v) use ($pb, $mapping) { return $pb->prepareEmbeddedDocumentValue($mapping, $v); }
-            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
+            ? function($v) use ($mapping) { return $this->pb->prepareEmbeddedDocumentValue($mapping, $v); }
+            : function($v) use ($mapping) { return $this->pb->prepareReferencedDocumentValue($mapping, $v); };
 
         $value = array_values(array_map($callback, $insertDiff));
 
-        if ($mapping['strategy'] === ClassMetadataInfo::STORAGE_STRATEGY_ADD_TO_SET) {
-            $value = array('$each' => $value);
-        }
-
-        $query = array('$' . $mapping['strategy'] => array($propertyPath => $value));
+        $query = ['$' . $operator => [$propertyPath => ['$each' => $value]]];
 
         $this->executeQuery($parent, $query, $options);
     }
