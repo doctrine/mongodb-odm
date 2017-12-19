@@ -543,6 +543,33 @@ class SchemaManagerTest extends TestCase
         $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
     }
 
+    public function testEnsureDocumentShardingWithShardByReference()
+    {
+        $dbName = DOCTRINE_MONGODB_DATABASE;
+        $classMetadata = $this->dm->getClassMetadata(\Documents\Sharded\ShardedByUser::class);
+        $collectionName = $classMetadata->getCollection();
+        $dbMock = $this->getMockDatabase();
+        $dbMock->method('getName')->willReturn($dbName);
+        $adminDBMock = $this->getMockDatabase();
+        $connMock = $this->getMockConnection();
+        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
+        $this->dm->connection = $connMock;
+        $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
+
+        $adminDBMock
+            ->expects($this->at(0))
+            ->method('command')
+            ->with(array('enableSharding' => $dbName))
+            ->willReturn(array('ok' => 1));
+        $adminDBMock
+            ->expects($this->at(1))
+            ->method('command')
+            ->with(array('shardCollection' => $dbName . '.' . $collectionName, 'key' => array('db_user.$id' => -1)))
+            ->willReturn(array('ok' => 1));
+
+        $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
+    }
+
     public function testEnableShardingForDb()
     {
         $adminDBMock = $this->getMockDatabase();
