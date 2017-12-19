@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Sharded\ShardedByUser;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
 use function iterator_to_array;
@@ -96,5 +97,22 @@ class EnsureShardingTest extends BaseTest
         $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
         $this->assertTrue($stats['sharded']);
+    }
+
+    public function testEnsureDocumentShardingWithShardByReference()
+    {
+        $class = ShardedByUser::class;
+
+        $this->dm->getSchemaManager()->ensureDocumentIndexes($class);
+        $this->dm->getSchemaManager()->ensureDocumentSharding($class);
+
+        $collection = $this->dm->getDocumentCollection($class);
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $indexes    = iterator_to_array($collection->listIndexes());
+
+        $this->assertTrue($stats['sharded']);
+
+        $this->assertCount(2, $indexes);
+        $this->assertSame(['db_user.$id' => 1], $indexes[1]->getKey());
     }
 }

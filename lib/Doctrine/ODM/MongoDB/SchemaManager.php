@@ -593,11 +593,27 @@ class SchemaManager
         $shardKey = $class->getShardKey();
         $adminDb  = $this->dm->getClient()->selectDatabase('admin');
 
+        $shardKeyPart = [];
+        foreach ($shardKey['keys'] as $key => $order) {
+            if ($class->hasField($key)) {
+                $mapping   = $class->getFieldMapping($key);
+                $fieldName = $mapping['name'];
+
+                if ($class->isSingleValuedReference($key)) {
+                    $fieldName = ClassMetadata::getReferenceFieldName($mapping['storeAs'], $fieldName);
+                }
+            } else {
+                $fieldName = $key;
+            }
+
+            $shardKeyPart[$fieldName] = $order;
+        }
+
         return $adminDb->command(
             array_merge(
                 [
                     'shardCollection' => $dbName . '.' . $class->getCollection(),
-                    'key'             => $shardKey['keys'],
+                    'key'             => $shardKeyPart,
                 ],
                 $this->getWriteOptions(null, $writeConcern)
             )
