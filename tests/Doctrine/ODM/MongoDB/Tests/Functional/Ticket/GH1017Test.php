@@ -41,8 +41,7 @@ class GH1017Test extends BaseTest
         // At the time of writing this test,
         // collision was always found when $i == 2
 
-        $this->markTestSkipped('No object hash collision '
-            . 'encountered after ' . $maxTries . 'tries');
+        $this->markTestSkipped('No object hash collision encountered after ' . $maxTries . ' tries');
     }
 }
 

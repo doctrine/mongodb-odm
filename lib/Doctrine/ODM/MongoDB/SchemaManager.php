@@ -288,7 +288,7 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
-        $this->dm->getDocumentCollection($documentName)->deleteIndexes();
+        $this->dm->getDocumentCollection($documentName)->dropIndexes();
     }
 
     /**
