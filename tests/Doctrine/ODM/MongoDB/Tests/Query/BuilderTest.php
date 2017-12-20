@@ -541,8 +541,6 @@ class BuilderTest extends BaseTest
             'exists()' => ['exists', [true]],
             'type()' => ['type', [7]],
             'all()' => ['all', [['value1', 'value2']]],
-            'maxDistance' => ['maxDistance', [5]],
-            'minDistance' => ['minDistance', [5]],
             'mod()' => ['mod', [2, 0]],
             'near()' => ['near', [1, 2]],
             'nearSphere()' => ['nearSphere', [1, 2]],
@@ -593,23 +591,6 @@ class BuilderTest extends BaseTest
         ];
     }
 
-    /**
-     * @dataProvider providePoint
-     */
-    public function testGeoNearWithSingleArgument($point, array $near, $spherical)
-    {
-        $expected = [
-            'near' => $near,
-            'options' => ['spherical' => $spherical],
-        ];
-
-        $qb = $this->getTestQueryBuilder();
-
-        $this->assertSame($qb, $qb->geoNear($point));
-        $this->assertEquals(Query::TYPE_GEO_NEAR, $qb->getType());
-        $this->assertEquals($expected, $qb->debug('geoNear'));
-    }
-
     public function providePoint()
     {
         $coordinates = [0, 0];
@@ -622,42 +603,6 @@ class BuilderTest extends BaseTest
         ];
     }
 
-    public function testGeoNearWithBothArguments()
-    {
-        $expected = [
-            'near' => [0, 0],
-            'options' => ['spherical' => false],
-        ];
-
-        $qb = $this->getTestQueryBuilder();
-
-        $this->assertSame($qb, $qb->geoNear([0, 0]));
-        $this->assertEquals(Query::TYPE_GEO_NEAR, $qb->getType());
-        $this->assertEquals($expected, $qb->debug('geoNear'));
-    }
-
-    public function testDistanceMultipler()
-    {
-        $expected = [
-            'near' => [0, 0],
-            'options' => ['spherical' => false, 'distanceMultiplier' => 1],
-        ];
-
-        $qb = $this->getTestQueryBuilder();
-
-        $this->assertSame($qb, $qb->geoNear(0, 0)->distanceMultiplier(1));
-        $this->assertEquals($expected, $qb->debug('geoNear'));
-    }
-
-    /**
-     * @expectedException BadMethodCallException
-     */
-    public function testDistanceMultiplerRequiresGeoNearCommand()
-    {
-        $qb = $this->getTestQueryBuilder();
-        $qb->distanceMultiplier(1);
-    }
-
     /**
      * @expectedException BadMethodCallException
      */
@@ -667,32 +612,6 @@ class BuilderTest extends BaseTest
         $qb->mapReduceOptions([]);
     }
 
-    public function testMaxDistanceWithGeoNearCommand()
-    {
-        $expected = [
-            'near' => [0, 0],
-            'options' => ['spherical' => false, 'maxDistance' => 5],
-        ];
-
-        $qb = $this->getTestQueryBuilder();
-
-        $this->assertSame($qb, $qb->geoNear(0, 0)->maxDistance(5));
-        $this->assertEquals($expected, $qb->debug('geoNear'));
-    }
-
-    public function testMinDistanceWithGeoNearCommand()
-    {
-        $expected = [
-            'near' => [0, 0],
-            'options' => ['spherical' => false, 'minDistance' => 5],
-        ];
-
-        $qb = $this->getTestQueryBuilder();
-
-        $this->assertSame($qb, $qb->geoNear(0, 0)->minDistance(5));
-        $this->assertEquals($expected, $qb->debug('geoNear'));
-    }
-
     /**
      * @expectedException BadMethodCallException
      */
@@ -700,28 +619,6 @@ class BuilderTest extends BaseTest
     {
         $qb = $this->getTestQueryBuilder();
         $qb->out('collection');
-    }
-
-    public function testSpherical()
-    {
-        $expected = [
-            'near' => [0, 0],
-            'options' => ['spherical' => true],
-        ];
-
-        $qb = $this->getTestQueryBuilder();
-
-        $this->assertSame($qb, $qb->geoNear(0, 0)->spherical(true));
-        $this->assertEquals($expected, $qb->debug('geoNear'));
-    }
-
-    /**
-     * @expectedException BadMethodCallException
-     */
-    public function testSphericalRequiresGeoNearCommand()
-    {
-        $qb = $this->getTestQueryBuilder();
-        $qb->spherical();
     }
 
     /**

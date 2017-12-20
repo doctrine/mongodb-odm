@@ -826,43 +826,6 @@ class Expr
     }
 
     /**
-     * Set the $maxDistance option for $near or $nearSphere criteria.
-     *
-     * This method must be called after near() or nearSphere(), since placement
-     * of the $maxDistance option depends on whether a GeoJSON point or legacy
-     * coordinates were provided for $near/$nearSphere.
-     *
-     * @see http://docs.mongodb.org/manual/reference/operator/maxDistance/
-     * @param float $maxDistance
-     * @return $this
-     * @throws \BadMethodCallException if the query does not already have $near or $nearSphere criteria
-     */
-    public function maxDistance($maxDistance)
-    {
-        if ($this->currentField) {
-            $query = &$this->query[$this->currentField];
-        } else {
-            $query = &$this->query;
-        }
-
-        if ( ! isset($query['$near']) && ! isset($query['$nearSphere'])) {
-            throw new \BadMethodCallException(
-                'This method requires a $near or $nearSphere operator (call near() or nearSphere() first)'
-            );
-        }
-
-        if (isset($query['$near']['$geometry'])) {
-            $query['$near']['$maxDistance'] = $maxDistance;
-        } elseif (isset($query['$nearSphere']['$geometry'])) {
-            $query['$nearSphere']['$maxDistance'] = $maxDistance;
-        } else {
-            $query['$maxDistance'] = $maxDistance;
-        }
-
-        return $this;
-    }
-
-    /**
      * Updates the value of the field to a specified value if the specified value is less than the current value of the field.
      *
      * @see Builder::min()
@@ -874,43 +837,6 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$min'][$this->currentField] = $value;
-        return $this;
-    }
-
-    /**
-     * Set the $minDistance option for $near or $nearSphere criteria.
-     *
-     * This method must be called after near() or nearSphere(), since placement
-     * of the $minDistance option depends on whether a GeoJSON point or legacy
-     * coordinates were provided for $near/$nearSphere.
-     *
-     * @see http://docs.mongodb.org/manual/reference/operator/minDistance/
-     * @param float $minDistance
-     * @return $this
-     * @throws \BadMethodCallException if the query does not already have $near or $nearSphere criteria
-     */
-    public function minDistance($minDistance)
-    {
-        if ($this->currentField) {
-            $query = &$this->query[$this->currentField];
-        } else {
-            $query = &$this->query;
-        }
-
-        if ( ! isset($query['$near']) && ! isset($query['$nearSphere'])) {
-            throw new \BadMethodCallException(
-                'This method requires a $near or $nearSphere operator (call near() or nearSphere() first)'
-            );
-        }
-
-        if (isset($query['$near']['$geometry'])) {
-            $query['$near']['$minDistance'] = $minDistance;
-        } elseif (isset($query['$nearSphere']['$geometry'])) {
-            $query['$nearSphere']['$minDistance'] = $minDistance;
-        } else {
-            $query['$minDistance'] = $minDistance;
-        }
-
         return $this;
     }
 

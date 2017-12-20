@@ -47,7 +47,6 @@ class Query implements \IteratorAggregate
     const TYPE_GROUP           = 7;
     const TYPE_MAP_REDUCE      = 8;
     const TYPE_DISTINCT        = 9;
-    const TYPE_GEO_NEAR        = 10;
     const TYPE_COUNT           = 11;
 
     /**
@@ -159,7 +158,6 @@ class Query implements \IteratorAggregate
             case self::TYPE_GROUP:
             case self::TYPE_MAP_REDUCE:
             case self::TYPE_DISTINCT:
-            case self::TYPE_GEO_NEAR:
             case self::TYPE_COUNT:
                 break;
 
@@ -289,7 +287,6 @@ class Query implements \IteratorAggregate
             case self::TYPE_GROUP:
             case self::TYPE_MAP_REDUCE:
             case self::TYPE_DISTINCT:
-            case self::TYPE_GEO_NEAR:
                 break;
 
             default:

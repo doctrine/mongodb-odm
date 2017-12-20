@@ -143,7 +143,7 @@ class Builder
      * $collStats must be the first stage in an aggregation pipeline, or else
      * the pipeline returns an error.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/geoNear/
+     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/collStats/
      * @since 1.5
      *
      * @return Stage\CollStats

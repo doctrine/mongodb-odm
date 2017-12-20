@@ -430,23 +430,6 @@ class Builder
     }
 
     /**
-     * Set the "distanceMultiplier" option for a geoNear command query.
-     *
-     * @param float $distanceMultiplier
-     * @return $this
-     * @throws \BadMethodCallException if the query is not a geoNear command
-     */
-    public function distanceMultiplier($distanceMultiplier)
-    {
-        if ($this->query['type'] !== Query::TYPE_GEO_NEAR) {
-            throw new \BadMethodCallException('This method requires a geoNear command (call geoNear() first)');
-        }
-
-        $this->query['geoNear']['options']['distanceMultiplier'] = $distanceMultiplier;
-        return $this;
-    }
-
-    /**
      * Change the query type to a distinct command.
      *
      * @see http://docs.mongodb.org/manual/reference/command/distinct/
@@ -647,41 +630,6 @@ class Builder
     public function geoIntersects($geometry)
     {
         $this->expr->geoIntersects($geometry);
-        return $this;
-    }
-
-    /**
-     * Change the query type to a geoNear command.
-     *
-     * A GeoJSON point may be provided as the first and only argument for
-     * 2dsphere queries. This single parameter may be a GeoJSON point object or
-     * an array corresponding to the point's JSON representation. If GeoJSON is
-     * used, the "spherical" option will default to true.
-     *
-     * This method sets the "near" option for the geoNear command. The "num"
-     * option may be set using {@link Expr::limit()}. The "distanceMultiplier",
-     * "maxDistance", "minDistance", and "spherical" options may be set using
-     * their respective builder methods. Additional query criteria will be
-     * assigned to the "query" option.
-     *
-     * @see http://docs.mongodb.org/manual/reference/command/geoNear/
-     * @param float|array|Point $x
-     * @param float $y
-     * @return $this
-     */
-    public function geoNear($x, $y = null)
-    {
-        if ($x instanceof Point) {
-            $x = $x->jsonSerialize();
-        }
-
-        $this->query['type'] = Query::TYPE_GEO_NEAR;
-        $this->query['geoNear'] = [
-            'near' => is_array($x) ? $x : [$x, $y],
-            'options' => [
-                'spherical' => is_array($x) && isset($x['type']),
-            ],
-        ];
         return $this;
     }
 
@@ -1136,36 +1084,6 @@ class Builder
     }
 
     /**
-     * Set the "maxDistance" option for a geoNear command query or add
-     * $maxDistance criteria to the query.
-     *
-     * If the query is a geoNear command ({@link Expr::geoNear()} was called),
-     * the "maxDistance" command option will be set; otherwise, $maxDistance
-     * will be added to the current expression.
-     *
-     * If the query uses GeoJSON points, $maxDistance will be interpreted in
-     * meters. If legacy point coordinates are used, $maxDistance will be
-     * interpreted in radians.
-     *
-     * @see Expr::maxDistance()
-     * @see http://docs.mongodb.org/manual/reference/command/geoNear/
-     * @see http://docs.mongodb.org/manual/reference/operator/maxDistance/
-     * @see http://docs.mongodb.org/manual/reference/operator/near/
-     * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
-     * @param float $maxDistance
-     * @return $this
-     */
-    public function maxDistance($maxDistance)
-    {
-        if ($this->query['type'] === Query::TYPE_GEO_NEAR) {
-            $this->query['geoNear']['options']['maxDistance'] = $maxDistance;
-        } else {
-            $this->expr->maxDistance($maxDistance);
-        }
-        return $this;
-    }
-
-    /**
      * Specifies a cumulative time limit in milliseconds for processing operations on a cursor.
      *
      * @param int $ms
@@ -1188,36 +1106,6 @@ class Builder
     public function min($value)
     {
         $this->expr->min($value);
-        return $this;
-    }
-
-    /**
-     * Set the "minDistance" option for a geoNear command query or add
-     * $minDistance criteria to the query.
-     *
-     * If the query is a geoNear command ({@link Expr::geoNear()} was called),
-     * the "minDistance" command option will be set; otherwise, $minDistance
-     * will be added to the current expression.
-     *
-     * If the query uses GeoJSON points, $minDistance will be interpreted in
-     * meters. If legacy point coordinates are used, $minDistance will be
-     * interpreted in radians.
-     *
-     * @see Expr::minDistance()
-     * @see http://docs.mongodb.org/manual/reference/command/geoNear/
-     * @see http://docs.mongodb.org/manual/reference/operator/minDistance/
-     * @see http://docs.mongodb.org/manual/reference/operator/near/
-     * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
-     * @param float $minDistance
-     * @return $this
-     */
-    public function minDistance($minDistance)
-    {
-        if ($this->query['type'] === Query::TYPE_GEO_NEAR) {
-            $this->query['geoNear']['options']['minDistance'] = $minDistance;
-        } else {
-            $this->expr->minDistance($minDistance);
-        }
         return $this;
     }
 
@@ -1866,23 +1754,6 @@ class Builder
 
         $this->query['sort'][$fieldName] = ['$meta' => $metaDataKeyword];
 
-        return $this;
-    }
-
-    /**
-     * Set the "spherical" option for a geoNear command query.
-     *
-     * @param bool $spherical
-     * @return $this
-     * @throws \BadMethodCallException if the query is not a geoNear command
-     */
-    public function spherical($spherical = true)
-    {
-        if ($this->query['type'] !== Query::TYPE_GEO_NEAR) {
-            throw new \BadMethodCallException('This method requires a geoNear command (call geoNear() first)');
-        }
-
-        $this->query['geoNear']['options']['spherical'] = $spherical;
         return $this;
     }
 

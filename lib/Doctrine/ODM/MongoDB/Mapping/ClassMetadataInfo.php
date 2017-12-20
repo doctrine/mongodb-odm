@@ -211,12 +211,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $identifier;
 
     /**
-     * READ-ONLY: The field that stores the calculated distance when performing geo spatial
-     * queries.
-     */
-    public $distance;
-
-    /**
      * READ-ONLY: Whether or not reads for this class are okay to read from a slave.
      *
      * @deprecated in version 1.2 and will be removed in 2.0.
@@ -1213,26 +1207,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Returns the distance field name.
-     *
-     * @return string $distance The distance field name.
-     */
-    public function getDistance()
-    {
-        return $this->distance;
-    }
-
-    /**
-     * Set the field name that stores the distance.
-     *
-     * @param string $distance
-     */
-    public function setDistance($distance)
-    {
-        $this->distance = $distance;
-    }
-
-    /**
      * Map a field.
      *
      * @param array $mapping The mapping information.
@@ -1307,9 +1281,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $mapping['isCascadeMerge'] = in_array('merge', $cascades);
         $mapping['isCascadeDetach'] = in_array('detach', $cascades);
 
-        if (isset($mapping['distance']) && $mapping['distance'] === true) {
-            $this->distance = $mapping['fieldName'];
-        }
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $mapping['name'] = '_id';
             $this->identifier = $mapping['fieldName'];

@@ -71,8 +71,6 @@ class MatchTest extends BaseTest
             'exists()' => ['exists', [true]],
             'type()' => ['type', [7]],
             'all()' => ['all', [['value1', 'value2']]],
-            'maxDistance' => ['maxDistance', [5]],
-            'minDistance' => ['minDistance', [5]],
             'mod()' => ['mod', [2, 0]],
             'geoIntersects()' => ['geoIntersects', [$this->getMockGeometry()]],
             'geoWithin()' => ['geoWithin', [$this->getMockGeometry()]],

@@ -160,10 +160,6 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'slaveOkay';
         }
 
-        if ($this->distance) {
-            $serialized[] = 'distance';
-        }
-
         if ($this->collectionCapped) {
             $serialized[] = 'collectionCapped';
             $serialized[] = 'collectionSize';

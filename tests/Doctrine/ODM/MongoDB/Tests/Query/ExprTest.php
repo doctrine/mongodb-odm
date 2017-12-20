@@ -472,18 +472,6 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(['$in' => [['x' => 1]], '$lt' => 2], $expr->getQuery());
     }
 
-    /**
-     * @dataProvider provideGeoJsonPoint
-     */
-    public function testMaxDistanceWithNearAndGeoJsonPoint($point, array $expected)
-    {
-        $expr = $this->createExpr();
-        $expr->near($point);
-
-        $this->assertSame($expr, $expr->maxDistance(1));
-        $this->assertEquals(['$near' => $expected + ['$maxDistance' => 1]], $expr->getQuery());
-    }
-
     public function provideGeoJsonPoint()
     {
         $json = ['type' => 'Point', 'coordinates' => [1, 2]];
@@ -493,94 +481,6 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'array' => [$json, $expected],
             'object' => [$this->getMockPoint($json), $expected],
         ];
-    }
-
-    public function testMaxDistanceWithNearAndLegacyCoordinates()
-    {
-        $expr = $this->createExpr();
-        $expr->near(1, 2);
-
-        $this->assertSame($expr, $expr->maxDistance(1));
-        $this->assertEquals(['$near' => [1, 2], '$maxDistance' => 1], $expr->getQuery());
-    }
-
-    public function testMaxDistanceWithNearSphereAndGeoJsonPoint()
-    {
-        $json = ['type' => 'Point', 'coordinates' => [1, 2]];
-
-        $expr = $this->createExpr();
-        $expr->nearSphere($this->getMockPoint($json));
-
-        $this->assertSame($expr, $expr->maxDistance(1));
-        $this->assertEquals(['$nearSphere' => ['$geometry' => $json, '$maxDistance' => 1]], $expr->getQuery());
-    }
-
-    public function testMaxDistanceWithNearSphereAndLegacyCoordinates()
-    {
-        $expr = $this->createExpr();
-        $expr->nearSphere(1, 2);
-
-        $this->assertSame($expr, $expr->maxDistance(1));
-        $this->assertEquals(['$nearSphere' => [1, 2], '$maxDistance' => 1], $expr->getQuery());
-    }
-
-    /**
-     * @expectedException \BadMethodCallException
-     */
-    public function testMaxDistanceRequiresNearOrNearSphereOperator()
-    {
-        $expr = $this->createExpr();
-        $expr->maxDistance(1);
-    }
-
-    /**
-     * @dataProvider provideGeoJsonPoint
-     */
-    public function testMinDistanceWithNearAndGeoJsonPoint($point, array $expected)
-    {
-        $expr = $this->createExpr();
-        $expr->near($point);
-
-        $this->assertSame($expr, $expr->minDistance(1));
-        $this->assertEquals(['$near' => $expected + ['$minDistance' => 1]], $expr->getQuery());
-    }
-
-    public function testMinDistanceWithNearAndLegacyCoordinates()
-    {
-        $expr = $this->createExpr();
-        $expr->near(1, 2);
-
-        $this->assertSame($expr, $expr->minDistance(1));
-        $this->assertEquals(['$near' => [1, 2], '$minDistance' => 1], $expr->getQuery());
-    }
-
-    public function testMinDistanceWithNearSphereAndGeoJsonPoint()
-    {
-        $json = ['type' => 'Point', 'coordinates' => [1, 2]];
-
-        $expr = $this->createExpr();
-        $expr->nearSphere($this->getMockPoint($json));
-
-        $this->assertSame($expr, $expr->minDistance(1));
-        $this->assertEquals(['$nearSphere' => ['$geometry' => $json, '$minDistance' => 1]], $expr->getQuery());
-    }
-
-    public function testMinDistanceWithNearSphereAndLegacyCoordinates()
-    {
-        $expr = $this->createExpr();
-        $expr->nearSphere(1, 2);
-
-        $this->assertSame($expr, $expr->minDistance(1));
-        $this->assertEquals(['$nearSphere' => [1, 2], '$minDistance' => 1], $expr->getQuery());
-    }
-
-    /**
-     * @expectedException \BadMethodCallException
-     */
-    public function testMinDistanceRequiresNearOrNearSphereOperator()
-    {
-        $expr = $this->createExpr();
-        $expr->minDistance(1);
     }
 
     /**
