@@ -11,7 +11,7 @@ If this documentation is not helping to answer questions you have about
 Doctrine MongoDB ODM don't panic. You can get help from different sources:
 
 -  Gitter chat room `#doctrine/mongodb-odm <https://gitter.im/doctrine/mongodb-odm>`_
--  On `StackOverflow <http://stackoverflow.com/questions/tagged/doctrine-odm>`_
+-  On `Stack Overflow <http://stackoverflow.com/questions/tagged/doctrine-odm>`_
 -  The `Doctrine Mailing List <http://groups.google.com/group/doctrine-user>`_
 -  Report a bug on `GitHub <https://github.com/doctrine/mongodb-odm/issues>`_.
 
