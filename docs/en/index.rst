@@ -10,10 +10,10 @@ Getting Help
 If this documentation is not helping to answer questions you have about
 Doctrine MongoDB ODM don't panic. You can get help from different sources:
 
--  The `Doctrine Mailing List <http://groups.google.com/group/doctrine-user>`_
--  Internet Relay Chat (IRC) in `#doctrine on Freenode <irc://irc.freenode.net/doctrine>`_
--  Report a bug on `GitHub <https://github.com/doctrine/mongodb-odm/issues>`_.
+-  Gitter chat room `#doctrine/mongodb-odm <https://gitter.im/doctrine/mongodb-odm>`_
 -  On `StackOverflow <http://stackoverflow.com/questions/tagged/doctrine-odm>`_
+-  The `Doctrine Mailing List <http://groups.google.com/group/doctrine-user>`_
+-  Report a bug on `GitHub <https://github.com/doctrine/mongodb-odm/issues>`_.
 
 Getting Started
 ---------------
