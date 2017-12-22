@@ -96,9 +96,9 @@ abstract class AbstractBucket extends Stage
             return array_map([$this, 'convertExpression'], $expression);
         } elseif (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
-        } else {
-            return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
         }
+
+        return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
     }
 
     /**

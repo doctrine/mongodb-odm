@@ -1299,9 +1299,9 @@ class Expr
     {
         if ($position === null) {
             return $this->operator('$slice', [$array, $n]);
-        } else {
-            return $this->operator('$slice', [$array, $position, $n]);
         }
+
+        return $this->operator('$slice', [$array, $position, $n]);
     }
 
     /**

@@ -320,9 +320,9 @@ class GraphLookup extends Stage
             return array_map([$this, 'convertExpression'], $expression);
         } elseif (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister($this->class)->prepareFieldName(substr($expression, 1));
-        } else {
-            return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
         }
+
+        return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
     }
 
     private function convertTargetFieldName($fieldName)

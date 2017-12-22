@@ -117,9 +117,9 @@ class CachingIteratorTest extends TestCase
         foreach ($items as $item) {
             if ($item instanceof \Exception) {
                 throw $item;
-            } else {
-                yield $item;
             }
+
+            yield $item;
         }
     }
 }
