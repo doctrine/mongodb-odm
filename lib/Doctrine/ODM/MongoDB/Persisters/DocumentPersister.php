@@ -1459,13 +1459,13 @@ class DocumentPersister
 
         if ($mapping['type'] === 'many') {
             return [[$fieldName, ['$elemMatch' => array_intersect_key($reference, $keys)]]];
-        } else {
-            return array_map(
-                function ($key) use ($reference, $fieldName) {
-                    return [$fieldName . '.' . $key, $reference[$key]];
-                },
-                array_keys($keys)
-            );
         }
+
+        return array_map(
+            function ($key) use ($reference, $fieldName) {
+                return [$fieldName . '.' . $key, $reference[$key]];
+            },
+            array_keys($keys)
+        );
     }
 }

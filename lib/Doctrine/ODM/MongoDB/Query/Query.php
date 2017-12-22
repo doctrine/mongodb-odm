@@ -328,9 +328,9 @@ class Query implements \IteratorAggregate
     /**
      * Set whether documents should be registered in UnitOfWork. If document would
      * already be managed it will be left intact and new instance returned.
-     * 
+     *
      * This option has no effect if hydration is disabled.
-     * 
+     *
      * @param boolean $readOnly
      */
     public function setReadOnly($readOnly)
@@ -471,13 +471,13 @@ class Query implements \IteratorAggregate
                         $this->query['newObj'],
                         array_merge($options, $this->getQueryOptions('upsert'))
                     );
-                } else {
-                    return $this->collection->updateOne(
-                        $this->query['query'],
-                        $this->query['newObj'],
-                        array_merge($options, $this->getQueryOptions('upsert'))
-                    );
                 }
+
+                return $this->collection->updateOne(
+                    $this->query['query'],
+                    $this->query['newObj'],
+                    array_merge($options, $this->getQueryOptions('upsert'))
+                );
 
             case self::TYPE_REMOVE:
                 return $this->collection->deleteMany($this->query['query'], $options);
