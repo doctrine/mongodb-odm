@@ -741,7 +741,7 @@ class DocumentPersister
             $criteria = $this->cm->merge(
                 array('_id' => array('$in' => array_values($ids))),
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
-                isset($mapping['criteria']) ? $mapping['criteria'] : array()
+                $mapping['criteria'] ?? array()
             );
             $criteria = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
 
@@ -797,12 +797,12 @@ class DocumentPersister
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
-        $mappedByFieldName = ClassMetadataInfo::getReferenceFieldName(isset($mappedByMapping['storeAs']) ? $mappedByMapping['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, $mapping['mappedBy']);
+        $mappedByFieldName = ClassMetadataInfo::getReferenceFieldName($mappedByMapping['storeAs'] ?? ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, $mapping['mappedBy']);
 
         $criteria = $this->cm->merge(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
-            isset($mapping['criteria']) ? $mapping['criteria'] : array()
+            $mapping['criteria'] ?? array()
         );
         $criteria = $this->uow->getDocumentPersister($mapping['targetDocument'])->prepareQueryOrNewObj($criteria);
         $qb = $this->dm->createQueryBuilder($mapping['targetDocument'])
@@ -1041,7 +1041,7 @@ class DocumentPersister
      */
     private function prepareQueryElement($fieldName, $value = null, $class = null, $prepareValue = true, $inNewObj = false)
     {
-        $class = isset($class) ? $class : $this->class;
+        $class = $class ?? $this->class;
 
         // @todo Consider inlining calls to ClassMetadataInfo methods
 

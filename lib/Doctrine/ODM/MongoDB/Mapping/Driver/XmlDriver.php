@@ -202,7 +202,7 @@ class XmlDriver extends FileDriver
             return;
         }
 
-        $keys = array($name => isset($mapping['order']) ? $mapping['order'] : 'asc');
+        $keys = array($name => $mapping['order'] ?? 'asc');
         $options = array();
 
         if (isset($mapping['background'])) {
