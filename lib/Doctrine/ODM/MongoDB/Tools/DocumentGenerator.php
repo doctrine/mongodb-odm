@@ -664,17 +664,17 @@ public function <methodName>()
                 }
             } elseif ($fieldMapping['type'] === ClassMetadataInfo::ONE) {
                 $nullable = $this->isAssociationNullable($fieldMapping) ? 'null' : null;
-                if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null, $nullable)) {
+                if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['targetDocument'] ?? null, $nullable)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
+                if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['targetDocument'] ?? null)) {
                     $methods[] = $code;
                 }
             } elseif ($fieldMapping['type'] === ClassMetadataInfo::MANY) {
-                if ($code = $this->generateDocumentStubMethod($metadata, 'add', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
+                if ($code = $this->generateDocumentStubMethod($metadata, 'add', $fieldMapping['fieldName'], $fieldMapping['targetDocument'] ?? null)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateDocumentStubMethod($metadata, 'remove', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
+                if ($code = $this->generateDocumentStubMethod($metadata, 'remove', $fieldMapping['fieldName'], $fieldMapping['targetDocument'] ?? null)) {
                     $methods[] = $code;
                 }
                 if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], '\Doctrine\Common\Collections\Collection')) {
@@ -822,7 +822,7 @@ public function <methodName>()
     {
         $lines = array();
         $lines[] = $this->spaces . '/**';
-        $lines[] = $this->spaces . ' * @var ' . (isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : 'object');
+        $lines[] = $this->spaces . ' * @var ' . ($fieldMapping['targetDocument'] ?? 'object');
 
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
@@ -873,7 +873,7 @@ public function <methodName>()
         $lines = array();
         $lines[] = $this->spaces . '/**';
         if (isset($fieldMapping['id']) && $fieldMapping['id']) {
-            $fieldMapping['strategy'] = isset($fieldMapping['strategy']) ? $fieldMapping['strategy'] : ClassMetadataInfo::GENERATOR_TYPE_AUTO;
+            $fieldMapping['strategy'] = $fieldMapping['strategy'] ?? ClassMetadataInfo::GENERATOR_TYPE_AUTO;
             if ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_AUTO) {
                 $lines[] = $this->spaces . ' * @var MongoDB\BSON\ObjectId $' . $fieldMapping['fieldName'];
             } elseif ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_INCREMENT) {

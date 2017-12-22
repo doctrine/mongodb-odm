@@ -719,7 +719,7 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
+                $orgValue = $originalData[$propName] ?? null;
 
                 // skip if value has not changed
                 if ($orgValue === $actualValue) {
@@ -1870,7 +1870,7 @@ class UnitOfWork implements PropertyChangedListener
                             continue;
                         } elseif ( ! $assoc2['isCascadeMerge']) {
                             if ($this->getDocumentState($other) === self::STATE_DETACHED) {
-                                $targetDocument = isset($assoc2['targetDocument']) ? $assoc2['targetDocument'] : get_class($other);
+                                $targetDocument = $assoc2['targetDocument'] ?? get_class($other);
                                 /* @var $targetClass \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo */
                                 $targetClass = $this->dm->getClassMetadata($targetDocument);
                                 $relatedId = $targetClass->getIdentifierObject($other);
@@ -2586,7 +2586,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getClassNameForAssociation(array $mapping, $data)
     {
-        $discriminatorField = isset($mapping['discriminatorField']) ? $mapping['discriminatorField'] : null;
+        $discriminatorField = $mapping['discriminatorField'] ?? null;
 
         $discriminatorValue = null;
         if (isset($discriminatorField, $data[$discriminatorField])) {
@@ -2596,9 +2596,8 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($discriminatorValue !== null) {
-            return isset($mapping['discriminatorMap'][$discriminatorValue])
-                ? $mapping['discriminatorMap'][$discriminatorValue]
-                : $discriminatorValue;
+            return $mapping['discriminatorMap'][$discriminatorValue]
+                ?? $discriminatorValue;
         }
 
         $class = $this->dm->getClassMetadata($mapping['targetDocument']);

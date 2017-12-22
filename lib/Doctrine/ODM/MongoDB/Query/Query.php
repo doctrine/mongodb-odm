@@ -407,7 +407,7 @@ class Query implements \IteratorAggregate
 
         return array_combine(
             array_map(
-                function($key) use ($rename) { return isset($rename[$key]) ? $rename[$key] : $key; },
+                function($key) use ($rename) { return $rename[$key] ?? $key; },
                 array_keys($options)
             ),
             array_values($options)

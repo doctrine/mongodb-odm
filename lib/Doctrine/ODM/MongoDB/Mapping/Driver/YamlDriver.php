@@ -37,7 +37,7 @@ class YamlDriver extends FileDriver
         if ( ! $element) {
             return;
         }
-        $element['type'] = isset($element['type']) ? $element['type'] : 'document';
+        $element['type'] = $element['type'] ?? 'document';
 
         if (isset($element['db'])) {
             $class->setDatabase($element['db']);
@@ -51,7 +51,7 @@ class YamlDriver extends FileDriver
             }
             $class->setReadPreference(
                 $element['readPreference']['mode'],
-                isset($element['readPreference']['tagSets']) ? $element['readPreference']['tagSets'] : null
+                $element['readPreference']['tagSets'] ?? null
             );
         }
         if (isset($element['writeConcern'])) {
@@ -63,7 +63,7 @@ class YamlDriver extends FileDriver
             }
         } elseif ($element['type'] === 'mappedSuperclass') {
             $class->setCustomRepositoryClass(
-                isset($element['repositoryClass']) ? $element['repositoryClass'] : null
+                $element['repositoryClass'] ?? null
             );
             $class->isMappedSuperclass = true;
         } elseif ($element['type'] === 'embeddedDocument') {
@@ -73,7 +73,7 @@ class YamlDriver extends FileDriver
         }
         if (isset($element['indexes'])) {
             foreach($element['indexes'] as $index) {
-                $class->addIndex($index['keys'], isset($index['options']) ? $index['options'] : array());
+                $class->addIndex($index['keys'], $index['options'] ?? array());
             }
         }
         if (isset($element['shardKey'])) {
@@ -238,8 +238,8 @@ class YamlDriver extends FileDriver
         $mapping = array(
             'type'            => $type,
             'embedded'        => true,
-            'targetDocument'  => isset($embed['targetDocument']) ? $embed['targetDocument'] : null,
-            'collectionClass' => isset($embed['collectionClass']) ? $embed['collectionClass'] : null,
+            'targetDocument'  => $embed['targetDocument'] ?? null,
+            'collectionClass' => $embed['collectionClass'] ?? null,
             'fieldName'       => $fieldName,
             'strategy'        => isset($embed['strategy']) ? (string) $embed['strategy'] : $defaultStrategy,
         );
@@ -262,13 +262,13 @@ class YamlDriver extends FileDriver
     {
         $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
-            'cascade'          => isset($reference['cascade']) ? $reference['cascade'] : [],
-            'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
+            'cascade'          => $reference['cascade'] ?? [],
+            'orphanRemoval'    => $reference['orphanRemoval'] ?? false,
             'type'             => $type,
             'reference'        => true,
             'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF,
-            'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
-            'collectionClass'  => isset($reference['collectionClass']) ? $reference['collectionClass'] : null,
+            'targetDocument'   => $reference['targetDocument'] ?? null,
+            'collectionClass'  => $reference['collectionClass'] ?? null,
             'fieldName'        => $fieldName,
             'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : $defaultStrategy,
             'inversedBy'       => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,
@@ -276,7 +276,7 @@ class YamlDriver extends FileDriver
             'repositoryMethod' => isset($reference['repositoryMethod']) ? (string) $reference['repositoryMethod'] : null,
             'limit'            => isset($reference['limit']) ? (integer) $reference['limit'] : null,
             'skip'             => isset($reference['skip']) ? (integer) $reference['skip'] : null,
-            'prime'            => isset($reference['prime']) ? $reference['prime'] : [],
+            'prime'            => $reference['prime'] ?? [],
         );
         if (isset($reference['name'])) {
             $mapping['name'] = $reference['name'];

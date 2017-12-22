@@ -58,7 +58,7 @@ class PersistenceBuilder
         $insertData = array();
         foreach ($class->fieldMappings as $mapping) {
 
-            $new = isset($changeset[$mapping['fieldName']][1]) ? $changeset[$mapping['fieldName']][1] : null;
+            $new = $changeset[$mapping['fieldName']][1] ?? null;
 
             if ($new === null && $mapping['nullable']) {
                 $insertData[$mapping['name']] = null;
@@ -331,7 +331,7 @@ class PersistenceBuilder
             $value = null;
 
             if ($rawValue !== null) {
-                switch (isset($mapping['association']) ? $mapping['association'] : null) {
+                switch ($mapping['association'] ?? null) {
                     // @Field, @String, @Date, etc.
                     case null:
                         $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);

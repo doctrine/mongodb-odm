@@ -1110,9 +1110,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             if ( ! isset($name['name'])) {
                 throw new \InvalidArgumentException('A name key is required when passing an array to setCollection()');
             }
-            $this->collectionCapped = isset($name['capped']) ? $name['capped'] : false;
-            $this->collectionSize = isset($name['size']) ? $name['size'] : 0;
-            $this->collectionMax = isset($name['max']) ? $name['max'] : 0;
+            $this->collectionCapped = $name['capped'] ?? false;
+            $this->collectionSize = $name['size'] ?? 0;
+            $this->collectionMax = $name['max'] ?? 0;
             $this->collection = $name['name'];
         } else {
             $this->collection = $name;
@@ -1270,7 +1270,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             if (isset($mapping['strategy'])) {
                 $this->generatorType = constant(ClassMetadata::class . '::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
             }
-            $this->generatorOptions = isset($mapping['options']) ? $mapping['options'] : array();
+            $this->generatorOptions = $mapping['options'] ?? array();
             switch ($this->generatorType) {
                 case self::GENERATOR_TYPE_AUTO:
                     $mapping['type'] = 'id';

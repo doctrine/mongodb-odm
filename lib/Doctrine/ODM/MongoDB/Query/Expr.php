@@ -1380,7 +1380,7 @@ class Expr
                 'minkey' => 255,
             ];
 
-            $type = isset($map[$type]) ? $map[$type] : $type;
+            $type = $map[$type] ?? $type;
         }
 
         return $this->operator('$type', $type);

@@ -61,7 +61,7 @@ class CreateCommand extends AbstractCommand
                     'Created <comment>%s%s</comment> for <info>%s</info>',
                     $option,
                     (isset($class) ? (self::INDEX === $option ? '(es)' : '') : (self::INDEX === $option ? 'es' : 's')),
-                    (isset($class) ? $class : 'all classes')
+                    ($class ?? 'all classes')
                 ));
             } catch (\Exception $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');

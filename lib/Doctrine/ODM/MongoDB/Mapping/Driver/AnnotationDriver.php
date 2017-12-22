@@ -154,7 +154,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             if ($indexes) {
                 foreach ($indexes as $index) {
-                    $name = isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'];
+                    $name = $mapping['name'] ?? $mapping['fieldName'];
                     $keys = array($name => $index->order ?: 'asc');
                     $this->addIndex($class, $index, $keys);
                 }
