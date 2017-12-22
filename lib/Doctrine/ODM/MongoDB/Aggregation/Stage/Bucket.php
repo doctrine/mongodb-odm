@@ -19,48 +19,80 @@
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
-use Doctrine\MongoDB\Aggregation\Builder;
-use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Types\Type;
-
-class Bucket extends BaseStage\Bucket
+class Bucket extends AbstractBucket
 {
     /**
-     * @var DocumentManager
+     * @var array
      */
-    private $dm;
+    private $boundaries;
 
     /**
-     * @var ClassMetadata
+     * @var mixed
      */
-    private $class;
+    private $default;
 
-    public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class)
+    /**
+     * An array of values based on the groupBy expression that specify the
+     * boundaries for each bucket.
+     *
+     * Each adjacent pair of values acts as the inclusive lower boundary and the
+     * exclusive upper boundary for the bucket. You must specify at least two
+     * boundaries. The specified values must be in ascending order and all of
+     * the same type. The exception is if the values are of mixed numeric types.
+     *
+     * @param array ...$boundaries
+     *
+     * @return $this
+     */
+    public function boundaries(...$boundaries)
     {
-        $this->dm = $documentManager;
-        $this->class = $class;
-
-        parent::__construct($builder);
+        $this->boundaries = $boundaries;
+        return $this;
     }
 
-    protected function convertExpression($expression)
+    /**
+     * A literal that specifies the _id of an additional bucket that contains
+     * all documents whose groupBy expression result does not fall into a bucket
+     * specified by boundaries.
+     *
+     * @param mixed $default
+     *
+     * @return $this
+     */
+    public function defaultBucket($default)
     {
-        if (is_array($expression)) {
-            return array_map([$this, 'convertExpression'], $expression);
-        } elseif (is_string($expression) && substr($expression, 0, 1) === '$') {
-            return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
-        } else {
-            return Type::convertPHPToDatabaseValue(parent::convertExpression($expression));
+        $this->default = $default;
+        return $this;
+    }
+
+    /**
+     * A document that specifies the fields to include in the output documents
+     * in addition to the _id field. To specify the field to include, you must
+     * use accumulator expressions.
+     *
+     * @return Bucket\BucketOutput
+     */
+    public function output()
+    {
+        if (! $this->output) {
+            $this->output = new Bucket\BucketOutput($this->builder, $this);
         }
+
+        return $this->output;
     }
 
-    /**
-     * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
-     */
-    private function getDocumentPersister()
+    protected function getExtraPipelineFields()
     {
-        return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
+        $fields = ['boundaries' => $this->boundaries];
+        if ($this->default !== null) {
+            $fields['default'] = $this->default;
+        }
+
+        return $fields;
+    }
+
+    protected function getStageName()
+    {
+        return '$bucket';
     }
 }

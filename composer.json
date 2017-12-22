@@ -22,11 +22,12 @@
         "doctrine/cache": "~1.0",
         "doctrine/inflector": "~1.0",
         "doctrine/instantiator": "^1.0.1",
-        "doctrine/mongodb": "^1.6.1"
+        "mongodb/mongodb": "^1.2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7.21|^6.4",
-        "symfony/yaml": "~2.3|~3.0|^4.0"
+        "symfony/yaml": "~2.3|~3.0|^4.0",
+        "jmikola/geojson": "^1.0"
     },
     "suggest": {
         "symfony/yaml": "Enables the YAML metadata mapping driver",

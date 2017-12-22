@@ -17,16 +17,23 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
+namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
- * Maps a field as GridFS file and instructs ODM to store the entire document in
- * a GridFS collection.
+ * Fluent interface for adding a $redact stage to an aggregation pipeline.
  *
- * @Annotation
+ * @author alcaeus <alcaeus@alcaeus.org>
+ * @since 1.2
  */
-final class File extends AbstractField
+class Redact extends Operator
 {
-    public $type = 'file';
-    public $file = true;
+    /**
+     * {@inheritdoc}
+     */
+    public function getExpression()
+    {
+        return [
+            '$redact' => $this->expr->getExpression()
+        ];
+    }
 }

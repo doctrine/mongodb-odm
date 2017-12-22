@@ -45,7 +45,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 {
     /* The Id generator types. */
     /**
-     * AUTO means Doctrine will automatically create a new \MongoId instance for us.
+     * AUTO means Doctrine will automatically create a new \MongoDB\BSON\ObjectId instance for us.
      */
     const GENERATOR_TYPE_AUTO = 1;
 
@@ -209,18 +209,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * READ-ONLY: The field name of the document identifier.
      */
     public $identifier;
-
-    /**
-     * READ-ONLY: The field that stores a file reference and indicates the
-     * document is a file and should be stored on the MongoGridFS.
-     */
-    public $file;
-
-    /**
-     * READ-ONLY: The field that stores the calculated distance when performing geo spatial
-     * queries.
-     */
-    public $distance;
 
     /**
      * READ-ONLY: Whether or not reads for this class are okay to read from a slave.
@@ -1219,56 +1207,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Returns TRUE if this Document is a file to be stored on the MongoGridFS FALSE otherwise.
-     *
-     * @return boolean
-     */
-    public function isFile()
-    {
-        return $this->file ? true : false;
-    }
-
-    /**
-     * Returns the file field name.
-     *
-     * @return string $file The file field name.
-     */
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    /**
-     * Set the field name that stores the grid file.
-     *
-     * @param string $file
-     */
-    public function setFile($file)
-    {
-        $this->file = $file;
-    }
-
-    /**
-     * Returns the distance field name.
-     *
-     * @return string $distance The distance field name.
-     */
-    public function getDistance()
-    {
-        return $this->distance;
-    }
-
-    /**
-     * Set the field name that stores the distance.
-     *
-     * @param string $distance
-     */
-    public function setDistance($distance)
-    {
-        $this->distance = $distance;
-    }
-
-    /**
      * Map a field.
      *
      * @param array $mapping The mapping information.
@@ -1343,16 +1281,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $mapping['isCascadeMerge'] = in_array('merge', $cascades);
         $mapping['isCascadeDetach'] = in_array('detach', $cascades);
 
-        if (isset($mapping['type']) && $mapping['type'] === 'file') {
-            $mapping['file'] = true;
-        }
-        if (isset($mapping['file']) && $mapping['file'] === true) {
-            $this->file = $mapping['fieldName'];
-            $mapping['name'] = 'file';
-        }
-        if (isset($mapping['distance']) && $mapping['distance'] === true) {
-            $this->distance = $mapping['fieldName'];
-        }
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $mapping['name'] = '_id';
             $this->identifier = $mapping['fieldName'];
@@ -1506,18 +1434,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
             throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
         }
-    }
-
-    /**
-     * Map a MongoGridFSFile.
-     *
-     * @param array $mapping The mapping information.
-     */
-    public function mapFile(array $mapping)
-    {
-        $mapping['file'] = true;
-        $mapping['type'] = 'file';
-        $this->mapField($mapping);
     }
 
     /**
@@ -1782,7 +1698,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param object $document
      *
-     * @return \MongoId $id The MongoID object.
+     * @return \MongoDB\BSON\ObjectId $id The ObjectId
      */
     public function getIdentifierObject($document)
     {
@@ -1981,7 +1897,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Checks whether the class will generate a new \MongoId instance for us.
+     * Checks whether the class will generate a new \MongoDB\BSON\ObjectId instance for us.
      *
      * @return boolean TRUE if the class uses the AUTO generator, FALSE otherwise.
      */

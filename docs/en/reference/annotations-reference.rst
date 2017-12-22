@@ -134,60 +134,6 @@ the discriminator field instead of the |FQCN|.
         // ...
     }
 
-.. _annotation_distance:
-
-@Distance
----------
-
-This annotation can be used in combination with geospatial indexes and the
-:ref:`geoNear() <geonear>` query method to populate the property with the
-calculated distance value.
-
-.. code-block:: php
-
-    <?php
-
-    /**
-     * @Document
-     * @Index(keys={"coordinates"="2d"})
-     */
-    class Place
-    {
-        /** @Id */
-        public $id;
-    
-        /** @EmbedOne(targetDocument="Coordinates") */
-        public $coordinates;
-    
-        /** @Distance */
-        public $distance;
-    }
-    
-    /** @EmbeddedDocument */
-    class Coordinates
-    {
-        /** @Field(type="float") */
-        public $latitude;
-    
-        /** @Field(type="float") */
-        public $longitude;
-    }
-
-Now you can run a `geoNear command`_ and access the computed distance. The
-following example would return the distance of the city nearest the query
-coordinates:
-
-.. code-block:: php
-
-    <?php
-
-    $city = $this->dm->createQuery('City')
-        ->geoNear(50, 60)
-        ->limit(1)
-        ->getQuery()
-        ->getSingleResult();
-    echo $city->distance;
-
 @Document
 ---------
 
@@ -427,51 +373,6 @@ Examples:
      */
     protected $height;
 
-@File
------
-
-Marks an annotated instance variable as a file. Additionally, this instructs ODM
-to store the entire document in `GridFS`_. Only a single field in a document may
-be mapped as a file.
-
-The instance variable will be an ``Doctrine\MongoDB\GridFSFile`` object, which
-is a wrapper class for `MongoGridFSFile`_ and facilitates access to the file
-data in GridFS. If the variable is a file path string when the document is first
-persisted, ODM will convert it to GridFSFile object automatically.
-
-.. code-block:: php
-
-    <?php
-
-    /** @File */
-    private $file;
-
-Additional fields can be mapped in GridFS documents like any other, but metadata
-fields set by the driver (e.g. ``length``) should be mapped with `@NotSaved`_ so
-as not to inadvertently overwrite them. Some metadata fields, such as
-``filename`` may be modified and do not require `@NotSaved`_. In the following
-example, we also add a custom field to refer to the corresponding User document
-that created the file.
-
-.. code-block:: php
-
-    <?php
-
-    /** @Field(type="string") */
-    private $filename;
-
-    /** @NotSaved(type="int") */
-    private $length;
-
-    /** @NotSaved(type="string") */
-    private $md5;
-
-    /** @NotSaved(type="date") */
-    private $uploadDate;
-
-    /** @ReferenceOne(targetDocument="Documents\User") */
-    private $uploadedBy;
-
 .. _haslifecyclecallbacks:
 
 @HasLifecycleCallbacks
@@ -498,8 +399,8 @@ annotation will cause Doctrine to ignore the callbacks.
 ---
 
 The annotated instance variable will be marked as the document identifier. The
-default behavior is to store a `MongoId`_ instance, but you may customize this
-via the :ref:`strategy <basic_mapping_identifiers>` attribute.
+default behavior is to store an `MongoDB\BSON\ObjectId`_ instance, but you may
+customize this via the :ref:`strategy <basic_mapping_identifiers>` attribute.
 
 .. code-block:: php
 
@@ -1109,8 +1010,6 @@ versioned parent document.
 .. _BSON specification: http://bsonspec.org/spec.html
 .. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs
 .. _geoNear command: https://docs.mongodb.com/manual/reference/command/geoNear/
-.. _GridFS: https://docs.mongodb.com/manual/core/gridfs/
-.. _MongoGridFSFile: http://php.net/manual/en/class.mongogridfsfile.php
-.. _MongoId: http://php.net/manual/en/class.mongoid.php
+.. _MongoDB\BSON\ObjectId: https://secure.php.net/manual/en/class.mongodb-bson-objectid.php
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>

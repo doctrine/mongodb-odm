@@ -4,7 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
 
-class OwningAndInverseReferencedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testOneToOne()
     {

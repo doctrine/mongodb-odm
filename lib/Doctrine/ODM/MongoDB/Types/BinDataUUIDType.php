@@ -29,5 +29,5 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class BinDataUUIDType extends BinDataType
 {
-    protected $binDataType = \MongoBinData::UUID;
+    protected $binDataType = \MongoDB\BSON\Binary::TYPE_OLD_UUID;
 }

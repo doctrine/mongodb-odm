@@ -16,6 +16,7 @@ class ShardKeyTest extends BaseTest
 
     protected function getConfiguration()
     {
+        $this->markTestSkipped('mongodb-driver: query logging does not exist');
         if ( ! isset($this->ql)) {
             $this->ql = new QueryLogger();
         }
@@ -57,7 +58,7 @@ class ShardKeyTest extends BaseTest
     public function testUpsert()
     {
         $o = new ShardedOne();
-        $o->id = new \MongoId();
+        $o->id = new \MongoDB\BSON\ObjectId();
         $this->dm->persist($o);
         $this->dm->flush();
 

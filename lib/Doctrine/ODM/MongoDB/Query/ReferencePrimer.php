@@ -26,6 +26,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use MongoDB\Driver\ReadPreference;
 
 /**
  * The ReferencePrimer is responsible for priming reference relationships.
@@ -82,7 +83,7 @@ class ReferencePrimer
             }
 
             if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-                $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+                $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE]);
             }
 
             $qb->getQuery()->execute()->toArray(false);

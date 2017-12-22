@@ -17,7 +17,7 @@ class RawTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 		$this->dm->persist($test);
 		$this->dm->flush();
 
-		$result = $this->dm->getDocumentCollection(get_class($test))->findOne(array('_id' => new \MongoId($test->id)));
+		$result = $this->dm->getDocumentCollection(get_class($test))->findOne(array('_id' => new \MongoDB\BSON\ObjectId($test->id)));
 		$this->assertEquals($value, $result['raw']);
 	}
 
@@ -28,10 +28,10 @@ class RawTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 			array(1),
 			array(0),
 			array(array('test' => 'test')),
-			array(new \MongoDate()),
+			array(new \MongoDB\BSON\UTCDateTime()),
 			array(true),
-			array(array('date' => new \MongoDate())),
-			array(new \MongoId())
+			array(array('date' => new \MongoDB\BSON\UTCDateTime())),
+			array(new \MongoDB\BSON\ObjectId())
 		);
 	}
 }

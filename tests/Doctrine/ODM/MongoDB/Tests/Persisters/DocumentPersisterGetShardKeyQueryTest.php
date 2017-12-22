@@ -42,23 +42,25 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 
-        $this->assertInstanceOf('MongoId', $shardKeyQuery['oid']);
-        $this->assertSame($o->oid, $shardKeyQuery['oid']->{'$id'});
+        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $shardKeyQuery['oid']);
+        $this->assertSame($o->oid, (string) $shardKeyQuery['oid']);
 
-        $this->assertInstanceOf('MongoBinData', $shardKeyQuery['bin']);
-        $this->assertSame($o->bin, $shardKeyQuery['bin']->bin);
+        $this->assertInstanceOf(\MongoDB\BSON\Binary::class, $shardKeyQuery['bin']);
+        $this->assertSame($o->bin, $shardKeyQuery['bin']->getData());
 
-        $this->assertInstanceOf('MongoDate', $shardKeyQuery['date']);
-        $this->assertSame($o->date->getTimestamp(), $shardKeyQuery['date']->sec);
+        $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, $shardKeyQuery['date']);
+        $this->assertEquals($o->date->getTimestamp(), $shardKeyQuery['date']->toDateTime()->getTimestamp());
 
-        $microseconds = (int)floor(((int)$o->date->format('u')) / 1000) * 1000;
-        $this->assertSame($microseconds, $shardKeyQuery['date']->usec);
+        $this->assertSame(
+            (int) $o->date->format('v'),
+            (int) $shardKeyQuery['date']->toDateTime()->format('v')
+        );
     }
 
     public function testShardById()
     {
         $o = new ShardedById();
-        $o->identifier = new \MongoId();
+        $o->identifier = new \MongoDB\BSON\ObjectId();
 
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
@@ -74,7 +76,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
     {
         $o = new ShardedByReferenceOne();
 
-        $userId = new \MongoId();
+        $userId = new \MongoDB\BSON\ObjectId();
         $o->reference = new \Documents\User();
         $o->reference->setId($userId);
 

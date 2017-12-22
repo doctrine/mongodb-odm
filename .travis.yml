@@ -15,7 +15,6 @@ env:
     - MONGO_REPO_TYPE="precise/mongodb-org/"
     - SOURCES_LOC="/etc/apt/sources.list.d/mongodb.list"
     - DRIVER_VERSION="stable"
-    - ADAPTER_VERSION="^1.0.0"
     - SERVER_VERSION="3.4"
     - KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
 
@@ -41,7 +40,6 @@ before_script:
   - curl -XPUT http://localhost:8889/v1/sharded_clusters/myCluster --data @tests/sharded.json
   - composer self-update
   - pecl install -f mongodb-${DRIVER_VERSION}
-  - composer config "platform.ext-mongo" "1.6.16" && composer require "alcaeus/mongo-php-adapter=${ADAPTER_VERSION}"
   - composer update ${COMPOSER_FLAGS}
 
 script:

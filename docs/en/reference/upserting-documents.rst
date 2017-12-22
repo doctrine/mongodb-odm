@@ -24,7 +24,7 @@ The above would result in an operation like the following:
     <?php
 
     $articleCollection->update(
-        array('_id' => new MongoId($articleId)),
+        array('_id' => new MongoDB\BSON\ObjectId($articleId)),
         array('$inc' => array('numViews' => 1)),
         array('upsert' => true, 'safe' => true)
     );

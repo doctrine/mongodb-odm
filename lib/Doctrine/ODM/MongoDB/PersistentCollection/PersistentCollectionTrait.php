@@ -439,17 +439,10 @@ trait PersistentCollectionTrait
      */
     public function count()
     {
-        $count = $this->coll->count();
+        // Workaround around not being able to directly count inverse collections anymore
+        $this->initialize();
 
-        // If this collection is inversed and not initialized, add the count returned from the database
-        if ($this->mapping['isInverseSide'] && ! $this->initialized) {
-            $documentPersister = $this->uow->getDocumentPersister(get_class($this->owner));
-            $count += empty($this->mapping['repositoryMethod'])
-                ? $documentPersister->createReferenceManyInverseSideQuery($this)->count(true)
-                : $documentPersister->createReferenceManyWithRepositoryMethodCursor($this)->count(true);
-        }
-
-        return $count + ($this->initialized ? 0 : count($this->mongoData));
+        return $this->coll->count();
     }
 
     /**

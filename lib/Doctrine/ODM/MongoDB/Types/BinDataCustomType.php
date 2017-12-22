@@ -26,5 +26,5 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class BinDataCustomType extends BinDataType
 {
-    protected $binDataType = \MongoBinData::CUSTOM;
+    protected $binDataType = \MongoDB\BSON\Binary::TYPE_USER_DEFINED;
 }

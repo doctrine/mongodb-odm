@@ -22,7 +22,7 @@ class MODM56Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test = $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM56Parent')->findOne();
 
         $this->assertEquals('Parent', $test['name']);
-        $this->assertInstanceOf('\MongoDate', $test['updatedAt']);
+        $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, $test['updatedAt']);
         $this->assertCount(2, $test['children']);
         $this->assertEquals('Child One', $test['children'][0]['name']);
         $this->assertEquals('Child Two', $test['children'][1]['name']);

@@ -232,7 +232,7 @@ The above would give you an ``ArrayCollection`` of all the distinct user ages!
 Refreshing Documents
 ~~~~~~~~~~~~~~~~~~~~
 
-When a query (e.g. geoNear, find) returns one or more hydrated documents whose
+When a query (e.g. find) returns one or more hydrated documents whose
 identifiers are already in the identity map, ODM returns the managed document
 instances for those results. In this case, a managed document's data may differ
 from whatever was just returned by the database query.

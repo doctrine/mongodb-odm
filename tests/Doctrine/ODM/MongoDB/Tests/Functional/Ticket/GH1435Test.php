@@ -8,7 +8,7 @@ class GH1435Test extends BaseTest
 {
     public function testUpsert()
     {
-        $id = (string) new \MongoId();
+        $id = (string) new \MongoDB\BSON\ObjectId();
 
         $document = new GH1435Document();
         $document->id = $id;

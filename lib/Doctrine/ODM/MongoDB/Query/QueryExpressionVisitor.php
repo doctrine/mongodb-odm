@@ -104,7 +104,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
 
                 return $this->builder->expr()
                     ->field($comparison->getField())
-                    ->equals(new \MongoRegex('/' . preg_quote($value, '/') . '/'));
+                    ->equals(new \MongoDB\BSON\Regex($value, ''));
 
             default:
                 throw new \RuntimeException('Unknown comparison operator: ' . $comparison->getOperator());

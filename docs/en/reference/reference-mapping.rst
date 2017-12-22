@@ -318,7 +318,8 @@ By default all references are stored as a `DBRef`_ object with the traditional
 ``$ref``, ``$id``, and (optionally) ``$db`` fields (in that order). For references to
 documents of a single collection, storing the collection (and database) names for
 each reference may be redundant. You can use ID references to store the
-referenced document's identifier (e.g. ``MongoId``) instead of a `DBRef`_.
+referenced document's identifier (e.g. ``MongoDB\BSON\ObjectId``) instead of a
+`DBRef`_.
 
 Example:
 
@@ -343,8 +344,8 @@ Example:
           profile:
             storeAs: id
 
-Now, the ``profile`` field will only store the ``MongoId`` of the referenced
-Profile document.
+Now, the ``profile`` field will only store the ``MongoDB\BSON\ObjectId`` of the
+referenced Profile document.
 
 ID references reduce the amount of storage used, both for the document
 itself and any indexes on the reference field; however, ID references cannot
@@ -352,9 +353,9 @@ be used with discriminators, since there is no `DBRef`_ object in which to store
 a discriminator value.
 
 In addition to saving references as `DBRef`_ with ``$ref``, ``$id``, and ``$db``
-fields and as ``MongoId``, it is possible to save references as `DBRef`_ without
-the ``$db`` field. This solves problems when the database name changes (and also
-reduces the amount of storage used).
+fields and as ``MongoDB\BSON\ObjectId``, it is possible to save references as
+`DBRef`_ without the ``$db`` field. This solves problems when the database name
+changes (and also reduces the amount of storage used).
 
 The ``storeAs`` option has the following possible values:
 

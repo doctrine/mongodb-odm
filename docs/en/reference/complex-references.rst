@@ -6,7 +6,7 @@ the inverse side of a relationship.
 
 You can create an `immutable`_ reference to one or many documents and specify
 how that reference is to be loaded. The reference is immutable in that it is
-defined only in the mapping, unlike a typical reference where a `MongoDBRef`_ or
+defined only in the mapping, unlike a typical reference where a ``DBRef`` or
 identifier (see :ref:`storing_references`) is stored on the document itself.
 
 The following options may be used for :ref:`one <reference_one>` and
@@ -148,5 +148,4 @@ is called to populate the reference, Doctrine will provide the Blogpost instance
         }
     }
 
-.. _MongoDBRef: http://php.net/manual/en/class.mongodbref.php
 .. _immutable: http://en.wikipedia.org/wiki/Immutable

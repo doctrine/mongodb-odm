@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MongoId;
 
 class EmbeddedIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -18,7 +17,7 @@ class EmbeddedIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbeddedIdsAreNotOverwritten()
     {
-        $id = (string) new MongoId();
+        $id = (string) new \MongoDB\BSON\ObjectId();
         $test = new DefaultIdEmbeddedDocument();
         $test->id = $id;
 

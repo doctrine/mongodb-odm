@@ -20,16 +20,57 @@
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
-use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Doctrine\ODM\MongoDB\Aggregation\Expr;
+use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types\Type;
 
-class GraphLookup extends BaseStage\GraphLookup
+class GraphLookup extends Stage
 {
+    /**
+     * @var string
+     */
+    private $from;
+
+    /**
+     * @var string|Expr|array
+     */
+    private $startWith;
+
+    /**
+     * @var string
+     */
+    private $connectFromField;
+
+    /**
+     * @var string
+     */
+    private $connectToField;
+
+    /**
+     * @var string
+     */
+    private $as;
+
+    /**
+     * @var int
+     */
+    private $maxDepth;
+
+    /**
+     * @var string
+     */
+    private $depthField;
+
+    /**
+     * @var Stage\GraphLookup\Match
+     */
+    private $restrictSearchWithMatch;
+
     /**
      * @var DocumentManager
      */
@@ -54,14 +95,107 @@ class GraphLookup extends BaseStage\GraphLookup
      */
     public function __construct(Builder $builder, $from, DocumentManager $documentManager, ClassMetadata $class)
     {
+        parent::__construct($builder);
+
         $this->dm = $documentManager;
         $this->class = $class;
-
-        parent::__construct($builder, $from);
+        $this->restrictSearchWithMatch = new GraphLookup\Match($this->builder, $this);
+        $this->from($from);
     }
 
     /**
+     * Name of the array field added to each output document.
+     *
+     * Contains the documents traversed in the $graphLookup stage to reach the
+     * document.
+     *
+     * @param string $alias
+     *
+     * @return $this
+     */
+    public function alias($alias)
+    {
+        $this->as = $alias;
+
+        return $this;
+    }
+
+    /**
+     * Field name whose value $graphLookup uses to recursively match against the
+     * connectToField of other documents in the collection.
+     *
+     * Optionally, connectFromField may be an array of field names, each of
+     * which is individually followed through the traversal process.
+     *
+     * @param string $connectFromField
+     *
+     * @return $this
+     */
+    public function connectFromField($connectFromField)
+    {
+        // No targetClass mapping - simply use field name as is
+        if ( ! $this->targetClass) {
+            $this->connectFromField = $connectFromField;
+            return $this;
+        }
+
+        // connectFromField doesn't have to be a reference - in this case, just convert the field name
+        if ( ! $this->targetClass->hasReference($connectFromField)) {
+            $this->connectFromField = $this->convertTargetFieldName($connectFromField);
+            return $this;
+        }
+
+        // connectFromField is a reference - do a sanity check
+        $referenceMapping = $this->targetClass->getFieldMapping($connectFromField);
+        if ($referenceMapping['targetDocument'] !== $this->targetClass->name) {
+            throw MappingException::connectFromFieldMustReferenceSameDocument($connectFromField);
+        }
+
+        $this->connectFromField = $this->getReferencedFieldName($connectFromField, $referenceMapping);
+        return $this;
+    }
+
+    /**
+     * Field name in other documents against which to match the value of the
+     * field specified by the connectFromField parameter.
+     *
+     * @param string $connectToField
+     *
+     * @return $this
+     */
+    public function connectToField($connectToField)
+    {
+        $this->connectToField = $this->convertTargetFieldName($connectToField);
+        return $this;
+    }
+
+    /**
+     * Name of the field to add to each traversed document in the search path.
+     *
+     * The value of this field is the recursion depth for the document,
+     * represented as a NumberLong. Recursion depth value starts at zero, so the
+     * first lookup corresponds to zero depth.
+     *
+     * @param string $depthField
+     *
+     * @return $this
+     */
+    public function depthField($depthField)
+    {
+        $this->depthField = $depthField;
+
+        return $this;
+    }
+
+    /**
+     * Target collection for the $graphLookup operation to search, recursively
+     * matching the connectFromField to the connectToField.
+     *
+     * The from collection cannot be sharded and must be in the same database as
+     * any other collections used in the operation.
+     *
      * @param string $from
+     *
      * @return $this
      */
     public function from($from)
@@ -79,40 +213,83 @@ class GraphLookup extends BaseStage\GraphLookup
         try {
             $this->targetClass = $this->dm->getClassMetadata($from);
         } catch (BaseMappingException $e) {
-            return parent::from($from);
+            $this->from = $from;
+            return $this;
         }
 
         if ($this->targetClass->isSharded()) {
             throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
         }
 
-        return parent::from($this->targetClass->getCollection());
+        $this->from = $this->targetClass->getCollection();
+        return $this;
     }
 
-    public function connectFromField($connectFromField)
+    /**
+     * {@inheritdoc}
+     */
+    public function getExpression()
     {
-        // No targetClass mapping - simply use field name as is
-        if ( ! $this->targetClass) {
-            return parent::connectFromField($connectFromField);
+        $graphLookup = [
+            'from' => $this->from,
+            'startWith' => $this->convertExpression($this->startWith),
+            'connectFromField' => $this->connectFromField,
+            'connectToField' => $this->connectToField,
+            'as' => $this->as,
+            'restrictSearchWithMatch' => $this->restrictSearchWithMatch->getExpression(),
+        ];
+
+        foreach (['maxDepth', 'depthField'] as $field) {
+            if ($this->$field === null) {
+                continue;
+            }
+
+            $graphLookup[$field] = $this->$field;
         }
 
-        // connectFromField doesn't have to be a reference - in this case, just convert the field name
-        if ( ! $this->targetClass->hasReference($connectFromField)) {
-            return parent::connectFromField($this->convertTargetFieldName($connectFromField));
-        }
-
-        // connectFromField is a reference - do a sanity check
-        $referenceMapping = $this->targetClass->getFieldMapping($connectFromField);
-        if ($referenceMapping['targetDocument'] !== $this->targetClass->name) {
-            throw MappingException::connectFromFieldMustReferenceSameDocument($connectFromField);
-        }
-
-        return parent::connectFromField($this->getReferencedFieldName($connectFromField, $referenceMapping));
+        return ['$graphLookup' => $graphLookup];
     }
 
-    public function connectToField($connectToField)
+    /**
+     * Non-negative integral number specifying the maximum recursion depth.
+     *
+     * @param int $maxDepth
+     *
+     * @return $this
+     */
+    public function maxDepth($maxDepth)
     {
-        return parent::connectToField($this->convertTargetFieldName($connectToField));
+        $this->maxDepth = $maxDepth;
+
+        return $this;
+    }
+
+    /**
+     * A document specifying additional conditions for the recursive search.
+     *
+     * @return GraphLookup\Match
+     */
+    public function restrictSearchWithMatch()
+    {
+        return $this->restrictSearchWithMatch;
+    }
+
+    /**
+     * Expression that specifies the value of the connectFromField with which to
+     * start the recursive search.
+     *
+     * Optionally, startWith may be array of values, each of which is
+     * individually followed through the traversal process.
+     *
+     * @param string|array|Expr $expression
+     *
+     * @return $this
+     */
+    public function startWith($expression)
+    {
+        $this->startWith = $expression;
+
+        return $this;
     }
 
     /**
@@ -132,7 +309,7 @@ class GraphLookup extends BaseStage\GraphLookup
             throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
         }
 
-        parent::from($this->targetClass->getCollection());
+        $this->from = $this->targetClass->getCollection();
 
         $referencedFieldName = $this->getReferencedFieldName($fieldName, $referenceMapping);
 
@@ -154,18 +331,18 @@ class GraphLookup extends BaseStage\GraphLookup
         return $this;
     }
 
-    protected function convertExpression($expression)
+    private function convertExpression($expression)
     {
         if (is_array($expression)) {
             return array_map([$this, 'convertExpression'], $expression);
         } elseif (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister($this->class)->prepareFieldName(substr($expression, 1));
         } else {
-            return Type::convertPHPToDatabaseValue(parent::convertExpression($expression));
+            return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
         }
     }
 
-    protected function convertTargetFieldName($fieldName)
+    private function convertTargetFieldName($fieldName)
     {
         if (is_array($fieldName)) {
             return array_map([$this, 'convertTargetFieldName'], $fieldName);

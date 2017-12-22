@@ -27,6 +27,7 @@ use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\Money;
 use Documents\Ecommerce\Option;
 use Documents\Ecommerce\StockItem;
+use MongoDB\Driver\ReadPreference;
 
 class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -423,16 +424,17 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $invokedArgs[] = func_get_args();
         };
 
+        $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
         $this->dm->createQueryBuilder(User::class)
             ->field('account')->prime($primer)
             ->field('groups')->prime($primer)
-            ->slaveOkay(true)
+            ->setReadPreference($readPreference)
             ->getQuery()
             ->toArray();
 
         $this->assertCount(2, $invokedArgs, 'Primer was invoked once for each referenced class.');
-        $this->assertArrayHasKey(Query::HINT_SLAVE_OKAY, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
-        $this->assertTrue($invokedArgs[0][3][Query::HINT_SLAVE_OKAY], 'Primer was invoked with UnitOfWork hints from original query.');
+        $this->assertArrayHasKey(Query::HINT_READ_PREFERENCE, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
+        $this->assertSame($readPreference, $invokedArgs[0][3][Query::HINT_READ_PREFERENCE], 'Primer was invoked with UnitOfWork hints from original query.');
 
         $accountIds = array($account->getId());
         $groupIds = array($group1->getId(), $group2->getId());
@@ -573,6 +575,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPrimeReferencesInReferenceManyWithRepositoryMethodThrowsException()
     {
+        $this->markTestSkipped('Test invalid until we\'ve figured out how to treat cursors vs. builders in repositoryMethod');
         $commentAuthor = new User();
         $this->dm->persist($commentAuthor);
 

@@ -179,23 +179,23 @@ You can read more about the available MongoDB types on `php.net <http://us.php.n
 
     The Doctrine mapping types are used to convert the local PHP types to the MongoDB types
     when persisting so that your domain is not bound to MongoDB-specific types. For example a
-    DateTime instance may be converted to MongoDate when you persist your documents, and vice
-    versa during hydration.
+    DateTime instance may be converted to ``MongoDB\BSON\UTCDateTime`` when you persist your
+    documents, and vice versa during hydration.
 
 Generally, the name of each built-in mapping type hints as to how the value will be converted.
 This list explains some of the less obvious mapping types:
 
--  ``bin``: string to MongoBinData instance with a "generic" type (default)
--  ``bin_bytearray``: string to MongoBinData instance with a "byte array" type
--  ``bin_custom``: string to MongoBinData instance with a "custom" type
--  ``bin_func``: string to MongoBinData instance with a "function" type
--  ``bin_md5``: string to MongoBinData instance with a "md5" type
--  ``bin_uuid``: string to MongoBinData instance with a "uuid" type
+-  ``bin``: string to MongoDB\BSON\Binary instance with a "generic" type (default)
+-  ``bin_bytearray``: string to MongoDB\BSON\Binary instance with a "byte array" type
+-  ``bin_custom``: string to MongoDB\BSON\Binary instance with a "custom" type
+-  ``bin_func``: string to MongoDB\BSON\Binary instance with a "function" type
+-  ``bin_md5``: string to MongoDB\BSON\Binary instance with a "md5" type
+-  ``bin_uuid``: string to MongoDB\BSON\Binary instance with a "uuid" type
 -  ``collection``: numerically indexed array to MongoDB array
--  ``date``: DateTime to MongoDate
+-  ``date``: DateTime to ``MongoDB\BSON\UTCDateTime``
 -  ``hash``: associative array to MongoDB object
--  ``id``: string to MongoId by default, but other formats are possible
--  ``timestamp``: string to MongoTimestamp
+-  ``id``: string to ObjectId by default, but other formats are possible
+-  ``timestamp``: string to ``MongoDB\BSON\Timestamp``
 -  ``raw``: any type
 
 .. note::
@@ -204,7 +204,7 @@ This list explains some of the less obvious mapping types:
     passed to MongoDB directly, without being prepared. Only formats suitable for
     the Mongo driver should be used. If your hash contains values which are not 
     suitable you should either use an embedded document or use formats provided
-    by the MongoDB driver (e.g. ``\MongoDate`` instead of ``\DateTime``).
+    by the MongoDB driver (e.g. ``\MongoDB\BSON\UTCDateTime`` instead of ``\DateTime``).
 
 Property Mapping
 ----------------
@@ -259,10 +259,10 @@ Here is an example:
               type: id
               id: true
 
-You can configure custom ID strategies if you don't want to use the default MongoId.
-The available strategies are:
+You can configure custom ID strategies if you don't want to use the default
+object ID. The available strategies are:
 
-- ``AUTO`` - Uses the native generated MongoId.
+- ``AUTO`` - Uses the native generated ObjectId.
 - ``ALNUM`` - Generates an alpha-numeric string (based on an incrementing value).
 - ``CUSTOM`` - Defers generation to a AbstractIdGenerator implementation specified in the ``class`` option.
 - ``INCREMENT`` - Uses another collection to auto increment an integer identifier.
@@ -506,7 +506,7 @@ class:
         public function convertToDatabaseValue($value)
         {
             // This is called to convert a PHP value to its Mongo equivalent
-            return new \MongoDate($value);
+            return new \MongoDB\BSON\UTCDateTime($value);
         }
     }
 

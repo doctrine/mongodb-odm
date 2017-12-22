@@ -22,11 +22,11 @@ class GH909Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $groups = $user->getGroups();
         $this->assertCount(2, $groups);
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $user->addGroup(new Group('Group C'));
         $this->assertCount(3, $groups);
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $this->dm->persist($user);
         $this->dm->flush();
@@ -60,11 +60,11 @@ class GH909Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $phoneNumbers = $user->getPhoneNumbers();
         $this->assertCount(2, $phoneNumbers);
-        $this->assertFalse($phoneNumbers->isInitialized());
+        $this->assertTrue($phoneNumbers->isInitialized());
 
         $user->addPhoneNumber(new Phonenumber('333-333-3333'));
         $this->assertCount(3, $phoneNumbers);
-        $this->assertFalse($phoneNumbers->isInitialized());
+        $this->assertTrue($phoneNumbers->isInitialized());
 
         $this->dm->persist($user);
         $this->dm->flush();

@@ -12,7 +12,7 @@ class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(User::class);
 
         $dateTime = new \DateTimeImmutable('2000-01-01T00:00Z');
-        $mongoDate = new \MongoDate($dateTime->format('U'), $dateTime->format('u'));
+        $mongoDate = new \MongoDB\BSON\UTCDateTime((int) $dateTime->format('Uv'));
         $stage = $builder
             ->replaceRoot()
                 ->field('isToday')
@@ -31,7 +31,7 @@ class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(User::class);
 
         $dateTime = new \DateTimeImmutable('2000-01-01T00:00Z');
-        $mongoDate = new \MongoDate($dateTime->format('U'), $dateTime->format('u'));
+        $mongoDate = new \MongoDB\BSON\UTCDateTime((int) $dateTime->format('Uv'));
         $stage = $builder
             ->replaceRoot(
                 $builder->expr()

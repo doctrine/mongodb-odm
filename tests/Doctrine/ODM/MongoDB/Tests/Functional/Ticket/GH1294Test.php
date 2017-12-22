@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH1294Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function testMongoRegexSearchOnIdentifierWithUuidStrategy()
+    public function testRegexSearchOnIdentifierWithUuidStrategy()
     {
         $userClass = __NAMESPACE__ . '\GH1294User';
 
@@ -26,12 +26,12 @@ class GH1294Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder($userClass);
 
         $res = $qb->field('id')
-            ->equals(new \MongoRegex("/^bbb.*$/i"))
+            ->equals(new \MongoDB\BSON\Regex("^bbb.*$", 'i'))
             ->getQueryArray();
 
-        $this->assertInstanceOf(\MongoRegex::class, $res['_id']);
-        $this->assertEquals('^bbb.*$', $res['_id']->regex);
-        $this->assertEquals('i', $res['_id']->flags);
+        $this->assertInstanceOf(\MongoDB\BSON\Regex::class, $res['_id']);
+        $this->assertEquals('^bbb.*$', $res['_id']->getPattern());
+        $this->assertEquals('i', $res['_id']->getFlags());
     }
 }
 

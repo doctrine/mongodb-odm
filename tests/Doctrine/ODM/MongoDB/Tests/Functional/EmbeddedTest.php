@@ -22,7 +22,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testSetEmbeddedToNull()
     {
         $user = new User();
-        $user->setId((string) new \MongoId());
+        $user->setId((string) new \MongoDB\BSON\ObjectId());
         $user->setUsername('jwage');
         $user->setAddress(null);
 
@@ -470,7 +470,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testChangeEmbedOneDocumentId()
     {
-        $originalId = (string) new \MongoId();
+        $originalId = (string) new \MongoDB\BSON\ObjectId();
 
         $test = new ChangeEmbeddedIdTest();
         $test->embed = new EmbeddedDocumentWithId();
@@ -479,7 +479,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->flush();
 
-        $newId = (string) new \MongoId();
+        $newId = (string) new \MongoDB\BSON\ObjectId();
 
         $test->embed->id = $newId;
 
@@ -493,7 +493,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testChangeEmbedManyDocumentId()
     {
-        $originalId = (string) new \MongoId();
+        $originalId = (string) new \MongoDB\BSON\ObjectId();
 
         $test = new ChangeEmbeddedIdTest();
         $test->embedMany[] = new EmbeddedDocumentWithId();
@@ -502,7 +502,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->dm->flush();
 
-        $newId = (string) new \MongoId();
+        $newId = (string) new \MongoDB\BSON\ObjectId();
 
         $test->embedMany[0]->id = $newId;
 
@@ -516,7 +516,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbeddedDocumentsWithSameIdAreNotSameInstance()
     {
-        $originalId = (string) new \MongoId();
+        $originalId = (string) new \MongoDB\BSON\ObjectId();
 
         $test = new ChangeEmbeddedIdTest();
         $test->embed = new EmbeddedDocumentWithId();
@@ -538,7 +538,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test1 = new ChangeEmbeddedIdTest();
 
         $embedded = new EmbeddedDocumentWithId();
-        $embedded->id = (string) new \MongoId();;
+        $embedded->id = (string) new \MongoDB\BSON\ObjectId();
         $test1->embedMany = array($embedded);
 
         $this->dm->persist($test1);
@@ -569,7 +569,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test2 = new ChangeEmbeddedIdTest();
 
         $embedded = new EmbeddedDocumentWithId();
-        $embedded->id = (string) new \MongoId();
+        $embedded->id = (string) new \MongoDB\BSON\ObjectId();
 
         $test1->embed = $embedded;
         $test2->embed = $embedded;
@@ -592,7 +592,7 @@ class EmbeddedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test1 = new ChangeEmbeddedWithNameAnnotationTest();
 
         $embedded = new EmbeddedDocumentWithId();
-        $embedded->id = (string) new \MongoId();
+        $embedded->id = (string) new \MongoDB\BSON\ObjectId();
 
         $firstEmbedded = new EmbedDocumentWithAnotherEmbed();
         $firstEmbedded->embed = $embedded;

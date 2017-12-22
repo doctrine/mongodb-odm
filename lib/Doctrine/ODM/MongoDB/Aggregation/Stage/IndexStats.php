@@ -17,26 +17,25 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB;
+namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
-use Doctrine\MongoDB\CursorInterface;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
- * EagerCursor wraps a Cursor instance and fetches all of its results upon
- * initialization.
+ * Fluent interface for adding a $indexStats stage to an aggregation pipeline.
  *
- * @since  1.0
- * @deprecated Deprecated in favor of using Cursor; will be removed in 2.0
+ * @author alcaeus <alcaeus@alcaeus.org>
+ * @since 1.3
  */
-class EagerCursor extends Cursor
+class IndexStats extends Stage
 {
-    public function __construct(CursorInterface $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class)
+    /**
+     * {@inheritdoc}
+     */
+    public function getExpression()
     {
-        @trigger_error(
-            sprintf('%s is deprecated - use %s instead.', __CLASS__, Cursor::class),
-            E_USER_DEPRECATED
-        );
-        parent::__construct($baseCursor, $unitOfWork, $class);
+        return [
+            '$indexStats' => new \stdClass()
+        ];
     }
 }

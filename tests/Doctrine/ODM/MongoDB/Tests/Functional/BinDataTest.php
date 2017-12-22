@@ -18,21 +18,21 @@ class BinDataTest extends BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(get_class($test))->findOne(array());
-        $this->assertInstanceOf('MongoBinData', $check[$field]);
-        $this->assertEquals($type, $check[$field]->type);
-        $this->assertEquals($data, $check[$field]->bin);
+        $this->assertInstanceOf(\MongoDB\BSON\Binary::class, $check[$field]);
+        $this->assertEquals($type, $check[$field]->getType());
+        $this->assertEquals($data, $check[$field]->getData());
     }
 
     public function provideData()
     {
         return array(
-            array('bin', 'test', \MongoBinData::GENERIC),
-            array('binFunc', 'test', \MongoBinData::FUNC),
-            array('binByteArray', 'test', \MongoBinData::BYTE_ARRAY),
-            array('binUUID', 'testtesttesttest', \MongoBinData::UUID),
-            array('binUUIDRFC4122', '1234567890ABCDEF', \MongoBinData::UUID_RFC4122),
-            array('binMD5', 'test', \MongoBinData::MD5),
-            array('binCustom', 'test', \MongoBinData::CUSTOM),
+            array('bin', 'test', \MongoDB\BSON\Binary::TYPE_GENERIC),
+            array('binFunc', 'test', \MongoDB\BSON\Binary::TYPE_FUNCTION),
+            array('binByteArray', 'test', \MongoDB\BSON\Binary::TYPE_OLD_BINARY),
+            array('binUUID', 'testtesttesttest', \MongoDB\BSON\Binary::TYPE_OLD_UUID),
+            array('binUUIDRFC4122', '1234567890ABCDEF', \MongoDB\BSON\Binary::TYPE_UUID),
+            array('binMD5', 'test', \MongoDB\BSON\Binary::TYPE_MD5),
+            array('binCustom', 'test', \MongoDB\BSON\Binary::TYPE_USER_DEFINED),
         );
     }
 }

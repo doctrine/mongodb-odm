@@ -29,9 +29,6 @@ First, setup some documents like the following:
 
             /** @EmbedOne(targetDocument="Coordinates") */
             public $coordinates;
-
-            /** @Distance */
-            public $distance;
         }
     
         /** @EmbeddedDocument */
@@ -75,42 +72,6 @@ and latitude with the ``near($longitude, $latitude)`` method:
         ->execute();
 
 .. _geonear:
-
-GeoNear Command
----------------
-
-You can also execute the `geoNear command`_ using the query builder's
-``geoNear()`` method. Additional builder methods can be used to set options for
-this command (e.g. ``distanceMultipler()``, ``maxDistance()``, ``spherical()``).
-Unlike ``near()``, which uses a query operator, ``geoNear()`` does not require
-the location field to be specified in the builder, as MongoDB will use the
-single geospatial index for the collection. Documents will be returned in order
-of nearest to farthest.
-
-.. code-block:: php
-
-    <?php
-
-    $cities = $this->dm->createQuery('City')
-        ->geoNear(-120, 40)
-        ->spherical(true)
-        // Convert radians to kilometers (use 3963.192 for miles)
-        ->distanceMultiplier(6378.137)
-        ->execute();
-
-If the model has a property mapped with :ref:`@Distance <annotation_distance>`,
-that field will be set with the calculated distance between the document and the
-query coordinates.
-
-.. code-block:: php
-
-    <?php
-
-    foreach ($cities as $city) {
-        printf("%s is %f kilometers away.\n", $city->name, $city->distance);
-    }
-
-.. _`geoNear command`: https://docs.mongodb.com/manual/reference/command/geoNear/
 
 Within Box
 ----------
