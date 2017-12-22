@@ -22,6 +22,9 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use MongoDB\Driver\Exception\RuntimeException;
+use MongoDB\Driver\WriteConcern;
+use MongoDB\Model\IndexInfo;
 
 class SchemaManager
 {
@@ -100,13 +103,13 @@ class SchemaManager
 
         $documentIndexes = $this->getDocumentIndexes($documentName);
         $collection = $this->dm->getDocumentCollection($documentName);
-        $mongoIndexes = $collection->getIndexInfo();
+        $mongoIndexes = iterator_to_array($collection->listIndexes());
 
         /* Determine which Mongo indexes should be deleted. Exclude the ID index
          * and those that are equivalent to any in the class metadata.
          */
         $self = $this;
-        $mongoIndexes = array_filter($mongoIndexes, function ($mongoIndex) use ($documentIndexes, $self) {
+        $mongoIndexes = array_filter($mongoIndexes, function (IndexInfo $mongoIndex) use ($documentIndexes, $self) {
             if ('_id_' === $mongoIndex['name']) {
                 return false;
             }
@@ -122,15 +125,11 @@ class SchemaManager
 
         // Delete indexes that do not exist in class metadata
         foreach ($mongoIndexes as $mongoIndex) {
-            if (isset($mongoIndex['name'])) {
-                /* Note: MongoCollection::deleteIndex() cannot delete
-                 * custom-named indexes, so use the deleteIndexes command.
-                 */
-                $collection->getDatabase()->command(array(
-                    'deleteIndexes' => $collection->getName(),
-                    'index' => $mongoIndex['name'],
-                ));
+            if (! isset($mongoIndex['name'])) {
+                continue;
             }
+
+            $collection->dropIndex($mongoIndex['name']);
         }
 
         $this->ensureDocumentIndexes($documentName, $timeout);
@@ -254,20 +253,11 @@ class SchemaManager
                 $keys = $index['keys'];
                 $options = $index['options'];
 
-                if ( ! isset($options['safe']) && ! isset($options['w'])) {
-                    $options['w'] = 1;
-                }
-
-                if (isset($options['safe']) && ! isset($options['w'])) {
-                    $options['w'] = is_bool($options['safe']) ? (integer) $options['safe'] : $options['safe'];
-                    unset($options['safe']);
-                }
-
                 if ( ! isset($options['timeout']) && isset($timeout)) {
                     $options['timeout'] = $timeout;
                 }
 
-                $collection->ensureIndex($keys, $options);
+                $collection->createIndex($keys, $options);
             }
         }
     }
@@ -298,7 +288,7 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
-        $this->dm->getDocumentCollection($documentName)->deleteIndexes();
+        $this->dm->getDocumentCollection($documentName)->dropIndexes();
     }
 
     /**
@@ -328,18 +318,13 @@ class SchemaManager
             throw new \InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
         }
 
-        if ($class->isFile()) {
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.files');
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.chunks');
-
-            return;
-        }
-
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
-            $class->getCollectionCapped(),
-            $class->getCollectionSize(),
-            $class->getCollectionMax()
+            [
+                'capped' => $class->getCollectionCapped(),
+                'size' => $class->getCollectionSize(),
+                'max' => $class->getCollectionMax(),
+            ]
         );
     }
 
@@ -458,7 +443,7 @@ class SchemaManager
      * the unique index. Additionally, the background option is only
      * relevant to index creation and is not considered.
      *
-     * @param array $mongoIndex Mongo index data.
+     * @param array|IndexInfo $mongoIndex Mongo index data.
      * @param array $documentIndex Document index data.
      * @return bool True if the indexes are equivalent, otherwise false.
      */
@@ -547,22 +532,29 @@ class SchemaManager
 
         $try = 0;
         do {
-            $result = $this->runShardCollectionCommand($documentName);
-            $done = true;
+            try {
+                $result = $this->runShardCollectionCommand($documentName);
+                $done = true;
 
-            // Need to check error message because MongoDB 3.0 does not return a code for this error
-            if ($result['ok'] != 1 && strpos($result['errmsg'], 'please create an index that starts') !== false) {
-                // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
-                // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
-                if (isset($result['proposedKey'])) {
-                    $key = $result['proposedKey'];
-                } else {
-                    $key = $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
+                // Need to check error message because MongoDB 3.0 does not return a code for this error
+                if ($result['ok'] != 1 && strpos($result['errmsg'], 'please create an index that starts') !== false) {
+                    // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
+                    // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
+                    if (isset($result['proposedKey'])) {
+                        $key = $result['proposedKey'];
+                    } else {
+                        $key = $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
+                    }
+
+                    $this->dm->getDocumentCollection($documentName)->ensureIndex($key, $indexOptions);
+                    $done = false;
+                }
+            } catch (RuntimeException $e) {
+                if ($e->getCode() === 20 || $e->getMessage() == 'already sharded') {
+                    return;
                 }
 
-                $this->dm->getDocumentCollection($documentName)->ensureIndex($key, $indexOptions);
-                $done = false;
-                $try++;
+                throw $e;
             }
         } while (! $done && $try < 2);
 
@@ -584,17 +576,16 @@ class SchemaManager
      */
     public function enableShardingForDbByDocumentName($documentName)
     {
-        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
-        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
-        $result = $adminDb->command(array('enableSharding' => $dbName));
+        $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
+        $adminDb = $this->dm->getClient()->selectDatabase('admin');
 
-        // Error code is only available with MongoDB 3.2. MongoDB 3.0 only returns a message
-        // Thus, check code if it exists and fall back on error message
-        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 23) || $result['errmsg'] == 'already enabled') {
-            return;
+        try {
+            $adminDb->command(array('enableSharding' => $dbName));
+        } catch (RuntimeException $e) {
+            if ($e->getCode() !== 23 || $e->getMessage() === 'already enabled') {
+                throw MongoDBException::failedToEnableSharding($dbName, $e->getMessage());
+            }
         }
-
-        throw MongoDBException::failedToEnableSharding($dbName, $result['errmsg']);
     }
 
     /**
@@ -605,16 +596,16 @@ class SchemaManager
     private function runShardCollectionCommand($documentName)
     {
         $class = $this->dm->getClassMetadata($documentName);
-        $dbName = $this->dm->getDocumentDatabase($documentName)->getName();
+        $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $shardKey = $class->getShardKey();
-        $adminDb = $this->dm->getConnection()->selectDatabase('admin');
+        $adminDb = $this->dm->getClient()->selectDatabase('admin');
 
         $result = $adminDb->command(
             array(
                 'shardCollection' => $dbName . '.' . $class->getCollection(),
                 'key'             => $shardKey['keys']
             )
-        );
+        )->toArray()[0];
 
         return $result;
     }

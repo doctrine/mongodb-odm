@@ -29,5 +29,5 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class BinDataMD5Type extends BinDataType
 {
-    protected $binDataType = \MongoBinData::MD5;
+    protected $binDataType = \MongoDB\BSON\Binary::TYPE_MD5;
 }

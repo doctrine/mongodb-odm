@@ -20,8 +20,8 @@
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
-use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
@@ -30,7 +30,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 /**
  * Fluent interface for building aggregation pipelines.
  */
-class Lookup extends BaseStage\Lookup
+class Lookup extends Stage
 {
     /**
      * @var DocumentManager
@@ -48,6 +48,26 @@ class Lookup extends BaseStage\Lookup
     private $targetClass;
 
     /**
+     * @var string
+     */
+    private $from;
+
+    /**
+     * @var string
+     */
+    private $localField;
+
+    /**
+     * @var string
+     */
+    private $foreignField;
+
+    /**
+     * @var string
+     */
+    private $as;
+
+    /**
      * @param Builder $builder
      * @param string $from
      * @param DocumentManager $documentManager
@@ -55,14 +75,39 @@ class Lookup extends BaseStage\Lookup
      */
     public function __construct(Builder $builder, $from, DocumentManager $documentManager, ClassMetadata $class)
     {
+        parent::__construct($builder);
+
         $this->dm = $documentManager;
         $this->class = $class;
 
-        parent::__construct($builder, $from);
+        $this->from($from);
     }
 
     /**
+     * Specifies the name of the new array field to add to the input documents.
+     *
+     * The new array field contains the matching documents from the from
+     * collection. If the specified name already exists in the input document,
+     * the existing field is overwritten.
+     *
+     * @param string $alias
+     *
+     * @return $this
+     */
+    public function alias($alias)
+    {
+        $this->as = $alias;
+
+        return $this;
+    }
+
+    /**
+     * Specifies the collection or field name in the same database to perform the join with.
+     *
+     * The from collection cannot be sharded.
+     *
      * @param string $from
+     *
      * @return $this
      */
     public function from($from)
@@ -80,14 +125,76 @@ class Lookup extends BaseStage\Lookup
         try {
             $this->targetClass = $this->dm->getClassMetadata($from);
         } catch (BaseMappingException $e) {
-            return parent::from($from);
+            $this->from = $from;
+            return $this;
         }
 
         if ($this->targetClass->isSharded()) {
             throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
         }
 
-        return parent::from($this->targetClass->getCollection());
+        $this->from = $this->targetClass->getCollection();
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExpression()
+    {
+        return [
+            '$lookup' => [
+                'from' => $this->from,
+                'localField' => $this->localField,
+                'foreignField' => $this->foreignField,
+                'as' => $this->as,
+            ]
+        ];
+    }
+
+    /**
+     * Specifies the field from the documents input to the $lookup stage.
+     *
+     * $lookup performs an equality match on the localField to the foreignField
+     * from the documents of the from collection. If an input document does not
+     * contain the localField, the $lookup treats the field as having a value of
+     * null for matching purposes.
+     *
+     * @param string $localField
+     *
+     * @return $this
+     */
+    public function localField($localField)
+    {
+        $this->localField = $this->prepareFieldName($localField, $this->class);
+        return $this;
+    }
+
+    /**
+     * Specifies the field from the documents in the from collection.
+     *
+     * $lookup performs an equality match on the foreignField to the localField
+     * from the input documents. If a document in the from collection does not
+     * contain the foreignField, the $lookup treats the value as null for
+     * matching purposes.
+     *
+     * @param string $foreignField
+     *
+     * @return $this
+     */
+    public function foreignField($foreignField)
+    {
+        $this->foreignField = $this->prepareFieldName($foreignField, $this->targetClass);
+        return $this;
+    }
+
+    protected function prepareFieldName($fieldName, ClassMetadata $class = null)
+    {
+        if ( ! $class) {
+            return $fieldName;
+        }
+
+        return $this->getDocumentPersister($class)->prepareFieldName($fieldName);
     }
 
     /**
@@ -107,7 +214,7 @@ class Lookup extends BaseStage\Lookup
             throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
         }
 
-        parent::from($this->targetClass->getCollection());
+        $this->from = $this->targetClass->getCollection();
 
         if ($referenceMapping['isOwningSide']) {
             switch ($referenceMapping['storeAs']) {
@@ -117,7 +224,7 @@ class Lookup extends BaseStage\Lookup
                     break;
 
                 default:
-                   throw MappingException::cannotLookupDbRefReference($this->class->name, $fieldName);
+                    throw MappingException::cannotLookupDbRefReference($this->class->name, $fieldName);
             }
 
             $this
@@ -145,31 +252,6 @@ class Lookup extends BaseStage\Lookup
         }
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function localField($localField)
-    {
-        return parent::localField($this->prepareFieldName($localField, $this->class));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function foreignField($foreignField)
-    {
-        return parent::foreignField($this->prepareFieldName($foreignField, $this->targetClass));
-    }
-
-    protected function prepareFieldName($fieldName, ClassMetadata $class = null)
-    {
-        if ( ! $class) {
-            return $fieldName;
-        }
-
-        return $this->getDocumentPersister($class)->prepareFieldName($fieldName);
     }
 
     /**

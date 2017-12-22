@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use MongoDB\Driver\Exception\InvalidArgumentException;
+
 /**
  * The Id type.
  *
@@ -31,11 +33,11 @@ class IdType extends Type
         if ($value === null) {
             return null;
         }
-        if ( ! $value instanceof \MongoId) {
+        if ( ! $value instanceof \MongoDB\BSON\ObjectId) {
             try {
-                $value = new \MongoId($value);
-            } catch (\MongoException $e) {
-                $value = new \MongoId();
+                $value = new \MongoDB\BSON\ObjectId($value);
+            } catch (InvalidArgumentException $e) {
+                $value = new \MongoDB\BSON\ObjectId();
             }
         }
         return $value;
@@ -43,16 +45,16 @@ class IdType extends Type
 
     public function convertToPHPValue($value)
     {
-        return $value instanceof \MongoId ? (string) $value : $value;
+        return $value instanceof \MongoDB\BSON\ObjectId ? (string) $value : $value;
     }
 
     public function closureToMongo()
     {
-        return '$return = new MongoId($value);';
+        return '$return = new MongoDB\BSON\ObjectId($value);';
     }
 
     public function closureToPHP()
     {
-        return '$return = $value instanceof \MongoId ? (string) $value : $value;';
+        return '$return = $value instanceof \MongoDB\BSON\ObjectId ? (string) $value : $value;';
     }
 }

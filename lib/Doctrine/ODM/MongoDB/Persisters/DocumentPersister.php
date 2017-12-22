@@ -21,10 +21,11 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\MongoDB\CursorInterface;
-use Doctrine\MongoDB\EagerCursor;
-use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
+use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -39,6 +40,9 @@ use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use MongoDB\Collection;
+use MongoDB\Driver\Cursor;
+use MongoDB\Driver\Exception\Exception as DriverException;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -85,7 +89,7 @@ class DocumentPersister
     /**
      * The MongoCollection instance for this document.
      *
-     * @var \MongoCollection
+     * @var Collection
      */
     private $collection;
 
@@ -243,19 +247,19 @@ class DocumentPersister
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 } elseif ($versionMapping['type'] === 'date') {
                     $nextVersionDateTime = new \DateTime();
-                    $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
+                    $nextVersion = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
                 $data[$versionMapping['name']] = $nextVersion;
             }
 
-            $inserts[$oid] = $data;
+            $inserts[] = $data;
         }
 
         if ($inserts) {
             try {
-                $this->collection->batchInsert($inserts, $options);
-            } catch (\MongoException $e) {
+                $this->collection->insertMany($inserts, $options);
+            } catch (DriverException $e) {
                 $this->queuedInserts = array();
                 throw $e;
             }
@@ -321,7 +325,7 @@ class DocumentPersister
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             } elseif ($versionMapping['type'] === 'date') {
                 $nextVersionDateTime = new \DateTime();
-                $nextVersion = new \MongoDate($nextVersionDateTime->getTimestamp());
+                $nextVersion = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
             }
             $data['$set'][$versionMapping['name']] = $nextVersion;
@@ -355,7 +359,7 @@ class DocumentPersister
         }
 
         try {
-            $this->collection->update($criteria, $data, $options);
+            $this->collection->updateOne($criteria, $data, $options);
             return;
         } catch (\MongoCursorException $e) {
             if (empty($retry) || strpos($e->getMessage(), 'Mod on _id not allowed') === false) {
@@ -363,7 +367,7 @@ class DocumentPersister
             }
         }
 
-        $this->collection->update($criteria, array('$set' => new \stdClass), $options);
+        $this->collection->updateOne($criteria, array('$set' => new \stdClass), $options);
     }
 
     /**
@@ -401,8 +405,8 @@ class DocumentPersister
                 $query[$versionMapping['name']] = $currentVersion;
             } elseif ($versionMapping['type'] === 'date') {
                 $nextVersion = new \DateTime();
-                $update['$set'][$versionMapping['name']] = new \MongoDate($nextVersion->getTimestamp());
-                $query[$versionMapping['name']] = new \MongoDate($currentVersion->getTimestamp());
+                $update['$set'][$versionMapping['name']] = Type::convertPHPToDatabaseValue($nextVersion);
+                $query[$versionMapping['name']] = Type::convertPHPToDatabaseValue($currentVersion);
             }
         }
 
@@ -421,9 +425,9 @@ class DocumentPersister
 
             $options = $this->getWriteOptions($options);
 
-            $result = $this->collection->update($query, $update, $options);
+            $result = $this->collection->updateOne($query, $update, $options);
 
-            if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
+            if (($this->class->isVersioned || $this->class->isLockable) && $result->getModifiedCount() !== 1) {
                 throw LockException::lockFailed($document);
             } elseif ($this->class->isVersioned) {
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
@@ -450,9 +454,9 @@ class DocumentPersister
 
         $options = $this->getWriteOptions($options);
 
-        $result = $this->collection->remove($query, $options);
+        $result = $this->collection->deleteOne($query, $options);
 
-        if (($this->class->isVersioned || $this->class->isLockable) && ! $result['n']) {
+        if (($this->class->isVersioned || $this->class->isLockable) && ! $result->getDeletedCount()) {
             throw LockException::lockFailed($document);
         }
     }
@@ -460,12 +464,9 @@ class DocumentPersister
     /**
      * Refreshes a managed document.
      *
-     * @param string $id
      * @param object $document The document to refresh.
-     *
-     * @deprecated The first argument is deprecated.
      */
-    public function refresh($id, $document)
+    public function refresh($document)
     {
         $query = $this->getQueryForDocument($document);
         $data = $this->collection->findOne($query);
@@ -476,8 +477,8 @@ class DocumentPersister
     /**
      * Finds a document by a set of criteria.
      *
-     * If a scalar or MongoId is provided for $criteria, it will be used to
-     * match an _id value.
+     * If a scalar or MongoDB\BSON\ObjectId is provided for $criteria, it will
+     * be used to match an _id value.
      *
      * @param mixed   $criteria Query criteria
      * @param object  $document Document to load the data into. If not specified, a new document is created.
@@ -491,7 +492,7 @@ class DocumentPersister
     public function load($criteria, $document = null, array $hints = array(), $lockMode = 0, array $sort = null)
     {
         // TODO: remove this
-        if ($criteria === null || is_scalar($criteria) || $criteria instanceof \MongoId) {
+        if ($criteria === null || is_scalar($criteria) || $criteria instanceof \MongoDB\BSON\ObjectId) {
             $criteria = array('_id' => $criteria);
         }
 
@@ -499,13 +500,11 @@ class DocumentPersister
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
         $criteria = $this->addFilterToPreparedQuery($criteria);
 
-        $cursor = $this->collection->find($criteria);
-
+        $options = [];
         if (null !== $sort) {
-            $cursor->sort($this->prepareSortOrProjection($sort));
+            $options['sort'] = $this->prepareSort($sort);
         }
-
-        $result = $cursor->getSingleResult();
+        $result = $this->collection->findOne($criteria, $options);
 
         if ($this->class->isLockable) {
             $lockMapping = $this->class->fieldMappings[$this->class->lockField];
@@ -524,7 +523,7 @@ class DocumentPersister
      * @param array        $sort     Sort array for Cursor::sort()
      * @param integer|null $limit    Limit for Cursor::limit()
      * @param integer|null $skip     Skip for Cursor::skip()
-     * @return Cursor
+     * @return Iterator
      */
     public function loadAll(array $criteria = array(), array $sort = null, $limit = null, $skip = null)
     {
@@ -532,20 +531,21 @@ class DocumentPersister
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
         $criteria = $this->addFilterToPreparedQuery($criteria);
 
-        $baseCursor = $this->collection->find($criteria);
-        $cursor = $this->wrapCursor($baseCursor);
-
+        $options = [];
         if (null !== $sort) {
-            $cursor->sort($sort);
+            $options['sort'] = $this->prepareSort($sort);
         }
 
         if (null !== $limit) {
-            $cursor->limit($limit);
+            $options['limit'] = $limit;
         }
 
         if (null !== $skip) {
-            $cursor->skip($skip);
+            $options['skip'] = $skip;
         }
+
+        $baseCursor = $this->collection->find($criteria, $options);
+        $cursor = $this->wrapCursor($baseCursor);
 
         return $cursor;
     }
@@ -593,12 +593,12 @@ class DocumentPersister
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
      *
-     * @param CursorInterface $baseCursor
-     * @return Cursor
+     * @param Cursor $baseCursor
+     * @return Iterator
      */
-    private function wrapCursor(CursorInterface $baseCursor)
+    private function wrapCursor(Cursor $baseCursor): Iterator
     {
-        return new Cursor($baseCursor, $this->dm->getUnitOfWork(), $this->class);
+        return new CachingIterator(new HydratingIterator($baseCursor, $this->dm->getUnitOfWork(), $this->class));
     }
 
     /**
@@ -624,7 +624,7 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $criteria = array('_id' => $this->class->getDatabaseIdentifierValue($id));
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-        $this->collection->update($criteria, array('$set' => array($lockMapping['name'] => $lockMode)));
+        $this->collection->updateOne($criteria, array('$set' => array($lockMapping['name'] => $lockMode)));
         $this->class->reflFields[$this->class->lockField]->setValue($document, $lockMode);
     }
 
@@ -638,7 +638,7 @@ class DocumentPersister
         $id = $this->uow->getDocumentIdentifier($document);
         $criteria = array('_id' => $this->class->getDatabaseIdentifierValue($id));
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-        $this->collection->update($criteria, array('$unset' => array($lockMapping['name'] => true)));
+        $this->collection->updateOne($criteria, array('$unset' => array($lockMapping['name'] => true)));
         $this->class->reflFields[$this->class->lockField]->setValue($document, null);
     }
 
@@ -732,8 +732,8 @@ class DocumentPersister
 
         foreach ($collection->getMongoData() as $key => $reference) {
             $className = $this->uow->getClassNameForAssociation($mapping, $reference);
-            $mongoId = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
-            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
+            $identifier = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
+            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($identifier);
 
             // create a reference to the class and id
             $reference = $this->dm->getReference($className, $id);
@@ -749,7 +749,7 @@ class DocumentPersister
 
             // only query for the referenced object if it is not already initialized or the collection is sorted
             if (($reference instanceof Proxy && ! $reference->__isInitialized__) || $sorted) {
-                $groupedIds[$className][] = $mongoId;
+                $groupedIds[$className][] = $identifier;
             }
         }
         foreach ($groupedIds as $className => $ids) {
@@ -761,23 +761,23 @@ class DocumentPersister
                 isset($mapping['criteria']) ? $mapping['criteria'] : array()
             );
             $criteria = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
-            $cursor = $mongoCollection->find($criteria);
+
+            $options = [];
             if (isset($mapping['sort'])) {
-                $cursor->sort($mapping['sort']);
+                $options['sort'] = $this->prepareSort($mapping['sort']);
             }
             if (isset($mapping['limit'])) {
-                $cursor->limit($mapping['limit']);
+                $options['limit'] = $mapping['limit'];
             }
             if (isset($mapping['skip'])) {
-                $cursor->skip($mapping['skip']);
-            }
-            if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-                $cursor->slaveOkay(true);
+                $options['skip'] = $mapping['skip'];
             }
             if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-                $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+                $options['readPreference'] = $hints[Query::HINT_READ_PREFERENCE];
             }
-            $documents = $cursor->toArray(false);
+
+            $cursor = $mongoCollection->find($criteria, $options);
+            $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById($documentData['_id'], $class);
                 if ($document instanceof Proxy && ! $document->__isInitialized()) {
@@ -795,7 +795,7 @@ class DocumentPersister
     private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection)
     {
         $query = $this->createReferenceManyInverseSideQuery($collection);
-        $documents = $query->execute()->toArray(false);
+        $documents = $query->execute()->toArray();
         foreach ($documents as $key => $document) {
             $collection->add($document);
         }
@@ -834,12 +834,11 @@ class DocumentPersister
         if (isset($mapping['skip'])) {
             $qb->skip($mapping['skip']);
         }
-        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $qb->slaveOkay(true);
-        }
+
         if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-            $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+            $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE]);
         }
+
         foreach ($mapping['prime'] as $field) {
             $qb->field($field)->prime(true);
         }
@@ -851,7 +850,7 @@ class DocumentPersister
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
         $mapping = $collection->getMapping();
-        $documents = $cursor->toArray(false);
+        $documents = $cursor->toArray();
         foreach ($documents as $key => $obj) {
             if (CollectionHelper::isHash($mapping['strategy'])) {
                 $collection->set($key, $obj);
@@ -864,58 +863,38 @@ class DocumentPersister
     /**
      * @param PersistentCollectionInterface $collection
      *
-     * @return CursorInterface
+     * @return \Iterator
      */
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection)
     {
-        $hints = $collection->getHints();
         $mapping = $collection->getMapping();
         $repositoryMethod = $mapping['repositoryMethod'];
         $cursor = $this->dm->getRepository($mapping['targetDocument'])
             ->$repositoryMethod($collection->getOwner());
 
-        if ( ! $cursor instanceof CursorInterface) {
-            throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return a CursorInterface");
+        if ( ! $cursor instanceof Iterator) {
+            throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return an iterable object");
         }
 
         if (!empty($mapping['prime'])) {
-            if (!$cursor instanceof Cursor) {
-                throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return a Cursor to allow for priming");
-            }
-
             $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
             $primers = array_combine($mapping['prime'], array_fill(0, count($mapping['prime']), true));
+            $class = $this->dm->getClassMetadata($mapping['targetDocument']);
 
-            $cursor->enableReferencePriming($primers, $referencePrimer);
-        }
-
-        if (isset($mapping['sort'])) {
-            $cursor->sort($mapping['sort']);
-        }
-        if (isset($mapping['limit'])) {
-            $cursor->limit($mapping['limit']);
-        }
-        if (isset($mapping['skip'])) {
-            $cursor->skip($mapping['skip']);
-        }
-        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $cursor->slaveOkay(true);
-        }
-        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-            $cursor->setReadPreference($hints[Query::HINT_READ_PREFERENCE], $hints[Query::HINT_READ_PREFERENCE_TAGS]);
+            $cursor = new PrimingIterator($cursor, $class, $referencePrimer, $primers, $collection->getHints());
         }
 
         return $cursor;
     }
 
     /**
-     * Prepare a sort or projection array by converting keys, which are PHP
-     * property names, to MongoDB field names.
+     * Prepare a projection array by converting keys, which are PHP property
+     * names, to MongoDB field names.
      *
      * @param array $fields
      * @return array
      */
-    public function prepareSortOrProjection(array $fields)
+    public function prepareProjection(array $fields)
     {
         $preparedFields = array();
 
@@ -924,6 +903,41 @@ class DocumentPersister
         }
 
         return $preparedFields;
+    }
+
+    /**
+     * @param $sort
+     * @return int
+     */
+    private function getSortDirection($sort)
+    {
+        switch (strtolower($sort)) {
+            case 'desc':
+                return -1;
+
+            case 'asc':
+                return 1;
+        }
+
+        return $sort;
+    }
+
+    /**
+     * Prepare a sort specification array by converting keys to MongoDB field
+     * names and changing direction strings to int.
+     *
+     * @param array $fields
+     * @return array
+     */
+    public function prepareSort(array $fields)
+    {
+        $sortFields = [];
+
+        foreach ($fields as $key => $value) {
+            $sortFields[$this->prepareFieldName($key)] = $this->getSortDirection($value);
+        }
+
+        return $sortFields;
     }
 
     /**
@@ -1063,7 +1077,7 @@ class DocumentPersister
                 return [[$fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value)]];
             }
 
-            if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof \MongoId)) {
+            if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof \MongoDB\BSON\ObjectId)) {
                 try {
                     return $this->prepareReference($fieldName, $value, $mapping, $inNewObj);
                 } catch (MappingException $e) {

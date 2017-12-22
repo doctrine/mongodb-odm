@@ -45,22 +45,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
     );
 
     /**
-     * Registers annotation classes to the common registry.
-     *
-     * This method should be called when bootstrapping your application.
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0. Register class loader through AnnotationRegistry::registerLoader instead.
-     */
-    public static function registerAnnotationClasses()
-    {
-        @trigger_error(
-            sprintf('%s is deprecated - register class loader through AnnotationRegistry::registerLoader instead.', __METHOD__),
-            E_USER_DEPRECATED
-        );
-        AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $class)
@@ -92,22 +76,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\InheritanceType) {
                 $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
-                // $fieldName property is deprecated, but fall back for BC
-                if (isset($annot->value)) {
-                    $class->setDiscriminatorField($annot->value);
-                } elseif (isset($annot->name)) {
-                    @trigger_error(
-                        sprintf('Specifying discriminator\'s name through "name" is deprecated - use @DiscriminatorField("%s") instead', $annot->name),
-                        E_USER_DEPRECATED
-                    );
-                    $class->setDiscriminatorField($annot->name);
-                } elseif (isset($annot->fieldName)) {
-                    @trigger_error(
-                        sprintf('Specifying discriminator\'s name through "name" is deprecated - use @DiscriminatorField("%s") instead', $annot->fieldName),
-                        E_USER_DEPRECATED
-                    );
-                    $class->setDiscriminatorField($annot->fieldName);
-                }
+                $class->setDiscriminatorField($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
                 $class->setDiscriminatorMap($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
@@ -153,9 +122,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             foreach ($documentAnnot->indexes as $index) {
                 $this->addIndex($class, $index);
             }
-        }
-        if (isset($documentAnnot->requireIndexes)) {
-            $class->setRequireIndexes($documentAnnot->requireIndexes);
         }
         if (isset($documentAnnot->slaveOkay)) {
             $class->setSlaveOkay($documentAnnot->slaveOkay);
@@ -262,7 +228,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     {
         $keys = array_merge($keys, $index->keys);
         $options = array();
-        $allowed = array('name', 'dropDups', 'background', 'safe', 'unique', 'sparse', 'expireAfterSeconds');
+        $allowed = array('name', 'dropDups', 'background', 'unique', 'sparse', 'expireAfterSeconds');
         foreach ($allowed as $name) {
             if (isset($index->$name)) {
                 $options[$name] = $index->$name;

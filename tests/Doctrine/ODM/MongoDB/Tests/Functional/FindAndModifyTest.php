@@ -10,7 +10,7 @@ class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $coll = $this->dm->getDocumentCollection('Documents\User');
         $docs = array(array('count' => 0), array('count' => 0));
-        $coll->batchInsert($docs);
+        $coll->insertMany($docs);
 
         // test update findAndModify
         $q = $this->dm->createQueryBuilder()
@@ -36,7 +36,7 @@ class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals('jwage', $result->getUsername());
 
         // Test the object was removed
-        $this->assertEquals(1, $this->dm->getDocumentCollection('Documents\User')->find()->count());
+        $this->assertEquals(1, $this->dm->getDocumentCollection(User::class)->count());
     }
 
     public function testFindAndModifyAlt()

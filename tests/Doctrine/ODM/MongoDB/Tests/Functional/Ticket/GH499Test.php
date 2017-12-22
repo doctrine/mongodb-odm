@@ -9,9 +9,9 @@ class GH499Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testSetRefMany()
     {
-        $a = new GH499Document(new \MongoId());
-        $b = new GH499Document(new \MongoId());
-        $c = new GH499Document(new \MongoId());
+        $a = new GH499Document(new \MongoDB\BSON\ObjectId());
+        $b = new GH499Document(new \MongoDB\BSON\ObjectId());
+        $c = new GH499Document(new \MongoDB\BSON\ObjectId());
 
         $a->addRef($b);
         $a->addRef($c);
@@ -24,10 +24,10 @@ class GH499Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH499Document');
 
-        $a = $collection->findOne(array('_id' => new \MongoId($a->getId())));
+        $a = $collection->findOne(array('_id' => new \MongoDB\BSON\ObjectId($a->getId())));
 
-        $this->assertEquals(new \MongoId($b->getId()), $a['refMany'][$b->getId()]);
-        $this->assertEquals(new \MongoId($c->getId()), $a['refMany'][$c->getId()]);
+        $this->assertEquals(new \MongoDB\BSON\ObjectId($b->getId()), $a['refMany'][$b->getId()]);
+        $this->assertEquals(new \MongoDB\BSON\ObjectId($c->getId()), $a['refMany'][$c->getId()]);
     }
 }
 
@@ -37,7 +37,7 @@ class GH499Document
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument="GH499Document", simple=true, strategy="set") */
+    /** @ODM\ReferenceMany(targetDocument="GH499Document", storeAs="id", strategy="set") */
     protected $refMany;
 
     public function __construct($id = null)

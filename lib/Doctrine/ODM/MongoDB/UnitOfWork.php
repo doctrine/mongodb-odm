@@ -24,7 +24,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
-use Doctrine\MongoDB\GridFSFile;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
@@ -627,11 +626,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $value = $refProp->getValue($document);
-            if (isset($mapping['file']) && ! $value instanceof GridFSFile) {
-                $value = new GridFSFile($value);
-                $class->reflFields[$name]->setValue($document, $value);
-                $actualData[$name] = $value;
-            } elseif ((isset($mapping['association']) && $mapping['type'] === 'many')
+            if ((isset($mapping['association']) && $mapping['type'] === 'many')
                 && $value !== null && ! ($value instanceof PersistentCollectionInterface)) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
                 if ( ! $value instanceof Collection) {
@@ -745,13 +740,12 @@ class UnitOfWork implements PropertyChangedListener
 
                 // skip if value has not changed
                 if ($orgValue === $actualValue) {
-                    if ($actualValue instanceof PersistentCollectionInterface) {
-                        if (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue)) {
-                            // consider dirty collections as changed as well
-                            continue;
-                        }
-                    } elseif ( ! (isset($class->fieldMappings[$propName]['file']) && $actualValue->isDirty())) {
-                        // but consider dirty GridFSFile instances as changed
+                    if (!$actualValue instanceof PersistentCollectionInterface) {
+                        continue;
+                    }
+
+                    if (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue)) {
+                        // consider dirty collections as changed as well
                         continue;
                     }
                 }
@@ -812,7 +806,7 @@ class UnitOfWork implements PropertyChangedListener
                     $dbOrgValue = $dateType->convertToDatabaseValue($orgValue);
                     $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
 
-                    if ($dbOrgValue instanceof \MongoDate && $dbActualValue instanceof \MongoDate && $dbOrgValue == $dbActualValue) {
+                    if ($dbOrgValue instanceof \MongoDB\BSON\UTCDateTime && $dbActualValue instanceof \MongoDB\BSON\UTCDateTime && $dbOrgValue == $dbActualValue) {
                         continue;
                     }
                 }
@@ -1096,9 +1090,9 @@ class UnitOfWork implements PropertyChangedListener
                 ));
             }
 
-            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! \MongoId::isValid($idValue)) {
+            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! preg_match('#^[0-9a-f]{24}$#', $idValue)) {
                 throw new \InvalidArgumentException(sprintf(
-                    '%s uses AUTO identifier generation strategy but provided identifier is not valid MongoId.',
+                    '%s uses AUTO identifier generation strategy but provided identifier is not a valid ObjectId.',
                     get_class($document)
                 ));
             }
@@ -2063,8 +2057,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ( ! $class->isEmbeddedDocument) {
             if ($this->getDocumentState($document) == self::STATE_MANAGED) {
-                $id = $class->getDatabaseIdentifierValue($this->documentIdentifiers[$oid]);
-                $this->getDocumentPersister($class->name)->refresh($id, $document);
+                $this->getDocumentPersister($class->name)->refresh($document);
             } else {
                 throw new \InvalidArgumentException('Document is not MANAGED.');
             }
@@ -2830,8 +2823,8 @@ class UnitOfWork implements PropertyChangedListener
      * Registers a document as managed.
      *
      * TODO: This method assumes that $id is a valid PHP identifier for the
-     * document class. If the class expects its database identifier to be a
-     * MongoId, and an incompatible $id is registered (e.g. an integer), the
+     * document class. If the class expects its database identifier to be an
+     * ObjectId, and an incompatible $id is registered (e.g. an integer), the
      * document identifiers map will become inconsistent with the identity map.
      * In the future, we may want to round-trip $id through a PHP and database
      * conversion and throw an exception if it's inconsistent.
@@ -2840,7 +2833,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param array $id The identifier values.
      * @param array $data The original document data.
      */
-    public function registerManaged($document, $id, array $data)
+    public function registerManaged($document, $id, $data)
     {
         $oid = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));

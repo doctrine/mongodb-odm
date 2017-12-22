@@ -84,7 +84,6 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
-        $this->assertEquals(true, $indexes[0]['options']['safe']);
 
         $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UniqueOnDocumentTest');
         $indexes = $class->getIndexes();
@@ -113,7 +112,6 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
-        $this->assertEquals(true, $indexes[0]['options']['safe']);
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
@@ -170,7 +168,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testUniqueIndexOnField()
     {
@@ -178,7 +177,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testUniqueIndexOnDocument()
     {
@@ -186,7 +186,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testIndexesOnDocument()
     {
@@ -194,7 +195,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testMultipleFieldsUniqueIndexOnDocument()
     {
@@ -202,7 +204,8 @@ class IndexesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @expectedException MongoCursorException
+     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
+     * @expectedExceptionMessage duplicate key error collection
      */
     public function testMultipleFieldIndexes()
     {
@@ -229,7 +232,7 @@ class UniqueOnFieldTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") @ODM\UniqueIndex(safe=true) */
+    /** @ODM\Field(type="string") @ODM\UniqueIndex() */
     public $username;
 
     /** @ODM\Field(type="string") */
@@ -297,7 +300,7 @@ class UniqueSparseOnFieldTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") @ODM\UniqueIndex(safe=true, sparse=true) */
+    /** @ODM\Field(type="string") @ODM\UniqueIndex(sparse=true) */
     public $username;
 
     /** @ODM\Field(type="string") */

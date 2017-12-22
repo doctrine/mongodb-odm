@@ -16,7 +16,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'zip' => 'zip',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
 
@@ -29,7 +29,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $document = array('zip' => 'zip');
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
 
@@ -44,7 +44,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'zip' => 'zip',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
 
@@ -58,7 +58,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $document = array('zip' => 'zip');
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
 
@@ -74,7 +74,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testOld' => 'testOld',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
 
@@ -90,7 +90,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'name' => 'Kris Wallsmith',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
 
@@ -103,7 +103,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $document = array('testOld' => null);
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
 
@@ -120,7 +120,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testOlder' => 'testOlder',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
 
@@ -141,7 +141,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testOlder' => 'testOlder',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy(array());
 
@@ -183,7 +183,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testOlder' => 'testOlder',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadChild')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadChild')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadChild')->findOneBy(array());
 
@@ -198,7 +198,7 @@ class AlsoLoadTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'testReallyOldest' => 'testReallyOldest',
         );
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadGrandchild')->insert($document);
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadGrandchild')->insertOne($document);
 
         $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadGrandchild')->findOneBy(array());
 

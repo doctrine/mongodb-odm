@@ -43,7 +43,6 @@ class XmlDriverTest extends AbstractDriverTest
         $classMetadata = new ClassMetadata('TestDocuments\UserNonStringOptions');
         $this->driver->loadMetadataForClass('TestDocuments\UserNonStringOptions', $classMetadata);
 
-        $this->assertTrue($classMetadata->requireIndexes);
         $this->assertFalse($classMetadata->slaveOkay);
 
         $profileMapping = $classMetadata->fieldMappings['profile'];
@@ -51,7 +50,7 @@ class XmlDriverTest extends AbstractDriverTest
         $this->assertTrue($profileMapping['orphanRemoval']);
 
         $profileMapping = $classMetadata->fieldMappings['groups'];
-        $this->assertSame(ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB, $profileMapping['storeAs']);
+        $this->assertSame(ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, $profileMapping['storeAs']);
         $this->assertFalse($profileMapping['orphanRemoval']);
         $this->assertSame(0, $profileMapping['limit']);
         $this->assertSame(2, $profileMapping['skip']);

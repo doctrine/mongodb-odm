@@ -45,7 +45,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 {
     /* The Id generator types. */
     /**
-     * AUTO means Doctrine will automatically create a new \MongoId instance for us.
+     * AUTO means Doctrine will automatically create a new \MongoDB\BSON\ObjectId instance for us.
      */
     const GENERATOR_TYPE_AUTO = 1;
 
@@ -211,18 +211,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $identifier;
 
     /**
-     * READ-ONLY: The field that stores a file reference and indicates the
-     * document is a file and should be stored on the MongoGridFS.
-     */
-    public $file;
-
-    /**
-     * READ-ONLY: The field that stores the calculated distance when performing geo spatial
-     * queries.
-     */
-    public $distance;
-
-    /**
      * READ-ONLY: Whether or not reads for this class are okay to read from a slave.
      *
      * @deprecated in version 1.2 and will be removed in 2.0.
@@ -238,13 +226,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
      */
     public $shardKey;
-
-    /**
-     * READ-ONLY: Whether or not queries on this document should require indexes.
-     *
-     * @deprecated property was deprecated in 1.2 and will be removed in 2.0
-     */
-    public $requireIndexes = false;
 
     /**
      * READ-ONLY: The name of the document class.
@@ -890,25 +871,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Set whether or not queries on this document should require indexes.
-     *
-     * @param bool $requireIndexes
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function setRequireIndexes($requireIndexes)
-    {
-        if ($requireIndexes) {
-            @trigger_error(
-                'requireIndexes was deprecated in version 1.2 and will be removed altogether in 2.0.',
-                E_USER_DEPRECATED
-            );
-        }
-
-        $this->requireIndexes = $requireIndexes;
-    }
-
-    /**
      * Returns the array of indexes for this Document.
      *
      * @return array $indexes The array of indexes.
@@ -1245,56 +1207,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Returns TRUE if this Document is a file to be stored on the MongoGridFS FALSE otherwise.
-     *
-     * @return boolean
-     */
-    public function isFile()
-    {
-        return $this->file ? true : false;
-    }
-
-    /**
-     * Returns the file field name.
-     *
-     * @return string $file The file field name.
-     */
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    /**
-     * Set the field name that stores the grid file.
-     *
-     * @param string $file
-     */
-    public function setFile($file)
-    {
-        $this->file = $file;
-    }
-
-    /**
-     * Returns the distance field name.
-     *
-     * @return string $distance The distance field name.
-     */
-    public function getDistance()
-    {
-        return $this->distance;
-    }
-
-    /**
-     * Set the field name that stores the distance.
-     *
-     * @param string $distance
-     */
-    public function setDistance($distance)
-    {
-        $this->distance = $distance;
-    }
-
-    /**
      * Map a field.
      *
      * @param array $mapping The mapping information.
@@ -1369,19 +1281,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         $mapping['isCascadeMerge'] = in_array('merge', $cascades);
         $mapping['isCascadeDetach'] = in_array('detach', $cascades);
 
-        if (isset($mapping['type']) && $mapping['type'] === 'file') {
-            $mapping['file'] = true;
-        }
-        if (isset($mapping['type']) && $mapping['type'] === 'increment') {
-            $mapping['strategy'] = self::STORAGE_STRATEGY_INCREMENT;
-        }
-        if (isset($mapping['file']) && $mapping['file'] === true) {
-            $this->file = $mapping['fieldName'];
-            $mapping['name'] = 'file';
-        }
-        if (isset($mapping['distance']) && $mapping['distance'] === true) {
-            $this->distance = $mapping['fieldName'];
-        }
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $mapping['name'] = '_id';
             $this->identifier = $mapping['fieldName'];
@@ -1405,16 +1304,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
         if ( ! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
-        }
-
-        // Synchronize the "simple" and "storeAs" mapping information for backwards compatibility
-        if (isset($mapping['simple']) && ($mapping['simple'] === true || $mapping['simple'] === 'true')) {
-            $mapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_ID;
-            @trigger_error('"simple" attribute of a reference is deprecated - use storeAs="id" instead.', E_USER_DEPRECATED);
-        }
-        // Provide the correct value for the "simple" field for backwards compatibility
-        if (isset($mapping['storeAs'])) {
-            $mapping['simple'] = $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID;
         }
 
         if (isset($mapping['reference'])
@@ -1512,7 +1401,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         switch (true) {
             case $mapping['type'] == 'int':
             case $mapping['type'] == 'float':
-            case $mapping['type'] == 'increment':
                 $defaultStrategy = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
                 break;
@@ -1546,18 +1434,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
             throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
         }
-    }
-
-    /**
-     * Map a MongoGridFSFile.
-     *
-     * @param array $mapping The mapping information.
-     */
-    public function mapFile(array $mapping)
-    {
-        $mapping['file'] = true;
-        $mapping['type'] = 'file';
-        $this->mapField($mapping);
     }
 
     /**
@@ -1822,7 +1698,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param object $document
      *
-     * @return \MongoId $id The MongoID object.
+     * @return \MongoDB\BSON\ObjectId $id The ObjectId
      */
     public function getIdentifierObject($document)
     {
@@ -2021,7 +1897,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Checks whether the class will generate a new \MongoId instance for us.
+     * Checks whether the class will generate a new \MongoDB\BSON\ObjectId instance for us.
      *
      * @return boolean TRUE if the class uses the AUTO generator, FALSE otherwise.
      */

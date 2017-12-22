@@ -111,9 +111,6 @@ class YamlDriver extends FileDriver
         if (isset($element['changeTrackingPolicy'])) {
             $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_' . strtoupper($element['changeTrackingPolicy'])));
         }
-        if (isset($element['requireIndexes'])) {
-            $class->setRequireIndexes($element['requireIndexes']);
-        }
         if (isset($element['slaveOkay'])) {
             $class->setSlaveOkay($element['slaveOkay']);
         }
@@ -286,8 +283,7 @@ class YamlDriver extends FileDriver
             'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
             'type'             => $type,
             'reference'        => true,
-            'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false, // deprecated
-            'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'collectionClass'  => isset($reference['collectionClass']) ? $reference['collectionClass'] : null,
             'fieldName'        => $fieldName,

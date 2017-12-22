@@ -31,7 +31,7 @@ class DateType extends Type
      * Supports microseconds
      *
      * @throws InvalidArgumentException if $value is invalid
-     * @param  mixed $value \DateTimeInterface|\MongoDate|int|float
+     * @param  mixed $value \DateTimeInterface|\MongoDB\BSON\UTCDateTime|int|float
      * @return \DateTime
      */
     public static function getDateTime($value)
@@ -41,9 +41,9 @@ class DateType extends Type
 
         if ($value instanceof \DateTimeInterface) {
             return $value;
-        } elseif ($value instanceof \MongoDate) {
-            $microseconds = str_pad($value->usec, 6, '0', STR_PAD_LEFT); // ensure microseconds
-            $datetime = static::craftDateTime($value->sec, $microseconds);
+        } elseif ($value instanceof \MongoDB\BSON\UTCDateTime) {
+            $datetime = $value->toDateTime();
+            $datetime->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         } elseif (is_numeric($value)) {
             $seconds = $value;
             $microseconds = 0;
@@ -82,13 +82,13 @@ class DateType extends Type
 
     public function convertToDatabaseValue($value)
     {
-        if ($value === null || $value instanceof \MongoDate) {
+        if ($value === null || $value instanceof \MongoDB\BSON\UTCDateTime) {
             return $value;
         }
 
         $datetime = static::getDateTime($value);
 
-        return new \MongoDate($datetime->format('U'), $datetime->format('u'));
+        return new \MongoDB\BSON\UTCDateTime((int) $datetime->format('Uv'));
     }
 
     public function convertToPHPValue($value)
@@ -102,7 +102,7 @@ class DateType extends Type
 
     public function closureToMongo()
     {
-        return 'if ($value === null || $value instanceof \MongoDate) { $return = $value; } else { $datetime = \\'.get_class($this).'::getDateTime($value); $return = new \MongoDate($datetime->format(\'U\'), $datetime->format(\'u\')); }';
+        return 'if ($value === null || $value instanceof \MongoDB\BSON\UTCDateTime) { $return = $value; } else { $datetime = \\'.get_class($this).'::getDateTime($value); $return = new \MongoDB\BSON\UTCDateTime((int) $datetime->format(\'Uv\')); }';
     }
 
     public function closureToPHP()

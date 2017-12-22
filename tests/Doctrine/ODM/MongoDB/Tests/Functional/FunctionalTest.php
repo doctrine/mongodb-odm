@@ -30,15 +30,16 @@ use Documents\Functional\SameCollection3;
 use Documents\Album;
 use Documents\Song;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function provideUpsertObjects()
     {
         return array(
-            array('Documents\\UserUpsert', new \MongoId('4f18f593acee41d724000005'), 'user'),
+            array('Documents\\UserUpsert', new \MongoDB\BSON\ObjectId('4f18f593acee41d724000005'), 'user'),
             array('Documents\\UserUpsertIdStrategyNone', 'jwage', 'user'),
-            array('Documents\\UserUpsertChild', new \MongoId('4f18f593acee41d724000005'), 'child')
+            array('Documents\\UserUpsertChild', new \MongoDB\BSON\ObjectId('4f18f593acee41d724000005'), 'child')
         );
     }
 
@@ -237,7 +238,6 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals('servers', $test['server']['$ref']);
         $this->assertTrue(isset($test['server']['$id']));
-        $this->assertEquals(DOCTRINE_MONGODB_DATABASE, $test['server']['$db']);
         $this->assertEquals('server_guest', $test['server']['_doctrine_class_name']);
     }
 
@@ -497,10 +497,11 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection = $this->dm->getDocumentCollection('Documents\Functional\NotSaved');
         $collection->drop();
         $test = array(
+            '_id' => new ObjectId(),
             'name' => 'Jonathan Wage',
-            'notSaved' => 'test'
+            'notSaved' => 'test',
         );
-        $collection->insert($test);
+        $collection->insertOne($test);
         $notSaved = $this->dm->find('Documents\Functional\NotSaved', $test['_id']);
         $this->assertEquals('Jonathan Wage', $notSaved->name);
         $this->assertEquals('test', $notSaved->notSaved);
@@ -699,7 +700,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             'Documents\Functional\SameCollection2')
         );
         $q = $qb->getQuery();
-        $test = $q->execute();
+        $test = $q->execute()->toArray();
         $this->assertCount(3, $test);
 
         $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findAll();
@@ -707,7 +708,7 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
         $query = $qb->getQuery();
-        $test = $query->execute();
+        $test = $query->execute()->toArray();
         $this->assertCount(2, $test);
     }
 

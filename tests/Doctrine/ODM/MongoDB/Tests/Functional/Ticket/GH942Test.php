@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MongoId;
 
 class GH942Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -17,7 +16,7 @@ class GH942Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $doc = $this->dm->getDocumentCollection(GH942Document::CLASSNAME)
-            ->findOne(array('_id' => new MongoId($doc->id)));
+            ->findOne(array('_id' => new \MongoDB\BSON\ObjectId($doc->id)));
 
         $this->assertSame('foo', $doc['name']);
         $this->assertSame(GH942Document::CLASSNAME, $doc['type']);
@@ -36,13 +35,13 @@ class GH942Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $parent = $this->dm->getDocumentCollection(GH942DocumentParent::CLASSNAME)
-            ->findOne(array('_id' => new MongoId($parent->id)));
+            ->findOne(array('_id' => new \MongoDB\BSON\ObjectId($parent->id)));
 
         $this->assertSame('parent', $parent['name']);
         $this->assertSame('p', $parent['type']);
 
         $child = $this->dm->getDocumentCollection(GH942DocumentChild::CLASSNAME)
-            ->findOne(array('_id' => new MongoId($child->id)));
+            ->findOne(array('_id' => new \MongoDB\BSON\ObjectId($child->id)));
 
         $this->assertSame('child', $child['name']);
         $this->assertSame(GH942DocumentChild::CLASSNAME, $child['type']);

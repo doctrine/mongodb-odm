@@ -232,7 +232,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function getTestIdTypesAndStrategiesData()
     {
-        $mongoId = new \MongoId();
+        $identifier = new \MongoDB\BSON\ObjectId();
 
         return array(
             // boolean
@@ -268,19 +268,19 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             array('custom_id', 'increment', null, 1, 'integer'),
 
             // object_id
-            array('object_id', 'none', (string) $mongoId, (string) $mongoId, 'MongoId'),
+            array('object_id', 'none', (string) $identifier, (string) $identifier, \MongoDB\BSON\ObjectId::class),
 
             // date
-            array('date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), 'MongoDate'),
+            array('date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), \MongoDB\BSON\UTCDateTime::class),
 
             // bin
-            array('bin', 'none', 'test-data', 'test-data', 'MongoBinData'),
-            array('bin', 'uuid', null, null, 'MongoBinData'),
-            array('bin_func', 'none', 'test-data', 'test-data', 'MongoBinData'),
-            array('bin_bytearray', 'none', 'test-data', 'test-data', 'MongoBinData'),
-            array('bin_uuid', 'none', 'TestTestTestTest', 'TestTestTestTest', 'MongoBinData'),
-            array('bin_md5', 'none', md5('test'), md5('test'), 'MongoBinData'),
-            array('bin_custom', 'none', 'test-data', 'test-data', 'MongoBinData'),
+            array('bin', 'none', 'test-data', 'test-data', \MongoDB\BSON\Binary::class),
+            array('bin', 'uuid', null, null, \MongoDB\BSON\Binary::class),
+            array('bin_func', 'none', 'test-data', 'test-data', \MongoDB\BSON\Binary::class),
+            array('bin_bytearray', 'none', 'test-data', 'test-data', \MongoDB\BSON\Binary::class),
+            array('bin_uuid', 'none', 'TestTestTestTest', 'TestTestTestTest', \MongoDB\BSON\Binary::class),
+            array('bin_md5', 'none', md5('test'), md5('test'), \MongoDB\BSON\Binary::class),
+            array('bin_custom', 'none', 'test-data', 'test-data', \MongoDB\BSON\Binary::class),
 
             // hash
             array('hash', 'none', array('key' => 'value'), array('key' => 'value'), 'array'),
@@ -303,19 +303,19 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $check = $this->dm->getDocumentCollection(get_class($object))->findOne(array());
 
-        $this->assertEquals('MongoBinData', get_class($check['_id']));
-        $this->assertEquals($expectedMongoBinDataType, $check['_id']->type);
+        $this->assertEquals(\MongoDB\BSON\Binary::class, get_class($check['_id']));
+        $this->assertEquals($expectedMongoBinDataType, $check['_id']->getType());
     }
 
     public function getTestBinIdsData()
     {
         return array(
             array('bin', 0, 'test-data'),
-            array('bin_func', \MongoBinData::FUNC, 'test-data'),
-            array('bin_bytearray', \MongoBinData::BYTE_ARRAY, 'test-data'),
-            array('bin_uuid', \MongoBinData::UUID, 'testtesttesttest'),
-            array('bin_md5', \MongoBinData::MD5, md5('test')),
-            array('bin_custom', \MongoBinData::CUSTOM, 'test-data'),
+            array('bin_func', \MongoDB\BSON\Binary::TYPE_FUNCTION, 'test-data'),
+            array('bin_bytearray', \MongoDB\BSON\Binary::TYPE_OLD_BINARY, 'test-data'),
+            array('bin_uuid', \MongoDB\BSON\Binary::TYPE_OLD_UUID, 'testtesttesttest'),
+            array('bin_md5', \MongoDB\BSON\Binary::TYPE_MD5, md5('test')),
+            array('bin_custom', \MongoDB\BSON\Binary::TYPE_USER_DEFINED, 'test-data'),
         );
     }
 
@@ -330,7 +330,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy but provided identifier is not valid MongoId.
+     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy but provided identifier is not a valid ObjectId.
      */
     public function testStrategyAutoWithNotValidIdThrowsException()
     {

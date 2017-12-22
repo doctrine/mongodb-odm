@@ -175,12 +175,15 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
 
     <?php
 
+    use Doctrine\Common\Annotations\AnnotationRegistry;
     use Doctrine\MongoDB\Connection;
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
     use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 
-    AnnotationDriver::registerAnnotationClasses();
+    $loader = require_once('path/to/vendor/autoload.php');
+
+    AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
     $config = new Configuration();
     $config->setProxyDir('/path/to/generate/proxies');
@@ -238,7 +241,7 @@ stored in MongoDB in correct collections and databases. You can use the
         [_id] => 4bec5869fdc212081d000000
         [title] => My First Blog Post
         [body] => MongoDB + Doctrine 2 ODM = awesomeness!
-        [createdAt] => MongoDate Object
+        [createdAt] => MongoDB\BSON\UTCDateTime Object
             (
                 [sec] => 1273723200
                 [usec] => 0

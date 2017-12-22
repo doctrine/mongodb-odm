@@ -5,8 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use MongoDB\Client;
+use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 
 abstract class BaseTest extends TestCase
@@ -31,16 +32,19 @@ abstract class BaseTest extends TestCase
         // Check if the database exists. Calling listCollections on a non-existing
         // database in a sharded setup will cause an invalid command cursor to be
         // returned
-        $databases = $this->dm->getConnection()->listDatabases();
-        $databaseNames = array_map(function ($database) { return $database['name']; }, $databases['databases']);
+        $client = $this->dm->getClient();
+        $databases = iterator_to_array($client->listDatabases());
+        $databaseNames = array_map(function (DatabaseInfo $database) {
+            return $database->getName();
+        }, $databases);
         if (! in_array(DOCTRINE_MONGODB_DATABASE, $databaseNames)) {
             return;
         }
 
-        $collections = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
+        $collections = $client->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
 
         foreach ($collections as $collection) {
-            $collection->drop();
+            $client->selectCollection(DOCTRINE_MONGODB_DATABASE, $collection->getName())->drop();
         }
     }
 
@@ -71,25 +75,21 @@ abstract class BaseTest extends TestCase
     protected function createTestDocumentManager()
     {
         $config = $this->getConfiguration();
-        $conn = new Connection(
-            getenv("DOCTRINE_MONGODB_SERVER") ?: DOCTRINE_MONGODB_SERVER,
-            array(),
-            $config
-        );
+        $client = new Client(getenv("DOCTRINE_MONGODB_SERVER") ?: DOCTRINE_MONGODB_SERVER, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
-        return DocumentManager::create($conn, $config);
+        return DocumentManager::create($client, $config);
     }
 
     protected function getServerVersion()
     {
-        $result = $this->dm->getConnection()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(array('buildInfo' => 1));
+        $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(array('buildInfo' => 1))->toArray()[0];
 
         return $result['version'];
     }
 
     protected function skipTestIfNotSharded($className)
     {
-        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true]);
+        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
         if (!$result['ok']) {
             $this->markTestSkipped('Could not check whether server supports sharding');
         }

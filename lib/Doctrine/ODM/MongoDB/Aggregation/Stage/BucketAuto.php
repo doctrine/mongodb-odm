@@ -19,48 +19,75 @@
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
-use Doctrine\MongoDB\Aggregation\Builder;
-use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Types\Type;
-
-class BucketAuto extends BaseStage\BucketAuto
+class BucketAuto extends AbstractBucket
 {
     /**
-     * @var DocumentManager
+     * @var int
      */
-    private $dm;
+    private $buckets;
 
     /**
-     * @var ClassMetadata
+     * @var string
      */
-    private $class;
+    private $granularity;
 
-    public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class)
+    /**
+     * A positive 32-bit integer that specifies the number of buckets into which
+     * input documents are grouped.
+     *
+     * @param int $buckets
+     *
+     * @return $this
+     */
+    public function buckets($buckets)
     {
-        $this->dm = $documentManager;
-        $this->class = $class;
-
-        parent::__construct($builder);
+        $this->buckets = $buckets;
+        return $this;
     }
 
-    protected function convertExpression($expression)
+    /**
+     * A string that specifies the preferred number series to use to ensure that
+     * the calculated boundary edges end on preferred round numbers or their
+     * powers of 10.
+     *
+     * @param string $granularity
+     *
+     * @return $this
+     */
+    public function granularity($granularity)
     {
-        if (is_array($expression)) {
-            return array_map([$this, 'convertExpression'], $expression);
-        } elseif (is_string($expression) && substr($expression, 0, 1) === '$') {
-            return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
-        } else {
-            return Type::convertPHPToDatabaseValue(parent::convertExpression($expression));
+        $this->granularity = $granularity;
+        return $this;
+    }
+
+    /**
+     * A document that specifies the fields to include in the output documents
+     * in addition to the _id field. To specify the field to include, you must
+     * use accumulator expressions.
+     *
+     * @return Bucket\BucketAutoOutput
+     */
+    public function output()
+    {
+        if (! $this->output) {
+            $this->output = new Bucket\BucketAutoOutput($this->builder, $this);
         }
+
+        return $this->output;
     }
 
-    /**
-     * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
-     */
-    private function getDocumentPersister()
+    protected function getExtraPipelineFields()
     {
-        return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
+        $fields = ['buckets' => $this->buckets];
+        if ($this->granularity !== null) {
+            $fields['granularity'] = $this->granularity;
+        }
+
+        return $fields;
+    }
+
+    protected function getStageName()
+    {
+        return '$bucketAuto';
     }
 }

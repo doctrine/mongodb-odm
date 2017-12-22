@@ -61,7 +61,6 @@
     <xs:attribute name="repository-class" type="xs:string"/>
     <xs:attribute name="inheritance-type" type="odm:inheritance-type"/>
     <xs:attribute name="change-tracking-policy" type="odm:change-tracking-policy" />
-    <xs:attribute name="require-indexes" type="xs:boolean" />
     <xs:attribute name="slave-okay" type="xs:boolean" />
     <xs:attribute name="read-only" type="xs:boolean" />
   </xs:complexType>
@@ -83,8 +82,6 @@
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="set" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="embed" type="xs:boolean" />
-    <xs:attribute name="file" type="xs:boolean" />
-    <xs:attribute name="distance" type="xs:boolean" />
     <xs:attribute name="reference" type="xs:boolean" />
     <xs:attribute name="version" type="xs:boolean" />
     <xs:attribute name="lock" type="xs:boolean" />
@@ -94,7 +91,6 @@
     <xs:attribute name="index" type="xs:boolean" />
     <xs:attribute name="index-name" type="xs:NMTOKEN" />
     <xs:attribute name="order" type="xs:NMTOKEN" />
-    <xs:attribute name="safe" type="xs:boolean" />
     <xs:attribute name="sparse" type="xs:boolean" />
     <xs:attribute name="unique" type="xs:boolean" />
   </xs:complexType>
@@ -339,7 +335,6 @@
     <xs:attribute name="name" type="xs:NMTOKEN"/>
     <xs:attribute name="drop-dups" type="xs:boolean"/>
     <xs:attribute name="background" type="xs:boolean"/>
-    <xs:attribute name="safe" type="xs:boolean"/>
     <xs:attribute name="unique" type="xs:boolean"/>
     <xs:attribute name="sparse" type="xs:boolean"/>
   </xs:complexType>

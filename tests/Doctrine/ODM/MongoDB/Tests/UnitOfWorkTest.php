@@ -37,7 +37,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $class = $this->dm->getClassMetadata('Documents\ForumUser');
         $user = new ForumUser();
-        $user->id = new \MongoId();
+        $user->id = new \MongoDB\BSON\ObjectId();
         $this->assertFalse($this->uow->isScheduledForInsert($user));
         $this->assertFalse($this->uow->isScheduledForUpsert($user));
         $this->uow->scheduleForUpsert($class, $user);
@@ -49,7 +49,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $class = $this->dm->getClassMetadata('Documents\ForumUser');
         $user = new ForumUser();
-        $user->id = new \MongoId();
+        $user->id = new \MongoDB\BSON\ObjectId();
         $this->assertEmpty($this->uow->getScheduledDocumentUpserts());
         $this->uow->scheduleForUpsert($class, $user);
         $this->assertEquals(array(spl_object_hash($user) => $user), $this->uow->getScheduledDocumentUpserts());
@@ -59,7 +59,7 @@ class UnitOfWorkTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $class = $this->dm->getClassMetadata('Documents\ForumUser');
         $test = new EmbeddedUpsertDocument();
-        $test->id = (string) new \MongoId();
+        $test->id = (string) new \MongoDB\BSON\ObjectId();
         $this->assertFalse($this->uow->isScheduledForInsert($test));
         $this->assertFalse($this->uow->isScheduledForUpsert($test));
         $this->uow->persist($test);

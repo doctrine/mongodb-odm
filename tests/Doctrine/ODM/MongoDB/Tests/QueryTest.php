@@ -2,8 +2,15 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\QueryBuilder;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Query\Query;
+use Documents\User;
+use MongoDB\Collection;
+use MongoDB\Database;
+use MongoDB\Driver\ReadPreference;
+use MongoDB\Model\CachingIterator;
 
 class QueryTest extends BaseTest
 {
@@ -46,8 +53,8 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $users = $query->execute();
 
-        $this->assertInstanceOf('Doctrine\MongoDB\CursorInterface', $users);
-        $this->assertCount(2, $users);
+        $this->assertInstanceOf(Iterator::class, $users);
+        $this->assertCount(2, $users->toArray());
     }
 
     public function testReferences()
@@ -68,13 +75,13 @@ class QueryTest extends BaseTest
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
             'bestFriend.$ref' => 'people',
-            'bestFriend.$id' => new \MongoId($jon->id),
+            'bestFriend.$id' => new \MongoDB\BSON\ObjectId($jon->id),
             'bestFriend.$db' => DOCTRINE_MONGODB_DATABASE,
         ), $queryArray);
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($kris, $query->getSingleResult());
     }
 
@@ -95,12 +102,12 @@ class QueryTest extends BaseTest
 
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
-            'bestFriendSimple' => new \MongoId($jon->id),
+            'bestFriendSimple' => new \MongoDB\BSON\ObjectId($jon->id),
         ), $queryArray);
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($kris, $query->getSingleResult());
     }
 
@@ -122,16 +129,16 @@ class QueryTest extends BaseTest
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
             'bestFriendPartial.$ref' => 'people',
-            'bestFriendPartial.$id' => new \MongoId($jon->id),
+            'bestFriendPartial.$id' => new \MongoDB\BSON\ObjectId($jon->id),
         ), $queryArray);
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($kris, $query->getSingleResult());
     }
 
-    public function testIncludesReferenceTo()
+    public function testIncludesReferenceToWithStoreAsDbRefWithDb()
     {
         $kris = new Person('Kris');
         $jon = new Person('Jon');
@@ -151,7 +158,7 @@ class QueryTest extends BaseTest
             'friends' => array(
                 '$elemMatch' => array(
                     '$ref' => 'people',
-                    '$id' => new \MongoId($kris->id),
+                    '$id' => new \MongoDB\BSON\ObjectId($kris->id),
                     '$db' => DOCTRINE_MONGODB_DATABASE,
                 ),
             ),
@@ -159,7 +166,7 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($jon, $query->getSingleResult());
     }
 
@@ -183,12 +190,12 @@ class QueryTest extends BaseTest
 
         $queryArray = $qb->getQueryArray();
         $this->assertEquals(array(
-            'friendsSimple' =>  new \MongoId($kris->id)
+            'friendsSimple' =>  new \MongoDB\BSON\ObjectId($kris->id)
         ), $queryArray);
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($jon, $query->getSingleResult());
     }
 
@@ -212,14 +219,14 @@ class QueryTest extends BaseTest
             'friendsPartial' => array(
                 '$elemMatch' => array(
                     '$ref' => 'people',
-                    '$id' => new \MongoId($kris->id)
+                    '$id' => new \MongoDB\BSON\ObjectId($kris->id)
                 ),
             ),
         ), $queryArray);
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(1, $query->count());
+        $this->assertCount(1, $query->toArray());
         $this->assertSame($jon, $query->getSingleResult());
     }
 
@@ -230,8 +237,8 @@ class QueryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $mongoId = new \MongoId($user->getId());
-        $ids = array($mongoId);
+        $identifier = new \MongoDB\BSON\ObjectId($user->getId());
+        $ids = array($identifier);
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('_id')->in($ids);
@@ -262,7 +269,7 @@ class QueryTest extends BaseTest
         );
         $query = $qb->getQuery();
 
-        $expectedQuery = array('phonenumbers' => array('$elemMatch' => array('lastCalledBy.$id' => new \MongoId($refId))));
+        $expectedQuery = array('phonenumbers' => array('$elemMatch' => array('lastCalledBy.$id' => new \MongoDB\BSON\ObjectId($refId))));
         $this->assertEquals($expectedQuery, $query->debug('query'));
     }
 
@@ -277,16 +284,16 @@ class QueryTest extends BaseTest
 
     public function testQueryWithMultipleEmbeddedDocumentsAndReference()
     {
-        $mongoId = new \MongoId();
+        $identifier = new \MongoDB\BSON\ObjectId();
 
         $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\EmbedTest')
             ->find()
-            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals((string) $mongoId);
+            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals((string) $identifier);
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
         $this->assertArrayHasKey('eO.eO.e1.eO.eP.pO._id', $debug);
-        $this->assertEquals($mongoId, $debug['eO.eO.e1.eO.eP.pO._id']);
+        $this->assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO._id']);
     }
 
     public function testSelectVsSingleCollectionInheritance()
@@ -374,6 +381,103 @@ class QueryTest extends BaseTest
         $this->assertFalse($this->uow->isInIdentityMap($readOnly));
         $this->assertFalse($this->uow->isInIdentityMap($readOnly->pet));
     }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testConstructorShouldThrowExceptionForInvalidType()
+    {
+        new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
+    }
+
+    /**
+     * @dataProvider provideQueryTypesThatDoNotReturnAnIterator
+     * @expectedException BadMethodCallException
+     */
+    public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator($type, $method)
+    {
+        $collection = $this->getMockCollection();
+        $collection->expects($this->never())->method($method);
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, ['type' => $type], []);
+
+        $query->getIterator();
+    }
+
+    public function provideQueryTypesThatDoNotReturnAnIterator()
+    {
+        return [
+            [Query::TYPE_FIND_AND_UPDATE, 'findOneAndUpdate'],
+            [Query::TYPE_FIND_AND_REMOVE, 'findOneAndDelete'],
+            [Query::TYPE_INSERT, 'insertOne'],
+            [Query::TYPE_UPDATE, 'updateOne'],
+            [Query::TYPE_REMOVE, 'deleteOne'],
+            [Query::TYPE_COUNT, 'count'],
+        ];
+    }
+
+    public function testFindAndModifyOptionsAreRenamed()
+    {
+        $queryArray = [
+            'type' => Query::TYPE_FIND_AND_REMOVE,
+            'query' => ['type' => 1],
+            'select' => ['_id' => 1],
+        ];
+
+        $collection = $this->getMockCollection();
+        $collection
+            ->expects($this->at(0))
+            ->method('findOneAndDelete')
+            ->with(['type' => 1], ['projection' => ['_id' => 1]]);
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+        $query->execute();
+    }
+
+    public function testCountWithOptions()
+    {
+        $collection = $this->getMockCollection();
+
+        $collection->expects($this->at(0))
+            ->method('count')
+            ->with(['foo' => 'bar'], ['skip' => 5])
+            ->will($this->returnValue(100));
+
+        $queryArray = [
+            'type' => Query::TYPE_COUNT,
+            'query' => ['foo' => 'bar'],
+            'skip' => 5,
+        ];
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+
+        $this->assertSame(100, $query->execute());
+    }
+
+    public function testReadPreference()
+    {
+        $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
+            ->method('count')
+            ->with(['foo' => 'bar'], ['readPreference' => $readPreference])
+            ->will($this->returnValue(0));
+
+        $queryQrray = [
+            'type' => Query::TYPE_COUNT,
+            'query' => ['foo' => 'bar'],
+        ];
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryQrray, ['readPreference' => $readPreference]);
+        $query->execute();
+    }
+
+    private function getMockCollection()
+    {
+        return $this->getMockBuilder(Collection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
 }
 
 /** @ODM\Document(collection="people") */
@@ -385,22 +489,22 @@ class Person
     /** @ODM\Field(type="string") */
     public $firstName;
 
-    /** @ODM\ReferenceOne */
+    /** @ODM\ReferenceOne(storeAs="dbRefWithDb") */
     public $bestFriend;
 
     /** @ODM\ReferenceOne(storeAs="id", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
     public $bestFriendSimple;
 
-    /** @ODM\ReferenceOne(storeAs="dbRef") */
+    /** @ODM\ReferenceOne */
     public $bestFriendPartial;
 
-    /** @ODM\ReferenceMany */
+    /** @ODM\ReferenceMany(storeAs="dbRefWithDb") */
     public $friends = array();
 
     /** @ODM\ReferenceMany(storeAs="id", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
     public $friendsSimple = array();
 
-    /** @ODM\ReferenceMany(storeAs="dbRef") */
+    /** @ODM\ReferenceMany */
     public $friendsPartial = array();
 
     /** @ODM\EmbedOne(targetDocument="Pet") */

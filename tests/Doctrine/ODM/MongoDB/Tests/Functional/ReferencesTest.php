@@ -41,9 +41,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $groups = $query->execute();
 
-        $count = $groups->count();
-
-        $this->assertEquals(0, $count);
+        $this->assertCount(0, $groups->toArray());
     }
 
     public function testLazyLoadReference()
@@ -191,10 +189,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFalse($groups->isInitialized());
 
         $groups->count();
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $groups->isEmpty();
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $groups = $user2->getGroups();
 
@@ -290,10 +288,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFalse($groups->isInitialized());
 
         $groups->count();
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $groups->isEmpty();
-        $this->assertFalse($groups->isInitialized());
+        $this->assertTrue($groups->isInitialized());
 
         $this->assertCount(2, $groups);
 
@@ -361,8 +359,8 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($test));
 
-        $collection->update(
-            array('_id' => new \MongoId($test->id)),
+        $collection->updateOne(
+            array('_id' => new \MongoDB\BSON\ObjectId($test->id)),
             array('$set' => array(
                 'referenceOne.$id' => array('identifier' => 2),
             ))
@@ -376,7 +374,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
      * @expectedExceptionMessage The "Proxies\__CG__\Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.
      */
-    public function testDocumentNotFoundExceptionWithMongoId()
+    public function testDocumentNotFoundExceptionWithObjectId()
     {
         $profile = new Profile();
         $user = new User();
@@ -389,10 +387,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($user));
 
-        $invalidId = new \MongoId('abcdefabcdefabcdefabcdef');
+        $invalidId = new \MongoDB\BSON\ObjectId('abcdefabcdefabcdefabcdef');
 
-        $collection->update(
-            array('_id' => new \MongoId($user->getId())),
+        $collection->updateOne(
+            array('_id' => new \MongoDB\BSON\ObjectId($user->getId())),
             array('$set' => array(
                 'profile.$id' => $invalidId,
             ))
@@ -420,10 +418,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($test));
 
-        $invalidBinData = new \MongoBinData('testbindata', \MongoBinData::BYTE_ARRAY);
+        $invalidBinData = new \MongoDB\BSON\Binary('testbindata', \MongoDB\BSON\Binary::TYPE_OLD_BINARY);
 
-        $collection->update(
-            array('_id' => new \MongoId($test->id)),
+        $collection->updateOne(
+            array('_id' => new \MongoDB\BSON\ObjectId($test->id)),
             array('$set' => array(
                 'referenceOne.$id' => $invalidBinData,
             ))
@@ -446,10 +444,10 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($user));
 
-        $invalidId = new \MongoId('abcdefabcdefabcdefabcdef');
+        $invalidId = new \MongoDB\BSON\ObjectId('abcdefabcdefabcdefabcdef');
 
-        $collection->update(
-            array('_id' => new \MongoId($user->getId())),
+        $collection->updateOne(
+            array('_id' => new \MongoDB\BSON\ObjectId($user->getId())),
             array('$set' => array(
                 'profile.$id' => $invalidId,
             ))

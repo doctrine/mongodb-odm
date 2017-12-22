@@ -15,7 +15,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // default behavior on inserts already leaves out embedded documents
-        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $expectedDocument = array('_id' => new \MongoDB\BSON\ObjectId($post->getId()));
         $this->assertPostDocument($expectedDocument, $post);
 
         // fill documents with comments
@@ -30,7 +30,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $expectedDocument = array(
-            '_id' => new \MongoId($post->getId()),
+            '_id' => new \MongoDB\BSON\ObjectId($post->getId()),
             'comments' => array(
                 array('comment' => 'Comment 1'),
                 array('comment' => 'Comment 2'),
@@ -50,7 +50,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(0, $post->getComments());
 
         // make sure embedded documents got unset
-        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $expectedDocument = array('_id' => new \MongoDB\BSON\ObjectId($post->getId()));
         $this->assertPostDocument($expectedDocument, $post);
     }
 
@@ -62,7 +62,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         // default behavior on inserts already leaves out referenced documents
-        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $expectedDocument = array('_id' => new \MongoDB\BSON\ObjectId($post->getId()));
         $this->assertPostDocument($expectedDocument, $post);
 
         // associate post with many GH597ReferenceMany documents
@@ -79,10 +79,10 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $expectedDocument = array(
-            '_id' => new \MongoId($post->getId()),
+            '_id' => new \MongoDB\BSON\ObjectId($post->getId()),
             'referenceMany' => array(
-                new \MongoId($referenceMany1->getId()),
-                new \MongoId($referenceMany2->getId())
+                new \MongoDB\BSON\ObjectId($referenceMany1->getId()),
+                new \MongoDB\BSON\ObjectId($referenceMany2->getId())
             )
         );
         $this->assertPostDocument($expectedDocument, $post);
@@ -98,7 +98,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(0, $post->getReferenceMany());
 
         // make sure reference-many documents got unset
-        $expectedDocument = array('_id' => new \MongoId($post->getId()));
+        $expectedDocument = array('_id' => new \MongoDB\BSON\ObjectId($post->getId()));
         $this->assertPostDocument($expectedDocument, $post);
     }
 
@@ -111,7 +111,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     private function assertPostDocument(array $expected, GH597Post $post)
     {
         $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH597Post');
-        $document = $collection->findOne(array('_id' => new \MongoId($post->getId())));
+        $document = $collection->findOne(array('_id' => new \MongoDB\BSON\ObjectId($post->getId())));
         $this->assertEquals($expected, $document);
     }
 }
@@ -125,7 +125,7 @@ class GH597Post
     /** @ODM\EmbedMany(targetDocument="GH597Comment") */
     public $comments;
 
-    /** @ODM\ReferenceMany(targetDocument="GH597ReferenceMany", simple="true") */
+    /** @ODM\ReferenceMany(targetDocument="GH597ReferenceMany", storeAs="id") */
     public $referenceMany;
 
     public function __construct()

@@ -26,5 +26,5 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class BinDataFuncType extends BinDataType
 {
-    protected $binDataType = \MongoBinData::FUNC;
+    protected $binDataType = \MongoDB\BSON\Binary::TYPE_FUNCTION;
 }

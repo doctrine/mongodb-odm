@@ -20,18 +20,23 @@
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
-use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
-class Out extends BaseStage\Out
+class Out extends Stage
 {
     /**
      * @var DocumentManager
      */
     private $dm;
+
+    /**
+     * @var string
+     */
+    private $collection;
 
     /**
      * @param Builder $builder
@@ -40,9 +45,20 @@ class Out extends BaseStage\Out
      */
     public function __construct(Builder $builder, $collection, DocumentManager $documentManager)
     {
-        $this->dm = $documentManager;
+        parent::__construct($builder);
 
-        parent::__construct($builder, $collection);
+        $this->dm = $documentManager;
+        $this->out($collection);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExpression()
+    {
+        return [
+            '$out' => $this->collection
+        ];
     }
 
     /**
@@ -53,24 +69,20 @@ class Out extends BaseStage\Out
         try {
             $class = $this->dm->getClassMetadata($collection);
         } catch (BaseMappingException $e) {
-            return parent::out($collection);
+            $this->collection = (string) $collection;
+            return $this;
         }
 
-        return $this->fromDocument($class);
+        $this->fromDocument($class);
+        return $this;
     }
 
-    /**
-     * @param ClassMetadata $classMetadata
-     * @return $this
-     *
-     * @throws MappingException
-     */
     private function fromDocument(ClassMetadata $classMetadata)
     {
         if ($classMetadata->isSharded()) {
             throw MappingException::cannotUseShardedCollectionInOutStage($classMetadata->name);
         }
 
-        return parent::out($classMetadata->getCollection());
+        $this->collection = $classMetadata->getCollection();
     }
 }

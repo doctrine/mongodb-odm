@@ -279,8 +279,8 @@ class CollectionPersister
             $query[$class->fieldMappings[$class->versionField]['name']] = $class->reflFields[$class->versionField]->getValue($document);
         }
         $collection = $this->dm->getDocumentCollection($className);
-        $result = $collection->update($query, $newObj, $options);
-        if ($class->isVersioned && ! $result['n']) {
+        $result = $collection->updateOne($query, $newObj, $options);
+        if ($class->isVersioned && ! $result->getMatchedCount()) {
             throw LockException::lockFailed($document);
         }
     }

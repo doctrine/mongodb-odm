@@ -58,7 +58,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\User');
         $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
 
-        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new \MongoId($user1->getId())));
+        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new \MongoDB\BSON\ObjectId($user1->getId())));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNotNull($user);
@@ -112,14 +112,14 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')->equals('distinct_test');
         $q = $qb->getQuery();
         $results = $q->execute();
-        $this->assertEquals(array(1, 2, 3), $results->toArray());
+        $this->assertEquals(array(1, 2, 3), $results);
 
         $results = $this->dm->createQueryBuilder('Documents\User')
             ->distinct('count')
             ->field('username')->equals('distinct_test')
             ->getQuery()
             ->execute();
-        $this->assertEquals(array(1, 2, 3), $results->toArray());
+        $this->assertEquals(array(1, 2, 3), $results);
     }
 
     public function testDistinctWithDifferentDbName()
@@ -139,7 +139,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->distinct('authorIp')
             ->getQuery()
             ->execute();
-        $this->assertEquals(array("127.0.0.1", "192.168.0.1"), $results->toArray());
+        $this->assertEquals(array("127.0.0.1", "192.168.0.1"), $results);
     }
 
     public function testFindQuery()
@@ -154,7 +154,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUpdateQuery()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->field('username')
             ->set('crap')
             ->equals('boo');
@@ -168,7 +168,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUpsertUpdateQuery()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->upsert(true)
             ->field('username')
             ->set('crap')
@@ -208,8 +208,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
-            ->multiple()
+            ->updateMany()
             ->field('username')->equals('multiple_test')
             ->field('username')->set('foo');
         $q = $qb->getQuery();
@@ -238,7 +237,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testIncUpdateQuery()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->field('hits')->inc(5)
             ->field('username')->equals('boo');
         $query = $qb->getQuery();
@@ -255,7 +254,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUnsetFieldUpdateQuery()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->update()
+            ->updateOne()
             ->field('hits')->unsetField()
             ->field('username')->equals('boo');
         $query = $qb->getQuery();
@@ -268,20 +267,10 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertArrayNotHasKey('hits', $user);
     }
 
-    public function testGroup()
-    {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->group(array('username' => 1), array('count' => 0))
-            ->reduce('function (obj, prev) { prev.count++; }');
-        $query = $qb->getQuery();
-        $result = $query->execute();
-        $this->assertEquals(array(array('username' => 'boo', 'count' => 1)), $result->toArray());
-    }
-
     public function testUnsetField()
     {
         $qb = $this->dm->createQueryBuilder()
-            ->update('Documents\User')
+            ->updateOne('Documents\User')
             ->field('nullTest')
             ->type('null')
             ->unsetField('nullTest');
@@ -327,8 +316,8 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $qb->field('createdAt')->range(
-            new \MongoDate(strtotime('1985-09-01 01:00:00')),
-            new \MongoDate(strtotime('1985-09-04'))
+            new \MongoDB\BSON\UTCDateTime(strtotime('1985-09-01 01:00:00') * 1000),
+            new \MongoDB\BSON\UTCDateTime(strtotime('1985-09-04') * 1000)
         );
         $query = $qb->getQuery();
         $articles = array_values($query->execute()->toArray());
@@ -346,7 +335,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $query = $qb->getQuery();
-        $this->assertInstanceOf(\Doctrine\MongoDB\IteratorAggregate::class, $query);
+        $this->assertInstanceOf(\IteratorAggregate::class, $query);
         foreach ($query as $article) {
             $this->assertEquals('Documents\Article', get_class($article));
         }
@@ -386,7 +375,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testQueryWhereInReferenceId()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $choices = array(new \MongoId(), new \MongoId());
+        $choices = array(new \MongoDB\BSON\ObjectId(), new \MongoDB\BSON\ObjectId());
         $qb->field('account.$id')->in($choices);
         $expected = array(
             'account.$id' => array(

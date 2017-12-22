@@ -256,9 +256,9 @@ EOF
         if (isset(\$data['%1\$s'])) {
             \$reference = \$data['%1\$s'];
             \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$reference);
-            \$mongoId = ClassMetadataInfo::getReferenceId(\$reference, \$this->class->fieldMappings['%2\$s']['storeAs']);
+            \$identifier = ClassMetadataInfo::getReferenceId(\$reference, \$this->class->fieldMappings['%2\$s']['storeAs']);
             \$targetMetadata = \$this->dm->getClassMetadata(\$className);
-            \$id = \$targetMetadata->getPHPIdentifierValue(\$mongoId);
+            \$id = \$targetMetadata->getPHPIdentifierValue(\$identifier);
             \$return = \$this->dm->getReference(\$className, \$id);
             \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
             \$hydratedData['%2\$s'] = \$return;

@@ -31,8 +31,8 @@ class ObjectIdType extends Type
         if ($value === null) {
             return null;
         }
-        if ( ! $value instanceof \MongoId) {
-            $value = new \MongoId($value);
+        if ( ! $value instanceof \MongoDB\BSON\ObjectId) {
+            $value = new \MongoDB\BSON\ObjectId($value);
         }
         return $value;
     }
@@ -44,7 +44,7 @@ class ObjectIdType extends Type
 
     public function closureToMongo()
     {
-        return '$return = new MongoId($value);';
+        return '$return = new MongoDB\BSON\ObjectId($value);';
     }
 
     public function closureToPHP()

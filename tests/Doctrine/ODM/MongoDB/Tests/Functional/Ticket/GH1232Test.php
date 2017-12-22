@@ -45,7 +45,6 @@ class GH1232Post
      *     targetDocument="GH1232Comment",
      *     mappedBy="post",
      *     repositoryMethod="getLongComments",
-     *     sort={"_id"="asc"}
      * )
      */
     protected $longComments;
@@ -74,6 +73,7 @@ class GH1232CommentRepository extends DocumentRepository
             ->createQueryBuilder()
             ->field('post')
             ->references($post)
+            ->sort('_id', 'asc')
             ->getQuery()
             ->execute();
     }

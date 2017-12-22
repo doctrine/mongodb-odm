@@ -123,9 +123,6 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'shard-key'})) {
             $this->setShardKey($class, $xmlRoot->{'shard-key'}[0]);
         }
-        if (isset($xmlRoot['require-indexes'])) {
-            $class->setRequireIndexes('true' === (string) $xmlRoot['require-indexes']);
-        }
         if (isset($xmlRoot['slave-okay'])) {
             $class->setSlaveOkay('true' === (string) $xmlRoot['slave-okay']);
         }
@@ -141,7 +138,7 @@ class XmlDriver extends FileDriver
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
                     $mapping[$key] = (string) $value;
-                    $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'sparse', 'file', 'distance');
+                    $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'sparse');
                     if (in_array($key, $booleanAttributes)) {
                         $mapping[$key] = ('true' === $mapping[$key]);
                     }
@@ -234,9 +231,6 @@ class XmlDriver extends FileDriver
         if (isset($mapping['index-name'])) {
             $options['name'] = (string) $mapping['index-name'];
         }
-        if (isset($mapping['safe'])) {
-            $options['safe'] = (boolean) $mapping['safe'];
-        }
         if (isset($mapping['sparse'])) {
             $options['sparse'] = (boolean) $mapping['sparse'];
         }
@@ -297,8 +291,7 @@ class XmlDriver extends FileDriver
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
             'type'             => $type,
             'reference'        => true,
-            'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false, // deprecated
-            'storeAs'          => isset($attributes['store-as']) ? (string) $attributes['store-as'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs'          => isset($attributes['store-as']) ? (string) $attributes['store-as'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'collectionClass'  => isset($attributes['collection-class']) ? (string) $attributes['collection-class'] : null,
             'name'             => (string) $attributes['field'],
@@ -375,9 +368,6 @@ class XmlDriver extends FileDriver
         }
         if (isset($attributes['name'])) {
             $options['name'] = (string) $attributes['name'];
-        }
-        if (isset($attributes['safe'])) {
-            $options['safe'] = ('true' === (string) $attributes['safe']);
         }
         if (isset($attributes['sparse'])) {
             $options['sparse'] = ('true' === (string) $attributes['sparse']);
