@@ -4,7 +4,6 @@ language: php
 
 # Note: latest PHP version is tested with coverage; lowest is tested with --prefer-lowest
 php:
-  - 7.0
   - 7.1
   - 7.2
 
@@ -38,7 +37,7 @@ jobs:
 
     # Test against lowest dependencies, including driver and server versions
     - stage: Test
-      php: 7.0
+      php: 7.1
       env: SERVER_VERSION="3.2" KEY_ID="EA312927" DRIVER_VERSION="1.3.0"
       install:
         - composer update --prefer-lowest
