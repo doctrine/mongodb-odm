@@ -2,8 +2,8 @@ dist: trusty
 sudo: required
 language: php
 
+# Note: latest PHP version is tested with coverage; lowest is tested with --prefer-lowest
 php:
-  - 7.0
   - 7.1
   - 7.2
 
@@ -15,36 +15,48 @@ env:
     - MONGO_REPO_TYPE="precise/mongodb-org/"
     - SOURCES_LOC="/etc/apt/sources.list.d/mongodb.list"
     - DRIVER_VERSION="stable"
-    - SERVER_VERSION="3.4"
-    - KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
+  matrix:
+    - SERVER_VERSION="3.2" KEY_ID="EA312927"
+    - SERVER_VERSION="3.4" KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
+    - SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
 
-matrix:
+jobs:
   include:
-    - php: 7.0
-      env: DRIVER_VERSION="stable" COMPOSER_FLAGS="--prefer-lowest" SERVER_VERSION="3.2" KEY_ID="EA312927"
-    - php: 7.2
-      env: SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
+    # Run tests with coverage
+    - stage: test
+      php: 7.2
+      env: COVERAGE SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
+      before_script:
+        - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
+        - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
+      script:
+        - vendor/bin/phpunit --coverage-clover=coverage.clover
+      after_script:
+        - wget https://scrutinizer-ci.com/ocular.phar
+        - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
+    # Test against lowest dependencies, including driver and server versions
+    - stage: Test
+      php: 7.1
+      env: SERVER_VERSION="3.2" KEY_ID="EA312927" DRIVER_VERSION="1.3.0"
+      install:
+        - composer update --prefer-lowest
 
 before_install:
+  - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
   - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
   - echo "deb ${MONGO_REPO_URI} ${MONGO_REPO_TYPE}${SERVER_VERSION} multiverse" | sudo tee ${SOURCES_LOC}
   - sudo apt-get update -qq
-
-install:
   - sudo apt-get --allow-unauthenticated install mongodb-org
   - if nc -z localhost 27017; then sudo service mongod stop; fi
   - sudo pip install mongo-orchestration
   - sudo mongo-orchestration start
-
-before_script:
   - curl -XPUT http://localhost:8889/v1/sharded_clusters/myCluster --data @tests/sharded.json
-  - composer self-update
   - pecl install -f mongodb-${DRIVER_VERSION}
-  - composer update ${COMPOSER_FLAGS}
+  - composer self-update
+
+install:
+  - composer update
 
 script:
-  - ./vendor/bin/phpunit --coverage-clover=coverage.clover
-
-after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - vendor/bin/phpunit
