@@ -72,7 +72,7 @@ builder's ``prime()`` method allows us to do just that.
          * not query an additional query.
          */
         foreach ($user->getAccounts() as $account) {
-            
+
         }
     }
 

@@ -22,7 +22,7 @@ property:
         {
             /** @Id */
             public $id;
-    
+
             /** @Field(type="string") @Index */
             public $username;
         }
@@ -32,7 +32,7 @@ property:
         <field name="username" index="true" />
 
     .. code-block:: yaml
-    
+
         fields:
           username:
             index: true
@@ -43,26 +43,26 @@ Index Options
 
 You can customize the index with some additional options:
 
-- 
+-
    **name** - The name of the index. This can be useful if you are
    indexing many keys and Mongo complains about the index name being
    too long.
-- 
+-
    **dropDups** - If a unique index is being created and duplicate
    values exist, drop all but one duplicate value.
-- 
+-
    **background** - Create indexes in the background while other
    operations are taking place. By default, index creation happens
    synchronously. If you specify TRUE with this option, index creation
    will be asynchronous.
-- 
+-
    **safe** - You can specify a boolean value for checking if the
    index creation succeeded. The driver will throw a
    MongoCursorException if index creation failed.
 -
-   **expireAfterSeconds** - If you specify this option then the associated 
-   document will be automatically removed when the provided time (in seconds) 
-   has passed. This option is bound to a number of limitations, which 
+   **expireAfterSeconds** - If you specify this option then the associated
+   document will be automatically removed when the provided time (in seconds)
+   has passed. This option is bound to a number of limitations, which
    are documented at https://docs.mongodb.com/manual/tutorial/expire-data/.
 -
    **order** - The order of the index (asc or desc).
@@ -96,7 +96,7 @@ Unique Index
         {
             /** @Id */
             public $id;
-    
+
             /** @Field(type="string") @Index(unique=true, order="asc") */
             public $username;
         }
@@ -129,7 +129,7 @@ For your convenience you can quickly specify a unique index with
         {
             /** @Id */
             public $id;
-    
+
             /** @Field(type="string") @UniqueIndex(order="asc") */
             public $username;
         }
@@ -164,10 +164,10 @@ you can specify them on the class doc block:
         {
             /** @Id */
             public $id;
-    
+
             /** @Field(type="int") */
             public $accountId;
-    
+
             /** @Field(type="string") */
             public $username;
         }
@@ -178,7 +178,7 @@ you can specify them on the class doc block:
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping
                             http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
-    
+
             <document name="Documents\User">
                 <indexes>
                     <index>
@@ -216,17 +216,17 @@ annotation:
          * @Document
          * @Indexes({
          *   @Index(keys={"accountId"="asc"}),
-         *   @Index(keys={"username"="asc"}) 
+         *   @Index(keys={"username"="asc"})
          * })
          */
         class User
         {
             /** @Id */
             public $id;
-    
+
             /** @Field(type="int") */
             public $accountId;
-    
+
             /** @Field(type="string") */
             public $username;
         }
@@ -237,7 +237,7 @@ annotation:
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping
                             http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
-    
+
             <document name="Documents\User">
                 <indexes>
                     <index>
@@ -275,7 +275,7 @@ documents.
     <?php
 
     namespace Documents;
-    
+
     /** @EmbeddedDocument */
     class Comment
     {
@@ -355,17 +355,17 @@ options structures manually:
         {
             /** @Id */
             public $id;
-    
+
             /** @EmbedOne(targetDocument="Coordinates") */
             public $coordinates;
         }
-    
+
         /** @EmbeddedDocument */
         class Coordinates
         {
             /** @Field(type="float") */
             public $latitude;
-    
+
             /** @Field(type="float") */
             public $longitude;
         }

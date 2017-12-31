@@ -112,10 +112,10 @@ Example:
 The semantics of the persist operation, applied on a document X,
 are as follows:
 
-- 
+-
    If X is a new document, it becomes managed. The document X will be
    entered into the database as a result of the flush operation.
-- 
+-
    If X is a preexisting managed document, it is ignored by the
    persist operation. However, the persist operation is cascaded to
    documents referenced by X, if the relationships from X to these
@@ -194,22 +194,22 @@ Example:
 The semantics of the remove operation, applied to a document X are
 as follows:
 
-- 
+-
    If X is a new document, it is ignored by the remove operation.
    However, the remove operation is cascaded to documents referenced
    by X, if the relationship from X to these other documents is mapped
    with cascade=REMOVE or cascade=ALL.
-- 
+-
    If X is a managed document, the remove operation causes it to
    become removed. The remove operation is cascaded to documents
    referenced by X, if the relationships from X to these other
    documents is mapped with cascade=REMOVE or cascade=ALL.
-- 
+-
    If X is a detached document, an InvalidArgumentException will be
    thrown.
-- 
+-
    If X is a removed document, it is ignored by the remove operation.
-- 
+-
    A removed document X will be removed from the database as a result
    of the flush operation.
 
@@ -238,16 +238,16 @@ The semantics of the detach operation, applied to a document X are
 as follows:
 
 
-- 
+-
    If X is a managed document, the detach operation causes it to
    become detached. The detach operation is cascaded to documents
    referenced by X, if the relationships from X to these other
    documents is mapped with cascade=DETACH or cascade=ALL. Documents
    which previously referenced X will continue to reference X.
-- 
+-
    If X is a new or detached document, it is ignored by the detach
    operation.
-- 
+-
    If X is a removed document, the detach operation is cascaded to
    documents referenced by X, if the relationships from X to these
    other documents is mapped with cascade=DETACH or
@@ -258,10 +258,10 @@ There are several situations in which a document is detached
 automatically without invoking the ``detach`` method:
 
 
-- 
+-
    When ``DocumentManager#clear()`` is invoked, all documents that are
    currently managed by the DocumentManager instance become detached.
-- 
+-
    When serializing a document. The document retrieved upon subsequent
    unserialization will be detached (This is the case for all
    documents that are serialized and stored in some cache).
@@ -294,27 +294,27 @@ Example:
     The semantics of the merge operation, applied to a document X, are
     as follows:
 
-- 
+-
    If X is a detached document, the state of X is copied onto a
    pre-existing managed document instance X' of the same iddocument or
    a new managed copy X' of X is created.
-- 
+-
    If X is a new document instance, an InvalidArgumentException will
    be thrown.
-- 
+-
    If X is a removed document instance, an InvalidArgumentException
    will be thrown.
-- 
+-
    If X is a managed document, it is ignored by the merge operation,
    however, the merge operation is cascaded to documents referenced by
    relationships from X if these relationships have been mapped with
    the cascade element value MERGE or ALL.
-- 
+-
    For all documents Y referenced by relationships from X having the
    cascade element value MERGE or ALL, Y is merged recursively as Y'.
    For all such Y referenced by X, X' is set to reference Y'. (Note
    that if X is managed then X is the same object as X'.)
-- 
+-
    If X is a document merged to X', with a reference to another
    document Y, where cascade=MERGE or cascade=ALL is not specified,
    then navigation of the same association from X' yields a reference
@@ -354,7 +354,7 @@ Here is an example where we add a new comment to an article:
 
     $comment = new Comment();
     // ...
-    
+
     $article->getComments()->add($comment);
 
 Or you can set a single reference:
@@ -365,7 +365,7 @@ Or you can set a single reference:
 
     $address = new Address();
     // ...
-    
+
     $user->setAddress($address);
 
 Removing References
@@ -410,12 +410,12 @@ operations. By default, no operations are cascaded.
 The following cascade options exist:
 
 
-- 
+-
    persist : Cascades persist operations to the associated documents.
 -  remove : Cascades remove operations to the associated documents.
 -  merge : Cascades merge operations to the associated documents.
 -  detach : Cascades detach operations to the associated documents.
-- 
+-
    all : Cascades persist, remove, merge and detach operations to
    associated documents.
 
@@ -428,7 +428,7 @@ in the $addresses collection.
 
     <?php
 
-    class User 
+    class User
     {
         //...
         /**
@@ -494,10 +494,10 @@ methods on a repository as follows:
 
     // All users that are 20 years old
     $users = $dm->getRepository('User')->findBy(array('age' => 20));
-    
+
     // All users that are 20 years old and have a surname of 'Miller'
     $users = $dm->getRepository('User')->findBy(array('age' => 20, 'surname' => 'Miller'));
-    
+
     // A single user by its nickname
     $user = $dm->getRepository('User')->findOneBy(array('nickname' => 'romanb'));
 
@@ -511,7 +511,7 @@ examples are equivalent:
 
     // A single user by its nickname
     $user = $dm->getRepository('User')->findOneBy(array('nickname' => 'romanb'));
-    
+
     // A single user by its nickname (__call magic)
     $user = $dm->getRepository('User')->findOneByNickname('romanb');
 

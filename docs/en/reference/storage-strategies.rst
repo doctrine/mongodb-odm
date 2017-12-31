@@ -68,12 +68,12 @@ atomicSet
 The ``atomicSet`` strategy uses MongoDB's `$set`_ operator to update the entire
 collection with a single update query. Unlike with ``set`` strategy there will
 be only one query for updating both parent document and collection itself. This
-strategy can be especially useful when dealing with high concurrency and 
+strategy can be especially useful when dealing with high concurrency and
 :ref:`versioned documents <annotations_reference_version>`.
 
 .. note::
 
-    The ``atomicSet`` and ``atomicSetArray`` strategies may only be used for 
+    The ``atomicSet`` and ``atomicSetArray`` strategies may only be used for
     collections mapped directly in a top-level document.
 
 .. _atomic_set_array:
@@ -81,13 +81,13 @@ strategy can be especially useful when dealing with high concurrency and
 atomicSetArray
 --------------
 
-The ``atomicSetArray`` strategy works exactly like ``atomicSet`` strategy,  but 
-will first numerically reindex the collection to ensure that it is stored as a 
+The ``atomicSetArray`` strategy works exactly like ``atomicSet`` strategy,  but
+will first numerically reindex the collection to ensure that it is stored as a
 BSON array.
 
 .. note::
 
-    The ``atomicSet`` and ``atomicSetArray`` strategies may only be used for 
+    The ``atomicSet`` and ``atomicSetArray`` strategies may only be used for
     collections mapped directly in a top-level document.
 
 .. _`$addToSet`: https://docs.mongodb.com/manual/reference/operator/update/addToSet/

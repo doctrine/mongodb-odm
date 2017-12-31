@@ -72,7 +72,7 @@ Simple example:
         <?php
 
         namespace Documents;
-    
+
         /**
          * @Document
          * @InheritanceType("SINGLE_COLLECTION")
@@ -83,7 +83,7 @@ Simple example:
         {
             // ...
         }
-    
+
         /**
          * @Document
          */
@@ -142,7 +142,7 @@ would get an Employee instance back:
     // ...
     $dm->persist($employee);
     $dm->flush();
-    
+
     $employee = $dm->find('Person', $employee->getId()); // instanceof Employee
 
 Even though we queried for a Person, Doctrine will know to return an Employee
@@ -232,7 +232,7 @@ collection and contains all inherited fields:
         <?php
 
         namespace Documents;
-    
+
         /**
          * @Document
          * @InheritanceType("COLLECTION_PER_CLASS")
@@ -241,7 +241,7 @@ collection and contains all inherited fields:
         {
             // ...
         }
-    
+
         /**
          * @Document
          */

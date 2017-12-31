@@ -33,25 +33,25 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     {
         /** @ODM\Id */
         private $id;
-    
+
         /** @ODM\Field(type="int", strategy="increment") */
         private $changes = 0;
-    
+
         /** @ODM\Field(type="collection") */
         private $notes = array();
-    
+
         /** @ODM\Field(type="string") */
         private $name;
-    
+
         /** @ODM\Field(type="int") */
         private $salary;
-    
+
         /** @ODM\Field(type="date") */
         private $started;
-    
+
         /** @ODM\Field(type="date") */
         private $left;
-    
+
         /** @ODM\EmbedOne(targetDocument="Address") */
         private $address;
 
@@ -78,41 +78,41 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         public function getAddress() { return $this->address; }
         public function setAddress(Address $address) { $this->address = $address; }
     }
-    
+
     /** @ODM\Document */
     class Employee extends BaseEmployee
     {
         /** @ODM\ReferenceOne(targetDocument="Documents\Manager") */
         private $manager;
-    
+
         public function getManager() { return $this->manager; }
         public function setManager(Manager $manager) { $this->manager = $manager; }
     }
-    
+
     /** @ODM\Document */
     class Manager extends BaseEmployee
     {
         /** @ODM\ReferenceMany(targetDocument="Documents\Project") */
         private $projects;
-    
+
         public __construct() { $this->projects = new ArrayCollection(); }
 
         public function getProjects() { return $this->projects; }
         public function addProject(Project $project) { $this->projects[] = $project; }
     }
-    
+
     /** @ODM\EmbeddedDocument */
     class Address
     {
         /** @ODM\Field(type="string") */
         private $address;
-    
+
         /** @ODM\Field(type="string") */
         private $city;
-    
+
         /** @ODM\Field(type="string") */
         private $state;
-    
+
         /** @ODM\Field(type="string") */
         private $zipcode;
 
@@ -128,16 +128,16 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         public function getZipcode() { return $this->zipcode; }
         public function setZipcode($zipcode) { $this->zipcode = $zipcode; }
     }
-    
+
     /** @ODM\Document */
     class Project
     {
         /** @ODM\Id */
         private $id;
-    
+
         /** @ODM\Field(type="string") */
         private $name;
-    
+
         public function __construct($name) { $this->name = $name; }
 
         public function getId() { return $this->id; }
@@ -153,7 +153,7 @@ Doctrine:
 .. code-block:: php
 
     <?php
-    
+
     use Documents\Employee;
     use Documents\Address;
     use Documents\Project;
@@ -164,14 +164,14 @@ Doctrine:
     $employee->setName('Employee');
     $employee->setSalary(50000);
     $employee->setStarted(new DateTime());
-    
+
     $address = new Address();
     $address->setAddress('555 Doctrine Rd.');
     $address->setCity('Nashville');
     $address->setState('TN');
     $address->setZipcode('37209');
     $employee->setAddress($address);
-    
+
     $project = new Project('New Project');
     $manager = new Manager();
     $manager->setName('Manager');
@@ -195,7 +195,7 @@ The above would insert the following:
             (
                 [name] => New Project
             )
-    
+
     )
     Array
     (
@@ -205,7 +205,7 @@ The above would insert the following:
                 [notes] => Array
                     (
                     )
-    
+
                 [name] => Manager
                 [salary] => 100000
                 [started] => MongoDate Object
@@ -213,7 +213,7 @@ The above would insert the following:
                         [sec] => 1275265048
                         [usec] => 0
                     )
-    
+
                 [projects] => Array
                     (
                         [0] => Array
@@ -222,11 +222,11 @@ The above would insert the following:
                                 [$id] => 4c0300188ead0e947a000000
                                 [$db] => my_db
                             )
-    
+
                     )
-    
+
             )
-    
+
     )
     Array
     (
@@ -236,7 +236,7 @@ The above would insert the following:
                 [notes] => Array
                     (
                     )
-    
+
                 [name] => Employee
                 [salary] => 50000
                 [started] => MongoDate Object
@@ -244,7 +244,7 @@ The above would insert the following:
                         [sec] => 1275265048
                         [usec] => 0
                     )
-    
+
                 [address] => Array
                     (
                         [address] => 555 Doctrine Rd.
@@ -252,9 +252,9 @@ The above would insert the following:
                         [state] => TN
                         [zipcode] => 37209
                     )
-    
+
             )
-    
+
     )
 
 If we update a property and call ``->flush()`` again we'll get an
@@ -268,7 +268,7 @@ efficient update query using the atomic operators:
     $manager->addNote('Gave user 100k a year raise');
     $manager->incrementChanges(2);
     $manager->addProject($newProject);
-    
+
     $dm->persist($newProject);
     $dm->flush();
 
@@ -283,7 +283,7 @@ this:
             (
                 [changes] => 2
             )
-    
+
         [$push] => Array
             (
                 [notes] => Array
@@ -311,12 +311,12 @@ this:
                     )
 
             )
-    
+
         [$set] => Array
             (
                 [salary] => 200000
             )
-    
+
     )
 
 This is a simple example, but it demonstrates well that you can

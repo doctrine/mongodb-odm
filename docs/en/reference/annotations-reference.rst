@@ -295,20 +295,20 @@ to be stored within an `@EmbedOne`_ or `@EmbedMany`_ relationship.
     {
         /** @Field(type="float") */
         private $amount;
-    
+
         public function __construct($amount)
         {
             $this->amount = (float) $amount;
         }
         //...
     }
-    
+
     /** @Document(db="finance", collection="wallets") */
     class Wallet
     {
         /** @EmbedOne(targetDocument="Money") */
         private $money;
-    
+
         public function setMoney(Money $money)
         {
             $this->money = $money;
@@ -362,12 +362,12 @@ Examples:
      * @Field(type="string")
      */
     protected $username;
-    
+
     /**
      * @Field(type="string", name="co")
      */
     protected $country;
-    
+
     /**
      * @Field(type="float")
      */
@@ -506,7 +506,7 @@ Examples:
     {
         // ...
     }
-    
+
     /**
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
@@ -576,7 +576,7 @@ method to be registered.
     class Article
     {
         // ...
-    
+
         /** @PostLoad */
         public function postLoad()
         {
@@ -601,7 +601,7 @@ the method to be registered.
     class Article
     {
         // ...
-    
+
         /** @PostPersist */
         public function postPersist()
         {
@@ -626,7 +626,7 @@ the method to be registered.
     class Article
     {
         // ...
-    
+
         /** @PostRemove */
         public function postRemove()
         {
@@ -651,7 +651,7 @@ the method to be registered.
     class Article
     {
         // ...
-    
+
         /** @PostUpdate */
         public function postUpdate()
         {
@@ -676,7 +676,7 @@ method to be registered.
     class Article
     {
         // ...
-    
+
         /** @PreFlush */
         public function preFlush()
         {
@@ -703,7 +703,7 @@ method to be registered.
     class Article
     {
         // ...
-    
+
         /** @PreLoad */
         public function preLoad(PreLoadEventArgs $eventArgs)
         {
@@ -728,7 +728,7 @@ the method to be registered.
     class Article
     {
         // ...
-    
+
         /** @PrePersist */
         public function prePersist()
         {
@@ -753,7 +753,7 @@ the method to be registered.
     class Article
     {
         // ...
-    
+
         /** @PreRemove */
         public function preRemove()
         {
@@ -778,7 +778,7 @@ the method to be registered.
     class Article
     {
         // ...
-    
+
         /** @PreUpdate */
         public function preUpdated()
         {

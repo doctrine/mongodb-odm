@@ -10,7 +10,7 @@ queries made to the database you can do so on your
     <?php
 
     // ...
-    
+
     $config->setLoggerCallable(function(array $log) {
         print_r($log);
     });
@@ -27,5 +27,5 @@ with a object instance and a method to call:
     <?php
 
     // ...
-    
+
     $config->setLoggerCallable(array($obj, 'method'));

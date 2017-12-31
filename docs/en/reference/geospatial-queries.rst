@@ -30,13 +30,13 @@ First, setup some documents like the following:
             /** @EmbedOne(targetDocument="Coordinates") */
             public $coordinates;
         }
-    
+
         /** @EmbeddedDocument */
         class Coordinates
         {
             /** @Field(type="float") */
             public $x;
-    
+
             /** @Field(type="float") */
             public $y;
         }

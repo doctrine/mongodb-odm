@@ -149,7 +149,7 @@ Later on, you may want to migrate this data into an embedded Address document:
 
         /** @Field(type="string") */
         public $city;
-    
+
         public function __construct($street, $city)
         {
             $this->street = $street;
@@ -165,16 +165,16 @@ Later on, you may want to migrate this data into an embedded Address document:
 
         /** @Field(type="string") */
         public $name;
-    
+
         /** @NotSaved */
         public $street;
-    
+
         /** @NotSaved */
         public $city;
-    
+
         /** @EmbedOne(targetDocument="Address") */
         public $address;
-    
+
         /** @PostLoad */
         public function postLoad()
         {
@@ -199,7 +199,7 @@ Alternatively, you could defer this migration until the Person is saved:
     class Person
     {
         // ...
-    
+
         /** @PrePersist */
         public function prePersist()
         {

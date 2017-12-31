@@ -199,10 +199,10 @@ This list explains some of the less obvious mapping types:
 -  ``raw``: any type
 
 .. note::
-    
-    If you are using the hash type, values within the associative array are 
+
+    If you are using the hash type, values within the associative array are
     passed to MongoDB directly, without being prepared. Only formats suitable for
-    the Mongo driver should be used. If your hash contains values which are not 
+    the Mongo driver should be used. If your hash contains values which are not
     suitable you should either use an embedded document or use formats provided
     by the MongoDB driver (e.g. ``\MongoDB\BSON\UTCDateTime`` instead of ``\DateTime``).
 
@@ -282,7 +282,7 @@ Here is an example how to manually set a string identifier for your documents:
         {
             /** @Id(strategy="NONE", type="string") */
             private $id;
-    
+
             public function setId($id)
             {
                 $this->id = $id;
@@ -292,17 +292,17 @@ Here is an example how to manually set a string identifier for your documents:
         }
 
     .. code-block:: xml
-    
+
         <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                 xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                                                     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-    
+
             <document name="MyPersistentClass">
                 <field name="id" id="true" strategy="NONE" type="string" />
             </document>
         </doctrine-mongo-mapping>
-    
+
     .. code-block:: yaml
 
         MyPersistentClass:
@@ -512,10 +512,10 @@ class:
 
 Restrictions to keep in mind:
 
-- 
+-
    If the value of the field is *NULL* the method
    ``convertToDatabaseValue()`` is not called.
-- 
+-
    The ``UnitOfWork`` never passes values to the database convert
    method that did not change in the request.
 
@@ -531,13 +531,13 @@ Here is an example:
     <?php
 
     // in bootstrapping code
-    
+
     // ...
-    
+
     use Doctrine\ODM\MongoDB\Types\Type;
-    
+
     // ...
-    
+
     // Register my type
     Type::addType('mytype', 'My\Project\Types\MyType');
 
@@ -588,7 +588,7 @@ the collection. Here is an example:
     {
         // ...
     }
-    
+
     /**
      * @Document(collection="my_documents")
      * @DiscriminatorField("type")

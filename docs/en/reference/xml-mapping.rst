@@ -20,16 +20,16 @@ trunk.
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-    
+
         ...
-    
+
     </doctrine-mongo-mapping>
 
 .. note::
 
     If you do not want to use latest XML Schema document please use link like
     `http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping-1.0.0-BETA12.xsd <http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping-1.0.0-BETA12.xsd>`_.
-    You can change ``1.0.0-BETA12`` part of the URL to 
+    You can change ``1.0.0-BETA12`` part of the URL to
     `any other ODM version <https://github.com/doctrine/mongodb-odm/releases>`_.
 
 The XML mapping document of a class is loaded on-demand the first
@@ -37,14 +37,14 @@ time it is requested and subsequently stored in the metadata cache.
 In order to work, this requires certain conventions:
 
 
-- 
+-
    Each document/mapped superclass must get its own dedicated XML
    mapping document.
-- 
+-
    The name of the mapping document must consist of the fully
    qualified name of the class, where namespace separators are
    replaced by dots (.).
-- 
+-
    All mapping documents should get the extension ".dcm.xml" to
    identify it as a Doctrine mapping file. This is more of a
    convention and you are not forced to do this. You can change the
@@ -103,12 +103,12 @@ of several common elements:
     // Documents.User.dcm.xml
 
     <?xml version="1.0" encoding="UTF-8"?>
-    
+
     <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-    
+
         <document name="Documents\User" db="documents" collection="users">
             <field fieldName="id" id="true" />
             <field fieldName="username" name="login" type="string" />

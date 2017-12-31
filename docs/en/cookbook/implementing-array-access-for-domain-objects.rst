@@ -105,17 +105,17 @@ exception (i.e. BadMethodCallException).
         {
             // option 1 or option 2
         }
-    
+
         public function offsetSet($offset, $value)
         {
             throw new BadMethodCallException("Array access of class " . get_class($this) . " is read-only!");
         }
-    
+
         public function offsetGet($offset)
         {
             // option 1 or option 2
         }
-    
+
         public function offsetUnset($offset)
         {
             throw new BadMethodCallException("Array access of class " . get_class($this) . " is read-only!");

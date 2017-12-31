@@ -75,7 +75,7 @@ follows:
 
     use Doctrine\Common\NotifyPropertyChanged,
         Doctrine\Common\PropertyChangedListener;
-    
+
     /**
      * @Document
      * @ChangeTrackingPolicy("NOTIFY")
@@ -83,9 +83,9 @@ follows:
     class MyDocument implements NotifyPropertyChanged
     {
         // ...
-    
+
         private $_listeners = array();
-    
+
         public function addPropertyChangedListener(PropertyChangedListener $listener)
         {
             $this->_listeners[] = $listener;
@@ -102,11 +102,11 @@ behavior:
     <?php
 
     // ...
-    
+
     class MyDocument implements NotifyPropertyChanged
     {
         // ...
-    
+
         protected function _onPropertyChanged($propName, $oldValue, $newValue)
         {
             if ($this->_listeners) {
@@ -115,7 +115,7 @@ behavior:
                 }
             }
         }
-    
+
         public function setData($data)
         {
             if ($data != $this->data) {
