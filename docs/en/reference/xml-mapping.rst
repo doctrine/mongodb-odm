@@ -36,7 +36,6 @@ The XML mapping document of a class is loaded on-demand the first
 time it is requested and subsequently stored in the metadata cache.
 In order to work, this requires certain conventions:
 
-
 -
    Each document/mapped superclass must get its own dedicated XML
    mapping document.

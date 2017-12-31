@@ -75,7 +75,6 @@ The following example designates a version field using the ``int`` type:
           type: int
           version: true
 
-
 Alternatively, the ``date`` type may be used:
 
 .. configuration-block::

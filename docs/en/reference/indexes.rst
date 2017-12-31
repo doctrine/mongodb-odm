@@ -37,7 +37,6 @@ property:
           username:
             index: true
 
-
 Index Options
 -------------
 

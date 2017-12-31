@@ -237,7 +237,6 @@ Example:
 The semantics of the detach operation, applied to a document X are
 as follows:
 
-
 -
    If X is a managed document, the detach operation causes it to
    become detached. The detach operation is cascaded to documents
@@ -256,7 +255,6 @@ as follows:
 
 There are several situations in which a document is detached
 automatically without invoking the ``detach`` method:
-
 
 -
    When ``DocumentManager#clear()`` is invoked, all documents that are
@@ -408,7 +406,6 @@ documents can be configured to automatically cascade certain
 operations. By default, no operations are cascaded.
 
 The following cascade options exist:
-
 
 -
    persist : Cascades persist operations to the associated documents.

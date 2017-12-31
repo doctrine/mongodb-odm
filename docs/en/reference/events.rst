@@ -620,7 +620,6 @@ Define the ``EventTest`` class with a ``documentNotFound()`` method:
         }
     }
 
-
 postUpdate, postRemove, postPersist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -685,7 +684,6 @@ Define the ``EventTest`` class with a ``postCollectionLoad()`` method:
             }
         }
     }
-
 
 Load ClassMetadata Event
 ------------------------

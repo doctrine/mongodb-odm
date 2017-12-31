@@ -384,8 +384,6 @@ as an option for the ``CUSTOM`` strategy:
               options:
                 class: Vendor\Specific\Generator
 
-
-
 Fields
 ~~~~~~
 

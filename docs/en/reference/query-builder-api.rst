@@ -680,7 +680,6 @@ method:
         ->language('it')
         ->text('parole che stai cercando');
 
-
 Update Queries
 ~~~~~~~~~~~~~~
 
