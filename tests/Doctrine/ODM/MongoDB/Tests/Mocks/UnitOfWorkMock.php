@@ -12,8 +12,7 @@ class UnitOfWorkMock extends \Doctrine\ODM\MongoDB\UnitOfWork
      */
     public function getDocumentPersister($documentName)
     {
-        return isset($this->_persisterMock[$documentName]) ?
-                $this->_persisterMock[$documentName] : parent::getDocumentPersister($documentName);
+        return $this->_persisterMock[$documentName] ?? parent::getDocumentPersister($documentName);
     }
 
     /**
@@ -23,8 +22,8 @@ class UnitOfWorkMock extends \Doctrine\ODM\MongoDB\UnitOfWork
     public function getDocumentChangeSet($document)
     {
         $oid = spl_object_hash($document);
-        return isset($this->_mockDataChangeSets[$oid]) ?
-                $this->_mockDataChangeSets[$oid] : parent::getDocumentChangeSet($document);
+
+        return $this->_mockDataChangeSets[$oid] ?? parent::getDocumentChangeSet($document);
     }
 
     /* MOCK API */

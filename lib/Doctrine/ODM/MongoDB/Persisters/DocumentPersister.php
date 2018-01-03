@@ -689,9 +689,7 @@ class DocumentPersister
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
                 $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
-                $id = $embeddedMetadata->identifier && isset($data[$embeddedMetadata->identifier])
-                    ? $data[$embeddedMetadata->identifier]
-                    : null;
+                $id = $embeddedMetadata->identifier && $data[$embeddedMetadata->identifier] ?? null;
 
                 if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
                     $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
@@ -796,7 +794,7 @@ class DocumentPersister
         $owner = $collection->getOwner();
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-        $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
+        $mappedByMapping = $targetClass->fieldMappings[$mapping['mappedBy']] ?? array();
         $mappedByFieldName = ClassMetadataInfo::getReferenceFieldName($mappedByMapping['storeAs'] ?? ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, $mapping['mappedBy']);
 
         $criteria = $this->cm->merge(

@@ -642,7 +642,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function getLifecycleCallbacks($event)
     {
-        return isset($this->lifecycleCallbacks[$event]) ? $this->lifecycleCallbacks[$event] : array();
+        return $this->lifecycleCallbacks[$event] ?? array();
     }
 
     /**

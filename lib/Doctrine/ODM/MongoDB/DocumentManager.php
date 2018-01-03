@@ -713,9 +713,7 @@ class DocumentManager implements ObjectManager
          * discriminator field and no value, so default to the full class name.
          */
         if (isset($class->discriminatorField)) {
-            $reference[$class->discriminatorField] = isset($class->discriminatorValue)
-                ? $class->discriminatorValue
-                : $class->name;
+            $reference[$class->discriminatorField] = $class->discriminatorValue ?? $class->name;
         }
 
         /* Add a discriminator value if the referenced document is not mapped
