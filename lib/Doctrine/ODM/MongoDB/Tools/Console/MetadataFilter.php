@@ -49,7 +49,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
         $it = $this->getInnerIterator();
         $metadata = $it->current();
 
-        foreach ($this->_filter AS $filter) {
+        foreach ($this->_filter as $filter) {
             if (strpos($metadata->name, $filter) !== false) {
                 return true;
             }
