@@ -33,11 +33,9 @@ class CreateCommand extends AbstractCommand
             @trigger_error('The ' . self::DB . ' option is deprecated and will be removed in ODM 2.0', E_USER_DEPRECATED);
         }
 
-        foreach ($this->createOrder as $option) {
-            if ($input->getOption($option)) {
-                $create[] = $option;
-            }
-        }
+        $create = array_filter($this->createOrder, function ($option) use ($input) {
+            return $input->getOption($option);
+        });
 
         // Default to the full creation order if no options were specified
         $create = empty($create) ? $this->createOrder : $create;
