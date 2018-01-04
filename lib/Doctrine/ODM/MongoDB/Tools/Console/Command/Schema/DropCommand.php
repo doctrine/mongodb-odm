@@ -25,11 +25,9 @@ class DropCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        foreach ($this->dropOrder as $option) {
-            if ($input->getOption($option)) {
-                $drop[] = $option;
-            }
-        }
+        $drop = array_filter($this->dropOrder, function ($option) use ($input) {
+            return $input->getOption($option);
+        });
 
         // Default to the full drop order if no options were specified
         $drop = empty($drop) ? $this->dropOrder : $drop;

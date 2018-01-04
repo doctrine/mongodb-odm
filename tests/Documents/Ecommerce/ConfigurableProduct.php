@@ -133,11 +133,9 @@ class ConfigurableProduct
 
     protected function _getStockItems()
     {
-        $stockItems = array();
-        foreach ($this->getOptions() as $option) {
-            $stockItems[] = $option->getStockItem();
-        }
-        return $stockItems;
+        return array_map(function ($option) {
+            return $option->getStockItem();
+        }, $this->getOptions());
     }
 
 }
