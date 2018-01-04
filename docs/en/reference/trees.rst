@@ -16,31 +16,31 @@ Full Tree in Single Document
     {
         /** @Id */
         private $id;
-    
+
         /** @Field(type="string") */
         private $title;
-    
+
         /** @Field(type="string") */
         private $body;
-    
+
         /** @EmbedMany(targetDocument="Comment") */
         private $comments = array();
-    
+
         // ...
     }
-    
+
     /** @EmbeddedDocument */
     class Comment
     {
         /** @Field(type="string") */
         private $by;
-    
+
         /** @Field(type="string") */
         private $text;
-    
+
         /** @EmbedMany(targetDocument="Comment") */
         private $replies = array();
-    
+
         // ...
     }
 
@@ -72,16 +72,16 @@ Parent Reference
     {
         /** @Id */
         private $id;
-    
+
         /** @Field(type="string") */
         private $name;
-    
+
         /**
          * @ReferenceOne(targetDocument="Category")
          * @Index
          */
         private $parent;
-    
+
         // ...
     }
 
@@ -111,16 +111,16 @@ Child Reference
     {
         /** @Id */
         private $id;
-    
+
         /** @Field(type="string") */
         private $name;
-    
+
         /**
          * @ReferenceMany(targetDocument="Category")
          * @Index
          */
         private $children = array();
-    
+
         // ...
     }
 
@@ -163,31 +163,31 @@ Array of Ancestors
     {
         /** @Field(type="string") */
         private $name;
-    
+
         // ...
     }
-    
+
     /** @Document */
     class Category extends BaseCategory
     {
         /** @Id */
         private $id;
-    
+
         /**
          * @ReferenceMany(targetDocument="Category")
          * @Index
          */
         private $ancestors = array();
-    
+
         /**
          * @ReferenceOne(targetDocument="Category")
          * @Index
          */
         private $parent;
-    
+
         // ...
     }
-    
+
     /** @EmbeddedDocument */
     class SubCategory extends BaseCategory
     {
@@ -232,13 +232,13 @@ Materialized Paths
     {
         /** @Id */
         private $id;
-    
+
         /** @Field(type="string") */
         private $name;
-    
+
         /** @Field(type="string") */
         private $path;
-    
+
         // ...
     }
 

@@ -56,12 +56,12 @@ Example:
     namespace MyProject\Model;
 
     use Doctrine\Common\Collections\ArrayCollection;
-    
+
     class User
     {
         private $addresses;
         private $articles;
-    
+
         public function __construct()
         {
             $this->addresses = new ArrayCollection;

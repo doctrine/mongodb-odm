@@ -16,53 +16,53 @@ MongoGridFS:
 .. code-block:: php
 
     <?php
-    
+
     namespace Documents;
-    
+
     /** @Document */
     class Image
     {
         /** @Id */
         private $id;
-    
+
         /** @Field */
         private $name;
-    
+
         /** @File */
         private $file;
-    
+
         /** @Field */
         private $uploadDate;
-    
+
         /** @Field */
         private $length;
-    
+
         /** @Field */
         private $chunkSize;
-    
+
         /** @Field */
         private $md5;
-    
+
         public function getId()
         {
             return $this->id;
         }
-    
+
         public function setName($name)
         {
             $this->name = $name;
         }
-    
+
         public function getName()
         {
             return $this->name;
         }
-    
+
         public function getFile()
         {
             return $this->file;
         }
-    
+
         public function setFile($file)
         {
             $this->file = $file;
@@ -89,7 +89,7 @@ First you need to create a new Image:
     $image = new Image();
     $image->setName('Test image');
     $image->setFile('/path/to/image.png');
-    
+
     $dm->persist($image);
     $dm->flush();
 
@@ -103,7 +103,7 @@ Now you can later query for the Image and render it:
         ->field('name')->equals('Test image')
         ->getQuery()
         ->getSingleResult();
-    
+
     header('Content-type: image/png;');
     echo $image->getFile()->getBytes();
 
@@ -114,41 +114,41 @@ every Profile to have a profile image:
 .. code-block:: php
 
     <?php
-    
+
     namespace Documents;
-    
+
     /** @Document */
     class Profile
     {
         /** @Id */
         private $id;
-    
+
         /** @Field */
         private $name;
-    
+
         /** @ReferenceOne(targetDocument="Documents\Image") */
         private $image;
-    
+
         public function getId()
         {
           return $this->id;
         }
-    
+
         public function getName()
         {
             return $this->name;
         }
-    
+
         public function setName($name)
         {
             $this->name = $name;
         }
-    
+
         public function getImage()
         {
             return $this->image;
         }
-    
+
         public function setImage(Image $image)
         {
             $this->image = $image;
@@ -164,11 +164,11 @@ Now you can create a new Profile and give it an Image:
     $image = new Image();
     $image->setName('Test image');
     $image->setFile('/path/to/image.png');
-    
+
     $profile = new Profile();
     $profile->setName('Jonathan H. Wage');
     $profile->setImage($image);
-    
+
     $dm->persist($profile);
     $dm->flush();
 
@@ -183,8 +183,8 @@ in a query you can use:
         ->field('name')->equals('Jonathan H. Wage')
         ->getQuery()
         ->getSingleResult();
-    
+
     $image = $profile->getImage();
-    
+
     header('Content-type: image/png;');
     echo $image->getFile()->getBytes();

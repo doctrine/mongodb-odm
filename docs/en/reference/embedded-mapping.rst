@@ -56,7 +56,7 @@ Embed a single document:
 
         Address:
           type: embeddedDocument
-          
+
 .. _embed_many:
 
 Embed Many
@@ -109,7 +109,7 @@ Embed many documents:
 
         Phonenumber:
           type: embeddedDocument
-          
+
 .. _embed_mixing_document_types:
 
 Mixing Document Types

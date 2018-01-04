@@ -74,7 +74,6 @@ following example:
      */
     private $lastComment;
 
-
 ``criteria`` Example
 --------------------
 

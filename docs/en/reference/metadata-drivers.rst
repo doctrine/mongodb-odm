@@ -60,26 +60,26 @@ implements the ``Driver`` interface:
     <?php
 
     namespace Doctrine\ODM\MongoDB\Mapping\Driver;
-    
+
     use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-    
+
     interface Driver
     {
         /**
          * Loads the metadata for the specified class into the provided container.
-         * 
+         *
          * @param string $className
          * @param ClassMetadataInfo $metadata
          */
         function loadMetadataForClass($className, ClassMetadataInfo $metadata);
-    
+
         /**
          * Gets the names of all mapped classes known to this driver.
-         * 
+         *
          * @return array The names of all mapped classes known to this driver.
          */
-        function getAllClassNames(); 
-    
+        function getAllClassNames();
+
         /**
          * Whether the class with the specified name should have its metadata loaded.
          * This is only the case if it is either mapped as a Document or a
@@ -105,17 +105,17 @@ the ``AbstractFileDriver`` implementation for you to extend from:
          * {@inheritdoc}
          */
         protected $_fileExtension = '.dcm.ext';
-    
+
         /**
          * {@inheritdoc}
          */
         public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
         {
             $data = $this->_loadMappingFile($file);
-    
+
             // populate ClassMetadataInfo instance from $data
         }
-    
+
         /**
          * {@inheritdoc}
          */

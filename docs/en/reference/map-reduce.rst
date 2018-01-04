@@ -22,28 +22,28 @@ named ``Event`` and it was related to a ``User`` document:
     <?php
 
     namespace Documents;
-    
+
     /** @Document */
     class Event
     {
         /** @Id */
         private $id;
-    
+
         /** @ReferenceOne(targetDocument="Documents\User") */
         private $user;
-    
+
         /** @Field(type="string") */
         private $type;
-    
+
         /** @Field(type="date") */
         private $date;
-    
+
         /** @Field(type="string") */
         private $description;
-    
+
         // getters and setters
     }
-    
+
     /** @Document */
     class User
     {
@@ -97,13 +97,13 @@ PHP driver directly:
     $reduce = new MongoDB\BSON\Javascript('function(k, vals) {
         var sum = 0;
         for (var i in vals) {
-            sum += vals[i]; 
+            sum += vals[i];
         }
         return sum;
     }');
 
     $result = $db->command(array(
-        'mapreduce' => 'events', 
+        'mapreduce' => 'events',
         'map' => $map,
         'reduce' => $reduce,
         'query' => array('type' => 'sale'),

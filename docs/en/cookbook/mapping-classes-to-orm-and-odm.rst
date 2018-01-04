@@ -18,7 +18,7 @@ for multiple Doctrine persistence layers:
     <?php
 
     namespace Doctrine\Blog;
-    
+
     class BlogPost
     {
         private $id;

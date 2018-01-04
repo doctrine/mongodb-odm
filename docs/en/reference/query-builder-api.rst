@@ -83,9 +83,9 @@ with the ``find()``, ``update()`` (deprecated), ``updateOne()``,
     <?php
 
     $qb = $dm->createQueryBuilder();
-    
+
     // ...
-    
+
     $qb->find('User');
 
 Executing Queries
@@ -371,7 +371,7 @@ object:
         ->reduce("function(k, vals) {
             var sum = 0;
             for (var i in vals) {
-                sum += vals[i]; 
+                sum += vals[i];
             }
             return sum;
         }");
@@ -571,7 +571,7 @@ Read more about the
 in the Mongo docs.
 
 .. code-block:: php
-    
+
     <?php
 
     $qb = $dm->createQueryBuilder('Transaction')
@@ -589,8 +589,8 @@ Query for users who have subscribed or are in a trial.
     $qb = $dm->createQueryBuilder('User');
     $qb->addOr($qb->expr()->field('subscriber')->equals(true));
     $qb->addOr($qb->expr()->field('inTrial')->equals(true));
-    
-Read more about the 
+
+Read more about the
 `$or operator <https://docs.mongodb.com/manual/reference/operator/query/or/>`_ in the Mongo docs.
 
 The ``references()`` method may be used to query the owning side of a
@@ -679,7 +679,6 @@ method:
     $qb = $dm->createQueryBuilder('Document')
         ->language('it')
         ->text('parole che stai cercando');
-
 
 Update Queries
 ~~~~~~~~~~~~~~

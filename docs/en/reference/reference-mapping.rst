@@ -181,7 +181,7 @@ The class name will be automatically stored in a field named
     The MongoDB shell tends to ignore fields other than ``$id`` and ``$ref``
     when displaying `DBRef`_ objects. You can verify the presence of any ``$db``
     and discriminator fields by querying and examining the document with a
-    driver. See `SERVER-10777 <https://jira.mongodb.org/browse/SERVER-10777>`_ 
+    driver. See `SERVER-10777 <https://jira.mongodb.org/browse/SERVER-10777>`_
     for additional discussion on this issue.
 
 The name of the field within the DBRef object can be customized via the

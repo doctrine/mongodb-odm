@@ -25,7 +25,7 @@ implementation code in an identity check as follows:
     {
         private $id; // This is the identifier of the document.
         //...
-    
+
         public function __wakeup()
         {
             // If the document has an identity, proceed as normal.
@@ -34,7 +34,7 @@ implementation code in an identity check as follows:
             }
             // otherwise do nothing, do NOT throw an exception!
         }
-    
+
         //...
     }
 
@@ -50,7 +50,7 @@ Safely implementing ``__clone`` is pretty much the same:
     {
         private $id; // This is the identifier of the document.
         //...
-    
+
         public function __clone()
         {
             // If the document has an identity, proceed as normal.
@@ -59,7 +59,7 @@ Safely implementing ``__clone`` is pretty much the same:
             }
             // otherwise do nothing, do NOT throw an exception!
         }
-    
+
         //...
     }
 
