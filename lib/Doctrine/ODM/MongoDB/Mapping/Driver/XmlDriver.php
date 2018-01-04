@@ -85,7 +85,7 @@ class XmlDriver extends FileDriver
              * configurations, but fall back to "fieldName" for BC.
              */
             $class->setDiscriminatorField(
-                isset($discrField['name']) ? (string) $discrField['name'] : (string) $discrField['fieldName']
+                (string) ($discrField['name'] ?? $discrField['fieldName'])
             );
         }
         if (isset($xmlRoot->{'discriminator-map'})) {
@@ -234,7 +234,7 @@ class XmlDriver extends FileDriver
             'targetDocument'  => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'collectionClass' => isset($attributes['collection-class']) ? (string) $attributes['collection-class'] : null,
             'name'            => (string) $attributes['field'],
-            'strategy'        => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
+            'strategy'        => (string) ($attributes['strategy'] ?? $defaultStrategy),
         );
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
@@ -274,11 +274,11 @@ class XmlDriver extends FileDriver
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
             'type'             => $type,
             'reference'        => true,
-            'storeAs'          => isset($attributes['store-as']) ? (string) $attributes['store-as'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF,
+            'storeAs'          => (string) ($attributes['store-as'] ?? ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF),
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'collectionClass'  => isset($attributes['collection-class']) ? (string) $attributes['collection-class'] : null,
             'name'             => (string) $attributes['field'],
-            'strategy'         => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
+            'strategy'         => (string) ($attributes['strategy'] ?? $defaultStrategy),
             'inversedBy'       => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
             'mappedBy'         => isset($attributes['mapped-by']) ? (string) $attributes['mapped-by'] : null,
             'repositoryMethod' => isset($attributes['repository-method']) ? (string) $attributes['repository-method'] : null,
@@ -306,7 +306,7 @@ class XmlDriver extends FileDriver
         if (isset($reference->{'sort'})) {
             foreach ($reference->{'sort'}->{'sort'} as $sort) {
                 $attr = $sort->attributes();
-                $mapping['sort'][(string) $attr['field']] = isset($attr['order']) ? (string) $attr['order'] : 'asc';
+                $mapping['sort'][(string) $attr['field']] = (string) ($attr['order'] ?? 'asc');
             }
         }
         if (isset($reference->{'criteria'})) {
@@ -338,7 +338,7 @@ class XmlDriver extends FileDriver
         $keys = array();
 
         foreach ($xmlIndex->{'key'} as $key) {
-            $keys[(string) $key['name']] = isset($key['order']) ? (string) $key['order'] : 'asc';
+            $keys[(string) $key['name']] = (string) ($key['order'] ?? 'asc');
         }
 
         $options = array();
@@ -443,7 +443,7 @@ class XmlDriver extends FileDriver
         $keys = array();
         $options = array();
         foreach ($xmlShardkey->{'key'} as $key) {
-            $keys[(string) $key['name']] = isset($key['order']) ? (string)$key['order'] : 'asc';
+            $keys[(string) $key['name']] = (string) ($key['order'] ?? 'asc');
         }
 
         if (isset($attributes['unique'])) {

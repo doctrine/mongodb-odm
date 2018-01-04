@@ -94,9 +94,7 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            $insertData[$class->discriminatorField] = isset($class->discriminatorValue)
-                ? $class->discriminatorValue
-                : $class->name;
+            $insertData[$class->discriminatorField] = $class->discriminatorValue ?? $class->name;
         }
 
         return $insertData;
@@ -271,9 +269,7 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            $updateData['$set'][$class->discriminatorField] = isset($class->discriminatorValue)
-                ? $class->discriminatorValue
-                : $class->name;
+            $updateData['$set'][$class->discriminatorField] = $class->discriminatorValue ?? $class->name;
         }
 
         return $updateData;
@@ -394,9 +390,7 @@ class PersistenceBuilder
          * discriminator field and no value, so default to the full class name.
          */
         if (isset($class->discriminatorField)) {
-            $embeddedDocumentValue[$class->discriminatorField] = isset($class->discriminatorValue)
-                ? $class->discriminatorValue
-                : $class->name;
+            $embeddedDocumentValue[$class->discriminatorField] = $class->discriminatorValue ?? $class->name;
         }
 
         // Ensure empty embedded documents are stored as BSON objects

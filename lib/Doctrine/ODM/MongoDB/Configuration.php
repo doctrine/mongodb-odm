@@ -155,8 +155,7 @@ class Configuration
      */
     public function getMetadataDriverImpl()
     {
-        return isset($this->attributes['metadataDriverImpl']) ?
-            $this->attributes['metadataDriverImpl'] : null;
+        return $this->attributes['metadataDriverImpl'] ?? null;
     }
 
     /**
@@ -166,8 +165,7 @@ class Configuration
      */
     public function getMetadataCacheImpl()
     {
-        return isset($this->attributes['metadataCacheImpl']) ?
-            $this->attributes['metadataCacheImpl'] : null;
+        return $this->attributes['metadataCacheImpl'] ?? null;
     }
 
     /**
@@ -197,8 +195,7 @@ class Configuration
      */
     public function getProxyDir()
     {
-        return isset($this->attributes['proxyDir']) ?
-            $this->attributes['proxyDir'] : null;
+        return $this->attributes['proxyDir'] ?? null;
     }
 
     /**
@@ -209,8 +206,7 @@ class Configuration
      */
     public function getAutoGenerateProxyClasses()
     {
-        return isset($this->attributes['autoGenerateProxyClasses']) ?
-            $this->attributes['autoGenerateProxyClasses'] : true;
+        return $this->attributes['autoGenerateProxyClasses'] ?? true;
     }
 
     /**
@@ -231,8 +227,7 @@ class Configuration
      */
     public function getProxyNamespace()
     {
-        return isset($this->attributes['proxyNamespace']) ?
-            $this->attributes['proxyNamespace'] : null;
+        return $this->attributes['proxyNamespace'] ?? null;
     }
 
     /**
@@ -262,8 +257,7 @@ class Configuration
      */
     public function getHydratorDir()
     {
-        return isset($this->attributes['hydratorDir']) ?
-            $this->attributes['hydratorDir'] : null;
+        return $this->attributes['hydratorDir'] ?? null;
     }
 
     /**
@@ -274,8 +268,7 @@ class Configuration
      */
     public function getAutoGenerateHydratorClasses()
     {
-        return isset($this->attributes['autoGenerateHydratorClasses']) ?
-            $this->attributes['autoGenerateHydratorClasses'] : true;
+        return $this->attributes['autoGenerateHydratorClasses'] ?? true;
     }
 
     /**
@@ -296,8 +289,7 @@ class Configuration
      */
     public function getHydratorNamespace()
     {
-        return isset($this->attributes['hydratorNamespace']) ?
-            $this->attributes['hydratorNamespace'] : null;
+        return $this->attributes['hydratorNamespace'] ?? null;
     }
 
     /**
@@ -327,8 +319,7 @@ class Configuration
      */
     public function getPersistentCollectionDir()
     {
-        return isset($this->attributes['persistentCollectionDir']) ?
-            $this->attributes['persistentCollectionDir'] : null;
+        return $this->attributes['persistentCollectionDir'] ?? null;
     }
 
     /**
@@ -339,8 +330,7 @@ class Configuration
      */
     public function getAutoGeneratePersistentCollectionClasses()
     {
-        return isset($this->attributes['autoGeneratePersistentCollectionClasses']) ?
-            $this->attributes['autoGeneratePersistentCollectionClasses'] : self::AUTOGENERATE_ALWAYS;
+        return $this->attributes['autoGeneratePersistentCollectionClasses'] ?? self::AUTOGENERATE_ALWAYS;
     }
 
     /**
@@ -361,8 +351,7 @@ class Configuration
      */
     public function getPersistentCollectionNamespace()
     {
-        return isset($this->attributes['persistentCollectionNamespace']) ?
-            $this->attributes['persistentCollectionNamespace'] : null;
+        return $this->attributes['persistentCollectionNamespace'] ?? null;
     }
 
     /**
@@ -393,8 +382,7 @@ class Configuration
      */
     public function getDefaultDB()
     {
-        return isset($this->attributes['defaultDB']) ?
-            $this->attributes['defaultDB'] : null;
+        return $this->attributes['defaultDB'] ?? null;
     }
 
     /**
@@ -427,11 +415,7 @@ class Configuration
      */
     public function getDefaultCommitOptions()
     {
-        if (isset($this->attributes['defaultCommitOptions'])) {
-            return $this->attributes['defaultCommitOptions'];
-        }
-
-        return array('w' => 1);
+        return $this->attributes['defaultCommitOptions'] ?? array('w' => 1);
     }
 
     /**
@@ -514,9 +498,7 @@ class Configuration
      */
     public function getDefaultRepositoryClassName()
     {
-        return isset($this->attributes['defaultRepositoryClassName'])
-            ? $this->attributes['defaultRepositoryClassName']
-            : DocumentRepository::class;
+        return $this->attributes['defaultRepositoryClassName'] ?? DocumentRepository::class;
     }
 
     /**
@@ -536,9 +518,7 @@ class Configuration
      */
     public function getRepositoryFactory()
     {
-        return isset($this->attributes['repositoryFactory'])
-            ? $this->attributes['repositoryFactory']
-            : new DefaultRepositoryFactory();
+        return $this->attributes['repositoryFactory'] ?? new DefaultRepositoryFactory();
     }
 
     /**

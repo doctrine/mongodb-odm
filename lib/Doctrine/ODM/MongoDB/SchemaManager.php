@@ -523,11 +523,7 @@ class SchemaManager
                 if ($result['ok'] != 1 && strpos($result['errmsg'], 'please create an index that starts') !== false) {
                     // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
                     // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
-                    if (isset($result['proposedKey'])) {
-                        $key = $result['proposedKey'];
-                    } else {
-                        $key = $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
-                    }
+                    $key = $result['proposedKey'] ?? $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
 
                     $this->dm->getDocumentCollection($documentName)->ensureIndex($key, $indexOptions);
                     $done = false;

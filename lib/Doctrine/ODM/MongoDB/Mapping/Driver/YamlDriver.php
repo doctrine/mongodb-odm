@@ -241,7 +241,7 @@ class YamlDriver extends FileDriver
             'targetDocument'  => $embed['targetDocument'] ?? null,
             'collectionClass' => $embed['collectionClass'] ?? null,
             'fieldName'       => $fieldName,
-            'strategy'        => isset($embed['strategy']) ? (string) $embed['strategy'] : $defaultStrategy,
+            'strategy'        => (string) ($embed['strategy'] ?? $defaultStrategy),
         );
         if (isset($embed['name'])) {
             $mapping['name'] = $embed['name'];
@@ -266,11 +266,11 @@ class YamlDriver extends FileDriver
             'orphanRemoval'    => $reference['orphanRemoval'] ?? false,
             'type'             => $type,
             'reference'        => true,
-            'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF,
+            'storeAs'          => (string) ($reference['storeAs'] ?? ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF),
             'targetDocument'   => $reference['targetDocument'] ?? null,
             'collectionClass'  => $reference['collectionClass'] ?? null,
             'fieldName'        => $fieldName,
-            'strategy'         => isset($reference['strategy']) ? (string) $reference['strategy'] : $defaultStrategy,
+            'strategy'         => (string) ($reference['strategy'] ?? $defaultStrategy),
             'inversedBy'       => isset($reference['inversedBy']) ? (string) $reference['inversedBy'] : null,
             'mappedBy'         => isset($reference['mappedBy']) ? (string) $reference['mappedBy'] : null,
             'repositoryMethod' => isset($reference['repositoryMethod']) ? (string) $reference['repositoryMethod'] : null,

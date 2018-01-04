@@ -304,10 +304,8 @@ class UnitOfWork implements PropertyChangedListener
     public function getParentAssociation($document)
     {
         $oid = spl_object_hash($document);
-        if ( ! isset($this->parentAssociations[$oid])) {
-            return null;
-        }
-        return $this->parentAssociations[$oid];
+
+        return $this->parentAssociations[$oid] ?? null;
     }
 
     /**
@@ -574,10 +572,8 @@ class UnitOfWork implements PropertyChangedListener
     public function getDocumentChangeSet($document)
     {
         $oid = spl_object_hash($document);
-        if (isset($this->documentChangeSets[$oid])) {
-            return $this->documentChangeSets[$oid];
-        }
-        return array();
+
+        return $this->documentChangeSets[$oid] ?? array();
     }
 
     /**
@@ -1566,8 +1562,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $serializedId = serialize($class->getDatabaseIdentifierValue($id));
 
-        return isset($this->identityMap[$class->name][$serializedId]) ?
-            $this->identityMap[$class->name][$serializedId] : false;
+        return $this->identityMap[$class->name][$serializedId] ?? false;
     }
 
     /**
@@ -2479,9 +2474,8 @@ class UnitOfWork implements PropertyChangedListener
     public function getVisitedCollections($document)
     {
         $oid = spl_object_hash($document);
-        return isset($this->visitedCollections[$oid])
-                ? $this->visitedCollections[$oid]
-                : array();
+
+        return $this->visitedCollections[$oid] ?? array();
     }
 
     /**
@@ -2494,9 +2488,8 @@ class UnitOfWork implements PropertyChangedListener
     public function getScheduledCollections($document)
     {
         $oid = spl_object_hash($document);
-        return isset($this->hasScheduledCollections[$oid])
-                ? $this->hasScheduledCollections[$oid]
-                : array();
+
+        return $this->hasScheduledCollections[$oid] ?? array();
     }
 
     /**
@@ -2609,9 +2602,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($discriminatorValue !== null) {
-            return isset($class->discriminatorMap[$discriminatorValue])
-                ? $class->discriminatorMap[$discriminatorValue]
-                : $discriminatorValue;
+            return $class->discriminatorMap[$discriminatorValue] ?? $discriminatorValue;
         }
 
         return $mapping['targetDocument'];
@@ -2642,15 +2633,13 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($discriminatorValue !== null) {
-            $className = isset($class->discriminatorMap[$discriminatorValue])
-                ? $class->discriminatorMap[$discriminatorValue]
-                : $discriminatorValue;
+            $className =  $class->discriminatorMap[$discriminatorValue] ?? $discriminatorValue;
 
             $class = $this->dm->getClassMetadata($className);
 
             unset($data[$class->discriminatorField]);
         }
-        
+
         if (! empty($hints[Query::HINT_READ_ONLY])) {
             $document = $class->newInstance();
             $this->hydratorFactory->hydrate($document, $data, $hints);
@@ -2733,10 +2722,8 @@ class UnitOfWork implements PropertyChangedListener
     public function getOriginalDocumentData($document)
     {
         $oid = spl_object_hash($document);
-        if (isset($this->originalDocumentData[$oid])) {
-            return $this->originalDocumentData[$oid];
-        }
-        return array();
+
+        return $this->originalDocumentData[$oid] ?? array();
     }
 
     /**
@@ -2771,8 +2758,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getDocumentIdentifier($document)
     {
-        return isset($this->documentIdentifiers[spl_object_hash($document)]) ?
-            $this->documentIdentifiers[spl_object_hash($document)] : null;
+        return $this->documentIdentifiers[spl_object_hash($document)] ?? null;
     }
 
     /**
