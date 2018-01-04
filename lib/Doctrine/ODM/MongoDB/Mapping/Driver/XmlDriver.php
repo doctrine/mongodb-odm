@@ -90,7 +90,7 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot->{'discriminator-map'})) {
             $map = array();
-            foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
+            foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} as $discrMapElement) {
                 $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
             }
             $class->setDiscriminatorMap($map);
