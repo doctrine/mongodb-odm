@@ -2469,6 +2469,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($document !== $coll->getOwner()) {
             $parent = $coll->getOwner();
+            $mapping = [];
             while (null !== ($parentAssoc = $this->getParentAssociation($parent))) {
                 list($mapping, $parent, ) = $parentAssoc;
             }
@@ -2592,12 +2593,15 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $isManagedObject = false;
+        $serializedId = null;
+        $id = null;
         if (! $class->isQueryResultDocument) {
             $id = $class->getDatabaseIdentifierValue($data['_id']);
             $serializedId = serialize($id);
             $isManagedObject = isset($this->identityMap[$class->name][$serializedId]);
         }
 
+        $oid = null;
         if ($isManagedObject) {
             $document = $this->identityMap[$class->name][$serializedId];
             $oid = spl_object_hash($document);

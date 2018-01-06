@@ -672,6 +672,7 @@ class DocumentManager implements ObjectManager
         }
 
         $storeAs = $referenceMapping['storeAs'] ?? null;
+        $reference = [];
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
                 if ($class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION) {

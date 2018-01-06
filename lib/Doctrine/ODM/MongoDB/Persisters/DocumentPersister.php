@@ -231,6 +231,7 @@ class DocumentPersister
             // Set the initial version for each insert
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+                $nextVersion = null;
                 if ($versionMapping['type'] === 'int') {
                     $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
@@ -309,6 +310,7 @@ class DocumentPersister
         // Set the initial version for each upsert
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+            $nextVersion = null;
             if ($versionMapping['type'] === 'int') {
                 $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
