@@ -43,7 +43,7 @@ EOT
             }
         }
         if ($errors) {
-            $output->writeln(sprintf('<error>%d document(s) have mapping issues.</error>'));
+            $output->writeln(sprintf('<error>%d document(s) have mapping issues.</error>', $errors));
         } else {
             $output->writeln('All documents are OK!');
         }

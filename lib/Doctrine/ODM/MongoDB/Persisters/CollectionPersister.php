@@ -38,6 +38,13 @@ class CollectionPersister
     private $pb;
 
     /**
+     * The UnitOfWork instance.
+     *
+     * @var UnitOfWork
+     */
+    private $uow;
+
+    /**
      * Constructs a new CollectionPersister instance.
      *
      * @param DocumentManager $dm

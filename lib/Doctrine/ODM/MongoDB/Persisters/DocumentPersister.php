@@ -104,6 +104,13 @@ class DocumentPersister
     private $cp;
 
     /**
+     * The HydratorFactory instance.
+     *
+     * @var HydratorFactory
+     */
+    private $hydratorFactory;
+
+    /**
      * Initializes this instance.
      *
      * @param PersistenceBuilder $pb
