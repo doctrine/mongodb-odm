@@ -24,23 +24,6 @@ class GH774Test extends BaseTest
         $this->assertEquals('test', $thread->permalink);
     }
 
-    public function testUpsertSingleFlush()
-    {
-        $id = (string) new \MongoDB\BSON\ObjectId();
-
-        $thread = new GH774Thread();
-        $thread->id = $id;
-        $thread->permalink = 'test';
-
-        $this->dm->persist($thread);
-        $this->dm->flush($thread);
-        $this->dm->clear();
-
-        $thread = $this->dm->find(get_class($thread), $id);
-        $this->assertNotNull($thread);
-        $this->assertEquals('test', $thread->permalink);
-    }
-
     protected function createMetadataDriverImpl()
     {
         return new XmlDriver(__DIR__ . '/GH774');

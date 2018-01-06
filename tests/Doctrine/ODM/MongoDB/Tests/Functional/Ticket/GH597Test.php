@@ -11,7 +11,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $post = new GH597Post();
         $this->dm->persist($post);
-        $this->dm->flush($post);
+        $this->dm->flush();
         $this->dm->clear();
 
         // default behavior on inserts already leaves out embedded documents
@@ -26,7 +26,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             new GH597Comment('Comment 3')
         ));
         $this->dm->persist($post);
-        $this->dm->flush($post);
+        $this->dm->flush();
         $this->dm->clear();
 
         $expectedDocument = array(
@@ -43,7 +43,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
         $this->assertCount(3, $post->getComments());
         $post->comments = null;
-        $this->dm->flush($post);
+        $this->dm->flush();
         $this->dm->clear();
 
         $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
@@ -75,7 +75,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $post->referenceMany = new ArrayCollection(array($referenceMany1, $referenceMany2));
         $this->dm->persist($post);
-        $this->dm->flush($post);
+        $this->dm->flush();
         $this->dm->clear();
 
         $expectedDocument = array(
@@ -91,7 +91,7 @@ class GH597Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
         $this->assertCount(2, $post->getReferenceMany());
         $post->referenceMany = null;
-        $this->dm->flush($post);
+        $this->dm->flush();
         $this->dm->clear();
 
         $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
