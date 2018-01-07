@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateCommand extends AbstractCommand
 {
-    private $createOrder = array(self::DB, self::COLLECTION, self::INDEX);
+    private $createOrder = array(self::COLLECTION, self::INDEX);
 
     private $timeout;
 
@@ -20,7 +20,6 @@ class CreateCommand extends AbstractCommand
             ->setName('odm:schema:create')
             ->addOption('class', 'c', InputOption::VALUE_REQUIRED, 'Document class to process (default: all classes)')
             ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
-            ->addOption(self::DB, null, InputOption::VALUE_NONE, 'Create databases')
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Create collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Create indexes')
             ->setDescription('Create databases, collections and indexes for your documents')
@@ -29,10 +28,6 @@ class CreateCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption(self::DB)) {
-            @trigger_error('The ' . self::DB . ' option is deprecated and will be removed in ODM 2.0', E_USER_DEPRECATED);
-        }
-
         $create = array_filter($this->createOrder, function ($option) use ($input) {
             return $input->getOption($option);
         });
@@ -82,12 +77,12 @@ class CreateCommand extends AbstractCommand
 
     protected function processDocumentDb(SchemaManager $sm, $document)
     {
-        $sm->createDocumentDatabase($document);
+        throw new \BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
     }
 
     protected function processDb(SchemaManager $sm)
     {
-        $sm->createDatabases();
+        throw new \BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
     }
 
     protected function processDocumentIndex(SchemaManager $sm, $document)
