@@ -697,9 +697,7 @@ available to you that make it easy to update documents in Mongo:
 * ``inc($name, $value)``
 * ``unsetField($field)``
 * ``push($field, $value)``
-* ``pushAll($field, array $valueArray)``
 * ``addToSet($field, $value)``
-* ``addManyToSet($field, array $values)``
 * ``popFirst($field)``
 * ``popLast($field)``
 * ``pull($field, $value)``
@@ -721,10 +719,6 @@ In ODM the distinction is done by explicitly calling ``updateMany()`` method of 
         ->field('username')->equals('sgoettschkes')
         ->getQuery()
         ->execute();
-
-.. note::
-    ``updateMany()`` and  ``updateOne()`` methods were introduced in version 1.2. If you're
-    using one of previous version you need to use ``update()`` combined with ``multiple(true)``.
 
 Modifier Operations
 -------------------
@@ -835,16 +829,12 @@ Append new tags to the tags array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')
-        ->updateOne()
-        ->field('tags')->pushAll(array('tag6', 'tag7'))
+    $qb = $dm->createQueryBuilder('Article');
+    $qb->updateOne()
+        ->field('tags')->push($qb->expr()->each(array('tag6', 'tag7')))
         ->field('id')->equals('theid')
         ->getQuery()
         ->execute();
-
-Read more about the
-`$pushAll modifier <https://docs.mongodb.com/manual/reference/operator/update/pushAll/>`_
-in the Mongo docs.
 
 Add value to array only if its not in the array already:
 
@@ -870,16 +860,12 @@ already:
 
     <?php
 
-    $dm->createQueryBuilder('Article')
-        ->updateOne()
-        ->field('tags')->addManyToSet(array('tag6', 'tag7'))
+    $qb = $dm->createQueryBuilder('Article');
+    $qb->updateOne()
+        ->field('tags')->addToSet($qb->expr()->each(array('tag6', 'tag7')))
         ->field('id')->equals('theid')
         ->getQuery()
         ->execute();
-
-Read more about the
-`$addManyToSet modifier <http://www.mongodb.org/display/DOCS/Updating#Updating-%24addManyToSet>`_
-in the Mongo docs.
 
 Remove first element in an array:
 

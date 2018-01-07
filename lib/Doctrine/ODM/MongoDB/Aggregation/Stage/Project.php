@@ -43,20 +43,6 @@ class Project extends Operator
     }
 
     /**
-     * Shorthand method to exclude the _id field.
-     *
-     * @deprecated Deprecated in 1.5, please use {@link excludeFields()}.
-     * @param bool $exclude
-     * @return $this
-     */
-    public function excludeIdField($exclude = true)
-    {
-        @trigger_error(__METHOD__ . ' has been deprecated in favor of excludeFields.', E_USER_DEPRECATED);
-
-        return $this->field('_id')->expression( ! $exclude);
-    }
-
-    /**
      * Shorthand method to define which fields to be included.
      *
      * @param array $fields

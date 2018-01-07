@@ -117,7 +117,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     '$$REDACT'
                 )
             ->project()
-                ->excludeIdField()
+                ->excludeFields(['_id'])
                 ->includeFields(['user', 'amount', 'invoiceAddress'])
                 ->field('deliveryAddress')
                 ->cond(
@@ -265,7 +265,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(\Documents\GuestServer::class);
         $builder
             ->project()
-            ->excludeIdField();
+            ->excludeFields(['_id']);
 
         $expectedPipeline = [
             [

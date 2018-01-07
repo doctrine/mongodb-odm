@@ -307,14 +307,6 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($expected, $expr->getQuery(), '->references() uses some keys if storeAs=dbRef is set');
     }
 
-    public function testAddManyToSet()
-    {
-        $expr = $this->createExpr();
-
-        $this->assertSame($expr, $expr->field('a')->addManyToSet([1, 2]));
-        $this->assertEquals(['$addToSet' => ['a' => ['$each' => [1, 2]]]], $expr->getNewObj());
-    }
-
     public function testAddToSetWithValue()
     {
         $expr = $this->createExpr();
@@ -727,48 +719,6 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($expr, $expr->where('javascript'));
         $this->assertEquals(['$where' => 'javascript'], $expr->getQuery());
         $this->assertNull($expr->getCurrentField());
-    }
-
-    public function testWithinBox()
-    {
-        $expr = $this->createExpr();
-
-        $this->assertSame($expr, $expr->withinBox(1, 2, 3, 4));
-        $this->assertEquals(['$within' => ['$box' => [[1, 2], [3, 4]]]], $expr->getQuery());
-    }
-
-    public function testWithinCenter()
-    {
-        $expr = $this->createExpr();
-
-        $this->assertSame($expr, $expr->withinCenter(1, 2, 3));
-        $this->assertEquals(['$within' => ['$center' => [[1, 2], 3]]], $expr->getQuery());
-    }
-
-    public function testWithinCenterSphere()
-    {
-        $expr = $this->createExpr();
-
-        $this->assertSame($expr, $expr->withinCenterSphere(1, 2, 3));
-        $this->assertEquals(['$within' => ['$centerSphere' => [[1, 2], 3]]], $expr->getQuery());
-    }
-
-    public function testWithinPolygon()
-    {
-        $expr = $this->createExpr();
-        $expectedQuery = ['$within' => ['$polygon' => [[0, 0], [1, 1], [1, 0]]]];
-
-        $this->assertSame($expr, $expr->withinPolygon([0, 0], [1, 1], [1, 0]));
-        $this->assertEquals($expectedQuery, $expr->getQuery());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testWithinPolygonRequiresAtLeastThreePoints()
-    {
-        $expr = $this->createExpr();
-        $expr->withinPolygon([0, 0], [1, 1]);
     }
 
     public function testIn()

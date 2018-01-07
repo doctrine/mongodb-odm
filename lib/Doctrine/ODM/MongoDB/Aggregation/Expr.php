@@ -48,21 +48,6 @@ class Expr
     }
 
     /**
-     * @param string $method
-     * @param array $args
-     * @return $this
-     */
-    public function __call($method, $args)
-    {
-        $internalMethodName = $method . 'Internal';
-        if (! is_callable([$this, $internalMethodName])) {
-            throw new \BadMethodCallException('The method ' . $method . ' does not exist.');
-        }
-
-        return $this->$internalMethodName(...$args);
-    }
-
-    /**
      * Returns the absolute value of a number.
      *
      * The <number> argument can be any valid expression as long as it resolves
@@ -224,10 +209,8 @@ class Expr
      * @param mixed|self $expression
      *
      * @return $this
-     *
-     * @deprecated Method will be renamed to "case" in next major version
      */
-    protected function caseInternal($expression)
+    public function case($expression)
     {
         $this->requiresSwitchStatement(static::class . '::case');
 
@@ -417,10 +400,8 @@ class Expr
      * @param mixed|self $expression
      *
      * @return $this
-     *
-     * @deprecated Method will be renamed to "default" in next major version
      */
-    protected function defaultInternal($expression)
+    public function default($expression)
     {
         $this->requiresSwitchStatement(static::class . '::default');
 
@@ -1713,10 +1694,8 @@ class Expr
      * {@link default()} methods.
      *
      * @return $this
-     *
-     * @deprecated Method will be renamed to "switch" in next major version
      */
-    private function switchInternal()
+    public function switch()
     {
         $this->operator('$switch', []);
 
@@ -1732,10 +1711,8 @@ class Expr
      * @param mixed|self $expression
      *
      * @return $this
-     *
-     * @deprecated Method will be renamed to "then" in next major version
      */
-    private function thenInternal($expression)
+    public function then($expression)
     {
         if (! is_array($this->switchBranch)) {
             throw new \BadMethodCallException(static::class . '::then requires a valid case statement (call case() first).');

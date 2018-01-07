@@ -587,7 +587,7 @@ You can also use fields defined in previous stages:
     $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
     $builder
         ->project()
-            ->excludeIdField()
+            ->excludeFields(['_id'])
             ->includeFields(['purchaseDate', 'user'])
             ->field('purchaseYear')
             ->year('$purchaseDate')
@@ -626,7 +626,7 @@ new one:
     $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
     $builder
         ->project()
-            ->excludeIdField()
+            ->excludeFields(['_id'])
             ->includeFields(['purchaseDate', 'user'])
             ->field('purchaseYear')
             ->year('$purchaseDate');
