@@ -773,10 +773,6 @@ class Builder
             $query['sort'] = $documentPersister->prepareSort($query['sort']);
         }
 
-        if ($this->class->slaveOkay) {
-            $query['slaveOkay'] = $this->class->slaveOkay;
-        }
-
         if ($this->class->readPreference && ! array_key_exists('readPreference', $query)) {
             $query['readPreference'] = new ReadPreference($this->class->readPreference, $this->class->readPreferenceTags);
         }
