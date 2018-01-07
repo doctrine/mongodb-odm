@@ -139,4 +139,12 @@ class MongoDBException extends \Exception
             $errorMessage
         ));
     }
+
+    /**
+     * @return MongoDBException
+     */
+    public static function commitInProgress()
+    {
+        return new self('There is already a commit operation in progress. Did you call flush from an event listener?');
+    }
 }

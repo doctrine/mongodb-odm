@@ -385,7 +385,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->commitsInProgress++;
         if ($this->commitsInProgress > 1) {
-            @trigger_error('There is already a commit operation in progress. Calling flush in an event subscriber is deprecated and will be forbidden in 2.0.', E_USER_DEPRECATED);
+            throw MongoDBException::commitInProgress();
         }
         try {
             if ($this->orphanRemovals) {
