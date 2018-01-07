@@ -40,7 +40,7 @@ class GH580Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear($class);
 
         // Remove initial object
-        $doc1 = $repository->findOneByName('foo');
+        $doc1 = $repository->findOneBy(['name' => 'foo']);
         $this->dm->remove($doc1) ;
         $this->dm->flush();
         $this->dm->clear($class);

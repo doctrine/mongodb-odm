@@ -30,7 +30,7 @@ class GH232Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $product = $this->dm->getRepository(__NAMESPACE__ . '\Product')->findOneByName('Product');
+        $product = $this->dm->getRepository(__NAMESPACE__ . '\Product')->findOneBy(['name' => 'Product']);
 
         $this->assertEquals(1, $product->subproducts->count());
         $this->assertEquals(1, $product->subproducts[0]->prices->count());

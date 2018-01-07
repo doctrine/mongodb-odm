@@ -108,7 +108,7 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $em->getRepository('Documents\BlogPost')->findOneByTitle('test');
+    $blogPost = $em->getRepository('Documents\BlogPost')->findOneBy(array('title' => 'test'));
 
 MongoDB ODM
 ~~~~~~~~~~~
@@ -183,7 +183,7 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $dm->getRepository('Documents\BlogPost')->findOneByTitle('test');
+    $blogPost = $dm->getRepository('Documents\BlogPost')->findOneBy(array('title' => 'test'));
 
 Repository Classes
 ------------------

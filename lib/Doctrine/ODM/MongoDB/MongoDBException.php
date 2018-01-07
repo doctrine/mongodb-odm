@@ -10,17 +10,6 @@ namespace Doctrine\ODM\MongoDB;
 class MongoDBException extends \Exception
 {
     /**
-     * @param string $documentName
-     * @param string $fieldName
-     * @param string $method
-     * @return MongoDBException
-     */
-    public static function invalidFindByCall($documentName, $fieldName, $method)
-    {
-        return new self(sprintf('Invalid find by call %s::$fieldName (%s)', $documentName, $fieldName, $method));
-    }
-
-    /**
      * @return MongoDBException
      */
     public static function detachedDocumentCannotBeRemoved()
@@ -52,15 +41,6 @@ class MongoDBException extends \Exception
     public static function documentManagerClosed()
     {
         return new self('The DocumentManager is closed.');
-    }
-
-    /**
-     * @param string $methodName
-     * @return MongoDBException
-     */
-    public static function findByRequiresParameter($methodName)
-    {
-        return new self("You need to pass a parameter to '".$methodName."'");
     }
 
     /**

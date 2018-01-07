@@ -23,12 +23,6 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->repository = $this->dm->getRepository('Documents\User');
     }
 
-    public function testMagicMethods()
-    {
-        $user = $this->repository->findOneByUsername('w00ting');
-        $this->assertEquals('w00ting', $user->getUsername());
-    }
-
     public function testFindAll()
     {
         $users = $this->repository->findAll();

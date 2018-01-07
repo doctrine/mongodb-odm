@@ -97,8 +97,8 @@ Once you have the ``$sdm`` you can start managing the soft delete state of your 
 
     <?php
 
-    $jwage = $dm->getRepository('User')->findOneByUsername('jwage');
-    $fabpot = $dm->getRepository('User')->findOneByUsername('fabpot');
+    $jwage = $dm->getRepository('User')->findOneBy(array('username' => 'jwage'));
+    $fabpot = $dm->getRepository('User')->findOneBy(array('username' => 'fabpot'));
     $sdm->delete($jwage);
     $sdm->delete($fabpot);
     $sdm->flush();

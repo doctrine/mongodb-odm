@@ -498,20 +498,6 @@ methods on a repository as follows:
     // A single user by its nickname
     $user = $dm->getRepository('User')->findOneBy(array('nickname' => 'romanb'));
 
-A DocumentRepository also provides a mechanism for more concise
-calls through its use of ``__call``. Thus, the following two
-examples are equivalent:
-
-.. code-block:: php
-
-    <?php
-
-    // A single user by its nickname
-    $user = $dm->getRepository('User')->findOneBy(array('nickname' => 'romanb'));
-
-    // A single user by its nickname (__call magic)
-    $user = $dm->getRepository('User')->findOneByNickname('romanb');
-
 .. note::
 
     You can learn more about Repositories in a :ref:`dedicated chapter <document_repositories>`.
