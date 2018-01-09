@@ -106,9 +106,6 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'shard-key'})) {
             $this->setShardKey($class, $xmlRoot->{'shard-key'}[0]);
         }
-        if (isset($xmlRoot['slave-okay'])) {
-            $class->setSlaveOkay('true' === (string) $xmlRoot['slave-okay']);
-        }
         if (isset($xmlRoot['read-only']) && 'true' === (string) $xmlRoot['read-only']) {
             $class->markReadOnly();
         }

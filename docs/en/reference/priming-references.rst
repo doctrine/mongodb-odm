@@ -145,10 +145,6 @@ As an example, we can look at the default callable, which is found in the
         $qb = $dm->createQueryBuilder($class->name)
             ->field($class->identifier)->in($ids);
 
-        if ( ! empty($hints[Query::HINT_SLAVE_OKAY])) {
-            $qb->slaveOkay(true);
-        }
-
         if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
             $qb->setReadPreference(
                 $hints[Query::HINT_READ_PREFERENCE],

@@ -139,10 +139,6 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'lifecycleCallbacks';
         }
 
-        if ($this->slaveOkay) {
-            $serialized[] = 'slaveOkay';
-        }
-
         if ($this->collectionCapped) {
             $serialized[] = 'collectionCapped';
             $serialized[] = 'collectionSize';

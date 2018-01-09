@@ -38,8 +38,7 @@ class Query implements \IteratorAggregate
     const TYPE_GEO_LOCATION = 10;
 
     const HINT_REFRESH = 1;
-    /** @deprecated */
-    const HINT_SLAVE_OKAY = 2;
+    // 2 was used for HINT_SLAVE_OKAY, which was removed in 2.0
     const HINT_READ_PREFERENCE = 3;
     const HINT_READ_ONLY = 5;
 
@@ -158,10 +157,6 @@ class Query implements \IteratorAggregate
 
         $this->setReadOnly($readOnly);
         $this->setRefresh($refresh);
-
-        if (isset($query['slaveOkay'])) {
-            $this->unitOfWorkHints[self::HINT_SLAVE_OKAY] = $query['slaveOkay'];
-        }
 
         if (isset($query['readPreference'])) {
             $this->unitOfWorkHints[self::HINT_READ_PREFERENCE] = $query['readPreference'];

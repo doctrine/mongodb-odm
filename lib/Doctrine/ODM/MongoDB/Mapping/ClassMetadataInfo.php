@@ -194,13 +194,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     public $identifier;
 
     /**
-     * READ-ONLY: Whether or not reads for this class are okay to read from a slave.
-     *
-     * @deprecated in version 1.2 and will be removed in 2.0.
-     */
-    public $slaveOkay;
-
-    /**
      * READ-ONLY: The array of indexes for the document collection.
      */
     public $indexes = array();
@@ -803,30 +796,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     }
 
     /**
-     * Sets the slaveOkay option applied to collections for this class.
-     *
-     * @param boolean|null $slaveOkay
-     *
-     * @deprecated in version 1.2 and will be removed in 2.0.
-     *
-     * @throws MappingException
-     */
-    public function setSlaveOkay($slaveOkay)
-    {
-        if ($slaveOkay) {
-            @trigger_error(
-                sprintf('%s was deprecated in version 1.2 and will be removed in 2.0.', __METHOD__),
-                E_USER_DEPRECATED
-            );
-        }
-
-        if ($this->readPreference) {
-            throw MappingException::canNotCombineReadPreferenceAndSlaveOkay($this->getName());
-        }
-        $this->slaveOkay = $slaveOkay === null ? null : (boolean) $slaveOkay;
-    }
-
-    /**
      * Add a index for this Document.
      *
      * @param array $keys Array of keys for the index.
@@ -947,14 +916,9 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      *
      * @param string $readPreference
      * @param array|null $tags
-     *
-     * @throws MappingException
      */
     public function setReadPreference($readPreference, $tags)
     {
-        if ($this->slaveOkay) {
-            throw MappingException::canNotCombineReadPreferenceAndSlaveOkay($this->getName());
-        }
         $this->readPreference = $readPreference;
         $this->readPreferenceTags = $tags;
     }

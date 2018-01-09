@@ -59,7 +59,6 @@ Working with Objects
   :doc:`Query Builder API <reference/query-builder-api>` |
   :doc:`Aggregation Pipeline queries <reference/aggregation-builder>` |
   :doc:`Geo Spatial Queries <reference/geospatial-queries>` |
-  :doc:`Slave Okay Queries <reference/slave-okay-queries>` |
   :doc:`Find and Update <reference/find-and-update>` |
   :doc:`Filters <reference/filters>` |
   :doc:`Priming References <reference/priming-references>` |
