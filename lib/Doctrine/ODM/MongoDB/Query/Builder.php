@@ -521,7 +521,7 @@ class Builder
     /**
      * Set the "finalize" option for a mapReduce or group command.
      *
-     * @param string|\MongoDB\BSON\JavaScript $finalize
+     * @param string|\MongoDB\BSON\Javascript $finalize
      * @return $this
      * @throws \BadMethodCallException if the query is not a mapReduce or group command
      */
@@ -979,7 +979,7 @@ class Builder
      * The "out" option defaults to inline, like {@link Builder::mapReduce()}.
      *
      * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
-     * @param string|\MongoDB\BSON\JavaScript $map
+     * @param string|\MongoDB\BSON\Javascript $map
      * @return $this
      */
     public function map($map)
@@ -998,8 +998,8 @@ class Builder
      * Change the query type to a mapReduce command.
      *
      * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
-     * @param string|\MongoDB\BSON\JavaScript $map
-     * @param string|\MongoDB\BSON\JavaScript $reduce
+     * @param string|\MongoDB\BSON\Javascript $map
+     * @param string|\MongoDB\BSON\Javascript $reduce
      * @param array|string $out
      * @param array $options
      * @return $this
@@ -1352,7 +1352,7 @@ class Builder
     /**
      * Set the "reduce" option for a mapReduce or group command.
      *
-     * @param string|\MongoDB\BSON\JavaScript $reduce
+     * @param string|\MongoDB\BSON\Javascript $reduce
      * @return $this
      * @throws \BadMethodCallException if the query is not a mapReduce or group command
      */
@@ -1774,7 +1774,7 @@ class Builder
      *
      * @see Expr::where()
      * @see http://docs.mongodb.org/manual/reference/operator/where/
-     * @param string|\MongoDB\BSON\JavaScript $javascript
+     * @param string|\MongoDB\BSON\Javascript $javascript
      * @return $this
      */
     public function where($javascript)

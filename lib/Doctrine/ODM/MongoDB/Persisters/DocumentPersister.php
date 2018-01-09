@@ -896,7 +896,7 @@ class DocumentPersister
     }
 
     /**
-     * @param $sort
+     * @param string $sort
      * @return int
      */
     private function getSortDirection($sort)

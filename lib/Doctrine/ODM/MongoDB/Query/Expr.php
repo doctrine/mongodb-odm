@@ -684,6 +684,7 @@ class Expr
         $mapping = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
         $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
+        $keys = [];
 
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
@@ -1081,6 +1082,7 @@ class Expr
         $mapping = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
         $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
+        $keys = [];
 
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
@@ -1354,7 +1356,7 @@ class Expr
      *
      * @see Builder::where()
      * @see http://docs.mongodb.org/manual/reference/operator/where/
-     * @param string|\MongoDB\BSON\JavaScript $javascript
+     * @param string|\MongoDB\BSON\Javascript $javascript
      * @return $this
      */
     public function where($javascript)

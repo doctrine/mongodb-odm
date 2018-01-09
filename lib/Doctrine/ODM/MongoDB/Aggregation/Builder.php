@@ -366,7 +366,7 @@ class Builder
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/out/
      *
-     * @param string $collection
+     * @param string $from
      * @return Stage\Out
      */
     public function out($from)

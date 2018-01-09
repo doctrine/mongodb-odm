@@ -161,7 +161,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $this->setShardKey($class, $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey']);
         }
 
-        /** @var $method \ReflectionMethod */
+        /** @var \ReflectionMethod $method */
         foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
             /* Filter for the declaring class only. Callbacks from parent
              * classes will already be registered.

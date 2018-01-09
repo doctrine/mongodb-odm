@@ -53,8 +53,8 @@ class PersistentCollectionException extends MongoDBException
     }
 
     /**
-     * @param $className
-     * @param $methodName
+     * @param string $className
+     * @param string $methodName
      * @param \Exception|null $previous
      *
      * @return self

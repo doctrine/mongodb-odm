@@ -27,7 +27,7 @@ final class CachingIterator implements Iterator
      * behavior of the SPL iterators and allows users to omit an explicit call
      * to rewind() before using the other methods.
      *
-     * @param Traversable $iterator
+     * @param \Traversable $iterator
      */
     public function __construct(\Traversable $iterator)
     {
@@ -91,7 +91,7 @@ final class CachingIterator implements Iterator
     }
 
     /**
-     * 
+     *
      * @see http://php.net/iterator.valid
      * @return boolean
      */

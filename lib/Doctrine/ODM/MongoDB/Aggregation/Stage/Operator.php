@@ -870,7 +870,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/meta/
      * @see Expr::meta
-     * @param $metaDataKeyword
+     * @param mixed|Expr $metaDataKeyword
      * @return $this
      */
     public function meta($metaDataKeyword)

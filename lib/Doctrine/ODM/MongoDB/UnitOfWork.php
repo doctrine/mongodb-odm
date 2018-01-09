@@ -1331,7 +1331,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Checks whether a document is scheduled for insertion, update or deletion.
      *
-     * @param $document
+     * @param object $document
      * @return boolean
      */
     public function isDocumentScheduled($document)
@@ -2866,7 +2866,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Helper method to initialize a lazy loading proxy or persistent collection.
      *
-     * @param object
+     * @param object $obj
      * @return void
      */
     public function initializeObject($obj)

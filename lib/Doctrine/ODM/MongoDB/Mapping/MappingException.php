@@ -60,9 +60,9 @@ class MappingException extends BaseMappingException
     }
 
     /**
-     * @param $fieldName
-     * @param $className
-     * @param $className2
+     * @param string $fieldName
+     * @param string $className
+     * @param string $className2
      * @return MappingException
      */
     public static function referenceFieldConflict($fieldName, $className, $className2)
@@ -303,7 +303,7 @@ class MappingException extends BaseMappingException
     }
 
     /**
-     * @param $subclassName
+     * @param string $subclassName
      * @return MappingException
      */
     public static function shardKeyInSingleCollInheritanceSubclass($subclassName)
@@ -312,7 +312,7 @@ class MappingException extends BaseMappingException
     }
 
     /**
-     * @param $className
+     * @param string $className
      * @return MappingException
      */
     public static function embeddedDocumentCantHaveShardKey($className)
@@ -331,8 +331,8 @@ class MappingException extends BaseMappingException
     }
 
     /**
-     * @param $className
-     * @param $fieldName
+     * @param string $className
+     * @param string $fieldName
      * @return MappingException
      */
     public static function noMultiKeyShardKeys($className, $fieldName)
