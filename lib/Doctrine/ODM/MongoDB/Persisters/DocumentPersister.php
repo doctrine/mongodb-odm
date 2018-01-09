@@ -25,6 +25,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Driver\Exception\Exception as DriverException;
+use MongoDB\Driver\Exception\WriteException;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -287,7 +288,7 @@ class DocumentPersister
                 $this->executeUpsert($document, $options);
                 $this->handleCollections($document, $options);
                 unset($this->queuedUpserts[$oid]);
-            } catch (\MongoException $e) {
+            } catch (WriteException $e) {
                 unset($this->queuedUpserts[$oid]);
                 throw $e;
             }
@@ -352,7 +353,7 @@ class DocumentPersister
         try {
             $this->collection->updateOne($criteria, $data, $options);
             return;
-        } catch (\MongoCursorException $e) {
+        } catch (WriteException $e) {
             if (empty($retry) || strpos($e->getMessage(), 'Mod on _id not allowed') === false) {
                 throw $e;
             }
