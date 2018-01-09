@@ -15,7 +15,7 @@ class GH977Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->getRepository(get_class($d))->findOneByValue1("Value 1");
+        $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => "Value 1"]);
         $d->value1 = "Changed";
         $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($d)), $d);
         $changeSet = $this->uow->getDocumentChangeSet($d);
@@ -25,7 +25,7 @@ class GH977Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
         
-        $d = $this->dm->getRepository(get_class($d))->findOneByValue1("Changed");
+        $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => "Changed"]);
         $this->assertNotNull($d);
         $this->assertEquals("v1 has changed", $d->value2);
     }
@@ -38,14 +38,14 @@ class GH977Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->getRepository(get_class($d))->findOneByValue1("Value 1");
+        $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => "Value 1"]);
         $d->value1 = "Changed";
         $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($d)), $d);
         $this->dm->refresh($d);
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->getRepository(get_class($d))->findOneByValue1("Value 1");
+        $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => "Value 1"]);
         $this->assertNotNull($d);
     }
 }

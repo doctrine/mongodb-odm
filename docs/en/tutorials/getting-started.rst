@@ -285,7 +285,7 @@ Or you can find the user by name even:
 
     <?php
 
-    $user = $dm->getRepository('User')->findOneByName('Bulat S.');
+    $user = $dm->getRepository('User')->findOneBy(array('name' => 'Bulat S.'));
 
 If you want to iterate over the posts the user references it is as easy as the following:
 

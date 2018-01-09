@@ -27,7 +27,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneByName('My Category');
+        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneBy(['name' => 'My Category']);
         $post2 = new Post;
         $post2->versions->add(new PostVersion('P2V1'));
         $post2->versions->add(new PostVersion('P2V2'));
@@ -36,7 +36,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneByName('My Category');
+        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneBy(['name' => 'My Category']);
         // Should be: 1 Category, 2 Post, 2 PostVersion in each Post
         $this->assertEquals(2, $category->posts->count());
         $this->assertEquals(2, $category->posts->get(0)->versions->count());
@@ -60,7 +60,7 @@ class MODM140Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneByName('My Category');
+        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneBy(['name' => 'My Category']);
         $this->assertEquals(1, $category->posts->count());
         $this->assertEquals(1, $category->posts->get(0)->comments->count());
     }

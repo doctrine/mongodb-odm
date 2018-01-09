@@ -20,7 +20,6 @@
         "doctrine/collections": "~1.1",
         "doctrine/common": "~2.4",
         "doctrine/cache": "~1.0",
-        "doctrine/inflector": "~1.0",
         "doctrine/instantiator": "^1.0.1",
         "mongodb/mongodb": "^1.2.0"
     },

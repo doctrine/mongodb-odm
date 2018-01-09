@@ -180,50 +180,6 @@ class DocumentRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Adds support for magic finders.
-     *
-     * @param string $method
-     * @param array $arguments
-     * @throws MongoDBException
-     * @throws \BadMethodCallException If the method called is an invalid find* method
-     *                                 or no find* method at all and therefore an invalid
-     *                                 method call.
-     * @return array|object The found document/documents.
-     *
-     * @deprecated method was deprecated in 1.2 and will be removed in 2.0
-     */
-    public function __call($method, $arguments)
-    {
-        @trigger_error(
-            'Using magic findBy and findOneBy calls was deprecated in version 1.2 and will be removed altogether in 2.0.',
-            E_USER_DEPRECATED
-        );
-        if (strpos($method, 'findBy') === 0) {
-            $by = substr($method, 6, strlen($method));
-            $method = 'findBy';
-        } elseif (strpos($method, 'findOneBy') === 0) {
-            $by = substr($method, 9, strlen($method));
-            $method = 'findOneBy';
-        } else {
-            throw new \BadMethodCallException(
-                "Undefined method: '$method'. The method name must start with 'findBy' or 'findOneBy'!"
-            );
-        }
-
-        if (!isset($arguments[0])) {
-            throw MongoDBException::findByRequiresParameter($method . $by);
-        }
-
-        $fieldName = Inflector::camelize($by);
-
-        if ($this->class->hasField($fieldName)) {
-            return $this->$method(array($fieldName => $arguments[0]));
-        }
-
-        throw MongoDBException::invalidFindByCall($this->documentName, $fieldName, $method . $by);
-    }
-
-    /**
      * @return string
      */
     public function getDocumentName()

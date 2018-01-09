@@ -16,7 +16,7 @@ class GH921Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository(__NAMESPACE__.'\GH921User')->findOneByName('smith');
+        $user = $this->dm->getRepository(__NAMESPACE__.'\GH921User')->findOneBy(['name' => 'smith']);
 
         $postA = new GH921Post();
         $user->addPost($postA);

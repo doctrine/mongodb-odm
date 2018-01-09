@@ -22,7 +22,7 @@ class DateTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneByUsername('w00ting');
+        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'w00ting']);
         $this->assertNotNull($user);
         $this->assertEquals('w00ting', $user->getUsername());
         $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());
