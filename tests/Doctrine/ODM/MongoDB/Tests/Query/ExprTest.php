@@ -670,15 +670,6 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($expectedQuery, $expr->getQuery());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testGeoWithinPolygonRequiresAtLeastThreePoints()
-    {
-        $expr = $this->createExpr();
-        $expr->geoWithinPolygon([0, 0], [1, 1]);
-    }
-
     public function testSetWithAtomic()
     {
         $expr = $this->createExpr();

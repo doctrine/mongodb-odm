@@ -75,10 +75,10 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/add/
      * @param mixed|self $expression1
      * @param mixed|self $expression2
-     * @param mixed|self $expression3,... Additional expressions
+     * @param mixed|self ...$expressions Additional expressions
      * @return $this
      */
-    public function add($expression1, $expression2 /* , $expression3, ... */)
+    public function add($expression1, $expression2, ...$expressions)
     {
         return $this->operator('$add', func_get_args());
     }
@@ -88,9 +88,10 @@ class Expr
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/and/
      * @param array|self $expression
+     * @param array|self ...$expressions
      * @return $this
      */
-    public function addAnd($expression /*, $expression2, ... */)
+    public function addAnd($expression, ...$expressions)
     {
         if (! isset($this->expr['$and'])) {
             $this->expr['$and'] = [];
@@ -106,9 +107,10 @@ class Expr
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/or/
      * @param array|self $expression
+     * @param array|self ...$expressions
      * @return $this
      */
-    public function addOr($expression /*, $expression2, ... */)
+    public function addOr($expression, ...$expressions)
     {
         if (! isset($this->expr['$or'])) {
             $this->expr['$or'] = [];
@@ -262,10 +264,10 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/concat/
      * @param mixed|self $expression1
      * @param mixed|self $expression2
-     * @param mixed|self $expression3,... Additional expressions
+     * @param mixed|self ...$expressions Additional expressions
      * @return $this
      */
-    public function concat($expression1, $expression2 /* , $expression3, ... */)
+    public function concat($expression1, $expression2, ...$expressions)
     {
         return $this->operator('$concat', func_get_args());
     }
@@ -279,12 +281,12 @@ class Expr
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/concatArrays/
      * @param mixed|self $array1
      * @param mixed|self $array2
-     * @param mixed|self $array3, ... Additional expressions
+     * @param mixed|self ...$arrays Additional expressions
      * @return $this
      *
      * @since 1.3
      */
-    public function concatArrays($array1, $array2 /* , $array3, ... */)
+    public function concatArrays($array1, $array2, ...$arrays)
     {
         return $this->operator('$concatArrays', func_get_args());
     }
@@ -1038,10 +1040,10 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/multiply/
      * @param mixed|self $expression1
      * @param mixed|self $expression2
-     * @param mixed|self $expression3,... Additional expressions
+     * @param mixed|self ...$expressions Additional expressions
      * @return $this
      */
-    public function multiply($expression1, $expression2 /* , $expression3, ... */)
+    public function multiply($expression1, $expression2, ...$expressions)
     {
         return $this->operator('$multiply', func_get_args());
     }
@@ -1193,10 +1195,10 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/setEquals/
      * @param mixed|self $expression1
      * @param mixed|self $expression2
-     * @param mixed|self $expression3,...   Additional sets
+     * @param mixed|self ...$expressions Additional sets
      * @return $this
      */
-    public function setEquals($expression1, $expression2 /* , $expression3, ... */)
+    public function setEquals($expression1, $expression2, ...$expressions)
     {
         return $this->operator('$setEquals', func_get_args());
     }
@@ -1210,10 +1212,10 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/setIntersection/
      * @param mixed|self $expression1
      * @param mixed|self $expression2
-     * @param mixed|self $expression3,...   Additional sets
+     * @param mixed|self ...$expressions Additional sets
      * @return $this
      */
-    public function setIntersection($expression1, $expression2 /* , $expression3, ... */)
+    public function setIntersection($expression1, $expression2, ...$expressions)
     {
         return $this->operator('$setIntersection', func_get_args());
     }
@@ -1243,10 +1245,10 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/setUnion/
      * @param mixed|self $expression1
      * @param mixed|self $expression2
-     * @param mixed|self $expression3,...   Additional sets
+     * @param mixed|self ...$expressions Additional sets
      * @return $this
      */
-    public function setUnion($expression1, $expression2 /* , $expression3, ... */)
+    public function setUnion($expression1, $expression2, ...$expressions)
     {
         return $this->operator('$setUnion', func_get_args());
     }
@@ -1327,14 +1329,14 @@ class Expr
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevPop/
      * @param mixed|self $expression1
-     * @param mixed|self $expression2,... Additional samples
+     * @param mixed|self ...$expressions Additional samples
      * @return $this
      *
      * @since 1.3
      */
-    public function stdDevPop($expression1 /* , $expression2, ... */)
+    public function stdDevPop($expression1, ...$expressions)
     {
-        $expression = (func_num_args() === 1) ? $expression1 : func_get_args();
+        $expression = (empty($expressions)) ? $expression1 : func_get_args();
 
         return $this->operator('$stdDevPop', $expression);
     }
@@ -1346,14 +1348,14 @@ class Expr
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevSamp/
      * @param mixed|self $expression1
-     * @param mixed|self $expression2,... Additional samples
+     * @param mixed|self ...$expressions Additional samples
      * @return $this
      *
      * @since 1.3
      */
-    public function stdDevSamp($expression1 /* , $expression2, ... */)
+    public function stdDevSamp($expression1, ...$expressions)
     {
-        $expression = (func_num_args() === 1) ? $expression1 : func_get_args();
+        $expression = (empty($expressions)) ? $expression1 : func_get_args();
 
         return $this->operator('$stdDevSamp', $expression);
     }

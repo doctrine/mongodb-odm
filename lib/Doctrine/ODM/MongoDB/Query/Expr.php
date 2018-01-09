@@ -67,9 +67,10 @@ class Expr
      * @see Builder::addAnd()
      * @see http://docs.mongodb.org/manual/reference/operator/and/
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addAnd($expression /*, $expression2, ... */)
+    public function addAnd($expression, ...$expressions)
     {
         if (! isset($this->query['$and'])) {
             $this->query['$and'] = [];
@@ -94,9 +95,10 @@ class Expr
      * @see Builder::addNor()
      * @see http://docs.mongodb.org/manual/reference/operator/nor/
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addNor($expression /* , $expression2, ... */)
+    public function addNor($expression, ...$expressions)
     {
         if (! isset($this->query['$nor'])) {
             $this->query['$nor'] = [];
@@ -116,9 +118,10 @@ class Expr
      * @see Builder::addOr()
      * @see http://docs.mongodb.org/manual/reference/operator/or/
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addOr($expression /* , $expression2, ... */)
+    public function addOr($expression, ...$expressions)
     {
         if (! isset($this->query['$or'])) {
             $this->query['$or'] = [];
@@ -566,16 +569,15 @@ class Expr
      *
      * @see Builder::geoWithinPolygon()
      * @see http://docs.mongodb.org/manual/reference/operator/polygon/
-     * @param array $point,... Three or more point coordinate tuples
+     * @param array $point1 First point of the polygon
+     * @param array $point2 Second point of the polygon
+     * @param array $point3 Third point of the polygon
+     * @param array ...$points Additional points of the polygon
      * @return $this
      * @throws \InvalidArgumentException if less than three points are given
      */
-    public function geoWithinPolygon(/* array($x1, $y1), ... */)
+    public function geoWithinPolygon($point1, $point2, $point3, ...$points)
     {
-        if (func_num_args() < 3) {
-            throw new \InvalidArgumentException('Polygon must be defined by three or more points.');
-        }
-
         $shape = ['$polygon' => func_get_args()];
 
         return $this->operator('$geoWithin', $shape);

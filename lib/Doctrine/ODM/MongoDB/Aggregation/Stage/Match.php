@@ -44,9 +44,10 @@ class Match extends Stage
      * @see Expr::addAnd()
      * @see http://docs.mongodb.org/manual/reference/operator/and/
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addAnd($expression /* , $expression2, ... */)
+    public function addAnd($expression, ...$expressions)
     {
         $this->query->addAnd(...func_get_args());
 
@@ -62,9 +63,10 @@ class Match extends Stage
      * @see Expr::addNor()
      * @see http://docs.mongodb.org/manual/reference/operator/nor/
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addNor($expression /*, $expression2, ... */)
+    public function addNor($expression, ...$expressions)
     {
         $this->query->addNor(...func_get_args());
 
@@ -80,9 +82,10 @@ class Match extends Stage
      * @see Expr::addOr()
      * @see http://docs.mongodb.org/manual/reference/operator/or/
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addOr($expression /* , $expression2, ... */)
+    public function addOr($expression, ...$expressions)
     {
         $this->query->addOr(...func_get_args());
 
@@ -303,10 +306,13 @@ class Match extends Stage
      *
      * @see Expr::geoWithinPolygon()
      * @see http://docs.mongodb.org/manual/reference/operator/polygon/
-     * @param array $point,... Three or more point coordinate tuples
+     * @param array $point1 First point of the polygon
+     * @param array $point2 Second point of the polygon
+     * @param array $point3 Third point of the polygon
+     * @param array ...$points Additional points of the polygon
      * @return $this
      */
-    public function geoWithinPolygon(/* array($x1, $y1), ... */)
+    public function geoWithinPolygon($point1, $point2, $point3, ...$points)
     {
         $this->query->geoWithinPolygon(...func_get_args());
 
