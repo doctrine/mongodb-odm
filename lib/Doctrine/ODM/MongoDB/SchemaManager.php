@@ -368,47 +368,6 @@ class SchemaManager
     }
 
     /**
-     * Create all the mapped document databases in the metadata factory.
-     *
-     * @deprecated Databases are created automatically by MongoDB (>= 3.0). Deprecated since ODM 1.2, to be removed in ODM 2.0.
-     */
-    public function createDatabases()
-    {
-        @trigger_error(
-            sprintf('%s was deprecated in version 1.2 - databases are created automatically by MongoDB (>= 3.0).', __METHOD__),
-            E_USER_DEPRECATED
-        );
-        foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
-                continue;
-            }
-            $this->createDocumentDatabase($class->name);
-        }
-    }
-
-    /**
-     * Create the document database for a mapped class.
-     *
-     * @param string $documentName
-     * @throws \InvalidArgumentException
-     *
-     * @deprecated A database is created automatically by MongoDB (>= 3.0). Deprecated since ODM 1.2, to be removed in ODM 2.0.
-     */
-    public function createDocumentDatabase($documentName)
-    {
-        @trigger_error(
-            sprintf('%s was deprecated in version 1.2 - databases are created automatically by MongoDB (>= 3.0).', __METHOD__),
-            E_USER_DEPRECATED
-        );
-        $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
-            throw new \InvalidArgumentException('Cannot create databases for mapped super classes, embedded documents or query result documents.');
-        }
-
-        $this->dm->getDocumentDatabase($documentName)->execute('function() { return true; }');
-    }
-
-    /**
      * Determine if an index returned by MongoCollection::getIndexInfo() can be
      * considered equivalent to an index in class metadata.
      *
