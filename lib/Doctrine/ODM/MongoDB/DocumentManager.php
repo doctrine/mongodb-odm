@@ -653,6 +653,7 @@ class DocumentManager implements ObjectManager
      * @param array $referenceMapping Mapping for the field that references the document
      *
      * @throws \InvalidArgumentException
+     * @throws MappingException
      * @return mixed The reference for the document in question, according to the desired mapping
      */
     public function createReference($document, array $referenceMapping)
@@ -735,27 +736,6 @@ class DocumentManager implements ObjectManager
         }
 
         return $reference;
-    }
-
-    /**
-     * Returns a DBRef array for the supplied document.
-     *
-     * @param mixed $document A document object
-     * @param array $referenceMapping Mapping for the field that references the document
-     *
-     * @throws \InvalidArgumentException
-     * @return array A DBRef array
-     * @deprecated Deprecated in favor of createReference; will be removed in 2.0
-     */
-    public function createDBRef($document, array $referenceMapping = null)
-    {
-        @trigger_error('The ' . __METHOD__ . ' method has been deprecated and will be removed in ODM 2.0. Use createReference() instead.', E_USER_DEPRECATED);
-
-        if (!isset($referenceMapping['storeAs'])) {
-            $referenceMapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF;
-        }
-
-        return $this->createReference($document, $referenceMapping);
     }
 
     /**
