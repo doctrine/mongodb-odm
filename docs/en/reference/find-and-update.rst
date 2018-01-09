@@ -80,5 +80,4 @@ You can read more about the find and modify functionality on the
 
     If you don't need to return the document, you can use just run a normal update which can
     affect multiple documents, as well. For multiple update to happen you need to use
-    ``->updateMany()`` method of the builder (or ``update()->multiple()`` combination that
-    was deprecated in version 1.2).
+    ``->updateMany()`` method of the builder.

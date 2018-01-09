@@ -127,27 +127,6 @@ class Builder
     }
 
     /**
-     * Append multiple values to the current array field only if they do not
-     * already exist in the array.
-     *
-     * If the field does not exist, it will be set to an array containing the
-     * unique values in the argument. If the field is not an array, the query
-     * will yield an error.
-     *
-     * @deprecated 1.1 Use {@link Builder::addToSet()} with {@link Expr::each()}; Will be removed in 2.0
-     * @see Expr::addManyToSet()
-     * @see http://docs.mongodb.org/manual/reference/operator/addToSet/
-     * @see http://docs.mongodb.org/manual/reference/operator/each/
-     * @param array $values
-     * @return $this
-     */
-    public function addManyToSet(array $values)
-    {
-        $this->expr->addManyToSet($values);
-        return $this;
-    }
-
-    /**
      * Add one or more $nor clauses to the current query.
      *
      * You can create a new expression using the {@link Builder::expr()} method.
@@ -1120,20 +1099,6 @@ class Builder
     }
 
     /**
-     * Set the "multiple" option for an update query.
-     *
-     * @param boolean $bool
-     * @return $this
-     *
-     * @deprecated Deprecated in version 1.4 - use updateOne or updateMany instead
-     */
-    public function multiple($bool = true)
-    {
-        $this->query['multiple'] = (boolean) $bool;
-        return $this;
-    }
-
-    /**
      * Add $near criteria to the query.
      *
      * A GeoJSON point may be provided as the first and only argument for
@@ -1348,27 +1313,6 @@ class Builder
     public function push($valueOrExpression)
     {
         $this->expr->push($valueOrExpression);
-        return $this;
-    }
-
-    /**
-     * Append multiple values to the current array field.
-     *
-     * If the field does not exist, it will be set to an array containing the
-     * values in the argument. If the field is not an array, the query will
-     * yield an error.
-     *
-     * This operator is deprecated in MongoDB 2.4. {@link Builder::push()} and
-     * {@link Expr::each()} should be used in its place.
-     *
-     * @see Expr::pushAll()
-     * @see http://docs.mongodb.org/manual/reference/operator/pushAll/
-     * @param array $values
-     * @return $this
-     */
-    public function pushAll(array $values)
-    {
-        $this->expr->pushAll($values);
         return $this;
     }
 
@@ -1830,82 +1774,6 @@ class Builder
     public function where($javascript)
     {
         $this->expr->where($javascript);
-        return $this;
-    }
-
-    /**
-     * Add $within criteria with a $box shape to the query.
-     *
-     * @deprecated 1.1 MongoDB 2.4 deprecated $within in favor of $geoWithin
-     * @see Builder::geoWithinBox()
-     * @see Expr::withinBox()
-     * @see http://docs.mongodb.org/manual/reference/operator/box/
-     * @param float $x1
-     * @param float $y1
-     * @param float $x2
-     * @param float $y2
-     * @return $this
-     */
-    public function withinBox($x1, $y1, $x2, $y2)
-    {
-        $this->expr->withinBox($x1, $y1, $x2, $y2);
-        return $this;
-    }
-
-    /**
-     * Add $within criteria with a $center shape to the query.
-     *
-     * @deprecated 1.1 MongoDB 2.4 deprecated $within in favor of $geoWithin
-     * @see Builder::geoWithinCenter()
-     * @see Expr::withinCenter()
-     * @see http://docs.mongodb.org/manual/reference/operator/center/
-     * @param float $x
-     * @param float $y
-     * @param float $radius
-     * @return $this
-     */
-    public function withinCenter($x, $y, $radius)
-    {
-        $this->expr->withinCenter($x, $y, $radius);
-        return $this;
-    }
-
-    /**
-     * Add $within criteria with a $centerSphere shape to the query.
-     *
-     * @deprecated 1.1 MongoDB 2.4 deprecated $within in favor of $geoWithin
-     * @see Builder::geoWithinCenterSphere()
-     * @see Expr::withinCenterSphere()
-     * @see http://docs.mongodb.org/manual/reference/operator/centerSphere/
-     * @param float $x
-     * @param float $y
-     * @param float $radius
-     * @return $this
-     */
-    public function withinCenterSphere($x, $y, $radius)
-    {
-        $this->expr->withinCenterSphere($x, $y, $radius);
-        return $this;
-    }
-
-    /**
-     * Add $within criteria with a $polygon shape to the query.
-     *
-     * Point coordinates are in x, y order (easting, northing for projected
-     * coordinates, longitude, latitude for geographic coordinates).
-     *
-     * The last point coordinate is implicitly connected with the first.
-     *
-     * @deprecated 1.1 MongoDB 2.4 deprecated $within in favor of $geoWithin
-     * @see Builder::geoWithinPolygon()
-     * @see Expr::withinPolygon()
-     * @see http://docs.mongodb.org/manual/reference/operator/polygon/
-     * @param array $point,... Three or more point coordinate tuples
-     * @return $this
-     */
-    public function withinPolygon(/* array($x1, $y1), array($x2, $y2), ... */)
-    {
-        $this->expr->withinPolygon(...func_get_args());
         return $this;
     }
 

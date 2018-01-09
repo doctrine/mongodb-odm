@@ -89,28 +89,6 @@ class Expr
     }
 
     /**
-     * Append multiple values to the current array field only if they do not
-     * already exist in the array.
-     *
-     * If the field does not exist, it will be set to an array containing the
-     * unique values in the argument. If the field is not an array, the query
-     * will yield an error.
-     *
-     * @deprecated 1.1 Use {@link Expr::addToSet()} with {@link Expr::each()}; Will be removed in 2.0
-     * @see Builder::addManyToSet()
-     * @see http://docs.mongodb.org/manual/reference/operator/addToSet/
-     * @see http://docs.mongodb.org/manual/reference/operator/each/
-     * @param array $values
-     * @return $this
-     */
-    public function addManyToSet(array $values)
-    {
-        $this->requiresCurrentField();
-        $this->newObj['$addToSet'][$this->currentField] = ['$each' => $values];
-        return $this;
-    }
-
-    /**
      * Add one or more $nor clauses to the current query.
      *
      * @see Builder::addNor()
@@ -701,45 +679,40 @@ class Expr
      */
     public function includesReferenceTo($document)
     {
-        if ($this->currentField) {
-            $mapping = $this->getReferenceMapping();
-            $reference = $this->dm->createReference($document, $mapping);
-            $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
+        $this->requiresCurrentField();
+        $mapping = $this->getReferenceMapping();
+        $reference = $this->dm->createReference($document, $mapping);
+        $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
-            switch ($storeAs) {
-                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                    $this->query[$mapping['name']] = $reference;
-                    return $this;
-                    break;
+        switch ($storeAs) {
+            case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                $this->query[$mapping['name']] = $reference;
+                return $this;
+                break;
 
-                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $keys = ['id' => true];
-                    break;
+            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                $keys = ['id' => true];
+                break;
 
-                case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
-                case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
-                    $keys = ['$ref' => true, '$id' => true, '$db' => true];
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+                $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-                    if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
-                        unset($keys['$db']);
-                    }
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                    unset($keys['$db']);
+                }
 
-                    if (isset($mapping['targetDocument'])) {
-                        unset($keys['$ref'], $keys['$db']);
-                    }
-                    break;
+                if (isset($mapping['targetDocument'])) {
+                    unset($keys['$ref'], $keys['$db']);
+                }
+                break;
 
-                default:
-                    throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
-            }
+            default:
+                throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
+        }
 
-            foreach ($keys as $key => $value) {
-                $this->query[$mapping['name']]['$elemMatch'][$key] = $reference[$key];
-            }
-        } else {
-            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in ODM 2.0.', E_USER_DEPRECATED);
-
-            $this->query['$elemMatch'] = $this->dm->createDBRef($document);
+        foreach ($keys as $key => $value) {
+            $this->query[$mapping['name']]['$elemMatch'][$key] = $reference[$key];
         }
 
         return $this;
@@ -1080,28 +1053,6 @@ class Expr
     }
 
     /**
-     * Append multiple values to the current array field.
-     *
-     * If the field does not exist, it will be set to an array containing the
-     * values in the argument. If the field is not an array, the query will
-     * yield an error.
-     *
-     * This operator is deprecated in MongoDB 2.4. {@link Expr::push()} and
-     * {@link Expr::each()} should be used in its place.
-     *
-     * @see Builder::pushAll()
-     * @see http://docs.mongodb.org/manual/reference/operator/pushAll/
-     * @param array $values
-     * @return $this
-     */
-    public function pushAll(array $values)
-    {
-        $this->requiresCurrentField();
-        $this->newObj['$pushAll'][$this->currentField] = $values;
-        return $this;
-    }
-
-    /**
      * Specify $gte and $lt criteria for the current field.
      *
      * This method is shorthand for specifying $gte criteria on the lower bound
@@ -1125,45 +1076,40 @@ class Expr
      */
     public function references($document)
     {
-        if ($this->currentField) {
-            $mapping = $this->getReferenceMapping();
-            $reference = $this->dm->createReference($document, $mapping);
-            $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
+        $this->requiresCurrentField();
+        $mapping = $this->getReferenceMapping();
+        $reference = $this->dm->createReference($document, $mapping);
+        $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
-            switch ($storeAs) {
-                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                    $this->query[$mapping['name']] = $reference;
-                    return $this;
-                    break;
+        switch ($storeAs) {
+            case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+                $this->query[$mapping['name']] = $reference;
+                return $this;
+                break;
 
-                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $keys = ['id' => true];
-                    break;
+            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+                $keys = ['id' => true];
+                break;
 
-                case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
-                case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
-                    $keys = ['$ref' => true, '$id' => true, '$db' => true];
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
+            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+                $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-                    if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
-                        unset($keys['$db']);
-                    }
+                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                    unset($keys['$db']);
+                }
 
-                    if (isset($mapping['targetDocument'])) {
-                        unset($keys['$ref'], $keys['$db']);
-                    }
-                    break;
+                if (isset($mapping['targetDocument'])) {
+                    unset($keys['$ref'], $keys['$db']);
+                }
+                break;
 
-                default:
-                    throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
-            }
+            default:
+                throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
+        }
 
-            foreach ($keys as $key => $value) {
-                $this->query[$mapping['name'] . '.' . $key] = $reference[$key];
-            }
-        } else {
-            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in ODM 2.0.', E_USER_DEPRECATED);
-
-            $this->query = $this->dm->createDBRef($document);
+        foreach ($keys as $key => $value) {
+            $this->query[$mapping['name'] . '.' . $key] = $reference[$key];
         }
 
         return $this;
@@ -1414,87 +1360,6 @@ class Expr
     {
         $this->query['$where'] = $javascript;
         return $this;
-    }
-
-    /**
-     * Add $within criteria with a $box shape to the expression.
-     *
-     * @deprecated 1.1 MongoDB 2.4 deprecated $within in favor of $geoWithin
-     * @see Expr::geoWithinBox()
-     * @see http://docs.mongodb.org/manual/reference/operator/box/
-     * @param float $x1
-     * @param float $y1
-     * @param float $x2
-     * @param float $y2
-     * @return $this
-     */
-    public function withinBox($x1, $y1, $x2, $y2)
-    {
-        $shape = ['$box' => [[$x1, $y1], [$x2, $y2]]];
-
-        return $this->operator('$within', $shape);
-    }
-
-    /**
-     * Add $within criteria with a $center shape to the expression.
-     *
-     * @deprecated 1.1 MongoDB 2.4 deprecated $within in favor of $geoWithin
-     * @see Expr::geoWithinCenter()
-     * @see http://docs.mongodb.org/manual/reference/operator/center/
-     * @param float $x
-     * @param float $y
-     * @param float $radius
-     * @return $this
-     */
-    public function withinCenter($x, $y, $radius)
-    {
-        $shape = ['$center' => [[$x, $y], $radius]];
-
-        return $this->operator('$within', $shape);
-    }
-
-    /**
-     * Add $within criteria with a $centerSphere shape to the expression.
-     *
-     * @deprecated 1.1 MongoDB 2.4 deprecated $within in favor of $geoWithin
-     * @see Expr::geoWithinCenterSphere()
-     * @see http://docs.mongodb.org/manual/reference/operator/centerSphere/
-     * @param float $x
-     * @param float $y
-     * @param float $radius
-     * @return $this
-     */
-    public function withinCenterSphere($x, $y, $radius)
-    {
-        $shape = ['$centerSphere' => [[$x, $y], $radius]];
-
-        return $this->operator('$within', $shape);
-    }
-
-    /**
-     * Add $within criteria with a $polygon shape to the expression.
-     *
-     * Point coordinates are in x, y order (easting, northing for projected
-     * coordinates, longitude, latitude for geographic coordinates).
-     *
-     * The last point coordinate is implicitly connected with the first.
-     *
-     * @deprecated 1.1 MongoDB 2.4 deprecated $within in favor of $geoWithin
-     * @see Expr::geoWithinPolygon()
-     * @see http://docs.mongodb.org/manual/reference/operator/polygon/
-     * @param array $point,... Three or more point coordinate tuples
-     * @return $this
-     * @throws \InvalidArgumentException if less than three points are given
-     */
-    public function withinPolygon(/* array($x1, $y1), array($x2, $y2), ... */)
-    {
-        if (func_num_args() < 3) {
-            throw new \InvalidArgumentException('Polygon must be defined by three or more points.');
-        }
-
-        $shape = ['$polygon' => func_get_args()];
-
-        return $this->operator('$within', $shape);
     }
 
     /**
