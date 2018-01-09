@@ -78,7 +78,7 @@ class SchemaManagerTest extends TestCase
     public function testEnsureIndexes()
     {
         foreach ($this->documentCollections as $class => $collection) {
-            if (in_array($class, $this->indexedClasses)) {
+            if (in_array($class, $this->indexedClasses, true)) {
                 $collection->expects($this->once())->method('createIndex');
             } else {
                 $collection->expects($this->never())->method('createIndex');
@@ -157,9 +157,9 @@ class SchemaManagerTest extends TestCase
     public function testDeleteIndexes()
     {
         foreach ($this->documentCollections as $class => $collection) {
-            if (in_array($class, $this->indexedClasses)) {
+            if (in_array($class, $this->indexedClasses, true)) {
                 $collection->expects($this->once())->method('dropIndexes');
-            } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses)) {
+            } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses, true)) {
                 $collection->expects($this->never())->method('dropIndexes');
             }
         }
@@ -206,9 +206,9 @@ class SchemaManagerTest extends TestCase
     public function testCreateCollections()
     {
         foreach ($this->documentDatabases as $class => $database) {
-            if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses)) {
+            if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses, true)) {
                 $database->expects($this->once())->method('createCollection');
-            } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses)) {
+            } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses, true)) {
                 $database->expects($this->never())->method('createCollection');
             }
         }
@@ -219,11 +219,11 @@ class SchemaManagerTest extends TestCase
     public function testDropCollections()
     {
         foreach ($this->documentCollections as $class => $collection) {
-            if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses)) {
+            if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses, true)) {
                 $collection->expects($this->once())
                     ->method('drop')
                     ->with();
-            } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses)) {
+            } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses, true)) {
                 $collection->expects($this->never())->method('drop');
             }
         }
@@ -262,9 +262,9 @@ class SchemaManagerTest extends TestCase
     public function testDropDatabases()
     {
         foreach ($this->documentDatabases as $class => $database) {
-            if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses)) {
+            if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses, true)) {
                 $database->expects($this->once())->method('drop');
-            } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses)) {
+            } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses, true)) {
                 $database->expects($this->never())->method('drop');
             }
         }

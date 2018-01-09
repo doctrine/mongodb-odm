@@ -37,7 +37,7 @@ abstract class BaseTest extends TestCase
         $databaseNames = array_map(function (DatabaseInfo $database) {
             return $database->getName();
         }, $databases);
-        if (! in_array(DOCTRINE_MONGODB_DATABASE, $databaseNames)) {
+        if (! in_array(DOCTRINE_MONGODB_DATABASE, $databaseNames, true)) {
             return;
         }
 

@@ -94,7 +94,7 @@ class ConfigurableProduct
         if ($this->options instanceof \Doctrine\Common\Collections\Collection) {
             $index = $this->options->indexOf($option);
         } else {
-            $index = array_search($option, $this->options);
+            $index = array_search($option, $this->options, true);
         }
         unset($this->options[$index]);
         return $this;

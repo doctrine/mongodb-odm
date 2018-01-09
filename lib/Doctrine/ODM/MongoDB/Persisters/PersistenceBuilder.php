@@ -369,7 +369,7 @@ class PersistenceBuilder
         if ( ! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = $embeddedMapping['discriminatorField'];
             $discriminatorValue = isset($embeddedMapping['discriminatorMap'])
-                ? array_search($class->name, $embeddedMapping['discriminatorMap'])
+                ? array_search($class->name, $embeddedMapping['discriminatorMap'], true)
                 : $class->name;
 
             /* If the discriminator value was not found in the map, use the full

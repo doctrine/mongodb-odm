@@ -61,7 +61,7 @@ class CollectionHelper
                 ClassMetadataInfo::STORAGE_STRATEGY_SET_ARRAY,
                 ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET,
                 ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET_ARRAY
-            ]
+            ], true
         );
     }
 }

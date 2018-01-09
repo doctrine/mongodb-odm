@@ -33,7 +33,7 @@ class Sort extends Stage
 
         foreach ($fields as $fieldName => $order) {
             if (is_string($order)) {
-                if (in_array($order, $allowedMetaSort)) {
+                if (in_array($order, $allowedMetaSort, true)) {
                     $order = ['$meta' => $order];
                 } else {
                     $order = strtolower($order) === 'asc' ? 1 : -1;

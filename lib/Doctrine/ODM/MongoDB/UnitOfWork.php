@@ -2193,7 +2193,7 @@ class UnitOfWork implements PropertyChangedListener
                     throw LockException::lockFailedVersionMissmatch($document, $lockVersion, $documentVersion);
                 }
             }
-        } elseif (in_array($lockMode, array(LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE))) {
+        } elseif (in_array($lockMode, array(LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE), true)) {
             $this->getDocumentPersister($class->name)->lock($document, $lockMode);
         }
     }

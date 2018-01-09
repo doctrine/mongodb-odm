@@ -719,7 +719,7 @@ class DocumentManager implements ObjectManager
         if (! isset($referenceMapping['targetDocument'])) {
             $discriminatorField = $referenceMapping['discriminatorField'];
             $discriminatorValue = isset($referenceMapping['discriminatorMap'])
-                ? array_search($class->name, $referenceMapping['discriminatorMap'])
+                ? array_search($class->name, $referenceMapping['discriminatorMap'], true)
                 : $class->name;
 
             /* If the discriminator value was not found in the map, use the full
