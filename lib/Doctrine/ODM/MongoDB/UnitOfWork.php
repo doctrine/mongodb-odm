@@ -360,10 +360,9 @@ class UnitOfWork implements PropertyChangedListener
      * 2) All document updates
      * 3) All document deletions
      *
-     * @param object $document
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
      */
-    public function commit($document = null, array $options = array())
+    public function commit(array $options = array())
     {
         // Raise preFlush
         if ($this->evm->hasListeners(Events::preFlush)) {
@@ -371,15 +370,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Compute changes done since last commit.
-        if ($document === null) {
-            $this->computeChangeSets();
-        } elseif (is_object($document)) {
-            $this->computeSingleDocumentChangeSet($document);
-        } elseif (is_array($document)) {
-            foreach ($document as $object) {
-                $this->computeSingleDocumentChangeSet($object);
-            }
-        }
+        $this->computeChangeSets();
 
         if ( ! ($this->documentInsertions ||
             $this->documentUpserts ||
@@ -514,52 +505,6 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! $class->isEmbeddedDocument) {
                 $this->computeChangeSet($class, $document);
             }
-        }
-    }
-
-    /**
-     * Only flush the given document according to a ruleset that keeps the UoW consistent.
-     *
-     * 1. All documents scheduled for insertion and (orphan) removals are processed as well!
-     * 2. Proxies are skipped.
-     * 3. Only if document is properly managed.
-     *
-     * @param  object $document
-     * @throws \InvalidArgumentException If the document is not STATE_MANAGED
-     * @return void
-     */
-    private function computeSingleDocumentChangeSet($document)
-    {
-        $state = $this->getDocumentState($document);
-
-        if ($state !== self::STATE_MANAGED && $state !== self::STATE_REMOVED) {
-            throw new \InvalidArgumentException('Document has to be managed or scheduled for removal for single computation ' . $this->objToStr($document));
-        }
-
-        $class = $this->dm->getClassMetadata(get_class($document));
-
-        if ($state === self::STATE_MANAGED && $class->isChangeTrackingDeferredImplicit()) {
-            $this->persist($document);
-        }
-
-        // Compute changes for INSERTed and UPSERTed documents first. This must always happen even in this case.
-        $this->computeScheduleInsertsChangeSets();
-        $this->computeScheduleUpsertsChangeSets();
-
-        // Ignore uninitialized proxy objects
-        if ($document instanceof Proxy && ! $document->__isInitialized__) {
-            return;
-        }
-
-        // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION, UPSERT OR DELETION are processed here.
-        $oid = spl_object_hash($document);
-
-        if ( ! isset($this->documentInsertions[$oid])
-            && ! isset($this->documentUpserts[$oid])
-            && ! isset($this->documentDeletions[$oid])
-            && isset($this->documentStates[$oid])
-        ) {
-            $this->computeChangeSet($class, $document);
         }
     }
 

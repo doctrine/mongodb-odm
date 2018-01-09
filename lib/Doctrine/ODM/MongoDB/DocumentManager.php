@@ -508,17 +508,13 @@ class DocumentManager implements ObjectManager
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
      *
-     * @param object $document
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
      * @throws \InvalidArgumentException
      */
-    public function flush($document = null, array $options = array())
+    public function flush(array $options = array())
     {
-        if (null !== $document && ! is_object($document) && ! is_array($document)) {
-            throw new \InvalidArgumentException(gettype($document));
-        }
         $this->errorIfClosed();
-        $this->unitOfWork->commit($document, $options);
+        $this->unitOfWork->commit($options);
     }
 
     /**

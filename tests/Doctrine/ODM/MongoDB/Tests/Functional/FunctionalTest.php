@@ -108,27 +108,6 @@ class FunctionalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue(isset($class->associationMappings['groups']));
     }
 
-    public function testFlushSingleDocument()
-    {
-        $user1 = new \Documents\ForumUser();
-        $user1->username = 'romanb';
-        $user2 = new \Documents\ForumUser();
-        $user2->username = 'jwage';
-        $this->dm->persist($user1);
-        $this->dm->persist($user2);
-        $this->dm->flush();
-
-        $user1->username = 'changed';
-        $user2->username = 'changed';
-        $this->dm->flush($user1);
-
-        $check = $this->dm->getDocumentCollection('Documents\ForumUser')->find(array('username' => 'jwage'));
-        $this->assertNotNull($check);
-
-        $check = $this->dm->getDocumentCollection('Documents\ForumUser')->find(array('username' => 'changed'));
-        $this->assertNotNull($check);
-    }
-
     public function testNestedCategories()
     {
         $root = new \Documents\Category('Root');

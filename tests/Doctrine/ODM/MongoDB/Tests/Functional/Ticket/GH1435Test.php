@@ -46,7 +46,7 @@ class GH1435Test extends BaseTest
         $document->name = 'test';
 
         $this->dm->persist($document);
-        $this->dm->flush($document);
+        $this->dm->flush();
         $this->dm->clear();
 
         $document = $this->dm->getRepository(GH1435DocumentIncrement::class)->findOneBy([]);
