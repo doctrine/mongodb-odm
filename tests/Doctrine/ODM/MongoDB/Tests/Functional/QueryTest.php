@@ -8,12 +8,15 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Article;
 use Documents\CmsComment;
 use Documents\Group;
+use Documents\IndirectlyReferencedUser;
 use Documents\Phonenumber;
+use Documents\ReferenceUser;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use function array_values;
 use function get_class;
+use function iterator_to_array;
 use function strtotime;
 
 class QueryTest extends BaseTest
@@ -364,6 +367,35 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
         $this->assertSame($user, $user2);
+    }
+
+    public function testNestedQueryReference()
+    {
+        $referencedUser = new User();
+        $referencedUser->setUsername('boo');
+        $phonenumber = new Phonenumber('6155139185');
+        $referencedUser->addPhonenumber($phonenumber);
+
+        $indirectlyReferencedUser = new IndirectlyReferencedUser();
+        $indirectlyReferencedUser->user = $referencedUser;
+
+        $user = new ReferenceUser();
+        $user->indirectlyReferencedUsers[] = $indirectlyReferencedUser;
+
+        $this->dm->persist($referencedUser);
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder('Documents\ReferenceUser');
+
+        $referencedUsersQuery = $qb
+            ->field('indirectlyReferencedUsers.user.id')->equals(new ObjectId($referencedUser->getId()))
+            ->getQuery();
+
+        $referencedUsers = iterator_to_array($referencedUsersQuery->execute(), false);
+
+        $this->assertCount(1, $referencedUsers);
+        $this->assertSame($user, $referencedUsers[0]);
     }
 
     public function testQueryWhereIn()
