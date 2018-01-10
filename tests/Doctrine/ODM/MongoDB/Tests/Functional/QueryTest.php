@@ -6,7 +6,9 @@ use Documents\Article;
 use Documents\Account;
 use Documents\Address;
 use Documents\CmsComment;
+use Documents\IndirectlyReferencedUser;
 use Documents\Phonenumber;
+use Documents\ReferenceUser;
 use Documents\User;
 
 class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -357,6 +359,32 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
         $this->assertSame($user, $user2);
+    }
+
+    public function testNestedQueryReference()
+    {
+        $referencedUser = new User();
+        $referencedUser->setUsername('boo');
+        $phonenumber = new Phonenumber('6155139185');
+        $referencedUser->addPhonenumber($phonenumber);
+
+        $indirectlyReferencedUser = new IndirectlyReferencedUser();
+        $indirectlyReferencedUser->user = $referencedUser;
+
+        $user = new ReferenceUser();
+        $user->indirectlyReferencedUsers[] = $indirectlyReferencedUser;
+
+        $this->dm->persist($referencedUser);
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder('Documents\ReferenceUser');
+
+        $referencedUsers = $qb
+            ->field('indirectlyReferencedUsers.user.id')->equals($referencedUser->getId())
+            ->getQuery()->getQuery();
+
+        print_r($referencedUsers);
     }
 
     public function testQueryWhereIn()
