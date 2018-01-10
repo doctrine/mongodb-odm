@@ -2,6 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Util\Debug;
 use Documents\Article;
 use Documents\Account;
 use Documents\Address;
@@ -381,15 +382,13 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\ReferenceUser');
 
         $referencedUsersQuery = $qb
-            ->field('indirectlyReferencedUsers.user.id')->equals($referencedUser->getId())
+            ->field('indirectlyReferencedUsers.user.id')->equals(new \MongoDB\BSON\ObjectId($referencedUser->getId()))
             ->getQuery();
 
-        print_r($referencedUsersQuery->getQuery());
-
-        $referencedUsers = $referencedUsersQuery->execute();
+        $referencedUsers = iterator_to_array($referencedUsersQuery->execute());
 
         $this->assertCount(1, $referencedUsers);
-        $this->assertSame($referencedUser, $referencedUsers[0]);
+        $this->assertSame($user, $referencedUsers[0]);
     }
 
     public function testQueryWhereIn()

@@ -77,7 +77,7 @@ class ReferenceUser
      *
      * @var IndirectlyReferencedUser[]
      */
-    public $indirectlyReferencedUsers = array();
+    public $indirectlyReferencedUsers = [];
 
     /**
      * @ODM\Field(type="string")
