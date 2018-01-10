@@ -380,11 +380,16 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\ReferenceUser');
 
-        $referencedUsers = $qb
+        $referencedUsersQuery = $qb
             ->field('indirectlyReferencedUsers.user.id')->equals($referencedUser->getId())
-            ->getQuery()->getQuery();
+            ->getQuery();
 
-        print_r($referencedUsers);
+        print_r($referencedUsersQuery->getQuery());
+
+        $referencedUsers = $referencedUsersQuery->execute();
+
+        $this->assertCount(1, $referencedUsers);
+        $this->assertSame($referencedUser, $referencedUsers[0]);
     }
 
     public function testQueryWhereIn()
