@@ -76,10 +76,10 @@ abstract class Operator extends Stage
      * @see Expr::add
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     * @param mixed|Expr $expression3,... Additional expressions
+     * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      */
-    public function add($expression1, $expression2 /* , $expression3, ... */)
+    public function add($expression1, $expression2, ...$expressions)
     {
         $this->expr->add(...func_get_args());
 
@@ -92,9 +92,10 @@ abstract class Operator extends Stage
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/and/
      * @see Expr::addAnd
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addAnd($expression /* , $expression2, ... */)
+    public function addAnd($expression, ...$expressions)
     {
         $this->expr->addAnd(...func_get_args());
 
@@ -107,9 +108,10 @@ abstract class Operator extends Stage
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/or/
      * @see Expr::addOr
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addOr($expression /* , $expression2, ... */)
+    public function addOr($expression, ...$expressions)
     {
         $this->expr->addOr(...func_get_args());
 
@@ -225,10 +227,10 @@ abstract class Operator extends Stage
      * @see Expr::concat
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     * @param mixed|Expr $expression3,... Additional expressions
+     * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      */
-    public function concat($expression1, $expression2 /* , $expression3, ... */)
+    public function concat($expression1, $expression2, ...$expressions)
     {
         $this->expr->concat(...func_get_args());
 
@@ -245,12 +247,12 @@ abstract class Operator extends Stage
      * @see Expr::concatArrays
      * @param mixed|Expr $array1
      * @param mixed|Expr $array2
-     * @param mixed|Expr $array3, ... Additional expressions
+     * @param mixed|Expr ...$arrays Additional expressions
      * @return $this
      *
      * @since 1.3
      */
-    public function concatArrays($array1, $array2 /* , $array3, ... */)
+    public function concatArrays($array1, $array2, ...$arrays)
     {
         $this->expr->concatArrays(...func_get_args());
 
@@ -957,10 +959,10 @@ abstract class Operator extends Stage
      * @see Expr::multiply
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     * @param mixed|Expr $expression3,... Additional expressions
+     * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      */
-    public function multiply($expression1, $expression2 /* , $expression3, ... */)
+    public function multiply($expression1, $expression2, ...$expressions)
     {
         $this->expr->multiply(...func_get_args());
 
@@ -1126,10 +1128,10 @@ abstract class Operator extends Stage
      * @see Expr::setEquals
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     * @param mixed|Expr $expression3,...   Additional sets
+     * @param mixed|Expr ...$expression3s Additional sets
      * @return $this
      */
-    public function setEquals($expression1, $expression2 /* , $expression3, ... */)
+    public function setEquals($expression1, $expression2, ...$expressions)
     {
         $this->expr->setEquals(...func_get_args());
 
@@ -1146,10 +1148,10 @@ abstract class Operator extends Stage
      * @see Expr::setIntersection
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     * @param mixed|Expr $expression3,...   Additional sets
+     * @param mixed|Expr ...$expressions Additional sets
      * @return $this
      */
-    public function setIntersection($expression1, $expression2 /* , $expression3, ... */)
+    public function setIntersection($expression1, $expression2, ...$expressions)
     {
         $this->expr->setIntersection(...func_get_args());
 
@@ -1186,10 +1188,10 @@ abstract class Operator extends Stage
      * @see Expr::setUnion
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     * @param mixed|Expr $expression3,...   Additional sets
+     * @param mixed|Expr ...$expressions Additional sets
      * @return $this
      */
-    public function setUnion($expression1, $expression2 /* , $expression3, ... */)
+    public function setUnion($expression1, $expression2, ...$expressions)
     {
         $this->expr->setUnion(...func_get_args());
 

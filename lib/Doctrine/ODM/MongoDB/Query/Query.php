@@ -361,13 +361,13 @@ class Query implements \IteratorAggregate
      * Returns an array containing the specified keys and their values from the
      * query array, provided they exist and are not null.
      *
-     * @param string $key,... One or more option keys to be read
+     * @param string ...$keys One or more option keys to be read
      * @return array
      */
-    private function getQueryOptions(/* $key, ... */)
+    private function getQueryOptions(string ...$keys)
     {
         return array_filter(
-            array_intersect_key($this->query, array_flip(func_get_args())),
+            array_intersect_key($this->query, array_flip($keys)),
             function($value) { return $value !== null; }
         );
     }

@@ -118,9 +118,10 @@ class Builder
      * @see Expr::addAnd()
      * @see http://docs.mongodb.org/manual/reference/operator/and/
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addAnd($expression /* , $expression2, ... */)
+    public function addAnd($expression, ...$expressions)
     {
         $this->expr->addAnd(...func_get_args());
         return $this;
@@ -134,9 +135,10 @@ class Builder
      * @see Expr::addNor()
      * @see http://docs.mongodb.org/manual/reference/operator/nor/
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addNor($expression /* , $expression2, ... */)
+    public function addNor($expression, ...$expressions)
     {
         $this->expr->addNor(...func_get_args());
         return $this;
@@ -150,9 +152,10 @@ class Builder
      * @see Expr::addOr()
      * @see http://docs.mongodb.org/manual/reference/operator/or/
      * @param array|Expr $expression
+     * @param array|Expr ...$expressions
      * @return $this
      */
-    public function addOr($expression /* , $expression2, ... */)
+    public function addOr($expression, ...$expressions)
     {
         $this->expr->addOr(...func_get_args());
         return $this;
@@ -685,10 +688,13 @@ class Builder
      *
      * @see Expr::geoWithinPolygon()
      * @see http://docs.mongodb.org/manual/reference/operator/polygon/
-     * @param array $point,... Three or more point coordinate tuples
+     * @param array $point1 First point of the polygon
+     * @param array $point2 Second point of the polygon
+     * @param array $point3 Third point of the polygon
+     * @param array ...$points Additional points of the polygon
      * @return $this
      */
-    public function geoWithinPolygon(/* array($x1, $y1), ... */)
+    public function geoWithinPolygon($point1, $point2, $point3, ...$points)
     {
         $this->expr->geoWithinPolygon(...func_get_args());
         return $this;

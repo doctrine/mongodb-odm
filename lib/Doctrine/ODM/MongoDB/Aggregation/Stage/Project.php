@@ -30,14 +30,14 @@ class Project extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/avg/
      * @see Expr::avg
      * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2, ... Additional expressions
+     * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
      * @since 1.3
      */
-    public function avg($expression1/* , $expression2, ... */)
+    public function avg($expression1, ...$expressions)
     {
-        $this->expr->avg(func_num_args() === 1 ? $expression1 : func_get_args());
+        $this->expr->avg(empty($expressions) ? $expression1 : func_get_args());
 
         return $this;
     }
@@ -83,14 +83,14 @@ class Project extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/max/
      * @see Expr::max
      * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2, ... Additional expressions
+     * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
      * @since 1.3
      */
-    public function max($expression1/* , $expression2, ... */)
+    public function max($expression1, ...$expressions)
     {
-        $this->expr->max(func_num_args() === 1 ? $expression1 : func_get_args());
+        $this->expr->max(empty($expressions) ? $expression1 : func_get_args());
 
         return $this;
     }
@@ -102,14 +102,14 @@ class Project extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/min/
      * @see Expr::min
      * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2, ... Additional expressions
+     * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
      * @since 1.3
      */
-    public function min($expression1/* , $expression2, ... */)
+    public function min($expression1, ...$expressions)
     {
-        $this->expr->min(func_num_args() === 1 ? $expression1 : func_get_args());
+        $this->expr->min(empty($expressions) ? $expression1 : func_get_args());
 
         return $this;
     }
@@ -122,14 +122,14 @@ class Project extends Operator
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevPop/
      * @see Expr::stdDevPop
      * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2, ... Additional expressions
+     * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
      * @since 1.3
      */
-    public function stdDevPop($expression1/* , $expression2, ... */)
+    public function stdDevPop($expression1, ...$expressions)
     {
-        $this->expr->stdDevPop(func_num_args() === 1 ? $expression1 : func_get_args());
+        $this->expr->stdDevPop(empty($expressions) ? $expression1 : func_get_args());
 
         return $this;
     }
@@ -142,14 +142,14 @@ class Project extends Operator
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevSamp/
      * @see Expr::stdDevSamp
      * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2, ... Additional expressions
+     * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
      * @since 1.3
      */
-    public function stdDevSamp($expression1/* , $expression2, ... */)
+    public function stdDevSamp($expression1, ...$expressions)
     {
-        $this->expr->stdDevSamp(func_num_args() === 1 ? $expression1 : func_get_args());
+        $this->expr->stdDevSamp(empty($expressions) ? $expression1 : func_get_args());
 
         return $this;
     }
@@ -162,14 +162,14 @@ class Project extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sum/
      * @see Expr::sum
      * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2, ... Additional expressions
+     * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
      * @since 1.3
      */
-    public function sum($expression1/* , $expression2, ... */)
+    public function sum($expression1, ...$expressions)
     {
-        $this->expr->sum(func_num_args() === 1 ? $expression1 : func_get_args());
+        $this->expr->sum(empty($expressions) ? $expression1 : func_get_args());
 
         return $this;
     }
