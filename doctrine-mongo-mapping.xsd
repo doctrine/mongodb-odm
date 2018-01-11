@@ -84,6 +84,9 @@
     <xs:attribute name="reference" type="xs:boolean" />
     <xs:attribute name="version" type="xs:boolean" />
     <xs:attribute name="lock" type="xs:boolean" />
+    <xs:attribute name="not-saved" type="xs:boolean" />
+    <xs:attribute name="nullable" type="xs:boolean" />
+    <xs:attribute name="also-load" type="xs:NMTOKEN" />
     <!-- index options -->
     <xs:attribute name="background" type="xs:boolean" />
     <xs:attribute name="drop-dups" type="xs:boolean" />
@@ -108,7 +111,9 @@
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
-    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
+    <xs:attribute name="not-saved" type="xs:boolean" />
+    <xs:attribute name="nullable" type="xs:boolean" />
+    <xs:attribute name="also-load" type="xs:NMTOKEN" />
   </xs:complexType>
 
   <xs:complexType name="embed-many">
@@ -122,6 +127,9 @@
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
+    <xs:attribute name="not-saved" type="xs:boolean" />
+    <xs:attribute name="nullable" type="xs:boolean" />
+    <xs:attribute name="also-load" type="xs:NMTOKEN" />
   </xs:complexType>
 
   <xs:simpleType name="reference-store-as">
@@ -147,11 +155,13 @@
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="simple" type="xs:boolean" /><!-- deprecated -->
     <xs:attribute name="store-as" type="odm:reference-store-as" default="dbRefWithDb" />
-    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="repository-method" type="xs:NMTOKEN" />
     <xs:attribute name="orphan-removal" type="xs:boolean" />
+    <xs:attribute name="not-saved" type="xs:boolean" />
+    <xs:attribute name="nullable" type="xs:boolean" />
+    <xs:attribute name="also-load" type="xs:NMTOKEN" />
   </xs:complexType>
 
   <xs:complexType name="reference-many">
@@ -173,10 +183,13 @@
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
-    <xs:attribute name="repositoryMethod" type="xs:NMTOKEN" />
+    <xs:attribute name="repository-method" type="xs:NMTOKEN" />
     <xs:attribute name="limit" type="xs:integer" />
     <xs:attribute name="skip" type="xs:integer" />
     <xs:attribute name="orphan-removal" type="xs:boolean" />
+    <xs:attribute name="not-saved" type="xs:boolean" />
+    <xs:attribute name="nullable" type="xs:boolean" />
+    <xs:attribute name="also-load" type="xs:NMTOKEN" />
   </xs:complexType>
 
   <xs:complexType name="sort-type">
