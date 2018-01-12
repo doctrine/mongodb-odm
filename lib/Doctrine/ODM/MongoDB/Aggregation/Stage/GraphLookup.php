@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types\Type;
 
@@ -358,9 +357,9 @@ class GraphLookup extends Stage
         }
 
         switch ($mapping['storeAs']) {
-            case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                return ClassMetadataInfo::getReferenceFieldName($mapping['storeAs'], $mapping['name']);
+            case ClassMetadata::REFERENCE_STORE_AS_ID:
+            case ClassMetadata::REFERENCE_STORE_AS_REF:
+                return ClassMetadata::getReferenceFieldName($mapping['storeAs'], $mapping['name']);
                 break;
 
             default:
