@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
@@ -14,7 +14,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testSetShardKeyOptionsByAttributes()
     {
-        $class = new ClassMetadataInfo('doc');
+        $class = new ClassMetadata('doc');
         $driver = $this->_loadDriver();
         $element = new \SimpleXmlElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
 
@@ -31,7 +31,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testGetAssociationCollectionClass()
     {
-        $class = new ClassMetadataInfo('doc');
+        $class = new ClassMetadata('doc');
         $driver = $this->_loadDriver();
         $element = new \SimpleXmlElement('<reference-many target-document="Phonenumber" collection-class="Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection" field="phonenumbers"></reference-many>');
 

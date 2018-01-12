@@ -3,7 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Documents\CmsUser;
 
 class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -62,11 +62,11 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testOwningSideAndInverseSide()
     {
-        $cm = new ClassMetadataInfo('Documents\User');
+        $cm = new ClassMetadata('Documents\User');
         $cm->mapManyReference(array('fieldName' => 'articles', 'targetDocument' => 'Documents\Article', 'inversedBy' => 'user'));
         $this->assertTrue($cm->fieldMappings['articles']['isOwningSide']);
 
-        $cm = new ClassMetadataInfo('Documents\Article');
+        $cm = new ClassMetadata('Documents\Article');
         $cm->mapOneReference(array('fieldName' => 'user', 'targetDocument' => 'Documents\User', 'mappedBy' => 'articles'));
         $this->assertTrue($cm->fieldMappings['user']['isInverseSide']);
     }

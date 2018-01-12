@@ -5,7 +5,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Documents\File;
@@ -33,7 +33,7 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testCollectionClassHasToImplementCommonInterface()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
 
         $cm->mapField(array(
             'fieldName' => 'assoc',
@@ -77,7 +77,7 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf(MyEmbedsCollection::class, $d->coll);
         $this->assertCount(1, $d->coll->getEnabled());
         $this->assertCount(1, $d->coll->getByName('#1'));
-        
+
         $this->assertInstanceOf(PersistentCollection::class, $d->boring);
         $this->assertCount(2, $d->boring);
     }
