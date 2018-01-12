@@ -5,17 +5,17 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Documents\Album;
 use Documents\SpecialUser;
 use Documents\User;
 
-class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testDefaultDiscriminatorField()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
 
         $cm->mapField(array(
             'fieldName' => 'assoc',
@@ -40,7 +40,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $mapping = $cm->getFieldMapping('assoc');
 
         $this->assertEquals(
-            ClassMetadataInfo::DEFAULT_DISCRIMINATOR_FIELD, $mapping['discriminatorField'],
+            ClassMetadata::DEFAULT_DISCRIMINATOR_FIELD, $mapping['discriminatorField'],
             'Default discriminator field is set for associations without targetDocument and discriminatorField options'
         );
 
@@ -131,7 +131,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSetCustomRepositoryClass()
     {
-        $cm = new ClassMetadataInfo('Doctrine\ODM\MongoDB\Tests\Mapping\ClassMetadataInfoTest');
+        $cm = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ClassMetadataTest');
         $cm->namespace = 'Doctrine\ODM\MongoDB\Tests\Mapping';
 
         $cm->setCustomRepositoryClass('TestCustomRepositoryClass');
@@ -166,7 +166,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testEmbedWithCascadeThrowsMappingException()
     {
-        $class = new ClassMetadataInfo(__NAMESPACE__ . '\EmbedWithCascadeTest');
+        $class = new ClassMetadata(__NAMESPACE__ . '\EmbedWithCascadeTest');
         $class->mapOneEmbedded(array(
             'fieldName' => 'address',
             'targetDocument' => 'Documents\Address',
@@ -219,13 +219,13 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testSimpleReferenceRequiresTargetDocument()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
 
         $cm->mapField(array(
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_ID,
         ));
     }
 
@@ -235,13 +235,13 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testSimpleAsStringReferenceRequiresTargetDocument()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
 
         $cm->mapField(array(
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_ID,
         ));
     }
 
@@ -251,36 +251,36 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testStoreAsIdReferenceRequiresTargetDocument()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
 
         $cm->mapField(array(
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_ID,
         ));
     }
-    
+
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
      * @expectedExceptionMessage atomicSet collection strategy can be used only in top level document, used in stdClass::many
      */
     public function testAtomicCollectionUpdateUsageInEmbeddedDocument()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->isEmbeddedDocument = true;
 
         $cm->mapField(array(
             'fieldName' => 'many',
             'reference' => true,
             'type' => 'many',
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET,
         ));
     }
 
     public function testDefaultStorageStrategyOfEmbeddedDocumentFields()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->isEmbeddedDocument = true;
 
         $mapping = $cm->mapField(array(
@@ -300,10 +300,10 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $config = array_merge($config, array(
             'fieldName' => 'many',
             'reference' => true,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET,
         ));
 
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->isEmbeddedDocument = true;
         $cm->mapField($config);
     }
@@ -320,13 +320,13 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testAddInheritedAssociationMapping()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
 
         $mapping = array(
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
-            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_ID,
         );
 
         $cm->addInheritedAssociationMapping($mapping);
@@ -344,7 +344,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testIdFieldsTypeMustNotBeOverridden()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->setIdentifier('id');
         $cm->mapField(array(
             'fieldName' => 'id',
@@ -358,11 +358,11 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testReferenceManySortMustNotBeUsedWithNonSetCollectionStrategy()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->mapField(array(
             'fieldName' => 'ref',
             'reference' => true,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
             'type' => 'many',
             'sort' => array('foo' => 1)
         ));
@@ -370,7 +370,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSetShardKeyForClassWithoutInheritance()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(array('id' => 'asc'));
 
         $shardKey = $cm->getShardKey();
@@ -380,8 +380,8 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSetShardKeyForClassWithSingleCollectionInheritance()
     {
-        $cm = new ClassMetadataInfo('stdClass');
-        $cm->inheritanceType = ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION;
+        $cm = new ClassMetadata('stdClass');
+        $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION;
         $cm->setShardKey(array('id' => 'asc'));
 
         $shardKey = $cm->getShardKey();
@@ -395,17 +395,17 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testSetShardKeyForClassWithSingleCollectionInheritanceWhichAlreadyHasIt()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(array('id' => 'asc'));
-        $cm->inheritanceType = ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION;
+        $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION;
 
         $cm->setShardKey(array('foo' => 'asc'));
     }
 
     public function testSetShardKeyForClassWithCollPerClassInheritance()
     {
-        $cm = new ClassMetadataInfo('stdClass');
-        $cm->inheritanceType = ClassMetadataInfo::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
+        $cm = new ClassMetadata('stdClass');
+        $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
         $cm->setShardKey(array('id' => 'asc'));
 
         $shardKey = $cm->getShardKey();
@@ -415,14 +415,14 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testIsNotShardedIfThereIsNoShardKey()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
 
         $this->assertFalse($cm->isSharded());
     }
 
     public function testIsShardedIfThereIsAShardKey()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(array('id' => 'asc'));
 
         $this->assertTrue($cm->isSharded());
@@ -434,7 +434,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testEmbeddedDocumentCantHaveShardKey()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->isEmbeddedDocument = true;
         $cm->setShardKey(array('id' => 'asc'));
     }
@@ -445,11 +445,11 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testNoIncrementFieldsAllowedInShardKey()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->mapField([
             'fieldName' => 'inc',
             'type' => 'int',
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_INCREMENT,
         ]);
         $cm->setShardKey(array('inc' => 1));
     }
@@ -460,7 +460,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testNoCollectionsInShardKey()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->mapField([
             'fieldName' => 'collection',
             'type' => 'collection'
@@ -474,7 +474,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testNoEmbedManyInShardKey()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->mapManyEmbedded(['fieldName' => 'embedMany']);
         $cm->setShardKey(array('embedMany' => 1));
     }
@@ -485,7 +485,7 @@ class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testNoReferenceManyInShardKey()
     {
-        $cm = new ClassMetadataInfo('stdClass');
+        $cm = new ClassMetadata('stdClass');
         $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
         $cm->setShardKey(array('referenceMany' => 1));
     }
