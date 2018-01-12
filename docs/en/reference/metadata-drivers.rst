@@ -60,7 +60,7 @@ implements the ``Driver`` interface:
 
     namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-    use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+    use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
     interface Driver
     {
@@ -68,9 +68,9 @@ implements the ``Driver`` interface:
          * Loads the metadata for the specified class into the provided container.
          *
          * @param string $className
-         * @param ClassMetadataInfo $metadata
+         * @param ClassMetadata $metadata
          */
-        function loadMetadataForClass($className, ClassMetadataInfo $metadata);
+        function loadMetadataForClass($className, ClassMetadata $metadata);
 
         /**
          * Gets the names of all mapped classes known to this driver.
@@ -108,11 +108,11 @@ the ``AbstractFileDriver`` implementation for you to extend from:
         /**
          * {@inheritdoc}
          */
-        public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+        public function loadMetadataForClass($className, ClassMetadata $metadata)
         {
             $data = $this->_loadMappingFile($file);
 
-            // populate ClassMetadataInfo instance from $data
+            // populate ClassMetadata instance from $data
         }
 
         /**
@@ -155,12 +155,12 @@ document when needed.
 
 You have all the methods you need to manually specify the mapping
 information instead of using some mapping file to populate it from.
-The base ``ClassMetadataInfo`` class is responsible for only data
+The base ``ClassMetadata`` class is responsible for only data
 storage and is not meant for runtime use. It does not require that
 the class actually exists yet so it is useful for describing some
 document before it exists and using that information to generate for
 example the documents themselves. The class ``ClassMetadata``
-extends ``ClassMetadataInfo`` and adds some functionality required
+extends ``ClassMetadata`` and adds some functionality required
 for runtime usage and requires that the PHP class is present and
 can be autoloaded.
 
