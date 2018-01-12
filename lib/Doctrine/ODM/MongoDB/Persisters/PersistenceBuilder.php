@@ -3,7 +3,6 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -87,7 +86,7 @@ class PersistenceBuilder
             // We're excluding collections using addToSet since there is a risk
             // of duplicated entries stored in the collection
             } elseif ($mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
-                    && $mapping['strategy'] !== ClassMetadataInfo::STORAGE_STRATEGY_ADD_TO_SET && ! $new->isEmpty()) {
+                    && $mapping['strategy'] !== ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET && ! $new->isEmpty()) {
                 $insertData[$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }
         }
@@ -127,7 +126,7 @@ class PersistenceBuilder
                 if ($new === null && $mapping['nullable'] !== true) {
                     $updateData['$unset'][$mapping['name']] = true;
                 } else {
-                    if ($new !== null && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT) {
+                    if ($new !== null && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                         $operator = '$inc';
                         $value = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
                     } else {
@@ -225,7 +224,7 @@ class PersistenceBuilder
             // Scalar fields
             if ( ! isset($mapping['association'])) {
                 if ($new !== null || $mapping['nullable'] === true) {
-                    if ($new !== null && empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadataInfo::STORAGE_STRATEGY_INCREMENT) {
+                    if ($new !== null && empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                         $operator = '$inc';
                         $value = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
                     } else {
@@ -321,7 +320,7 @@ class PersistenceBuilder
                 continue;
             }
 
-            // Inline ClassMetadataInfo::getFieldValue()
+            // Inline ClassMetadata::getFieldValue()
             $rawValue = $class->reflFields[$mapping['fieldName']]->getValue($embeddedDocument);
 
             $value = null;

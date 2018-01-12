@@ -11,7 +11,7 @@ use Documents\Album;
 use Documents\SpecialUser;
 use Documents\User;
 
-class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ClassMetadataInfoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testDefaultDiscriminatorField()
     {

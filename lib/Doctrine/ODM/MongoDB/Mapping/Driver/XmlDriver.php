@@ -6,7 +6,6 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -30,7 +29,7 @@ class XmlDriver extends FileDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $class)
     {
-        /* @var $class ClassMetadataInfo */
+        /* @var $class MappingClassMetadata */
         /* @var $xmlRoot \SimpleXMLElement */
         $xmlRoot = $this->getElement($className);
         if ( ! $xmlRoot) {
@@ -182,7 +181,7 @@ class XmlDriver extends FileDriver
         }
     }
 
-    private function addFieldMapping(ClassMetadataInfo $class, $mapping)
+    private function addFieldMapping(MappingClassMetadata $class, $mapping)
     {
         if (isset($mapping['name'])) {
             $name = $mapping['name'];
@@ -221,10 +220,10 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function addEmbedMapping(ClassMetadataInfo $class, $embed, $type)
+    private function addEmbedMapping(MappingClassMetadata $class, $embed, $type)
     {
         $attributes = $embed->attributes();
-        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type == 'one' ? MappingClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'type'            => $type,
             'embedded'        => true,
@@ -258,20 +257,20 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addReferenceMapping(ClassMetadataInfo $class, $reference, $type)
+    private function addReferenceMapping(MappingClassMetadata $class, $reference, $type)
     {
         $cascade = array_keys((array) $reference->cascade);
         if (1 === count($cascade)) {
             $cascade = current($cascade) ?: next($cascade);
         }
         $attributes = $reference->attributes();
-        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type == 'one' ? MappingClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'cascade'          => $cascade,
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
             'type'             => $type,
             'reference'        => true,
-            'storeAs'          => (string) ($attributes['store-as'] ?? ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF),
+            'storeAs'          => (string) ($attributes['store-as'] ?? MappingClassMetadata::REFERENCE_STORE_AS_DB_REF),
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'collectionClass'  => isset($attributes['collection-class']) ? (string) $attributes['collection-class'] : null,
             'name'             => (string) $attributes['field'],
@@ -328,7 +327,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addIndex(ClassMetadataInfo $class, \SimpleXmlElement $xmlIndex)
+    private function addIndex(MappingClassMetadata $class, \SimpleXmlElement $xmlIndex)
     {
         $attributes = $xmlIndex->attributes();
 
@@ -433,7 +432,7 @@ class XmlDriver extends FileDriver
         return $partialFilterExpression;
     }
 
-    private function setShardKey(ClassMetadataInfo $class, \SimpleXmlElement $xmlShardkey)
+    private function setShardKey(MappingClassMetadata $class, \SimpleXmlElement $xmlShardkey)
     {
         $attributes = $xmlShardkey->attributes();
 

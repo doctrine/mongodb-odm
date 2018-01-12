@@ -4,7 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\UnitOfWork;

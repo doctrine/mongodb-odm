@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\LockException;
@@ -26,7 +26,7 @@ use InvalidArgumentException;
  *
  * @since       1.0
  */
-class ClassMetadata implements ClassMetadata
+class ClassMetadata implements BaseClassMetadata
 {
     /* The Id generator types. */
     /**

@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Documents\CmsUser;
 
 class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest

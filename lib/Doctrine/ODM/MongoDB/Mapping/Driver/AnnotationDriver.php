@@ -31,7 +31,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $class)
     {
-        /** @var $class ClassMetadataInfo */
+        /** @var $class MappingClassMetadata */
         $reflClass = $class->getReflectionClass();
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
