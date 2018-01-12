@@ -233,6 +233,7 @@
       <xs:element name="merge" type="odm:emptyType" minOccurs="0" maxOccurs="1"/>
       <xs:element name="remove" type="odm:emptyType" minOccurs="0" maxOccurs="1"/>
       <xs:element name="refresh" type="odm:emptyType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="detach" type="odm:emptyType" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
 
