@@ -61,7 +61,7 @@ Persistent Models
 To make the above classes persistent, all we need to do is provide Doctrine with some mapping
 information so that it knows how to consume the objects and persist them to the database.
 
-You can provide your mapping information in Annotations, XML, or YAML:
+You can provide your mapping information in Annotations or XML:
 
 .. configuration-block::
 
@@ -137,34 +137,6 @@ You can provide your mapping information in Annotations, XML, or YAML:
                 <field fieldName="createdAt" type="date" />
           </document>
         </doctrine-mongo-mapping>
-
-    .. code-block:: yaml
-
-        Documents\User:
-          fields:
-            id:
-              type: id
-              id: true
-            name:
-              type: string
-            email:
-              type: string
-          referenceMany:
-            posts:
-              targetDocument: Documents\BlogPost
-              cascade: all
-
-        Documents\BlogPost:
-          fields:
-            id:
-              type: id
-              id: true
-            title:
-              type: string
-            body:
-              type: string
-            createdAt:
-              type: date
 
 That’s it, we have our models, and we can save and retrieve them. Now
 all we need to do is to properly instantiate the ``DocumentManager``

@@ -1,5 +1,0 @@
-TestDocuments\QueryResultDocument:
-  type: queryResultDocument
-  fields:
-    name: string
-    count: integer

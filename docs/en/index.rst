@@ -42,7 +42,6 @@ Mapping Objects onto a Database
 
 * **Mapping Driver References**:
   :doc:`XML <reference/xml-mapping>` |
-  :doc:`YAML <reference/yml-mapping>` |
   :doc:`Docblock Annotations <reference/annotations-reference>` |
   :doc:`Metadata Drivers <reference/metadata-drivers>`
 

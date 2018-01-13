@@ -73,13 +73,6 @@ document class like so:
             <!-- ... -->
         </document>
 
-    .. code-block:: yaml
-
-        Documents\User:
-            repositoryClass: Repositories\\UserRepository
-            collection: user
-            # ...
-
 The next step is implementing your repository class. In most cases, ODM's default
 ``DocumentRepository`` class may be extended with additional methods that you need.
 More complex cases that require passing additional dependencies to a custom repository

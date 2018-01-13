@@ -158,19 +158,6 @@ they can't be persisted to the database.
             </query-result-document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        Documents\User:
-          type: queryResultDocument
-          fields:
-            user:
-              name: _id
-              targetDocument: Documents\User
-            numPurchases:
-              type: int
-            amount:
-              type: float
-
 Once you have mapped the document, use the ``hydrate()`` method to tell the
 aggregation builder about this document:
 

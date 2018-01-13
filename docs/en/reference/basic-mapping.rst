@@ -13,14 +13,13 @@ document mapping metadata:
 
 -  Docblock Annotations
 -  XML
--  YAML
 -  Raw PHP Code
 
 .. note::
 
     If you're wondering which mapping driver gives the best
     performance, the answer is: None. Once the metadata of a class has
-    been read from the source (annotations, xml or yaml) it is stored
+    been read from the source (annotations or xml) it is stored
     in an instance of the
     ``Doctrine\ODM\MongoDB\Mapping\ClassMetadata`` class and these
     instances are stored in the metadata cache. Therefore at the end of
@@ -54,9 +53,9 @@ for supplying object document mapping metadata.
 .. note::
 
     If you're not comfortable with the concept of docblock
-    annotations, don't worry, as mentioned earlier Doctrine 2 provides
-    XML and YAML alternatives and you could easily implement your own
-    favorite mechanism for defining ORM metadata.
+    annotations, don't worry, as mentioned earlier Doctrine provides
+    XML alternative and you could easily implement your own
+    favorite mechanism for defining ODM metadata.
 
 Persistent classes
 ------------------
@@ -89,11 +88,6 @@ to be designated as a document. This can be done through the
             </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        Documents\User:
-          type: document
-
 By default, the document will be persisted to a database named
 doctrine and a collection with the same name as the class name. In
 order to change that, you can use the ``db`` and ``collection``
@@ -122,13 +116,6 @@ option as follows:
             <document name="Documents\User" db="my_db" collection="users">
             </document>
         </doctrine-mongo-mapping>
-
-    .. code-block:: yaml
-
-        Documents\User:
-          type: document
-          db: my_db
-          collection: users
 
 Now instances of ``Documents\User`` will be persisted into a
 collection named ``users`` in the database ``my_db``.
@@ -251,14 +238,6 @@ Here is an example:
           </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        Documents\User:
-          fields:
-            id:
-              type: id
-              id: true
-
 You can configure custom ID strategies if you don't want to use the default
 object ID. The available strategies are:
 
@@ -302,15 +281,6 @@ Here is an example how to manually set a string identifier for your documents:
                 <field name="id" id="true" strategy="NONE" type="string" />
             </document>
         </doctrine-mongo-mapping>
-
-    .. code-block:: yaml
-
-        MyPersistentClass:
-          fields:
-            id:
-              type: string
-              id: true
-              strategy: NONE
 
 When using the ``NONE`` strategy you will have to explicitly set an id before persisting the document:
 
@@ -373,17 +343,6 @@ as an option for the ``CUSTOM`` strategy:
             </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        MyPersistentClass:
-          fields:
-            id:
-              id: true
-              strategy: CUSTOM
-              type: string
-              options:
-                class: Vendor\Specific\Generator
-
 Fields
 ~~~~~~
 
@@ -426,16 +385,6 @@ Example:
           </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        Documents\User:
-          fields:
-            id:
-              type: id
-              id: true
-            username:
-              type: string
-
 In that example we mapped the property ``id`` to the field ``id``
 using the mapping type ``id`` and the property ``name`` is mapped
 to the field ``name`` with the default mapping type ``string``. As
@@ -456,11 +405,6 @@ as follows:
     .. code-block:: xml
 
         <field fieldName="name" name="db_name" />
-
-    .. code-block:: yaml
-
-        name:
-          name: db_name
 
 Custom Mapping Types
 --------------------
@@ -559,11 +503,6 @@ type in your mapping like this:
     .. code-block:: xml
 
         <field fieldName="field" type="mytype" />
-
-    .. code-block:: yaml
-
-        field:
-          type: mytype
 
 Multiple Document Types in a Collection
 ---------------------------------------

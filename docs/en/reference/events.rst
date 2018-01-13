@@ -164,7 +164,7 @@ the life-time of their registered documents.
 -
    loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
-   (annotations/xml/yaml).
+   (annotations/xml).
 -
    preFlush - The preFlush event occurs before the change-sets of all
    managed documents are computed. This both a lifecycle call back and

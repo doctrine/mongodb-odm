@@ -52,22 +52,6 @@ the ``@Document`` annotation:
             </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        Documents\Category:
-          type: document
-          collection:
-            name: collname
-            capped: true
-            size: 100000
-            max: 1000
-          fields:
-            id:
-              type: id
-              id: true
-            name:
-              type: string
-
 Creating
 --------
 

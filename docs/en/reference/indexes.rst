@@ -31,12 +31,6 @@ property:
 
         <field name="username" index="true" />
 
-    .. code-block:: yaml
-
-        fields:
-          username:
-            index: true
-
 Index Options
 -------------
 
@@ -104,14 +98,6 @@ Unique Index
 
         <field fieldName="username" index="true" unique="true" order="asc" />
 
-    .. code-block:: yaml
-
-        fields:
-          username:
-            index: true
-            unique: true
-            order: true
-
 For your convenience you can quickly specify a unique index with
 ``@UniqueIndex``:
 
@@ -136,13 +122,6 @@ For your convenience you can quickly specify a unique index with
     .. code-block:: xml
 
         <field fieldName="username" unique="true" order="asc" />
-
-    .. code-block:: yaml
-
-        fields:
-          username:
-            unique: true
-            order: true
 
 If you want to specify an index that consists of multiple fields
 you can specify them on the class doc block:
@@ -188,19 +167,6 @@ you can specify them on the class doc block:
                 </indexes>
             </document>
         </doctrine-mongo-mapping>
-
-    .. code-block:: yaml
-
-        Documents\User:
-          indexes:
-            usernameacctid:
-              options:
-                unique: true
-              keys:
-                accountId:
-                  order: asc
-                username:
-                  order: asc
 
 To specify multiple indexes you must use the ``@Indexes``
 annotation:
@@ -248,19 +214,6 @@ annotation:
                 </indexes>
             </document>
         </doctrine-mongo-mapping>
-
-    .. code-block:: yaml
-
-        Documents\User:
-          indexes:
-            accountId:
-              keys:
-                accountId:
-                  order: asc
-            username:
-              keys:
-                username:
-                  order: asc
 
 Embedded Indexes
 ----------------
@@ -377,13 +330,6 @@ options structures manually:
             </index>
         </indexes>
 
-    .. code-block:: yaml
-
-        indexes:
-          coordinates:
-            keys:
-              coordinates: 2d
-
 Partial indexes
 ---------------
 
@@ -422,16 +368,6 @@ index.
                 </partial-filter-expression>
             </index>
         </indexes>
-
-    .. code-block:: yaml
-
-        indexes:
-          partialIndexExample:
-            keys:
-              coordinates: asc
-            options:
-              partialFilterExpression:
-                version: { $gt: 1 }
 
 .. note::
 
