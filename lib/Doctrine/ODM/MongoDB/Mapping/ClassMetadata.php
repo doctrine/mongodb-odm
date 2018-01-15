@@ -2051,6 +2051,8 @@ class ClassMetadata implements BaseClassMetadata
         $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
         $reflProp->setAccessible(true);
         $this->reflFields[$mapping['fieldName']] = $reflProp;
+
+        return $mapping;
     }
 
     /**

@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use Documents\Account;
 use Documents\Album;
 use Documents\CmsUser;
 use Documents\SpecialUser;
@@ -68,12 +69,12 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testOwningSideAndInverseSide()
     {
-        $cm = new ClassMetadata('Documents\User');
-        $cm->mapManyReference(array('fieldName' => 'articles', 'targetDocument' => 'Documents\Article', 'inversedBy' => 'user'));
-        $this->assertTrue($cm->fieldMappings['articles']['isOwningSide']);
+        $cm = new ClassMetadata(User::class);
+        $cm->mapOneReference(array('fieldName' => 'account', 'targetDocument' => Account::class, 'inversedBy' => 'user'));
+        $this->assertTrue($cm->fieldMappings['account']['isOwningSide']);
 
-        $cm = new ClassMetadata('Documents\Article');
-        $cm->mapOneReference(array('fieldName' => 'user', 'targetDocument' => 'Documents\User', 'mappedBy' => 'articles'));
+        $cm = new ClassMetadata(Account::class);
+        $cm->mapOneReference(array('fieldName' => 'user', 'targetDocument' => Account::class, 'mappedBy' => 'account'));
         $this->assertTrue($cm->fieldMappings['user']['isInverseSide']);
     }
 
@@ -242,7 +243,13 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testDefaultDiscriminatorField()
     {
-        $cm = new ClassMetadata('stdClass');
+        $object = new class {
+            public $assoc;
+            public $assocWithTargetDocument;
+            public $assocWithDiscriminatorField;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
 
         $cm->mapField(array(
             'fieldName' => 'assoc',
@@ -490,11 +497,15 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage atomicSet collection strategy can be used only in top level document, used in stdClass::many
+     * @expectedExceptionMessage atomicSet collection strategy can be used only in top level document, used in
      */
     public function testAtomicCollectionUpdateUsageInEmbeddedDocument()
     {
-        $cm = new ClassMetadata('stdClass');
+        $object = new class {
+            public $many;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
         $cm->isEmbeddedDocument = true;
 
         $cm->mapField(array(
@@ -507,7 +518,11 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testDefaultStorageStrategyOfEmbeddedDocumentFields()
     {
-        $cm = new ClassMetadata('stdClass');
+        $object = new class {
+            public $many;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
         $cm->isEmbeddedDocument = true;
 
         $mapping = $cm->mapField(array(
@@ -672,7 +687,11 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testNoIncrementFieldsAllowedInShardKey()
     {
-        $cm = new ClassMetadata('stdClass');
+        $object = new class {
+            public $inc;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
         $cm->mapField([
             'fieldName' => 'inc',
             'type' => 'int',
@@ -687,7 +706,11 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testNoCollectionsInShardKey()
     {
-        $cm = new ClassMetadata('stdClass');
+        $object = new class {
+            public $collection;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
         $cm->mapField([
             'fieldName' => 'collection',
             'type' => 'collection'
@@ -701,7 +724,11 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testNoEmbedManyInShardKey()
     {
-        $cm = new ClassMetadata('stdClass');
+        $object = new class {
+            public $embedMany;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
         $cm->mapManyEmbedded(['fieldName' => 'embedMany']);
         $cm->setShardKey(array('embedMany' => 1));
     }
@@ -712,7 +739,11 @@ class ClassMetadataTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testNoReferenceManyInShardKey()
     {
-        $cm = new ClassMetadata('stdClass');
+        $object = new class {
+            public $referenceMany;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
         $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
         $cm->setShardKey(array('referenceMany' => 1));
     }
