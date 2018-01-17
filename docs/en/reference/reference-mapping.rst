@@ -78,14 +78,6 @@ Reference one document:
           </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        Product:
-          type: document
-          referenceOne:
-            shipping:
-              targetDocument: Documents\Shipping
-
 .. _reference_many:
 
 Reference Many
@@ -130,14 +122,6 @@ Reference many documents:
           </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        User:
-          type: document
-          referenceMany:
-            accounts:
-              targetDocument: Documents\Account
-
 .. _reference_mixing_document_types:
 
 Mixing Document Types
@@ -166,11 +150,6 @@ omit the ``targetDocument`` option:
     .. code-block:: xml
 
         <field fieldName="favorites" />
-
-    .. code-block:: yaml
-
-        referenceMany:
-            favorites: ~
 
 Now the ``$favorites`` property can store a reference to any type of document!
 The class name will be automatically stored in a field named
@@ -212,12 +191,6 @@ The name of the field within the DBRef object can be customized via the
             <discriminator-field name="type" />
         </reference-many>
 
-    .. code-block:: yaml
-
-        referenceMany:
-          favorites:
-            discriminatorField: type
-
 You can also specify a discriminator map to avoid storing the |FQCN|
 in each `DBRef`_ object:
 
@@ -253,14 +226,6 @@ in each `DBRef`_ object:
                 <discriminator-mapping value="song" class="Documents\Song" />
             </discriminator-map>
         </reference-many>
-
-    .. code-block:: yaml
-
-        referenceMany:
-          favorites:
-            discriminatorMap:
-              album: Documents\Album
-              song: Documents\Song
 
 If you have references without a discriminator value that should be considered
 a certain class, you can optionally specify a default discriminator value:
@@ -300,15 +265,6 @@ a certain class, you can optionally specify a default discriminator value:
             <default-discriminator-value value="album" />
         </reference-many>
 
-    .. code-block:: yaml
-
-        referenceMany:
-          favorites:
-            discriminatorMap:
-              album: Documents\Album
-              song: Documents\Song
-            defaultDiscriminatorValue: album
-
 .. _storing_references:
 
 Storing References
@@ -337,12 +293,6 @@ Example:
     .. code-block:: xml
 
         <reference-one target-document="Documents\Profile", store-as="id" />
-
-    .. code-block:: yaml
-
-        referenceOne:
-          profile:
-            storeAs: id
 
 Now, the ``profile`` field will only store the ``MongoDB\BSON\ObjectId`` of the
 referenced Profile document.
@@ -395,12 +345,6 @@ referenced documents. You must explicitly enable this functionality:
                 <persist/>
             </cascade>
         </reference-one>
-
-    .. code-block:: yaml
-
-        referenceOne:
-          profile:
-            cascade: [persist]
 
 The valid values are:
 

@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH1435Test extends BaseTest
 {
@@ -61,23 +61,36 @@ class GH1435Test extends BaseTest
         $this->assertNotNull($document);
         $this->assertSame(1, $document->id);
     }
-
-    protected function createMetadataDriverImpl()
-    {
-        return new YamlDriver(__DIR__ . '/GH1435');
-    }
 }
 
+/**
+ * @ODM\Document()
+ */
 class GH1435Document
 {
+    /**
+     * @ODM\Id()
+     */
     public $id;
 
+    /**
+     * @ODM\Field(type="string", nullable=true)
+     */
     public $name;
 }
 
+/**
+ * @ODM\Document()
+ */
 class GH1435DocumentIncrement
 {
+    /**
+     * @ODM\Id(strategy="increment")
+     */
     public $id;
 
+    /**
+     * @ODM\Field(type="string", nullable=true)
+     */
     public $name;
 }

@@ -47,13 +47,6 @@ the document:
             </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        Documents\User:
-          shardKey:
-            keys:
-              username: asc
-
 .. note::
     When a shard key is defined for a document, Doctrine MongoDB ODM will no
     longer persist changes to the shard key as these fields become immutable in

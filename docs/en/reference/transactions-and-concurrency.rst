@@ -69,12 +69,6 @@ The following example designates a version field using the ``int`` type:
 
         <field fieldName="version" version="true" type="int" />
 
-    .. code-block:: yaml
-
-        version:
-          type: int
-          version: true
-
 Alternatively, the ``date`` type may be used:
 
 .. configuration-block::
@@ -88,12 +82,6 @@ Alternatively, the ``date`` type may be used:
     .. code-block:: xml
 
         <field fieldName="version" version="true" type="date" />
-
-    .. code-block:: yaml
-
-        version:
-          type: date
-          version: true
 
 Choosing the Field Type
 """""""""""""""""""""""
@@ -252,12 +240,6 @@ Pessimistic locking requires a document to designate a lock field using the ``in
     .. code-block:: xml
 
         <field fieldName="lock" lock="true" type="int" />
-
-    .. code-block:: yaml
-
-        lock:
-          type: int
-          lock: true
 
 Lock Modes
 ^^^^^^^^^^

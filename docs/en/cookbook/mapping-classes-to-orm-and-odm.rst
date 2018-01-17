@@ -77,19 +77,6 @@ First define the mapping for the ORM:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Documents\BlogPost:
-          repositoryClass: Doctrine\Blog\ORM\BlogPostRepository
-          id:
-            id:
-              type: integer
-          fields:
-            title:
-              type: string
-            body:
-              type: text
-
 Now you are able to persist the ``Documents\BlogPost`` with an instance of ``EntityManager``:
 
 .. code-block:: php
@@ -152,18 +139,6 @@ Now map the same class to the Doctrine MongoDB ODM:
                 <field fieldName="email" type="text" />
             </document>
         </doctrine-mongo-mapping>
-
-    .. code-block:: yaml
-
-        Documents\BlogPost:
-          repositoryClass: Doctrine\Blog\ODM\MongoDB\BlogPostRepository
-          fields:
-            id:
-              type: id
-            title:
-              type: string
-            body:
-              type: text
 
 Now the same class is able to be persisted in the same way using an instance of ``DocumentManager``:
 

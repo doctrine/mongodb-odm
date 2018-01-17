@@ -46,17 +46,6 @@ Embed a single document:
           </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        User:
-          type: document
-          embedOne:
-            address:
-              targetDocument: Address
-
-        Address:
-          type: embeddedDocument
-
 .. _embed_many:
 
 Embed Many
@@ -99,17 +88,6 @@ Embed many documents:
           </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        User:
-          type: document
-          embedMany:
-            phonenumbers:
-              targetDocument: Phonenumber
-
-        Phonenumber:
-          type: embeddedDocument
-
 .. _embed_mixing_document_types:
 
 Mixing Document Types
@@ -138,11 +116,6 @@ you can simply omit the ``targetDocument`` option:
     .. code-block:: xml
 
         <embed-many field="tasks" />
-
-    .. code-block:: yaml
-
-        embedMany:
-          tasks: ~
 
 Now the ``$tasks`` property can store any type of document! The class name will
 be automatically stored in a field named ``_doctrine_class_name`` within
@@ -173,12 +146,6 @@ the embedded document. The field name can be customized with the
         <embed-many field="tasks">
             <discriminator-field name="type" />
         </embed-many>
-
-    .. code-block:: yaml
-
-        embedMany:
-          tasks:
-            discriminatorField: type
 
 You can also specify a discriminator map to avoid storing the |FQCN|
 in each embedded document:
@@ -215,14 +182,6 @@ in each embedded document:
                 <discriminator-mapping value="build" class="BuildTask" />
             </discriminator-map>
         </embed-many>
-
-    .. code-block:: yaml
-
-        embedMany:
-          tasks:
-            discriminatorMap:
-              download: DownloadTask
-              build: BuildTask
 
 If you have embedded documents without a discriminator value that need to be
 treated correctly you can optionally specify a default value for the
@@ -262,15 +221,6 @@ discriminator:
             </discriminator-map>
             <default-discriminator-value value="download" />
         </embed-many>
-
-    .. code-block:: yaml
-
-        embedMany:
-          tasks:
-            discriminatorMap:
-              download: DownloadTask
-              build: BuildTask
-            defaultDiscriminatorValue: download
 
 Cascading Operations
 --------------------

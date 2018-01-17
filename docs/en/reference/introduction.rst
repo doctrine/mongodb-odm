@@ -11,7 +11,7 @@ Features Overview
 -  Map one or many embedded documents.
 -  Map one or many referenced documents.
 -  Create references between documents in different databases.
--  Map documents with Annotations, XML, YAML or plain old PHP code.
+-  Map documents with Annotations, XML or plain old PHP code.
 -  Documents can be stored on the `MongoGridFS <http://www.php.net/MongoGridFS>`_.
 -  Collection per class(concrete) and single collection inheritance supported.
 -  Map your Doctrine 2 ORM Entities to the ODM and use mixed data stores.

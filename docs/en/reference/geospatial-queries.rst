@@ -49,13 +49,6 @@ First, setup some documents like the following:
             </index>
         </indexes>
 
-    .. code-block:: yaml
-
-        indexes:
-          coordinates:
-            keys:
-              coordinates: 2d
-
 Near Query
 ----------
 

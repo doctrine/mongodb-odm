@@ -50,11 +50,6 @@ Example:
           </mapped-superclass>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        Documents\BaseDocument:
-            type: mappedSuperclass
-
 .. _single_collection_inheritance:
 
 Single Collection Inheritance
@@ -116,16 +111,6 @@ Simple example:
           <document name="Documents\Employee">
           </document>
         </doctrine-mongo-mapping>
-
-    .. code-block:: yaml
-
-        Documents\Person:
-          type: document
-          inheritanceType: SINGLE_COLLECTION
-          discriminatorField: type
-          discriminatorMap:
-            person: Person
-            employee: Employee
 
 The discriminator value allows Doctrine to infer the class name to instantiate
 when hydrating a document. If a discriminator map is used, the discriminator
@@ -206,17 +191,6 @@ discriminator field:
           </document>
         </doctrine-mongo-mapping>
 
-    .. code-block:: yaml
-
-        Documents\Person:
-          type: document
-          inheritanceType: SINGLE_COLLECTION
-          discriminatorField: type
-          defaultDiscriminatorValue: person
-          discriminatorMap:
-            person: Person
-            employee: Employee
-
 .. _collection_per_class_inheritance:
 
 Collection Per Class Inheritance
@@ -269,12 +243,6 @@ collection and contains all inherited fields:
           <document name="Documents\Employee">
           </document>
         </doctrine-mongo-mapping>
-
-    .. code-block:: yaml
-
-        Documents\Person:
-          type: document
-          inheritanceType: COLLECTION_PER_CLASS
 
 A discriminator is not needed with this type of inheritance since the data is
 separated in different collections.
