@@ -161,6 +161,9 @@ html_use_index = False
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'DoctrineMongoDBODMdoc'
 
+# Additional variables to be passed into the template
+#  - subproject - name of subproject on readthedocs for proper versions support
+html_context = {'subproject': 'doctrine-mongodb-odm'}
 
 # -- Options for LaTeX output --------------------------------------------------
 
