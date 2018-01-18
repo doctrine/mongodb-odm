@@ -5,11 +5,10 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
@@ -29,9 +28,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $class)
+    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
     {
-        /** @var $class MappingClassMetadata */
+        /** @var $class ClassMetadata */
         $reflClass = $class->getReflectionClass();
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
@@ -56,7 +55,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $this->addIndex($class, $index);
                 }
             } elseif ($annot instanceof ODM\InheritanceType) {
-                $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_'.$annot->value));
+                $class->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_'.$annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
                 $class->setDiscriminatorField($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
@@ -64,7 +63,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
                 $class->setDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
-                $class->setChangeTrackingPolicy(constant(MappingClassMetadata::class . '::CHANGETRACKING_'.$annot->value));
+                $class->setChangeTrackingPolicy(constant(ClassMetadata::class . '::CHANGETRACKING_'.$annot->value));
             } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
                 $class->setDefaultDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ReadPreference) {
@@ -203,7 +202,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
     }
 
-    private function addIndex(MappingClassMetadata $class, $index, array $keys = array())
+    private function addIndex(ClassMetadata $class, $index, array $keys = array())
     {
         $keys = array_merge($keys, $index->keys);
         $options = array();
@@ -226,7 +225,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @throws MappingException
      */
-    private function setShardKey(MappingClassMetadata $class, ODM\ShardKey $shardKey)
+    private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey)
     {
         $options = array();
         $allowed = array('unique', 'numInitialChunks');
