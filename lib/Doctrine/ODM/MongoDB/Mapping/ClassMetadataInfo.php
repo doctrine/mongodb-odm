@@ -462,7 +462,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     private static function getReferencePrefix($storeAs)
     {
-        if (!in_array($storeAs, [ClassMetadataInfo::REFERENCE_STORE_AS_REF, ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB])) {
+        if (!in_array($storeAs, [ClassMetadataInfo::REFERENCE_STORE_AS_REF, ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB], true)) {
             throw new \LogicException('Can only get a reference prefix for DBRef and reference arrays');
         }
 
@@ -648,7 +648,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function addLifecycleCallback($callback, $event)
     {
-        if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event])) {
+        if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event], true)) {
             return;
         }
 
@@ -865,7 +865,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
                 continue;
             }
 
-            if (in_array($this->fieldMappings[$field]['type'], ['many', 'collection'])) {
+            if (in_array($this->fieldMappings[$field]['type'], ['many', 'collection'], true)) {
                 throw MappingException::noMultiKeyShardKeys($this->getName(), $field);
             }
 
@@ -1212,7 +1212,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
 
         $cascades = isset($mapping['cascade']) ? array_map('strtolower', (array) $mapping['cascade']) : array();
 
-        if (in_array('all', $cascades) || isset($mapping['embedded'])) {
+        if (in_array('all', $cascades, true) || isset($mapping['embedded'])) {
             $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach');
         }
 
@@ -1222,11 +1222,11 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $mapping['cascade'] = $cascades;
         }
 
-        $mapping['isCascadeRemove'] = in_array('remove', $cascades);
-        $mapping['isCascadePersist'] = in_array('persist', $cascades);
-        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
-        $mapping['isCascadeMerge'] = in_array('merge', $cascades);
-        $mapping['isCascadeDetach'] = in_array('detach', $cascades);
+        $mapping['isCascadeRemove'] = in_array('remove', $cascades, true);
+        $mapping['isCascadePersist'] = in_array('persist', $cascades, true);
+        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades, true);
+        $mapping['isCascadeMerge'] = in_array('merge', $cascades, true);
+        $mapping['isCascadeDetach'] = in_array('detach', $cascades, true);
 
         if (isset($mapping['id']) && $mapping['id'] === true) {
             $mapping['name'] = '_id';
@@ -1373,7 +1373,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             $mapping['strategy'] = $defaultStrategy;
         }
 
-        if (! in_array($mapping['strategy'], $allowedStrategies)) {
+        if (! in_array($mapping['strategy'], $allowedStrategies, true)) {
             throw MappingException::invalidStorageStrategy($this->name, $mapping['fieldName'], $mapping['type'], $mapping['strategy']);
         }
 

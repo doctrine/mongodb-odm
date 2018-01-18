@@ -24,7 +24,7 @@ class GH1017Test extends BaseTest
 
             $owner->embedded = new GH1017EmbeddedDocument();
             $oid = spl_object_hash($owner->embedded);
-            if (in_array($oid, $usedHashes)) {
+            if (in_array($oid, $usedHashes, true)) {
                 // Collision found, let's test state of embedded doc
                 $this->assertEquals(
                     UnitOfWork::STATE_NEW,

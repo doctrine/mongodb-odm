@@ -66,11 +66,11 @@ class Article
 
     public function removeTag($tag)
     {
-        if ( ! in_array($tag, $this->tags))
+        if ( ! in_array($tag, $this->tags, true))
         {
             return;
         }
-        unset($this->tags[array_search($tag, $this->tags)]);
+        unset($this->tags[array_search($tag, $this->tags, true)]);
     }
 
     public function getTags()

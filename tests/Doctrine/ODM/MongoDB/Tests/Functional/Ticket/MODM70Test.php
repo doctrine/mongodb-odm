@@ -106,7 +106,7 @@ class Avatar
 
 	public function removeAvatarPart($part)
 	{
-		$key = array_search($this->avatarParts, $part);
+		$key = array_search($this->avatarParts, $part, true);
 		if ($key !== false) {
 			unset($this->avatarParts[$key]);
 		}

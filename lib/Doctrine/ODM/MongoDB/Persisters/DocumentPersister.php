@@ -1001,7 +1001,7 @@ class DocumentPersister
 
         foreach ($query as $key => $value) {
             // Recursively prepare logical query clauses
-            if (in_array($key, array('$and', '$or', '$nor')) && is_array($value)) {
+            if (in_array($key, array('$and', '$or', '$nor'), true) && is_array($value)) {
                 foreach ($value as $k2 => $v2) {
                     $preparedQuery[$key][$k2] = $this->prepareQueryOrNewObj($v2, $isNewObj);
                 }
@@ -1236,12 +1236,12 @@ class DocumentPersister
     {
         foreach ($expression as $k => $v) {
             // Ignore query operators whose arguments need no type conversion
-            if (in_array($k, array('$exists', '$type', '$mod', '$size'))) {
+            if (in_array($k, array('$exists', '$type', '$mod', '$size'), true)) {
                 continue;
             }
 
             // Process query operators whose argument arrays need type conversion
-            if (in_array($k, array('$in', '$nin', '$all')) && is_array($v)) {
+            if (in_array($k, array('$in', '$nin', '$all'), true) && is_array($v)) {
                 foreach ($v as $k2 => $v2) {
                     $expression[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
                 }
@@ -1325,13 +1325,13 @@ class DocumentPersister
     {
         $discriminatorValues = array($metadata->discriminatorValue);
         foreach ($metadata->subClasses as $className) {
-            if ($key = array_search($className, $metadata->discriminatorMap)) {
+            if ($key = array_search($className, $metadata->discriminatorMap, true)) {
                 $discriminatorValues[] = $key;
             }
         }
 
         // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
-        if ($metadata->defaultDiscriminatorValue && array_search($metadata->defaultDiscriminatorValue, $discriminatorValues) !== false) {
+        if ($metadata->defaultDiscriminatorValue && array_search($metadata->defaultDiscriminatorValue, $discriminatorValues, true) !== false) {
             $discriminatorValues[] = null;
         }
 

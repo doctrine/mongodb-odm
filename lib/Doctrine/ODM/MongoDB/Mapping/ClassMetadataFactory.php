@@ -249,7 +249,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $methods = get_class_methods($customGenerator);
                 foreach ($idGenOptions as $name => $value) {
                     $method = 'set' . ucfirst($name);
-                    if ( ! in_array($method, $methods)) {
+                    if ( ! in_array($method, $methods, true)) {
                         throw MappingException::missingGeneratorSetter(get_class($customGenerator), $name);
                     }
 
