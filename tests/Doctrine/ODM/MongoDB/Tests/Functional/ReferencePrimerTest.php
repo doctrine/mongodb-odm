@@ -4,7 +4,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Documents\Account;
@@ -452,7 +451,7 @@ class ReferencePrimerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($group);
         $this->dm->flush();
 
-        $groupDBRef = $this->dm->createReference($group, ['storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, 'targetDocument' => Group::class]);
+        $groupDBRef = $this->dm->createReference($group, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'targetDocument' => Group::class]);
 
         $this->dm->clear();
 

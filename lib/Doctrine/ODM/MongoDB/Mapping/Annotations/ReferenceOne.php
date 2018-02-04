@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * Specifies a one-to-one relationship to a different document
@@ -13,7 +13,7 @@ final class ReferenceOne extends AbstractField
 {
     public $type = 'one';
     public $reference = true;
-    public $storeAs = ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF;
+    public $storeAs = ClassMetadata::REFERENCE_STORE_AS_DB_REF;
     public $targetDocument;
     public $discriminatorField;
     public $discriminatorMap;

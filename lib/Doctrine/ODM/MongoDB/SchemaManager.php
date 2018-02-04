@@ -4,7 +4,6 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
@@ -175,7 +174,7 @@ class SchemaManager
                     $newKeys = array();
                     foreach ($index['keys'] as $key => $v) {
                         if ($key == $fieldMapping['name']) {
-                            $key = ClassMetadataInfo::getReferenceFieldName($fieldMapping['storeAs'], $key);
+                            $key = ClassMetadata::getReferenceFieldName($fieldMapping['storeAs'], $key);
                         }
                         $newKeys[$key] = $v;
                     }

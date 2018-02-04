@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Documents\CmsPhonenumber;
@@ -147,7 +147,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testCannotCreateDbRefWithoutId()
     {
         $d = new \Documents\User();
-        $this->dm->createReference($d, ['storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF]);
+        $this->dm->createReference($d, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF]);
     }
 
     public function testCreateDbRefWithNonNullEmptyId()
@@ -156,7 +156,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $phonenumber->phonenumber = 0;
         $this->dm->persist($phonenumber);
 
-        $dbRef = $this->dm->createReference($phonenumber, ['storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, 'targetDocument' => CmsPhonenumber::class]);
+        $dbRef = $this->dm->createReference($phonenumber, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'targetDocument' => CmsPhonenumber::class]);
 
         $this->assertSame(array('$ref' => 'CmsPhonenumber', '$id' => 0), $dbRef);
     }

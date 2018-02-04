@@ -70,7 +70,7 @@ class ProxyFactory extends AbstractProxyFactory
      */
     public function skipClass(BaseClassMetadata $class)
     {
-        /* @var $class \Doctrine\ODM\Mongodb\Mapping\ClassMetadataInfo */
+        /* @var $class \Doctrine\ODM\Mongodb\Mapping\ClassMetadata */
         return $class->isMappedSuperclass || $class->isQueryResultDocument || $class->getReflectionClass()->isAbstract();
     }
 
@@ -79,7 +79,7 @@ class ProxyFactory extends AbstractProxyFactory
      */
     public function createProxyDefinition($className)
     {
-        /* @var $classMetadata \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo */
+        /* @var $classMetadata \Doctrine\ODM\MongoDB\Mapping\ClassMetadata */
         $classMetadata     = $this->metadataFactory->getMetadataFor($className);
         $documentPersister = $this->uow->getDocumentPersister($className);
         $reflectionId      = $classMetadata->reflFields[$classMetadata->identifier];

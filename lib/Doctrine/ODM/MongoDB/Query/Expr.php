@@ -4,7 +4,6 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
@@ -687,20 +686,20 @@ class Expr
         $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
         switch ($storeAs) {
-            case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+            case ClassMetadata::REFERENCE_STORE_AS_ID:
                 $this->query[$mapping['name']] = $reference;
                 return $this;
                 break;
 
-            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+            case ClassMetadata::REFERENCE_STORE_AS_REF:
                 $keys = ['id' => true];
                 break;
 
-            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
-            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+            case ClassMetadata::REFERENCE_STORE_AS_DB_REF:
+            case ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB:
                 $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                if ($storeAs === ClassMetadata::REFERENCE_STORE_AS_DB_REF) {
                     unset($keys['$db']);
                 }
 
@@ -1084,20 +1083,20 @@ class Expr
         $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
 
         switch ($storeAs) {
-            case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
+            case ClassMetadata::REFERENCE_STORE_AS_ID:
                 $this->query[$mapping['name']] = $reference;
                 return $this;
                 break;
 
-            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+            case ClassMetadata::REFERENCE_STORE_AS_REF:
                 $keys = ['id' => true];
                 break;
 
-            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
-            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+            case ClassMetadata::REFERENCE_STORE_AS_DB_REF:
+            case ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB:
                 $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-                if ($storeAs === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+                if ($storeAs === ClassMetadata::REFERENCE_STORE_AS_DB_REF) {
                     unset($keys['$db']);
                 }
 

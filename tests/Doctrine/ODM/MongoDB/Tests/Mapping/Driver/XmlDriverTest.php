@@ -2,7 +2,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
@@ -44,11 +43,11 @@ class XmlDriverTest extends AbstractDriverTest
         $this->driver->loadMetadataForClass('TestDocuments\UserNonStringOptions', $classMetadata);
 
         $profileMapping = $classMetadata->fieldMappings['profile'];
-        $this->assertSame(ClassMetadataInfo::REFERENCE_STORE_AS_ID, $profileMapping['storeAs']);
+        $this->assertSame(ClassMetadata::REFERENCE_STORE_AS_ID, $profileMapping['storeAs']);
         $this->assertTrue($profileMapping['orphanRemoval']);
 
         $profileMapping = $classMetadata->fieldMappings['groups'];
-        $this->assertSame(ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, $profileMapping['storeAs']);
+        $this->assertSame(ClassMetadata::REFERENCE_STORE_AS_DB_REF, $profileMapping['storeAs']);
         $this->assertFalse($profileMapping['orphanRemoval']);
         $this->assertSame(0, $profileMapping['limit']);
         $this->assertSame(2, $profileMapping['skip']);
