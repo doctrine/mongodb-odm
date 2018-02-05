@@ -526,7 +526,7 @@ class SchemaManager
     }
 
     /**
-     * @param $documentName
+     * @param string $documentName
      *
      * @return array
      */

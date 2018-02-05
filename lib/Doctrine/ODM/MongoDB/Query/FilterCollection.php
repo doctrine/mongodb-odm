@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 
 /**
  * Collection class for all the query filters.
@@ -30,6 +31,13 @@ class FilterCollection
      * @var array
      */
     private $enabledFilters = array();
+
+    /**
+     * The CriteriaMerger instance.
+     *
+     * @var CriteriaMerger
+     */
+    private $cm;
 
     /**
      * Constructor.

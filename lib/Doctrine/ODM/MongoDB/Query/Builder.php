@@ -232,7 +232,7 @@ class Builder
      *
      * @see Expr::bitsAllClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllClear/
-     * @param int|array|\MongoBinData $value
+     * @param int|array|\MongoDB\BSON\Binary $value
      * @return $this
      */
     public function bitsAllClear($value)
@@ -247,7 +247,7 @@ class Builder
      *
      * @see Expr::bitsAllSet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllSet/
-     * @param int|array|\MongoBinData $value
+     * @param int|array|\MongoDB\BSON\Binary $value
      * @return $this
      */
     public function bitsAllSet($value)
@@ -262,7 +262,7 @@ class Builder
      *
      * @see Expr::bitsAnyClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnyClear/
-     * @param int|array|\MongoBinData $value
+     * @param int|array|\MongoDB\BSON\Binary $value
      * @return $this
      */
     public function bitsAnyClear($value)
@@ -277,7 +277,7 @@ class Builder
      *
      * @see Expr::bitsAnySet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnySet/
-     * @param int|array|\MongoBinData $value
+     * @param int|array|\MongoDB\BSON\Binary $value
      * @return $this
      */
     public function bitsAnySet($value)
@@ -521,7 +521,7 @@ class Builder
     /**
      * Set the "finalize" option for a mapReduce or group command.
      *
-     * @param string|\MongoCode $finalize
+     * @param string|\MongoDB\BSON\Javascript $finalize
      * @return $this
      * @throws \BadMethodCallException if the query is not a mapReduce or group command
      */
@@ -979,7 +979,7 @@ class Builder
      * The "out" option defaults to inline, like {@link Builder::mapReduce()}.
      *
      * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
-     * @param string|\MongoCode $map
+     * @param string|\MongoDB\BSON\Javascript $map
      * @return $this
      */
     public function map($map)
@@ -998,8 +998,8 @@ class Builder
      * Change the query type to a mapReduce command.
      *
      * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
-     * @param string|\MongoCode $map
-     * @param string|\MongoCode $reduce
+     * @param string|\MongoDB\BSON\Javascript $map
+     * @param string|\MongoDB\BSON\Javascript $reduce
      * @param array|string $out
      * @param array $options
      * @return $this
@@ -1352,7 +1352,7 @@ class Builder
     /**
      * Set the "reduce" option for a mapReduce or group command.
      *
-     * @param string|\MongoCode $reduce
+     * @param string|\MongoDB\BSON\Javascript $reduce
      * @return $this
      * @throws \BadMethodCallException if the query is not a mapReduce or group command
      */
@@ -1774,7 +1774,7 @@ class Builder
      *
      * @see Expr::where()
      * @see http://docs.mongodb.org/manual/reference/operator/where/
-     * @param string|\MongoCode $javascript
+     * @param string|\MongoDB\BSON\Javascript $javascript
      * @return $this
      */
     public function where($javascript)

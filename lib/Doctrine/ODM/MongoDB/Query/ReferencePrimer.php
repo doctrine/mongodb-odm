@@ -233,6 +233,8 @@ class ReferencePrimer
     private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds)
     {
         $mapping = $persistentCollection->getMapping();
+        $class = null;
+        $className = null;
 
         if ($mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID) {
             $className = $mapping['targetDocument'];

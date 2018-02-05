@@ -220,7 +220,7 @@ class Match extends Stage
      *
      * @see Expr::geoWithin()
      * @see http://docs.mongodb.org/manual/reference/operator/geoWithin/
-     * @param array|Geometry $geometry
+     * @param Geometry $geometry
      * @return $this
      */
     public function geoWithin(Geometry $geometry)

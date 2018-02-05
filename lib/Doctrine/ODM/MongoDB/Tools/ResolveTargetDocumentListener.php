@@ -39,6 +39,7 @@ class ResolveTargetDocumentListener
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
     {
+        /** @var ClassMetadata $cm */
         $cm = $args->getClassMetadata();
         foreach ($cm->associationMappings as $mapping) {
             if (isset($this->resolveTargetDocuments[$mapping['targetDocument']])) {

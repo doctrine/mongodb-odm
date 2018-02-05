@@ -953,7 +953,7 @@ class Expr
      * Returns the metadata associated with a document in a pipeline operations.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/meta/
-     * @param $metaDataKeyword
+     * @param mixed|self $metaDataKeyword
      * @return $this
      */
     public function meta($metaDataKeyword)

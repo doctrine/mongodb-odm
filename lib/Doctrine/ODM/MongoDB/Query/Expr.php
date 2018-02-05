@@ -222,7 +222,7 @@ class Expr
      *
      * @see Builder::bitsAllClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllClear/
-     * @param int|array|\MongoBinData $value
+     * @param int|array|\MongoDB\BSON\Binary $value
      * @return $this
      */
     public function bitsAllClear($value)
@@ -237,7 +237,7 @@ class Expr
      *
      * @see Builder::bitsAllSet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllSet/
-     * @param int|array|\MongoBinData $value
+     * @param int|array|\MongoDB\BSON\Binary $value
      * @return $this
      */
     public function bitsAllSet($value)
@@ -252,7 +252,7 @@ class Expr
      *
      * @see Builder::bitsAnyClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnyClear/
-     * @param int|array|\MongoBinData $value
+     * @param int|array|\MongoDB\BSON\Binary $value
      * @return $this
      */
     public function bitsAnyClear($value)
@@ -267,7 +267,7 @@ class Expr
      *
      * @see Builder::bitsAnySet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnySet/
-     * @param int|array|\MongoBinData $value
+     * @param int|array|\MongoDB\BSON\Binary $value
      * @return $this
      */
     public function bitsAnySet($value)
@@ -684,6 +684,7 @@ class Expr
         $mapping = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
         $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
+        $keys = [];
 
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
@@ -1081,6 +1082,7 @@ class Expr
         $mapping = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
         $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
+        $keys = [];
 
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
@@ -1354,7 +1356,7 @@ class Expr
      *
      * @see Builder::where()
      * @see http://docs.mongodb.org/manual/reference/operator/where/
-     * @param string|\MongoCode $javascript
+     * @param string|\MongoDB\BSON\Javascript $javascript
      * @return $this
      */
     public function where($javascript)

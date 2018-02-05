@@ -25,6 +25,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Driver\Exception\Exception as DriverException;
+use MongoDB\Driver\Exception\WriteException;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -102,6 +103,13 @@ class DocumentPersister
      * @var CollectionPersister
      */
     private $cp;
+
+    /**
+     * The HydratorFactory instance.
+     *
+     * @var HydratorFactory
+     */
+    private $hydratorFactory;
 
     /**
      * Initializes this instance.
@@ -224,6 +232,7 @@ class DocumentPersister
             // Set the initial version for each insert
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+                $nextVersion = null;
                 if ($versionMapping['type'] === 'int') {
                     $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
@@ -279,7 +288,7 @@ class DocumentPersister
                 $this->executeUpsert($document, $options);
                 $this->handleCollections($document, $options);
                 unset($this->queuedUpserts[$oid]);
-            } catch (\MongoException $e) {
+            } catch (WriteException $e) {
                 unset($this->queuedUpserts[$oid]);
                 throw $e;
             }
@@ -302,6 +311,7 @@ class DocumentPersister
         // Set the initial version for each upsert
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
+            $nextVersion = null;
             if ($versionMapping['type'] === 'int') {
                 $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
@@ -343,7 +353,7 @@ class DocumentPersister
         try {
             $this->collection->updateOne($criteria, $data, $options);
             return;
-        } catch (\MongoCursorException $e) {
+        } catch (WriteException $e) {
             if (empty($retry) || strpos($e->getMessage(), 'Mod on _id not allowed') === false) {
                 throw $e;
             }
@@ -886,7 +896,7 @@ class DocumentPersister
     }
 
     /**
-     * @param $sort
+     * @param string $sort
      * @return int
      */
     private function getSortDirection($sort)
