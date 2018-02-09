@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
+
+use MongoDB\BSON\Binary;
 
 /**
  * The BinData type for binary UUID data.
@@ -8,9 +12,8 @@ namespace Doctrine\ODM\MongoDB\Types;
  * Per the BSON specification, this sub-type is deprecated in favor of the
  * RFC 4122 UUID sub-type (BinDataUUIDRFC4122Type class).
  *
- * @since       1.0
  */
 class BinDataUUIDType extends BinDataType
 {
-    protected $binDataType = \MongoDB\BSON\Binary::TYPE_OLD_UUID;
+    protected $binDataType = Binary::TYPE_OLD_UUID;
 }

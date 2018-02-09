@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -28,7 +30,7 @@ class ReferenceUser
      *
      * @var User[]
      */
-    public $users = array();
+    public $users = [];
 
     /**
      * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRef")
@@ -42,7 +44,7 @@ class ReferenceUser
      *
      * @var User[]
      */
-    public $parentUsers = array();
+    public $parentUsers = [];
 
     /**
      * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRefWithDb")
@@ -56,7 +58,7 @@ class ReferenceUser
      *
      * @var User[]
      */
-    public $otherUsers = array();
+    public $otherUsers = [];
 
     /**
      * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="ref")
@@ -70,7 +72,7 @@ class ReferenceUser
      *
      * @var User[]
      */
-    public $referencedUsers = array();
+    public $referencedUsers = [];
 
     /**
      * @ODM\Field(type="string")
@@ -79,9 +81,6 @@ class ReferenceUser
      */
     public $name;
 
-    /**
-     * @param User $user
-     */
     public function setUser(User $user)
     {
         $this->user = $user;
@@ -95,9 +94,6 @@ class ReferenceUser
         return $this->user;
     }
 
-    /**
-     * @param User $user
-     */
     public function addUser(User $user)
     {
         $this->users[] = $user;
@@ -111,9 +107,6 @@ class ReferenceUser
         return $this->users;
     }
 
-    /**
-     * @param User $parentUser
-     */
     public function setParentUser(User $parentUser)
     {
         $this->parentUser = $parentUser;
@@ -127,9 +120,6 @@ class ReferenceUser
         return $this->parentUser;
     }
 
-    /**
-     * @param User $parentUser
-     */
     public function addParentUser(User $parentUser)
     {
         $this->parentUsers[] = $parentUser;
@@ -143,9 +133,6 @@ class ReferenceUser
         return $this->parentUsers;
     }
 
-    /**
-     * @param User $otherUser
-     */
     public function setOtherUser(User $otherUser)
     {
         $this->otherUser = $otherUser;
@@ -159,9 +146,6 @@ class ReferenceUser
         return $this->otherUser;
     }
 
-    /**
-     * @param User $otherUser
-     */
     public function addOtherUser(User $otherUser)
     {
         $this->otherUsers[] = $otherUser;
@@ -175,9 +159,6 @@ class ReferenceUser
         return $this->otherUsers;
     }
 
-    /**
-     * @param User $referencedUser
-     */
     public function setReferencedUser(User $referencedUser)
     {
         $this->referencedUser = $referencedUser;
@@ -191,9 +172,6 @@ class ReferenceUser
         return $this->referencedUser;
     }
 
-    /**
-     * @param User $referencedUser
-     */
     public function addReferencedUser(User $referencedUser)
     {
         $this->referencedUsers[] = $referencedUser;

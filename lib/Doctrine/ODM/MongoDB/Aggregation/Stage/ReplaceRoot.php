@@ -1,12 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
+use function array_map;
+use function is_array;
+use function is_string;
+use function substr;
 
 class ReplaceRoot extends Operator
 {
@@ -40,7 +47,7 @@ class ReplaceRoot extends Operator
     public function getExpression()
     {
         return [
-            '$replaceRoot' => $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression()
+            '$replaceRoot' => $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression(),
         ];
     }
 
@@ -56,7 +63,7 @@ class ReplaceRoot extends Operator
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
+     * @return DocumentPersister
      */
     private function getDocumentPersister()
     {

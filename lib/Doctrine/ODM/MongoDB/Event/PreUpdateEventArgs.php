@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use function get_class;
+use function sprintf;
 
 /**
  * Class that holds event arguments for a preUpdate event.
  *
- * @since 1.0
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
@@ -17,11 +20,10 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     private $documentChangeSet;
 
     /**
-     * Constructor.
      *
-     * @param object          $document
-     * @param DocumentManager $dm
-     * @param array           $changeSet
+     *
+     * @param object $document
+     * @param array  $changeSet
      */
     public function __construct($document, DocumentManager $dm, array $changeSet)
     {
@@ -44,7 +46,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      *
      * @param string $field
      *
-     * @return boolean
+     * @return bool
      */
     public function hasChangedField($field)
     {
@@ -99,7 +101,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      */
     private function assertValidField($field)
     {
-        if ( ! isset($this->documentChangeSet[$field])) {
+        if (! isset($this->documentChangeSet[$field])) {
             throw new \InvalidArgumentException(sprintf(
                 'Field "%s" is not a valid field of the document "%s" in PreUpdateEventArgs.',
                 $field,

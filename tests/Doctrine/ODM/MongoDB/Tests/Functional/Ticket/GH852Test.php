@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\Binary;
+use function get_class;
 
 class GH852Test extends BaseTest
 {
@@ -80,18 +85,24 @@ class GH852Test extends BaseTest
         // these lines are relevant for $useKeys = false in DocumentRepository::matching()
         $this->dm->clear();
         $docs = $this->dm->getRepository(get_class($parent))
-                ->matching(new \Doctrine\Common\Collections\Criteria());
+                ->matching(new Criteria());
         $this->assertCount(4, $docs);
     }
 
     public function provideIdGenerators()
     {
-        $binDataType = \MongoDB\BSON\Binary::TYPE_GENERIC;
+        $binDataType = Binary::TYPE_GENERIC;
 
-        return array(
-            array(function($id) { return array('foo' => $id); }),
-            array(function($id) use ($binDataType) { return new \MongoDB\BSON\Binary($id, $binDataType); }),
-        );
+        return [
+            [function ($id) {
+                return ['foo' => $id];
+            },
+            ],
+            [function ($id) use ($binDataType) {
+                return new Binary($id, $binDataType);
+            },
+            ],
+        ];
     }
 }
 

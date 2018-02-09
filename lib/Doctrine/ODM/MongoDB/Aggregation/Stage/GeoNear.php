@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use GeoJson\Geometry\Point;
+use function is_array;
 
 /**
  * Fluent interface for adding a $geoNear stage to an aggregation pipeline.
  *
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.2
  */
 class GeoNear extends Match
 {
@@ -44,24 +45,23 @@ class GeoNear extends Match
     private $near;
 
     /**
-     * @var integer
+     * @var int
      */
     private $num;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $spherical = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $uniqueDocs;
 
     /**
-     * @param Builder $builder
      * @param float|array|Point $x
-     * @param float $y
+     * @param float             $y
      */
     public function __construct(Builder $builder, $x, $y = null)
     {
@@ -79,20 +79,18 @@ class GeoNear extends Match
             'near' => $this->near,
             'spherical' => $this->spherical,
             'distanceField' => $this->distanceField,
-            'query' => $this->query->getQuery()
+            'query' => $this->query->getQuery(),
         ];
 
         foreach (['distanceMultiplier', 'includeLocs', 'maxDistance', 'minDistance', 'num', 'uniqueDocs'] as $option) {
-            if ( ! $this->$option) {
+            if (! $this->$option) {
                 continue;
             }
 
             $geoNear[$option] = $this->$option;
         }
 
-        return [
-            '$geoNear' => $geoNear
-        ];
+        return ['$geoNear' => $geoNear];
     }
 
     /**
@@ -137,7 +135,7 @@ class GeoNear extends Match
     /**
      * The maximum number of documents to return.
      *
-     * @param integer $limit
+     * @param int $limit
      * @return $this
      */
     public function limit($limit)
@@ -164,7 +162,6 @@ class GeoNear extends Match
      * @param float $minDistance
      * @return $this
      *
-     * @since 1.3
      */
     public function minDistance($minDistance)
     {
@@ -182,7 +179,7 @@ class GeoNear extends Match
      * used, the "spherical" option will default to true.
      *
      * @param float|array|Point $x
-     * @param float $y
+     * @param float             $y
      * @return $this
      */
     public function near($x, $y = null)
@@ -200,12 +197,12 @@ class GeoNear extends Match
     /**
      * The maximum number of documents to return.
      *
-     * @param integer $num
+     * @param int $num
      * @return $this
      */
     public function num($num)
     {
-        $this->num = (integer) $num;
+        $this->num = (int) $num;
 
         return $this;
     }
@@ -213,12 +210,12 @@ class GeoNear extends Match
     /**
      * Required if using a 2dsphere index. Determines how MongoDB calculates the distance.
      *
-     * @param boolean $spherical
+     * @param bool $spherical
      * @return $this
      */
     public function spherical($spherical = true)
     {
-        $this->spherical = (boolean) $spherical;
+        $this->spherical = (bool) $spherical;
 
         return $this;
     }
@@ -226,12 +223,12 @@ class GeoNear extends Match
     /**
      * If this value is true, the query returns a matching document once, even if more than one of the document’s location fields match the query.
      *
-     * @param boolean $uniqueDocs
+     * @param bool $uniqueDocs
      * @return $this
      */
     public function uniqueDocs($uniqueDocs = true)
     {
-        $this->uniqueDocs = (boolean) $uniqueDocs;
+        $this->uniqueDocs = (bool) $uniqueDocs;
 
         return $this;
     }

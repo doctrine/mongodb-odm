@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -44,7 +46,7 @@ class GH520Test extends BaseTest
         $this->dm->clear();
 
         $primedIds = null;
-        $primer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$primedIds) {
+        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$primedIds) {
             $primedIds = $ids;
         };
 

@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use MongoDB\BSON\Binary;
+use function get_class;
 
 class BinDataTest extends BaseTest
 {
@@ -17,23 +21,23 @@ class BinDataTest extends BaseTest
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(get_class($test))->findOne(array());
-        $this->assertInstanceOf(\MongoDB\BSON\Binary::class, $check[$field]);
+        $check = $this->dm->getDocumentCollection(get_class($test))->findOne([]);
+        $this->assertInstanceOf(Binary::class, $check[$field]);
         $this->assertEquals($type, $check[$field]->getType());
         $this->assertEquals($data, $check[$field]->getData());
     }
 
     public function provideData()
     {
-        return array(
-            array('bin', 'test', \MongoDB\BSON\Binary::TYPE_GENERIC),
-            array('binFunc', 'test', \MongoDB\BSON\Binary::TYPE_FUNCTION),
-            array('binByteArray', 'test', \MongoDB\BSON\Binary::TYPE_OLD_BINARY),
-            array('binUUID', 'testtesttesttest', \MongoDB\BSON\Binary::TYPE_OLD_UUID),
-            array('binUUIDRFC4122', '1234567890ABCDEF', \MongoDB\BSON\Binary::TYPE_UUID),
-            array('binMD5', 'test', \MongoDB\BSON\Binary::TYPE_MD5),
-            array('binCustom', 'test', \MongoDB\BSON\Binary::TYPE_USER_DEFINED),
-        );
+        return [
+            ['bin', 'test', Binary::TYPE_GENERIC],
+            ['binFunc', 'test', Binary::TYPE_FUNCTION],
+            ['binByteArray', 'test', Binary::TYPE_OLD_BINARY],
+            ['binUUID', 'testtesttesttest', Binary::TYPE_OLD_UUID],
+            ['binUUIDRFC4122', '1234567890ABCDEF', Binary::TYPE_UUID],
+            ['binMD5', 'test', Binary::TYPE_MD5],
+            ['binCustom', 'test', Binary::TYPE_USER_DEFINED],
+        ];
     }
 }
 

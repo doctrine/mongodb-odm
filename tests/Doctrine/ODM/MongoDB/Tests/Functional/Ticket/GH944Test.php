@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
-class GH944Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH944Test extends BaseTest
 {
     public function testIssue()
     {

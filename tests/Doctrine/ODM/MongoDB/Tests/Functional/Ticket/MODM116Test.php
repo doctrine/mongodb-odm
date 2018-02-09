@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function array_values;
+use function get_class;
 
-class MODM116Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM116Test extends BaseTest
 {
     public function testIssue()
     {

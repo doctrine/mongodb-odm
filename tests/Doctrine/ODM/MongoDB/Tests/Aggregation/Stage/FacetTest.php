@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Facet;
@@ -26,7 +28,7 @@ class FacetTest extends BaseTest
             '$facet' => [
                 'someField' => [['$sortByCount' => '$tags']],
                 'otherField' => [['$sortByCount' => '$comments']],
-            ]
+            ],
         ], $facetStage->getExpression());
     }
 
@@ -46,8 +48,9 @@ class FacetTest extends BaseTest
             '$facet' => [
                 'someField' => [['$sortByCount' => '$tags']],
                 'otherField' => [['$sortByCount' => '$comments']],
-            ]
-        ]], $builder->getPipeline());
+            ],
+        ],
+        ], $builder->getPipeline());
     }
 
     public function testFacetThrowsExceptionWithoutFieldName()

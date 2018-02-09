@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -58,7 +60,7 @@ class GH267Test extends BaseTest
  * @ODM\Document(collection="users")
  */
 class GH267User
-{   
+{
     /** @ODM\Id */
     protected $id;
 
@@ -75,32 +77,32 @@ class GH267User
         $this->name = $name;
     }
 
-    public function setId($id) 
+    public function setId($id)
     {
         $this->id = $id;
     }
 
-    public function getId() 
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setName($name) 
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function getName() 
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setCompany($company) 
+    public function setCompany($company)
     {
         $this->company = $company;
     }
 
-    public function getCompany() 
+    public function getCompany()
     {
         return $this->company;
     }
@@ -113,7 +115,7 @@ class GH267User
  * @ODM\DiscriminatorMap({"seller"="GH267SellerCompany", "buyer"="GH267BuyerCompany"})
  */
 class GH267Company
-{   
+{
     /** @ODM\Id */
     protected $id;
 
@@ -122,22 +124,22 @@ class GH267Company
      */
     protected $users;
 
-    public function setId($id) 
+    public function setId($id)
     {
         $this->id = $id;
     }
 
-    public function getId() 
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setUsers($users) 
+    public function setUsers($users)
     {
         $this->users = $users;
     }
 
-    public function getUsers() 
+    public function getUsers()
     {
         return $this->users;
     }
@@ -147,14 +149,12 @@ class GH267Company
  * @ODM\Document(collection="companies")
  */
 class GH267BuyerCompany extends GH267Company
-{   
-
+{
 }
 
 /**
  * @ODM\Document(collection="companies")
  */
 class GH267SellerCompany extends GH267Company
-{   
-
+{
 }

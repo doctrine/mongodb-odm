@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class MODM48Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM48Test extends BaseTest
 {
     public function testTest()
     {
@@ -14,7 +17,7 @@ class MODM48Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $a = $this->dm->find(__NAMESPACE__.'\MODM48A', $a->id);
+        $a = $this->dm->find(__NAMESPACE__ . '\MODM48A', $a->id);
         $this->assertNotNull($a);
 
         $a->getB()->setVal('test');
@@ -22,7 +25,7 @@ class MODM48Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $a = $this->dm->find(__NAMESPACE__.'\MODM48A', $a->id);
+        $a = $this->dm->find(__NAMESPACE__ . '\MODM48A', $a->id);
         $this->assertEquals('test', $a->getB()->getVal());
     }
 }
@@ -36,9 +39,18 @@ class MODM48A
     /** @ODM\EmbedOne(targetDocument="MODM48B") */
     public $b;
 
-    function getId()  {return $this->id;}
-    function getB()   {return $this->b;}
-    function setB($b) {$this->b = $b;}
+    function getId()
+    {
+        return $this->id;
+    }
+    function getB()
+    {
+        return $this->b;
+    }
+    function setB($b)
+    {
+        $this->b = $b;
+    }
 }
 
 /** @ODM\EmbeddedDocument */
@@ -47,6 +59,12 @@ class MODM48B
     /** @ODM\Field(type="string") */
     public $val;
 
-    function setVal($val) {$this->val = $val;}
-    function getVal() {return $this->val;}
+    function setVal($val)
+    {
+        $this->val = $val;
+    }
+    function getVal()
+    {
+        return $this->val;
+    }
 }

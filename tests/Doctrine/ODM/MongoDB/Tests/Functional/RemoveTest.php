@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
 use Documents\BlogPost;
 use Documents\CmsArticle;
@@ -12,7 +15,7 @@ use Documents\Group;
 use Documents\Project;
 use Documents\User;
 
-class RemoveTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class RemoveTest extends BaseTest
 {
     public function testRemove()
     {

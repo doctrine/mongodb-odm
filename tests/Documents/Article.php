@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use function array_search;
+use function in_array;
 
 /**
  * @ODM\Document(collection="articles")
@@ -22,7 +26,7 @@ class Article
     private $createdAt;
 
     /** @ODM\Field(type="collection") */
-    private $tags = array();
+    private $tags = [];
 
     public function getId()
     {
@@ -66,8 +70,7 @@ class Article
 
     public function removeTag($tag)
     {
-        if ( ! in_array($tag, $this->tags))
-        {
+        if (! in_array($tag, $this->tags)) {
             return;
         }
         unset($this->tags[array_search($tag, $this->tags)]);

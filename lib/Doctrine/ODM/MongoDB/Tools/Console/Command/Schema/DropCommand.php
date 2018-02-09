@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function array_filter;
+use function sprintf;
+use function ucfirst;
 
 class DropCommand extends AbstractCommand
 {
-    private $dropOrder = array(self::INDEX, self::COLLECTION, self::DB);
+    private $dropOrder = [self::INDEX, self::COLLECTION, self::DB];
 
     protected function configure()
     {
@@ -46,10 +51,10 @@ class DropCommand extends AbstractCommand
                 $output->writeln(sprintf(
                     'Dropped <comment>%s%s</comment> for <info>%s</info>',
                     $option,
-                    (isset($class) ? (self::INDEX === $option ? '(es)' : '') : (self::INDEX === $option ? 'es' : 's')),
+                    (isset($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's')),
                     ($class ?? 'all classes')
                 ));
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');
                 $isErrored = true;
             }

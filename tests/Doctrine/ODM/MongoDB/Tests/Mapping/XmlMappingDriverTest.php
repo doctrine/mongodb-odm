@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Documents\User;
+use const DIRECTORY_SEPARATOR;
+use function get_class;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
@@ -26,8 +30,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $this->assertTrue($class->isSharded());
         $shardKey = $class->getShardKey();
-        $this->assertSame(array('unique' => true, 'numInitialChunks' => 4096), $shardKey['options']);
-        $this->assertSame(array('_id' => 1), $shardKey['keys']);
+        $this->assertSame(['unique' => true, 'numInitialChunks' => 4096], $shardKey['options']);
+        $this->assertSame(['_id' => 1], $shardKey['keys']);
     }
 
     public function testGetAssociationCollectionClass()

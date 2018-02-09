@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM66Test extends BaseTest
 {
-
     public function testTest()
     {
         $b1 = new MODM52B('first');
-        $a = new MODM52A(array($b1));
+        $a = new MODM52A([$b1]);
         $this->dm->persist($a);
         $this->dm->flush();
         $b2 = new MODM52B('second');
@@ -23,17 +25,19 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertCount(2, $b);
 
-        $this->assertEquals(array(
-            $b1->getId(), $b2->getId()
-            ), array(
-            $b[0]->getId(), $b[1]->getId()
-        ));
+        $this->assertEquals([
+            $b1->getId(),
+        $b2->getId(),
+            ], [
+            $b[0]->getId(),
+        $b[1]->getId(),
+            ]);
     }
 
     public function testRefresh()
     {
         $b1 = new MODM52B('first');
-        $a = new MODM52A(array($b1));
+        $a = new MODM52A([$b1]);
         $this->dm->persist($a);
         $this->dm->flush();
         $b2 = new MODM52B('second');
@@ -47,13 +51,14 @@ class MODM66Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertCount(2, $b);
 
-        $this->assertEquals(array(
-            $b1->getId(), $b2->getId()
-            ), array(
-            $b[0]->getId(), $b[1]->getId()
-        ));
+        $this->assertEquals([
+            $b1->getId(),
+        $b2->getId(),
+            ], [
+            $b[0]->getId(),
+        $b[1]->getId(),
+            ]);
     }
-
 }
 
 /** @ODM\Document */
@@ -79,7 +84,6 @@ class MODM52A
 /** @ODM\Document */
 class MODM52B
 {
-
     /** @ODM\Id */
     protected $id;
 
@@ -95,5 +99,4 @@ class MODM52B
     {
         return $this->id;
     }
-
 }

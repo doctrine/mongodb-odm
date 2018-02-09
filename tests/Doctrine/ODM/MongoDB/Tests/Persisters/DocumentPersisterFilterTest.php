@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\BlogPost;
+use Documents\Comment;
 
 class DocumentPersisterFilterTest extends BaseTest
 {
@@ -17,21 +21,23 @@ class DocumentPersisterFilterTest extends BaseTest
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
 
-        $preparedQuery = array('username' => 'Toby');
+        $preparedQuery = ['username' => 'Toby'];
 
-        $expectedCriteria = array('$and' => array(
-            array('username' => 'Toby'),
-            array('username' => 'Tim'),
-        ));
+        $expectedCriteria = [
+        '$and' => [
+            ['username' => 'Toby'],
+            ['username' => 'Tim'],
+        ],
+        ];
 
         $this->assertSame($expectedCriteria, $persister->addFilterToPreparedQuery($preparedQuery));
     }
 
     public function testFilterCrieriaShouldAndWithMappingCriteriaOwningSide()
     {
-        $blogPost = new \Documents\BlogPost('Roger');
-        $blogPost->addComment(new \Documents\Comment('comment by normal user', new \DateTime(), false));
-        $blogPost->addComment(new \Documents\Comment('comment by admin', new \DateTime(), true));
+        $blogPost = new BlogPost('Roger');
+        $blogPost->addComment(new Comment('comment by normal user', new \DateTime(), false));
+        $blogPost->addComment(new Comment('comment by admin', new \DateTime(), true));
 
         $this->dm->persist($blogPost);
         $this->dm->flush();

@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use Doctrine\ODM\MongoDB\Types\Type;
+use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\TestCase;
 
 class IdTypeTest extends TestCase
 {
     public function testConvertToDatabaseValue()
     {
-        $identifier = new \MongoDB\BSON\ObjectId();
+        $identifier = new ObjectId();
         $type = Type::getType('id');
 
         $this->assertNull($type->convertToDatabaseValue(null), 'null is not converted');
@@ -24,17 +27,17 @@ class IdTypeTest extends TestCase
     {
         $type = Type::getType('id');
 
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $type->convertToDatabaseValue($value));
+        $this->assertInstanceOf(ObjectId::class, $type->convertToDatabaseValue($value));
     }
 
     public function provideInvalidObjectIdConstructorArguments()
     {
-        return array(
-            'integer' => array(1),
-            'float'   => array(3.14),
-            'string'  => array('string'),
-            'bool'    => array(true),
-            'object'  => array(array('x' => 1, 'y' => 2)),
-        );
+        return [
+            'integer' => [1],
+            'float'   => [3.14],
+            'string'  => ['string'],
+            'bool'    => [true],
+            'object'  => [['x' => 1, 'y' => 2]],
+        ];
     }
 }

@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Documents\Functional\Ticket\MODM160 as MODM160;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Functional\Ticket\MODM160;
 
-class MODM160Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM160Test extends BaseTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testEmbedManyInArrayMergeNew()
     {
         // create a test document
@@ -26,9 +26,6 @@ class MODM160Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->merge($test);
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testEmbedManyInArrayCollectionMergeNew()
     {
         // create a test document
@@ -46,9 +43,6 @@ class MODM160Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->merge($test);
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testEmbedOneMergeNew()
     {
         // create a test document

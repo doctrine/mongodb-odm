@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use function uniqid;
 
 /** @ODM\EmbeddedDocument */
 class VirtualHostDirective
@@ -19,7 +23,7 @@ class VirtualHostDirective
     protected $directives;
 
 
-    public function __construct($name='', $value='')
+    public function __construct($name = '', $value = '')
     {
         $this->name = $name;
         $this->value = $value;
@@ -35,10 +39,11 @@ class VirtualHostDirective
         return $this->recId;
     }
 
-    public function setRecId($value=null)
+    public function setRecId($value = null)
     {
-        if (!$value)
+        if (! $value) {
             $value = uniqid();
+        }
 
         $this->recId = $value;
     }
@@ -67,8 +72,9 @@ class VirtualHostDirective
 
     public function getDirectives()
     {
-        if (!$this->directives)
-            $this->directives = new \Doctrine\Common\Collections\ArrayCollection(array());
+        if (! $this->directives) {
+            $this->directives = new ArrayCollection([]);
+        }
         return $this->directives;
     }
 
@@ -94,7 +100,7 @@ class VirtualHostDirective
     public function hasDirective($name)
     {
         foreach ($this->getDirectives() as $d) {
-            if ($d->getName() == $name) {
+            if ($d->getName() === $name) {
                 return $d;
             }
         }
@@ -114,5 +120,4 @@ class VirtualHostDirective
 
         return $this;
     }
-
 }

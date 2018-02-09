@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function iterator_to_array;
 
-class GH602Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH602Test extends BaseTest
 {
     public function testReferenceManyOwningSidePreparesFilterCriteriaForDifferentClass()
     {
@@ -50,11 +54,8 @@ class GH602Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertFalse($user1likes[1]->__isInitialized());
         $this->assertEquals($thing2->getId(), $user1likes[1]->getId());
 
-        try {
-            $user1likes[1]->__load();
-            $this->fail('Expected DocumentNotFoundException for filtered Proxy object');
-        } catch (DocumentNotFoundException $e) {
-        }
+        $user1likes[1]->__load();
+        $this->expectException(DocumentNotFoundException::class);
     }
 
     public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass()

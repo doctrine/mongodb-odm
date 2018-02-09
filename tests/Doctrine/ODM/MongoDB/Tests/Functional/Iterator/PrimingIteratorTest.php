@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 
@@ -7,6 +9,7 @@ use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use function is_array;
 
 final class PrimingIteratorTest extends BaseTest
 {
@@ -31,7 +34,7 @@ final class PrimingIteratorTest extends BaseTest
 
     private function getIterator($items = null): \Iterator
     {
-        if (!is_array($items)) {
+        if (! is_array($items)) {
             $items = [
                 ['_id' => new ObjectId(), 'username' => 'foo', 'hits' => 1],
                 ['_id' => new ObjectId(), 'username' => 'bar', 'hits' => 2],

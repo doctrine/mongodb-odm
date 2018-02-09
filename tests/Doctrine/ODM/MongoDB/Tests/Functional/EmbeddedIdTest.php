@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use MongoDB\BSON\ObjectId;
 
-class EmbeddedIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class EmbeddedIdTest extends BaseTest
 {
     public function testEmbeddedIdsAreGenerated()
     {
@@ -17,7 +21,7 @@ class EmbeddedIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbeddedIdsAreNotOverwritten()
     {
-        $id = (string) new \MongoDB\BSON\ObjectId();
+        $id = (string) new ObjectId();
         $test = new DefaultIdEmbeddedDocument();
         $test->id = $id;
 
@@ -61,7 +65,7 @@ class EmbeddedIdTestUser
     public $embedOne;
 
     /** @ODM\EmbedMany(targetDocument="DefaultIdEmbeddedDocument") */
-    public $embedMany = array();
+    public $embedMany = [];
 }
 
 /** @ODM\Document */
@@ -74,7 +78,7 @@ class EmbeddedStrategyNoneIdTestUser
     public $embedOne;
 
     /** @ODM\EmbedMany(targetDocument="DefaultIdStrategyNoneEmbeddedDocument") */
-    public $embedMany = array();
+    public $embedMany = [];
 }
 
 /** @ODM\EmbeddedDocument */

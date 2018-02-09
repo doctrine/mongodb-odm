@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Tournament;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -18,7 +20,7 @@ class Tournament
     private $name;
 
     /** @ODM\ReferenceMany(targetDocument="Participant", cascade={"all"}) */
-    protected $participants = array();
+    protected $participants = [];
 
     public function __construct($name)
     {

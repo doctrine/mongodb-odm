@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\File;
 use Documents\ProfileNotify;
+use function get_class;
 
-class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class CustomCollectionsTest extends BaseTest
 {
     public function testMappingNamespaceIsAdded()
     {
@@ -35,12 +38,12 @@ class CustomCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $cm = new ClassMetadata('stdClass');
 
-        $cm->mapField(array(
+        $cm->mapField([
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'many',
             'collectionClass' => 'stdClass',
-        ));
+        ]);
     }
 
     public function testGeneratedClassExtendsBaseCollection()
@@ -234,14 +237,14 @@ class MyEmbedsCollection extends ArrayCollection
 {
     public function getByName($name)
     {
-        return $this->filter(function($item) use ($name) {
+        return $this->filter(function ($item) use ($name) {
             return $item->name === $name;
         });
     }
 
     public function getEnabled()
     {
-        return $this->filter(function($item) {
+        return $this->filter(function ($item) {
             return $item->enabled;
         });
     }
@@ -258,7 +261,7 @@ class MyDocumentsCollection extends ArrayCollection
 {
     public function havingEmbeds()
     {
-        return $this->filter(function($item) {
+        return $this->filter(function ($item) {
             return $item->coll->count();
         });
     }

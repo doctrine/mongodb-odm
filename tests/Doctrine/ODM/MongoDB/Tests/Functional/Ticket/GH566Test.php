@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function iterator_to_array;
 
-class GH566Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH566Test extends BaseTest
 {
     public function testFoo()
     {
@@ -27,10 +31,10 @@ class GH566Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $embeddedDoc2->parent = $doc2;
 
         $doc3->version = $embeddedDoc2;
-        $doc3->versions = new ArrayCollection(array(
+        $doc3->versions = new ArrayCollection([
             $embeddedDoc1,
             $embeddedDoc2,
-        ));
+        ]);
 
         $this->dm->flush();
 

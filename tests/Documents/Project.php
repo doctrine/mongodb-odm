@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,7 +30,7 @@ class Project
      */
     private $subProjects;
 
-    public function __construct($name, Collection $subProjects = null)
+    public function __construct($name, ?Collection $subProjects = null)
     {
         $this->name = $name;
         $this->subProjects = $subProjects ? $subProjects : new ArrayCollection();

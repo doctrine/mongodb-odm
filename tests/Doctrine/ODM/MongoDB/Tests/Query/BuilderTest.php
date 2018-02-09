@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -12,7 +14,7 @@ use Documents\Feature;
 use Documents\User;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
-use MongoDB\Collection;
+use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\ReadPreference;
 
 class BuilderTest extends BaseTest
@@ -35,13 +37,13 @@ class BuilderTest extends BaseTest
             ->field('featureFull')->references($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureFull.$id' => new \MongoDB\BSON\ObjectId($f->id) ], $q1['query']);
+        $this->assertEquals([ 'featureFull.$id' => new ObjectId($f->id) ], $q1['query']);
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featureSimple')->references($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureSimple' => new \MongoDB\BSON\ObjectId($f->id) ], $q2['query']);
+        $this->assertEquals([ 'featureSimple' => new ObjectId($f->id) ], $q2['query']);
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featurePartial')->references($f)
@@ -49,7 +51,7 @@ class BuilderTest extends BaseTest
 
         $this->assertEquals(
             [
-                'featurePartial.$id' => new \MongoDB\BSON\ObjectId($f->id),
+                'featurePartial.$id' => new ObjectId($f->id),
                 'featurePartial.$ref' => 'Feature',
             ],
             $q3['query']
@@ -93,13 +95,13 @@ class BuilderTest extends BaseTest
             ->field('featureFullMany')->includesReferenceTo($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureFullMany' => [ '$elemMatch' => [ '$id' => new \MongoDB\BSON\ObjectId($f->id) ] ] ], $q1['query']);
+        $this->assertEquals([ 'featureFullMany' => [ '$elemMatch' => [ '$id' => new ObjectId($f->id) ] ] ], $q1['query']);
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featureSimpleMany')->includesReferenceTo($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureSimpleMany' => new \MongoDB\BSON\ObjectId($f->id) ], $q2['query']);
+        $this->assertEquals([ 'featureSimpleMany' => new ObjectId($f->id) ], $q2['query']);
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featurePartialMany')->includesReferenceTo($f)
@@ -109,10 +111,10 @@ class BuilderTest extends BaseTest
             [
                 'featurePartialMany' => [
                     '$elemMatch' => [
-                        '$id' => new \MongoDB\BSON\ObjectId($f->id),
+                        '$id' => new ObjectId($f->id),
                         '$ref' => 'Feature',
-                    ]
-                ]
+                    ],
+                ],
             ],
             $q3['query']
         );
@@ -295,10 +297,12 @@ class BuilderTest extends BaseTest
         $qb->addOr($qb->expr()->field('firstName')->equals('Kris'));
         $qb->addOr($qb->expr()->field('firstName')->equals('Chris'));
 
-        $this->assertEquals(['$or' => [
+        $this->assertEquals([
+        '$or' => [
             ['firstName' => 'Kris'],
-            ['firstName' => 'Chris']
-        ]], $qb->getQueryArray());
+            ['firstName' => 'Chris'],
+        ],
+        ], $qb->getQueryArray());
     }
 
     public function testThatAndAcceptsAnotherQuery()
@@ -321,19 +325,23 @@ class BuilderTest extends BaseTest
         $qb->addNor($qb->expr()->field('firstName')->equals('Kris'));
         $qb->addNor($qb->expr()->field('firstName')->equals('Chris'));
 
-        $this->assertEquals(['$nor' => [
+        $this->assertEquals([
+        '$nor' => [
             ['firstName' => 'Kris'],
-            ['firstName' => 'Chris']
-        ]], $qb->getQueryArray());
+            ['firstName' => 'Chris'],
+        ],
+        ], $qb->getQueryArray());
     }
 
     public function testAddElemMatch()
     {
         $qb = $this->getTestQueryBuilder();
         $qb->field('phonenumbers')->elemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
-        $expected = ['phonenumbers' => [
-            '$elemMatch' => ['phonenumber' => '6155139185']
-        ]];
+        $expected = [
+        'phonenumbers' => [
+            '$elemMatch' => ['phonenumber' => '6155139185'],
+        ],
+        ];
         $this->assertEquals($expected, $qb->getQueryArray());
     }
 
@@ -344,9 +352,9 @@ class BuilderTest extends BaseTest
         $expected = [
             'username' => [
                 '$not' => [
-                    '$in' => ['boo']
-                ]
-            ]
+                    '$in' => ['boo'],
+                ],
+            ],
         ];
         $this->assertEquals($expected, $qb->getQueryArray());
     }
@@ -355,9 +363,7 @@ class BuilderTest extends BaseTest
     {
         $qb = $this->getTestQueryBuilder()
             ->where("function() { return this.username == 'boo' }");
-        $expected = [
-            '$where' => "function() { return this.username == 'boo' }"
-        ];
+        $expected = ['$where' => "function() { return this.username == 'boo' }"];
         $this->assertEquals($expected, $qb->getQueryArray());
     }
 
@@ -369,9 +375,7 @@ class BuilderTest extends BaseTest
             ->field('username')->set('jwage');
 
         $expected = [
-            '$set' => [
-                'username' => 'jwage'
-            ]
+            '$set' => ['username' => 'jwage'],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
         $this->assertTrue($qb->debug('upsert'));
@@ -384,9 +388,7 @@ class BuilderTest extends BaseTest
             ->field('username')->set('jwage');
 
         $expected = [
-            '$set' => [
-                'username' => 'jwage'
-            ]
+            '$set' => ['username' => 'jwage'],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
         $this->assertTrue($qb->debug('multiple'));
@@ -400,14 +402,12 @@ class BuilderTest extends BaseTest
             ->set('jwage')
             ->equals('boo');
 
-        $expected = [
-            'username' => 'boo'
-        ];
+        $expected = ['username' => 'boo'];
         $this->assertEquals($expected, $qb->getQueryArray());
 
-        $expected = ['$set' => [
-            'username' => 'jwage'
-        ]];
+        $expected = [
+        '$set' => ['username' => 'jwage'],
+        ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
@@ -418,14 +418,12 @@ class BuilderTest extends BaseTest
             ->field('hits')->inc(5)
             ->field('username')->equals('boo');
 
-        $expected = [
-            'username' => 'boo'
-        ];
+        $expected = ['username' => 'boo'];
         $this->assertEquals($expected, $qb->getQueryArray());
 
-        $expected = ['$inc' => [
-            'hits' => 5
-        ]];
+        $expected = [
+        '$inc' => ['hits' => 5],
+        ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
@@ -436,14 +434,12 @@ class BuilderTest extends BaseTest
             ->field('hits')->unsetField()
             ->field('username')->equals('boo');
 
-        $expected = [
-            'username' => 'boo'
-        ];
+        $expected = ['username' => 'boo'];
         $this->assertEquals($expected, $qb->getQueryArray());
 
-        $expected = ['$unset' => [
-            'hits' => 1
-        ]];
+        $expected = [
+        '$unset' => ['hits' => 1],
+        ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
@@ -456,14 +452,14 @@ class BuilderTest extends BaseTest
             ->field('username')->equals('boo')
             ->field('createDate')->setOnInsert($createDate);
 
-        $expected = [
-            'username' => 'boo'
-        ];
+        $expected = ['username' => 'boo'];
         $this->assertEquals($expected, $qb->getQueryArray());
 
-        $expected = ['$setOnInsert' => [
+        $expected = [
+        '$setOnInsert' => [
             'createDate' => (Type::getType('date'))->convertToDatabaseValue($createDate),
-        ]];
+        ],
+        ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
@@ -478,7 +474,7 @@ class BuilderTest extends BaseTest
             'createdAt' => [
                 '$gte' => Type::getType('date')->convertToDatabaseValue($start),
                 '$lt' => Type::getType('date')->convertToDatabaseValue($end),
-            ]
+            ],
         ];
         $this->assertEquals($expected, $qb->getQueryArray());
     }
@@ -809,14 +805,14 @@ class BuilderTest extends BaseTest
             ->field('lastUpdated')->currentDate($type)
             ->field('username')->equals('boo');
 
-        $expected = [
-            'username' => 'boo'
-        ];
+        $expected = ['username' => 'boo'];
         $this->assertEquals($expected, $qb->getQueryArray());
 
-        $expected = ['$currentDate' => [
-            'lastUpdated' => ['$type' => $type]
-        ]];
+        $expected = [
+        '$currentDate' => [
+            'lastUpdated' => ['$type' => $type],
+        ],
+        ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
@@ -824,7 +820,7 @@ class BuilderTest extends BaseTest
     {
         return [
             ['date'],
-            ['timestamp']
+            ['timestamp'],
         ];
     }
 
@@ -845,14 +841,14 @@ class BuilderTest extends BaseTest
             ->field('flags')->bitAnd(15)
             ->field('username')->equals('boo');
 
-        $expected = [
-            'username' => 'boo'
-        ];
+        $expected = ['username' => 'boo'];
         $this->assertEquals($expected, $qb->getQueryArray());
 
-        $expected = ['$bit' => [
-            'flags' => ['and' => 15]
-        ]];
+        $expected = [
+        '$bit' => [
+            'flags' => ['and' => 15],
+        ],
+        ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
@@ -863,14 +859,14 @@ class BuilderTest extends BaseTest
             ->field('flags')->bitOr(15)
             ->field('username')->equals('boo');
 
-        $expected = [
-            'username' => 'boo'
-        ];
+        $expected = ['username' => 'boo'];
         $this->assertEquals($expected, $qb->getQueryArray());
 
-        $expected = ['$bit' => [
-            'flags' => ['or' => 15]
-        ]];
+        $expected = [
+        '$bit' => [
+            'flags' => ['or' => 15],
+        ],
+        ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
@@ -881,14 +877,14 @@ class BuilderTest extends BaseTest
             ->field('flags')->bitXor(15)
             ->field('username')->equals('boo');
 
-        $expected = [
-            'username' => 'boo'
-        ];
+        $expected = ['username' => 'boo'];
         $this->assertEquals($expected, $qb->getQueryArray());
 
-        $expected = ['$bit' => [
-            'flags' => ['xor' => 15]
-        ]];
+        $expected = [
+        '$bit' => [
+            'flags' => ['xor' => 15],
+        ],
+        ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 

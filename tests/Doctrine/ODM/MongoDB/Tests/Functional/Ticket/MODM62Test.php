@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class MODM62Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM62Test extends BaseTest
 {
     public function testTest()
     {
@@ -13,12 +16,12 @@ class MODM62Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->refresh($test);
 
-        $test->setB(array('test', 'test2'));
+        $test->setB(['test', 'test2']);
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find(__NAMESPACE__.'\MODM62Document', $test->id);
-        $this->assertEquals(array('test', 'test2'), $test->b);
+        $test = $this->dm->find(__NAMESPACE__ . '\MODM62Document', $test->id);
+        $this->assertEquals(['test', 'test2'], $test->b);
     }
 }
 
@@ -29,7 +32,10 @@ class MODM62Document
     public $id;
 
     /** @ODM\Field(type="collection") */
-    public $b = array('ok');
+    public $b = ['ok'];
 
-    public function setB($b) {$this->b = $b;}
+    public function setB($b)
+    {
+        $this->b = $b;
+    }
 }

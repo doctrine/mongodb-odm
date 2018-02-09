@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -8,8 +10,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding a $unwind stage to an aggregation pipeline.
  *
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.2
  */
 class Unwind extends Stage
 {
@@ -29,7 +29,6 @@ class Unwind extends Stage
     private $preserveNullAndEmptyArrays = false;
 
     /**
-     * @param Builder $builder
      * @param string $fieldName
      */
     public function __construct(Builder $builder, $fieldName)
@@ -47,23 +46,21 @@ class Unwind extends Stage
         // Fallback behavior for MongoDB < 3.2
         if ($this->includeArrayIndex === null && ! $this->preserveNullAndEmptyArrays) {
             return [
-                '$unwind' => $this->fieldName
+                '$unwind' => $this->fieldName,
             ];
         }
 
         $unwind = ['path' => $this->fieldName];
 
         foreach (['includeArrayIndex', 'preserveNullAndEmptyArrays'] as $option) {
-            if ( ! $this->$option) {
+            if (! $this->$option) {
                 continue;
             }
 
             $unwind[$option] = $this->$option;
         }
 
-        return [
-            '$unwind' => $unwind
-        ];
+        return ['$unwind' => $unwind];
     }
 
     /**
@@ -73,7 +70,6 @@ class Unwind extends Stage
      * @param string $includeArrayIndex
      * @return $this
      *
-     * @since 1.3
      */
     public function includeArrayIndex($includeArrayIndex)
     {
@@ -89,7 +85,6 @@ class Unwind extends Stage
      * @param bool $preserveNullAndEmptyArrays
      * @return $this
      *
-     * @since 1.3
      */
     public function preserveNullAndEmptyArrays($preserveNullAndEmptyArrays = true)
     {

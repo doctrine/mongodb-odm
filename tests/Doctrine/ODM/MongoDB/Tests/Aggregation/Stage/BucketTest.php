@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsComment;
 use Documents\User;
 
-class BucketAutoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class BucketAutoTest extends BaseTest
 {
     use AggregationTestTrait;
 
@@ -23,12 +26,14 @@ class BucketAutoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame(['$bucket' => [
+        $this->assertSame([
+        '$bucket' => [
             'groupBy' => '$someField',
             'boundaries' => [1, 2, 3],
             'default' => 0,
-            'output' => ['averageValue' => ['$avg' => '$value']]
-        ]], $bucketStage->getExpression());
+            'output' => ['averageValue' => ['$avg' => '$value']],
+        ],
+        ], $bucketStage->getExpression());
     }
 
     public function testBucketFromBuilder()
@@ -42,12 +47,15 @@ class BucketAutoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame([['$bucket' => [
+        $this->assertSame([[
+        '$bucket' => [
             'groupBy' => '$someField',
             'boundaries' => [1, 2, 3],
             'default' => 0,
-            'output' => ['averageValue' => ['$avg' => '$value']]
-        ]]], $builder->getPipeline());
+            'output' => ['averageValue' => ['$avg' => '$value']],
+        ],
+        ],
+        ], $builder->getPipeline());
     }
 
     public function testBucketSkipsUndefinedProperties()
@@ -57,10 +65,12 @@ class BucketAutoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->groupBy('$someField')
             ->boundaries(1, 2, 3);
 
-        $this->assertSame(['$bucket' => [
+        $this->assertSame([
+        '$bucket' => [
             'groupBy' => '$someField',
             'boundaries' => [1, 2, 3],
-        ]], $bucketStage->getExpression());
+        ],
+        ], $bucketStage->getExpression());
     }
 
     public function testFieldNameConversion()
@@ -76,12 +86,15 @@ class BucketAutoTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 ->avg('$value');
 
         $this->assertEquals(
-            [['$bucket' => [
+            [[
+            '$bucket' => [
                 'groupBy' => '$ip',
                 'boundaries' => [1, 2, 3],
                 'default' => 0,
-                'output' => ['averageValue' => ['$avg' => '$value']]
-            ]]],
+                'output' => ['averageValue' => ['$avg' => '$value']],
+            ],
+            ],
+            ],
             $builder->getPipeline()
         );
     }

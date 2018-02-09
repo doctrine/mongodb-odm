@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Operator;
@@ -39,8 +41,8 @@ class OperatorTest extends BaseTest
             [
                 'nested' => [
                     'dayOfMonth' => ['$dayOfMonth' => '$dateField'],
-                    'dayOfWeek' => ['$dayOfWeek' => '$dateField']
-                ]
+                    'dayOfWeek' => ['$dayOfWeek' => '$dateField'],
+                ],
             ],
             $stage->getExpression()
         );
@@ -65,7 +67,7 @@ class OperatorTest extends BaseTest
                         ['case' => ['$eq' => ['$numElements', 1]], 'then' => 'One element given'],
                     ],
                     'default' => ['$concat' => ['$numElements', ' elements given']],
-                ]
+                ],
             ],
             $stage->getExpression()
         );

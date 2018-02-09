@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -7,13 +10,16 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use function array_search;
+use function array_values;
+use function get_class;
+use function is_null;
 
 /**
  * PersistenceBuilder builds the queries used by the persisters to update and insert
  * documents when a DocumentManager is flushed. It uses the changeset information in the
  * UnitOfWork to build queries using atomic operators like $set, $unset, etc.
  *
- * @since       1.0
  */
 class PersistenceBuilder
 {
@@ -34,8 +40,6 @@ class PersistenceBuilder
     /**
      * Initializes a new PersistenceBuilder instance.
      *
-     * @param DocumentManager $dm
-     * @param UnitOfWork $uow
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
@@ -54,9 +58,8 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
-        $insertData = array();
+        $insertData = [];
         foreach ($class->fieldMappings as $mapping) {
-
             $new = $changeset[$mapping['fieldName']][1] ?? null;
 
             if ($new === null && $mapping['nullable']) {
@@ -71,7 +74,7 @@ class PersistenceBuilder
             }
 
             // @Field, @String, @Date, etc.
-            if ( ! isset($mapping['association'])) {
+            if (! isset($mapping['association'])) {
                 $insertData[$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
 
             // @ReferenceOne
@@ -110,19 +113,19 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
-        $updateData = array();
+        $updateData = [];
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
             // skip non embedded document identifiers
-            if ( ! $class->isEmbeddedDocument && ! empty($mapping['id'])) {
+            if (! $class->isEmbeddedDocument && ! empty($mapping['id'])) {
                 continue;
             }
 
             list($old, $new) = $change;
 
             // Scalar fields
-            if ( ! isset($mapping['association'])) {
+            if (! isset($mapping['association'])) {
                 if ($new === null && $mapping['nullable'] !== true) {
                     $updateData['$unset'][$mapping['name']] = true;
                 } else {
@@ -144,7 +147,7 @@ class PersistenceBuilder
                     $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
 
                 // If we don't have a new value then lets unset the embedded document
-                } elseif ( ! $new) {
+                } elseif (! $new) {
                     $updateData['$unset'][$mapping['name']] = true;
 
                 // Update existing embedded document
@@ -169,7 +172,7 @@ class PersistenceBuilder
                     $this->uow->unscheduleCollectionDeletion($old);
                 } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY) {
                     foreach ($new as $key => $embeddedDoc) {
-                        if ( ! $this->uow->isScheduledForInsert($embeddedDoc)) {
+                        if (! $this->uow->isScheduledForInsert($embeddedDoc)) {
                             $update = $this->prepareUpdateData($embeddedDoc);
                             foreach ($update as $cmd => $values) {
                                 foreach ($values as $name => $value) {
@@ -215,14 +218,14 @@ class PersistenceBuilder
         $class = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
-        $updateData = array();
+        $updateData = [];
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
             list($old, $new) = $change;
 
             // Scalar fields
-            if ( ! isset($mapping['association'])) {
+            if (! isset($mapping['association'])) {
                 if ($new !== null || $mapping['nullable'] === true) {
                     if ($new !== null && empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                         $operator = '$inc';
@@ -280,7 +283,7 @@ class PersistenceBuilder
      * If the document does not have an identifier and the mapping calls for a
      * simple reference, null may be returned.
      *
-     * @param array $referenceMapping
+     * @param array  $referenceMapping
      * @param object $document
      * @return array|null
      */
@@ -303,20 +306,20 @@ class PersistenceBuilder
      * within this value were previously scheduled for deletion or update, they
      * will also be unscheduled.
      *
-     * @param array $embeddedMapping
+     * @param array  $embeddedMapping
      * @param object $embeddedDocument
-     * @param boolean $includeNestedCollections
+     * @param bool   $includeNestedCollections
      * @return array|object
      * @throws \UnexpectedValueException if an unsupported associating mapping is found
      */
     public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
     {
-        $embeddedDocumentValue = array();
+        $embeddedDocumentValue = [];
         $class = $this->dm->getClassMetadata(get_class($embeddedDocument));
 
         foreach ($class->fieldMappings as $mapping) {
             // Skip notSaved fields
-            if ( ! empty($mapping['notSaved'])) {
+            if (! empty($mapping['notSaved'])) {
                 continue;
             }
 
@@ -341,7 +344,7 @@ class PersistenceBuilder
                     case ClassMetadata::EMBED_MANY:
                     case ClassMetadata::REFERENCE_MANY:
                         // Skip PersistentCollections already scheduled for deletion
-                        if ( ! $includeNestedCollections && $rawValue instanceof PersistentCollectionInterface
+                        if (! $includeNestedCollections && $rawValue instanceof PersistentCollectionInterface
                             && $this->uow->isCollectionScheduledForDeletion($rawValue)) {
                             break;
                         }
@@ -365,7 +368,7 @@ class PersistenceBuilder
         /* Add a discriminator value if the embedded document is not mapped
          * explicitly to a targetDocument class.
          */
-        if ( ! isset($embeddedMapping['targetDocument'])) {
+        if (! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = $embeddedMapping['discriminatorField'];
             $discriminatorValue = isset($embeddedMapping['discriminatorMap'])
                 ? array_search($class->name, $embeddedMapping['discriminatorMap'])
@@ -430,7 +433,6 @@ class PersistenceBuilder
     /**
      * Returns the collection representation to be stored and unschedules it afterwards.
      *
-     * @param PersistentCollectionInterface $coll
      * @param bool $includeNestedCollections
      * @return array
      */
@@ -439,10 +441,12 @@ class PersistenceBuilder
         $mapping = $coll->getMapping();
         $pb = $this;
         $callback = isset($mapping['embedded'])
-            ? function($v) use ($pb, $mapping, $includeNestedCollections) {
+            ? function ($v) use ($pb, $mapping, $includeNestedCollections) {
                 return $pb->prepareEmbeddedDocumentValue($mapping, $v, $includeNestedCollections);
             }
-            : function($v) use ($pb, $mapping) { return $pb->prepareReferencedDocumentValue($mapping, $v); };
+            : function ($v) use ($pb, $mapping) {
+                return $pb->prepareReferencedDocumentValue($mapping, $v);
+            };
 
         $setData = $coll->map($callback)->toArray();
         if (CollectionHelper::isList($mapping['strategy'])) {

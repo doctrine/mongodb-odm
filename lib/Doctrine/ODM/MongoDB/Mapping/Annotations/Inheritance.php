@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
@@ -12,7 +14,7 @@ use Doctrine\Common\Annotations\Annotation;
 final class Inheritance extends Annotation
 {
     public $type = 'NONE';
-    public $discriminatorMap = array();
+    public $discriminatorMap = [];
     public $discriminatorField;
     public $defaultDiscriminatorValue;
 }

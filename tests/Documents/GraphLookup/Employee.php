@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\GraphLookup;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,7 +27,7 @@ class Employee
     /** @ODM\ReferenceMany(targetDocument=Employee::class, mappedBy="reportsTo") */
     public $reportingEmployees;
 
-    public function __construct($name, Employee $reportsTo = null)
+    public function __construct($name, ?Employee $reportsTo = null)
     {
         $this->name = $name;
         $this->reportsTo = $reportsTo;

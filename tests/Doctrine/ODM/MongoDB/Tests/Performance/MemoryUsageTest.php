@@ -1,21 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Performance;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
+use const PHP_EOL;
+use function current;
+use function end;
+use function floor;
+use function gc_collect_cycles;
+use function log;
+use function memory_get_usage;
+use function pow;
+use function round;
+use function sprintf;
 
 /**
  * @group performance
  */
-class MemoryUsageTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MemoryUsageTest extends BaseTest
 {
     /**
      * [jwage: Memory increased by 14.09 kb]
      */
     public function testMemoryUsage()
     {
-        $memoryUsage = array();
+        $memoryUsage = [];
         for ($i = 0; $i < 100; $i++) {
             $ph1 = new CmsPhonenumber();
             $ph1->phonenumber = '12345';
@@ -46,7 +59,7 @@ class MemoryUsageTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     private function formatMemory($size)
     {
-        $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
+        $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
         return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
     }
 }

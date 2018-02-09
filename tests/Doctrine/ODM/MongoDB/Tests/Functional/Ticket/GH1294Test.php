@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use MongoDB\BSON\Regex;
 
-class GH1294Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1294Test extends BaseTest
 {
     public function testRegexSearchOnIdentifierWithUuidStrategy()
     {
@@ -26,10 +30,10 @@ class GH1294Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder($userClass);
 
         $res = $qb->field('id')
-            ->equals(new \MongoDB\BSON\Regex("^bbb.*$", 'i'))
+            ->equals(new Regex('^bbb.*$', 'i'))
             ->getQueryArray();
 
-        $this->assertInstanceOf(\MongoDB\BSON\Regex::class, $res['_id']);
+        $this->assertInstanceOf(Regex::class, $res['_id']);
         $this->assertEquals('^bbb.*$', $res['_id']->getPattern());
         $this->assertEquals('i', $res['_id']->getFlags());
     }

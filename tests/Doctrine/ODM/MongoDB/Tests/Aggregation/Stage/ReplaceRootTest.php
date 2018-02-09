@@ -1,27 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsComment;
 use Documents\User;
+use MongoDB\BSON\UTCDateTime;
 
-class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ReplaceRootTest extends BaseTest
 {
     public function testTypeConversion()
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
         $dateTime = new \DateTimeImmutable('2000-01-01T00:00Z');
-        $mongoDate = new \MongoDB\BSON\UTCDateTime((int) $dateTime->format('Uv'));
+        $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
         $stage = $builder
             ->replaceRoot()
                 ->field('isToday')
                 ->eq('$createdAt', $dateTime);
 
         $this->assertEquals(
-            ['$replaceRoot' => [
+            [
+            '$replaceRoot' => [
                 'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
-            ]],
+            ],
+            ],
             $stage->getExpression()
         );
     }
@@ -31,7 +37,7 @@ class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(User::class);
 
         $dateTime = new \DateTimeImmutable('2000-01-01T00:00Z');
-        $mongoDate = new \MongoDB\BSON\UTCDateTime((int) $dateTime->format('Uv'));
+        $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
         $stage = $builder
             ->replaceRoot(
                 $builder->expr()
@@ -40,9 +46,11 @@ class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             );
 
         $this->assertEquals(
-            ['$replaceRoot' => [
+            [
+            '$replaceRoot' => [
                 'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
-            ]],
+            ],
+            ],
             $stage->getExpression()
         );
     }
@@ -57,9 +65,11 @@ class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 ->concat('$authorIp', 'foo');
 
         $this->assertEquals(
-            ['$replaceRoot' => [
+            [
+            '$replaceRoot' => [
                 'someField' => ['$concat' => ['$ip', 'foo']],
-            ]],
+            ],
+            ],
             $stage->getExpression()
         );
     }

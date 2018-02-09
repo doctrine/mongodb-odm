@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
-class MODM117Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM117Test extends BaseTest
 {
     public function testIssue()
     {
@@ -34,11 +38,11 @@ class MODM117User
 
     public function __get($name)
     {
-        return $this->{'_'.$name};
+        return $this->{'_' . $name};
     }
 
     public function __set($name, $value)
     {
-        $this->{'_'.$name} = $value;
+        $this->{'_' . $name} = $value;
     }
 }

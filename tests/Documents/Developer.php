@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,10 +28,10 @@ class Developer
      */
     private $projects;
 
-    public function __construct($name, Collection $projects = null)
+    public function __construct($name, ?Collection $projects = null)
     {
         $this->name = $name;
-        $this->projects = null === $projects ? new ArrayCollection() : $projects;
+        $this->projects = $projects === null ? new ArrayCollection() : $projects;
     }
 
     public function getId()

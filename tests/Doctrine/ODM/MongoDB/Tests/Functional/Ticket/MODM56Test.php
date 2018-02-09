@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use MongoDB\BSON\UTCDateTime;
 
-class MODM56Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM56Test extends BaseTest
 {
     public function testTest()
     {
@@ -19,10 +23,10 @@ class MODM56Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $parent->children[] = $childTwo;
         $this->dm->flush();
 
-        $test = $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM56Parent')->findOne();
+        $test = $this->dm->getDocumentCollection(__NAMESPACE__ . '\MODM56Parent')->findOne();
 
         $this->assertEquals('Parent', $test['name']);
-        $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, $test['updatedAt']);
+        $this->assertInstanceOf(UTCDateTime::class, $test['updatedAt']);
         $this->assertCount(2, $test['children']);
         $this->assertEquals('Child One', $test['children'][0]['name']);
         $this->assertEquals('Child Two', $test['children'][1]['name']);
@@ -42,7 +46,7 @@ class MODM56Parent
     public $updatedAt;
 
     /** @ODM\EmbedMany(targetDocument="MODM56Child") */
-    public $children = array();
+    public $children = [];
 
     public function __construct($name)
     {

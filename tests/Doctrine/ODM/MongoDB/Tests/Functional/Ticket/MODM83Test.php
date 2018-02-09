@@ -1,20 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
-class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM83Test extends BaseTest
 {
     private function getDocumentManager()
     {
         $this->listener = new MODM83EventListener();
         $evm = $this->dm->getEventManager();
-        $events = array(
+        $events = [
             Events::preUpdate,
             Events::postUpdate,
-        );
+        ];
         $evm->addEventListener($events, $this->listener);
         return $this->dm;
     }
@@ -34,23 +38,23 @@ class MODM83Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
         $dm->clear();
 
-        $won = $dm->find(__NAMESPACE__.'\MODM83TestDocument', $won->id);
-        $too = $dm->find(__NAMESPACE__.'\MODM83OtherDocument', $too->id);
+        $won = $dm->find(__NAMESPACE__ . '\MODM83TestDocument', $won->id);
+        $too = $dm->find(__NAMESPACE__ . '\MODM83OtherDocument', $too->id);
         $too->name = 'Bob';
         $dm->flush();
         $dm->clear();
 
-        $called = array(
-            Events::preUpdate  => array(__NAMESPACE__.'\MODM83OtherDocument'),
-            Events::postUpdate => array(__NAMESPACE__.'\MODM83OtherDocument')
-        );
+        $called = [
+            Events::preUpdate  => [__NAMESPACE__ . '\MODM83OtherDocument'],
+            Events::postUpdate => [__NAMESPACE__ . '\MODM83OtherDocument'],
+        ];
         $this->assertEquals($called, $this->listener->called);
     }
 }
 
 class MODM83EventListener
 {
-    public $called = array();
+    public $called = [];
     public function __call($method, $args)
     {
         $document = $args[0]->getDocument();

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class EmbeddedReferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class EmbeddedReferenceTest extends BaseTest
 {
     public function testReferencedDocumentInsideEmbeddedDocument()
     {

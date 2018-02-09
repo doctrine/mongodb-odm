@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document */
@@ -21,7 +24,7 @@ class Product
     public function __construct($name)
     {
         $this->name = $name;
-        $this->features = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->features = new ArrayCollection();
     }
 
     public function addFeature(Feature $feature)

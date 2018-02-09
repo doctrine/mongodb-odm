@@ -1,18 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use function array_udiff;
+use function array_udiff_assoc;
+use function array_values;
+use function count;
+use function get_class;
+use function is_object;
+use function spl_object_hash;
 
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
  *
- * @since 1.1
  */
 trait PersistentCollectionTrait
 {
@@ -22,7 +29,7 @@ trait PersistentCollectionTrait
      *
      * @var array
      */
-    private $snapshot = array();
+    private $snapshot = [];
 
     /**
      * Collection's owning entity
@@ -40,14 +47,14 @@ trait PersistentCollectionTrait
      * Whether the collection is dirty and needs to be synchronized with the database
      * when the UnitOfWork that manages its persistent state commits.
      *
-     * @var boolean
+     * @var bool
      */
     private $isDirty = false;
 
     /**
      * Whether the collection has already been initialized.
      *
-     * @var boolean
+     * @var bool
      */
     private $initialized = true;
 
@@ -77,14 +84,14 @@ trait PersistentCollectionTrait
      *
      * @var array
      */
-    private $mongoData = array();
+    private $mongoData = [];
 
     /**
      * Any hints to account for during reconstitution/lookup of the documents.
      *
      * @var array
      */
-    private $hints = array();
+    private $hints = [];
 
     /** {@inheritdoc} */
     public function setDocumentManager(DocumentManager $dm)
@@ -124,7 +131,7 @@ trait PersistentCollectionTrait
             return;
         }
 
-        $newObjects = array();
+        $newObjects = [];
 
         if ($this->isDirty) {
             // Remember any NEW objects added through add()
@@ -137,7 +144,7 @@ trait PersistentCollectionTrait
         $this->uow->loadCollection($this);
         $this->takeSnapshot();
 
-        $this->mongoData = array();
+        $this->mongoData = [];
 
         // Reattach any NEW objects added through add()
         if ($newObjects) {
@@ -216,7 +223,7 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function clearSnapshot()
     {
-        $this->snapshot = array();
+        $this->snapshot = [];
         $this->isDirty = $this->coll->count() ? true : false;
     }
 
@@ -232,7 +239,9 @@ trait PersistentCollectionTrait
         return array_udiff_assoc(
             $this->snapshot,
             $this->coll->toArray(),
-            function ($a, $b) { return $a === $b ? 0 : 1; }
+            function ($a, $b) {
+                return $a === $b ? 0 : 1;
+            }
         );
     }
 
@@ -257,7 +266,9 @@ trait PersistentCollectionTrait
         return array_udiff_assoc(
             $this->coll->toArray(),
             $this->snapshot,
-            function ($a, $b) { return $a === $b ? 0 : 1; }
+            function ($a, $b) {
+                return $a === $b ? 0 : 1;
+            }
         );
     }
 
@@ -345,7 +356,7 @@ trait PersistentCollectionTrait
         $this->initialize();
         $removed = $this->coll->removeElement($element);
 
-        if ( ! $removed) {
+        if (! $removed) {
             return $removed;
         }
 
@@ -522,11 +533,11 @@ trait PersistentCollectionTrait
             }
         }
 
-        $this->mongoData = array();
+        $this->mongoData = [];
         $this->coll->clear();
 
         // Nothing to do for inverse-side collections
-        if ( ! $this->mapping['isOwningSide']) {
+        if (! $this->mapping['isOwningSide']) {
             return;
         }
 
@@ -558,7 +569,7 @@ trait PersistentCollectionTrait
      */
     public function __sleep()
     {
-        return array('coll', 'initialized');
+        return ['coll', 'initialized'];
     }
 
     /* ArrayAccess implementation */
@@ -587,7 +598,7 @@ trait PersistentCollectionTrait
      */
     public function offsetSet($offset, $value)
     {
-        if ( ! isset($offset)) {
+        if (! isset($offset)) {
             return $this->doAdd($value, true);
         }
 
@@ -651,7 +662,7 @@ trait PersistentCollectionTrait
         $this->initialize();
 
         $this->owner = null;
-        $this->snapshot = array();
+        $this->snapshot = [];
 
         $this->changed();
     }
@@ -660,7 +671,7 @@ trait PersistentCollectionTrait
      * Actual logic for adding an element to the collection.
      *
      * @param mixed $value
-     * @param bool $arrayAccess
+     * @param bool  $arrayAccess
      * @return bool
      */
     private function doAdd($value, $arrayAccess)
@@ -686,7 +697,7 @@ trait PersistentCollectionTrait
      * Actual logic for removing element by its key.
      *
      * @param mixed $offset
-     * @param bool $arrayAccess
+     * @param bool  $arrayAccess
      * @return mixed|void
      */
     private function doRemove($offset, $arrayAccess)
@@ -694,7 +705,7 @@ trait PersistentCollectionTrait
         $this->initialize();
         $removed = $arrayAccess ? $this->coll->offsetUnset($offset) : $this->coll->remove($offset);
 
-        if ( ! $removed && ! $arrayAccess) {
+        if (! $removed && ! $arrayAccess) {
             return $removed;
         }
 
@@ -708,8 +719,7 @@ trait PersistentCollectionTrait
      *
      * @param mixed $offset
      * @param mixed $value
-     * @param bool $arrayAccess
-     * @return bool
+     * @param bool  $arrayAccess
      */
     private function doSet($offset, $value, $arrayAccess)
     {
@@ -729,7 +739,7 @@ trait PersistentCollectionTrait
      * Embedded documents are automatically considered as "orphan removal enabled" because they might have references
      * that require to trigger cascade remove operations.
      *
-     * @return boolean
+     * @return bool
      */
     private function isOrphanRemovalEnabled()
     {

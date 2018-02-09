@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * Raw data type.
  *
- * @since       1.0
  */
 class RawType extends Type
 {

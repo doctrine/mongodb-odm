@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 
 class XmlDriverTest extends AbstractDriverTest
 {
@@ -16,13 +18,13 @@ class XmlDriverTest extends AbstractDriverTest
     {
         $classMetadata = new ClassMetadata('TestDocuments\UserCustomIdGenerator');
         $this->driver->loadMetadataForClass('TestDocuments\UserCustomIdGenerator', $classMetadata);
-        $this->assertEquals(array(
+        $this->assertEquals([
             'fieldName' => 'id',
             'strategy' => 'custom',
-            'options' => array(
+            'options' => [
                 'class' => 'TestDocuments\CustomIdGenerator',
-                'someOption' => 'some-option'
-            ),
+                'someOption' => 'some-option',
+            ],
             'id' => true,
             'name' => '_id',
             'type' => 'custom_id',
@@ -33,8 +35,8 @@ class XmlDriverTest extends AbstractDriverTest
             'isCascadeRemove' => false,
             'isInverseSide' => false,
             'isOwningSide' => true,
-            'nullable' => false
-        ), $classMetadata->fieldMappings['id']);
+            'nullable' => false,
+        ], $classMetadata->fieldMappings['id']);
     }
 
     public function testDriverShouldParseNonStringAttributes()

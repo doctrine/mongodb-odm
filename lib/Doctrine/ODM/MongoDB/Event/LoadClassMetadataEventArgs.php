@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClassMetadataEventArgs;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Class that holds event arguments for a loadMetadata event.
  *
- * @since 1.0
  */
 class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
     /**
      * Retrieves the associated DocumentManager.
      *
-     * @return \Doctrine\ODM\MongoDB\DocumentManager
+     * @return DocumentManager
      */
     public function getDocumentManager()
     {

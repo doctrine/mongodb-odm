@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
@@ -37,20 +39,20 @@ class SortTest extends BaseTest
             'singleFieldSeparated' => [
                 ['field' => -1],
                 'field',
-                'desc'
+                'desc',
             ],
             'singleFieldCombined' => [
                 ['field' => -1],
-                ['field' => 'desc']
+                ['field' => 'desc'],
             ],
             'multipleFields' => [
                 ['field' => -1, 'otherField' => 1],
-                ['field' => 'desc', 'otherField' => 'asc']
+                ['field' => 'desc', 'otherField' => 'asc'],
             ],
             'sortMeta' => [
                 ['field' => ['$meta' => 'textScore'], 'invalidField' => -1],
-                ['field' => 'textScore', 'invalidField' => 'nonExistingMetaField']
-            ]
+                ['field' => 'textScore', 'invalidField' => 'nonExistingMetaField'],
+            ],
         ];
     }
 }

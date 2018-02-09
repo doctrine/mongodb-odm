@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Bars;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -14,7 +16,7 @@ class Bar
     private $name;
 
     /** @ODM\EmbedMany(targetDocument="Documents\Bars\Location") */
-    private $locations = array();
+    private $locations = [];
 
     public function __construct($name = null)
     {
@@ -45,7 +47,7 @@ class Bar
     {
         return $this->locations;
     }
-    
+
     public function setLocations($locations)
     {
         $this->locations = $locations;

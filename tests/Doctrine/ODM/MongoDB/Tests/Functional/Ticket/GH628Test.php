@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -13,7 +15,7 @@ class GH628Test extends BaseTest
             ->getQuery()
             ->getQuery();
 
-        $expected = array('f.bar.baz' => 1);
+        $expected = ['f.bar.baz' => 1];
 
         $this->assertEquals($expected, $query['query']);
     }

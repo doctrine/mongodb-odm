@@ -1,41 +1,50 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use const E_USER_DEPRECATED;
+use function array_merge;
+use function array_replace;
+use function constant;
+use function get_class;
+use function is_array;
+use function ksort;
+use function reset;
+use function trigger_error;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  *
- * @since       1.0
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {
-    protected $entityAnnotationClasses = array(
+    protected $entityAnnotationClasses = [
         ODM\Document::class            => 1,
         ODM\MappedSuperclass::class    => 2,
         ODM\EmbeddedDocument::class    => 3,
         ODM\QueryResultDocument::class => 4,
-    );
+    ];
 
     /**
      * {@inheritdoc}
      */
     public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
     {
-        /** @var $class ClassMetadata */
+        /** @var ClassMetadata $class */
         $reflClass = $class->getReflectionClass();
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
 
-        $documentAnnots = array();
+        $documentAnnots = [];
         foreach ($classAnnotations as $annot) {
             $classAnnotations[get_class($annot)] = $annot;
 
@@ -51,11 +60,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $this->addIndex($class, $annot);
             }
             if ($annot instanceof ODM\Indexes) {
-                foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $index) {
+                foreach (is_array($annot->value) ? $annot->value : [$annot->value] as $index) {
                     $this->addIndex($class, $index);
                 }
             } elseif ($annot instanceof ODM\InheritanceType) {
-                $class->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_'.$annot->value));
+                $class->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_' . $annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
                 $class->setDiscriminatorField($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
@@ -63,16 +72,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
                 $class->setDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
-                $class->setChangeTrackingPolicy(constant(ClassMetadata::class . '::CHANGETRACKING_'.$annot->value));
+                $class->setChangeTrackingPolicy(constant(ClassMetadata::class . '::CHANGETRACKING_' . $annot->value));
             } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
                 $class->setDefaultDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ReadPreference) {
                 $class->setReadPreference($annot->value, $annot->tags);
             }
-
         }
 
-        if ( ! $documentAnnots) {
+        if (! $documentAnnots) {
             throw MappingException::classIsNotAValidDocument($className);
         }
 
@@ -115,8 +123,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 continue;
             }
 
-            $indexes = array();
-            $mapping = array('fieldName' => $property->getName());
+            $indexes = [];
+            $mapping = ['fieldName' => $property->getName()];
             $fieldAnnot = null;
 
             foreach ($this->reader->getPropertyAnnotations($property) as $annot) {
@@ -130,7 +138,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $indexes[] = $annot;
                 }
                 if ($annot instanceof ODM\Indexes) {
-                    foreach (is_array($annot->value) ? $annot->value : array($annot->value) as $index) {
+                    foreach (is_array($annot->value) ? $annot->value : [$annot->value] as $index) {
                         $indexes[] = $index;
                     }
                 } elseif ($annot instanceof ODM\AlsoLoad) {
@@ -150,7 +158,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($indexes) {
                 foreach ($indexes as $index) {
                     $name = $mapping['name'] ?? $mapping['fieldName'];
-                    $keys = array($name => $index->order ?: 'asc');
+                    $keys = [$name => $index->order ?: 'asc'];
                     $this->addIndex($class, $index, $keys);
                 }
             }
@@ -175,7 +183,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $class->registerAlsoLoadMethod($method->getName(), $annot->value);
                 }
 
-                if ( ! isset($classAnnotations[ODM\HasLifecycleCallbacks::class])) {
+                if (! isset($classAnnotations[ODM\HasLifecycleCallbacks::class])) {
                     continue;
                 }
 
@@ -202,11 +210,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
     }
 
-    private function addIndex(ClassMetadata $class, $index, array $keys = array())
+    private function addIndex(ClassMetadata $class, $index, array $keys = [])
     {
         $keys = array_merge($keys, $index->keys);
-        $options = array();
-        $allowed = array('name', 'dropDups', 'background', 'unique', 'sparse', 'expireAfterSeconds');
+        $options = [];
+        $allowed = ['name', 'dropDups', 'background', 'unique', 'sparse', 'expireAfterSeconds'];
         foreach ($allowed as $name) {
             if (isset($index->$name)) {
                 $options[$name] = $index->$name;
@@ -220,15 +228,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     * @param ClassMetadata $class
-     * @param ODM\ShardKey      $shardKey
      *
      * @throws MappingException
      */
     private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey)
     {
-        $options = array();
-        $allowed = array('unique', 'numInitialChunks');
+        $options = [];
+        $allowed = ['unique', 'numInitialChunks'];
         foreach ($allowed as $name) {
             if (isset($shardKey->$name)) {
                 $options[$name] = $shardKey->$name;
@@ -242,10 +248,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * Factory method for the Annotation Driver
      *
      * @param array|string $paths
-     * @param Reader $reader
      * @return AnnotationDriver
      */
-    public static function create($paths = array(), Reader $reader = null)
+    public static function create($paths = [], ?Reader $reader = null)
     {
         if ($reader === null) {
             $reader = new AnnotationReader();

@@ -1,19 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
-class OutTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Sharded\ShardedUser;
+use Documents\SimpleReferenceUser;
+use Documents\User;
+
+class OutTest extends BaseTest
 {
     public function testOutStageWithClassName()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
-            ->out(\Documents\User::class);
+            ->out(User::class);
 
         $expectedPipeline = [
-            [
-                '$out' => 'users'
-            ]
+            ['$out' => 'users'],
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -21,14 +26,12 @@ class OutTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testOutStageWithCollectionName()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
             ->out('someRandomCollectionName');
 
         $expectedPipeline = [
-            [
-                '$out' => 'someRandomCollectionName'
-            ]
+            ['$out' => 'someRandomCollectionName'],
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -40,16 +43,16 @@ class OutTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testOutStageWithShardedClassName()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
-            ->out(\Documents\Sharded\ShardedUser::class);
+            ->out(ShardedUser::class);
 
         $builder->getPipeline();
     }
 
     public function testSubsequentOutStagesAreOverwritten()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
             ->out('someCollection')
             ->out('otherCollection');

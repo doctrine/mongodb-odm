@@ -1,8 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Symfony;
 
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
+use function mkdir;
+use function rmdir;
+use function sys_get_temp_dir;
+use function touch;
+use function unlink;
 
 /**
  * @group DDC-1418
@@ -11,52 +19,52 @@ abstract class AbstractDriverTest extends TestCase
 {
     public function testFindMappingFile()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\DocumentFoo' => 'foo',
             'MyNamespace\MySubnamespace\Document' => $this->dir,
-        ));
+        ]);
 
-        touch($filename = $this->dir.'/Foo'.$this->getFileExtension());
+        touch($filename = $this->dir . '/Foo' . $this->getFileExtension());
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Document\Foo'));
     }
 
     public function testFindMappingFileInSubnamespace()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\Document' => $this->dir,
-        ));
+        ]);
 
-        touch($filename = $this->dir.'/Foo.Bar'.$this->getFileExtension());
+        touch($filename = $this->dir . '/Foo.Bar' . $this->getFileExtension());
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Document\Foo\Bar'));
     }
 
     public function testFindMappingFileNamespacedFoundFileNotFound()
     {
-        $this->expectException(\Doctrine\Common\Persistence\Mapping\MappingException::class);
-        $this->expectExceptionMessage("No mapping file found named");
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('No mapping file found named');
 
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\Document' => $this->dir,
-        ));
+        ]);
 
         $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Document\Foo');
     }
 
     public function testFindMappingNamespaceNotFound()
     {
-        $this->expectException(\Doctrine\Common\Persistence\Mapping\MappingException::class);
-        $this->expectExceptionMessage("No mapping file found named 'Foo".$this->getFileExtension()."' for class 'MyOtherNamespace\MySubnamespace\Document\Foo'.");
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage("No mapping file found named 'Foo" . $this->getFileExtension() . "' for class 'MyOtherNamespace\MySubnamespace\Document\Foo'.");
 
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\Document' => $this->dir,
-        ));
+        ]);
 
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Document\Foo');
     }
 
     protected function setUp()
     {
-        $this->dir = sys_get_temp_dir().'/abstract_driver_test';
+        $this->dir = sys_get_temp_dir() . '/abstract_driver_test';
         @mkdir($this->dir, 0775, true);
     }
 
@@ -76,7 +84,7 @@ abstract class AbstractDriverTest extends TestCase
     }
 
     abstract protected function getFileExtension();
-    abstract protected function getDriver(array $paths = array());
+    abstract protected function getDriver(array $paths = []);
 
     private function setField($obj, $field, $value)
     {
@@ -85,7 +93,7 @@ abstract class AbstractDriverTest extends TestCase
         $ref->setValue($obj, $value);
     }
 
-    private function invoke($obj, $method, array $args = array())
+    private function invoke($obj, $method, array $args = [])
     {
         $ref = new \ReflectionMethod($obj, $method);
         $ref->setAccessible(true);

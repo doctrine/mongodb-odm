@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Iterator;
 
@@ -45,7 +47,6 @@ final class HydratingIterator implements \Iterator
 
     /**
      * @see http://php.net/iterator.next
-     * @return void
      */
     public function next()
     {
@@ -54,7 +55,6 @@ final class HydratingIterator implements \Iterator
 
     /**
      * @see http://php.net/iterator.rewind
-     * @return void
      */
     public function rewind()
     {
@@ -63,7 +63,7 @@ final class HydratingIterator implements \Iterator
 
     /**
      * @see http://php.net/iterator.valid
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {

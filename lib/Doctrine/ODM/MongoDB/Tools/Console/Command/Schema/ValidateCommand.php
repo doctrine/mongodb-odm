@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\Common\Cache\VoidCache;
@@ -7,6 +9,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use function serialize;
+use function sprintf;
+use function unserialize;
 
 class ValidateCommand extends Command
 {
@@ -18,7 +23,7 @@ class ValidateCommand extends Command
         $this
             ->setName('odm:schema:validate')
             ->setDescription('Validates if document mapping stays the same after serializing into cache.')
-            ->setDefinition(array())
+            ->setDefinition([])
             ->setHelp(<<<EOT
 Validates if document mapping stays the same after serializing into cache.
 EOT
@@ -37,9 +42,9 @@ EOT
 
         $errors = 0;
         foreach ($metadataFactory->getAllMetadata() as $meta) {
-            if ($meta != unserialize(serialize($meta))) {
+            if ($meta !== unserialize(serialize($meta))) {
                 ++$errors;
-                $output->writeln(sprintf("%s has mapping issues.", $meta->name));
+                $output->writeln(sprintf('%s has mapping issues.', $meta->name));
             }
         }
         if ($errors) {

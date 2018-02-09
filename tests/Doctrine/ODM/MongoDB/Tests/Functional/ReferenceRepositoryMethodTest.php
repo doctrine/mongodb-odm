@@ -1,11 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\BlogPost;
+use Documents\Comment;
 use Documents\User;
+use function strtotime;
 
-class ReferenceRepositoryMethodTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ReferenceRepositoryMethodTest extends BaseTest
 {
     public function testOneToOne()
     {
@@ -15,9 +20,9 @@ class ReferenceRepositoryMethodTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $date2 = new \DateTime();
         $date2->setTimestamp(strtotime('-10 seconds'));
 
-        $blogPost = new \Documents\BlogPost('Test');
-        $blogPost->addComment(new \Documents\Comment('Comment 1', $date1));
-        $blogPost->addComment(new \Documents\Comment('Comment 2', $date2));
+        $blogPost = new BlogPost('Test');
+        $blogPost->addComment(new Comment('Comment 1', $date1));
+        $blogPost->addComment(new Comment('Comment 2', $date2));
         $this->dm->persist($blogPost);
         $this->dm->flush();
         $this->dm->clear();
@@ -70,9 +75,9 @@ class ReferenceRepositoryMethodTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $repo = $this->dm->getRepository('Documents\BlogPost');
 
-        $blogPost = new \Documents\BlogPost('Test');
+        $blogPost = new BlogPost('Test');
 
-        $blogPost->addComment(new \Documents\Comment('Comment', new \DateTime()));
+        $blogPost->addComment(new Comment('Comment', new \DateTime()));
         $this->dm->persist($blogPost);
         $this->dm->flush();
         $this->dm->clear();
@@ -85,9 +90,9 @@ class ReferenceRepositoryMethodTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testRepositoryMethodWithoutMappedBy()
     {
-        $blogPost = new \Documents\BlogPost('Test');
+        $blogPost = new BlogPost('Test');
 
-        $blogPost->addComment(new \Documents\Comment('Comment', new \DateTime()));
+        $blogPost->addComment(new Comment('Comment', new \DateTime()));
         $this->dm->persist($blogPost);
         $this->dm->flush();
         $this->dm->clear();

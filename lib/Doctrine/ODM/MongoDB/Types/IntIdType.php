@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Integer Id type.
  *
- * @since       1.0
  */
 class IntIdType extends IntType
 {

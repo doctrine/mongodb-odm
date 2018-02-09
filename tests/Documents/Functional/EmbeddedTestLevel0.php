@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -12,5 +14,5 @@ class EmbeddedTestLevel0
     /** @ODM\Field(type="string") */
     public $name;
     /** @ODM\EmbedMany(targetDocument="EmbeddedTestLevel1") */
-    public $level1 = array();
+    public $level1 = [];
 }

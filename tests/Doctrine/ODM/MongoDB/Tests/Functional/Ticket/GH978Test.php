@@ -1,6 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\Money;
@@ -10,7 +14,7 @@ use Documents\Ecommerce\StockItem;
 /**
  * Test for UnitOfWork::detach()
  */
-class GH978Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH978Test extends BaseTest
 {
     public function testDetach()
     {

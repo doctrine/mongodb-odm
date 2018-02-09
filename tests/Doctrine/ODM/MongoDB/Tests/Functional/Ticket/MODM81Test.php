@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM81Test extends BaseTest
 {
     /**
      * @return DocumentManager
@@ -30,8 +33,8 @@ class MODM81Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
 
         $embedded = new MODM81TestEmbeddedDocument($doc1, $doc2, 'Test1');
-        $doc1->setEmbeddedDocuments(array($embedded));
-        $doc2->setEmbeddedDocuments(array($embedded));
+        $doc1->setEmbeddedDocuments([$embedded]);
+        $doc2->setEmbeddedDocuments([$embedded]);
 
         $dm->flush();
         $dm->clear();
@@ -95,7 +98,7 @@ class MODM81TestDocument
     }
 
     /**
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @return ArrayCollection
      */
     public function getEmbeddedDocuments()
     {
@@ -109,7 +112,6 @@ class MODM81TestDocument
     {
         $this->embeddedDocuments = new ArrayCollection($documents);
     }
-
 }
 
 /** @ODM\EmbeddedDocument */

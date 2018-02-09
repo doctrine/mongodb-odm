@@ -1,17 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache;
 
 use Doctrine\Common\Cache\ApcCache;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use const PHP_EOL;
 
 /**
  * Command to clear the metadata cache of the various cache drivers.
  *
- * @since   1.0
- * @version $Revision$
  */
 class MetadataCommand extends Command
 {
@@ -23,7 +24,7 @@ class MetadataCommand extends Command
         $this
         ->setName('odm:clear-cache:metadata')
         ->setDescription('Clear all metadata cache of the various cache drivers.')
-        ->setDefinition(array())
+        ->setDefinition([])
         ->setHelp(<<<EOT
 Clear all metadata cache of the various cache drivers.
 EOT
@@ -38,12 +39,12 @@ EOT
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         $cacheDriver = $dm->getConfiguration()->getMetadataCacheImpl();
 
-        if ( ! $cacheDriver) {
+        if (! $cacheDriver) {
             throw new \InvalidArgumentException('No Metadata cache driver is configured on given DocumentManager.');
         }
 
         if ($cacheDriver instanceof ApcCache) {
-            throw new \LogicException("Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
+            throw new \LogicException('Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
         }
 
         $output->write('Clearing ALL Metadata cache entries' . PHP_EOL);

@@ -1,8 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Ecommerce;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use function array_map;
+use function array_search;
+use function in_array;
 
 /**
  * @ODM\Document
@@ -22,14 +28,14 @@ class ConfigurableProduct
     /**
      * @ODM\EmbedMany(targetDocument="Documents\Ecommerce\Option")
      */
-    protected $options = array();
+    protected $options = [];
 
     /**
      * @var Documents\Option
      */
     protected $selectedOption;
 
-    public function  __construct($name)
+    public function __construct($name)
     {
         $this->setName($name);
     }
@@ -61,12 +67,11 @@ class ConfigurableProduct
 
     /**
      * @param string|Option $name
-     * @param float|null $price
-     * @param StockItem|null $item
+     * @param float|null    $price
      */
-    public function addOption($name, $price = null, StockItem $item = null)
+    public function addOption($name, $price = null, ?StockItem $item = null)
     {
-        if ( ! $name instanceof Option) {
+        if (! $name instanceof Option) {
             $name = (string) $name;
             if (empty($name)) {
                 throw new \InvalidArgumentException('option name cannot be empty');
@@ -74,7 +79,7 @@ class ConfigurableProduct
             $name = new Option($name, $price, $item);
             unset($price, $item);
         }
-        if (null !== $this->_findOption($name->getName())
+        if ($this->_findOption($name->getName()) !== null
             || in_array($name->getStockItem(), $this->_getStockItems(), true)) {
             throw new \InvalidArgumentException('cannot add option with the same name twice');
         }
@@ -88,10 +93,10 @@ class ConfigurableProduct
 
     public function removeOption($name)
     {
-        if(null === ($option = $this->_findOption($name))) {
+        if (($option = $this->_findOption($name)) === null) {
             throw new \InvalidArgumentException('option ' . $name . ' doesn\'t exist');
         }
-        if ($this->options instanceof \Doctrine\Common\Collections\Collection) {
+        if ($this->options instanceof Collection) {
             $index = $this->options->indexOf($option);
         } else {
             $index = array_search($option, $this->options);
@@ -102,13 +107,13 @@ class ConfigurableProduct
 
     public function hasOption($name)
     {
-        return null !== $this->_findOption($name);
+        return $this->_findOption($name) !== null;
     }
 
     public function selectOption($name)
     {
         $option = $this->_findOption($name);
-        if ( ! isset($option)) {
+        if (! isset($option)) {
             throw new \InvalidArgumentException('specified option: ' . $name . ' doesn\'t exist');
         }
         $this->selectedOption = $option;
@@ -118,7 +123,7 @@ class ConfigurableProduct
     protected function _findOption($name)
     {
         foreach ($this->options as $option) {
-            if ($name == $option->getName()) {
+            if ($name === $option->getName()) {
                 return $option;
             }
         }
@@ -137,5 +142,4 @@ class ConfigurableProduct
             return $option->getStockItem();
         }, $this->getOptions());
     }
-
 }

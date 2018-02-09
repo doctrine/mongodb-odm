@@ -1,34 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Proxy;
 
+use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Common\Proxy\Proxy as BaseProxy;
 use Doctrine\Common\Proxy\ProxyDefinition;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\Common\Proxy\Proxy as BaseProxy;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
 use ReflectionProperty;
+use function get_class;
 
 /**
  * This factory is used to create proxy objects for documents at runtime.
  *
- * @since       1.0
  */
 class ProxyFactory extends AbstractProxyFactory
 {
     /**
-     * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     * @var ClassMetadataFactory
      */
     private $metadataFactory;
 
     /**
-     * @var \Doctrine\ODM\MongoDB\UnitOfWork The UnitOfWork this factory is bound to.
+     * @var UnitOfWork The UnitOfWork this factory is bound to.
      */
     private $uow;
 
@@ -38,7 +43,7 @@ class ProxyFactory extends AbstractProxyFactory
     private $proxyNamespace;
 
     /**
-     * @var \Doctrine\Common\EventManager
+     * @var EventManager
      */
     private $lifecycleEventManager;
 
@@ -46,11 +51,11 @@ class ProxyFactory extends AbstractProxyFactory
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>DocumentManager</tt>.
      *
-     * @param \Doctrine\ODM\MongoDB\DocumentManager $documentManager The DocumentManager the new factory works for.
-     * @param string                                $proxyDir        The directory to use for the proxy classes. It
-     *                                                               must exist.
-     * @param string                                $proxyNamespace  The namespace to use for the proxy classes.
-     * @param integer                               $autoGenerate    Whether to automatically generate proxy classes.
+     * @param DocumentManager $documentManager The DocumentManager the new factory works for.
+     * @param string          $proxyDir        The directory to use for the proxy classes. It
+     *                                         must exist.
+     * @param string          $proxyNamespace  The namespace to use for the proxy classes.
+     * @param int             $autoGenerate    Whether to automatically generate proxy classes.
      */
     public function __construct(DocumentManager $documentManager, $proxyDir, $proxyNamespace, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
@@ -96,13 +101,10 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Generates a closure capable of initializing a proxy
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ODM\MongoDB\Persisters\DocumentPersister $documentPersister
-     * @param \ReflectionProperty                                $reflectionId
      *
      * @return \Closure
      *
-     * @throws \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     * @throws DocumentNotFoundException
      */
     private function createInitializer(
         BaseClassMetadata $classMetadata,
@@ -121,7 +123,7 @@ class ProxyFactory extends AbstractProxyFactory
                 $properties = $proxy->__getLazyProperties();
 
                 foreach ($properties as $propertyName => $property) {
-                    if ( ! isset($proxy->$propertyName)) {
+                    if (! isset($proxy->$propertyName)) {
                         $proxy->$propertyName = $properties[$propertyName];
                     }
                 }
@@ -131,8 +133,8 @@ class ProxyFactory extends AbstractProxyFactory
 
                 $id = $reflectionId->getValue($proxy);
 
-                if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
-                    if ( ! $this->lifecycleEventManager->documentNotFound($proxy, $id)) {
+                if ($documentPersister->load(['_id' => $id], $proxy) === null) {
+                    if (! $this->lifecycleEventManager->documentNotFound($proxy, $id)) {
                         throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
                     }
                 }
@@ -154,7 +156,7 @@ class ProxyFactory extends AbstractProxyFactory
             $properties = $proxy->__getLazyProperties();
 
             foreach ($properties as $propertyName => $property) {
-                if ( ! isset($proxy->$propertyName)) {
+                if (! isset($proxy->$propertyName)) {
                     $proxy->$propertyName = $properties[$propertyName];
                 }
             }
@@ -163,8 +165,8 @@ class ProxyFactory extends AbstractProxyFactory
 
             $id = $reflectionId->getValue($proxy);
 
-            if (null === $documentPersister->load(array('_id' => $id), $proxy)) {
-                if ( ! $this->lifecycleEventManager->documentNotFound($proxy, $id)) {
+            if ($documentPersister->load(['_id' => $id], $proxy) === null) {
+                if (! $this->lifecycleEventManager->documentNotFound($proxy, $id)) {
                     throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
                 }
             }
@@ -178,13 +180,10 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Generates a closure capable of finalizing a cloned proxy
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ODM\MongoDB\Persisters\DocumentPersister $documentPersister
-     * @param \ReflectionProperty                                $reflectionId
      *
      * @return \Closure
      *
-     * @throws \Doctrine\ODM\MongoDB\DocumentNotFoundException
+     * @throws DocumentNotFoundException
      */
     private function createCloner(
         BaseClassMetadata $classMetadata,
@@ -200,10 +199,10 @@ class ProxyFactory extends AbstractProxyFactory
             $proxy->__setInitializer(null);
 
             $id       = $reflectionId->getValue($proxy);
-            $original = $documentPersister->load(array('_id' => $id));
+            $original = $documentPersister->load(['_id' => $id]);
 
-            if (null === $original) {
-                if ( ! $this->lifecycleEventManager->documentNotFound($proxy, $id)) {
+            if ($original === null) {
+                if (! $this->lifecycleEventManager->documentNotFound($proxy, $id)) {
                     throw DocumentNotFoundException::documentNotFound(get_class($proxy), $id);
                 }
             }

@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use PHPUnit\Framework\TestCase;
+use function call_user_func_array;
 
 class CriteriaMergerTest extends TestCase
 {
@@ -12,40 +15,40 @@ class CriteriaMergerTest extends TestCase
      */
     public function testMerge(array $args, array $merged)
     {
-        $this->assertSame($merged, call_user_func_array(array(new CriteriaMerger(), 'merge'), $args));
+        $this->assertSame($merged, call_user_func_array([new CriteriaMerger(), 'merge'], $args));
     }
 
     public function provideMerge()
     {
-        return array(
-            'no args' => array(
-                array(),
-                array(),
-            ),
-            'one arg returned as-is' => array(
-                array(array('x' => 1)),
-                array('x' => 1),
-            ),
-            'empty criteria arrays are ignored' => array(
-                array(array('x' => 1), array()),
-                array('x' => 1),
-            ),
-            'two identical args' => array(
-                array(array('x' => 1), array('x' => 1)),
-                array('$and' => array(array('x' => 1), array('x' => 1))),
-            ),
-            'two different args' => array(
-                array(array('x' => 1), array('y' => 1)),
-                array('$and' => array(array('x' => 1), array('y' => 1))),
-            ),
-            'two conflicting args' => array(
-                array(array('x' => 1), array('x' => 2)),
-                array('$and' => array(array('x' => 1), array('x' => 2))),
-            ),
-            'existing $and criteria gets nested' => array(
-                array(array('$and' => array(array('x' => 1))), array('x' => 1)),
-                array('$and' => array(array('$and' => array(array('x' => 1))), array('x' => 1))),
-            ),
-        );
+        return [
+            'no args' => [
+                [],
+                [],
+            ],
+            'one arg returned as-is' => [
+                [['x' => 1]],
+                ['x' => 1],
+            ],
+            'empty criteria arrays are ignored' => [
+                [['x' => 1], []],
+                ['x' => 1],
+            ],
+            'two identical args' => [
+                [['x' => 1], ['x' => 1]],
+                ['$and' => [['x' => 1], ['x' => 1]]],
+            ],
+            'two different args' => [
+                [['x' => 1], ['y' => 1]],
+                ['$and' => [['x' => 1], ['y' => 1]]],
+            ],
+            'two conflicting args' => [
+                [['x' => 1], ['x' => 2]],
+                ['$and' => [['x' => 1], ['x' => 2]]],
+            ],
+            'existing $and criteria gets nested' => [
+                [['$and' => [['x' => 1]]], ['x' => 1]],
+                ['$and' => [['$and' => [['x' => 1]]], ['x' => 1]]],
+            ],
+        ];
     }
 }

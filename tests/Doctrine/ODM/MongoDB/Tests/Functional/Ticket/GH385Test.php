@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 class GH385Test extends BaseTest
 {
     public function testQueryBuilderShouldPrepareUnmappedFields()
     {
-        $identifier = new \MongoDB\BSON\ObjectId();
+        $identifier = new ObjectId();
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->upsert()
@@ -19,11 +21,11 @@ class GH385Test extends BaseTest
 
         $debug = $qb->getQuery()->getQuery();
 
-        $this->assertEquals(array('$inc' => array('foo.bar.level3a' => 1, 'foo.bar.level3b' => 1)), $debug['newObj']);
+        $this->assertEquals(['$inc' => ['foo.bar.level3a' => 1, 'foo.bar.level3b' => 1]], $debug['newObj']);
 
         $qb->getQuery()->execute();
 
-        $check = $this->dm->getDocumentCollection('Documents\User')->findOne(array('_id' => $identifier));
+        $check = $this->dm->getDocumentCollection('Documents\User')->findOne(['_id' => $identifier]);
         $this->assertNotNull($check);
         $this->assertTrue(isset($check['foo']['bar']['level3a']));
         $this->assertTrue(isset($check['foo']['bar']['level3b']));

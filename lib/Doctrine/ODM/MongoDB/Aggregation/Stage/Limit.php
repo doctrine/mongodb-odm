@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -8,25 +10,22 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding a $limit stage to an aggregation pipeline.
  *
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.2
  */
 class Limit extends Stage
 {
     /**
-     * @var integer
+     * @var int
      */
     private $limit;
 
     /**
-     * @param Builder $builder
-     * @param integer $limit
+     * @param int $limit
      */
     public function __construct(Builder $builder, $limit)
     {
         parent::__construct($builder);
 
-        $this->limit = (integer) $limit;
+        $this->limit = (int) $limit;
     }
 
     /**
@@ -35,7 +34,7 @@ class Limit extends Stage
     public function getExpression()
     {
         return [
-            '$limit' => $this->limit
+            '$limit' => $this->limit,
         ];
     }
 }

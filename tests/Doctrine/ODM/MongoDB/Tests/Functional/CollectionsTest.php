@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Bars\Bar;
 use Documents\Bars\Location;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class CollectionsTest extends BaseTest
 {
     public function testCollections()
     {

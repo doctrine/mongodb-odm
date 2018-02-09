@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Documents\CmsAddress;
-use Documents\CmsUser;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\FriendUser;
+use function get_class;
 
-class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class FlushTest extends BaseTest
 {
     /**
      * Given 3 users, userA userB userC
@@ -29,7 +31,9 @@ class FlushTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $userB->addFriend($userC);
 
         // persist all users, flush and clear
-        foreach (array($userA, $userB, $userC) as $user) $this->dm->persist($user);
+        foreach ([$userA, $userB, $userC] as $user) {
+            $this->dm->persist($user);
+        }
         $this->dm->flush();
         $this->dm->clear();
 

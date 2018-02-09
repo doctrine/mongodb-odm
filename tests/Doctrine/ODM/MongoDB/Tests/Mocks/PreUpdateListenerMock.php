@@ -1,19 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
-use Doctrine\Common\EventSubscriber;
+use function spl_object_hash;
 
 class PreUpdateListenerMock implements EventSubscriber
 {
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             'onFlush',
-            'preUpdate'
-        );
+            'preUpdate',
+        ];
     }
 
     public function onFlush(OnFlushEventArgs $args)

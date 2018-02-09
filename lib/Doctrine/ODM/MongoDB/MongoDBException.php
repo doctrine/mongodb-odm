@@ -1,11 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB;
+
+use function array_slice;
+use function end;
+use function get_class;
+use function is_array;
+use function is_object;
+use function join;
+use function sprintf;
 
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM
  *
- * @since       1.0
  */
 class MongoDBException extends \Exception
 {
@@ -67,19 +76,20 @@ class MongoDBException extends \Exception
      */
     public static function invalidDocumentRepository($className)
     {
-        return new self("Invalid repository class '".$className."'. It must be a Doctrine\Common\Persistence\ObjectRepository.");
+        return new self("Invalid repository class '" . $className . "'. It must be a Doctrine\Common\Persistence\ObjectRepository.");
     }
 
     /**
-     * @param string $type
+     * @param string       $type
      * @param string|array $expected
-     * @param mixed $got
+     * @param mixed        $got
      * @return MongoDBException
      */
     public static function invalidValueForType($type, $expected, $got)
     {
         if (is_array($expected)) {
-            $expected = sprintf('%s or %s',
+            $expected = sprintf(
+                '%s or %s',
                 join(', ', array_slice($expected, 0, -1)),
                 end($expected)
             );
@@ -121,7 +131,8 @@ class MongoDBException extends \Exception
      */
     public static function failedToEnableSharding($dbName, $errorMessage)
     {
-        return new self(sprintf('Failed to enable sharding for database "%s". Error from MongoDB: %s',
+        return new self(sprintf(
+            'Failed to enable sharding for database "%s". Error from MongoDB: %s',
             $dbName,
             $errorMessage
         ));
@@ -134,7 +145,8 @@ class MongoDBException extends \Exception
      */
     public static function failedToEnsureDocumentSharding($className, $errorMessage)
     {
-        return new self(sprintf('Failed to ensure sharding for document "%s". Error from MongoDB: %s',
+        return new self(sprintf(
+            'Failed to ensure sharding for document "%s". Error from MongoDB: %s',
             $className,
             $errorMessage
         ));

@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+use function in_array;
+use function is_array;
+use function is_string;
+use function strtolower;
 
 /**
  * Fluent interface for adding a $sort stage to an aggregation pipeline.
  *
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.2
  */
 class Sort extends Stage
 {
@@ -19,9 +23,8 @@ class Sort extends Stage
     private $sort = [];
 
     /**
-     * @param Builder $builder
      * @param array|string $fieldName Field name or array of field/order pairs
-     * @param int|string $order       Field order (if one field is specified)
+     * @param int|string   $order     Field order (if one field is specified)
      */
     public function __construct(Builder $builder, $fieldName, $order = null)
     {
@@ -50,7 +53,7 @@ class Sort extends Stage
     public function getExpression()
     {
         return [
-            '$sort' => $this->sort
+            '$sort' => $this->sort,
         ];
     }
 }

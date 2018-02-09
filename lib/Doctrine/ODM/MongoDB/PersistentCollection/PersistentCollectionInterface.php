@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\Common\Collections\Collection;
@@ -11,14 +13,12 @@ use Doctrine\ODM\MongoDB\MongoDBException;
  * Interface for persistent collection classes.
  *
  * @internal
- * @since 1.1
  */
 interface PersistentCollectionInterface extends Collection
 {
     /**
      * Sets the document manager and unit of work (used during merge operations).
      *
-     * @param DocumentManager $dm
      */
     public function setDocumentManager(DocumentManager $dm);
 
@@ -60,14 +60,14 @@ interface PersistentCollectionInterface extends Collection
      * Gets a boolean flag indicating whether this collection is dirty which means
      * its state needs to be synchronized with the database.
      *
-     * @return boolean TRUE if the collection is dirty, FALSE otherwise.
+     * @return bool TRUE if the collection is dirty, FALSE otherwise.
      */
     public function isDirty();
 
     /**
      * Sets a boolean flag, indicating whether this collection is dirty.
      *
-     * @param boolean $dirty Whether the collection should be marked dirty or not.
+     * @param bool $dirty Whether the collection should be marked dirty or not.
      */
     public function setDirty($dirty);
 
@@ -77,7 +77,7 @@ interface PersistentCollectionInterface extends Collection
      * describes the association between the owner and the elements of the collection.
      *
      * @param object $document
-     * @param array $mapping
+     * @param array  $mapping
      */
     public function setOwner($document, array $mapping);
 
@@ -157,14 +157,14 @@ interface PersistentCollectionInterface extends Collection
     /**
      * Sets the initialized flag of the collection, forcing it into that state.
      *
-     * @param boolean $bool
+     * @param bool $bool
      */
     public function setInitialized($bool);
 
     /**
      * Checks whether this collection has been initialized.
      *
-     * @return boolean
+     * @return bool
      */
     public function isInitialized();
 

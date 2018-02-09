@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH928Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH928Test extends BaseTest
 {
     public function testNullIdCriteriaShouldNotRemoveEverything()
     {
@@ -16,11 +19,11 @@ class GH928Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $collection = $this->dm->getDocumentCollection(__NAMESPACE__.'\GH928Document');
+        $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH928Document');
 
         $this->assertEquals(2, $collection->count());
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\GH928Document')
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH928Document')
             ->remove()
             ->field('id')->equals(null)
             ->getQuery()

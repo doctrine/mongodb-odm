@@ -1,20 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
-class MODM91Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM91Test extends BaseTest
 {
     private function getDocumentManager()
     {
         $this->listener = new MODM91EventListener();
         $evm = $this->dm->getEventManager();
-        $events = array(
+        $events = [
             Events::preUpdate,
             Events::postUpdate,
-        );
+        ];
         $evm->addEventListener($events, $this->listener);
         return $this->dm;
     }
@@ -31,18 +35,18 @@ class MODM91Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
         $dm->clear();
 
-        $testDoc = $dm->find(__NAMESPACE__.'\MODM91TestDocument', $testDoc->id);
+        $testDoc = $dm->find(__NAMESPACE__ . '\MODM91TestDocument', $testDoc->id);
         $dm->flush();
         $dm->clear();
 
-        $called = array();
+        $called = [];
         $this->assertEquals($called, $this->listener->called);
     }
 }
 
 class MODM91EventListener
 {
-    public $called = array();
+    public $called = [];
     public function __call($method, $args)
     {
         $document = $args[0]->getDocument();

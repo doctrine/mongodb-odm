@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use function get_parent_class;
 
 class DocumentManagerMock extends DocumentManager
 {

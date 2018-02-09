@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -7,14 +9,17 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\GraphLookup\Airport;
 use Documents\GraphLookup\Employee;
 use Documents\GraphLookup\ReportingHierarchy;
 use Documents\GraphLookup\Traveller;
 use Documents\Sharded\ShardedOne;
 use Documents\User;
+use function array_merge;
+use function count;
 
-class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GraphLookupTest extends BaseTest
 {
     use AggregationTestTrait;
 
@@ -34,14 +39,16 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->alias('reportingHierarchy');
 
         $this->assertEquals(
-            ['$graphLookup' => [
+            [
+            '$graphLookup' => [
                 'from' => 'employees',
                 'startWith' => '$reportsTo',
                 'connectFromField' => 'reportsTo',
                 'connectToField' => 'name',
                 'as' => 'reportingHierarchy',
                 'restrictSearchWithMatch' => (object) [],
-            ]],
+            ],
+            ],
             $graphLookupStage->getExpression()
         );
     }
@@ -56,14 +63,17 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->alias('reportingHierarchy');
 
         $this->assertEquals(
-            [['$graphLookup' => [
+            [[
+            '$graphLookup' => [
                 'from' => 'employees',
                 'startWith' => '$reportsTo',
                 'connectFromField' => 'reportsTo',
                 'connectToField' => 'name',
                 'as' => 'reportingHierarchy',
                 'restrictSearchWithMatch' => (object) [],
-            ]]],
+            ],
+            ],
+            ],
             $builder->getPipeline()
         );
     }
@@ -83,7 +93,8 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->depthField('depth');
 
         $this->assertSame(
-            [['$graphLookup' => [
+            [[
+            '$graphLookup' => [
                 'from' => 'employees',
                 'startWith' => '$reportsTo',
                 'connectFromField' => 'reportsTo',
@@ -92,7 +103,9 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 'restrictSearchWithMatch' => ['hobbies' => 'golf'],
                 'maxDepth' => 1,
                 'depthField' => 'depth',
-            ]]],
+            ],
+            ],
+            ],
             $builder->getPipeline()
         );
     }
@@ -109,7 +122,7 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     'startWith' => '$reportsTo.id',
                     'connectFromField' => 'reportsTo.id',
                     'connectToField' => '_id',
-                ]
+                ],
             ],
             'owningSideId' => [
                 'addGraphLookupStage' => function (Builder $builder) {
@@ -120,7 +133,7 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     'startWith' => '$reportsToId',
                     'connectFromField' => 'reportsToId',
                     'connectToField' => '_id',
-                ]
+                ],
             ],
             'inverseSide' => [
                 'addGraphLookupStage' => function (Builder $builder) {
@@ -131,7 +144,7 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     'startWith' => '$reportsTo.id',
                     'connectFromField' => 'reportsTo.id',
                     'connectToField' => '_id',
-                ]
+                ],
             ],
         ];
     }
@@ -153,8 +166,8 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     'from' => 'Employee',
                     'as' => 'reportingHierarchy',
                     'restrictSearchWithMatch' => (object) [],
-                ], $expectedFields)
-            ]
+                ], $expectedFields),
+            ],
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -187,7 +200,7 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     'startWith' => '$nearestAirport.id',
                     'connectFromField' => 'connections.id',
                     'connectToField' => '_id',
-                ]
+                ],
             ],
             'owningSideId' => [
                 'addGraphLookupStage' => function (Builder $builder) {
@@ -201,7 +214,7 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     'startWith' => '$nearestAirportId',
                     'connectFromField' => 'connectionIds',
                     'connectToField' => '_id',
-                ]
+                ],
             ],
         ];
     }
@@ -224,8 +237,8 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     'maxDepth' => 2,
                     'depthField' => 'numConnections',
                     'restrictSearchWithMatch' => (object) [],
-                ], $expectedFields)
-            ]
+                ], $expectedFields),
+            ],
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -265,8 +278,8 @@ class GraphLookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     'connectToField' => 'target',
                     'as' => 'targets',
                     'restrictSearchWithMatch' => (object) [],
-                ]
-            ]
+                ],
+            ],
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());

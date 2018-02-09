@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Documents\Phonenumber;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Group;
+use Documents\Phonenumber;
 use Documents\User;
 
-class GH909Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH909Test extends BaseTest
 {
     public function testManyReferenceAddAndPersist()
     {

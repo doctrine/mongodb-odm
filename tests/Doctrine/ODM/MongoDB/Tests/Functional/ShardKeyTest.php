@@ -1,11 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 use Documents\Sharded\ShardedOne;
+use MongoDB\BSON\ObjectId;
+use function array_keys;
+use function end;
+use function get_class;
 
 class ShardKeyTest extends BaseTest
 {
@@ -17,7 +22,7 @@ class ShardKeyTest extends BaseTest
     protected function getConfiguration()
     {
         $this->markTestSkipped('mongodb-driver: query logging does not exist');
-        if ( ! isset($this->ql)) {
+        if (! isset($this->ql)) {
             $this->ql = new QueryLogger();
         }
 
@@ -31,7 +36,7 @@ class ShardKeyTest extends BaseTest
     {
         parent::setUp();
 
-        $class = \Documents\Sharded\ShardedOne::class;
+        $class = ShardedOne::class;
         $this->skipTestIfNotSharded($class);
         $schemaManager = $this->dm->getSchemaManager();
         $schemaManager->ensureDocumentSharding($class);
@@ -43,7 +48,7 @@ class ShardKeyTest extends BaseTest
         $this->dm->persist($o);
         $this->dm->flush();
 
-        /** @var \Documents\Sharded\ShardedOne $o */
+        /** @var ShardedOne $o */
         $o = $this->dm->find(get_class($o), $o->id);
         $o->title = 'test2';
         $this->dm->flush();
@@ -58,7 +63,7 @@ class ShardKeyTest extends BaseTest
     public function testUpsert()
     {
         $o = new ShardedOne();
-        $o->id = new \MongoDB\BSON\ObjectId();
+        $o->id = new ObjectId();
         $this->dm->persist($o);
         $this->dm->flush();
 
@@ -121,6 +126,6 @@ class ShardKeyTest extends BaseTest
         $this->dm->flush();
 
         $o->key = 'testing2';
-        $this->dm->flush(null, array('upsert' => true));
+        $this->dm->flush(null, ['upsert' => true]);
     }
 }

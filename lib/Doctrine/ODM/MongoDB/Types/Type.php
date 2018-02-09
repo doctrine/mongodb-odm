@@ -1,46 +1,55 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
 
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
+use MongoDB\BSON\ObjectId;
+use function end;
+use function explode;
+use function get_class;
+use function gettype;
+use function is_object;
+use function sprintf;
+use function str_replace;
 
 /**
  * The Type interface.
  *
- * @since       1.0
  */
 abstract class Type
 {
-    const ID = 'id';
-    const INTID = 'int_id';
-    const CUSTOMID = 'custom_id';
-    const BOOL = 'bool';
-    const BOOLEAN = 'boolean';
-    const INT = 'int';
-    const INTEGER = 'integer';
-    const FLOAT = 'float';
-    const STRING = 'string';
-    const DATE = 'date';
-    const KEY = 'key';
-    const TIMESTAMP = 'timestamp';
-    const BINDATA = 'bin';
-    const BINDATAFUNC = 'bin_func';
-    const BINDATABYTEARRAY = 'bin_bytearray';
-    const BINDATAUUID = 'bin_uuid';
-    const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
-    const BINDATAMD5 = 'bin_md5';
-    const BINDATACUSTOM = 'bin_custom';
-    const HASH = 'hash';
-    const COLLECTION = 'collection';
-    const OBJECTID = 'object_id';
-    const RAW = 'raw';
+    public const ID = 'id';
+    public const INTID = 'int_id';
+    public const CUSTOMID = 'custom_id';
+    public const BOOL = 'bool';
+    public const BOOLEAN = 'boolean';
+    public const INT = 'int';
+    public const INTEGER = 'integer';
+    public const FLOAT = 'float';
+    public const STRING = 'string';
+    public const DATE = 'date';
+    public const KEY = 'key';
+    public const TIMESTAMP = 'timestamp';
+    public const BINDATA = 'bin';
+    public const BINDATAFUNC = 'bin_func';
+    public const BINDATABYTEARRAY = 'bin_bytearray';
+    public const BINDATAUUID = 'bin_uuid';
+    public const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
+    public const BINDATAMD5 = 'bin_md5';
+    public const BINDATACUSTOM = 'bin_custom';
+    public const HASH = 'hash';
+    public const COLLECTION = 'collection';
+    public const OBJECTID = 'object_id';
+    public const RAW = 'raw';
 
     /** Map of already instantiated type objects. One instance per type (flyweight). */
-    private static $typeObjects = array();
+    private static $typeObjects = [];
 
     /** The map of supported doctrine mapping types. */
-    private static $typesMap = array(
+    private static $typesMap = [
         self::ID => Types\IdType::class,
         self::INTID => Types\IntIdType::class,
         self::CUSTOMID => Types\CustomIdType::class,
@@ -64,10 +73,12 @@ abstract class Type
         self::COLLECTION => Types\CollectionType::class,
         self::OBJECTID => Types\ObjectIdType::class,
         self::RAW => Types\RawType::class,
-    );
+    ];
 
     /* Prevent instantiation and force use of the factory method. */
-    final private function __construct() {}
+    final private function __construct()
+    {
+    }
 
     /**
      * Converts a value from its PHP representation to its database representation
@@ -106,7 +117,7 @@ abstract class Type
     /**
      * Register a new type in the type map.
      *
-     * @param string $name The name of the type.
+     * @param string $name  The name of the type.
      * @param string $class The class name.
      */
     public static function registerType($name, $class)
@@ -123,12 +134,12 @@ abstract class Type
      */
     public static function getType($type)
     {
-        if ( ! isset(self::$typesMap[$type])) {
+        if (! isset(self::$typesMap[$type])) {
             throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
         }
-        if ( ! isset(self::$typeObjects[$type])) {
+        if (! isset(self::$typeObjects[$type])) {
             $className = self::$typesMap[$type];
-            self::$typeObjects[$type] = new $className;
+            self::$typeObjects[$type] = new $className();
         }
         return self::$typeObjects[$type];
     }
@@ -145,7 +156,7 @@ abstract class Type
         if (is_object($variable)) {
             if ($variable instanceof \DateTimeInterface) {
                 return self::getType('date');
-            } elseif ($variable instanceof \MongoDB\BSON\ObjectId) {
+            } elseif ($variable instanceof ObjectId) {
                 return self::getType('id');
             }
         } else {
@@ -171,7 +182,7 @@ abstract class Type
      * Adds a custom type to the type map.
      *
      * @static
-     * @param string $name Name of the type. This should correspond to what getName() returns.
+     * @param string $name      Name of the type. This should correspond to what getName() returns.
      * @param string $className The class name of the custom type.
      * @throws MappingException
      */
@@ -189,7 +200,7 @@ abstract class Type
      *
      * @static
      * @param string $name Name of the type
-     * @return boolean TRUE if type is supported; FALSE otherwise
+     * @return bool TRUE if type is supported; FALSE otherwise
      */
     public static function hasType($name)
     {
@@ -206,7 +217,7 @@ abstract class Type
      */
     public static function overrideType($name, $className)
     {
-        if ( ! isset(self::$typesMap[$name])) {
+        if (! isset(self::$typesMap[$name])) {
             throw MappingException::typeNotFound($name);
         }
 

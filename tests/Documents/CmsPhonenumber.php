@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -17,11 +19,13 @@ class CmsPhonenumber
      */
     public $user;
 
-    public function setUser(CmsUser $user) {
+    public function setUser(CmsUser $user)
+    {
         $this->user = $user;
     }
-    
-    public function getUser() {
+
+    public function getUser()
+    {
         return $this->user;
     }
 }

@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-class MODM88Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Article;
+
+class MODM88Test extends BaseTest
 {
     public function testTest()
     {
-        $article = new \Documents\Article;
+        $article = new Article();
         $article->setTitle('Test Title');
         $article->setBody('Test Body');
         $this->dm->persist($article);
@@ -17,7 +22,7 @@ class MODM88Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->select('_id', 'title');
         $q = $qb->getQuery();
         $document = $q->getSingleResult();
-        
+
         $this->assertEquals('Test Title', $document->getTitle());
         $this->assertNull($document->getBody());
 

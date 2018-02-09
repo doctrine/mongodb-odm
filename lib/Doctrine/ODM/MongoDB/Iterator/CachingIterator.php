@@ -1,6 +1,13 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Iterator;
+
+use function current;
+use function key;
+use function next;
+use function reset;
 
 /**
  * Iterator for wrapping a Traversable and caching its results.
@@ -19,7 +26,7 @@ final class CachingIterator implements Iterator
     private $iteratorExhausted = false;
 
     /**
-     * Constructor.
+     *
      *
      * Initialize the iterator and stores the first item in the cache. This
      * effectively rewinds the Traversable and the wrapping Generator, which
@@ -27,7 +34,6 @@ final class CachingIterator implements Iterator
      * behavior of the SPL iterators and allows users to omit an explicit call
      * to rewind() before using the other methods.
      *
-     * @param \Traversable $iterator
      */
     public function __construct(\Traversable $iterator)
     {
@@ -62,11 +68,10 @@ final class CachingIterator implements Iterator
 
     /**
      * @see http://php.net/iterator.next
-     * @return void
      */
     public function next()
     {
-        if ( ! $this->iteratorExhausted) {
+        if (! $this->iteratorExhausted) {
             $this->iterator->next();
             $this->storeCurrentItem();
         }
@@ -76,7 +81,6 @@ final class CachingIterator implements Iterator
 
     /**
      * @see http://php.net/iterator.rewind
-     * @return void
      */
     public function rewind()
     {
@@ -93,7 +97,7 @@ final class CachingIterator implements Iterator
     /**
      *
      * @see http://php.net/iterator.valid
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {
@@ -105,7 +109,7 @@ final class CachingIterator implements Iterator
      */
     private function exhaustIterator()
     {
-        while ( ! $this->iteratorExhausted) {
+        while (! $this->iteratorExhausted) {
             $this->next();
         }
     }

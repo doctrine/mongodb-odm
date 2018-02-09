@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Utility;
+
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use function in_array;
 
 /**
  * Utility class used to unify checks on how collection strategies should behave.
  *
- * @since   1.0
  * @internal
  */
 class CollectionHelper
 {
-    const DEFAULT_STRATEGY = ClassMetadata::STORAGE_STRATEGY_PUSH_ALL;
+    public const DEFAULT_STRATEGY = ClassMetadata::STORAGE_STRATEGY_PUSH_ALL;
 
     /**
      * Returns whether update query must be included in query updating owning document.
@@ -60,7 +63,7 @@ class CollectionHelper
                 ClassMetadata::STORAGE_STRATEGY_SET,
                 ClassMetadata::STORAGE_STRATEGY_SET_ARRAY,
                 ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET,
-                ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY
+                ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY,
             ]
         );
     }

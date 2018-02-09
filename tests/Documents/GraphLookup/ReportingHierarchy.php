@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\GraphLookup;
 
 use Doctrine\Common\Collections\ArrayCollection;

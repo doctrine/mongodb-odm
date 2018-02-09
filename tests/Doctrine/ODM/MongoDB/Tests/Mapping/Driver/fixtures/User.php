@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TestDocuments;
+
+use Doctrine\Common\Collections\ArrayCollection;
 
 class User
 {
@@ -22,14 +26,14 @@ class User
 
     protected $account;
 
-    protected $tags = array();
+    protected $tags = [];
 
     protected $test;
 
     public function __construct()
     {
-        $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = array();
+        $this->phonenumbers = new ArrayCollection();
+        $this->groups = [];
         $this->createdAt = new \DateTime();
     }
 

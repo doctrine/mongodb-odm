@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
+
+use MongoDB\BSON\MaxKey;
+use MongoDB\BSON\MinKey;
 
 /**
  * The Key type.
  *
- * @since       1.0
  */
 class KeyType extends Type
 {
@@ -14,7 +18,7 @@ class KeyType extends Type
         if ($value === null) {
             return null;
         }
-        return $value ? new \MongoDB\BSON\MaxKey : new \MongoDB\BSON\MinKey;
+        return $value ? new MaxKey() : new MinKey();
     }
 
     public function convertToPHPValue($value)
@@ -22,6 +26,6 @@ class KeyType extends Type
         if ($value === null) {
             return null;
         }
-        return $value instanceof \MongoDB\BSON\MaxKey ? 1 : 0;
+        return $value instanceof MaxKey ? 1 : 0;
     }
 }

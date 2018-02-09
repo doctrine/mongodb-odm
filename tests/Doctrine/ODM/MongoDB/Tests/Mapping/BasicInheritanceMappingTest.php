@@ -1,11 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function serialize;
+use function unserialize;
 
-class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class BasicInheritanceMappingTest extends BaseTest
 {
     private $factory;
 
@@ -72,7 +77,7 @@ class BasicInheritanceMappingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
-        $this->assertSame("secondary", $class->readPreference);
+        $this->assertSame('secondary', $class->readPreference);
         $this->assertEquals([ ['dc' => 'east'] ], $class->readPreferenceTags);
     }
 }

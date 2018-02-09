@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Documents\User;
+use function is_array;
 
 trait AggregationOperatorsProviderTrait
 {
@@ -149,7 +152,7 @@ trait AggregationOperatorsProviderTrait
                     return [
                         $expr->gte('$field', 5),
                         '$field',
-                        '$otherField'
+                        '$otherField',
                     ];
                 },
             ],
@@ -308,10 +311,10 @@ trait AggregationOperatorsProviderTrait
                     '$let' => [
                         'vars' => [
                             'total' => ['$add' => ['$price', '$tax']],
-                            'discounted' => ['$cond' => ['if' => '$applyDiscount', 'then' => 0.9, 'else' => 1]]
+                            'discounted' => ['$cond' => ['if' => '$applyDiscount', 'then' => 0.9, 'else' => 1]],
                         ],
-                        'in' => ['$multiply' => ['$$total', '$$discounted']]
-                    ]
+                        'in' => ['$multiply' => ['$$total', '$$discounted']],
+                    ],
                 ],
                 'operator' => 'let',
                 'args' => function (Expr $expr) {
@@ -363,7 +366,7 @@ trait AggregationOperatorsProviderTrait
                     return [
                         '$quizzes',
                         'grade',
-                        $expr->add('$$grade', 2)
+                        $expr->add('$$grade', 2),
                     ];
                 },
             ],
@@ -440,7 +443,7 @@ trait AggregationOperatorsProviderTrait
                         ['sum' => 0, 'product' => 1],
                         $expr
                             ->add('$$value.sum', '$$this')
-                            ->multiply('$$value.product', '$$this')
+                            ->multiply('$$value.product', '$$this'),
                     ];
                 },
             ],

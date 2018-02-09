@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -24,7 +26,7 @@ trait AggregationTestTrait
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Doctrine\ODM\MongoDB\Aggregation\Expr
+     * @return \PHPUnit_Framework_MockObject_MockObject|AggregationExpr
      */
     protected function getMockAggregationExpr()
     {

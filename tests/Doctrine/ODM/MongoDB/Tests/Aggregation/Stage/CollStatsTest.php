@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\CollStats;
@@ -51,8 +53,9 @@ class CollStatsTest extends BaseTest
         $this->assertSame([[
             '$collStats' => [
                 'latencyStats' => ['histograms' => true],
-                'storageStats' => []
-            ]
-        ]], $builder->getPipeline());
+                'storageStats' => [],
+            ],
+        ],
+        ], $builder->getPipeline());
     }
 }

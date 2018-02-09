@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -8,8 +10,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 /**
  * Fluent interface for adding a $group stage to an aggregation pipeline.
  *
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.2
  */
 class Group extends Operator
 {
@@ -34,7 +34,7 @@ class Group extends Operator
     public function getExpression()
     {
         return [
-            '$group' => $this->expr->getExpression()
+            '$group' => $this->expr->getExpression(),
         ];
     }
 
@@ -195,7 +195,6 @@ class Group extends Operator
      * @param mixed|Expr $expression
      * @return $this
      *
-     * @since 1.3
      */
     public function stdDevPop($expression)
     {
@@ -214,7 +213,6 @@ class Group extends Operator
      * @param mixed|Expr $expression
      * @return $this
      *
-     * @since 1.3
      */
     public function stdDevSamp($expression)
     {

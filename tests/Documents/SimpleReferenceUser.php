@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -16,7 +18,7 @@ class SimpleReferenceUser
     public $user;
 
     /** @ODM\ReferenceMany(targetDocument="Documents\User", storeAs="id") */
-    public $users = array();
+    public $users = [];
 
     /** @ODM\Field(type="string") */
     public $name;

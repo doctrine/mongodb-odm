@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -7,10 +9,13 @@ use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function array_filter;
+use function sprintf;
+use function ucfirst;
 
 class CreateCommand extends AbstractCommand
 {
-    private $createOrder = array(self::COLLECTION, self::INDEX);
+    private $createOrder = [self::COLLECTION, self::INDEX];
 
     private $timeout;
 
@@ -53,10 +58,10 @@ class CreateCommand extends AbstractCommand
                 $output->writeln(sprintf(
                     'Created <comment>%s%s</comment> for <info>%s</info>',
                     $option,
-                    (isset($class) ? (self::INDEX === $option ? '(es)' : '') : (self::INDEX === $option ? 'es' : 's')),
+                    (isset($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's')),
                     ($class ?? 'all classes')
                 ));
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');
                 $isErrored = true;
             }
@@ -99,15 +104,15 @@ class CreateCommand extends AbstractCommand
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
 
-        if (!$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass && !$classMetadata->isQueryResultDocument) {
-            $this->getDocumentManager()->getProxyFactory()->generateProxyClasses(array($classMetadata));
+        if (! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument) {
+            $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
         }
     }
 
     protected function processProxy(SchemaManager $sm)
     {
         $classes = array_filter($this->getMetadataFactory()->getAllMetadata(), function (ClassMetadata $classMetadata) {
-            return !$classMetadata->isEmbeddedDocument && !$classMetadata->isMappedSuperclass && !$classMetadata->isQueryResultDocument;
+            return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
         });
 
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($classes);

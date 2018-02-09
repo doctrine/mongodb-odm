@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-/**
- * @since 6/26/12
- */
-class GH232Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH232Test extends BaseTest
 {
     public function testReferencedDocumentInsideEmbeddedDocument()
     {
@@ -47,10 +47,10 @@ class Product
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="Price") */
-    public $prices = array();
+    public $prices = [];
 
     /** @ODM\EmbedMany(targetDocument="SubProduct") */
-    public $subproducts = array();
+    public $subproducts = [];
 
     public function __construct($name)
     {
@@ -63,7 +63,7 @@ class Product
 class SubProduct
 {
     /** @ODM\EmbedMany(targetDocument="Price") */
-    public $prices = array();
+    public $prices = [];
 
     public function __construct()
     {

@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class MODM65Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM65Test extends BaseTest
 {
     public function testTest()
     {
@@ -16,11 +19,11 @@ class MODM65Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getDocumentCollection(__NAMESPACE__.'\MODM65User')->findOne();
+        $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\MODM65User')->findOne();
         $this->assertTrue(isset($user['snu']['lN']));
         $this->assertTrue(isset($user['snu']['fN']));
 
-        $user = $this->dm->find(__NAMESPACE__.'\MODM65User', $user['_id']);
+        $user = $this->dm->find(__NAMESPACE__ . '\MODM65User', $user['_id']);
         $this->assertEquals('Jonathan', $user->socialNetworkUser->firstName);
         $this->assertEquals('Wage', $user->socialNetworkUser->lastName);
     }
@@ -31,20 +34,20 @@ class MODM65Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
  */
 class MODM65User
 {
-	/**
-	 * @ODM\Id
-	 */
-	public $id;
-	/**
-	 * @ODM\EmbedOne(
-	 * 	discriminatorField="php",
-	 * 	discriminatorMap={
-	 * 		"fbu"="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\MODM65SocialNetworkUser"
-	 * 	},
-	 * 	name="snu"
-	 * )
-	 */
-	public $socialNetworkUser;
+    /**
+     * @ODM\Id
+     */
+    public $id;
+    /**
+     * @ODM\EmbedOne(
+     *  discriminatorField="php",
+     *  discriminatorMap={
+     *      "fbu"="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\MODM65SocialNetworkUser"
+     *  },
+     *  name="snu"
+     * )
+     */
+    public $socialNetworkUser;
 }
 
 /**
@@ -52,14 +55,14 @@ class MODM65User
  */
 class MODM65SocialNetworkUser
 {
-	/**
-	 * @ODM\Field(name="fN", type="string")
-	 * @var string
-	 */
-	public $firstName;
-	/**
-	 * @ODM\Field(name="lN", type="string")
-	 * @var string
-	 */
-	public $lastName;
+    /**
+     * @ODM\Field(name="fN", type="string")
+     * @var string
+     */
+    public $firstName;
+    /**
+     * @ODM\Field(name="lN", type="string")
+     * @var string
+     */
+    public $lastName;
 }

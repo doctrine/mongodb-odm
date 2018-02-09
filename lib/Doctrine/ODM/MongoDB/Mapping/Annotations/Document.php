@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 /**
@@ -12,7 +14,7 @@ final class Document extends AbstractDocument
     public $db;
     public $collection;
     public $repositoryClass;
-    public $indexes = array();
+    public $indexes = [];
     public $readOnly = false;
     public $shardKey;
     public $writeConcern;

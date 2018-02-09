@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -14,7 +16,7 @@ class Album
     private $name;
 
     /** @ODM\EmbedMany(targetDocument="Song") */
-    private $songs = array();
+    private $songs = [];
 
     public function __construct($name)
     {

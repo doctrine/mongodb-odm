@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class HasLifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class HasLifecycleCallbacksTest extends BaseTest
 {
     public function testHasLifecycleCallbacksSubExtendsSuper()
     {
@@ -110,7 +113,7 @@ abstract class HasLifecycleCallbacksSuper
     /** @ODM\Id */
     public $id;
 
-    public $invoked = array();
+    public $invoked = [];
 
     /** @ODM\PrePersist */
     public function prePersist()
@@ -125,7 +128,7 @@ abstract class HasLifecycleCallbacksSuperAnnotated
     /** @ODM\Id */
     public $id;
 
-    public $invoked = array();
+    public $invoked = [];
 
     /** @ODM\PrePersist */
     public function prePersist()

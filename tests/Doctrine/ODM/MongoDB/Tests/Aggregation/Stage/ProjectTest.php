@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Project;
-use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function array_combine;
+use function array_map;
 
 class ProjectTest extends BaseTest
 {
@@ -54,7 +57,9 @@ class ProjectTest extends BaseTest
     {
         $operators = ['avg', 'max', 'min', 'stdDevPop', 'stdDevSamp', 'sum'];
 
-        return array_combine($operators, array_map(function ($operator) { return [$operator]; }, $operators));
+        return array_combine($operators, array_map(function ($operator) {
+            return [$operator];
+        }, $operators));
     }
 
     /**

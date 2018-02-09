@@ -1,22 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Documents\SubProject;
 use Documents\User;
+use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
-use MongoDB\Database;
 use MongoDB\Driver\ReadPreference;
-use MongoDB\Model\CachingIterator;
+use const DOCTRINE_MONGODB_DATABASE;
+use function array_keys;
 
 class QueryTest extends BaseTest
 {
     public function testSelectAndSelectSliceOnSameField()
     {
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person')
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person')
             ->exclude('comments')
             ->select('comments')
             ->selectSlice('comments', 0, 10);
@@ -37,18 +41,20 @@ class QueryTest extends BaseTest
         $this->dm->persist($chris);
         $this->dm->flush();
 
-        $class = __NAMESPACE__.'\Person';
-        $expression1 = array('firstName' => 'Kris');
-        $expression2 = array('firstName' => 'Chris');
+        $class = __NAMESPACE__ . '\Person';
+        $expression1 = ['firstName' => 'Kris'];
+        $expression2 = ['firstName' => 'Chris'];
 
         $qb = $this->dm->createQueryBuilder($class);
         $qb->addOr($qb->expr()->field('firstName')->equals('Kris'));
         $qb->addOr($qb->expr()->field('firstName')->equals('Chris'));
 
-        $this->assertEquals(array('$or' => array(
-            array('firstName' => 'Kris'),
-            array('firstName' => 'Chris')
-        )), $qb->getQueryArray());
+        $this->assertEquals([
+        '$or' => [
+            ['firstName' => 'Kris'],
+            ['firstName' => 'Chris'],
+        ],
+        ], $qb->getQueryArray());
 
         $query = $qb->getQuery();
         $users = $query->execute();
@@ -69,15 +75,15 @@ class QueryTest extends BaseTest
         $kris->bestFriend = $jon;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
         $qb->field('bestFriend')->references($jon);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals(array(
+        $this->assertEquals([
             'bestFriend.$ref' => 'people',
-            'bestFriend.$id' => new \MongoDB\BSON\ObjectId($jon->id),
+            'bestFriend.$id' => new ObjectId($jon->id),
             'bestFriend.$db' => DOCTRINE_MONGODB_DATABASE,
-        ), $queryArray);
+        ], $queryArray);
 
         $query = $qb->getQuery();
 
@@ -97,13 +103,13 @@ class QueryTest extends BaseTest
         $kris->bestFriendSimple = $jon;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
         $qb->field('bestFriendSimple')->references($jon);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals(array(
-            'bestFriendSimple' => new \MongoDB\BSON\ObjectId($jon->id),
-        ), $queryArray);
+        $this->assertEquals([
+            'bestFriendSimple' => new ObjectId($jon->id),
+        ], $queryArray);
 
         $query = $qb->getQuery();
 
@@ -123,14 +129,14 @@ class QueryTest extends BaseTest
         $kris->bestFriendPartial = $jon;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
         $qb->field('bestFriendPartial')->references($jon);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals(array(
+        $this->assertEquals([
             'bestFriendPartial.$ref' => 'people',
-            'bestFriendPartial.$id' => new \MongoDB\BSON\ObjectId($jon->id),
-        ), $queryArray);
+            'bestFriendPartial.$id' => new ObjectId($jon->id),
+        ], $queryArray);
 
         $query = $qb->getQuery();
 
@@ -150,19 +156,19 @@ class QueryTest extends BaseTest
         $jon->friends[] = $kris;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
         $qb->field('friends')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals(array(
-            'friends' => array(
-                '$elemMatch' => array(
+        $this->assertEquals([
+            'friends' => [
+                '$elemMatch' => [
                     '$ref' => 'people',
-                    '$id' => new \MongoDB\BSON\ObjectId($kris->id),
+                    '$id' => new ObjectId($kris->id),
                     '$db' => DOCTRINE_MONGODB_DATABASE,
-                ),
-            ),
-        ), $queryArray);
+                ],
+            ],
+        ], $queryArray);
 
         $query = $qb->getQuery();
 
@@ -185,13 +191,13 @@ class QueryTest extends BaseTest
         $jon->friendsSimple[] = $jachim;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
         $qb->field('friendsSimple')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals(array(
-            'friendsSimple' =>  new \MongoDB\BSON\ObjectId($kris->id)
-        ), $queryArray);
+        $this->assertEquals([
+            'friendsSimple' =>  new ObjectId($kris->id),
+        ], $queryArray);
 
         $query = $qb->getQuery();
 
@@ -211,18 +217,18 @@ class QueryTest extends BaseTest
         $jon->friendsPartial[] = $kris;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\Person');
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
         $qb->field('friendsPartial')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals(array(
-            'friendsPartial' => array(
-                '$elemMatch' => array(
+        $this->assertEquals([
+            'friendsPartial' => [
+                '$elemMatch' => [
                     '$ref' => 'people',
-                    '$id' => new \MongoDB\BSON\ObjectId($kris->id)
-                ),
-            ),
-        ), $queryArray);
+                    '$id' => new ObjectId($kris->id),
+                ],
+            ],
+        ], $queryArray);
 
         $query = $qb->getQuery();
 
@@ -232,13 +238,13 @@ class QueryTest extends BaseTest
 
     public function testQueryIdIn()
     {
-        $user = new \Documents\User();
+        $user = new User();
         $user->setUsername('jwage');
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $identifier = new \MongoDB\BSON\ObjectId($user->getId());
-        $ids = array($identifier);
+        $identifier = new ObjectId($user->getId());
+        $ids = [$identifier];
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('_id')->in($ids);
@@ -254,7 +260,7 @@ class QueryTest extends BaseTest
             ->field('testInt')->set('0')
             ->field('intfields.intone')->set('1')
             ->field('intfields.inttwo')->set('2');
-        $this->assertEquals(array('testInt' => 0, 'intfields' => array('intone' => 1, 'inttwo' => 2)), $qb->getNewObj());
+        $this->assertEquals(['testInt' => 0, 'intfields' => ['intone' => 1, 'inttwo' => 2]], $qb->getNewObj());
     }
 
     public function testElemMatch()
@@ -265,28 +271,27 @@ class QueryTest extends BaseTest
         $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
 
         $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()
-            ->field('lastCalledBy.id')->equals($refId)
-        );
+            ->field('lastCalledBy.id')->equals($refId));
         $query = $qb->getQuery();
 
-        $expectedQuery = array('phonenumbers' => array('$elemMatch' => array('lastCalledBy.$id' => new \MongoDB\BSON\ObjectId($refId))));
+        $expectedQuery = ['phonenumbers' => ['$elemMatch' => ['lastCalledBy.$id' => new ObjectId($refId)]]];
         $this->assertEquals($expectedQuery, $query->debug('query'));
     }
 
     public function testQueryWithMultipleEmbeddedDocuments()
     {
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\EmbedTest')
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\EmbedTest')
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.name')->equals('Foo');
         $query = $qb->getQuery();
-        $this->assertEquals(array('eO.eO.e1.eO.n' => 'Foo'), $query->debug('query'));
+        $this->assertEquals(['eO.eO.e1.eO.n' => 'Foo'], $query->debug('query'));
     }
 
     public function testQueryWithMultipleEmbeddedDocumentsAndReference()
     {
-        $identifier = new \MongoDB\BSON\ObjectId();
+        $identifier = new ObjectId();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__.'\EmbedTest')
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\EmbedTest')
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals((string) $identifier);
         $query = $qb->getQuery();
@@ -298,14 +303,14 @@ class QueryTest extends BaseTest
 
     public function testSelectVsSingleCollectionInheritance()
     {
-        $p = new \Documents\SubProject('SubProject');
+        $p = new SubProject('SubProject');
         $this->dm->persist($p);
         $this->dm->flush();
         $this->dm->clear();
 
         $test = $this->dm->createQueryBuilder()
                 ->find('Documents\Project')
-                ->select(array('name'))
+                ->select(['name'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
@@ -315,14 +320,14 @@ class QueryTest extends BaseTest
 
     public function testEmptySelectVsSingleCollectionInheritance()
     {
-        $p = new \Documents\SubProject('SubProject');
+        $p = new SubProject('SubProject');
         $this->dm->persist($p);
         $this->dm->flush();
         $this->dm->clear();
 
         $test = $this->dm->createQueryBuilder()
                 ->find('Documents\Project')
-                ->select(array())
+                ->select([])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
@@ -332,30 +337,30 @@ class QueryTest extends BaseTest
 
     public function testDiscriminatorFieldNotAddedWithoutHydration()
     {
-        $p = new \Documents\SubProject('SubProject');
+        $p = new SubProject('SubProject');
         $this->dm->persist($p);
         $this->dm->flush();
         $this->dm->clear();
 
         $test = $this->dm->createQueryBuilder()
                 ->find('Documents\Project')->hydrate(false)
-                ->select(array('name'))
+                ->select(['name'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
-        $this->assertEquals(array('_id', 'name'), array_keys($test));
+        $this->assertEquals(['_id', 'name'], array_keys($test));
     }
 
     public function testExcludeVsSingleCollectionInheritance()
     {
-        $p = new \Documents\SubProject('SubProject');
+        $p = new SubProject('SubProject');
         $this->dm->persist($p);
         $this->dm->flush();
         $this->dm->clear();
 
         $test = $this->dm->createQueryBuilder()
                 ->find('Documents\SubProject')
-                ->exclude(array('name', 'issues'))
+                ->exclude(['name', 'issues'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
@@ -499,13 +504,13 @@ class Person
     public $bestFriendPartial;
 
     /** @ODM\ReferenceMany(storeAs="dbRefWithDb") */
-    public $friends = array();
+    public $friends = [];
 
     /** @ODM\ReferenceMany(storeAs="id", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
-    public $friendsSimple = array();
+    public $friendsSimple = [];
 
     /** @ODM\ReferenceMany */
-    public $friendsPartial = array();
+    public $friendsPartial = [];
 
     /** @ODM\EmbedOne(targetDocument="Pet") */
     public $pet;

@@ -1,10 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\Type;
+use MongoDB\BSON\Binary;
+use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\Timestamp;
+use MongoDB\BSON\UTCDateTime;
+use const STR_PAD_LEFT;
+use function md5;
+use function str_pad;
+use function str_repeat;
+use function time;
 
-class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class TypeTest extends BaseTest
 {
     /**
      * @dataProvider provideTypes
@@ -16,31 +28,31 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function provideTypes()
     {
-        return array(
-            'id' => array(Type::getType(Type::ID), "507f1f77bcf86cd799439011"),
-            'intId' => array(Type::getType(Type::INTID), 1),
-            'customId' => array(Type::getType(Type::CUSTOMID), (object) array('foo' => 'bar')),
-            'bool' => array(Type::getType(Type::BOOL), true),
-            'boolean' => array(Type::getType(Type::BOOLEAN), false),
-            'int' => array(Type::getType(Type::INT), 69),
-            'integer' => array(Type::getType(Type::INTEGER), 42),
-            'float' => array(Type::getType(Type::FLOAT), 3.14),
-            'string' => array(Type::getType(Type::STRING), 'ohai'),
-            'minKey' => array(Type::getType(Type::KEY), 0),
-            'maxKey' => array(Type::getType(Type::KEY), 1),
-            'timestamp' => array(Type::getType(Type::TIMESTAMP), time()),
-            'binData' => array(Type::getType(Type::BINDATA), 'foobarbaz'),
-            'binDataFunc' => array(Type::getType(Type::BINDATAFUNC), 'foobarbaz'),
-            'binDataByteArray' => array(Type::getType(Type::BINDATABYTEARRAY), 'foobarbaz'),
-            'binDataUuid' => array(Type::getType(Type::BINDATAUUID), "testtesttesttest"),
-            'binDataUuidRFC4122' => array(Type::getType(Type::BINDATAUUIDRFC4122), str_repeat('a', 16)),
-            'binDataMD5' => array(Type::getType(Type::BINDATAMD5), md5('ODM')),
-            'binDataCustom' => array(Type::getType(Type::BINDATACUSTOM), 'foobarbaz'),
-            'hash' => array(Type::getType(Type::HASH), array('foo' => 'bar')),
-            'collection' => array(Type::getType(Type::COLLECTION), array('foo', 'bar')),
-            'objectId' => array(Type::getType(Type::OBJECTID), "507f1f77bcf86cd799439011"),
-            'raw' => array(Type::getType(Type::RAW), (object) array('foo' => 'bar')),
-       );
+        return [
+            'id' => [Type::getType(Type::ID), '507f1f77bcf86cd799439011'],
+            'intId' => [Type::getType(Type::INTID), 1],
+            'customId' => [Type::getType(Type::CUSTOMID), (object) ['foo' => 'bar']],
+            'bool' => [Type::getType(Type::BOOL), true],
+            'boolean' => [Type::getType(Type::BOOLEAN), false],
+            'int' => [Type::getType(Type::INT), 69],
+            'integer' => [Type::getType(Type::INTEGER), 42],
+            'float' => [Type::getType(Type::FLOAT), 3.14],
+            'string' => [Type::getType(Type::STRING), 'ohai'],
+            'minKey' => [Type::getType(Type::KEY), 0],
+            'maxKey' => [Type::getType(Type::KEY), 1],
+            'timestamp' => [Type::getType(Type::TIMESTAMP), time()],
+            'binData' => [Type::getType(Type::BINDATA), 'foobarbaz'],
+            'binDataFunc' => [Type::getType(Type::BINDATAFUNC), 'foobarbaz'],
+            'binDataByteArray' => [Type::getType(Type::BINDATABYTEARRAY), 'foobarbaz'],
+            'binDataUuid' => [Type::getType(Type::BINDATAUUID), 'testtesttesttest'],
+            'binDataUuidRFC4122' => [Type::getType(Type::BINDATAUUIDRFC4122), str_repeat('a', 16)],
+            'binDataMD5' => [Type::getType(Type::BINDATAMD5), md5('ODM')],
+            'binDataCustom' => [Type::getType(Type::BINDATACUSTOM), 'foobarbaz'],
+            'hash' => [Type::getType(Type::HASH), ['foo' => 'bar']],
+            'collection' => [Type::getType(Type::COLLECTION), ['foo', 'bar']],
+            'objectId' => [Type::getType(Type::OBJECTID), '507f1f77bcf86cd799439011'],
+            'raw' => [Type::getType(Type::RAW), (object) ['foo' => 'bar']],
+        ];
     }
 
     /**
@@ -53,19 +65,19 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function provideTypesForIdempotent()
     {
-        return array(
-            'id' => array(Type::getType(Type::ID), new \MongoDB\BSON\ObjectId()),
-            'date' => array(Type::getType(Type::DATE), new \MongoDB\BSON\UTCDateTime()),
-            'timestamp' => array(Type::getType(Type::TIMESTAMP), new \MongoDB\BSON\Timestamp(0, time())),
-            'binData' => array(Type::getType(Type::BINDATA), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_GENERIC)),
-            'binDataFunc' => array(Type::getType(Type::BINDATAFUNC), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_FUNCTION)),
-            'binDataByteArray' => array(Type::getType(Type::BINDATABYTEARRAY), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_OLD_BINARY)),
-            'binDataUuid' => array(Type::getType(Type::BINDATAUUID), new \MongoDB\BSON\Binary("testtesttesttest", \MongoDB\BSON\Binary::TYPE_OLD_UUID)),
-            'binDataUuidRFC4122' => array(Type::getType(Type::BINDATAUUIDRFC4122), new \MongoDB\BSON\Binary(str_repeat('a', 16), \MongoDB\BSON\Binary::TYPE_UUID)),
-            'binDataMD5' => array(Type::getType(Type::BINDATAMD5), new \MongoDB\BSON\Binary(md5('ODM'), \MongoDB\BSON\Binary::TYPE_MD5)),
-            'binDataCustom' => array(Type::getType(Type::BINDATACUSTOM), new \MongoDB\BSON\Binary('foobarbaz', \MongoDB\BSON\Binary::TYPE_USER_DEFINED)),
-            'objectId' => array(Type::getType(Type::OBJECTID), new \MongoDB\BSON\ObjectId()),
-        );
+        return [
+            'id' => [Type::getType(Type::ID), new ObjectId()],
+            'date' => [Type::getType(Type::DATE), new UTCDateTime()],
+            'timestamp' => [Type::getType(Type::TIMESTAMP), new Timestamp(0, time())],
+            'binData' => [Type::getType(Type::BINDATA), new Binary('foobarbaz', Binary::TYPE_GENERIC)],
+            'binDataFunc' => [Type::getType(Type::BINDATAFUNC), new Binary('foobarbaz', Binary::TYPE_FUNCTION)],
+            'binDataByteArray' => [Type::getType(Type::BINDATABYTEARRAY), new Binary('foobarbaz', Binary::TYPE_OLD_BINARY)],
+            'binDataUuid' => [Type::getType(Type::BINDATAUUID), new Binary('testtesttesttest', Binary::TYPE_OLD_UUID)],
+            'binDataUuidRFC4122' => [Type::getType(Type::BINDATAUUIDRFC4122), new Binary(str_repeat('a', 16), Binary::TYPE_UUID)],
+            'binDataMD5' => [Type::getType(Type::BINDATAMD5), new Binary(md5('ODM'), Binary::TYPE_MD5)],
+            'binDataCustom' => [Type::getType(Type::BINDATACUSTOM), new Binary('foobarbaz', Binary::TYPE_USER_DEFINED)],
+            'objectId' => [Type::getType(Type::OBJECTID), new ObjectId()],
+        ];
     }
 
     public function testConvertDatePreservesMilliseconds()
@@ -84,6 +96,6 @@ class TypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $date = new \DateTimeImmutable('now');
 
-        $this->assertInstanceOf(\MongoDB\BSON\UTCDateTime::class, Type::convertPHPToDatabaseValue($date));
+        $this->assertInstanceOf(UTCDateTime::class, Type::convertPHPToDatabaseValue($date));
     }
 }

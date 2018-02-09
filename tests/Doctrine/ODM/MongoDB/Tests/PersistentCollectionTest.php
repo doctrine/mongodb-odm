@@ -1,16 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Documents\User;
+use function serialize;
+use function unserialize;
 
 class PersistentCollectionTest extends BaseTest
 {
     public function testSlice()
     {
-        list ($start, $limit) = array(0, 25);
+        list ($start, $limit) = [0, 25];
         $collection = $this->getMockCollection();
         $collection->expects($this->once())
             ->method('slice')
@@ -35,7 +43,7 @@ class PersistentCollectionTest extends BaseTest
         /** @var PersistentCollection $unserialized */
         $unserialized = unserialize($serialized);
 
-        $unserialized->setOwner($owner, array('targetDocument' => '\stdClass'));
+        $unserialized->setOwner($owner, ['targetDocument' => '\stdClass']);
         $unserialized->getTypeClass();
     }
 
@@ -63,7 +71,7 @@ class PersistentCollectionTest extends BaseTest
         /** @var PersistentCollection $unserialized */
         $unserialized = unserialize($serialized);
 
-        $unserialized->setOwner(new \Documents\User(), $this->dm->getClassMetadata('Documents\\User')->getFieldMapping('phonebooks'));
+        $unserialized->setOwner(new User(), $this->dm->getClassMetadata('Documents\\User')->getFieldMapping('phonebooks'));
         $unserialized->setDocumentManager($this->dm);
         $this->assertInstanceOf(ClassMetadata::class, $unserialized->getTypeClass());
     }
@@ -71,7 +79,6 @@ class PersistentCollectionTest extends BaseTest
     /**
      * @param array $expected
      * @param array $snapshot
-     * @param \Closure $callback
      *
      * @dataProvider dataGetDeletedDocuments
      */
@@ -93,44 +100,58 @@ class PersistentCollectionTest extends BaseTest
         $one = new \stdClass();
         $two = new \stdClass();
 
-        return array(
-            'sameItems' => array(
-                array(),
-                array($one),
-                function ($collection) {}
-            ),
-            'added' => array(
-                array(),
-                array($one),
-                function ($collection) use ($two) { $collection->add($two); }
-            ),
-            'removed' => array(
-                array($one),
-                array($one, $two),
-                function ($collection) use ($one) { $collection->removeElement($one); }
-            ),
-            'replaced' => array(
-                array($one),
-                array($one),
-                function ($collection) use ($one, $two) { $collection->removeElement($one); $collection->add($two); }
-            ),
-            'removed2' => array(
-                array($two),
-                array($one, $two),
-                function ($collection) use ($two) { $collection->removeElement($two); }
-            ),
-            'orderChanged' => array(
-                array(),
-                array($one, $two),
-                function ($collection) use ($one, $two) { $collection->removeElement($one); $collection->removeElement($two); $collection->add($two); $collection->add($one); }
-            ),
-        );
+        return [
+            'sameItems' => [
+                [],
+                [$one],
+                function ($collection) {
+                },
+            ],
+            'added' => [
+                [],
+                [$one],
+                function ($collection) use ($two) {
+                    $collection->add($two);
+                },
+            ],
+            'removed' => [
+                [$one],
+                [$one, $two],
+                function ($collection) use ($one) {
+                    $collection->removeElement($one);
+                },
+            ],
+            'replaced' => [
+                [$one],
+                [$one],
+                function ($collection) use ($one, $two) {
+                    $collection->removeElement($one);
+                    $collection->add($two);
+                },
+            ],
+            'removed2' => [
+                [$two],
+                [$one, $two],
+                function ($collection) use ($two) {
+                    $collection->removeElement($two);
+                },
+            ],
+            'orderChanged' => [
+                [],
+                [$one, $two],
+                function ($collection) use ($one, $two) {
+                    $collection->removeElement($one);
+                    $collection->removeElement($two);
+                    $collection->add($two);
+                    $collection->add($one);
+                },
+            ],
+        ];
     }
 
     /**
      * @param array $expected
      * @param array $snapshot
-     * @param \Closure $callback
      *
      * @dataProvider dataGetInsertedDocuments
      */
@@ -152,28 +173,39 @@ class PersistentCollectionTest extends BaseTest
         $one = new \stdClass();
         $two = new \stdClass();
 
-        return array(
-            'sameItems' => array(
-                array(),
-                array($one),
-                function ($collection) {}
-            ),
-            'added' => array(
-                array($two),
-                array($one),
-                function ($collection) use ($two) { $collection->add($two); }
-            ),
-            'replaced' => array(
-                array($two),
-                array($one),
-                function ($collection) use ($one, $two) { $collection->removeElement($one); $collection->add($two); }
-            ),
-            'orderChanged' => array(
-                array(),
-                array($one, $two),
-                function ($collection) use ($one, $two) { $collection->removeElement($one); $collection->removeElement($two); $collection->add($two); $collection->add($one); }
-            ),
-        );
+        return [
+            'sameItems' => [
+                [],
+                [$one],
+                function ($collection) {
+                },
+            ],
+            'added' => [
+                [$two],
+                [$one],
+                function ($collection) use ($two) {
+                    $collection->add($two);
+                },
+            ],
+            'replaced' => [
+                [$two],
+                [$one],
+                function ($collection) use ($one, $two) {
+                    $collection->removeElement($one);
+                    $collection->add($two);
+                },
+            ],
+            'orderChanged' => [
+                [],
+                [$one, $two],
+                function ($collection) use ($one, $two) {
+                    $collection->removeElement($one);
+                    $collection->removeElement($two);
+                    $collection->add($two);
+                    $collection->add($one);
+                },
+            ],
+        ];
     }
 
     public function testOffsetExistsIsForwarded()
@@ -243,7 +275,7 @@ class PersistentCollectionTest extends BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentManager
+     * @return DocumentManager
      */
     private function getMockDocumentManager()
     {
@@ -251,7 +283,7 @@ class PersistentCollectionTest extends BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\UnitOfWork
+     * @return UnitOfWork
      */
     private function getMockUnitOfWork()
     {
@@ -259,7 +291,7 @@ class PersistentCollectionTest extends BaseTest
     }
 
     /**
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     private function getMockCollection()
     {

@@ -1,11 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
+
+use MongoDB\BSON\UTCDateTime;
+use function date_default_timezone_get;
+use function explode;
+use function get_class;
+use function gettype;
+use function is_numeric;
+use function is_scalar;
+use function is_string;
+use function sprintf;
+use function str_pad;
+use function strpos;
 
 /**
  * The Date type.
  *
- * @since       1.0
  */
 class DateType extends Type
 {
@@ -24,14 +37,14 @@ class DateType extends Type
 
         if ($value instanceof \DateTimeInterface) {
             return $value;
-        } elseif ($value instanceof \MongoDB\BSON\UTCDateTime) {
+        } elseif ($value instanceof UTCDateTime) {
             $datetime = $value->toDateTime();
             $datetime->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         } elseif (is_numeric($value)) {
             $seconds = $value;
             $microseconds = 0;
 
-            if (false !== strpos($value, '.')) {
+            if (strpos($value, '.') !== false) {
                 list($seconds, $microseconds) = explode('.', $value);
                 $microseconds = str_pad($microseconds, 6, '0'); // ensure microseconds
             }
@@ -40,13 +53,13 @@ class DateType extends Type
         } elseif (is_string($value)) {
             try {
                 $datetime = new \DateTime($value);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $exception = $e;
             }
         }
 
         if ($datetime === false) {
-            throw new \InvalidArgumentException(sprintf('Could not convert %s to a date value', is_scalar($value) ? '"'.$value.'"' : gettype($value)), 0, $exception);
+            throw new \InvalidArgumentException(sprintf('Could not convert %s to a date value', is_scalar($value) ? '"' . $value . '"' : gettype($value)), 0, $exception);
         }
 
         return $datetime;
@@ -65,13 +78,13 @@ class DateType extends Type
 
     public function convertToDatabaseValue($value)
     {
-        if ($value === null || $value instanceof \MongoDB\BSON\UTCDateTime) {
+        if ($value === null || $value instanceof UTCDateTime) {
             return $value;
         }
 
         $datetime = static::getDateTime($value);
 
-        return new \MongoDB\BSON\UTCDateTime((int) $datetime->format('Uv'));
+        return new UTCDateTime((int) $datetime->format('Uv'));
     }
 
     public function convertToPHPValue($value)
@@ -85,11 +98,11 @@ class DateType extends Type
 
     public function closureToMongo()
     {
-        return 'if ($value === null || $value instanceof \MongoDB\BSON\UTCDateTime) { $return = $value; } else { $datetime = \\'.get_class($this).'::getDateTime($value); $return = new \MongoDB\BSON\UTCDateTime((int) $datetime->format(\'Uv\')); }';
+        return 'if ($value === null || $value instanceof \MongoDB\BSON\UTCDateTime) { $return = $value; } else { $datetime = \\' . get_class($this) . '::getDateTime($value); $return = new \MongoDB\BSON\UTCDateTime((int) $datetime->format(\'Uv\')); }';
     }
 
     public function closureToPHP()
     {
-        return 'if ($value === null) { $return = null; } else { $return = \\'.get_class($this).'::getDateTime($value); }';
+        return 'if ($value === null) { $return = null; } else { $return = \\' . get_class($this) . '::getDateTime($value); }';
     }
 }

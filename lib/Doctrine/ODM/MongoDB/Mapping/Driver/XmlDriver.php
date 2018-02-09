@@ -1,19 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use function array_keys;
+use function constant;
+use function count;
+use function current;
+use function explode;
+use function in_array;
+use function is_numeric;
+use function iterator_to_array;
+use function next;
+use function preg_match;
+use function simplexml_load_file;
+use function strtoupper;
+use function trim;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
- * @since       1.0
  */
 class XmlDriver extends FileDriver
 {
-    const DEFAULT_FILE_EXTENSION = '.dcm.xml';
+    public const DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
     /**
      * {@inheritDoc}
@@ -31,22 +45,22 @@ class XmlDriver extends FileDriver
         /* @var $class ClassMetadata */
         /* @var $xmlRoot \SimpleXMLElement */
         $xmlRoot = $this->getElement($className);
-        if ( ! $xmlRoot) {
+        if (! $xmlRoot) {
             return;
         }
 
-        if ($xmlRoot->getName() == 'document') {
+        if ($xmlRoot->getName() === 'document') {
             if (isset($xmlRoot['repository-class'])) {
                 $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
             }
-        } elseif ($xmlRoot->getName() == 'mapped-superclass') {
+        } elseif ($xmlRoot->getName() === 'mapped-superclass') {
             $class->setCustomRepositoryClass(
                 isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null
             );
             $class->isMappedSuperclass = true;
-        } elseif ($xmlRoot->getName() == 'embedded-document') {
+        } elseif ($xmlRoot->getName() === 'embedded-document') {
             $class->isEmbeddedDocument = true;
-        } elseif ($xmlRoot->getName() == 'query-result-document') {
+        } elseif ($xmlRoot->getName() === 'query-result-document') {
             $class->isQueryResultDocument = true;
         }
         if (isset($xmlRoot['db'])) {
@@ -54,7 +68,7 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot['collection'])) {
             if (isset($xmlRoot['capped-collection'])) {
-                $config = array('name' => (string) $xmlRoot['collection']);
+                $config = ['name' => (string) $xmlRoot['collection']];
                 $config['capped'] = (bool) $xmlRoot['capped-collection'];
                 if (isset($xmlRoot['capped-collection-max'])) {
                     $config['max'] = (int) $xmlRoot['capped-collection-max'];
@@ -87,7 +101,7 @@ class XmlDriver extends FileDriver
             );
         }
         if (isset($xmlRoot->{'discriminator-map'})) {
-            $map = array();
+            $map = [];
             foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} as $discrMapElement) {
                 $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
             }
@@ -104,7 +118,7 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'shard-key'})) {
             $this->setShardKey($class, $xmlRoot->{'shard-key'}[0]);
         }
-        if (isset($xmlRoot['read-only']) && 'true' === (string) $xmlRoot['read-only']) {
+        if (isset($xmlRoot['read-only']) && (string) $xmlRoot['read-only'] === 'true') {
             $class->markReadOnly();
         }
         if (isset($xmlRoot->{'read-preference'})) {
@@ -112,17 +126,17 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
-                $mapping = array();
+                $mapping = [];
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
                     $mapping[$key] = (string) $value;
-                    $booleanAttributes = array('id', 'reference', 'embed', 'unique', 'sparse');
+                    $booleanAttributes = ['id', 'reference', 'embed', 'unique', 'sparse'];
                     if (in_array($key, $booleanAttributes)) {
-                        $mapping[$key] = ('true' === $mapping[$key]);
+                        $mapping[$key] = ($mapping[$key] === 'true');
                     }
                 }
                 if (isset($mapping['id']) && $mapping['id'] === true && isset($mapping['strategy'])) {
-                    $mapping['options'] = array();
+                    $mapping['options'] = [];
                     if (isset($field->{'id-generator-option'})) {
                         foreach ($field->{'id-generator-option'} as $generatorOptions) {
                             $attributesGenerator = iterator_to_array($generatorOptions->attributes());
@@ -134,15 +148,15 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($attributes['not-saved'])) {
-                    $mapping['notSaved'] = ('true' === (string) $attributes['not-saved']);
+                    $mapping['notSaved'] = ((string) $attributes['not-saved'] === 'true');
                 }
 
                 if (isset($attributes['also-load'])) {
                     $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
                 } elseif (isset($attributes['version'])) {
-                    $mapping['version'] = ('true' === (string) $attributes['version']);
+                    $mapping['version'] = ((string) $attributes['version'] === 'true');
                 } elseif (isset($attributes['lock'])) {
-                    $mapping['lock'] = ('true' === (string) $attributes['lock']);
+                    $mapping['lock'] = ((string) $attributes['lock'] === 'true');
                 }
 
                 $this->addFieldMapping($class, $mapping);
@@ -193,27 +207,27 @@ class XmlDriver extends FileDriver
         $class->mapField($mapping);
 
         // Index this field if either "index", "unique", or "sparse" are set
-        if ( ! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
+        if (! (isset($mapping['index']) || isset($mapping['unique']) || isset($mapping['sparse']))) {
             return;
         }
 
-        $keys = array($name => $mapping['order'] ?? 'asc');
-        $options = array();
+        $keys = [$name => $mapping['order'] ?? 'asc'];
+        $options = [];
 
         if (isset($mapping['background'])) {
-            $options['background'] = (boolean) $mapping['background'];
+            $options['background'] = (bool) $mapping['background'];
         }
         if (isset($mapping['drop-dups'])) {
-            $options['dropDups'] = (boolean) $mapping['drop-dups'];
+            $options['dropDups'] = (bool) $mapping['drop-dups'];
         }
         if (isset($mapping['index-name'])) {
             $options['name'] = (string) $mapping['index-name'];
         }
         if (isset($mapping['sparse'])) {
-            $options['sparse'] = (boolean) $mapping['sparse'];
+            $options['sparse'] = (bool) $mapping['sparse'];
         }
         if (isset($mapping['unique'])) {
-            $options['unique'] = (boolean) $mapping['unique'];
+            $options['unique'] = (bool) $mapping['unique'];
         }
 
         $class->addIndex($keys, $options);
@@ -222,15 +236,15 @@ class XmlDriver extends FileDriver
     private function addEmbedMapping(ClassMetadata $class, $embed, $type)
     {
         $attributes = $embed->attributes();
-        $defaultStrategy = $type == 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
-        $mapping = array(
+        $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $mapping = [
             'type'            => $type,
             'embedded'        => true,
             'targetDocument'  => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'collectionClass' => isset($attributes['collection-class']) ? (string) $attributes['collection-class'] : null,
             'name'            => (string) $attributes['field'],
             'strategy'        => (string) ($attributes['strategy'] ?? $defaultStrategy),
-        );
+        ];
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
         }
@@ -248,7 +262,7 @@ class XmlDriver extends FileDriver
             $mapping['defaultDiscriminatorValue'] = (string) $embed->{'default-discriminator-value'}['value'];
         }
         if (isset($attributes['not-saved'])) {
-            $mapping['notSaved'] = ('true' === (string) $attributes['not-saved']);
+            $mapping['notSaved'] = ((string) $attributes['not-saved'] === 'true');
         }
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
@@ -259,14 +273,14 @@ class XmlDriver extends FileDriver
     private function addReferenceMapping(ClassMetadata $class, $reference, $type)
     {
         $cascade = array_keys((array) $reference->cascade);
-        if (1 === count($cascade)) {
+        if (count($cascade) === 1) {
             $cascade = current($cascade) ?: next($cascade);
         }
         $attributes = $reference->attributes();
-        $defaultStrategy = $type == 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
-        $mapping = array(
+        $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $mapping = [
             'cascade'          => $cascade,
-            'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
+            'orphanRemoval'    => isset($attributes['orphan-removal']) ? ((string) $attributes['orphan-removal'] === 'true') : false,
             'type'             => $type,
             'reference'        => true,
             'storeAs'          => (string) ($attributes['store-as'] ?? ClassMetadata::REFERENCE_STORE_AS_DB_REF),
@@ -277,10 +291,10 @@ class XmlDriver extends FileDriver
             'inversedBy'       => isset($attributes['inversed-by']) ? (string) $attributes['inversed-by'] : null,
             'mappedBy'         => isset($attributes['mapped-by']) ? (string) $attributes['mapped-by'] : null,
             'repositoryMethod' => isset($attributes['repository-method']) ? (string) $attributes['repository-method'] : null,
-            'limit'            => isset($attributes['limit']) ? (integer) $attributes['limit'] : null,
-            'skip'             => isset($attributes['skip']) ? (integer) $attributes['skip'] : null,
+            'limit'            => isset($attributes['limit']) ? (int) $attributes['limit'] : null,
+            'skip'             => isset($attributes['skip']) ? (int) $attributes['skip'] : null,
             'prime'            => [],
-        );
+        ];
 
         if (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
@@ -311,7 +325,7 @@ class XmlDriver extends FileDriver
             }
         }
         if (isset($attributes['not-saved'])) {
-            $mapping['notSaved'] = ('true' === (string) $attributes['not-saved']);
+            $mapping['notSaved'] = ((string) $attributes['not-saved'] === 'true');
         }
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
@@ -330,28 +344,28 @@ class XmlDriver extends FileDriver
     {
         $attributes = $xmlIndex->attributes();
 
-        $keys = array();
+        $keys = [];
 
         foreach ($xmlIndex->{'key'} as $key) {
             $keys[(string) $key['name']] = (string) ($key['order'] ?? 'asc');
         }
 
-        $options = array();
+        $options = [];
 
         if (isset($attributes['background'])) {
-            $options['background'] = ('true' === (string) $attributes['background']);
+            $options['background'] = ((string) $attributes['background'] === 'true');
         }
         if (isset($attributes['drop-dups'])) {
-            $options['dropDups'] = ('true' === (string) $attributes['drop-dups']);
+            $options['dropDups'] = ((string) $attributes['drop-dups'] === 'true');
         }
         if (isset($attributes['name'])) {
             $options['name'] = (string) $attributes['name'];
         }
         if (isset($attributes['sparse'])) {
-            $options['sparse'] = ('true' === (string) $attributes['sparse']);
+            $options['sparse'] = ((string) $attributes['sparse'] === 'true');
         }
         if (isset($attributes['unique'])) {
-            $options['unique'] = ('true' === (string) $attributes['unique']);
+            $options['unique'] = ((string) $attributes['unique'] === 'true');
         }
 
         if (isset($xmlIndex->{'option'})) {
@@ -362,7 +376,7 @@ class XmlDriver extends FileDriver
                 } elseif ($value === 'false') {
                     $value = false;
                 } elseif (is_numeric($value)) {
-                    $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
+                    $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
                 }
                 $options[(string) $option['name']] = $value;
             }
@@ -422,7 +436,7 @@ class XmlDriver extends FileDriver
             } elseif ($value === 'false') {
                 $value = false;
             } elseif (is_numeric($value)) {
-                $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
+                $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
             }
 
             $partialFilterExpression[(string) $field['name']] = $operator ? ['$' . $operator => $value] : $value;
@@ -435,14 +449,14 @@ class XmlDriver extends FileDriver
     {
         $attributes = $xmlShardkey->attributes();
 
-        $keys = array();
-        $options = array();
+        $keys = [];
+        $options = [];
         foreach ($xmlShardkey->{'key'} as $key) {
             $keys[(string) $key['name']] = (string) ($key['order'] ?? 'asc');
         }
 
         if (isset($attributes['unique'])) {
-            $options['unique'] = ('true' === (string) $attributes['unique']);
+            $options['unique'] = ((string) $attributes['unique'] === 'true');
         }
 
         if (isset($attributes['numInitialChunks'])) {
@@ -457,7 +471,7 @@ class XmlDriver extends FileDriver
                 } elseif ($value === 'false') {
                     $value = false;
                 } elseif (is_numeric($value)) {
-                    $value = preg_match('/^[-]?\d+$/', $value) ? (integer) $value : (float) $value;
+                    $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
                 }
                 $options[(string) $option['name']] = $value;
             }
@@ -495,10 +509,10 @@ class XmlDriver extends FileDriver
      */
     protected function loadMappingFile($file)
     {
-        $result = array();
+        $result = [];
         $xmlElement = simplexml_load_file($file);
 
-        foreach (array('document', 'embedded-document', 'mapped-superclass', 'query-result-document') as $type) {
+        foreach (['document', 'embedded-document', 'mapped-superclass', 'query-result-document'] as $type) {
             if (isset($xmlElement->$type)) {
                 foreach ($xmlElement->$type as $documentElement) {
                     $documentName = (string) $documentElement['name'];

@@ -1,23 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1418Test extends BaseTest
 {
     public function testManualHydrateAndMerge()
     {
-        $document = new GH1418Document;
-        $this->dm->getHydratorFactory()->hydrate($document, array(
+        $document = new GH1418Document();
+        $this->dm->getHydratorFactory()->hydrate($document, [
           '_id' => 1,
           'name' => 'maciej',
           'embedOne' => ['name' => 'maciej', 'sourceId' => 1],
           'embedMany' => [
-              ['name' => 'maciej', 'sourceId' => 2]
+              ['name' => 'maciej', 'sourceId' => 2],
           ],
-        ), [ Query::HINT_READ_ONLY => true ]);
+        ], [ Query::HINT_READ_ONLY => true ]);
 
         $this->assertEquals(1, $document->embedOne->id);
         $this->assertEquals(2, $document->embedMany->first()->id);
@@ -37,7 +40,7 @@ class GH1418Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testReadDocumentAndManage()
     {
-        $document = new GH1418Document;
+        $document = new GH1418Document();
         $document->id = 1;
 
         $embedded = new GH1418Embedded();

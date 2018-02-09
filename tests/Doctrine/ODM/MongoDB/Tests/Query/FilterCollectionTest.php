@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
-class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+
+class FilterCollectionTest extends BaseTest
 {
     public function testEnable()
     {
@@ -71,7 +75,7 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
 
-        $this->assertSame(array('username' => 'Tim'), $filterCollection->getFilterCriteria($class));
+        $this->assertSame(['username' => 'Tim'], $filterCollection->getFilterCriteria($class));
     }
 
     public function testGetFilterCriteriaMergesCriteria()
@@ -91,10 +95,12 @@ class FilterCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'John');
 
-        $expectedCriteria = array('$and' => array(
-            array('username' => 'Tim'),
-            array('username' => 'John'),
-        ));
+        $expectedCriteria = [
+        '$and' => [
+            ['username' => 'Tim'],
+            ['username' => 'John'],
+        ],
+        ];
 
         $this->assertSame($expectedCriteria, $filterCollection->getFilterCriteria($class));
     }

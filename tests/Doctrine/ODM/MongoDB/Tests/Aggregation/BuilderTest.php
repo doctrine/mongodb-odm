@@ -1,10 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Article;
+use Documents\BlogPost;
+use Documents\BlogTagAggregation;
+use Documents\CmsComment;
+use Documents\GuestServer;
+use Documents\Tag;
+use MongoDB\BSON\UTCDateTime;
 
-class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class BuilderTest extends BaseTest
 {
     public function testGetPipeline()
     {
@@ -20,39 +30,43 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                         'hasCoordinates' => ['$exists' => true],
                         'username' => 'foo',
                     ],
-                    'num' => 10
-                ]
+                    'num' => 10,
+                ],
             ],
-            ['$match' =>
+            [
+            '$match' =>
                 [
                     '$or' => [
                         ['username' => 'admin'],
-                        ['username' => 'administrator']
+                        ['username' => 'administrator'],
                     ],
-                    'group' => ['$in' => ['a', 'b']]
-                ]
+                    'group' => ['$in' => ['a', 'b']],
+                ],
             ],
             ['$sample' => ['size' => 10]],
-            ['$lookup' =>
+            [
+            '$lookup' =>
                 [
                     'from' => 'orders',
                     'localField' => '_id',
                     'foreignField' => 'user.$id',
-                    'as' => 'orders'
-                ]
+                    'as' => 'orders',
+                ],
             ],
             ['$unwind' => 'a'],
             ['$unwind' => 'b'],
-            ['$redact' =>
+            [
+            '$redact' =>
                 [
                     '$cond' => [
                         'if' => ['$lte' => ['$accessLevel', 3]],
                         'then' => '$$KEEP',
                         'else' => '$$REDACT',
-                    ]
-                ]
+                    ],
+                ],
             ],
-            ['$project' =>
+            [
+            '$project' =>
                 [
                     '_id' => false,
                     'user' => true,
@@ -63,33 +77,34 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                             'if' => [
                                 '$and' => [
                                     ['$eq' => ['$useAlternateDeliveryAddress', true]],
-                                    ['$ne' => ['$deliveryAddress', null]]
-                                ]
+                                    ['$ne' => ['$deliveryAddress', null]],
+                                ],
                             ],
                             'then' => '$deliveryAddress',
-                            'else' => '$invoiceAddress'
-                        ]
-                    ]
-                ]
+                            'else' => '$invoiceAddress',
+                        ],
+                    ],
+                ],
             ],
-            ['$group' =>
+            [
+            '$group' =>
                 [
                     '_id' => '$user',
                     'numOrders' => ['$sum' => 1],
                     'amount' => [
                         'total' => ['$sum' => '$amount'],
-                        'avg' => ['$avg' => '$amount']
-                    ]
-                ]
+                        'avg' => ['$avg' => '$amount'],
+                    ],
+                ],
             ],
             ['$sort' => ['totalAmount' => 0]],
             ['$sort' => ['numOrders' => -1, 'avgAmount' => 1]],
             ['$limit' => 5],
             ['$skip' => 2],
-            ['$out' => 'collectionName']
+            ['$out' => 'collectionName'],
         ];
 
-        $builder = $this->dm->createAggregationBuilder(\Documents\BlogPost::class);
+        $builder = $this->dm->createAggregationBuilder(BlogPost::class);
         $builder
             ->geoNear($point)
                 ->distanceField('distance')
@@ -153,10 +168,10 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->insertTestData();
 
-        $builder = $this->dm->createAggregationBuilder(\Documents\BlogPost::class);
+        $builder = $this->dm->createAggregationBuilder(BlogPost::class);
 
         $resultCursor = $builder
-            ->hydrate(\Documents\BlogTagAggregation::class)
+            ->hydrate(BlogTagAggregation::class)
             ->unwind('$tags')
             ->group()
                 ->field('id')
@@ -170,7 +185,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $results = $resultCursor->toArray();
         $this->assertCount(2, $results);
-        $this->assertInstanceOf(\Documents\BlogTagAggregation::class, $results[0]);
+        $this->assertInstanceOf(BlogTagAggregation::class, $results[0]);
 
         $this->assertSame('baseball', $results[0]->tag->name);
         $this->assertSame(3, $results[0]->numPosts);
@@ -178,7 +193,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testPipelineConvertsTypes()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\Article::class);
+        $builder = $this->dm->createAggregationBuilder(Article::class);
         $dateTime = new \DateTimeImmutable('2000-01-01T00:00Z');
         $builder
             ->group()
@@ -202,19 +217,19 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 '$group' => [
                     '_id' => [
                         '$cond' => [
-                            'if' => ['$lt' => ['$createdAt', new \MongoDB\BSON\UTCDateTime((int) $dateTime->format('Uv'))]],
+                            'if' => ['$lt' => ['$createdAt', new UTCDateTime((int) $dateTime->format('Uv'))]],
                             'then' => true,
                             'else' => false,
-                        ]
+                        ],
                     ],
                     'numPosts' => ['$sum' => 1],
-                ]
+                ],
             ],
             [
                 '$replaceRoot' => [
-                    'isToday' => ['$eq' => ['$createdAt', new \MongoDB\BSON\UTCDateTime((int) $dateTime->format('Uv'))]],
-                ]
-            ]
+                    'isToday' => ['$eq' => ['$createdAt', new UTCDateTime((int) $dateTime->format('Uv'))]],
+                ],
+            ],
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -222,7 +237,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testFieldNameConversion()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\CmsComment::class);
+        $builder = $this->dm->createAggregationBuilder(CmsComment::class);
         $builder
             ->match()
                 ->field('authorIp')
@@ -240,15 +255,11 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             [
                 '$project' => ['ip' => true],
             ],
-            [
-                '$unwind' => 'ip',
-            ],
+            ['$unwind' => 'ip'],
             [
                 '$sort' => ['ip' => 1],
             ],
-            [
-                '$replaceRoot' => '$ip',
-            ]
+            ['$replaceRoot' => '$ip'],
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -258,11 +269,11 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->dm->getFilterCollection()->enable('testFilter');
         $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
-        $filter->setParameter('class', \Documents\GuestServer::class);
+        $filter->setParameter('class', GuestServer::class);
         $filter->setParameter('field', 'filtered');
         $filter->setParameter('value', true);
 
-        $builder = $this->dm->createAggregationBuilder(\Documents\GuestServer::class);
+        $builder = $this->dm->createAggregationBuilder(GuestServer::class);
         $builder
             ->project()
             ->excludeFields(['_id']);
@@ -279,7 +290,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ],
             [
                 '$project' => ['_id' => false],
-            ]
+            ],
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -289,11 +300,11 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->dm->getFilterCollection()->enable('testFilter');
         $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
-        $filter->setParameter('class', \Documents\GuestServer::class);
+        $filter->setParameter('class', GuestServer::class);
         $filter->setParameter('field', 'filtered');
         $filter->setParameter('value', true);
 
-        $builder = $this->dm->createAggregationBuilder(\Documents\GuestServer::class);
+        $builder = $this->dm->createAggregationBuilder(GuestServer::class);
         $builder
             ->geoNear(0, 0);
 
@@ -320,7 +331,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $this->insertTestData();
 
-        $builder = $this->dm->createAggregationBuilder(\Documents\BlogPost::class);
+        $builder = $this->dm->createAggregationBuilder(BlogPost::class);
         $builder
             ->out('sampleCollection');
 
@@ -330,25 +341,25 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     private function insertTestData()
     {
-        $baseballTag = new \Documents\Tag('baseball');
-        $footballTag = new \Documents\Tag('football');
+        $baseballTag = new Tag('baseball');
+        $footballTag = new Tag('football');
 
-        $blogPost = new \Documents\BlogPost();
+        $blogPost = new BlogPost();
         $blogPost->name = 'Test 1';
         $blogPost->addTag($baseballTag);
         $this->dm->persist($blogPost);
 
-        $blogPost = new \Documents\BlogPost();
+        $blogPost = new BlogPost();
         $blogPost->name = 'Test 2';
         $blogPost->addTag($baseballTag);
         $this->dm->persist($blogPost);
 
-        $blogPost = new \Documents\BlogPost();
+        $blogPost = new BlogPost();
         $blogPost->name = 'Test 3';
         $blogPost->addTag($footballTag);
         $this->dm->persist($blogPost);
 
-        $blogPost = new \Documents\BlogPost();
+        $blogPost = new BlogPost();
         $blogPost->name = 'Test 4';
         $blogPost->addTag($baseballTag);
         $blogPost->addTag($footballTag);

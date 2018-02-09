@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
-class GH897Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH897Test extends BaseTest
 {
     public function testRecomputeSingleDocumentChangesetForManagedDocumentWithoutChangeset()
     {
@@ -18,8 +22,8 @@ class GH897Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $documentA = $this->dm->find(__NAMESPACE__.'\GH897A', $documentA->id);
-        $documentB = $this->dm->find(__NAMESPACE__.'\GH897B', $documentB->id);
+        $documentA = $this->dm->find(__NAMESPACE__ . '\GH897A', $documentA->id);
+        $documentB = $this->dm->find(__NAMESPACE__ . '\GH897B', $documentB->id);
         $documentB->refOne = $documentA;
 
         /* Necessary to inject DocumentManager since it is not currently
@@ -30,7 +34,7 @@ class GH897Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $documentA = $this->dm->find(__NAMESPACE__.'\GH897A', $documentA->id);
+        $documentA = $this->dm->find(__NAMESPACE__ . '\GH897A', $documentA->id);
 
         $this->assertSame('a-changed', $documentA->name);
     }
@@ -63,7 +67,7 @@ class GH897B
     /** @ODM\PreFlush */
     public function preFlush()
     {
-        if ( ! $this->refOne instanceof GH897A) {
+        if (! $this->refOne instanceof GH897A) {
             return;
         }
 

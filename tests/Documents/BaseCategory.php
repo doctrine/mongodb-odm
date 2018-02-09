@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -8,38 +10,38 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 abstract class BaseCategory
 {
     /** @ODM\Field(type="string") */
-     protected $name;
+    protected $name;
 
      /** @ODM\EmbedMany(targetDocument="SubCategory") */
-     protected $children = array();
+    protected $children = [];
 
-     public function __construct($name = null)
-     {
-         $this->name = $name;
-     }
-    
-     public function getId()
-     {
-         return $this->id;
-     }
+    public function __construct($name = null)
+    {
+        $this->name = $name;
+    }
 
-     public function setName($name)
-     {
-         $this->name = $name;
-     }
+    public function getId()
+    {
+        return $this->id;
+    }
 
-     public function getName()
-     {
-         return $this->name;
-     }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-     public function addChild(BaseCategory $child)
-     {
-         $this->children[] = $child;
-     }
+    public function getName()
+    {
+        return $this->name;
+    }
 
-     public function getChildren()
-     {
-         return $this->children;
-     }
+    public function addChild(BaseCategory $child)
+    {
+        $this->children[] = $child;
+    }
+
+    public function getChildren()
+    {
+        return $this->children;
+    }
 }

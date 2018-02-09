@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ReferenceDiscriminatorsTest extends BaseTest
 {
     public function setUp()
     {
@@ -88,11 +91,11 @@ class ReferenceDiscriminatorsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 /**
-* @ODM\Document(collection="rdt_action")
-* @ODM\InheritanceType("SINGLE_COLLECTION")
-* @ODM\DiscriminatorField("discriminator")
-* @ODM\DiscriminatorMap({"action"="Action", "commentable_action"="CommentableAction"})
-*/
+ * @ODM\Document(collection="rdt_action")
+ * @ODM\InheritanceType("SINGLE_COLLECTION")
+ * @ODM\DiscriminatorField("discriminator")
+ * @ODM\DiscriminatorMap({"action"="Action", "commentable_action"="CommentableAction"})
+ */
 class Action
 {
     /** @ODM\Id */
@@ -123,9 +126,9 @@ class CommentableAction extends Action
     /**
      * @ODM\Field(type="collection")
      **/
-    protected $comments = array();
+    protected $comments = [];
 
-    public function __construct($type, array $comments = array())
+    public function __construct($type, array $comments = [])
     {
         parent::__construct($type);
         $this->comments = $comments;

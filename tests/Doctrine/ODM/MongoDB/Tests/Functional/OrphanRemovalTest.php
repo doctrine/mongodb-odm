@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class OrphanRemovalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class OrphanRemovalTest extends BaseTest
 {
     public function testOrphanRemoval()
     {
@@ -241,7 +245,7 @@ class OrphanRemovalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentRepository
+     * @return DocumentRepository
      */
     private function getUserRepository()
     {
@@ -249,7 +253,7 @@ class OrphanRemovalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentRepository
+     * @return DocumentRepository
      */
     private function getProfileRepository()
     {
@@ -270,10 +274,10 @@ class OrphanRemovalUser
     public $profileNoOrphanRemoval;
 
     /** @ODM\ReferenceMany(targetDocument="OrphanRemovalProfile", orphanRemoval=true) */
-    public $profileMany = array();
+    public $profileMany = [];
 
     /** @ODM\ReferenceMany(targetDocument="OrphanRemovalProfile", orphanRemoval=false) */
-    public $profileManyNoOrphanRemoval = array();
+    public $profileManyNoOrphanRemoval = [];
 }
 
 /** @ODM\Document */

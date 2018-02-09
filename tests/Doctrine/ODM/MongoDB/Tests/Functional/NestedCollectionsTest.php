@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Phonebook;
 use Documents\Phonenumber;
+use function get_class;
 
-class NestedCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class NestedCollectionsTest extends BaseTest
 {
     /**
      * @dataProvider provideStrategy
@@ -63,14 +67,14 @@ class NestedCollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function provideStrategy()
     {
-        return array(
-            array(ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET),
-            array(ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY),
-            array(ClassMetadata::STORAGE_STRATEGY_SET),
-            array(ClassMetadata::STORAGE_STRATEGY_SET_ARRAY),
-            array(ClassMetadata::STORAGE_STRATEGY_PUSH_ALL),
-            array(ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET),
-        );
+        return [
+            [ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET],
+            [ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY],
+            [ClassMetadata::STORAGE_STRATEGY_SET],
+            [ClassMetadata::STORAGE_STRATEGY_SET_ARRAY],
+            [ClassMetadata::STORAGE_STRATEGY_PUSH_ALL],
+            [ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET],
+        ];
     }
 }
 

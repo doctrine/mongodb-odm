@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Mongo;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
-use Documents\Address;
-use Documents\Phonenumber;
 use Documents\User;
 
-class PersistingTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class PersistingTest extends BaseTest
 {
     public function testCascadeInsertUpdateAndRemove()
     {

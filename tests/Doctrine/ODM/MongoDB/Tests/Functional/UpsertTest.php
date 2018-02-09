@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use MongoDB\BSON\ObjectId;
 
-class UpsertTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class UpsertTest extends BaseTest
 {
     /**
      * Tests for "MongoCursorException: Cannot apply $push/$pushAll modifier to non-array" error.
@@ -14,10 +18,10 @@ class UpsertTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testUpsertEmbedManyDoesNotCreateObject()
     {
         $test = new UpsertTestUser();
-        $test->id = (string) new \MongoDB\BSON\ObjectId();
+        $test->id = (string) new ObjectId();
 
         $embedded = new UpsertTestUserEmbedded();
-        $embedded->id = (string) new \MongoDB\BSON\ObjectId();
+        $embedded->id = (string) new ObjectId();
         $embedded->test = 'test';
 
         $test->embedMany[] = $embedded;

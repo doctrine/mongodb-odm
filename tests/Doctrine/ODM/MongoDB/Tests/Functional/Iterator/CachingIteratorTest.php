@@ -1,9 +1,12 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use PHPUnit\Framework\TestCase;
+use function iterator_to_array;
 
 class CachingIteratorTest extends TestCase
 {
@@ -54,7 +57,7 @@ class CachingIteratorTest extends TestCase
 
     public function testPartialIterationDoesNotExhaust()
     {
-        $traversable = $this->getTraversableThatThrows([1, 2, new \Exception]);
+        $traversable = $this->getTraversableThatThrows([1, 2, new \Exception()]);
         $iterator = new CachingIterator($traversable);
 
         $expectedKey = 0;

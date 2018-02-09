@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\User;
+use MongoDB\BSON\ObjectId;
 
-class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ExprTest extends BaseTest
 {
     public function testSelectIsPrepared()
     {
@@ -17,12 +21,12 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->select('id');
         $query = $qb->getQuery();
 
-        $this->assertEquals(array('_id' => 1), $query->debug('select'));
+        $this->assertEquals(['_id' => 1], $query->debug('select'));
     }
 
     public function testInIsPrepared()
     {
-        $ids = array('4f28aa84acee41388900000a');
+        $ids = ['4f28aa84acee41388900000a'];
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('groups.id')->in($ids)
@@ -30,13 +34,13 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$in'][0]);
+        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$in'][0]);
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$in'][0]);
     }
 
     public function testAllIsPrepared()
     {
-        $ids = array('4f28aa84acee41388900000a');
+        $ids = ['4f28aa84acee41388900000a'];
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('groups.id')->all($ids)
@@ -44,7 +48,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$all'][0]);
+        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$all'][0]);
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$all'][0]);
     }
 
@@ -58,13 +62,13 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$ne']);
+        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$ne']);
         $this->assertEquals($id, (string) $debug['groups.$id']['$ne']);
     }
 
     public function testNotInIsPrepared()
     {
-        $ids = array('4f28aa84acee41388900000a');
+        $ids = ['4f28aa84acee41388900000a'];
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('groups.id')->notIn($ids)
@@ -72,13 +76,13 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$nin'][0]);
+        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$nin'][0]);
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 
     public function testAndIsPrepared()
     {
-        $ids = array('4f28aa84acee41388900000a');
+        $ids = ['4f28aa84acee41388900000a'];
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
         $qb
@@ -87,13 +91,13 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['$and'][0]['groups.$id']['$in'][0]);
+        $this->assertInstanceOf(ObjectId::class, $debug['$and'][0]['groups.$id']['$in'][0]);
         $this->assertEquals($ids[0], (string) $debug['$and'][0]['groups.$id']['$in'][0]);
     }
 
     public function testOrIsPrepared()
     {
-        $ids = array('4f28aa84acee41388900000a');
+        $ids = ['4f28aa84acee41388900000a'];
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
         $qb
@@ -102,16 +106,16 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['$or'][0]['groups.$id']['$in'][0]);
+        $this->assertInstanceOf(ObjectId::class, $debug['$or'][0]['groups.$id']['$in'][0]);
         $this->assertEquals($ids[0], (string) $debug['$or'][0]['groups.$id']['$in'][0]);
     }
 
     public function testMultipleQueryOperatorsArePrepared()
     {
-        $all = array('4f28aa84acee41388900000a');
-        $in = array('4f28aa84acee41388900000b');
+        $all = ['4f28aa84acee41388900000a'];
+        $in = ['4f28aa84acee41388900000b'];
         $ne = '4f28aa84acee41388900000c';
-        $nin = array('4f28aa84acee41388900000d');
+        $nin = ['4f28aa84acee41388900000d'];
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->field('groups.id')->all($all)
@@ -122,13 +126,13 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$all'][0]);
+        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$all'][0]);
         $this->assertEquals($all[0], (string) $debug['groups.$id']['$all'][0]);
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$in'][0]);
+        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$in'][0]);
         $this->assertEquals($in[0], (string) $debug['groups.$id']['$in'][0]);
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$ne']);
+        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$ne']);
         $this->assertEquals($ne, (string) $debug['groups.$id']['$ne']);
-        $this->assertInstanceOf(\MongoDB\BSON\ObjectId::class, $debug['groups.$id']['$nin'][0]);
+        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$nin'][0]);
         $this->assertEquals($nin[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 
@@ -138,7 +142,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('address.subAddress.subAddress.subAddress.test')->equals('test');
         $query = $qb->getQuery();
         $debug = $query->debug('query');
-        $this->assertEquals(array('address.subAddress.subAddress.subAddress.testFieldName' => 'test'), $debug);
+        $this->assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => 'test'], $debug);
     }
 
     public function testPreparePositionalOperator()
@@ -146,10 +150,10 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->updateOne()
             ->field('phonenumbers.$.phonenumber')->equals('foo')
-            ->field('phonenumbers.$')->set(array('phonenumber' => 'bar'));
+            ->field('phonenumbers.$')->set(['phonenumber' => 'bar']);
 
-        $this->assertEquals(array('phonenumbers.$.phonenumber' => 'foo'), $qb->getQueryArray());
-        $this->assertEquals(array('$set' => array('phonenumbers.$' => array('phonenumber' => 'bar'))), $qb->getNewObj());
+        $this->assertEquals(['phonenumbers.$.phonenumber' => 'foo'], $qb->getQueryArray());
+        $this->assertEquals(['$set' => ['phonenumbers.$' => ['phonenumber' => 'bar']]], $qb->getNewObj());
     }
 
     public function testSortIsPrepared()
@@ -158,22 +162,22 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->sort('id', 'desc');
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(array('_id' => -1), $query['sort']);
+        $this->assertEquals(['_id' => -1], $query['sort']);
 
         $qb = $this->dm->createQueryBuilder('Documents\User')
             ->sort('address.subAddress.subAddress.subAddress.test', 'asc');
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(array('address.subAddress.subAddress.subAddress.testFieldName' => 1), $query['sort']);
+        $this->assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => 1], $query['sort']);
     }
 
     public function testNestedWithOperator()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User')
-            ->field('address.subAddress.subAddress.subAddress.test')->notIn(array('test'));
+            ->field('address.subAddress.subAddress.subAddress.test')->notIn(['test']);
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(array('address.subAddress.subAddress.subAddress.testFieldName' => array('$nin' => array('test'))), $query['query']);
+        $this->assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => ['$nin' => ['test']]], $query['query']);
     }
 
     public function testNewObjectIsPrepared()
@@ -183,7 +187,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('address.subAddress.subAddress.subAddress.test')->popFirst();
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(array('$pop' => array('address.subAddress.subAddress.subAddress.testFieldName' => 1)), $query['newObj']);
+        $this->assertEquals(['$pop' => ['address.subAddress.subAddress.subAddress.testFieldName' => 1]], $query['newObj']);
     }
 
     public function testReferencesUsesMinimalKeys()
@@ -193,12 +197,12 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $documentPersister = $this->createMock(DocumentPersister::class);
         $class = $this->createMock(ClassMetadata::class);
 
-        $expected = array('foo.$id' => '1234');
+        $expected = ['foo.$id' => '1234'];
 
         $dm
             ->expects($this->once())
             ->method('createReference')
-            ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234', '$db' => 'db')));
+            ->will($this->returnValue(['$ref' => 'coll', '$id' => '1234', '$db' => 'db']));
         $dm
             ->expects($this->once())
             ->method('getUnitOfWork')
@@ -218,7 +222,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class
             ->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('targetDocument' => 'Foo', 'name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
+            ->will($this->returnValue(['targetDocument' => 'Foo', 'name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB]));
 
         $expr = $this->createExpr($dm, $class);
         $expr->field('bar')->references(new \stdClass());
@@ -233,12 +237,12 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $documentPersister = $this->createMock(DocumentPersister::class);
         $class = $this->createMock(ClassMetadata::class);
 
-        $expected = array('foo.$ref' => 'coll', 'foo.$id' => '1234', 'foo.$db' => 'db');
+        $expected = ['foo.$ref' => 'coll', 'foo.$id' => '1234', 'foo.$db' => 'db'];
 
         $dm
             ->expects($this->once())
             ->method('createReference')
-            ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234', '$db' => 'db')));
+            ->will($this->returnValue(['$ref' => 'coll', '$id' => '1234', '$db' => 'db']));
         $dm
             ->expects($this->once())
             ->method('getUnitOfWork')
@@ -258,7 +262,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class
             ->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
+            ->will($this->returnValue(['name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB]));
 
         $expr = $this->createExpr($dm, $class);
         $expr->field('bar')->references(new \stdClass());
@@ -273,12 +277,12 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $documentPersister = $this->createMock(DocumentPersister::class);
         $class = $this->createMock(ClassMetadata::class);
 
-        $expected = array('foo.$ref' => 'coll', 'foo.$id' => '1234');
+        $expected = ['foo.$ref' => 'coll', 'foo.$id' => '1234'];
 
         $dm
             ->expects($this->once())
             ->method('createReference')
-            ->will($this->returnValue(array('$ref' => 'coll', '$id' => '1234')));
+            ->will($this->returnValue(['$ref' => 'coll', '$id' => '1234']));
         $dm
             ->expects($this->once())
             ->method('getUnitOfWork')
@@ -298,7 +302,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $class
             ->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'name' => 'foo')));
+            ->will($this->returnValue(['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'name' => 'foo']));
 
         $expr = $this->createExpr($dm, $class);
         $expr->field('bar')->references(new \stdClass());
@@ -548,11 +552,13 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->sort('x', 1);
 
         $expectedNewObj = [
-            '$push' => ['a' => [
+            '$push' => [
+        'a' => [
                 '$each' => [['x' => 1], ['x' => 2]],
                 '$slice' => -2,
                 '$sort' => ['x' => 1],
-            ]],
+            ],
+            ],
         ];
 
         $this->assertSame($expr, $expr->field('a')->push($innerExpr));
@@ -569,11 +575,13 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->each([['x' => 1], ['x' => 2]]);
 
         $expectedNewObj = [
-            '$push' => ['a' => [
+            '$push' => [
+        'a' => [
                 '$each' => [['x' => 1], ['x' => 2]],
                 '$sort' => ['x' => 1],
                 '$slice' => -2,
-            ]],
+            ],
+            ],
         ];
 
         $this->assertSame($expr, $expr->field('a')->push($innerExpr));
@@ -589,10 +597,12 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->position(0);
 
         $expectedNewObj = [
-            '$push' => ['a' => [
+            '$push' => [
+        'a' => [
                 '$each' => [20, 30],
                 '$position' => 0,
-            ]],
+            ],
+            ],
         ];
 
         $this->assertSame($expr, $expr->field('a')->push($innerExpr));
@@ -743,9 +753,9 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals(['$nin' => ['value1', 'value2']], $expr->getQuery());
     }
 
-    private function createExpr(DocumentManager $dm = null, ClassMetadata $class = null): Expr
+    private function createExpr(?DocumentManager $dm = null, ?ClassMetadata $class = null): Expr
     {
-        if (!$dm) {
+        if (! $dm) {
             $dm = $this->createMock(DocumentManager::class);
             $uow = $this->createMock(UnitOfWork::class);
             $documentPersister = $this->createMock(DocumentPersister::class);
@@ -766,7 +776,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 ->will($this->returnArgument(0));
         }
 
-        if (!$class) {
+        if (! $class) {
             $class = new ClassMetadata(User::class);
         }
 

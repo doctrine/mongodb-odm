@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Phonenumber;
 use Documents\User;
+use function get_class;
 
-class GH1132Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1132Test extends BaseTest
 {
     public function testClonedPersistentCollectionCanBeClearedAndUsedInNewDocument()
     {
@@ -36,7 +40,7 @@ class GH1132Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($u);
         $this->dm->persist($u2);
         $this->dm->flush();
-        
+
         $u2->setPhonenumbers(clone $u->getPhonenumbers());
         $u2->getPhonenumbers()->clear();
 

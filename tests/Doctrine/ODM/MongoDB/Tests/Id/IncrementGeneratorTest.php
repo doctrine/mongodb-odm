@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Id;
 
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
+use const DOCTRINE_MONGODB_DATABASE;
 
-class IncrementGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class IncrementGeneratorTest extends BaseTest
 {
     public function testIdGeneratorWithStartingValue()
     {

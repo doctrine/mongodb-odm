@@ -1,19 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM76Test extends BaseTest
 {
     public function testTest()
     {
-        $c1 = new MODM76C;
-        $c2 = new MODM76C;
+        $c1 = new MODM76C();
+        $c2 = new MODM76C();
 
         $b = new MODM76B($c1);
-        $a = new MODM76A(array($b), array($c1));
+        $a = new MODM76A([$b], [$c1]);
 
         $this->dm->persist($a);
         $this->dm->persist($b);
@@ -21,7 +24,7 @@ class MODM76Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->persist($c2);
         $this->dm->flush();
 
-        $this->assertTrue($a->getId() != null);
+        $this->assertTrue($a->getId() !== null);
     }
 }
 
@@ -35,10 +38,10 @@ class MODM76A
     protected $test = 'test';
 
     /** @ODM\EmbedMany(targetDocument="MODM76B") */
-    protected $b = array();
+    protected $b = [];
 
     /** @ODM\ReferenceMany(targetDocument="MODM76C") */
-    protected $c = array();
+    protected $c = [];
 
     public function __construct($b, $c)
     {

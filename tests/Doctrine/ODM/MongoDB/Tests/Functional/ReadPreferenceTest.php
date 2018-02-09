@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Group;
 use Documents\User;
 use MongoDB\Driver\ReadPreference;
 
-class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ReadPreferenceTest extends BaseTest
 {
     public function setUp()
     {
@@ -85,7 +88,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $query = $this->dm->getRepository(DocumentWithReadPreference::class)
             ->createQueryBuilder()
-            ->setReadPreference(new ReadPreference("secondary", []))
+            ->setReadPreference(new ReadPreference('secondary', []))
             ->getQuery();
 
         $this->assertReadPreferenceHint(ReadPreference::RP_SECONDARY, $query->getQuery()['readPreference']);

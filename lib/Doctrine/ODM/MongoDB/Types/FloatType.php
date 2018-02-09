@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Float type.
  *
- * @since       1.0
  */
 class FloatType extends Type
 {

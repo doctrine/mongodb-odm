@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function sprintf;
 
 class ShardCommand extends AbstractCommand
 {
@@ -19,8 +22,6 @@ class ShardCommand extends AbstractCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @return int|null|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -38,7 +39,7 @@ class ShardCommand extends AbstractCommand
                 $this->processIndex($sm);
                 $output->writeln('Enabled sharding for <info>all classes</info>');
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
             $isErrored = true;
         }
@@ -47,7 +48,6 @@ class ShardCommand extends AbstractCommand
     }
 
     /**
-     * @param SchemaManager $sm
      * @param object $document
      */
     protected function processDocumentIndex(SchemaManager $sm, $document)
@@ -55,16 +55,12 @@ class ShardCommand extends AbstractCommand
         $sm->ensureDocumentSharding($document);
     }
 
-    /**
-     * @param SchemaManager $sm
-     */
     protected function processIndex(SchemaManager $sm)
     {
         $sm->ensureSharding();
     }
 
     /**
-     * @param SchemaManager $sm
      * @param object $document
      * @throws \BadMethodCallException
      */
@@ -74,7 +70,6 @@ class ShardCommand extends AbstractCommand
     }
 
     /**
-     * @param SchemaManager $sm
      * @throws \BadMethodCallException
      */
     protected function processCollection(SchemaManager $sm)
@@ -83,7 +78,6 @@ class ShardCommand extends AbstractCommand
     }
 
     /**
-     * @param SchemaManager $sm
      * @param object $document
      * @throws \BadMethodCallException
      */
@@ -93,7 +87,6 @@ class ShardCommand extends AbstractCommand
     }
 
     /**
-     * @param SchemaManager $sm
      * @throws \BadMethodCallException
      */
     protected function processDb(SchemaManager $sm)

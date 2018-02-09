@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH561Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH561Test extends BaseTest
 {
     public function testPersistMainDocument()
     {
@@ -19,16 +22,16 @@ class GH561Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->find(__NAMESPACE__.'\GH561Document', $document->id);
-        $this->assertInstanceOf(__NAMESPACE__.'\GH561Document', $document);
+        $document = $this->dm->find(__NAMESPACE__ . '\GH561Document', $document->id);
+        $this->assertInstanceOf(__NAMESPACE__ . '\GH561Document', $document);
         $this->assertCount(1, $document->embeddedDocuments);
 
         $embeddedDocument = $document->embeddedDocuments->first();
-        $this->assertInstanceOf(__NAMESPACE__.'\GH561EmbeddedDocument', $embeddedDocument);
+        $this->assertInstanceOf(__NAMESPACE__ . '\GH561EmbeddedDocument', $embeddedDocument);
         $this->assertCount(1, $embeddedDocument->embeddedDocuments);
 
         $anotherEmbeddedDocument = $embeddedDocument->embeddedDocuments->first();
-        $this->assertInstanceOf(__NAMESPACE__.'\GH561AnotherEmbeddedDocument', $anotherEmbeddedDocument);
+        $this->assertInstanceOf(__NAMESPACE__ . '\GH561AnotherEmbeddedDocument', $anotherEmbeddedDocument);
         $this->assertEquals('foo', $anotherEmbeddedDocument->name);
     }
 }

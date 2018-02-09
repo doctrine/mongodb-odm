@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
 use Documents\CustomUser;
 use Documents\User;
+use function count;
 
-class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class CustomIdTest extends BaseTest
 {
     public function testSetId()
     {
@@ -74,11 +78,11 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         unset($user1, $user2, $user3);
 
-        $users = $this->dm->getRepository("Documents\User")->findAll();
+        $users = $this->dm->getRepository('Documents\User')->findAll();
 
         $this->assertCount(2, $users);
 
-        $results = array();
+        $results = [];
         foreach ($users as $user) {
             if ($user->getId() === 'userId') {
                 $results['userId'] = true;
@@ -87,7 +91,7 @@ class CustomIdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             $results['ids'][] = $user->getId();
         }
 
-        $users = $this->dm->getRepository("Documents\CustomUser")->findAll();
+        $users = $this->dm->getRepository('Documents\CustomUser')->findAll();
 
         $this->assertCount(1, $users);
 

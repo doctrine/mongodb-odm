@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -9,15 +11,9 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding an output specification to a bucket stage.
  *
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.5
  */
 class BucketOutput extends AbstractOutput
 {
-    /**
-     * @param Builder $builder
-     * @param Stage\Bucket $bucket
-     */
     public function __construct(Builder $builder, Stage\Bucket $bucket)
     {
         parent::__construct($builder, $bucket);

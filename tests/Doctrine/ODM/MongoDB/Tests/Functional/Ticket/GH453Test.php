@@ -1,15 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function array_values;
+use function get_class;
+use function sprintf;
 
-class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH453Test extends BaseTest
 {
     public function testHashWithStringKeys()
     {
-        $hash = array('a' => 'x', 'b' => 'y', 'c' => 'z');
+        $hash = ['a' => 'x', 'b' => 'y', 'c' => 'z'];
 
         $doc = new GH453Document();
         $doc->hash = $hash;
@@ -40,7 +46,7 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testHashWithNumericKeys()
     {
-        $hash = array(0 => 'x', 1 => 'y', 2 => 'z');
+        $hash = [0 => 'x', 1 => 'y', 2 => 'z'];
 
         $doc = new GH453Document();
         $doc->hash = $hash;
@@ -71,7 +77,7 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testCollection()
     {
-        $col = array('x', 'y', 'z');
+        $col = ['x', 'y', 'z'];
 
         $doc = new GH453Document();
         $doc->colPush = $col;
@@ -107,14 +113,20 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbedMany()
     {
-        $colPush = new ArrayCollection(array(
+        $colPush = new ArrayCollection([
             new GH453EmbeddedDocument(),
             new GH453EmbeddedDocument(),
             new GH453EmbeddedDocument(),
-        ));
-        $colSet = $colPush->map(function($v) { return clone $v; });
-        $colSetArray = $colPush->map(function($v) { return clone $v; });
-        $colAddToSet = $colPush->map(function($v) { return clone $v; });
+        ]);
+        $colSet = $colPush->map(function ($v) {
+            return clone $v;
+        });
+        $colSetArray = $colPush->map(function ($v) {
+            return clone $v;
+        });
+        $colAddToSet = $colPush->map(function ($v) {
+            return clone $v;
+        });
 
         $doc = new GH453Document();
         $doc->embedManyPush = $colPush;
@@ -151,21 +163,39 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testReferenceMany()
     {
-        $colPush = new ArrayCollection(array(
+        $colPush = new ArrayCollection([
             new GH453ReferencedDocument(),
             new GH453ReferencedDocument(),
             new GH453ReferencedDocument(),
-        ));
-        $colSet = $colPush->map(function($v) { return clone $v; });
-        $colSetArray = $colPush->map(function($v) { return clone $v; });
-        $colAddToSet = $colPush->map(function($v) { return clone $v; });
+        ]);
+        $colSet = $colPush->map(function ($v) {
+            return clone $v;
+        });
+        $colSetArray = $colPush->map(function ($v) {
+            return clone $v;
+        });
+        $colAddToSet = $colPush->map(function ($v) {
+            return clone $v;
+        });
 
         $dm = $this->dm;
 
-        $colPush->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
-        $colSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
-        $colSetArray->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
-        $colAddToSet->forAll(function($k, $v) use ($dm) { $dm->persist($v); return true; });
+        $colPush->forAll(function ($k, $v) use ($dm) {
+            $dm->persist($v);
+            return true;
+        });
+        $colSet->forAll(function ($k, $v) use ($dm) {
+            $dm->persist($v);
+            return true;
+        });
+        $colSetArray->forAll(function ($k, $v) use ($dm) {
+            $dm->persist($v);
+            return true;
+        });
+        $colAddToSet->forAll(function ($k, $v) use ($dm) {
+            $dm->persist($v);
+            return true;
+        });
 
         $doc = new GH453Document();
         $doc->referenceManyPush = $colPush;
@@ -216,13 +246,13 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     private function assertBsonType($bsonType, $documentId, $fieldName)
     {
-        $criteria = array('_id' => $documentId);
+        $criteria = ['_id' => $documentId];
 
-        if (4 === $bsonType) {
+        if ($bsonType === 4) {
             // See: https://jira.mongodb.org/browse/SERVER-1475
             $criteria['$where'] = sprintf('Array.isArray(this.%s)', $fieldName);
         } else {
-            $criteria[$fieldName] = array('$type' => $bsonType);
+            $criteria[$fieldName] = ['$type' => $bsonType];
         }
 
         $this->assertNotNull($this->dm->getRepository(__NAMESPACE__ . '\GH453Document')->findOneBy($criteria));
@@ -240,22 +270,22 @@ class GH453Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     private function assertBsonTypeAndValue($bsonType, $expectedValue, $documentId, $fieldName)
     {
-        if (4 === $bsonType) {
+        if ($bsonType === 4) {
             $expectedValue = array_values((array) $expectedValue);
-        } elseif (3 === $bsonType) {
+        } elseif ($bsonType === 3) {
             $expectedValue = (object) $expectedValue;
         }
 
-        $criteria = array(
+        $criteria = [
             '_id' => $documentId,
-            '$and' => array(array($fieldName => $expectedValue)),
-        );
+            '$and' => [[$fieldName => $expectedValue]],
+        ];
 
-        if (4 === $bsonType) {
+        if ($bsonType === 4) {
             // See: https://jira.mongodb.org/browse/SERVER-1475
-            $criteria['$and'][] = array('$where' => sprintf('Array.isArray(this.%s)', $fieldName));
+            $criteria['$and'][] = ['$where' => sprintf('Array.isArray(this.%s)', $fieldName)];
         } else {
-            $criteria['$and'][] = array($fieldName => array('$type' => $bsonType));
+            $criteria['$and'][] = [$fieldName => ['$type' => $bsonType]];
         }
 
         $this->assertNotNull($this->dm->getRepository(__NAMESPACE__ . '\GH453Document')->findOneBy($criteria));

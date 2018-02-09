@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Ecommerce;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -34,15 +36,15 @@ class StockItem
         return $this->id;
     }
 
-    public function  __construct($name = null, $cost = null, $inventory = null)
+    public function __construct($name = null, $cost = null, $inventory = null)
     {
-        if (null !== $name) {
+        if ($name !== null) {
             $this->setName($name);
         }
-        if (null !== $cost) {
+        if ($cost !== null) {
             $this->setCost($cost);
         }
-        if (null !== $inventory) {
+        if ($inventory !== null) {
             $this->setInventory($inventory);
         }
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
@@ -7,7 +9,6 @@ use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM
  *
- * @since       1.0
  */
 class MappingException extends BaseMappingException
 {
@@ -104,7 +105,7 @@ class MappingException extends BaseMappingException
      * Throws an exception that indicates that a class used in a discriminator map does not exist.
      * An example would be an outdated (maybe renamed) classname.
      *
-     * @param string $className The class that could not be found
+     * @param string $className   The class that could not be found
      * @param string $owningClass The class that declares the discriminator map.
      * @return MappingException
      */
@@ -119,7 +120,7 @@ class MappingException extends BaseMappingException
     /**
      * Throws an exception that indicates a discriminator value does not exist in a map
      *
-     * @param string $value The discriminator value that could not be found
+     * @param string $value       The discriminator value that could not be found
      * @param string $owningClass The class that declares the discriminator map
      * @return MappingException
      */
@@ -152,7 +153,6 @@ class MappingException extends BaseMappingException
      * within the stacktrace
      *
      * @param string $document The document's name
-     * @param \ReflectionException $previousException
      * @return \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public static function reflectionFailure($document, \ReflectionException $previousException)

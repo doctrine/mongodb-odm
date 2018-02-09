@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH971Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH971Test extends BaseTest
 {
     public function testUpdateOfInheritedDocumentUsingFindAndUpdate()
     {
-        $name = "Ferrari";
-        $features = array(
-            "Super Engine",
-            "Huge Wheels"
-        );
+        $name = 'Ferrari';
+        $features = [
+            'Super Engine',
+            'Huge Wheels',
+        ];
 
         //first query, create Car with name "Ferrari"
         $this->dm->createQueryBuilder(__NAMESPACE__ . '\Car')
@@ -46,8 +48,8 @@ class GH971Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->createQueryBuilder(__NAMESPACE__ . '\Bicycle')
             ->findAndUpdate()
             ->upsert(true)
-            ->field('name')->equals("Cool")
-            ->field('features')->push("2 people")
+            ->field('name')->equals('Cool')
+            ->field('features')->push('2 people')
             ->getQuery()->execute();
     }
 
@@ -57,8 +59,8 @@ class GH971Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->findAndUpdate()
             ->upsert(true)
             ->field('type')->equals('tandem')
-            ->field('name')->equals("Cool")
-            ->field('features')->push("2 people")
+            ->field('name')->equals('Cool')
+            ->field('features')->push('2 people')
             ->getQuery()->execute();
 
         $results = $this->dm->getRepository(__NAMESPACE__ . '\Tandem')->findAll();
@@ -87,14 +89,20 @@ class Vehicle
 /**
  * @ODM\Document
  */
-class Car extends Vehicle {}
+class Car extends Vehicle
+{
+}
 
 /**
  * @ODM\Document
  */
-class Bicycle extends Vehicle {}
+class Bicycle extends Vehicle
+{
+}
 
 /**
  * @ODM\Document
  */
-class Tandem extends Bicycle {}
+class Tandem extends Bicycle
+{
+}
