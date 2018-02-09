@@ -7,3 +7,5 @@ tests/PersistentCollections/*
 phpunit.xml
 composer.lock
 vendor/
+.phpcs-cache
+phpcs.xml
