@@ -1167,7 +1167,7 @@ class DocumentPersister
         }
 
         // No further processing for fields without a targetDocument mapping
-        if ( ! isset($mapping['targetDocument'])) {
+        if ( ! isset($mapping['targetDocument']) || ! empty($mapping['embedded'])) {
             if ($nextObjectProperty) {
                 $fieldName .= '.'.$nextObjectProperty;
             }
