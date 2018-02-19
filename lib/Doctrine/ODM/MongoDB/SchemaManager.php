@@ -475,7 +475,7 @@ class SchemaManager
                 $done = true;
 
                 // Need to check error message because MongoDB 3.0 does not return a code for this error
-                if ($result['ok'] !== 1 && strpos($result['errmsg'], 'please create an index that starts') !== false) {
+                if (! (bool) $result['ok'] && strpos($result['errmsg'], 'please create an index that starts') !== false) {
                     // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
                     // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
                     $key = $result['proposedKey'] ?? $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
@@ -484,7 +484,7 @@ class SchemaManager
                     $done = false;
                 }
             } catch (RuntimeException $e) {
-                if ($e->getCode() === 20 || $e->getMessage() === 'already sharded') {
+                if ($e->getCode() === 20 || $e->getCode() === 23 || $e->getMessage() === 'already sharded') {
                     return;
                 }
 
@@ -494,7 +494,7 @@ class SchemaManager
 
         // Starting with MongoDB 3.2, this command returns code 20 when a collection is already sharded.
         // For older MongoDB versions, check the error message
-        if ($result['ok'] === 1 || (isset($result['code']) && $result['code'] === 20) || $result['errmsg'] === 'already sharded') {
+        if ((bool) $result['ok'] || (isset($result['code']) && $result['code'] === 20) || $result['errmsg'] === 'already sharded') {
             return;
         }
 

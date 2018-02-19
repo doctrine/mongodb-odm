@@ -54,8 +54,8 @@ class GH602Test extends BaseTest
         $this->assertFalse($user1likes[1]->__isInitialized());
         $this->assertEquals($thing2->getId(), $user1likes[1]->getId());
 
-        $user1likes[1]->__load();
         $this->expectException(DocumentNotFoundException::class);
+        $user1likes[1]->__load();
     }
 
     public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass()
