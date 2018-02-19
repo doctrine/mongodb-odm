@@ -1022,7 +1022,7 @@ class UnitOfWork implements PropertyChangedListener
                 ));
             }
 
-            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! preg_match('#^[0-9a-f]{24}$#', $idValue)) {
+            if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! preg_match('#^[0-9a-f]{24}$#', (string) $idValue)) {
                 throw new \InvalidArgumentException(sprintf(
                     '%s uses AUTO identifier generation strategy but provided identifier is not a valid ObjectId.',
                     get_class($document)

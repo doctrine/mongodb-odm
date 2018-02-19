@@ -711,7 +711,9 @@ class DocumentPersister
                 $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
                 $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
-                $id = $embeddedMetadata->identifier && $data[$embeddedMetadata->identifier] ?? null;
+                $id = $embeddedMetadata->identifier && isset($data[$embeddedMetadata->identifier])
+                    ? $data[$embeddedMetadata->identifier]
+                    : null;
 
                 if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
                     $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
@@ -912,7 +914,7 @@ class DocumentPersister
      */
     private function getSortDirection($sort)
     {
-        switch (strtolower($sort)) {
+        switch (strtolower((string) $sort)) {
             case 'desc':
                 return -1;
 
@@ -1033,7 +1035,7 @@ class DocumentPersister
                 continue;
             }
 
-            $preparedQueryElements = $this->prepareQueryElement($key, $value, null, true, $isNewObj);
+            $preparedQueryElements = $this->prepareQueryElement((string) $key, $value, null, true, $isNewObj);
             foreach ($preparedQueryElements as list($preparedKey, $preparedValue)) {
                 $preparedQuery[$preparedKey] = is_array($preparedValue)
                     ? array_map('\Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $preparedValue)

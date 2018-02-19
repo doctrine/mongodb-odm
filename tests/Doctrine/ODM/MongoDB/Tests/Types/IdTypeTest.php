@@ -37,7 +37,6 @@ class IdTypeTest extends TestCase
             'float'   => [3.14],
             'string'  => ['string'],
             'bool'    => [true],
-            'object'  => [['x' => 1, 'y' => 2]],
         ];
     }
 }

@@ -37,7 +37,7 @@ class DateTypeTest extends TestCase
         $this->assertSame($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are not converted');
 
         $timestamp = 100000000.123;
-        $dateTime = \DateTime::createFromFormat('U.u', $timestamp);
+        $dateTime = \DateTime::createFromFormat('U.u', (string) $timestamp);
         $mongoDate = new UTCDateTime(100000000123);
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTime), 'DateTime objects are converted to MongoDate objects');
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($timestamp), 'Numeric timestamps are converted to MongoDate objects');
@@ -53,7 +53,7 @@ class DateTypeTest extends TestCase
         $timestamp = 100000000.123;
         $mongoDate = new UTCDateTime(100000000123);
 
-        $dateTimeImmutable = \DateTimeImmutable::createFromFormat('U.u', $timestamp);
+        $dateTimeImmutable = \DateTimeImmutable::createFromFormat('U.u', (string) $timestamp);
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTimeImmutable), 'DateTimeImmutable objects are converted to MongoDate objects');
     }
 

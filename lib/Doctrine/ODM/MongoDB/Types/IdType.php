@@ -20,7 +20,7 @@ class IdType extends Type
         }
         if (! $value instanceof ObjectId) {
             try {
-                $value = new ObjectId($value);
+                $value = new ObjectId((string) $value);
             } catch (InvalidArgumentException $e) {
                 $value = new ObjectId();
             }

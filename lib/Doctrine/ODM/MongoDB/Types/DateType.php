@@ -42,6 +42,7 @@ class DateType extends Type
             $datetime->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         } elseif (is_numeric($value)) {
             $seconds = $value;
+            $value = (string) $value;
             $microseconds = 0;
 
             if (strpos($value, '.') !== false) {
@@ -49,7 +50,7 @@ class DateType extends Type
                 $microseconds = str_pad($microseconds, 6, '0'); // ensure microseconds
             }
 
-            $datetime = static::craftDateTime($seconds, $microseconds);
+            $datetime = static::craftDateTime((int) $seconds, $microseconds);
         } elseif (is_string($value)) {
             try {
                 $datetime = new \DateTime($value);
@@ -65,7 +66,8 @@ class DateType extends Type
         return $datetime;
     }
 
-    private static function craftDateTime($seconds, $microseconds = 0)
+    // @todo fix typing for $microseconds
+    private static function craftDateTime(int $seconds, $microseconds = 0)
     {
         $datetime = new \DateTime();
         $datetime->setTimestamp($seconds);

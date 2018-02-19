@@ -70,15 +70,15 @@ class AlnumGenerator extends IncrementGenerator
     /** @inheritDoc */
     public function generate(DocumentManager $dm, $document)
     {
-        $id = parent::generate($dm, $document);
+        $id = (string) parent::generate($dm, $document);
         $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;
-        $base  = strlen($index);
+        $base  = (string) strlen($index);
 
         $out = '';
         do {
             $out = $index[bcmod($id, $base)] . $out;
             $id = bcdiv($id, $base);
-        } while (bccomp($id, 0) === 1);
+        } while (bccomp($id, '0') === 1);
 
         if (is_numeric($this->pad)) {
             $out = str_pad($out, $this->pad, '0', STR_PAD_LEFT);
