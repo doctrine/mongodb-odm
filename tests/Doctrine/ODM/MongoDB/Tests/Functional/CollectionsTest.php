@@ -76,30 +76,52 @@ class CollectionsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($bar->getLocations(), $changeSet['locations'][1]);
     }
 
-    public function testCreateCollections()
+    public function testCreateCollectionsBasic()
     {
         $sm = $this->dm->getSchemaManager();
-        $sm->dropDocumentCollection(__NAMESPACE__.'\CreateCollectionTest');
-        $sm->createDocumentCollection(__NAMESPACE__.'\CreateCollectionTest');
+        $sm->dropDocumentCollection(CollectionTestBasic::class);
+        $sm->createDocumentCollection(CollectionTestBasic::class);
 
-        $coll = $this->dm->getDocumentCollection(__NAMESPACE__.'\CreateCollectionTest');
-        $insert = array(array(1), array(2), array(3));
+        $coll = $this->dm->getDocumentCollection(CollectionTestBasic::class);
+        $insert = [
+            ['username' => 'bob'],
+            ['username' => 'alice'],
+            ['username' => 'jim'],
+        ];
         $coll->insertMany($insert);
 
         $data = $coll->find()->toArray();
         $this->assertCount(3, $data);
     }
+
+    public function testCreateCollectionsCapped()
+    {
+        $sm = $this->dm->getSchemaManager();
+        $sm->dropDocumentCollection(CollectionTestCapped::class);
+        $sm->createDocumentCollection(CollectionTestCapped::class);
+
+        $coll = $this->dm->getDocumentCollection(CollectionTestCapped::class);
+        $insert = [
+            ['username' => 'bob'],
+            ['username' => 'alice'],
+            ['username' => 'jim'],
+        ];
+        $coll->insertMany($insert);
+
+        $data = $coll->find()->toArray();
+        $this->assertCount(1, $data);
+    }
 }
 
 /**
  * @ODM\Document(collection={
- *   "name"="testing",
- *   "capped"="true",
- *   "size"="1000",
- *   "max"="1"
+ *   "name"="CollectionTestCapped",
+ *   "capped"=true,
+ *   "size"=1000,
+ *   "max"=1
  * })
  */
-class CollectionTest
+class CollectionTestCapped
 {
     /** @ODM\Id */
     public $id;
@@ -111,9 +133,11 @@ class CollectionTest
 /**
  * @ODM\Document
  */
-class CreateCollectionTest
+class CollectionTestBasic
 {
     /** @ODM\Id */
     public $id;
 
+    /** @ODM\Field(type="string") */
+    public $username;
 }
