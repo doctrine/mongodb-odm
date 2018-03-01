@@ -90,24 +90,6 @@ class DetachedDocumentTest extends BaseTest
         $this->assertTrue($this->dm->contains($phonenumbers[1]));
     }
 
-    /**
-     * @group DDC-203
-     */
-    public function testDetachedEntityThrowsExceptionOnFlush()
-    {
-        $ph = new CmsPhonenumber();
-        $ph->phonenumber = '12345';
-        $this->dm->persist($ph);
-        $this->dm->flush();
-        $this->dm->clear();
-        $this->dm->persist($ph);
-        try {
-            $this->dm->flush();
-            $this->fail();
-        } catch (\Throwable $expected) {
-        }
-    }
-
     public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
     {
         $user = new CmsUser();
