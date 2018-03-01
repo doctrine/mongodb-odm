@@ -29,6 +29,6 @@ class PreUpdateListenerMock implements EventSubscriber
 
     public function preUpdate(PreUpdateEventArgs $args)
     {
-        return; // fatal error
+        return;
     }
 }

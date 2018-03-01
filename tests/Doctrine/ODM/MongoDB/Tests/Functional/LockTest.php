@@ -148,6 +148,9 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testLockVersionedDocument()
     {
         $article = new LockInt();

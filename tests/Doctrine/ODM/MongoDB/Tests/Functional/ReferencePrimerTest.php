@@ -91,6 +91,9 @@ class ReferencePrimerTest extends BaseTest
             ->eagerCursor(false);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testFieldPrimingCanBeToggled()
     {
         $this->dm->createQueryBuilder(User::class)

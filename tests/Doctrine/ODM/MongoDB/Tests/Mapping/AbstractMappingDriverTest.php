@@ -16,6 +16,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
 {
     abstract protected function _loadDriver();
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testLoadMapping()
     {
         $className = __NAMESPACE__ . '\AbstractMappingDriverUser';

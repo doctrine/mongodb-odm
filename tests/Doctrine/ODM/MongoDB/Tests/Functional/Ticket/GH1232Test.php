@@ -11,6 +11,9 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1232Test extends BaseTest
 {
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testRemoveDoesNotCauseErrors()
     {
         $post = new GH1232Post();

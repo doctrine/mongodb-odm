@@ -305,6 +305,9 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals([['name' => 'd'], $c, 'b.c.d'], $unitOfWork->getParentAssociation($d));
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testPreUpdateTriggeredWithEmptyChangeset()
     {
         $this->dm->getEventManager()->addEventSubscriber(
