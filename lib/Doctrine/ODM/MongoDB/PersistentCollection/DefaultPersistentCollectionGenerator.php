@@ -1,13 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\ODM\MongoDB\Configuration;
+use const DIRECTORY_SEPARATOR;
+use function array_map;
+use function array_pop;
+use function class_exists;
+use function dirname;
+use function explode;
+use function file_exists;
+use function file_put_contents;
+use function implode;
+use function interface_exists;
+use function is_dir;
+use function is_writable;
+use function join;
+use function method_exists;
+use function mkdir;
+use function rename;
+use function str_replace;
+use function strtolower;
+use function substr;
+use function uniqid;
+use function var_export;
 
 /**
  * Default generator for custom PersistentCollection classes.
  *
- * @since 1.1
  */
 final class DefaultPersistentCollectionGenerator implements PersistentCollectionGenerator
 {
@@ -52,16 +74,16 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
     public function loadClass($collectionClass, $autoGenerate)
     {
         // These checks are not in __construct() because of BC and should be moved for 2.0
-        if ( ! $this->collectionDir) {
+        if (! $this->collectionDir) {
             throw PersistentCollectionException::directoryRequired();
         }
-        if ( ! $this->collectionNamespace) {
+        if (! $this->collectionNamespace) {
             throw PersistentCollectionException::namespaceRequired();
         }
 
         $collClassName = str_replace('\\', '', $collectionClass) . 'Persistent';
         $className = $this->collectionNamespace . '\\' . $collClassName;
-        if ( ! class_exists($className, false)) {
+        if (! class_exists($className, false)) {
             $fileName = $this->collectionDir . DIRECTORY_SEPARATOR . $collClassName . '.php';
             switch ($autoGenerate) {
                 case Configuration::AUTOGENERATE_NEVER:
@@ -74,7 +96,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
                     break;
 
                 case Configuration::AUTOGENERATE_FILE_NOT_EXISTS:
-                    if ( ! file_exists($fileName)) {
+                    if (! file_exists($fileName)) {
                         $this->generateCollectionClass($collectionClass, $className, $fileName);
                     }
                     require $fileName;
@@ -129,8 +151,7 @@ CODE;
         $rc = new \ReflectionClass($for);
         $rt = new \ReflectionClass('Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait');
         foreach ($rc->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-            if (
-                $rt->hasMethod($method->name) ||
+            if ($rt->hasMethod($method->name) ||
                 $method->isConstructor() ||
                 $method->isFinal() ||
                 $method->isStatic()
@@ -142,17 +163,17 @@ CODE;
         $code .= "}\n";
 
         if ($fileName === false) {
-            if ( ! class_exists($targetFqcn)) {
+            if (! class_exists($targetFqcn)) {
                 eval(substr($code, 5));
             }
         } else {
             $parentDirectory = dirname($fileName);
 
-            if ( ! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
+            if (! is_dir($parentDirectory) && (@mkdir($parentDirectory, 0775, true) === false)) {
                 throw PersistentCollectionException::directoryNotWritable();
             }
 
-            if ( ! is_writable($parentDirectory)) {
+            if (! is_writable($parentDirectory)) {
                 throw PersistentCollectionException::directoryNotWritable();
             }
 
@@ -186,14 +207,13 @@ CODE;
     }
 
     /**
-     * @param \ReflectionMethod $method
      *
      * @return string
      */
     private function buildParametersString(\ReflectionMethod $method)
     {
         $parameters = $method->getParameters();
-        $parameterDefinitions = array();
+        $parameterDefinitions = [];
 
         /* @var $param \ReflectionParameter */
         foreach ($parameters as $param) {
@@ -227,7 +247,6 @@ CODE;
     }
 
     /**
-     * @param \ReflectionParameter $parameter
      *
      * @return string|null
      */
@@ -282,7 +301,6 @@ CODE;
     }
 
     /**
-     * @param \ReflectionMethod $method
      *
      * @return string
      *
@@ -290,16 +308,13 @@ CODE;
      */
     private function getMethodReturnType(\ReflectionMethod $method)
     {
-        if ( ! method_exists($method, 'hasReturnType') || ! $method->hasReturnType()) {
+        if (! method_exists($method, 'hasReturnType') || ! $method->hasReturnType()) {
             return '';
         }
         return ': ' . $this->formatType($method->getReturnType(), $method);
     }
 
     /**
-     * @param \ReflectionType $type
-     * @param \ReflectionMethod $method
-     * @param \ReflectionParameter|null $parameter
      *
      * @return string
      *
@@ -308,18 +323,18 @@ CODE;
     private function formatType(
         \ReflectionType $type,
         \ReflectionMethod $method,
-        \ReflectionParameter $parameter = null
+        ?\ReflectionParameter $parameter = null
     ) {
         $name = method_exists($type, 'getName') ? $type->getName() : (string) $type;
         $nameLower = strtolower($name);
-        if ('self' === $nameLower) {
+        if ($nameLower === 'self') {
             $name = $method->getDeclaringClass()->getName();
         }
-        if ('parent' === $nameLower) {
+        if ($nameLower === 'parent') {
             $name = $method->getDeclaringClass()->getParentClass()->getName();
         }
-        if ( ! $type->isBuiltin() && ! class_exists($name) && ! interface_exists($name)) {
-            if (null !== $parameter) {
+        if (! $type->isBuiltin() && ! class_exists($name) && ! interface_exists($name)) {
+            if ($parameter !== null) {
                 throw PersistentCollectionException::invalidParameterTypeHint(
                     $method->getDeclaringClass()->getName(),
                     $method->getName(),
@@ -331,11 +346,11 @@ CODE;
                 $method->getName()
             );
         }
-        if ( ! $type->isBuiltin()) {
+        if (! $type->isBuiltin()) {
             $name = '\\' . $name;
         }
         if ($type->allowsNull()
-            && (null === $parameter || ! $parameter->isDefaultValueAvailable() || null !== $parameter->getDefaultValue())
+            && ($parameter === null || ! $parameter->isDefaultValueAvailable() || $parameter->getDefaultValue() !== null)
         ) {
             $name = '?' . $name;
         }

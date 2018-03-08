@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
@@ -22,9 +24,7 @@ class Out extends Stage
     private $collection;
 
     /**
-     * @param Builder $builder
      * @param string $collection
-     * @param DocumentManager $documentManager
      */
     public function __construct(Builder $builder, $collection, DocumentManager $documentManager)
     {
@@ -40,7 +40,7 @@ class Out extends Stage
     public function getExpression()
     {
         return [
-            '$out' => $this->collection
+            '$out' => $this->collection,
         ];
     }
 

@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
 class SplObjectHashCollisionsTest extends BaseTest
 {
@@ -48,11 +51,23 @@ class SplObjectHashCollisionsTest extends BaseTest
 
     public function provideParentAssociationsIsCleared()
     {
-        return array(
-            array( function (DocumentManager $dm) { $dm->clear(); }, 0 ),
-            array( function (DocumentManager $dm, $doc) { $dm->clear(get_class($doc)); }, 1 ),
-            array( function (DocumentManager $dm, $doc) { $dm->detach($doc); }, 1 ),
-        );
+        return [
+            [
+        function (DocumentManager $dm) {
+                $dm->clear();
+        }, 0,
+            ],
+            [
+            function (DocumentManager $dm, $doc) {
+                $dm->clear(get_class($doc));
+            }, 1,
+            ],
+            [
+            function (DocumentManager $dm, $doc) {
+                $dm->detach($doc);
+            }, 1,
+            ],
+        ];
     }
 
     private function expectCount($prop, $expected)
@@ -77,7 +92,7 @@ class SplColDoc
     public $one;
 
     /** @ODM\EmbedMany */
-    public $many = array();
+    public $many = [];
 }
 
 /** @ODM\EmbeddedDocument */

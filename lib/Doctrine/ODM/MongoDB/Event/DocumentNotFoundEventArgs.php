@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  *  $Id$
  *
@@ -26,7 +29,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 /**
  * Provides event arguments for the documentNotFound event.
  *
- * @since 1.1
  */
 class DocumentNotFoundEventArgs extends LifecycleEventArgs
 {
@@ -41,10 +43,9 @@ class DocumentNotFoundEventArgs extends LifecycleEventArgs
     private $disableException = false;
 
     /**
-     * Constructor.
+     *
      *
      * @param object $document
-     * @param DocumentManager $dm
      * @param string $identifier
      */
     public function __construct($document, DocumentManager $dm, $identifier)

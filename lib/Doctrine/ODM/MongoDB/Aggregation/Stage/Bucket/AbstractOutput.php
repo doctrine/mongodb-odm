@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -10,8 +12,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  * Abstract class with common functionality for output objects in bucket stages
  *
  * @internal
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.5
  */
 abstract class AbstractOutput extends Stage
 {
@@ -25,10 +25,6 @@ abstract class AbstractOutput extends Stage
      */
     private $expr;
 
-    /**
-     * @param Builder $builder
-     * @param Stage\AbstractBucket $bucket
-     */
     public function __construct(Builder $builder, Stage\AbstractBucket $bucket)
     {
         parent::__construct($builder);

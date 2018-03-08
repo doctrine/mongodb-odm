@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -7,7 +9,6 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 /**
  * MongoDB ODM Hydrator Exception
  *
- * @since  1.0
  */
 class HydratorException extends MongoDBException
 {

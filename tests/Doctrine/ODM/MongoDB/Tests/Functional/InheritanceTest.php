@@ -1,15 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Developer;
+use Documents\OtherSubProject;
+use Documents\Profile;
+use Documents\Project;
+use Documents\SpecialUser;
+use Documents\SubProject;
+use Documents\User;
+
+class InheritanceTest extends BaseTest
 {
     public function testCollectionPerClassInheritance()
     {
-        $profile = new \Documents\Profile();
+        $profile = new Profile();
         $profile->setFirstName('Jon');
 
-        $user = new \Documents\SpecialUser();
+        $user = new SpecialUser();
         $user->setUsername('specialuser');
         $user->setProfile($profile);
 
@@ -33,36 +44,36 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertEquals('Wage', $user->getProfile()->getLastName());
-        $this->assertInstanceOf(\Documents\SpecialUser::class, $user);
+        $this->assertInstanceOf(SpecialUser::class, $user);
     }
 
     public function testSingleCollectionInhertiance()
     {
-        $subProject = new \Documents\SubProject('Sub Project');
+        $subProject = new SubProject('Sub Project');
         $this->dm->persist($subProject);
         $this->dm->flush();
 
         $coll = $this->dm->getDocumentCollection('Documents\SubProject');
-        $document = $coll->findOne(array('name' => 'Sub Project'));
+        $document = $coll->findOne(['name' => 'Sub Project']);
         $this->assertEquals('sub-project', $document['type']);
 
-        $project = new \Documents\OtherSubProject('Other Sub Project');
+        $project = new OtherSubProject('Other Sub Project');
         $this->dm->persist($project);
         $this->dm->flush();
 
         $coll = $this->dm->getDocumentCollection('Documents\OtherSubProject');
-        $document = $coll->findOne(array('name' => 'Other Sub Project'));
+        $document = $coll->findOne(['name' => 'Other Sub Project']);
         $this->assertEquals('other-sub-project', $document['type']);
 
         $this->dm->clear();
 
-        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(array('name' => 'Sub Project'));
+        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(['name' => 'Sub Project']);
         $this->assertInstanceOf('Documents\SubProject', $document);
 
-        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(array('name' => 'Sub Project'));
+        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(['name' => 'Sub Project']);
         $this->assertInstanceOf('Documents\SubProject', $document);
 
-        $document = $this->dm->getRepository('Documents\Project')->findOneBy(array('name' => 'Sub Project'));
+        $document = $this->dm->getRepository('Documents\Project')->findOneBy(['name' => 'Sub Project']);
         $this->assertInstanceOf('Documents\SubProject', $document);
         $this->dm->clear();
 
@@ -70,13 +81,13 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $document = $this->dm->find('Documents\Project', $id);
         $this->assertInstanceOf('Documents\SubProject', $document);
 
-        $document = $this->dm->getRepository('Documents\Project')->findOneBy(array('name' => 'Other Sub Project'));
+        $document = $this->dm->getRepository('Documents\Project')->findOneBy(['name' => 'Other Sub Project']);
         $this->assertInstanceOf('Documents\OtherSubProject', $document);
     }
 
     public function testPrePersistIsCalledFromMappedSuperClass()
     {
-        $user = new \Documents\User();
+        $user = new User();
         $user->setUsername('test');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -85,13 +96,13 @@ class InheritanceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testInheritanceProxy()
     {
-        $developer = new \Documents\Developer('avalanche123');
+        $developer = new Developer('avalanche123');
 
         $projects = $developer->getProjects();
 
-        $projects->add(new \Documents\Project('Main Project'));
-        $projects->add(new \Documents\SubProject('Sub Project'));
-        $projects->add(new \Documents\OtherSubProject('Another Sub Project'));
+        $projects->add(new Project('Main Project'));
+        $projects->add(new SubProject('Sub Project'));
+        $projects->add(new OtherSubProject('Another Sub Project'));
 
         $this->dm->persist($developer);
         $this->dm->flush();

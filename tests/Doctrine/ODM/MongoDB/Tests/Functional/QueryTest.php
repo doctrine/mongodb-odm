@@ -1,15 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Article;
-use Documents\Account;
-use Documents\Address;
 use Documents\CmsComment;
+use Documents\Group;
 use Documents\Phonenumber;
 use Documents\User;
+use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
+use function array_values;
+use function get_class;
+use function strtotime;
 
-class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class QueryTest extends BaseTest
 {
     public function setUp()
     {
@@ -58,7 +65,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $qb = $this->dm->createQueryBuilder('Documents\User');
         $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
 
-        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new \MongoDB\BSON\ObjectId($user1->getId())));
+        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new ObjectId($user1->getId())));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNotNull($user);
@@ -73,12 +80,12 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $qb->field('username')->not($qb->expr()->in(array('boo')));
+        $qb->field('username')->not($qb->expr()->in(['boo']));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNull($user);
 
-        $qb->field('username')->not($qb->expr()->in(array('1boo')));
+        $qb->field('username')->not($qb->expr()->in(['1boo']));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
         $this->assertNotNull($user);
@@ -112,23 +119,23 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')->equals('distinct_test');
         $q = $qb->getQuery();
         $results = $q->execute();
-        $this->assertEquals(array(1, 2, 3), $results);
+        $this->assertEquals([1, 2, 3], $results);
 
         $results = $this->dm->createQueryBuilder('Documents\User')
             ->distinct('count')
             ->field('username')->equals('distinct_test')
             ->getQuery()
             ->execute();
-        $this->assertEquals(array(1, 2, 3), $results);
+        $this->assertEquals([1, 2, 3], $results);
     }
 
     public function testDistinctWithDifferentDbName()
     {
         $c1 = new CmsComment();
-        $c1->authorIp = "127.0.0.1";
+        $c1->authorIp = '127.0.0.1';
         $c2 = new CmsComment();
         $c3 = new CmsComment();
-        $c2->authorIp = $c3->authorIp = "192.168.0.1";
+        $c2->authorIp = $c3->authorIp = '192.168.0.1';
         $this->dm->persist($c1);
         $this->dm->persist($c2);
         $this->dm->persist($c3);
@@ -139,7 +146,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->distinct('authorIp')
             ->getQuery()
             ->execute();
-        $this->assertEquals(array("127.0.0.1", "192.168.0.1"), $results);
+        $this->assertEquals(['127.0.0.1', '192.168.0.1'], $results);
     }
 
     public function testFindQuery()
@@ -316,8 +323,8 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $qb->field('createdAt')->range(
-            new \MongoDB\BSON\UTCDateTime(strtotime('1985-09-01 01:00:00') * 1000),
-            new \MongoDB\BSON\UTCDateTime(strtotime('1985-09-04') * 1000)
+            new UTCDateTime(strtotime('1985-09-01 01:00:00') * 1000),
+            new UTCDateTime(strtotime('1985-09-04') * 1000)
         );
         $query = $qb->getQuery();
         $articles = array_values($query->execute()->toArray());
@@ -343,7 +350,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testQueryReferences()
     {
-        $group = new \Documents\Group('Test Group');
+        $group = new Group('Test Group');
 
         $user = new User();
         $user->setUsername('cool');
@@ -362,26 +369,22 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testQueryWhereIn()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $choices = array('a', 'b');
+        $choices = ['a', 'b'];
         $qb->field('username')->in($choices);
-        $expected = array(
-            'username' => array(
-                '$in' => $choices
-            )
-        );
+        $expected = [
+            'username' => ['$in' => $choices],
+        ];
         $this->assertSame($expected, $qb->getQueryArray());
     }
 
     public function testQueryWhereInReferenceId()
     {
         $qb = $this->dm->createQueryBuilder('Documents\User');
-        $choices = array(new \MongoDB\BSON\ObjectId(), new \MongoDB\BSON\ObjectId());
+        $choices = [new ObjectId(), new ObjectId()];
         $qb->field('account.$id')->in($choices);
-        $expected = array(
-            'account.$id' => array(
-                '$in' => $choices
-            )
-        );
+        $expected = [
+            'account.$id' => ['$in' => $choices],
+        ];
         $this->assertSame($expected, $qb->getQueryArray());
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
@@ -391,9 +394,7 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $qb = $this->dm->createQueryBuilder('Documents\Article');
         $qb->field('tags')->equals('pet');
-        $expected = array(
-            'tags' => 'pet'
-        );
+        $expected = ['tags' => 'pet'];
         $this->assertSame($expected, $qb->getQueryArray());
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
@@ -402,10 +403,10 @@ class QueryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testQueryWhereAllValuesOfCollection()
     {
         $qb = $this->dm->createQueryBuilder('Documents\Article');
-        $qb->field('tags')->equals(array('pet', 'blue'));
-        $expected = array(
-            'tags' => array('pet', 'blue')
-        );
+        $qb->field('tags')->equals(['pet', 'blue']);
+        $expected = [
+            'tags' => ['pet', 'blue'],
+        ];
         $this->assertSame($expected, $qb->getQueryArray());
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }

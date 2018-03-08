@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
+use function get_class;
+use function sprintf;
 
 abstract class AbstractField extends Annotation
 {
     public $name;
     public $type = 'string';
     public $nullable = false;
-    public $options = array();
+    public $options = [];
     public $strategy;
 
     /**

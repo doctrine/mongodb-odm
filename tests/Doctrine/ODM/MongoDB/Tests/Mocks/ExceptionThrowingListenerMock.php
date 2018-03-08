@@ -1,18 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
-use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
-use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 
 class ExceptionThrowingListenerMock implements EventSubscriber
 {
     public function getSubscribedEvents()
     {
-        return [
-            'onFlush',
-        ];
+        return ['onFlush'];
     }
 
     public function onFlush(OnFlushEventArgs $args)

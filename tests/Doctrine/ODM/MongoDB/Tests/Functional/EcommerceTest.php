@@ -1,20 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Ecommerce\ConfigurableProduct;
-use Documents\Ecommerce\StockItem;
 use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\Money;
 use Documents\Ecommerce\Option;
+use Documents\Ecommerce\StockItem;
 
-class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class EcommerceTest extends BaseTest
 {
     public function setUp()
     {
         parent::setUp();
 
-        $currencies = array('USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125);
+        $currencies = ['USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125];
 
         foreach ($currencies as $name => &$multiplier) {
             $multiplier = new Currency($name, $multiplier);
@@ -45,11 +48,11 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(3, $product->getOptions());
         $this->assertEquals(12.99, $product->getOption('small')->getPrice());
 
-        $usdCurrency = $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(array('name' => 'USD'));
+        $usdCurrency = $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(['name' => 'USD']);
         $this->assertNotNull($usdCurrency);
         $usdCurrency->setMultiplier('2');
 
-        $this->assertInstanceOf(\Documents\Ecommerce\StockItem::class, $product->getOption('small')->getStockItem());
+        $this->assertInstanceOf(StockItem::class, $product->getOption('small')->getStockItem());
         $this->assertNotNull($product->getOption('small')->getStockItem()->getId());
         $this->assertEquals(12.99 * 2, $product->getOption('small')->getPrice());
     }
@@ -61,7 +64,7 @@ class EcommerceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $currency = $price->getCurrency();
         $this->assertInstanceOf(Currency::class, $currency);
         $this->assertNotNull($currency->getId());
-        $this->assertEquals($currency, $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(array('name' => Currency::USD)));
+        $this->assertEquals($currency, $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(['name' => Currency::USD]));
     }
 
     public function testRemoveOption()

@@ -43,10 +43,16 @@ jobs:
         - composer update --prefer-lowest
 
     - stage: Code Quality
-      php: 7.2
-      env: SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
+      php: 7.1
+      env: STATIC_ANALYSIS SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
       script:
         - vendor/bin/phpstan analyse -l 1 lib
+
+    - stage: Code Quality
+      php: 7.1
+      env: CODING_STANDARDS SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
+      script:
+        - vendor/bin/phpcs
 
 before_install:
   - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"

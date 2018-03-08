@@ -1,18 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
+use MongoDB\BSON\Binary;
+use MongoDB\BSON\Javascript;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
+use function array_filter;
+use function array_key_exists;
+use function array_search;
+use function count;
+use function func_get_args;
+use function is_array;
+use function is_bool;
+use function is_callable;
+use function is_string;
+use function strtolower;
 
 /**
  * Query builder for ODM.
  *
- * @since       1.0
  */
 class Builder
 {
@@ -26,7 +39,7 @@ class Builder
     /**
      * The ClassMetadata instance.
      *
-     * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     private $class;
 
@@ -41,14 +54,14 @@ class Builder
     /**
      * Whether or not to hydrate the data to documents.
      *
-     * @var boolean
+     * @var bool
      */
     private $hydrate = true;
 
     /**
      * Whether or not to refresh the data for documents that are already in the identity map.
      *
-     * @var boolean
+     * @var bool
      */
     private $refresh = false;
 
@@ -57,7 +70,7 @@ class Builder
      *
      * @var array
      */
-    private $primers = array();
+    private $primers = [];
 
     /**
      * Whether or not to register documents in UnitOfWork.
@@ -93,7 +106,6 @@ class Builder
     /**
      * Construct a Builder
      *
-     * @param DocumentManager $dm
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
      */
     public function __construct(DocumentManager $dm, $documentName = null)
@@ -232,7 +244,7 @@ class Builder
      *
      * @see Expr::bitsAllClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllClear/
-     * @param int|array|\MongoDB\BSON\Binary $value
+     * @param int|array|Binary $value
      * @return $this
      */
     public function bitsAllClear($value)
@@ -247,7 +259,7 @@ class Builder
      *
      * @see Expr::bitsAllSet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllSet/
-     * @param int|array|\MongoDB\BSON\Binary $value
+     * @param int|array|Binary $value
      * @return $this
      */
     public function bitsAllSet($value)
@@ -262,7 +274,7 @@ class Builder
      *
      * @see Expr::bitsAnyClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnyClear/
-     * @param int|array|\MongoDB\BSON\Binary $value
+     * @param int|array|Binary $value
      * @return $this
      */
     public function bitsAnyClear($value)
@@ -277,7 +289,7 @@ class Builder
      *
      * @see Expr::bitsAnySet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnySet/
-     * @param int|array|\MongoDB\BSON\Binary $value
+     * @param int|array|Binary $value
      * @return $this
      */
     public function bitsAnySet($value)
@@ -312,7 +324,6 @@ class Builder
      * @return $this
      * @throws \BadMethodCallException if the query does not already have $text criteria
      *
-     * @since 1.3
      */
     public function caseSensitive($caseSensitive)
     {
@@ -386,7 +397,6 @@ class Builder
      * @return $this
      * @throws \BadMethodCallException if the query does not already have $text criteria
      *
-     * @since 1.3
      */
     public function diacriticSensitive($diacriticSensitive)
     {
@@ -411,16 +421,16 @@ class Builder
     /**
      * Set whether the query should return its result as an EagerCursor.
      *
-     * @param boolean $bool
+     * @param bool $bool
      * @return $this
      */
     public function eagerCursor($bool = true)
     {
-        if ( ! $bool && ! empty($this->primers)) {
+        if (! $bool && ! empty($this->primers)) {
             throw new \BadMethodCallException("Can't set eagerCursor to false when using reference primers");
         }
 
-        $this->query['eagerCursor'] = (boolean) $bool;
+        $this->query['eagerCursor'] = (bool) $bool;
         return $this;
     }
 
@@ -464,7 +474,7 @@ class Builder
      */
     public function exclude($fieldName = null)
     {
-        if ( ! isset($this->query['select'])) {
+        if (! isset($this->query['select'])) {
             $this->query['select'] = [];
         }
 
@@ -482,12 +492,12 @@ class Builder
      *
      * @see Expr::exists()
      * @see http://docs.mongodb.org/manual/reference/operator/exists/
-     * @param boolean $bool
+     * @param bool $bool
      * @return $this
      */
     public function exists($bool)
     {
-        $this->expr->exists((boolean) $bool);
+        $this->expr->exists((bool) $bool);
         return $this;
     }
 
@@ -521,7 +531,7 @@ class Builder
     /**
      * Set the "finalize" option for a mapReduce or group command.
      *
-     * @param string|\MongoDB\BSON\Javascript $finalize
+     * @param string|Javascript $finalize
      * @return $this
      * @throws \BadMethodCallException if the query is not a mapReduce or group command
      */
@@ -688,9 +698,9 @@ class Builder
      *
      * @see Expr::geoWithinPolygon()
      * @see http://docs.mongodb.org/manual/reference/operator/polygon/
-     * @param array $point1 First point of the polygon
-     * @param array $point2 Second point of the polygon
-     * @param array $point3 Third point of the polygon
+     * @param array $point1    First point of the polygon
+     * @param array $point2    Second point of the polygon
+     * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
      * @return $this
      */
@@ -717,7 +727,7 @@ class Builder
      * @param array $options
      * @return Query $query
      */
-    public function getQuery(array $options = array())
+    public function getQuery(array $options = [])
     {
         if ($this->query['type'] === Query::TYPE_MAP_REDUCE) {
             $this->hydrate = false;
@@ -743,11 +753,13 @@ class Builder
                 'discriminator. Either not use base class or set \'' . $this->class->discriminatorField . '\' field manually.');
         }
 
-        if ( ! empty($query['select'])) {
+        if (! empty($query['select'])) {
             $query['select'] = $documentPersister->prepareProjection($query['select']);
             if ($this->hydrate && $this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION
                 && ! isset($query['select'][$this->class->discriminatorField])) {
-                $includeMode = 0 < count(array_filter($query['select'], function($mode) { return $mode == 1; }));
+                $includeMode = 0 < count(array_filter($query['select'], function ($mode) {
+                    return $mode === 1;
+                }));
                 if ($includeMode && ! isset($query['select'][$this->class->discriminatorField])) {
                     $query['select'][$this->class->discriminatorField] = 1;
                 }
@@ -789,7 +801,7 @@ class Builder
     /**
      * Get the type of this query.
      *
-     * @return integer $type
+     * @return int $type
      */
     public function getType()
     {
@@ -849,12 +861,12 @@ class Builder
     /**
      * Set the immortal cursor flag.
      *
-     * @param boolean $bool
+     * @param bool $bool
      * @return $this
      */
     public function immortal($bool = true)
     {
-        $this->query['immortal'] = (boolean) $bool;
+        $this->query['immortal'] = (bool) $bool;
         return $this;
     }
 
@@ -879,7 +891,7 @@ class Builder
      *
      * @see Expr::inc()
      * @see http://docs.mongodb.org/manual/reference/operator/inc/
-     * @param float|integer $value
+     * @param float|int $value
      * @return $this
      */
     public function inc($value)
@@ -933,12 +945,12 @@ class Builder
      * commands.
      *
      * @see Query::prepareCursor()
-     * @param integer $limit
+     * @param int $limit
      * @return $this
      */
     public function limit($limit)
     {
-        $this->query['limit'] = (integer) $limit;
+        $this->query['limit'] = (int) $limit;
         return $this;
     }
 
@@ -979,7 +991,7 @@ class Builder
      * The "out" option defaults to inline, like {@link Builder::mapReduce()}.
      *
      * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
-     * @param string|\MongoDB\BSON\Javascript $map
+     * @param string|Javascript $map
      * @return $this
      */
     public function map($map)
@@ -998,10 +1010,10 @@ class Builder
      * Change the query type to a mapReduce command.
      *
      * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
-     * @param string|\MongoDB\BSON\Javascript $map
-     * @param string|\MongoDB\BSON\Javascript $reduce
-     * @param array|string $out
-     * @param array $options
+     * @param string|Javascript $map
+     * @param string|Javascript $reduce
+     * @param array|string      $out
+     * @param array             $options
      * @return $this
      */
     public function mapReduce($map, $reduce, $out = ['inline' => true], array $options = [])
@@ -1011,7 +1023,7 @@ class Builder
             'map' => $map,
             'reduce' => $reduce,
             'out' => $out,
-            'options' => $options
+            'options' => $options,
         ];
         return $this;
     }
@@ -1078,8 +1090,8 @@ class Builder
      *
      * @see Expr::mod()
      * @see http://docs.mongodb.org/manual/reference/operator/mod/
-     * @param float|integer $divisor
-     * @param float|integer $remainder
+     * @param float|int $divisor
+     * @param float|int $remainder
      * @return $this
      */
     public function mod($divisor, $remainder = 0)
@@ -1095,7 +1107,7 @@ class Builder
      *
      * @see Expr::mul()
      * @see http://docs.mongodb.org/manual/reference/operator/mul/
-     * @param float|integer $value
+     * @param float|int $value
      * @return $this
      */
     public function mul($value)
@@ -1114,7 +1126,7 @@ class Builder
      * @see Expr::near()
      * @see http://docs.mongodb.org/manual/reference/operator/near/
      * @param float|array|Point $x
-     * @param float $y
+     * @param float             $y
      * @return $this
      */
     public function near($x, $y = null)
@@ -1133,7 +1145,7 @@ class Builder
      * @see Expr::nearSphere()
      * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
      * @param float|array|Point $x
-     * @param float $y
+     * @param float             $y
      * @return $this
      */
     public function nearSphere($x, $y = null)
@@ -1243,13 +1255,13 @@ class Builder
      * If a custom callable is used, its signature should conform to the default
      * Closure defined in {@link ReferencePrimer::__construct()}.
      *
-     * @param boolean|callable $primer
+     * @param bool|callable $primer
      * @return $this
      * @throws \InvalidArgumentException If $primer is not boolean or callable
      */
     public function prime($primer = true)
     {
-        if ( ! is_bool($primer) && ! is_callable($primer)) {
+        if (! is_bool($primer) && ! is_callable($primer)) {
             throw new \InvalidArgumentException('$primer is not a boolean or callable');
         }
 
@@ -1259,7 +1271,7 @@ class Builder
             return $this;
         }
 
-        if (array_key_exists('eagerCursor', $this->query) && !$this->query['eagerCursor']) {
+        if (array_key_exists('eagerCursor', $this->query) && ! $this->query['eagerCursor']) {
             throw new \BadMethodCallException("Can't call prime() when setting eagerCursor to false");
         }
 
@@ -1352,7 +1364,7 @@ class Builder
     /**
      * Set the "reduce" option for a mapReduce or group command.
      *
-     * @param string|\MongoDB\BSON\Javascript $reduce
+     * @param string|Javascript $reduce
      * @return $this
      * @throws \BadMethodCallException if the query is not a mapReduce or group command
      */
@@ -1427,7 +1439,7 @@ class Builder
     public function returnNew($bool = true)
     {
         $this->refresh(true);
-        $this->query['new'] = (boolean) $bool;
+        $this->query['new'] = (bool) $bool;
 
         return $this;
     }
@@ -1440,7 +1452,7 @@ class Builder
      */
     public function select($fieldName = null)
     {
-        if ( ! isset($this->query['select'])) {
+        if (! isset($this->query['select'])) {
             $this->query['select'] = [];
         }
 
@@ -1458,7 +1470,7 @@ class Builder
      * projection.
      *
      * @see http://docs.mongodb.org/manual/reference/projection/elemMatch/
-     * @param string $fieldName
+     * @param string     $fieldName
      * @param array|Expr $expression
      * @return $this
      */
@@ -1494,8 +1506,8 @@ class Builder
      *
      * @see http://docs.mongodb.org/manual/reference/projection/slice/
      * @param string $fieldName
-     * @param integer $countOrSkip Count parameter, or skip if limit is specified
-     * @param integer $limit       Limit parameter used in conjunction with skip
+     * @param int    $countOrSkip Count parameter, or skip if limit is specified
+     * @param int    $limit       Limit parameter used in conjunction with skip
      * @return $this
      */
     public function selectSlice($fieldName, $countOrSkip, $limit = null)
@@ -1518,7 +1530,7 @@ class Builder
      * @see Expr::set()
      * @see http://docs.mongodb.org/manual/reference/operator/set/
      * @param mixed $value
-     * @param boolean $atomic
+     * @param bool  $atomic
      * @return $this
      */
     public function set($value, $atomic = true)
@@ -1566,7 +1578,6 @@ class Builder
      * This is only relevant for read-only queries and commands.
      *
      * @see http://docs.mongodb.org/manual/core/read-preference/
-     * @param ReadPreference $readPreference
      * @return $this
      */
     public function setReadPreference(ReadPreference $readPreference)
@@ -1593,12 +1604,12 @@ class Builder
      *
      * @see Expr::size()
      * @see http://docs.mongodb.org/manual/reference/operator/size/
-     * @param integer $size
+     * @param int $size
      * @return $this
      */
     public function size($size)
     {
-        $this->expr->size((integer) $size);
+        $this->expr->size((int) $size);
         return $this;
     }
 
@@ -1609,24 +1620,24 @@ class Builder
      * results in an output collecton and return a cursor.
      *
      * @see Query::prepareCursor()
-     * @param integer $skip
+     * @param int $skip
      * @return $this
      */
     public function skip($skip)
     {
-        $this->query['skip'] = (integer) $skip;
+        $this->query['skip'] = (int) $skip;
         return $this;
     }
 
     /**
      * Set the snapshot cursor flag.
      *
-     * @param boolean $bool
+     * @param bool $bool
      * @return $this
      */
     public function snapshot($bool = true)
     {
-        $this->query['snapshot'] = (boolean) $bool;
+        $this->query['snapshot'] = (bool) $bool;
         return $this;
     }
 
@@ -1637,12 +1648,12 @@ class Builder
      * field name (key) and order (value) pairs.
      *
      * @param array|string $fieldName Field name or array of field/order pairs
-     * @param int|string $order       Field order (if one field is specified)
+     * @param int|string   $order     Field order (if one field is specified)
      * @return $this
      */
     public function sort($fieldName, $order = 1)
     {
-        if ( ! isset($this->query['sort'])) {
+        if (! isset($this->query['sort'])) {
             $this->query['sort'] = [];
         }
 
@@ -1652,7 +1663,7 @@ class Builder
             if (is_string($order)) {
                 $order = strtolower($order) === 'asc' ? 1 : -1;
             }
-            $this->query['sort'][$fieldName] = (integer) $order;
+            $this->query['sort'][$fieldName] = (int) $order;
         }
 
         return $this;
@@ -1677,7 +1688,7 @@ class Builder
          * operator. We'll assume that the user knows what they're doing in that
          * case and will not attempt to override the projection.
          */
-        if ( ! isset($this->query['select'][$fieldName])) {
+        if (! isset($this->query['select'][$fieldName])) {
             $this->selectMeta($fieldName, $metaDataKeyword);
         }
 
@@ -1707,7 +1718,7 @@ class Builder
      *
      * @see Expr::type()
      * @see http://docs.mongodb.org/manual/reference/operator/type/
-     * @param integer $type
+     * @param int $type
      * @return $this
      */
     public function type($type)
@@ -1760,12 +1771,12 @@ class Builder
     /**
      * Set the "upsert" option for an update or findAndUpdate query.
      *
-     * @param boolean $bool
+     * @param bool $bool
      * @return $this
      */
     public function upsert($bool = true)
     {
-        $this->query['upsert'] = (boolean) $bool;
+        $this->query['upsert'] = (bool) $bool;
         return $this;
     }
 
@@ -1774,7 +1785,7 @@ class Builder
      *
      * @see Expr::where()
      * @see http://docs.mongodb.org/manual/reference/operator/where/
-     * @param string|\MongoDB\BSON\Javascript $javascript
+     * @param string|Javascript $javascript
      * @return $this
      */
     public function where($javascript)
@@ -1792,8 +1803,8 @@ class Builder
      */
     private function getDiscriminatorValues($classNames)
     {
-        $discriminatorValues = array();
-        $collections = array();
+        $discriminatorValues = [];
+        $collections = [];
         foreach ($classNames as $className) {
             $class = $this->dm->getClassMetadata($className);
             $discriminatorValues[] = $class->discriminatorValue;

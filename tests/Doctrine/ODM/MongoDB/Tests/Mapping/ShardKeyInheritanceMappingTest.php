@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -25,7 +27,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $class = $this->factory->getMetadataFor(ShardedSubclass::class);
 
         $this->assertTrue($class->isSharded());
-        $this->assertEquals(array('keys' => array('_id' => 1), 'options' => array()), $class->getShardKey());
+        $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
     public function testShardKeySingleCollectionInheritance()
@@ -33,7 +35,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $class = $this->factory->getMetadataFor(ShardedSingleCollInheritance2::class);
 
         $this->assertTrue($class->isSharded());
-        $this->assertEquals(array('keys' => array('_id' => 1), 'options' => array()), $class->getShardKey());
+        $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
     /**
@@ -49,7 +51,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $class = $this->factory->getMetadataFor(ShardedCollectionPerClass2::class);
 
         $this->assertTrue($class->isSharded());
-        $this->assertEquals(array('keys' => array('_id' => 1), 'options' => array()), $class->getShardKey());
+        $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
     public function testShardKeyCollectionPerClassInheritanceOverriding()
@@ -57,7 +59,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $class = $this->factory->getMetadataFor(ShardedCollectionPerClass3::class);
 
         $this->assertTrue($class->isSharded());
-        $this->assertEquals(array('keys' => array('_id' => 'hashed'), 'options' => array()), $class->getShardKey());
+        $this->assertEquals(['keys' => ['_id' => 'hashed'], 'options' => []], $class->getShardKey());
     }
 }
 
@@ -94,14 +96,16 @@ class ShardedSingleCollInheritance1
  * @ODM\Document
  */
 class ShardedSingleCollInheritance2 extends ShardedSingleCollInheritance1
-{}
+{
+}
 
 /**
  * @ODM\Document
  * @ODM\ShardKey(keys={"_id"="hashed"})
  */
 class ShardedSingleCollInheritance3 extends ShardedSingleCollInheritance1
-{}
+{
+}
 
 /**
  * @ODM\Document
@@ -118,11 +122,13 @@ class ShardedCollectionPerClass1
  * @ODM\Document
  */
 class ShardedCollectionPerClass2 extends ShardedCollectionPerClass1
-{}
+{
+}
 
 /**
  * @ODM\Document
  * @ODM\ShardKey(keys={"_id"="hashed"})
  */
 class ShardedCollectionPerClass3 extends ShardedCollectionPerClass1
-{}
+{
+}

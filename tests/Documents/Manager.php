@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -8,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class Manager extends BaseEmployee
 {
     /** @ODM\ReferenceMany(targetDocument="Documents\Project") */
-    private $projects = array();
+    private $projects = [];
 
     public function getProjects()
     {

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class LifecycleTest extends BaseTest
 {
@@ -24,7 +26,7 @@ class LifecycleTest extends BaseTest
 
         $this->dm->clear();
 
-        $parent = $this->dm->getRepository(__NAMESPACE__.'\ParentObject')->find($parent->getId());
+        $parent = $this->dm->getRepository(__NAMESPACE__ . '\ParentObject')->find($parent->getId());
         $this->assertNotNull($parent);
         $this->assertEquals('parent #changed', $parent->getName());
         $this->assertCount(1, $parent->getChildren());
@@ -43,7 +45,7 @@ class LifecycleTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $parent = $this->dm->getRepository(__NAMESPACE__.'\ParentObject')->find($parent->getId());
+        $parent = $this->dm->getRepository(__NAMESPACE__ . '\ParentObject')->find($parent->getId());
         $this->assertNotNull($parent);
         $this->assertCount(1, $parent->getChildren());
     }
@@ -86,7 +88,7 @@ class ParentObject
     /** @ODM\PrePersist @ODM\PreUpdate */
     public function prePersistPreUpdate()
     {
-        $this->children = array($this->child);
+        $this->children = [$this->child];
     }
 
     /** @ODM\PreUpdate */

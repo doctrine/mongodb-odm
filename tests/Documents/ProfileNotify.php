@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,7 +28,7 @@ class ProfileNotify implements NotifyPropertyChanged
     private $images;
 
     /** @var PropertyChangedListener[] */
-    private $listeners = array();
+    private $listeners = [];
 
     public function __construct()
     {

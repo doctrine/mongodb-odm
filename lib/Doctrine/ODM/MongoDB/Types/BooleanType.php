@@ -1,22 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Boolean type.
  *
- * @since       1.0
  */
 class BooleanType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (boolean) $value : null;
+        return $value !== null ? (bool) $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (boolean) $value : null;
+        return $value !== null ? (bool) $value : null;
     }
 
     public function closureToMongo()

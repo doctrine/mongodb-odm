@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 class GH1435Test extends BaseTest
 {
     public function testUpsert()
     {
-        $id = (string) new \MongoDB\BSON\ObjectId();
+        $id = (string) new ObjectId();
 
         $document = new GH1435Document();
         $document->id = $id;

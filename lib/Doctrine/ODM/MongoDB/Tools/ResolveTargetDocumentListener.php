@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use function array_replace_recursive;
+use function ltrim;
 
 /**
  * ResolveTargetDocumentListener
@@ -15,27 +19,24 @@ class ResolveTargetDocumentListener
     /**
      * @var array
      */
-    private $resolveTargetDocuments = array();
+    private $resolveTargetDocuments = [];
 
     /**
      * Add a target-document class name to resolve to a new class name.
      *
      * @param string $originalDocument
      * @param string $newDocument
-     * @param array $mapping
-     * @return void
+     * @param array  $mapping
      */
     public function addResolveTargetDocument($originalDocument, $newDocument, array $mapping)
     {
-        $mapping['targetDocument'] = ltrim($newDocument, "\\");
-        $this->resolveTargetDocuments[ltrim($originalDocument, "\\")] = $mapping;
+        $mapping['targetDocument'] = ltrim($newDocument, '\\');
+        $this->resolveTargetDocuments[ltrim($originalDocument, '\\')] = $mapping;
     }
 
     /**
      * Process event and resolve new target document names.
      *
-     * @param LoadClassMetadataEventArgs $args
-     * @return void
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
     {
@@ -49,7 +50,6 @@ class ResolveTargetDocumentListener
     }
 
     /**
-     * @param ClassMetadata $classMetadata
      * @param array $mapping
      */
     private function remapAssociation(ClassMetadata $classMetadata, array $mapping)

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Ecommerce;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -32,8 +34,7 @@ class Option
 
     /**
      * @param string $name
-     * @param float $price
-     * @param StockItem $stockItem
+     * @param float  $price
      */
     public function __construct($name, Money $money, StockItem $stockItem)
     {
@@ -61,7 +62,7 @@ class Option
      */
     public function getPrice($object = false)
     {
-        if (true === $object) {
+        if ($object === true) {
             return $this->money;
         }
         return $this->money->getAmount();

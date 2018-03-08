@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
 class CollectionPersisterTest extends BaseTest
 {
@@ -13,9 +17,9 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user = $this->getTestUser('jwage');
-        $persister->delete($user->phonenumbers, array());
+        $persister->delete($user->phonenumbers, []);
 
-        $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
+        $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
         $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
     }
 
@@ -23,9 +27,9 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user = $this->getTestUser('jwage');
-        $persister->delete($user->categories, array());
+        $persister->delete($user->categories, []);
 
-        $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
+        $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
         $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
 
@@ -34,18 +38,18 @@ class CollectionPersisterTest extends BaseTest
         $persister = $this->getCollectionPersister();
         $user = $this->getTestUser('jwage');
 
-        $persister->delete($user->categories[0]->children[0]->children, array());
-        $persister->delete($user->categories[0]->children[1]->children, array());
+        $persister->delete($user->categories[0]->children[0]->children, []);
+        $persister->delete($user->categories[0]->children[1]->children, []);
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
 
         $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
         $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
 
-        $persister->delete($user->categories[0]->children, array());
-        $persister->delete($user->categories[1]->children, array());
+        $persister->delete($user->categories[0]->children, []);
+        $persister->delete($user->categories[1]->children, []);
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
 
         $this->assertFalse(isset($check['categories'][0]['children']), 'Test that the nested children categories field was deleted');
         $this->assertTrue(isset($check['categories'][0]), 'Test that the category with the children still exists');
@@ -70,7 +74,7 @@ class CollectionPersisterTest extends BaseTest
 
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
 
         $this->assertFalse(isset($check['phonenumbers'][0]));
         $this->assertFalse(isset($check['phonenumbers'][1]));
@@ -85,7 +89,7 @@ class CollectionPersisterTest extends BaseTest
         unset($user->categories[1]);
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
         $this->assertFalse(isset($check['categories'][0]));
         $this->assertFalse(isset($check['categories'][1]));
     }
@@ -97,7 +101,7 @@ class CollectionPersisterTest extends BaseTest
         $user->phonenumbers[] = new CollectionPersisterPhonenumber('6155139185');
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
         $this->assertCount(4, $check['phonenumbers']);
         $this->assertEquals((string) $check['phonenumbers'][2]['$id'], $user->phonenumbers[2]->id);
         $this->assertEquals((string) $check['phonenumbers'][3]['$id'], $user->phonenumbers[3]->id);
@@ -106,7 +110,7 @@ class CollectionPersisterTest extends BaseTest
         $user->categories[] = new CollectionPersisterCategory('Test');
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
         $this->assertCount(4, $check['categories']);
 
         $user->categories[3]->children[0] = new CollectionPersisterCategory('Test');
@@ -115,7 +119,7 @@ class CollectionPersisterTest extends BaseTest
         $user->categories[3]->children[1]->children[1] = new CollectionPersisterCategory('Test');
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(array('username' => 'jwage'));
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
         $this->assertCount(2, $check['categories'][3]['children']);
         $this->assertCount(2, $check['categories'][3]['children']['1']['children']);
     }
@@ -168,7 +172,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->dm->flush();
 
-        $doc = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'postA'));
+        $doc = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(['post' => 'postA']);
 
         $this->assertCount(1, $doc['comments']);
         $this->assertEquals($commentA->comment, $doc['comments']['a']['comment']);
@@ -189,7 +193,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->dm->flush();
 
-        $doc = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'postA'));
+        $doc = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(['post' => 'postA']);
 
         $this->assertCount(2, $doc['comments']);
         $this->assertEquals($commentA->comment, $doc['comments']['a']['comment']);
@@ -209,7 +213,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->dm->flush();
 
-        $doc = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'postA'));
+        $doc = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(['post' => 'postA']);
 
         $this->assertCount(2, $doc['comments']);
         $this->assertEquals($commentA->comment, $doc['comments']['a']['comment']);
@@ -226,7 +230,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->dm->flush();
 
-        $doc = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(array('post' => 'postA'));
+        $doc = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterPost')->findOne(['post' => 'postA']);
 
         $this->assertCount(1, $doc['comments']);
         $this->assertEquals($commentA->comment, $doc['comments']['a']['comment']);
@@ -248,8 +252,8 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->dm->flush();
 
-        $this->assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(array('comments.a.by' => 'userA')));
-        $this->assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(array('comments.a.comments.b.by' => 'userB')));
+        $this->assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.by' => 'userA']));
+        $this->assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.comments.b.by' => 'userB']));
     }
 }
 
@@ -263,10 +267,10 @@ class CollectionPersisterUser
     public $username;
 
     /** @ODM\EmbedMany(targetDocument="CollectionPersisterCategory") */
-    public $categories = array();
+    public $categories = [];
 
     /** @ODM\ReferenceMany(targetDocument="CollectionPersisterPhonenumber", cascade={"persist"}) */
-    public $phonenumbers = array();
+    public $phonenumbers = [];
 }
 
 /** @ODM\EmbeddedDocument */
@@ -276,7 +280,7 @@ class CollectionPersisterCategory
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="CollectionPersisterCategory") */
-    public $children = array();
+    public $children = [];
 
     public function __construct($name)
     {
@@ -303,42 +307,40 @@ class CollectionPersisterPhonenumber
 class CollectionPersisterPost
 {
   /** @ODM\Id */
-  public $id;
+    public $id;
 
   /** @ODM\Field(type="string") */
-  public $post;
+    public $post;
 
   /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */
-  public $comments = array();
+    public $comments = [];
 
-  function __construct($post)
-  {
-    $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
-    $this->post = $post;
-  }
-
-
+    function __construct($post)
+    {
+        $this->comments = new ArrayCollection();
+        $this->post = $post;
+    }
 }
 
 /** @ODM\EmbeddedDocument */
 class CollectionPersisterComment
 {
   /** @ODM\Id */
-  public $id;
+    public $id;
 
   /** @ODM\Field(type="string") */
-  public $comment;
+    public $comment;
 
   /** @ODM\Field(type="string") */
-  public $by;
+    public $by;
 
   /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */
-  public $comments = array();
+    public $comments = [];
 
-  function __construct($comment, $by)
-  {
-    $this->comments = new \Doctrine\Common\Collections\ArrayCollection();
-    $this->comment = $comment;
-    $this->by = $by;
-  }
+    function __construct($comment, $by)
+    {
+        $this->comments = new ArrayCollection();
+        $this->comment = $comment;
+        $this->by = $by;
+    }
 }

@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
 class GH999Test extends BaseTest
 {
     public function testModifyingInFlushHandler()
     {
-        $this->dm->getEventManager()->addEventListener(array(Events::onFlush), new GH999Listener());
+        $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH999Listener());
 
         $document = new GH999Document('name');
         $this->dm->persist($document);
@@ -26,7 +29,8 @@ class GH999Test extends BaseTest
 
 class GH999Listener
 {
-    public function onFlush(OnFlushEventArgs $args) {
+    public function onFlush(OnFlushEventArgs $args)
+    {
         $dm = $args->getDocumentManager();
 
         foreach ($dm->getUnitOfWork()->getScheduledDocumentInsertions() as $document) {
@@ -72,4 +76,3 @@ class GH999Document
         throw new \Exception('Did not expect postUpdate to be called when persisting a new document');
     }
 }
-

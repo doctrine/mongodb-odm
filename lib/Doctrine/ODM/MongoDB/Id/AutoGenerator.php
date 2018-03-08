@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MongoDB\BSON\ObjectId;
 
 /**
  * AutoGenerator generates a native ObjectId
  *
- * @since       1.0
  */
 class AutoGenerator extends AbstractIdGenerator
 {
     /** @inheritDoc */
     public function generate(DocumentManager $dm, $document)
     {
-        return new \MongoDB\BSON\ObjectId();
+        return new ObjectId();
     }
 }

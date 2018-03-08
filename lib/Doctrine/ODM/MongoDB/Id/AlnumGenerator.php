@@ -1,8 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use const STR_PAD_LEFT;
+use function bccomp;
+use function bcdiv;
+use function bcmod;
+use function intval;
+use function is_numeric;
+use function str_pad;
+use function strlen;
 
 /**
  * AlnumGenerator is responsible for generating cased alpha-numeric unique identifiers.
@@ -16,11 +26,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  *
  * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
  *
- * @since       1.0
  */
 class AlnumGenerator extends IncrementGenerator
 {
-
     protected $pad = null;
 
     protected $awkwardSafeMode = false;
@@ -62,15 +70,15 @@ class AlnumGenerator extends IncrementGenerator
     /** @inheritDoc */
     public function generate(DocumentManager $dm, $document)
     {
-        $id = parent::generate($dm, $document);
+        $id = (string) parent::generate($dm, $document);
         $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;
-        $base  = strlen($index);
+        $base  = (string) strlen($index);
 
         $out = '';
         do {
             $out = $index[bcmod($id, $base)] . $out;
             $id = bcdiv($id, $base);
-        } while (bccomp($id, 0) == 1);
+        } while (bccomp($id, '0') === 1);
 
         if (is_numeric($this->pad)) {
             $out = str_pad($out, $this->pad, '0', STR_PAD_LEFT);

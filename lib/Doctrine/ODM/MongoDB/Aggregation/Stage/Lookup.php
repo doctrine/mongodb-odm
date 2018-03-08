@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
@@ -8,6 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -50,10 +53,7 @@ class Lookup extends Stage
     private $as;
 
     /**
-     * @param Builder $builder
      * @param string $from
-     * @param DocumentManager $documentManager
-     * @param ClassMetadata $class
      */
     public function __construct(Builder $builder, $from, DocumentManager $documentManager, ClassMetadata $class)
     {
@@ -130,7 +130,7 @@ class Lookup extends Stage
                 'localField' => $this->localField,
                 'foreignField' => $this->foreignField,
                 'as' => $this->as,
-            ]
+            ],
         ];
     }
 
@@ -170,9 +170,9 @@ class Lookup extends Stage
         return $this;
     }
 
-    protected function prepareFieldName($fieldName, ClassMetadata $class = null)
+    protected function prepareFieldName($fieldName, ?ClassMetadata $class = null)
     {
-        if ( ! $class) {
+        if (! $class) {
             return $fieldName;
         }
 
@@ -237,7 +237,7 @@ class Lookup extends Stage
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
+     * @return DocumentPersister
      */
     private function getDocumentPersister(ClassMetadata $class)
     {

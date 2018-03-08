@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
+use MongoDB\BSON\ObjectId;
+use function get_class;
 
 class GH774Test extends BaseTest
 {
     public function testUpsert()
     {
-        $id = (string) new \MongoDB\BSON\ObjectId();
+        $id = (string) new ObjectId();
 
         $thread = new GH774Thread();
         $thread->id = $id;

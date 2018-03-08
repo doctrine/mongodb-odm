@@ -1,14 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use MongoDB\Driver\ReadPreference;
+use function array_push;
+use function array_shift;
+use function array_values;
+use function call_user_func;
+use function count;
+use function explode;
+use function get_class;
+use function implode;
+use function is_callable;
+use function is_object;
+use function serialize;
+use function sprintf;
 
 /**
  * The ReferencePrimer is responsible for priming reference relationships.
@@ -20,7 +32,6 @@ use MongoDB\Driver\ReadPreference;
  * Priming can only be used for the owning side side of a relationship, since
  * the referenced identifiers are not immediately available on an inverse side.
  *
- * @since  1.0
  */
 class ReferencePrimer
 {
@@ -48,19 +59,19 @@ class ReferencePrimer
     /**
      * Initializes this instance with the specified document manager and unit of work.
      *
-     * @param DocumentManager $dm Document manager.
-     * @param UnitOfWork $uow Unit of work.
+     * @param DocumentManager $dm  Document manager.
+     * @param UnitOfWork      $uow Unit of work.
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
         $this->dm = $dm;
         $this->uow = $uow;
 
-        $this->defaultPrimer = function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
+        $this->defaultPrimer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
             $qb = $dm->createQueryBuilder($class->name)
                 ->field($class->identifier)->in($ids);
 
-            if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
                 $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE]);
             }
 
@@ -87,7 +98,7 @@ class ReferencePrimer
      * @throws \LogicException If the mapped field is a simple reference and is
      *                         missing a target document class.
      */
-    public function primeReferences(ClassMetadata $class, $documents, $fieldName, array $hints = array(), $primer = null)
+    public function primeReferences(ClassMetadata $class, $documents, $fieldName, array $hints = [], $primer = null)
     {
         $data = $this->parseDotSyntaxForPrimer($fieldName, $class, $documents);
         $mapping = $data['mapping'];
@@ -98,7 +109,7 @@ class ReferencePrimer
         /* Inverse-side references would need to be populated before we can
          * collect references to be primed. This is not supported.
          */
-        if ( ! isset($mapping['reference']) || ! $mapping['isOwningSide']) {
+        if (! isset($mapping['reference']) || ! $mapping['isOwningSide']) {
             throw new \InvalidArgumentException(sprintf('Field "%s" is not the owning side of a reference relationship in class "%s"', $fieldName, $class->name));
         }
 
@@ -114,7 +125,7 @@ class ReferencePrimer
         }
 
         $primer = $primer ?: $this->defaultPrimer;
-        $groupedIds = array();
+        $groupedIds = [];
 
         /* @var $document PersistentCollectionInterface */
         foreach ($documents as $document) {
@@ -123,7 +134,7 @@ class ReferencePrimer
             /* The field will need to be either a Proxy (reference-one) or
              * PersistentCollection (reference-many) in order to prime anything.
              */
-            if ( ! is_object($fieldValue)) {
+            if (! is_object($fieldValue)) {
                 continue;
             }
 
@@ -131,7 +142,7 @@ class ReferencePrimer
                 $refClass = $this->dm->getClassMetadata(get_class($fieldValue));
                 $id = $this->uow->getDocumentIdentifier($fieldValue);
                 $groupedIds[$refClass->name][serialize($id)] = $id;
-            } elseif ($mapping['type'] == 'many' && $fieldValue instanceof PersistentCollectionInterface) {
+            } elseif ($mapping['type'] === 'many' && $fieldValue instanceof PersistentCollectionInterface) {
                 $this->addManyReferences($fieldValue, $groupedIds);
             }
         }
@@ -159,14 +170,14 @@ class ReferencePrimer
     private function parseDotSyntaxForPrimer($fieldName, $class, $documents, $mapping = null)
     {
         // Recursion passthrough:
-        if ($mapping != null) {
-            return array('fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping);
+        if ($mapping !== null) {
+            return ['fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping];
         }
 
         // Gather mapping data:
         $e = explode('.', $fieldName);
 
-        if ( ! isset($class->fieldMappings[$e[0]])) {
+        if (! isset($class->fieldMappings[$e[0]])) {
             throw new \InvalidArgumentException(sprintf('Field %s cannot be further parsed for priming because it is unmapped.', $fieldName));
         }
 
@@ -174,16 +185,16 @@ class ReferencePrimer
         $e[0] = $mapping['fieldName'];
 
         // Case of embedded document(s) to recurse through:
-        if ( ! isset($mapping['reference'])) {
+        if (! isset($mapping['reference'])) {
             if (empty($mapping['embedded'])) {
                 throw new \InvalidArgumentException(sprintf('Field "%s" of fieldName "%s" is not an embedded document, therefore no children can be primed. Aborting. This feature does not support traversing nested referenced documents at this time.', $e[0], $fieldName));
             }
 
-            if ( ! isset($mapping['targetDocument'])) {
+            if (! isset($mapping['targetDocument'])) {
                 throw new \InvalidArgumentException(sprintf('No target document class has been specified for this embedded document. However, targetDocument mapping must be specified in order for prime to work on fieldName "%s" for mapping of field "%s".', $fieldName, $mapping['fieldName']));
             }
 
-            $childDocuments = array();
+            $childDocuments = [];
 
             foreach ($documents as $document) {
                 $fieldValue = $class->getFieldValue($document, $e[0]);
@@ -193,7 +204,7 @@ class ReferencePrimer
                         array_push($childDocuments, $elemDocument);
                     }
                 } else {
-                    array_push($childDocuments,$fieldValue);
+                    array_push($childDocuments, $fieldValue);
                 }
             }
 
@@ -201,11 +212,11 @@ class ReferencePrimer
 
             $childClass = $this->dm->getClassMetadata($mapping['targetDocument']);
 
-            if ( ! $childClass->hasField($e[0])) {
+            if (! $childClass->hasField($e[0])) {
                 throw new \InvalidArgumentException(sprintf('Field to prime must exist in embedded target document. Reference fieldName "%s" for mapping of target document class "%s".', $fieldName, $mapping['targetDocument']));
             }
 
-            $childFieldName = implode('.',$e);
+            $childFieldName = implode('.', $e);
 
             return $this->parseDotSyntaxForPrimer($childFieldName, $childClass, $childDocuments);
         }
@@ -216,7 +227,7 @@ class ReferencePrimer
                 throw new \InvalidArgumentException(sprintf('Cannot prime more than one layer deep but field "%s" is a reference and has children in fieldName "%s".', $e[0], $fieldName));
             }
 
-            return array('fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping);
+            return ['fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping];
         }
     }
 
@@ -227,8 +238,7 @@ class ReferencePrimer
      * have a target document class defined. Without that, there is no way to
      * infer the class of the referenced documents.
      *
-     * @param PersistentCollectionInterface $persistentCollection
-     * @param array                $groupedIds
+     * @param array $groupedIds
      */
     private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds)
     {
@@ -251,7 +261,7 @@ class ReferencePrimer
 
             $document = $this->uow->tryGetById($id, $class);
 
-            if ( ! $document || ($document instanceof Proxy && ! $document->__isInitialized())) {
+            if (! $document || ($document instanceof Proxy && ! $document->__isInitialized())) {
                 $id = $class->getPHPIdentifierValue($id);
                 $groupedIds[$className][serialize($id)] = $id;
             }

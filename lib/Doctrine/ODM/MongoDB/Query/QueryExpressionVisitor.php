@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Value;
+use MongoDB\BSON\Regex;
 
 /**
  * Converts Collection expressions to query expressions.
  *
- * @since  1.0
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {
@@ -20,7 +22,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      * @todo Implement support for Comparison::CONTAINS
      * @var array
      */
-    private static $operatorMethods = array(
+    private static $operatorMethods = [
         Comparison::EQ => 'equals',
         Comparison::GT => 'gt',
         Comparison::GTE => 'gte',
@@ -30,28 +32,23 @@ class QueryExpressionVisitor extends ExpressionVisitor
         Comparison::LTE => 'lte',
         Comparison::NEQ => 'notEqual',
         Comparison::NIN => 'notIn',
-    );
+    ];
 
     /**
      * Map Criteria API composite types to query builder methods
      *
      * @var array
      */
-    private static $compositeMethods = array(
+    private static $compositeMethods = [
         CompositeExpression::TYPE_AND => 'addAnd',
         CompositeExpression::TYPE_OR => 'addOr',
-    );
+    ];
 
     /**
      * @var Builder
      */
     protected $builder;
 
-    /**
-     * Constructor.
-     *
-     * @param Builder $builder
-     */
     public function __construct(Builder $builder)
     {
         $this->builder = $builder;
@@ -61,8 +58,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      * Converts a comparison expression into the target query language output.
      *
      * @see ExpressionVisitor::walkComparison()
-     * @param Comparison $comparison
-     * @return \Doctrine\ODM\MongoDB\Query\Expr
+     * @return Expr
      */
     public function walkComparison(Comparison $comparison)
     {
@@ -87,7 +83,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
 
                 return $this->builder->expr()
                     ->field($comparison->getField())
-                    ->equals(new \MongoDB\BSON\Regex($value, ''));
+                    ->equals(new Regex($value, ''));
 
             default:
                 throw new \RuntimeException('Unknown comparison operator: ' . $comparison->getOperator());
@@ -98,12 +94,11 @@ class QueryExpressionVisitor extends ExpressionVisitor
      * Converts a composite expression into the target query language output.
      *
      * @see ExpressionVisitor::walkCompositeExpression()
-     * @param CompositeExpression $compositeExpr
-     * @return \Doctrine\ODM\MongoDB\Query\Expr
+     * @return Expr
      */
     public function walkCompositeExpression(CompositeExpression $compositeExpr)
     {
-        if ( ! isset(self::$compositeMethods[$compositeExpr->getType()])) {
+        if (! isset(self::$compositeMethods[$compositeExpr->getType()])) {
             throw new \RuntimeException('Unknown composite ' . $compositeExpr->getType());
         }
 
@@ -121,7 +116,6 @@ class QueryExpressionVisitor extends ExpressionVisitor
      * Converts a value expression into the target query language part.
      *
      * @see ExpressionVisitor::walkValue()
-     * @param Value $value
      * @return mixed
      */
     public function walkValue(Value $value)

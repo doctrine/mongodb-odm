@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
@@ -9,7 +11,12 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
+use function array_map;
+use function is_array;
+use function is_string;
+use function substr;
 
 class GraphLookup extends Stage
 {
@@ -69,11 +76,8 @@ class GraphLookup extends Stage
     private $targetClass;
 
     /**
-     * @param Builder $builder
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
-     * @param DocumentManager $documentManager
-     * @param ClassMetadata $class
      */
     public function __construct(Builder $builder, $from, DocumentManager $documentManager, ClassMetadata $class)
     {
@@ -116,13 +120,13 @@ class GraphLookup extends Stage
     public function connectFromField($connectFromField)
     {
         // No targetClass mapping - simply use field name as is
-        if ( ! $this->targetClass) {
+        if (! $this->targetClass) {
             $this->connectFromField = $connectFromField;
             return $this;
         }
 
         // connectFromField doesn't have to be a reference - in this case, just convert the field name
-        if ( ! $this->targetClass->hasReference($connectFromField)) {
+        if (! $this->targetClass->hasReference($connectFromField)) {
             $this->connectFromField = $this->convertTargetFieldName($connectFromField);
             return $this;
         }
@@ -281,7 +285,7 @@ class GraphLookup extends Stage
      */
     private function fromReference($fieldName)
     {
-        if ( ! $this->class->hasReference($fieldName)) {
+        if (! $this->class->hasReference($fieldName)) {
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);
         }
 
@@ -330,7 +334,7 @@ class GraphLookup extends Stage
             return array_map([$this, 'convertTargetFieldName'], $fieldName);
         }
 
-        if ( ! $this->targetClass) {
+        if (! $this->targetClass) {
             return $fieldName;
         }
 
@@ -338,8 +342,7 @@ class GraphLookup extends Stage
     }
 
     /**
-     * @param ClassMetadata $class
-     * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
+     * @return DocumentPersister
      */
     private function getDocumentPersister(ClassMetadata $class)
     {
@@ -348,7 +351,7 @@ class GraphLookup extends Stage
 
     private function getReferencedFieldName($fieldName, array $mapping)
     {
-        if ( ! $mapping['isOwningSide']) {
+        if (! $mapping['isOwningSide']) {
             if (isset($mapping['repositoryMethod']) || ! isset($mapping['mappedBy'])) {
                 throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $fieldName);
             }

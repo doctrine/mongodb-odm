@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 use Documents\Book;
 use Documents\Chapter;
@@ -11,13 +14,15 @@ use Documents\IdentifiedChapter;
 use Documents\Page;
 use Documents\Phonebook;
 use Documents\Phonenumber;
+use MongoDB\BSON\ObjectId;
+use function get_class;
 
 /**
  * CollectionPersister will throw exception when collection with atomicSet
  * or atomicSetArray should be handled by it. If no exception was thrown it
  * means that collection update was handled by DocumentPersister.
  */
-class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class AtomicSetTest extends BaseTest
 {
     /**
      * @var QueryLogger
@@ -27,7 +32,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     protected function getConfiguration()
     {
         $this->markTestSkipped('mongodb-driver: query logging does not exist');
-        if ( ! isset($this->ql)) {
+        if (! isset($this->ql)) {
             $this->ql = new QueryLogger();
         }
 
@@ -51,7 +56,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $user->phonenumbers);
         $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
 
-        $user->surname = "Malarz";
+        $user->surname = 'Malarz';
         $user->phonenumbers[] = new Phonenumber('87654321');
         $this->ql->clear();
         $this->dm->flush();
@@ -69,7 +74,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testAtomicUpsert()
     {
         $user = new AtomicSetUser('Maciej');
-        $user->id = new \MongoDB\BSON\ObjectId();
+        $user->id = new ObjectId();
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -99,7 +104,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $user->phonenumbers);
         $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
 
-        $user->surname = "Malarz";
+        $user->surname = 'Malarz';
         $user->phonenumbers = $clearWith;
         $this->ql->clear();
         $this->dm->flush();
@@ -114,11 +119,11 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function provideAtomicCollectionUnset()
     {
-        return array(
-            array(null),
-            array(array()),
-            array(new ArrayCollection()),
-        );
+        return [
+            [null],
+            [[]],
+            [new ArrayCollection()],
+        ];
     }
 
     public function testAtomicCollectionClearAndUpdate()
@@ -250,7 +255,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $publicBook->getPhonenumbers());
         $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
-    
+
     public function testWeNeedToGoDeeper()
     {
         $user = new AtomicSetUser('Maciej');
@@ -413,7 +418,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Simulate another PHP request which loads this record and tries to add an embedded document two levels deep...
         $this->dm->clear();
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
 
         // Now we add a new "page" to the only chapter in this book.
         $firstChapter = $book->chapters->first();
@@ -425,8 +430,8 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertCount(1, $this->ql, 'Adding a page to the first chapter of the book requires one query');
 
         // this is failing if lifecycle callback postUpdate is recomputing change set
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
-        $this->assertEquals(2, $book->chapters->first()->pages->count(), "Two page objects are expected in the first chapter of the book.");
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
+        $this->assertEquals(2, $book->chapters->first()->pages->count(), 'Two page objects are expected in the first chapter of the book.');
     }
 
     public function testReplacementOfEmbedManyElements()
@@ -441,10 +446,10 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Simulate another PHP request which loads this record.
         $this->dm->clear();
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
 
         $firstChapter = $book->chapters->first();
-        $firstChapter->name = "First chapter A";
+        $firstChapter->name = 'First chapter A';
 
         // Developers commonly attempt to replace the contents of an EmbedMany with a new ArrayCollection like this:
         $replacementChapters = new ArrayCollection();
@@ -456,7 +461,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Simulate another PHP request.
         $this->dm->clear();
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
 
         // Verify we see chapters A and B.
         $this->assertEquals('First chapter A', $book->chapters[0]->name);
@@ -472,9 +477,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
         $firstChapter = $book->identifiedChapters->first();
-        $firstChapter->name = "First chapter A";
+        $firstChapter->name = 'First chapter A';
         $replacementChapters = new ArrayCollection();
         $replacementChapters->add($firstChapter);
         $replacementChapters->add(new IdentifiedChapter('Second chapter B'));
@@ -483,7 +488,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
         $this->assertEquals('First chapter A', $book->identifiedChapters[0]->name);
         $this->assertEquals('Second chapter B', $book->identifiedChapters[1]->name);
     }
@@ -500,18 +505,18 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         // Simulate another PHP request which loads this record.
         $this->dm->clear();
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
 
         // Modify the chapter's name.
-        $book->chapters->first()->name = "First chapter A";
+        $book->chapters->first()->name = 'First chapter A';
 
         $this->dm->flush();
 
         // Simulate another PHP request & verify the change was saved.
         $this->dm->clear();
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
 
-        $this->assertEquals('First chapter A', $book->chapters[0]->name, "The chapter title failed to update.");
+        $this->assertEquals('First chapter A', $book->chapters[0]->name, 'The chapter title failed to update.');
     }
 
     public function testUpdatedEmbeddedDocumentAndDirtyCollectionInside()
@@ -523,9 +528,9 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
         $firstChapter = $book->chapters->first();
-        $firstChapter->name = "Apple";
+        $firstChapter->name = 'Apple';
 
         // Add some pages.
         $firstChapter->pages->add(new Page(1));
@@ -534,7 +539,7 @@ class AtomicSetTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(array('_id' => $book->id));
+        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
         $this->assertEquals(2, $book->chapters->first()->pages->count());
     }
 }

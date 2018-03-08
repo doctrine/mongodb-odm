@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Query\Filter;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use function array_key_exists;
 
 /**
  * The base class that user defined filters should extend.
@@ -22,7 +25,7 @@ abstract class BsonFilter
      * Parameters for the filter.
      * @var array
      */
-    protected $parameters = array();
+    protected $parameters = [];
 
     /**
      * Constructs the BsonFilter object.
@@ -37,8 +40,8 @@ abstract class BsonFilter
     /**
      * Sets a parameter that can be used by the filter.
      *
-     * @param string $name Name of the parameter.
-     * @param mixed $value Value of the parameter.
+     * @param string $name  Name of the parameter.
+     * @param mixed  $value Value of the parameter.
      *
      * @return BsonFilter The current Bson filter.
      */
@@ -61,7 +64,7 @@ abstract class BsonFilter
      */
     final public function getParameter($name)
     {
-        if ( ! array_key_exists($name, $this->parameters)) {
+        if (! array_key_exists($name, $this->parameters)) {
             throw new \InvalidArgumentException("Filter parameter '" . $name . "' is not set.");
         }
         return $this->parameters[$name];
@@ -72,7 +75,6 @@ abstract class BsonFilter
      *
      * If there is no criteria for the class, an empty array should be returned.
      *
-     * @param ClassMetadata $class
      * @return array
      */
     abstract public function addFilterCriteria(ClassMetadata $class);

@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Ecommerce;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use function implode;
+use function in_array;
 
 /**
  * @ODM\Document
  */
 class Currency
 {
-    const
+    public const
         USD   = 'USD',
         EURO  = 'EURO',
         JPN   = 'JPN';
@@ -32,7 +36,7 @@ class Currency
     public function __construct($name, $multiplier = 1)
     {
         $name = (string) $name;
-        if ( ! in_array($name, self::getAll())) {
+        if (! in_array($name, self::getAll())) {
             throw new \InvalidArgumentException(
                 'Currency must be one of ' . implode(', ', self::getAll()) .
                 $name . 'given'
@@ -70,10 +74,10 @@ class Currency
 
     public static function getAll()
     {
-        return array(
+        return [
             self::USD,
             self::EURO,
             self::JPN,
-        );
+        ];
     }
 }

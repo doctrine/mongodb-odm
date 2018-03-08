@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use function is_array;
 
 /**
  * The Hash type.
  *
- * @since       1.0
  */
 class HashType extends Type
 {
     public function convertToDatabaseValue($value)
     {
         if ($value !== null && ! is_array($value)) {
-            throw MongoDBException::invalidValueForType('Hash', array('array', 'null'), $value);
+            throw MongoDBException::invalidValueForType('Hash', ['array', 'null'], $value);
         }
         return $value !== null ? (object) $value : null;
     }

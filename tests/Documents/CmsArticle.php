@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -33,11 +35,13 @@ class CmsArticle
      */
     public $comments;
 
-    public function setAuthor(CmsUser $author) {
+    public function setAuthor(CmsUser $author)
+    {
         $this->user = $author;
     }
 
-    public function addComment(CmsComment $comment) {
+    public function addComment(CmsComment $comment)
+    {
         $this->comments[] = $comment;
         $comment->setArticle($this);
     }

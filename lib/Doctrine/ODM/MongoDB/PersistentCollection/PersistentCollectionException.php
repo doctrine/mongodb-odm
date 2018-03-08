@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use function sprintf;
 
 /**
  * MongoDB ODM PersistentCollection Exception.
  *
- * @since 1.1
  */
 class PersistentCollectionException extends MongoDBException
 {
@@ -27,10 +29,9 @@ class PersistentCollectionException extends MongoDBException
     }
 
     /**
-     * @param string          $className
-     * @param string          $methodName
-     * @param string          $parameterName
-     * @param \Exception|null $previous
+     * @param string $className
+     * @param string $methodName
+     * @param string $parameterName
      *
      * @return self
      */
@@ -38,7 +39,7 @@ class PersistentCollectionException extends MongoDBException
         $className,
         $methodName,
         $parameterName,
-        \Exception $previous = null
+        ?\Throwable $previous = null
     ) {
         return new self(
             sprintf(
@@ -55,11 +56,10 @@ class PersistentCollectionException extends MongoDBException
     /**
      * @param string $className
      * @param string $methodName
-     * @param \Exception|null $previous
      *
      * @return self
      */
-    public static function invalidReturnTypeHint($className, $methodName, \Exception $previous = null)
+    public static function invalidReturnTypeHint($className, $methodName, ?\Throwable $previous = null)
     {
         return new self(
             sprintf(

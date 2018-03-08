@@ -1,36 +1,50 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use Documents\CmsAddress;
+use Documents\CmsArticle;
+use Documents\CmsComment;
+use Documents\CmsGroup;
+use Documents\CmsPhonenumber;
+use Documents\CmsProduct;
+use Documents\CmsUser;
+use Documents\Comment;
+use Documents\Sharded\ShardedUser;
+use Documents\SimpleReferenceUser;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\TestCase;
+use const DOCTRINE_MONGODB_DATABASE;
+use function in_array;
 
 class SchemaManagerTest extends TestCase
 {
-    private $indexedClasses = array(
-        \Documents\CmsAddress::class,
-        \Documents\CmsArticle::class,
-        \Documents\CmsComment::class,
-        \Documents\CmsProduct::class,
-        \Documents\Comment::class,
-        \Documents\SimpleReferenceUser::class,
-    );
+    private $indexedClasses = [
+        CmsAddress::class,
+        CmsArticle::class,
+        CmsComment::class,
+        CmsProduct::class,
+        Comment::class,
+        SimpleReferenceUser::class,
+    ];
 
-    private $someNonIndexedClasses = array(
-        \Documents\CmsGroup::class,
-        \Documents\CmsPhonenumber::class,
-        \Documents\CmsUser::class,
-    );
+    private $someNonIndexedClasses = [
+        CmsGroup::class,
+        CmsPhonenumber::class,
+        CmsUser::class,
+    ];
 
-    private $someMappedSuperclassAndEmbeddedClasses = array(
+    private $someMappedSuperclassAndEmbeddedClasses = [
         'Documents/BlogTagAggregation',
         'Documents/CmsContent',
         'Documents/CmsPage',
@@ -39,11 +53,11 @@ class SchemaManagerTest extends TestCase
         'Documents/Phonenumber',
         'Documents/Song',
         'Documents/SubCategory',
-    );
+    ];
 
-    private $classMetadatas = array();
-    private $documentCollections = array();
-    private $documentDatabases = array();
+    private $classMetadatas = [];
+    private $documentCollections = [];
+    private $documentDatabases = [];
 
     /**
      * @var SchemaManager
@@ -58,7 +72,7 @@ class SchemaManagerTest extends TestCase
         $cmf->setConfiguration($this->dm->getConfiguration());
         $cmf->setDocumentManager($this->dm);
 
-        $map = array();
+        $map = [];
 
         foreach ($cmf->getAllMetadata() as $cm) {
             $this->documentCollections[$cm->name] = $this->getMockCollection();
@@ -91,39 +105,39 @@ class SchemaManagerTest extends TestCase
     public function testEnsureDocumentIndexes()
     {
         foreach ($this->documentCollections as $class => $collection) {
-            if ($class === \Documents\CmsArticle::class) {
+            if ($class === CmsArticle::class) {
                 $collection->expects($this->once())->method('createIndex');
             } else {
                 $collection->expects($this->never())->method('createIndex');
             }
         }
 
-        $this->schemaManager->ensureDocumentIndexes(\Documents\CmsArticle::class);
+        $this->schemaManager->ensureDocumentIndexes(CmsArticle::class);
     }
 
     public function testEnsureDocumentIndexesWithTwoLevelInheritance()
     {
-        $collection = $this->documentCollections[\Documents\CmsProduct::class];
+        $collection = $this->documentCollections[CmsProduct::class];
         $collection->expects($this->once())->method('createIndex');
 
-        $this->schemaManager->ensureDocumentIndexes(\Documents\CmsProduct::class);
+        $this->schemaManager->ensureDocumentIndexes(CmsProduct::class);
     }
 
     public function testEnsureDocumentIndexesWithTimeout()
     {
-        $collection = $this->documentCollections[\Documents\CmsArticle::class];
+        $collection = $this->documentCollections[CmsArticle::class];
         $collection->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), $this->callback(function($o) {
+            ->with($this->anything(), $this->callback(function ($o) {
                 return isset($o['timeout']) && $o['timeout'] === 10000;
             }));
 
-        $this->schemaManager->ensureDocumentIndexes(\Documents\CmsArticle::class, 10000);
+        $this->schemaManager->ensureDocumentIndexes(CmsArticle::class, 10000);
     }
 
     public function testUpdateDocumentIndexesShouldCreateMappedIndexes()
     {
-        $collection = $this->documentCollections[\Documents\CmsArticle::class];
+        $collection = $this->documentCollections[CmsArticle::class];
         $collection->expects($this->once())
             ->method('listIndexes')
             ->will($this->returnValue(new IndexInfoIteratorIterator(new \ArrayIterator([]))));
@@ -132,17 +146,18 @@ class SchemaManagerTest extends TestCase
         $collection->expects($this->never())
             ->method('dropIndex');
 
-        $this->schemaManager->updateDocumentIndexes(\Documents\CmsArticle::class);
+        $this->schemaManager->updateDocumentIndexes(CmsArticle::class);
     }
 
     public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes()
     {
-        $collection = $this->documentCollections[\Documents\CmsArticle::class];
+        $collection = $this->documentCollections[CmsArticle::class];
         $indexes = [[
             'v' => 1,
-            'key' => array('topic' => -1),
-            'name' => 'topic_-1'
-        ]];
+            'key' => ['topic' => -1],
+            'name' => 'topic_-1',
+        ],
+        ];
         $collection->expects($this->once())
             ->method('listIndexes')
             ->will($this->returnValue(new IndexInfoIteratorIterator(new \ArrayIterator($indexes))));
@@ -151,7 +166,7 @@ class SchemaManagerTest extends TestCase
         $collection->expects($this->once())
             ->method('dropIndex');
 
-        $this->schemaManager->updateDocumentIndexes(\Documents\CmsArticle::class);
+        $this->schemaManager->updateDocumentIndexes(CmsArticle::class);
     }
 
     public function testDeleteIndexes()
@@ -170,24 +185,24 @@ class SchemaManagerTest extends TestCase
     public function testDeleteDocumentIndexes()
     {
         foreach ($this->documentCollections as $class => $collection) {
-            if ($class === \Documents\CmsArticle::class) {
+            if ($class === CmsArticle::class) {
                 $collection->expects($this->once())->method('dropIndexes');
             } else {
                 $collection->expects($this->never())->method('dropIndexes');
             }
         }
 
-        $this->schemaManager->deleteDocumentIndexes(\Documents\CmsArticle::class);
+        $this->schemaManager->deleteDocumentIndexes(CmsArticle::class);
     }
 
     public function testCreateDocumentCollection()
     {
-        $cm = $this->classMetadatas[\Documents\CmsArticle::class];
+        $cm = $this->classMetadatas[CmsArticle::class];
         $cm->collectionCapped = true;
         $cm->collectionSize = 1048576;
         $cm->collectionMax = 32;
 
-        $database = $this->documentDatabases[\Documents\CmsArticle::class];
+        $database = $this->documentDatabases[CmsArticle::class];
         $database->expects($this->once())
             ->method('createCollection')
             ->with(
@@ -195,12 +210,12 @@ class SchemaManagerTest extends TestCase
                 [
                     'capped' => true,
                     'size' => 1048576,
-                    'max' => 32
+                    'max' => 32,
                 ]
             )
         ;
 
-        $this->schemaManager->createDocumentCollection(\Documents\CmsArticle::class);
+        $this->schemaManager->createDocumentCollection(CmsArticle::class);
     }
 
     public function testCreateCollections()
@@ -234,7 +249,7 @@ class SchemaManagerTest extends TestCase
     public function testDropDocumentCollection()
     {
         foreach ($this->documentCollections as $class => $collection) {
-            if ($class === \Documents\CmsArticle::class) {
+            if ($class === CmsArticle::class) {
                 $collection->expects($this->once())
                     ->method('drop')
                     ->with();
@@ -243,20 +258,20 @@ class SchemaManagerTest extends TestCase
             }
         }
 
-        $this->schemaManager->dropDocumentCollection(\Documents\CmsArticle::class);
+        $this->schemaManager->dropDocumentCollection(CmsArticle::class);
     }
 
     public function testDropDocumentDatabase()
     {
         foreach ($this->documentDatabases as $class => $database) {
-            if ($class === \Documents\CmsArticle::class) {
+            if ($class === CmsArticle::class) {
                 $database->expects($this->once())->method('drop');
             } else {
                 $database->expects($this->never())->method('drop');
             }
         }
 
-        $this->dm->getSchemaManager()->dropDocumentDatabase(\Documents\CmsArticle::class);
+        $this->dm->getSchemaManager()->dropDocumentDatabase(CmsArticle::class);
     }
 
     public function testDropDatabases()
@@ -278,7 +293,7 @@ class SchemaManagerTest extends TestCase
     public function testIsMongoIndexEquivalentToDocumentIndex($expected, $mongoIndex, $documentIndex)
     {
         $defaultMongoIndex = [
-            'key' => ['foo' => 1, 'bar' => -1]
+            'key' => ['foo' => 1, 'bar' => -1],
         ];
         $defaultDocumentIndex = [
             'keys' => ['foo' => 1, 'bar' => -1],
@@ -445,7 +460,7 @@ class SchemaManagerTest extends TestCase
                 'expected' => true,
                 'mongoIndex' => ['partialFilterExpression' => []],
                 'documentIndex' => [],
-            ]
+            ],
         ];
     }
 
@@ -454,7 +469,7 @@ class SchemaManagerTest extends TestCase
         $this->markTestSkipped('Sharding support is still WIP');
 
         $dbName = DOCTRINE_MONGODB_DATABASE;
-        $classMetadata = $this->dm->getClassMetadata(\Documents\Sharded\ShardedUser::class);
+        $classMetadata = $this->dm->getClassMetadata(ShardedUser::class);
         $collectionName = $classMetadata->getCollection();
         $dbMock = $this->getMockDatabase();
         $dbMock->method('getName')->willReturn($dbName);
@@ -462,18 +477,18 @@ class SchemaManagerTest extends TestCase
         $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
-        $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
+        $this->dm->documentDatabases = [$classMetadata->getName() => $dbMock];
 
         $adminDBMock
             ->expects($this->at(0))
             ->method('command')
-            ->with(array('enableSharding' => $dbName))
-            ->willReturn(array('ok' => 1));
+            ->with(['enableSharding' => $dbName])
+            ->willReturn(['ok' => 1]);
         $adminDBMock
             ->expects($this->at(1))
             ->method('command')
-            ->with(array('shardCollection' => $dbName . '.' . $collectionName, 'key' => array('_id' => 'hashed')))
-            ->willReturn(array('ok' => 1));
+            ->with(['shardCollection' => $dbName . '.' . $collectionName, 'key' => ['_id' => 'hashed']])
+            ->willReturn(['ok' => 1]);
 
         $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
     }
@@ -487,7 +502,7 @@ class SchemaManagerTest extends TestCase
         $this->markTestSkipped('Sharding support is still WIP');
 
         $dbName = DOCTRINE_MONGODB_DATABASE;
-        $classMetadata = $this->dm->getClassMetadata(\Documents\Sharded\ShardedUser::class);
+        $classMetadata = $this->dm->getClassMetadata(ShardedUser::class);
         $collectionName = $classMetadata->getCollection();
         $dbMock = $this->getMockDatabase();
         $dbMock->method('getName')->willReturn($dbName);
@@ -495,18 +510,18 @@ class SchemaManagerTest extends TestCase
         $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
-        $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
+        $this->dm->documentDatabases = [$classMetadata->getName() => $dbMock];
 
         $adminDBMock
             ->expects($this->at(0))
             ->method('command')
-            ->with(array('enableSharding' => $dbName))
-            ->willReturn(array('ok' => 1));
+            ->with(['enableSharding' => $dbName])
+            ->willReturn(['ok' => 1]);
         $adminDBMock
             ->expects($this->at(1))
             ->method('command')
-            ->with(array('shardCollection' => $dbName . '.' . $collectionName, 'key' => array('_id' => 'hashed')))
-            ->willReturn(array('ok' => 0, 'code' => 666, 'errmsg' => 'Scary error'));
+            ->with(['shardCollection' => $dbName . '.' . $collectionName, 'key' => ['_id' => 'hashed']])
+            ->willReturn(['ok' => 0, 'code' => 666, 'errmsg' => 'Scary error']);
 
         $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
     }
@@ -516,7 +531,7 @@ class SchemaManagerTest extends TestCase
         $this->markTestSkipped('Sharding support is still WIP');
 
         $dbName = DOCTRINE_MONGODB_DATABASE;
-        $classMetadata = $this->dm->getClassMetadata(\Documents\Sharded\ShardedUser::class);
+        $classMetadata = $this->dm->getClassMetadata(ShardedUser::class);
         $collectionName = $classMetadata->getCollection();
         $dbMock = $this->getMockDatabase();
         $dbMock->method('getName')->willReturn($dbName);
@@ -524,18 +539,18 @@ class SchemaManagerTest extends TestCase
         $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
-        $this->dm->documentDatabases = array($classMetadata->getName() => $dbMock);
+        $this->dm->documentDatabases = [$classMetadata->getName() => $dbMock];
 
         $adminDBMock
             ->expects($this->at(0))
             ->method('command')
-            ->with(array('enableSharding' => $dbName))
-            ->willReturn(array('ok' => 1));
+            ->with(['enableSharding' => $dbName])
+            ->willReturn(['ok' => 1]);
         $adminDBMock
             ->expects($this->at(1))
             ->method('command')
-            ->with(array('shardCollection' => $dbName . '.' . $collectionName, 'key' => array('_id' => 'hashed')))
-            ->willReturn(array('ok' => 0, 'code' => 20, 'errmsg' => 'already sharded'));
+            ->with(['shardCollection' => $dbName . '.' . $collectionName, 'key' => ['_id' => 'hashed']])
+            ->willReturn(['ok' => 0, 'code' => 20, 'errmsg' => 'already sharded']);
 
         $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
     }
@@ -548,16 +563,16 @@ class SchemaManagerTest extends TestCase
         $adminDBMock
             ->expects($this->once())
             ->method('command')
-            ->with(array('enableSharding' => 'db'))
-            ->willReturn(array('ok' => 1));
+            ->with(['enableSharding' => 'db'])
+            ->willReturn(['ok' => 1]);
         $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
         $dbMock = $this->getMockDatabase();
         $dbMock->method('getName')->willReturn('db');
-        $this->dm->documentDatabases = array(\Documents\Sharded\ShardedUser::class => $dbMock);
+        $this->dm->documentDatabases = [ShardedUser::class => $dbMock];
 
-        $this->schemaManager->enableShardingForDbByDocumentName(\Documents\Sharded\ShardedUser::class);
+        $this->schemaManager->enableShardingForDbByDocumentName(ShardedUser::class);
     }
 
     /**
@@ -572,16 +587,16 @@ class SchemaManagerTest extends TestCase
         $adminDBMock
             ->expects($this->once())
             ->method('command')
-            ->with(array('enableSharding' => 'db'))
-            ->willReturn(array('ok' => 0, 'code' => 666, 'errmsg' => 'Scary error'));
+            ->with(['enableSharding' => 'db'])
+            ->willReturn(['ok' => 0, 'code' => 666, 'errmsg' => 'Scary error']);
         $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
         $dbMock = $this->getMockDatabase();
         $dbMock->method('getName')->willReturn('db');
-        $this->dm->documentDatabases = array(\Documents\Sharded\ShardedUser::class => $dbMock);
+        $this->dm->documentDatabases = [ShardedUser::class => $dbMock];
 
-        $this->schemaManager->enableShardingForDbByDocumentName(\Documents\Sharded\ShardedUser::class);
+        $this->schemaManager->enableShardingForDbByDocumentName(ShardedUser::class);
     }
 
     public function testEnableShardingForDbIgnoresAlreadyShardedError()
@@ -592,16 +607,16 @@ class SchemaManagerTest extends TestCase
         $adminDBMock
             ->expects($this->once())
             ->method('command')
-            ->with(array('enableSharding' => 'db'))
-            ->willReturn(array('ok' => 0, 'code' => 23, 'errmsg' => 'already enabled'));
+            ->with(['enableSharding' => 'db'])
+            ->willReturn(['ok' => 0, 'code' => 23, 'errmsg' => 'already enabled']);
         $connMock = $this->getMockClient();
         $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
         $this->dm->connection = $connMock;
         $dbMock = $this->getMockDatabase();
         $dbMock->method('getName')->willReturn('db');
-        $this->dm->documentDatabases = array(\Documents\Sharded\ShardedUser::class => $dbMock);
+        $this->dm->documentDatabases = [ShardedUser::class => $dbMock];
 
-        $this->schemaManager->enableShardingForDbByDocumentName(\Documents\Sharded\ShardedUser::class);
+        $this->schemaManager->enableShardingForDbByDocumentName(ShardedUser::class);
     }
 
     private function getMockCollection()

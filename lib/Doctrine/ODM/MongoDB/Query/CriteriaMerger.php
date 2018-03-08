@@ -1,6 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Query;
+
+use function array_filter;
+use function array_values;
+use function count;
 
 /**
  * Utility class for merging query criteria.
@@ -21,7 +27,7 @@ class CriteriaMerger
     public function merge(...$criterias)
     {
         $nonEmptyCriterias = array_values(array_filter($criterias, function (array $criteria) {
-            return !empty($criteria);
+            return ! empty($criteria);
         }));
 
         switch (count($nonEmptyCriterias)) {

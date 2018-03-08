@@ -1,24 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Documents\Address;
-use Documents\Profile;
-use Documents\ProfileNotify;
-use Documents\Phonenumber;
-use Documents\Account;
-use Documents\Group;
-use Documents\User;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Account;
+use Documents\Address;
+use Documents\Group;
+use Documents\Phonenumber;
+use Documents\Profile;
+use Documents\ProfileNotify;
+use Documents\User;
+use MongoDB\BSON\Binary;
+use MongoDB\BSON\ObjectId;
+use function get_class;
 
-class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ReferencesTest extends BaseTest
 {
     public function testManyDeleteReference()
     {
-        $user = new \Documents\User();
+        $user = new User();
 
         $user->addGroup(new Group('Group 1'));
         $user->addGroup(new Group('Group 2'));
@@ -86,7 +93,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(get_class($user), $user->getId());
-        $this->assertInstanceOf(\Doctrine\Common\Persistence\Proxy::class, $user->getProfileNotify());
+        $this->assertInstanceOf(Proxy::class, $user->getProfileNotify());
         $this->assertFalse($user->getProfileNotify()->__isInitialized());
 
         $user->getProfileNotify()->setLastName('Malarz');
@@ -126,7 +133,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testManyEmbedded()
     {
-        $user = new \Documents\User();
+        $user = new User();
         $user->addPhonenumber(new Phonenumber('6155139185'));
         $user->addPhonenumber(new Phonenumber('6153303769'));
 
@@ -166,7 +173,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testManyReference()
     {
-        $user = new \Documents\User();
+        $user = new User();
         $user->addGroup(new Group('Group 1'));
         $user->addGroup(new Group('Group 2'));
 
@@ -263,7 +270,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testManyReferenceWithAddToSetStrategy()
     {
-        $user = new \Documents\User();
+        $user = new User();
         $user->addUniqueGroup($group1 = new Group('Group 1'));
         $user->addUniqueGroup($group1);
         $user->addUniqueGroup(new Group('Group 2'));
@@ -319,7 +326,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testSortReferenceManyOwningSide()
     {
-        $user = new \Documents\User();
+        $user = new User();
         $user->addGroup(new Group('Group 1'));
         $user->addGroup(new Group('Group 2'));
 
@@ -350,7 +357,7 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $test = new DocumentWithArrayReference();
         $test->referenceOne = new DocumentWithArrayId();
-        $test->referenceOne->id = array('identifier' => 1);
+        $test->referenceOne->id = ['identifier' => 1];
 
         $this->dm->persist($test);
         $this->dm->persist($test->referenceOne);
@@ -360,10 +367,12 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $collection = $this->dm->getDocumentCollection(get_class($test));
 
         $collection->updateOne(
-            array('_id' => new \MongoDB\BSON\ObjectId($test->id)),
-            array('$set' => array(
-                'referenceOne.$id' => array('identifier' => 2),
-            ))
+            ['_id' => new ObjectId($test->id)],
+            [
+            '$set' => [
+                'referenceOne.$id' => ['identifier' => 2],
+            ],
+            ]
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
@@ -387,13 +396,13 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($user));
 
-        $invalidId = new \MongoDB\BSON\ObjectId('abcdefabcdefabcdefabcdef');
+        $invalidId = new ObjectId('abcdefabcdefabcdefabcdef');
 
         $collection->updateOne(
-            array('_id' => new \MongoDB\BSON\ObjectId($user->getId())),
-            array('$set' => array(
-                'profile.$id' => $invalidId,
-            ))
+            ['_id' => new ObjectId($user->getId())],
+            [
+            '$set' => ['profile.$id' => $invalidId],
+            ]
         );
 
         $user = $this->dm->find(get_class($user), $user->getId());
@@ -418,13 +427,13 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($test));
 
-        $invalidBinData = new \MongoDB\BSON\Binary('testbindata', \MongoDB\BSON\Binary::TYPE_OLD_BINARY);
+        $invalidBinData = new Binary('testbindata', Binary::TYPE_OLD_BINARY);
 
         $collection->updateOne(
-            array('_id' => new \MongoDB\BSON\ObjectId($test->id)),
-            array('$set' => array(
-                'referenceOne.$id' => $invalidBinData,
-            ))
+            ['_id' => new ObjectId($test->id)],
+            [
+            '$set' => ['referenceOne.$id' => $invalidBinData],
+            ]
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
@@ -444,13 +453,13 @@ class ReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $collection = $this->dm->getDocumentCollection(get_class($user));
 
-        $invalidId = new \MongoDB\BSON\ObjectId('abcdefabcdefabcdefabcdef');
+        $invalidId = new ObjectId('abcdefabcdefabcdefabcdef');
 
         $collection->updateOne(
-            array('_id' => new \MongoDB\BSON\ObjectId($user->getId())),
-            array('$set' => array(
-                'profile.$id' => $invalidId,
-            ))
+            ['_id' => new ObjectId($user->getId())],
+            [
+            '$set' => ['profile.$id' => $invalidId],
+            ]
         );
 
         $user = $this->dm->find(get_class($user), $user->getId());

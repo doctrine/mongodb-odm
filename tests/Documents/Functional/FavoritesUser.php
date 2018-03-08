@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -22,10 +24,10 @@ class FavoritesUser
      *   }
      * )
      */
-    private $favorites = array();
+    private $favorites = [];
 
     /** @ODM\EmbedMany */
-    private $embedded = array();
+    private $embedded = [];
 
     /** @ODM\ReferenceOne */
     private $favorite;

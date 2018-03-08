@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 /**
  * Default factory class for persistent collection classes.
  *
- * @since 1.1
  */
 final class DefaultPersistentCollectionFactory extends AbstractPersistentCollectionFactory
 {
@@ -14,6 +15,6 @@ final class DefaultPersistentCollectionFactory extends AbstractPersistentCollect
      */
     protected function createCollectionClass($collectionClass)
     {
-        return new $collectionClass;
+        return new $collectionClass();
     }
 }

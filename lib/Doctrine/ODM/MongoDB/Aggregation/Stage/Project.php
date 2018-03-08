@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
+use function func_get_args;
 
 /**
  * Fluent interface for adding a $project stage to an aggregation pipeline.
  *
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.2
  */
 class Project extends Operator
 {
@@ -18,7 +19,7 @@ class Project extends Operator
     public function getExpression()
     {
         return [
-            '$project' => $this->expr->getExpression()
+            '$project' => $this->expr->getExpression(),
         ];
     }
 
@@ -33,7 +34,6 @@ class Project extends Operator
      * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
-     * @since 1.3
      */
     public function avg($expression1, ...$expressions)
     {
@@ -63,7 +63,6 @@ class Project extends Operator
      * If you specify the exclusion of a field other than _id, you cannot employ
      * any other $project specification forms.
      *
-     * @since 1.5
      * @param array $fields
      * @return $this
      */
@@ -86,7 +85,6 @@ class Project extends Operator
      * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
-     * @since 1.3
      */
     public function max($expression1, ...$expressions)
     {
@@ -105,7 +103,6 @@ class Project extends Operator
      * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
-     * @since 1.3
      */
     public function min($expression1, ...$expressions)
     {
@@ -125,7 +122,6 @@ class Project extends Operator
      * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
-     * @since 1.3
      */
     public function stdDevPop($expression1, ...$expressions)
     {
@@ -145,7 +141,6 @@ class Project extends Operator
      * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
-     * @since 1.3
      */
     public function stdDevSamp($expression1, ...$expressions)
     {
@@ -165,7 +160,6 @@ class Project extends Operator
      * @param mixed|Expr ...$expressions Additional expressions
      * @return $this
      *
-     * @since 1.3
      */
     public function sum($expression1, ...$expressions)
     {

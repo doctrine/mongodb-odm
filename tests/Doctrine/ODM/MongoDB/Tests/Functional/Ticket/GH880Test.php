@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH880Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH880Test extends BaseTest
 {
     public function test880()
     {
-        $docs = array();
+        $docs = [];
         $docs[] = new GH880Document('hello', 1);
         $docs[] = new GH880Document('world', 1);
         foreach ($docs as $doc) {
@@ -47,7 +50,7 @@ class GH880Document
     /** @ODM\Field(type="int") */
     public $category;
 
-    public function __construct($status = "", $category = 0)
+    public function __construct($status = '', $category = 0)
     {
         $this->status = $status;
         $this->category = $category;

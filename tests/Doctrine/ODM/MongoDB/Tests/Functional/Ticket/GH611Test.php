@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 class GH611Test extends BaseTest
 {
     public function testPreparationofEmbeddedDocumentValues()
     {
-        $documentId = (string) (new \MongoDB\BSON\ObjectId());
+        $documentId = (string) (new ObjectId());
 
         $document = new GH611Document();
         $document->id = $documentId;
@@ -67,7 +70,7 @@ class GH611Test extends BaseTest
             ->updateOne()
             ->field('id')->equals($documentId)
             ->field('embedded._id')->exists(false)
-            ->field('embedded')->set(array('id' => 5, 'n' => 'c'))
+            ->field('embedded')->set(['id' => 5, 'n' => 'c'])
             ->getQuery()
             ->execute();
 
@@ -84,7 +87,7 @@ class GH611Test extends BaseTest
             ->updateOne()
             ->field('id')->equals($documentId)
             ->field('embedded._id')->exists(false)
-            ->field('embedded')->set((object) array('id' => 6, 'n' => 'd'))
+            ->field('embedded')->set((object) ['id' => 6, 'n' => 'd'])
             ->getQuery()
             ->execute();
 

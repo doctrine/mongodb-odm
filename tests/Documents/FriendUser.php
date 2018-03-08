@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document */
@@ -26,8 +29,8 @@ class FriendUser
     public function __construct($name)
     {
         $this->name = $name;
-        $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->friendsWithMe = new ArrayCollection();
+        $this->myFriends = new ArrayCollection();
     }
 
     public function addFriend(FriendUser $user)

@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 
-class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ResolveTargetDocumentListenerTest extends BaseTest
 {
     /**
-     * @var \Doctrine\ODM\MongoDB\DocumentManager
+     * @var DocumentManager
      */
     protected $dm;
 
@@ -32,13 +36,13 @@ class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\Base
         $this->listener->addResolveTargetDocument(
             'Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface',
             'Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetDocument',
-            array()
+            []
         );
 
         $this->listener->addResolveTargetDocument(
             'Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface',
             'Doctrine\ODM\MongoDB\Tests\Tools\TargetDocument',
-            array()
+            []
         );
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);

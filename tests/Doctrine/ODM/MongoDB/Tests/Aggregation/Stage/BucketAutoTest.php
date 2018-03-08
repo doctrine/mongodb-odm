@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\BucketAuto;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsComment;
 use Documents\User;
 
-class BucketTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class BucketTest extends BaseTest
 {
     use AggregationTestTrait;
 
@@ -23,12 +26,14 @@ class BucketTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame(['$bucketAuto' => [
+        $this->assertSame([
+        '$bucketAuto' => [
             'groupBy' => '$someField',
             'buckets' => 3,
             'granularity' => 'R10',
-            'output' => ['averageValue' => ['$avg' => '$value']]
-        ]], $bucketStage->getExpression());
+            'output' => ['averageValue' => ['$avg' => '$value']],
+        ],
+        ], $bucketStage->getExpression());
     }
 
     public function testBucketAutoFromBuilder()
@@ -42,12 +47,15 @@ class BucketTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame([['$bucketAuto' => [
+        $this->assertSame([[
+        '$bucketAuto' => [
             'groupBy' => '$someField',
             'buckets' => 3,
             'granularity' => 'R10',
-            'output' => ['averageValue' => ['$avg' => '$value']]
-        ]]], $builder->getPipeline());
+            'output' => ['averageValue' => ['$avg' => '$value']],
+        ],
+        ],
+        ], $builder->getPipeline());
     }
 
     public function testBucketAutoSkipsUndefinedProperties()
@@ -57,10 +65,12 @@ class BucketTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->groupBy('$someField')
             ->buckets(3);
 
-        $this->assertSame(['$bucketAuto' => [
+        $this->assertSame([
+        '$bucketAuto' => [
             'groupBy' => '$someField',
             'buckets' => 3,
-        ]], $bucketStage->getExpression());
+        ],
+        ], $bucketStage->getExpression());
     }
 
     public function testFieldNameConversion()
@@ -76,12 +86,15 @@ class BucketTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 ->avg('$value');
 
         $this->assertEquals(
-            [['$bucketAuto' => [
+            [[
+            '$bucketAuto' => [
                 'groupBy' => '$ip',
                 'buckets' => 3,
                 'granularity' => 'R10',
-                'output' => ['averageValue' => ['$avg' => '$value']]
-            ]]],
+                'output' => ['averageValue' => ['$avg' => '$value']],
+            ],
+            ],
+            ],
             $builder->getPipeline()
         );
     }

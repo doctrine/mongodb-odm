@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,14 +12,13 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 /**
  * Abstract factory for creating persistent collection classes.
  *
- * @since 1.1
  */
 abstract class AbstractPersistentCollectionFactory implements PersistentCollectionFactory
 {
     /**
      * {@inheritdoc}
      */
-    public function create(DocumentManager $dm, array $mapping, BaseCollection $coll = null)
+    public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null)
     {
         if ($coll === null) {
             $coll = ! empty($mapping['collectionClass'])

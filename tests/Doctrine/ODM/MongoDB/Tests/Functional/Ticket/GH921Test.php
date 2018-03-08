@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH921Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH921Test extends BaseTest
 {
     public function testPersistentCollectionCountAndIterationShouldBeConsistent()
     {
@@ -16,7 +19,7 @@ class GH921Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository(__NAMESPACE__.'\GH921User')->findOneBy(['name' => 'smith']);
+        $user = $this->dm->getRepository(__NAMESPACE__ . '\GH921User')->findOneBy(['name' => 'smith']);
 
         $postA = new GH921Post();
         $user->addPost($postA);
@@ -67,12 +70,30 @@ class GH921User
     /** @ODM\ReferenceMany(targetDocument="GH921Post") */
     private $posts;
 
-    public function __construct() { $this->posts = new ArrayCollection(); }
-    public function getId() { return $this->id; }
-    public function getName() { return $this->name; }
-    public function setName($name) { $this->name = $name; }
-    public function addPost(GH921Post $post) { $this->posts[] = $post; }
-    public function getPosts() { return $this->posts; }
+    public function __construct()
+    {
+        $this->posts = new ArrayCollection();
+    }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function getName()
+    {
+        return $this->name;
+    }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    public function addPost(GH921Post $post)
+    {
+        $this->posts[] = $post;
+    }
+    public function getPosts()
+    {
+        return $this->posts;
+    }
 }
 
 /** @ODM\Document */
@@ -84,7 +105,16 @@ class GH921Post
     /** @ODM\Field(type="string") */
     private $name;
 
-    public function getId() { return $this->id; }
-    public function getName() { return $this->name; }
-    public function setName($name) { $this->name = $name; }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function getName()
+    {
+        return $this->name;
+    }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 }

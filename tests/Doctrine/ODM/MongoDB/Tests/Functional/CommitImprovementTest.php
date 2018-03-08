@@ -1,16 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 use Documents\User;
 use Documents\VersionedUser;
+use function get_class;
 
-class CommitImprovementTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class CommitImprovementTest extends BaseTest
 {
     /**
      * @var Doctrine\ODM\MongoDB\Tests\QueryLogger
@@ -20,7 +25,7 @@ class CommitImprovementTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     protected function getConfiguration()
     {
         $this->markTestSkipped('mongodb-driver: query logging does not exist');
-        if ( ! isset($this->ql)) {
+        if (! isset($this->ql)) {
             $this->ql = new QueryLogger();
         }
 
@@ -68,8 +73,7 @@ class CommitImprovementTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $troll->setVersion(3);
         try {
             $this->dm->flush();
-        } catch (\Doctrine\ODM\MongoDB\LockException $ex) {
-
+        } catch (LockException $ex) {
         }
 
         $this->dm->clear();
@@ -137,22 +141,22 @@ class CommitImprovementTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 class PhonenumberMachine implements EventSubscriber
 {
-    private $numbers = array('12345678', '87654321');
+    private $numbers = ['12345678', '87654321'];
 
     private $numberId = 0;
 
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::postPersist,
             Events::postUpdate,
-        );
+        ];
     }
 
     public function __call($eventName, $args)
     {
         $document = $args[0]->getDocument();
-        if ( ! ($document instanceof User)) {
+        if (! ($document instanceof User)) {
             return;
         }
         // hey I just met you, and this is crazy!
@@ -165,8 +169,8 @@ class PhonenumberMachine implements EventSubscriber
             // prove that even this won't break our flow
             $dm = $args[0]->getDocumentManager();
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet(
-                    $dm->getClassMetadata(get_class($document)),
-                    $document
+                $dm->getClassMetadata(get_class($document)),
+                $document
             );
         }
     }

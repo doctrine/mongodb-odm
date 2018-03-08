@@ -1,21 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
+use function explode;
 
-class MODM43Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM43Test extends BaseTest
 {
     public function testTest()
     {
-        $person = array(
+        $person = [
             '_id' => new ObjectId(),
-            'name' => 'Jonathan Wage'
-        );
-        $this->dm->getDocumentCollection(__NAMESPACE__.'\Person')->insertOne($person);
-        $user = $this->dm->find(__NAMESPACE__.'\Person', $person['_id']);
+            'name' => 'Jonathan Wage',
+        ];
+        $this->dm->getDocumentCollection(__NAMESPACE__ . '\Person')->insertOne($person);
+        $user = $this->dm->find(__NAMESPACE__ . '\Person', $person['_id']);
         $this->assertEquals('Jonathan', $user->firstName);
         $this->assertEquals('Wage', $user->lastName);
     }

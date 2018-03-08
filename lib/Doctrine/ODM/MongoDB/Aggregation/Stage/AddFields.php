@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $addFields stage to an aggregation pipeline.
  *
- * @author Boris Guéry <guery.b@gmail.com>
  */
 final class AddFields extends Operator
 {
@@ -15,7 +16,7 @@ final class AddFields extends Operator
     public function getExpression()
     {
         return [
-            '$addFields' => $this->expr->getExpression()
+            '$addFields' => $this->expr->getExpression(),
         ];
     }
 }

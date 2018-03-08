@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH936Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH936Test extends BaseTest
 {
     public function testRemoveCascadesThroughProxyDocuments()
     {
@@ -38,7 +41,7 @@ class GH936Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /** @ODM\Document */
 class GH936Document
 {
-    const CLASSNAME = __CLASS__;
+    public const CLASSNAME = __CLASS__;
 
     /** @ODM\Id */
     public $id;
@@ -54,7 +57,7 @@ class GH936Document
 
 class GH936Listener
 {
-    public $removed = array();
+    public $removed = [];
 
     public function postRemove(LifecycleEventArgs $args)
     {

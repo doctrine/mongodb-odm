@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB;
+
+use function json_encode;
+use function sprintf;
 
 /**
  * Class for exception when encountering proxy object that has
  * an identifier that does not exist in the database.
  *
- * @since       1.0
  */
 class DocumentNotFoundException extends MongoDBException
 {
@@ -14,7 +18,7 @@ class DocumentNotFoundException extends MongoDBException
     {
         return new self(sprintf(
             'The "%s" document with identifier %s could not be found.',
-            $className, 
+            $className,
             json_encode($identifier)
         ));
     }

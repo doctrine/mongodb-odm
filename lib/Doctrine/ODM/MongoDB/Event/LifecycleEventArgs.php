@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
  * of documents.
  *
- * @since 1.0
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
@@ -25,7 +27,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
     /**
      * Retrieves the associated DocumentManager.
      *
-     * @return \Doctrine\ODM\MongoDB\DocumentManager
+     * @return DocumentManager
      */
     public function getDocumentManager()
     {

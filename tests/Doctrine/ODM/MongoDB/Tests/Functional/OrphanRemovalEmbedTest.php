@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 /**
  * Test the orphan removal on embedded documents that contain references with cascade operations.
  */
-class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class OrphanRemovalEmbedTest extends BaseTest
 {
     /**
      * Test unsetting an embedOne relationship
@@ -137,7 +141,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentRepository
+     * @return DocumentRepository
      */
     private function getUserRepository()
     {
@@ -145,7 +149,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentRepository
+     * @return DocumentRepository
      */
     private function getAddressRepository()
     {
@@ -163,7 +167,7 @@ class OrphanRemovalCascadeUser
     public $profile;
 
     /** @ODM\EmbedMany(targetDocument="OrphanRemovalCascadeProfile") */
-    public $profileMany = array();
+    public $profileMany = [];
 }
 
 /** @ODM\EmbeddedDocument */

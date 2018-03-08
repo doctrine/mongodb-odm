@@ -1,15 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
 use GeoJson\Geometry\Point;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
+use function array_map;
+use function array_merge;
+use function array_unshift;
+use function is_array;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -26,7 +34,7 @@ class Builder
     /**
      * The ClassMetadata instance.
      *
-     * @var \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     private $class;
 
@@ -50,7 +58,6 @@ class Builder
     /**
      * Create a new aggregation builder.
      *
-     * @param DocumentManager $dm
      * @param string $documentName
      */
     public function __construct(DocumentManager $dm, $documentName)
@@ -127,8 +134,6 @@ class Builder
      * the pipeline returns an error.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/collStats/
-     * @since 1.5
-     *
      * @return Stage\CollStats
      */
     public function collStats()
@@ -200,7 +205,7 @@ class Builder
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/geoNear/
      *
      * @param float|array|Point $x
-     * @param float $y
+     * @param float             $y
      * @return Stage\GeoNear
      */
     public function geoNear($x, $y = null)
@@ -221,7 +226,9 @@ class Builder
     public function getPipeline()
     {
         $pipeline = array_map(
-            function (Stage $stage) { return $stage->getExpression(); },
+            function (Stage $stage) {
+                return $stage->getExpression();
+            },
             $this->stages
         );
 
@@ -240,12 +247,12 @@ class Builder
     /**
      * Returns a certain stage from the pipeline
      *
-     * @param integer $index
+     * @param int $index
      * @return Stage
      */
     public function getStage($index)
     {
-        if ( ! isset($this->stages[$index])) {
+        if (! isset($this->stages[$index])) {
             throw new \OutOfRangeException("Could not find stage with index {$index}.");
         }
 
@@ -311,7 +318,7 @@ class Builder
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/limit/
      *
-     * @param integer $limit
+     * @param int $limit
      * @return Stage\Limit
      */
     public function limit($limit)
@@ -424,7 +431,7 @@ class Builder
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/sample/
      *
-     * @param integer $size
+     * @param int $size
      * @return Stage\Sample
      */
     public function sample($size)
@@ -438,7 +445,7 @@ class Builder
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/skip/
      *
-     * @param integer $skip
+     * @param int $skip
      * @return Stage\Skip
      */
     public function skip($skip)
@@ -456,7 +463,7 @@ class Builder
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sort/
      *
      * @param array|string $fieldName Field name or array of field/order pairs
-     * @param integer|string $order   Field order (if one field is specified)
+     * @param int|string   $order     Field order (if one field is specified)
      * @return Stage\Sort
      */
     public function sort($fieldName, $order = null)
@@ -497,7 +504,6 @@ class Builder
     }
 
     /**
-     * @param Stage $stage
      * @return Stage
      */
     protected function addStage(Stage $stage)
@@ -524,18 +530,13 @@ class Builder
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
+     * @return DocumentPersister
      */
     private function getDocumentPersister()
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }
 
-    /**
-     * @param Cursor $cursor
-     *
-     * @return Iterator
-     */
     private function prepareIterator(Cursor $cursor): Iterator
     {
         $class = null;

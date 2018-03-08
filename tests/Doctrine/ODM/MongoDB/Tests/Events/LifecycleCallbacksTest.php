@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
-class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class LifecycleCallbacksTest extends BaseTest
 {
     private function createUser($name = 'jon', $fullName = 'Jonathan H. Wage')
     {
@@ -24,7 +27,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = $this->createUser();
         $this->dm->clear();
 
-        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
+        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
         $this->assertInstanceOf('DateTime', $user->createdAt);
         $this->assertInstanceOf('DateTime', $user->profile->createdAt);
 
@@ -33,7 +36,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
+        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
         $this->assertInstanceOf('DateTime', $user->updatedAt);
         $this->assertInstanceOf('DateTime', $user->profile->updatedAt);
     }
@@ -61,7 +64,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($user->postUpdate);
         $this->assertTrue($user->profile->postUpdate);
     }
-    
+
     public function testPreFlush()
     {
         $user = $this->createUser();
@@ -78,7 +81,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = $this->createUser();
         $this->dm->clear();
 
-        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
+        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
 
         $this->assertTrue($user->preLoad);
         $this->assertTrue($user->profile->preLoad);
@@ -126,7 +129,7 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($profile->postUpdate);
 
         $this->dm->clear();
-        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
+        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
         $profile = $user->profiles[0];
 
         $this->assertTrue($profile->preLoad);
@@ -172,10 +175,10 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($profile->postUpdate);
 
         $this->dm->clear();
-        $user = $this->dm->find(__NAMESPACE__.'\User', $user->id);
+        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
         $profile = $user->profile->profile;
         $profile->name = '2nd level changed again';
-        
+
         $profile2 = new Profile();
         $profile2->name = 'test';
         $user->profiles[] = $profile2;
@@ -206,12 +209,12 @@ class LifecycleCallbacksTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($user->profiles[0]->preRemove);
         $this->assertTrue($user->profiles[0]->postRemove);
     }
-    
+
     public function testReferences()
     {
         $user = $this->createUser();
         $user2 = $this->createUser('maciej', 'Maciej Malarz');
-        
+
         $user->friends[] = $user2;
         $this->dm->flush();
 
@@ -250,10 +253,10 @@ class User extends BaseDocument
     public $profile;
 
     /** @ODM\EmbedMany(targetDocument="Profile") */
-    public $profiles = array();
-    
+    public $profiles = [];
+
     /** @ODM\ReferenceMany(targetDocument="User") */
-    public $friends = array();
+    public $friends = [];
 }
 
 /** @ODM\Document */
@@ -358,7 +361,7 @@ abstract class BaseDocument
     {
         $this->postLoad = true;
     }
-    
+
     /** @ODM\PreFlush */
     public function preFlush(Event\PreFlushEventArgs $e)
     {

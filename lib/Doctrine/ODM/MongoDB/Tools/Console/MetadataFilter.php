@@ -1,18 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tools\Console;
+
+use function count;
+use function iterator_to_array;
+use function strpos;
 
 /**
  * Used by CLI Tools to restrict entity-based commands to given patterns.
  *
- * @since       1.0
  */
 class MetadataFilter extends \FilterIterator implements \Countable
 {
     /**
      * Filter Metadatas by one or more filter options.
      *
-     * @param array $metadatas
+     * @param array        $metadatas
      * @param array|string $filter
      * @return array
      */
@@ -25,10 +30,9 @@ class MetadataFilter extends \FilterIterator implements \Countable
     /**
      * @var array
      */
-    private $_filter = array();
+    private $_filter = [];
 
     /**
-     * @param \ArrayIterator $metadata
      * @param array|string $filter
      */
     public function __construct(\ArrayIterator $metadata, $filter)
@@ -42,7 +46,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
      */
     public function accept()
     {
-        if (count($this->_filter) == 0) {
+        if (count($this->_filter) === 0) {
             return true;
         }
 

@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use MongoDB\Driver\Exception\RuntimeException;
-use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
+use function array_filter;
+use function array_unique;
+use function iterator_to_array;
+use function strpos;
 
 class SchemaManager
 {
@@ -21,10 +26,6 @@ class SchemaManager
      */
     protected $metadataFactory;
 
-    /**
-     * @param DocumentManager $dm
-     * @param ClassMetadataFactory $cmf
-     */
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
         $this->dm = $dm;
@@ -35,7 +36,7 @@ class SchemaManager
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory.
      *
-     * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @param int $timeout Timeout (ms) for acknowledged index creation
      */
     public function ensureIndexes($timeout = null)
     {
@@ -53,7 +54,7 @@ class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      *
-     * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @param int $timeout Timeout (ms) for acknowledged index creation
      */
     public function updateIndexes($timeout = null)
     {
@@ -72,7 +73,7 @@ class SchemaManager
      * deleted.
      *
      * @param string $documentName
-     * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @param int    $timeout      Timeout (ms) for acknowledged index creation
      * @throws \InvalidArgumentException
      */
     public function updateDocumentIndexes($documentName, $timeout = null)
@@ -92,7 +93,7 @@ class SchemaManager
          */
         $self = $this;
         $mongoIndexes = array_filter($mongoIndexes, function (IndexInfo $mongoIndex) use ($documentIndexes, $self) {
-            if ('_id_' === $mongoIndex['name']) {
+            if ($mongoIndex['name'] === '_id_') {
                 return false;
             }
 
@@ -123,32 +124,32 @@ class SchemaManager
      */
     public function getDocumentIndexes($documentName)
     {
-        $visited = array();
+        $visited = [];
         return $this->doGetDocumentIndexes($documentName, $visited);
     }
 
     /**
      * @param string $documentName
-     * @param array $visited
+     * @param array  $visited
      * @return array
      */
     private function doGetDocumentIndexes($documentName, array &$visited)
     {
         if (isset($visited[$documentName])) {
-            return array();
+            return [];
         }
 
         $visited[$documentName] = true;
 
         $class = $this->dm->getClassMetadata($documentName);
         $indexes = $this->prepareIndexes($class);
-        $embeddedDocumentIndexes = array();
+        $embeddedDocumentIndexes = [];
 
         // Add indexes from embedded & referenced documents
         foreach ($class->fieldMappings as $fieldMapping) {
             if (isset($fieldMapping['embedded'])) {
                 if (isset($fieldMapping['targetDocument'])) {
-                    $possibleEmbeds = array($fieldMapping['targetDocument']);
+                    $possibleEmbeds = [$fieldMapping['targetDocument']];
                 } elseif (isset($fieldMapping['discriminatorMap'])) {
                     $possibleEmbeds = array_unique($fieldMapping['discriminatorMap']);
                 } else {
@@ -171,9 +172,9 @@ class SchemaManager
                 }
             } elseif (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
                 foreach ($indexes as $idx => $index) {
-                    $newKeys = array();
+                    $newKeys = [];
                     foreach ($index['keys'] as $key => $v) {
-                        if ($key == $fieldMapping['name']) {
+                        if ($key === $fieldMapping['name']) {
                             $key = ClassMetadata::getReferenceFieldName($fieldMapping['storeAs'], $key);
                         }
                         $newKeys[$key] = $v;
@@ -186,20 +187,19 @@ class SchemaManager
     }
 
     /**
-     * @param ClassMetadata $class
      * @return array
      */
     private function prepareIndexes(ClassMetadata $class)
     {
         $persister = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
         $indexes = $class->getIndexes();
-        $newIndexes = array();
+        $newIndexes = [];
 
         foreach ($indexes as $index) {
-            $newIndex = array(
-                'keys' => array(),
-                'options' => $index['options']
-            );
+            $newIndex = [
+                'keys' => [],
+                'options' => $index['options'],
+            ];
             foreach ($index['keys'] as $key => $value) {
                 $key = $persister->prepareFieldName($key);
                 if ($class->hasField($key)) {
@@ -220,7 +220,7 @@ class SchemaManager
      * Ensure the given document's indexes are created.
      *
      * @param string $documentName
-     * @param integer $timeout Timeout (ms) for acknowledged index creation
+     * @param int    $timeout      Timeout (ms) for acknowledged index creation
      * @throws \InvalidArgumentException
      */
     public function ensureDocumentIndexes($documentName, $timeout = null)
@@ -235,7 +235,7 @@ class SchemaManager
                 $keys = $index['keys'];
                 $options = $index['options'];
 
-                if ( ! isset($options['timeout']) && isset($timeout)) {
+                if (! isset($options['timeout']) && isset($timeout)) {
                     $options['timeout'] = $timeout;
                 }
 
@@ -384,15 +384,15 @@ class SchemaManager
      * the unique index. Additionally, the background option is only
      * relevant to index creation and is not considered.
      *
-     * @param array|IndexInfo $mongoIndex Mongo index data.
-     * @param array $documentIndex Document index data.
+     * @param array|IndexInfo $mongoIndex    Mongo index data.
+     * @param array           $documentIndex Document index data.
      * @return bool True if the indexes are equivalent, otherwise false.
      */
     public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)
     {
         $documentIndexOptions = $documentIndex['options'];
 
-        if ($mongoIndex['key'] != $documentIndex['keys']) {
+        if ($mongoIndex['key'] !== $documentIndex['keys']) {
             return false;
         }
 
@@ -404,20 +404,18 @@ class SchemaManager
             return false;
         }
 
-        if ( ! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
+        if (! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
             ! empty($documentIndexOptions['unique']) && ! empty($documentIndexOptions['dropDups'])) {
-
             return false;
         }
 
-        foreach (array('bits', 'max', 'min') as $option) {
+        foreach (['bits', 'max', 'min'] as $option) {
             if (isset($mongoIndex[$option]) xor isset($documentIndexOptions[$option])) {
                 return false;
             }
 
             if (isset($mongoIndex[$option]) && isset($documentIndexOptions[$option]) &&
                 $mongoIndex[$option] !== $documentIndexOptions[$option]) {
-
                 return false;
             }
         }
@@ -428,7 +426,6 @@ class SchemaManager
 
         if (isset($mongoIndex['partialFilterExpression']) && isset($documentIndexOptions['partialFilterExpression']) &&
             $mongoIndex['partialFilterExpression'] !== $documentIndexOptions['partialFilterExpression']) {
-
             return false;
         }
 
@@ -443,10 +440,10 @@ class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function ensureSharding(array $indexOptions = array())
+    public function ensureSharding(array $indexOptions = [])
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || !$class->isSharded()) {
+            if ($class->isMappedSuperclass || ! $class->isSharded()) {
                 continue;
             }
 
@@ -462,10 +459,10 @@ class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function ensureDocumentSharding($documentName, array $indexOptions = array())
+    public function ensureDocumentSharding($documentName, array $indexOptions = [])
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ( ! $class->isSharded()) {
+        if (! $class->isSharded()) {
             return;
         }
 
@@ -478,7 +475,7 @@ class SchemaManager
                 $done = true;
 
                 // Need to check error message because MongoDB 3.0 does not return a code for this error
-                if ($result['ok'] != 1 && strpos($result['errmsg'], 'please create an index that starts') !== false) {
+                if (! (bool) $result['ok'] && strpos($result['errmsg'], 'please create an index that starts') !== false) {
                     // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
                     // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
                     $key = $result['proposedKey'] ?? $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
@@ -487,7 +484,7 @@ class SchemaManager
                     $done = false;
                 }
             } catch (RuntimeException $e) {
-                if ($e->getCode() === 20 || $e->getMessage() == 'already sharded') {
+                if ($e->getCode() === 20 || $e->getCode() === 23 || $e->getMessage() === 'already sharded') {
                     return;
                 }
 
@@ -497,7 +494,7 @@ class SchemaManager
 
         // Starting with MongoDB 3.2, this command returns code 20 when a collection is already sharded.
         // For older MongoDB versions, check the error message
-        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 20) || $result['errmsg'] == 'already sharded') {
+        if ((bool) $result['ok'] || (isset($result['code']) && $result['code'] === 20) || $result['errmsg'] === 'already sharded') {
             return;
         }
 
@@ -517,7 +514,7 @@ class SchemaManager
         $adminDb = $this->dm->getClient()->selectDatabase('admin');
 
         try {
-            $adminDb->command(array('enableSharding' => $dbName));
+            $adminDb->command(['enableSharding' => $dbName]);
         } catch (RuntimeException $e) {
             if ($e->getCode() !== 23 || $e->getMessage() === 'already enabled') {
                 throw MongoDBException::failedToEnableSharding($dbName, $e->getMessage());
@@ -538,10 +535,10 @@ class SchemaManager
         $adminDb = $this->dm->getClient()->selectDatabase('admin');
 
         $result = $adminDb->command(
-            array(
+            [
                 'shardCollection' => $dbName . '.' . $class->getCollection(),
-                'key'             => $shardKey['keys']
-            )
+                'key'             => $shardKey['keys'],
+            ]
         )->toArray()[0];
 
         return $result;

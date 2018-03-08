@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
-class MongoCollectionTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MongoCollectionTest extends BaseTest
 {
     public function testGridFSEmptyResult()
     {
         $mongoCollection = $this->dm->getDocumentCollection('Documents\File');
-        $this->assertNull($mongoCollection->findOne(array('_id' => 'definitelynotanid')));
+        $this->assertNull($mongoCollection->findOne(['_id' => 'definitelynotanid']));
     }
 }

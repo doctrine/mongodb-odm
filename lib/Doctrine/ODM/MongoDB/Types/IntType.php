@@ -1,22 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Int type.
  *
- * @since       1.0
  */
 class IntType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (integer) $value : null;
+        return $value !== null ? (int) $value : null;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (integer) $value : null;
+        return $value !== null ? (int) $value : null;
     }
 
     public function closureToMongo()

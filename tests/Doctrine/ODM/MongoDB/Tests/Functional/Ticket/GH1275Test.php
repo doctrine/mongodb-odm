@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function array_map;
 
-class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1275Test extends BaseTest
 {
     public function testResortAtomicCollectionsFlipItems()
     {
@@ -32,7 +36,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $container->add($itemThree);
 
         $this->assertSame(
-            array('Number One', 'Number Two', 'Number Three'),
+            ['Number One', 'Number Two', 'Number Three'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -44,7 +48,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number One','Number Three', 'Number Two'),
+            ['Number One','Number Three', 'Number Two'],
             array_map($getNameCallback, $container->items->toArray())
         );
     }
@@ -73,7 +77,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $container->add($itemThree);
 
         $this->assertSame(
-            array('Number One', 'Number Two', 'Number Three'),
+            ['Number One', 'Number Two', 'Number Three'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -83,7 +87,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number One', 'Number Two', 'Number Three'),
+            ['Number One', 'Number Two', 'Number Three'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -93,7 +97,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number Two', 'Number One', 'Number Three'),
+            ['Number Two', 'Number One', 'Number Three'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -103,7 +107,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number One', 'Number Three', 'Number Two'),
+            ['Number One', 'Number Three', 'Number Two'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -113,7 +117,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number One', 'Number Three', 'Number Two'),
+            ['Number One', 'Number Three', 'Number Two'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -123,7 +127,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('Number Three', 'Number One', 'Number Two'),
+            ['Number Three', 'Number One', 'Number Two'],
             array_map($getNameCallback, $container->items->toArray())
         );
 
@@ -132,14 +136,14 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public static function getCollectionStrategies()
     {
-        return array(
-            'testResortWithStrategyAddToSet' => array(ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET),
-            'testResortWithStrategySet' => array(ClassMetadata::STORAGE_STRATEGY_SET),
-            'testResortWithStrategySetArray' => array(ClassMetadata::STORAGE_STRATEGY_SET_ARRAY),
-            'testResortWithStrategyPushAll' => array(ClassMetadata::STORAGE_STRATEGY_PUSH_ALL),
-            'testResortWithStrategyAtomicSet' => array(ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET),
-            'testResortWithStrategyAtomicSetArray' => array(ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY),
-        );
+        return [
+            'testResortWithStrategyAddToSet' => [ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET],
+            'testResortWithStrategySet' => [ClassMetadata::STORAGE_STRATEGY_SET],
+            'testResortWithStrategySetArray' => [ClassMetadata::STORAGE_STRATEGY_SET_ARRAY],
+            'testResortWithStrategyPushAll' => [ClassMetadata::STORAGE_STRATEGY_PUSH_ALL],
+            'testResortWithStrategyAtomicSet' => [ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET],
+            'testResortWithStrategyAtomicSetArray' => [ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY],
+        ];
     }
 
     /**
@@ -161,7 +165,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('one', 'two', 'three'),
+            ['one', 'two', 'three'],
             array_map($getNameCallback, $container->$strategy->toArray())
         );
 
@@ -175,7 +179,7 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            array('one', 'three', 'two'),
+            ['one', 'three', 'two'],
             array_map($getNameCallback, $container->$strategy->toArray())
         );
     }
@@ -184,7 +188,8 @@ class GH1275Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /**
  * @ODM\Document(collection="item")
  */
-class Item {
+class Item
+{
     /** @ODM\Id */
     public $id;
 
@@ -206,7 +211,8 @@ class Item {
 /**
  * @ODM\EmbeddedDocument
  */
-class Element {
+class Element
+{
     /** @ODM\Id */
     public $id;
 
@@ -222,17 +228,18 @@ class Element {
 /**
  * @ODM\Document(collection="container")
  */
-class Container {
+class Container
+{
     /** @ODM\Id */
     public $id;
 
     /** @ODM\ReferenceMany(
-    *     targetDocument="Item",
-    *     cascade={"refresh","persist"},
-    *     orphanRemoval="true",
-    *     strategy="atomicSet"
-    * )
-    */
+     *     targetDocument="Item",
+     *     cascade={"refresh","persist"},
+     *     orphanRemoval="true",
+     *     strategy="atomicSet"
+     * )
+     */
     public $items;
 
     /**
@@ -305,7 +312,7 @@ class Container {
     public function add(Item $item)
     {
         $this->items->add($item);
-        if ($this->items->count() == 1) {
+        if ($this->items->count() === 1) {
             $this->firstItem = $item;
         }
     }

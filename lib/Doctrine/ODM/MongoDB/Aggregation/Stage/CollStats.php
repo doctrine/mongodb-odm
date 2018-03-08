@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -8,14 +10,12 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding a $collStats stage to an aggregation pipeline.
  *
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.5
  */
 class CollStats extends Stage
 {
-    const LATENCY_STATS_NONE = 0;
-    const LATENCY_STATS_SIMPLE = 1;
-    const LATENCY_STATS_HISTOGRAMS = 2;
+    public const LATENCY_STATS_NONE = 0;
+    public const LATENCY_STATS_SIMPLE = 1;
+    public const LATENCY_STATS_HISTOGRAMS = 2;
 
     /**
      * @var int
@@ -27,9 +27,6 @@ class CollStats extends Stage
      */
     private $storageStats = false;
 
-    /**
-     * @param Builder $builder
-     */
     public function __construct(Builder $builder)
     {
         parent::__construct($builder);

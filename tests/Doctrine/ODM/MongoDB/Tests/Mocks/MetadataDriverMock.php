@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
@@ -19,6 +21,6 @@ class MetadataDriverMock implements MappingDriver
 
     public function getAllClassNames()
     {
-        return array();
+        return [];
     }
 }

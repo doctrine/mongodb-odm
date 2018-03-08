@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH426Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH426Test extends BaseTest
 {
     public function testTest()
     {
@@ -33,7 +36,7 @@ class GH426Form
     public $id;
 
     /** @ODM\ReferenceMany(targetDocument="GH426Field", mappedBy="form", cascade={"all"}) */
-    public $fields = array();
+    public $fields = [];
 
     /** @ODM\ReferenceOne(targetDocument="GH426Field", mappedBy="form", sort={"_id":1}) */
     public $firstField;

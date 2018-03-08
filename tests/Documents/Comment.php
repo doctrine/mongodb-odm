@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use DateTime;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document(repositoryClass="Documents\CommentRepository") */
 class Comment
@@ -37,5 +39,4 @@ class Comment
     {
         return $this->text;
     }
-
 }

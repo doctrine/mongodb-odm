@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -9,34 +11,30 @@ class HydratorTest extends BaseTest
 {
     public function testHydrator()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\HydrationClosureUser');
+        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\HydrationClosureUser');
 
         $user = new HydrationClosureUser();
-        $this->dm->getHydratorFactory()->hydrate($user, array(
+        $this->dm->getHydratorFactory()->hydrate($user, [
             '_id' => 1,
             'title' => null,
             'name' => 'jon',
             'birthdate' => new \DateTime('1961-01-01'),
-            'referenceOne' => array('$id' => '1'),
-            'referenceMany' => array(
-                array(
-                    '$id' => '1'
-                ),
-                array(
-                    '$id' => '2'
-                )
-            ),
-            'embedOne' => array('name' => 'jon'),
-            'embedMany' => array(
-                array('name' => 'jon')
-            )
-        ));
+            'referenceOne' => ['$id' => '1'],
+            'referenceMany' => [
+                ['$id' => '1'],
+                ['$id' => '2'],
+            ],
+            'embedOne' => ['name' => 'jon'],
+            'embedMany' => [
+                ['name' => 'jon'],
+            ],
+        ]);
 
         $this->assertEquals(1, $user->id);
         $this->assertNull($user->title);
         $this->assertEquals('jon', $user->name);
         $this->assertInstanceOf('DateTime', $user->birthdate);
-        $this->assertInstanceOf(__NAMESPACE__.'\HydrationClosureReferenceOne', $user->referenceOne);
+        $this->assertInstanceOf(__NAMESPACE__ . '\HydrationClosureReferenceOne', $user->referenceOne);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->referenceMany);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user->referenceMany[0]);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user->referenceMany[1]);
@@ -47,7 +45,7 @@ class HydratorTest extends BaseTest
 
     public function testReadOnly()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\HydrationClosureUser');
+        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\HydrationClosureUser');
 
         $user = new HydrationClosureUser();
         $this->dm->getHydratorFactory()->hydrate($user, [
@@ -56,7 +54,7 @@ class HydratorTest extends BaseTest
             'birthdate' => new \DateTime('1961-01-01'),
             'embedOne' => ['name' => 'maciej'],
             'embedMany' => [
-                ['name' => 'maciej']
+                ['name' => 'maciej'],
             ],
         ], [ Query::HINT_READ_ONLY => true ]);
 
@@ -85,13 +83,13 @@ class HydrationClosureUser
     public $referenceOne;
 
     /** @ODM\ReferenceMany(targetDocument="HydrationClosureReferenceMany") */
-    public $referenceMany = array();
+    public $referenceMany = [];
 
     /** @ODM\EmbedOne(targetDocument="HydrationClosureEmbedOne") */
     public $embedOne;
 
     /** @ODM\EmbedMany(targetDocument="HydrationClosureEmbedMany") */
-    public $embedMany = array();
+    public $embedMany = [];
 }
 
 /** @ODM\Document */

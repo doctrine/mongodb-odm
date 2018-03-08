@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -65,10 +70,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testLoadMetadataForNonDocumentThrowsException()
     {
         $cm = new ClassMetadata('stdClass');
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
+        $reader = new AnnotationReader();
+        $annotationDriver = new AnnotationDriver($reader);
 
-        $this->expectException(\Doctrine\ODM\MongoDB\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
     }
 
@@ -78,8 +83,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ColumnWithoutType');
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $annotationDriver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
+        $reader = new AnnotationReader();
+        $annotationDriver = new AnnotationDriver($reader);
 
         $annotationDriver->loadMetadataForClass('Doctrine\ODM\MongoDB\Tests\Mapping\InvalidColumn', $cm);
         $this->assertEquals('id', $cm->fieldMappings['id']['type']);
@@ -163,14 +168,14 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     protected function _loadDriverForCMSDocuments()
     {
         $annotationDriver = $this->_loadDriver();
-        $annotationDriver->addPaths(array(__DIR__ . '/../../../../../Documents'));
+        $annotationDriver->addPaths([__DIR__ . '/../../../../../Documents']);
         return $annotationDriver;
     }
 
     protected function _loadDriver()
     {
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        return new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
+        $reader = new AnnotationReader();
+        return new AnnotationDriver($reader);
     }
 }
 
@@ -178,7 +183,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 class ColumnWithoutType
 {
      /** @ODM\Id */
-     public $id;
+    public $id;
 }
 
 /** @ODM\MappedSuperclass */

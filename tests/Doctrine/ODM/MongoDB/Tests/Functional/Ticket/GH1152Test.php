@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH1152Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1152Test extends BaseTest
 {
     public function testParentAssociationsInPostLoad()
     {
@@ -34,7 +37,7 @@ class GH1152Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 /** @ODM\Document */
 class GH1152Parent
 {
-    const CLASSNAME = __CLASS__;
+    public const CLASSNAME = __CLASS__;
 
     /** @ODM\Id */
     public $id;
@@ -56,7 +59,7 @@ class GH1152Listener
         $dm = $args->getDocumentManager();
         $document = $args->getDocument();
 
-        if (!$document instanceof GH1152Child) {
+        if (! $document instanceof GH1152Child) {
             return;
         }
 

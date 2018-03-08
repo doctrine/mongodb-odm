@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -11,11 +13,11 @@ class Strategy
     public $id;
 
     /** @ODM\Field(type="collection") */
-    public $logs = array();
+    public $logs = [];
 
     /** @ODM\EmbedMany(targetDocument="Message", strategy="set") */
-    public $messages = array();
+    public $messages = [];
 
     /** @ODM\ReferenceMany(targetDocument="Task", strategy="set") */
-    public $tasks = array();
+    public $tasks = [];
 }

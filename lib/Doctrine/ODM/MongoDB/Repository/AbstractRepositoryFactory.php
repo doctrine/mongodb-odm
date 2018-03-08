@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Repository;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use function ltrim;
+use function spl_object_hash;
 
 /**
  * Abstract factory for creating document repositories.
  *
- * @since 1.2
  */
 abstract class AbstractRepositoryFactory implements RepositoryFactory
 {
@@ -18,7 +21,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      *
      * @var ObjectRepository[]
      */
-    private $repositoryList = array();
+    private $repositoryList = [];
 
     /**
      * {@inheritdoc}
@@ -59,8 +62,6 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      * Instantiates requested repository.
      *
      * @param string $repositoryClassName
-     * @param DocumentManager $documentManager
-     * @param ClassMetadata $metadata
      * @return ObjectRepository
      */
     abstract protected function instantiateRepository($repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata);

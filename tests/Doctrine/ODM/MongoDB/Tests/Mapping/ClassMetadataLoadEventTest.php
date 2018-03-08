@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
+use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class ClassMetadataLoadEventTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ClassMetadataLoadEventTest extends BaseTest
 {
     public function testEvent()
     {
@@ -16,13 +20,13 @@ class ClassMetadataLoadEventTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($classMetadata->hasField('about'));
     }
 
-    public function loadClassMetadata(\Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs $eventArgs)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         $classMetadata = $eventArgs->getClassMetadata();
-        $field = array(
+        $field = [
             'fieldName' => 'about',
-            'type' => 'string'
-        );
+            'type' => 'string',
+        ];
         $classMetadata->mapField($field);
     }
 }

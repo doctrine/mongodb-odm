@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -11,10 +13,10 @@ class SimpleEmbedAndReference
     public $id;
 
     /** @ODM\EmbedMany(targetDocument="Embedded") */
-    public $embedMany = array();
+    public $embedMany = [];
 
     /** @ODM\ReferenceMany(targetDocument="Reference") */
-    public $referenceMany = array();
+    public $referenceMany = [];
 
     /** @ODM\EmbedOne(targetDocument="Embedded") */
     public $embedOne;

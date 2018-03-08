@@ -1,18 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
-class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class LifecycleListenersTest extends BaseTest
 {
     private function getDocumentManager()
     {
         $this->listener = new MyEventListener();
         $evm = $this->dm->getEventManager();
-        $events = array(
+        $events = [
             Events::prePersist,
             Events::postPersist,
             Events::preUpdate,
@@ -21,7 +25,7 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             Events::postLoad,
             Events::preRemove,
             Events::postRemove,
-        );
+        ];
         $evm->addEventListener($events, $this->listener);
         return $this->dm;
     }
@@ -35,55 +39,55 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->persist($test);
         $dm->flush();
 
-        $called = array(
-            Events::prePersist => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
-            Events::postPersist => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument')
-        );
+        $called = [
+            Events::prePersist => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::postPersist => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+        ];
         $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+        $this->listener->called = [];
 
         $test->embedded[0] = new TestEmbeddedDocument();
         $test->embedded[0]->name = 'cool';
         $dm->flush();
         $dm->clear();
 
-        $called = array(
-            Events::prePersist => array('Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'),
-            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
-            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
-            Events::postPersist => array('Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument')
-        );
+        $called = [
+            Events::prePersist => ['Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
+            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::postPersist => ['Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
+        ];
         $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+        $this->listener->called = [];
 
-        $document = $dm->find(__NAMESPACE__.'\TestDocument', $test->id);
+        $document = $dm->find(__NAMESPACE__ . '\TestDocument', $test->id);
         $document->embedded->initialize();
-        $called = array(
-            Events::preLoad => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'),
-            Events::postLoad => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument')
-        );
+        $called = [
+            Events::preLoad => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
+            Events::postLoad => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
+        ];
         $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+        $this->listener->called = [];
 
         $document->embedded[0]->name = 'changed';
         $dm->flush();
 
-        $called = array(
-            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'),
-            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument')
-        );
+        $called = [
+            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
+            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
+        ];
         $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+        $this->listener->called = [];
 
         $dm->remove($document);
         $dm->flush();
 
-        $called = array(
-            Events::preRemove => array('Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
-            Events::postRemove => array('Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument')
-        );
+        $called = [
+            Events::preRemove => ['Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::postRemove => ['Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+        ];
         $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+        $this->listener->called = [];
 
         $test = new TestDocument();
         $test->name = 'test';
@@ -91,19 +95,19 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $test->embedded[0]->name = 'cool';
         $dm->persist($test);
         $dm->flush();
-        $this->listener->called = array();
+        $this->listener->called = [];
 
         $test->name = 'cool';
         $dm->flush();
 
         $dm->clear();
 
-        $called = array(
-            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
-            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument')
-        );
+        $called = [
+            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+        ];
         $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+        $this->listener->called = [];
     }
 
     public function testMultipleLevelsOfEmbeddedDocsPrePersist()
@@ -117,29 +121,29 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
         $dm->clear();
 
-        $test = $dm->find(__NAMESPACE__.'\TestProfile', $test->id);
-        $this->listener->called = array();
+        $test = $dm->find(__NAMESPACE__ . '\TestProfile', $test->id);
+        $this->listener->called = [];
 
         $test->image->thumbnails[] = new Thumbnail('Thumbnail #1');
 
         $dm->flush();
-        $called = array(
-            Events::prePersist => array('Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'),
-            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image'),
-            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image'),
-            Events::postPersist => array('Doctrine\ODM\MongoDB\Tests\Events\Thumbnail')
-        );
+        $called = [
+            Events::prePersist => ['Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'],
+            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image'],
+            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image'],
+            Events::postPersist => ['Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'],
+        ];
         $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+        $this->listener->called = [];
 
         $test->image->thumbnails[0]->name = 'ok';
         $dm->flush();
-        $called = array(
-            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'),
-            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'),
-        );
+        $called = [
+            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'],
+            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'],
+        ];
         $this->assertEquals($called, $this->listener->called);
-        $this->listener->called = array();
+        $this->listener->called = [];
     }
 
     public function testChangeToReferenceFieldTriggersEvents()
@@ -153,29 +157,29 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->persist($profile);
         $dm->flush();
         $dm->clear();
-        $this->listener->called = array();
+        $this->listener->called = [];
 
-        $called = array(
-            Events::preUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
-            Events::postUpdate => array('Doctrine\ODM\MongoDB\Tests\Events\TestDocument'),
-        );
+        $called = [
+            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+        ];
 
         $document = $dm->getRepository(get_class($document))->find($document->id);
         $profile = $dm->getRepository(get_class($profile))->find($profile->id);
-        $this->listener->called = array();
+        $this->listener->called = [];
         $document->profile = $profile;
         $dm->flush();
         $dm->clear();
         $this->assertEquals($called, $this->listener->called, 'Changing ReferenceOne field did not dispatched proper events.');
-        $this->listener->called = array();
+        $this->listener->called = [];
 
         $document = $dm->getRepository(get_class($document))->find($document->id);
         $profile = $dm->getRepository(get_class($profile))->find($profile->id);
-        $this->listener->called = array();
+        $this->listener->called = [];
         $document->profiles[] = $profile;
         $dm->flush();
         $this->assertEquals($called, $this->listener->called, 'Changing ReferenceMany field did not dispatched proper events.');
-        $this->listener->called = array();
+        $this->listener->called = [];
     }
 
     public function testPostCollectionLoad()
@@ -205,7 +209,7 @@ class LifecycleListenersTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 class MyEventListener
 {
-    public $called = array();
+    public $called = [];
 
     public function __call($method, $args)
     {
@@ -302,7 +306,7 @@ class Image
     public $name;
 
     /** @ODM\EmbedMany(targetDocument="Thumbnail") */
-    public $thumbnails = array();
+    public $thumbnails = [];
 
     public function __construct($name)
     {

@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Criteria;
-use Documents\Account;
-use Documents\Address;
-use Documents\Phonenumber;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 
-class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class RepositoriesTest extends BaseTest
 {
     public function setUp()
     {
@@ -36,7 +36,7 @@ class RepositoriesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user2 = $this->repository->find($this->user->getId());
         $this->assertSame($this->user, $user2);
 
-        $user3 = $this->repository->findOneBy(array('username' => 'w00ting'));
+        $user3 = $this->repository->findOneBy(['username' => 'w00ting']);
         $this->assertSame($user2, $user3);
     }
 

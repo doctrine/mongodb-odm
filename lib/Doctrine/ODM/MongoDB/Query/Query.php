@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -8,39 +10,48 @@ use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Operation\FindOneAndUpdate;
-
+use function array_combine;
+use function array_filter;
+use function array_flip;
+use function array_intersect_key;
+use function array_keys;
+use function array_map;
+use function array_merge;
+use function array_values;
+use function is_array;
+use function is_callable;
 
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
  * and to hydrate the raw arrays of data to Doctrine document objects.
  *
- * @since       1.0
  */
 class Query implements \IteratorAggregate
 {
-    const TYPE_FIND            = 1;
-    const TYPE_FIND_AND_UPDATE = 2;
-    const TYPE_FIND_AND_REMOVE = 3;
-    const TYPE_INSERT          = 4;
-    const TYPE_UPDATE          = 5;
-    const TYPE_REMOVE          = 6;
-    const TYPE_GROUP           = 7;
-    const TYPE_MAP_REDUCE      = 8;
-    const TYPE_DISTINCT        = 9;
-    const TYPE_COUNT           = 11;
+    public const TYPE_FIND            = 1;
+    public const TYPE_FIND_AND_UPDATE = 2;
+    public const TYPE_FIND_AND_REMOVE = 3;
+    public const TYPE_INSERT          = 4;
+    public const TYPE_UPDATE          = 5;
+    public const TYPE_REMOVE          = 6;
+    public const TYPE_GROUP           = 7;
+    public const TYPE_MAP_REDUCE      = 8;
+    public const TYPE_DISTINCT        = 9;
+    public const TYPE_COUNT           = 11;
 
     /**
      * @deprecated 1.1 Will be removed for 2.0
      */
-    const TYPE_GEO_LOCATION = 10;
+    public const TYPE_GEO_LOCATION = 10;
 
-    const HINT_REFRESH = 1;
+    public const HINT_REFRESH = 1;
     // 2 was used for HINT_SLAVE_OKAY, which was removed in 2.0
-    const HINT_READ_PREFERENCE = 3;
-    const HINT_READ_ONLY = 5;
+    public const HINT_READ_PREFERENCE = 3;
+    public const HINT_READ_ONLY = 5;
 
     /**
      * The DocumentManager instance.
@@ -59,7 +70,7 @@ class Query implements \IteratorAggregate
     /**
      * Whether to hydrate results as document class instances.
      *
-     * @var boolean
+     * @var bool
      */
     private $hydrate = true;
 
@@ -68,14 +79,14 @@ class Query implements \IteratorAggregate
      *
      * @var array
      */
-    private $primers = array();
+    private $primers = [];
 
     /**
      * Hints for UnitOfWork behavior.
      *
      * @var array
      */
-    private $unitOfWorkHints = array();
+    private $unitOfWorkHints = [];
 
     /**
      * The Collection instance.
@@ -104,29 +115,26 @@ class Query implements \IteratorAggregate
     private $options;
 
     /**
-     * Constructor.
+     *
      *
      * Please note that $requireIndexes was deprecated in 1.2 and will be removed in 2.0
      *
-     * @param DocumentManager $dm
-     * @param ClassMetadata $class
-     * @param Collection $collection
      * @param array $query
      * @param array $options
-     * @param boolean $hydrate
-     * @param boolean $refresh
+     * @param bool  $hydrate
+     * @param bool  $refresh
      * @param array $primers
-     * @param boolean $readOnly
+     * @param bool  $readOnly
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $readOnly = false)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], $hydrate = true, $refresh = false, array $primers = [], $readOnly = false)
     {
         $primers = array_filter($primers);
 
-        if ( ! empty($primers)) {
+        if (! empty($primers)) {
             $query['eagerCursor'] = true;
         }
 
-        if ( ! empty($query['eagerCursor'])) {
+        if (! empty($query['eagerCursor'])) {
             $query['useIdentifierKeys'] = false;
         }
 
@@ -186,14 +194,14 @@ class Query implements \IteratorAggregate
     /**
      * Execute the query and returns the results.
      *
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws MongoDBException
      * @return Iterator|int|string|array
      */
     public function execute()
     {
         $results = $this->runQuery();
 
-        if ( ! $this->hydrate) {
+        if (! $this->hydrate) {
             return $results;
         }
 
@@ -209,15 +217,14 @@ class Query implements \IteratorAggregate
         if (($this->query['type'] === self::TYPE_FIND_AND_UPDATE ||
                 $this->query['type'] === self::TYPE_FIND_AND_REMOVE) &&
             is_array($results) && isset($results['_id'])) {
-
             $results = $uow->getOrCreateDocument($this->class->name, $results, $this->unitOfWorkHints);
 
-            if ( ! empty($this->primers)) {
+            if (! empty($this->primers)) {
                 $referencePrimer = new ReferencePrimer($this->dm, $uow);
 
                 foreach ($this->primers as $fieldName => $primer) {
                     $primer = is_callable($primer) ? $primer : null;
-                    $referencePrimer->primeReferences($this->class, array($results), $fieldName, $this->unitOfWorkHints, $primer);
+                    $referencePrimer->primeReferences($this->class, [$results], $fieldName, $this->unitOfWorkHints, $primer);
                 }
             }
         }
@@ -303,7 +310,7 @@ class Query implements \IteratorAggregate
     /**
      * Return the query type.
      *
-     * @return integer
+     * @return int
      */
     public function getType()
     {
@@ -313,11 +320,11 @@ class Query implements \IteratorAggregate
     /**
      * Sets whether or not to hydrate the documents to objects.
      *
-     * @param boolean $hydrate
+     * @param bool $hydrate
      */
     public function setHydrate($hydrate)
     {
-        $this->hydrate = (boolean) $hydrate;
+        $this->hydrate = (bool) $hydrate;
     }
 
     /**
@@ -326,11 +333,11 @@ class Query implements \IteratorAggregate
      *
      * This option has no effect if hydration is disabled.
      *
-     * @param boolean $readOnly
+     * @param bool $readOnly
      */
     public function setReadOnly($readOnly)
     {
-        $this->unitOfWorkHints[Query::HINT_READ_ONLY] = (boolean) $readOnly;
+        $this->unitOfWorkHints[self::HINT_READ_ONLY] = (bool) $readOnly;
     }
 
     /**
@@ -339,11 +346,11 @@ class Query implements \IteratorAggregate
      *
      * This option has no effect if hydration is disabled.
      *
-     * @param boolean $refresh
+     * @param bool $refresh
      */
     public function setRefresh($refresh)
     {
-        $this->unitOfWorkHints[Query::HINT_REFRESH] = (boolean) $refresh;
+        $this->unitOfWorkHints[self::HINT_REFRESH] = (bool) $refresh;
     }
 
     /**
@@ -368,7 +375,9 @@ class Query implements \IteratorAggregate
     {
         return array_filter(
             array_intersect_key($this->query, array_flip($keys)),
-            function($value) { return $value !== null; }
+            function ($value) {
+                return $value !== null;
+            }
         );
     }
 
@@ -380,7 +389,7 @@ class Query implements \IteratorAggregate
 
         $cursor = new CachingIterator($cursor);
 
-        if ( ! empty($this->primers)) {
+        if (! empty($this->primers)) {
             $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
             $cursor = new PrimingIterator($cursor, $this->class, $referencePrimer, $this->primers, $this->unitOfWorkHints);
         }
@@ -402,7 +411,9 @@ class Query implements \IteratorAggregate
 
         return array_combine(
             array_map(
-                function($key) use ($rename) { return $rename[$key] ?? $key; },
+                function ($key) use ($rename) {
+                    return $rename[$key] ?? $key;
+                },
                 array_keys($options)
             ),
             array_values($options)

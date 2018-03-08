@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class GH1525Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class GH1525Test extends BaseTest
 {
     public function testEmbedCloneTwoFlushesPerDocument()
     {
@@ -26,7 +30,7 @@ class GH1525Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         for ($i = 0; $i < 2; ++$i) {
-            $test = $this->dm->getRepository(GH1525Document::class)->findOneBy(array('name' => 'test' . $i));
+            $test = $this->dm->getRepository(GH1525Document::class)->findOneBy(['name' => 'test' . $i]);
 
             $this->assertInstanceOf(GH1525Document::class, $test);
 
@@ -41,7 +45,7 @@ class GH1525Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbedCloneWithIdStrategyNoneOnParentAndEarlyPersist()
     {
-        $uuidGen = new \Doctrine\ODM\MongoDB\Id\UuidGenerator();
+        $uuidGen = new UuidGenerator();
         $embedded = new GH1525Embedded('embedded');
 
         $count = 2;
@@ -55,7 +59,7 @@ class GH1525Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         for ($i = 0; $i < $count; ++$i) {
-            $test = $this->dm->getRepository(GH1525DocumentIdStrategyNone::class)->findOneBy(array('name' => 'test' . $i));
+            $test = $this->dm->getRepository(GH1525DocumentIdStrategyNone::class)->findOneBy(['name' => 'test' . $i]);
 
             $this->assertInstanceOf(GH1525DocumentIdStrategyNone::class, $test);
 
@@ -66,7 +70,7 @@ class GH1525Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testEmbedCloneWithIdStrategyNoneOnParentAndLatePersist()
     {
-        $uuidGen = new \Doctrine\ODM\MongoDB\Id\UuidGenerator();
+        $uuidGen = new UuidGenerator();
         $embedded = new GH1525Embedded('embedded');
 
         $count = 2;
@@ -80,7 +84,7 @@ class GH1525Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         for ($i = 0; $i < $count; ++$i) {
-            $test = $this->dm->getRepository(GH1525DocumentIdStrategyNone::class)->findOneBy(array('name' => 'test' . $i));
+            $test = $this->dm->getRepository(GH1525DocumentIdStrategyNone::class)->findOneBy(['name' => 'test' . $i]);
 
             $this->assertInstanceOf(GH1525DocumentIdStrategyNone::class, $test);
 

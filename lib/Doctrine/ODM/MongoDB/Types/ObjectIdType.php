@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
+
+use MongoDB\BSON\ObjectId;
 
 /**
  * The ObjectId type.
  *
- * @since       1.0
  */
 class ObjectIdType extends Type
 {
@@ -14,8 +17,8 @@ class ObjectIdType extends Type
         if ($value === null) {
             return null;
         }
-        if ( ! $value instanceof \MongoDB\BSON\ObjectId) {
-            $value = new \MongoDB\BSON\ObjectId($value);
+        if (! $value instanceof ObjectId) {
+            $value = new ObjectId($value);
         }
         return $value;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -7,14 +9,17 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
+use function array_map;
+use function is_array;
+use function is_string;
+use function substr;
 
 /**
  * Abstract class with common functionality for $bucket and $bucketAuto stages
  *
  * @internal
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.5
  */
 abstract class AbstractBucket extends Stage
 {
@@ -102,7 +107,7 @@ abstract class AbstractBucket extends Stage
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\Persisters\DocumentPersister
+     * @return DocumentPersister
      */
     private function getDocumentPersister()
     {

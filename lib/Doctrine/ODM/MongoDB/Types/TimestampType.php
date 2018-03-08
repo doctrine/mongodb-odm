@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
 
 use MongoDB\BSON\Timestamp;
+use function explode;
+use function substr;
 
 /**
  * The Timestamp type.
  *
- * @since       1.0
  */
 class TimestampType extends Type
 {
@@ -26,7 +29,6 @@ class TimestampType extends Type
     }
 
     /**
-     * @param Timestamp $timestamp
      * @return int
      */
     private function extractSeconds(Timestamp $timestamp)

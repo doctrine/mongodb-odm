@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 
 abstract class AbstractIndex extends Annotation
 {
-    public $keys = array();
+    public $keys = [];
     public $name;
     public $dropDups;
     public $background;
@@ -14,6 +16,6 @@ abstract class AbstractIndex extends Annotation
     public $order;
     public $unique = false;
     public $sparse = false;
-    public $options = array();
-    public $partialFilterExpression = array();
+    public $options = [];
+    public $partialFilterExpression = [];
 }

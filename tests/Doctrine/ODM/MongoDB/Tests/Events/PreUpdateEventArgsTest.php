@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Article;
 use Documents\Book;
 use Documents\Chapter;
 use Documents\Page;
+use function get_class;
+use function in_array;
 
-class PreUpdateEventArgsTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class PreUpdateEventArgsTest extends BaseTest
 {
     public function testChangeSetIsUpdated()
     {

@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MongoDB\Operation\FindOneAndUpdate;
+use function get_class;
 
 /**
  * IncrementGenerator is responsible for generating auto increment identifiers. It uses
@@ -16,7 +19,6 @@ use MongoDB\Operation\FindOneAndUpdate;
  * collection. If not specified it defaults to the name of the collection for the
  * document.
  *
- * @since       1.0
  */
 class IncrementGenerator extends AbstractIdGenerator
 {

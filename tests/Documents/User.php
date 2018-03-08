@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -87,7 +89,7 @@ class User extends BaseDocument
     protected $embeddedReferenceManyInverse;
 
     /** @ODM\Field(type="collection") */
-    private $logs = array();
+    private $logs = [];
 
     public function __construct()
     {
@@ -161,7 +163,7 @@ class User extends BaseDocument
         return $this->address;
     }
 
-    public function setAddress(Address $address = null)
+    public function setAddress(?Address $address = null)
     {
         $this->address = $address;
     }

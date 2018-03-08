@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use Documents\User;
 
 class ExprTest extends BaseTest
 {
@@ -60,8 +60,8 @@ class ExprTest extends BaseTest
             [
                 'nested' => [
                     'dayOfMonth' => ['$dayOfMonth' => '$dateField'],
-                    'dayOfWeek' => ['$dayOfWeek' => '$dateField']
-                ]
+                    'dayOfWeek' => ['$dayOfWeek' => '$dateField'],
+                ],
             ],
             $expr->getExpression()
         );
@@ -103,7 +103,7 @@ class ExprTest extends BaseTest
                         ['case' => ['$eq' => ['$numElements', 1]], 'then' => 'One element given'],
                     ],
                     'default' => ['$concat' => ['$numElements', ' elements given']],
-                ]
+                ],
             ],
             $expr->getExpression()
         );

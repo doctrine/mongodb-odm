@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
+
+use MongoDB\BSON\Regex;
 
 /**
  * The String type.
  *
- * @since       1.0
  */
 class StringType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return ($value === null || $value instanceof \MongoDB\BSON\Regex) ? $value : (string) $value;
+        return ($value === null || $value instanceof Regex) ? $value : (string) $value;
     }
 
     public function convertToPHPValue($value)

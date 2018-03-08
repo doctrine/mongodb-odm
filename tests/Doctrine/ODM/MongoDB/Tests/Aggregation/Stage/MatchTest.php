@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Match;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use MongoDB\BSON\UTCDateTime;
 
 class MatchTest extends BaseTest
 {
@@ -95,16 +98,18 @@ class MatchTest extends BaseTest
         $builder = $this->dm->createAggregationBuilder('Documents\User');
 
         $date = new \DateTime();
-        $mongoDate = new \MongoDB\BSON\UTCDateTime((int) $date->format('Uv'));
+        $mongoDate = new UTCDateTime((int) $date->format('Uv'));
         $stage = $builder
             ->match()
                 ->field('createdAt')
                 ->lte($date);
 
         $this->assertEquals(
-            ['$match' => [
-                'createdAt' => ['$lte' => $mongoDate]
-            ]],
+            [
+            '$match' => [
+                'createdAt' => ['$lte' => $mongoDate],
+            ],
+            ],
             $stage->getExpression()
         );
     }

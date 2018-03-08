@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Bars\Bar;
 use Documents\Bars\Location;
 
-class SimpleTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class SimpleTest extends BaseTest
 {
     public function testSimple()
     {

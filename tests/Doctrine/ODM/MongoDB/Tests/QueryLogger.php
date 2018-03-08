@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
+
+use function count;
 
 class QueryLogger implements \Countable
 {
-    private $queries = array();
+    private $queries = [];
 
     /**
      * Log a query.
@@ -21,14 +25,14 @@ class QueryLogger implements \Countable
      */
     public function clear()
     {
-        $this->queries = array();
+        $this->queries = [];
     }
 
     /**
      * Returns the number of logged queries.
      *
      * @see php.net/countable.count
-     * @return integer
+     * @return int
      */
     public function count()
     {

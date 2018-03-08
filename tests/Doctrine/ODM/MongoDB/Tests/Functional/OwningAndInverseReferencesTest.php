@@ -1,10 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\BlogPost;
+use Documents\BrowseNode;
+use Documents\Cart;
+use Documents\Comment;
+use Documents\Customer;
+use Documents\Feature;
+use Documents\FriendUser;
+use Documents\Product;
+use Documents\Tag;
+use function get_class;
+use function strtotime;
 
-class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class OwningAndInverseReferencesTest extends BaseTest
 {
     public function testOneToOne()
     {
@@ -16,9 +30,9 @@ class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         // if inversedBy then isOwningSide
         // if mappedBy then isInverseSide
 
-        $customer = new \Documents\Customer;
+        $customer = new Customer();
         $customer->name = 'Jon Wage';
-        $customer->cart = new \Documents\Cart;
+        $customer->cart = new Cart();
         $customer->cart->numItems = 5;
         $customer->cart->customer = $customer;
         $customer->cartTest = 'test';
@@ -51,9 +65,9 @@ class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
 
     public function testOneToManyBiDirectional()
     {
-        $product = new \Documents\Product('Book');
-        $product->addFeature(new \Documents\Feature('Pages'));
-        $product->addFeature(new \Documents\Feature('Cover'));
+        $product = new Product('Book');
+        $product->addFeature(new Feature('Pages'));
+        $product->addFeature(new Feature('Cover'));
         $this->dm->persist($product);
         $this->dm->flush();
         $this->dm->clear();
@@ -75,15 +89,15 @@ class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
 
     public function testOneToManySelfReferencing()
     {
-        $node = new \Documents\BrowseNode('Root');
-        $node->addChild(new \Documents\BrowseNode('Child 1'));
-        $node->addChild(new \Documents\BrowseNode('Child 2'));
+        $node = new BrowseNode('Root');
+        $node->addChild(new BrowseNode('Child 1'));
+        $node->addChild(new BrowseNode('Child 2'));
 
         $this->dm->persist($node);
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($node))->findOne(array('parent' => array('$exists' => false)));
+        $check = $this->dm->getDocumentCollection(get_class($node))->findOne(['parent' => ['$exists' => false]]);
         $this->assertNotNull($check);
         $this->assertArrayNotHasKey('children', $check);
 
@@ -105,8 +119,8 @@ class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
 
     public function testManyToMany()
     {
-        $baseballTag = new \Documents\Tag('baseball');
-        $blogPost = new \Documents\BlogPost();
+        $baseballTag = new Tag('baseball');
+        $blogPost = new BlogPost();
         $blogPost->name = 'Test';
         $blogPost->addTag($baseballTag);
 
@@ -137,10 +151,10 @@ class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
 
     public function testManyToManySelfReferencing()
     {
-        $jwage = new \Documents\FriendUser('jwage');
-        $fabpot = new \Documents\FriendUser('fabpot');
+        $jwage = new FriendUser('jwage');
+        $fabpot = new FriendUser('fabpot');
         $fabpot->addFriend($jwage);
-        $romanb = new \Documents\FriendUser('romanb');
+        $romanb = new FriendUser('romanb');
         $romanb->addFriend($jwage);
         $jwage->addFriend($fabpot);
         $jwage->addFriend($romanb);
@@ -202,9 +216,9 @@ class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
         $date2 = new DateTime();
         $date2->setTimestamp(strtotime('-10 seconds'));
 
-        $blogPost = new \Documents\BlogPost('Test');
-        $blogPost->addComment(new \Documents\Comment('Comment 1', $date1));
-        $blogPost->addComment(new \Documents\Comment('Comment 2', $date2));
+        $blogPost = new BlogPost('Test');
+        $blogPost->addComment(new Comment('Comment 1', $date1));
+        $blogPost->addComment(new Comment('Comment 2', $date2));
 
         $this->dm->persist($blogPost);
         $this->dm->flush();
@@ -243,8 +257,8 @@ class OwningAndInverseReferencesTest extends \Doctrine\ODM\MongoDB\Tests\BaseTes
             ->getQuery()
             ->getSingleResult();
 
-        $blogPost->addComment(new \Documents\Comment('Comment 3 by admin', $date1, true));
-        $blogPost->addComment(new \Documents\Comment('Comment 4 by admin', $date2, true));
+        $blogPost->addComment(new Comment('Comment 3 by admin', $date1, true));
+        $blogPost->addComment(new Comment('Comment 4 by admin', $date2, true));
         $this->dm->flush();
         $this->dm->clear();
 

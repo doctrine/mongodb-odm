@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Configuration;
@@ -9,6 +11,14 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Client;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
+use const DOCTRINE_MONGODB_DATABASE;
+use const DOCTRINE_MONGODB_SERVER;
+use function array_key_exists;
+use function array_map;
+use function getenv;
+use function in_array;
+use function iterator_to_array;
+use function version_compare;
 
 abstract class BaseTest extends TestCase
 {
@@ -25,7 +35,7 @@ abstract class BaseTest extends TestCase
 
     public function tearDown()
     {
-        if ( ! $this->dm) {
+        if (! $this->dm) {
             return;
         }
 
@@ -75,14 +85,14 @@ abstract class BaseTest extends TestCase
     protected function createTestDocumentManager()
     {
         $config = $this->getConfiguration();
-        $client = new Client(getenv("DOCTRINE_MONGODB_SERVER") ?: DOCTRINE_MONGODB_SERVER, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+        $client = new Client(getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
         return DocumentManager::create($client, $config);
     }
 
     protected function getServerVersion()
     {
-        $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(array('buildInfo' => 1))->toArray()[0];
+        $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(['buildInfo' => 1])->toArray()[0];
 
         return $result['version'];
     }
@@ -90,11 +100,11 @@ abstract class BaseTest extends TestCase
     protected function skipTestIfNotSharded($className)
     {
         $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
-        if (!$result['ok']) {
+        if (! $result['ok']) {
             $this->markTestSkipped('Could not check whether server supports sharding');
         }
 
-        if (!array_key_exists('shardCollection', $result['commands'])) {
+        if (! array_key_exists('shardCollection', $result['commands'])) {
             $this->markTestSkipped('Test skipped because server does not support sharding');
         }
     }

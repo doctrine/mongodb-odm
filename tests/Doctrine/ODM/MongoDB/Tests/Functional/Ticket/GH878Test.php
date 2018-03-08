@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -40,7 +42,8 @@ class GH878Test extends BaseTest
     /**
      * @return GH878Document
      */
-    private function getPersistedButDetachedDocument() {
+    private function getPersistedButDetachedDocument()
+    {
         $document = new GH878Document();
         $document->embeddedField = new GH878SubDocument();
 

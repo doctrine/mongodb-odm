@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Mapping;
 
+use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -14,17 +18,20 @@ use Doctrine\ODM\MongoDB\Id\AlnumGenerator;
 use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
+use function get_class;
+use function get_class_methods;
+use function in_array;
+use function ucfirst;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a document database.
  *
- * @since       1.0
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
-    protected $cacheSalt = "\$MONGODBODMCLASSMETADATA";
+    protected $cacheSalt = '$MONGODBODMCLASSMETADATA';
 
     /** @var DocumentManager The DocumentManager instance */
     private $dm;
@@ -32,10 +39,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var Configuration The Configuration instance */
     private $config;
 
-    /** @var \Doctrine\Common\Persistence\Mapping\Driver\MappingDriver The used metadata driver. */
+    /** @var MappingDriver The used metadata driver. */
     private $driver;
 
-    /** @var \Doctrine\Common\EventManager The event manager instance */
+    /** @var EventManager The event manager instance */
     private $evm;
 
     /**
@@ -51,7 +58,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Sets the Configuration instance
      *
-     * @param Configuration $config
      */
     public function setConfiguration(Configuration $config)
     {
@@ -110,7 +116,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = array())
+    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = [])
     {
         /** @var $class ClassMetadata */
         /** @var $parent ClassMetadata */
@@ -181,7 +187,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function validateIdentifier($class)
     {
-        if ( ! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument) {
+        if (! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument) {
             throw MappingException::identifierRequired($class->name);
         }
     }
@@ -190,7 +196,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Creates a new ClassMetadata instance for the given class name.
      *
      * @param string $className
-     * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     protected function newClassMetadataInstance($className)
     {
@@ -240,16 +246,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     throw MappingException::missingIdGeneratorClass($class->name);
                 }
 
-                $customGenerator = new $idGenOptions['class'];
+                $customGenerator = new $idGenOptions['class']();
                 unset($idGenOptions['class']);
-                if ( ! $customGenerator instanceof AbstractIdGenerator) {
+                if (! $customGenerator instanceof AbstractIdGenerator) {
                     throw MappingException::classIsNotAValidGenerator(get_class($customGenerator));
                 }
 
                 $methods = get_class_methods($customGenerator);
                 foreach ($idGenOptions as $name => $value) {
                     $method = 'set' . ucfirst($name);
-                    if ( ! in_array($method, $methods)) {
+                    if (! in_array($method, $methods)) {
                         throw MappingException::missingGeneratorSetter(get_class($customGenerator), $name);
                     }
 
@@ -267,16 +273,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited fields to the subclass mapping.
      *
-     * @param ClassMetadata $subClass
-     * @param ClassMetadata $parentClass
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
-            if ( ! isset($mapping['declared'])) {
+            if (! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
             $subClass->addInheritedFieldMapping($mapping);
@@ -290,10 +294,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited association mappings to the subclass mapping.
      *
-     * @param \Doctrine\ODM\MongoDB\Mapping\ClassMetadata $subClass
-     * @param \Doctrine\ODM\MongoDB\Mapping\ClassMetadata $parentClass
      *
-     * @return void
      *
      * @throws MappingException
      */
@@ -304,10 +305,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $mapping['sourceDocument'] = $subClass->name;
             }
 
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
-            if ( ! isset($mapping['declared'])) {
+            if (! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
             $subClass->addInheritedAssociationMapping($mapping);
@@ -317,8 +318,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited indexes to the subclass mapping.
      *
-     * @param ClassMetadata $subClass
-     * @param ClassMetadata $parentClass
      */
     private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
@@ -330,8 +329,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited shard key to the subclass mapping.
      *
-     * @param ClassMetadata $subClass
-     * @param ClassMetadata $parentClass
      */
     private function setInheritedShardKey(ClassMetadata $subClass, ClassMetadata $parentClass)
     {

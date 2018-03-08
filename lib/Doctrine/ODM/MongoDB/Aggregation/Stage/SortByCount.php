@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use function substr;
 
 class SortByCount extends Stage
 {
@@ -15,7 +18,6 @@ class SortByCount extends Stage
     private $fieldName;
 
     /**
-     * @param Builder $builder
      * @param string $fieldName Expression to group by. To specify a field path,
      * prefix the field name with a dollar sign $ and enclose it in quotes.
      * The expression can not evaluate to an object.
@@ -34,7 +36,7 @@ class SortByCount extends Stage
     public function getExpression()
     {
         return [
-            '$sortByCount' => $this->fieldName
+            '$sortByCount' => $this->fieldName,
         ];
     }
 }

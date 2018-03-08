@@ -1,12 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
+use function array_map;
+use function array_values;
+use function is_array;
 
-class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class CustomTypeTest extends BaseTest
 {
     public static function setUpBeforeClass()
     {
@@ -16,7 +22,7 @@ class CustomTypeTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testCustomTypeValueConversions()
     {
         $country = new Country();
-        $country->nationalHolidays = array(new \DateTime(), new \DateTime());
+        $country->nationalHolidays = [new \DateTime(), new \DateTime()];
 
         $this->dm->persist($country);
         $this->dm->flush();
@@ -52,13 +58,13 @@ class DateCollectionType
             return null;
         }
 
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             throw new CustomTypeException('Array expected.');
         }
 
         $converter = Type::getType('date');
 
-        $value = array_map(function($date) use ($converter) {
+        $value = array_map(function ($date) use ($converter) {
             return $converter->convertToDatabaseValue($date);
         }, array_values($value));
 
@@ -71,13 +77,13 @@ class DateCollectionType
             return null;
         }
 
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             throw new CustomTypeException('Array expected.');
         }
 
         $converter = Type::getType('date');
 
-        $value = array_map(function($date) use ($converter) {
+        $value = array_map(function ($date) use ($converter) {
             return $converter->convertToPHPValue($date);
         }, array_values($value));
 

@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
-use Doctrine\Common\Inflector\Inflector;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
+use function is_array;
 
 /**
  * A DocumentRepository serves as a repository for documents with generic as well as
@@ -18,7 +20,6 @@ use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
  * This class is designed for inheritance and users can subclass this class to
  * write their own repositories with business-specific methods to locate documents.
  *
- * @since       1.0
  */
 class DocumentRepository implements ObjectRepository, Selectable
 {
@@ -46,9 +47,9 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Initializes this instance with the specified document manager, unit of work and
      * class metadata.
      *
-     * @param DocumentManager $dm The DocumentManager to use.
-     * @param UnitOfWork $uow The UnitOfWork to use.
-     * @param ClassMetadata $classMetadata The class metadata.
+     * @param DocumentManager $dm            The DocumentManager to use.
+     * @param UnitOfWork      $uow           The UnitOfWork to use.
+     * @param ClassMetadata   $classMetadata The class metadata.
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, ClassMetadata $classMetadata)
     {
@@ -90,9 +91,9 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Finds a document matching the specified identifier. Optionally a lock mode and
      * expected version may be specified.
      *
-     * @param mixed $id Identifier.
-     * @param int $lockMode Optional. Lock mode; one of the LockMode constants.
-     * @param int $lockVersion Optional. Expected version.
+     * @param mixed $id          Identifier.
+     * @param int   $lockMode    Optional. Lock mode; one of the LockMode constants.
+     * @param int   $lockVersion Optional. Expected version.
      * @throws Mapping\MappingException
      * @throws LockException
      * @return object|null The document, if found, otherwise null.
@@ -123,14 +124,14 @@ class DocumentRepository implements ObjectRepository, Selectable
             return $document; // Hit!
         }
 
-        $criteria = array('_id' => $id);
+        $criteria = ['_id' => $id];
 
         if ($lockMode === LockMode::NONE) {
             return $this->getDocumentPersister()->load($criteria);
         }
 
         if ($lockMode === LockMode::OPTIMISTIC) {
-            if (!$this->class->isVersioned) {
+            if (! $this->class->isVersioned) {
                 throw LockException::notVersioned($this->documentName);
             }
             if ($document = $this->getDocumentPersister()->load($criteria)) {
@@ -140,7 +141,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             return $document;
         }
 
-        return $this->getDocumentPersister()->load($criteria, null, array(), $lockMode);
+        return $this->getDocumentPersister()->load($criteria, null, [], $lockMode);
     }
 
     /**
@@ -150,20 +151,20 @@ class DocumentRepository implements ObjectRepository, Selectable
      */
     public function findAll()
     {
-        return $this->findBy(array());
+        return $this->findBy([]);
     }
 
     /**
      * Finds documents by a set of criteria.
      *
-     * @param array        $criteria Query criteria
-     * @param array        $sort     Sort array for Cursor::sort()
-     * @param integer|null $limit    Limit for Cursor::limit()
-     * @param integer|null $skip     Skip for Cursor::skip()
+     * @param array    $criteria Query criteria
+     * @param array    $sort     Sort array for Cursor::sort()
+     * @param int|null $limit    Limit for Cursor::limit()
+     * @param int|null $skip     Skip for Cursor::skip()
      *
      * @return array
      */
-    public function findBy(array $criteria, array $sort = null, $limit = null, $skip = null)
+    public function findBy(array $criteria, ?array $sort = null, $limit = null, $skip = null)
     {
         return $this->getDocumentPersister()->loadAll($criteria, $sort, $limit, $skip)->toArray(false);
     }
@@ -216,7 +217,6 @@ class DocumentRepository implements ObjectRepository, Selectable
      * returns a new collection containing these elements.
      *
      * @see Selectable::matching()
-     * @param Criteria $criteria
      * @return Collection
      */
     public function matching(Criteria $criteria)

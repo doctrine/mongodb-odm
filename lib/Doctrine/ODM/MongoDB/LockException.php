@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB;
 
 /**
  * LockException
  *
- * @since 1.0
  */
 class LockException extends MongoDBException
 {
@@ -34,7 +35,7 @@ class LockException extends MongoDBException
 
     public static function lockFailedVersionMissmatch($document, $expectedLockVersion, $actualLockVersion)
     {
-        return new self('The optimistic lock failed, version ' . $expectedLockVersion . ' was expected, but is actually '.$actualLockVersion, $document);
+        return new self('The optimistic lock failed, version ' . $expectedLockVersion . ' was expected, but is actually ' . $actualLockVersion, $document);
     }
 
     public static function notVersioned($documentName)
@@ -44,11 +45,11 @@ class LockException extends MongoDBException
 
     public static function invalidLockFieldType($type)
     {
-        return new self('Invalid lock field type '.$type.'. Lock field must be int.');
+        return new self('Invalid lock field type ' . $type . '. Lock field must be int.');
     }
 
     public static function invalidVersionFieldType($type)
     {
-        return new self('Invalid version field type '.$type.'. Version field must be int or date.');
+        return new self('Invalid version field type ' . $type . '. Version field must be int or date.');
     }
 }

@@ -1,13 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use function chr;
+use function hexdec;
+use function mt_rand;
+use function php_uname;
+use function preg_match;
+use function sha1;
+use function sprintf;
+use function str_replace;
+use function strlen;
+use function substr;
 
 /**
  * Generates UUIDs.
  *
- * @since       1.0
  */
 class UuidGenerator extends AbstractIdGenerator
 {
@@ -42,7 +53,7 @@ class UuidGenerator extends AbstractIdGenerator
      * Checks that a given string is a valid uuid.
      *
      * @param string $uuid The string to check.
-     * @return boolean
+     * @return bool
      */
     public function isValid($uuid)
     {
@@ -53,8 +64,8 @@ class UuidGenerator extends AbstractIdGenerator
     /**
      * Generates a new UUID
      *
-     * @param DocumentManager $dm Not used.
-     * @param object $document Not used.
+     * @param DocumentManager $dm       Not used.
+     * @param object          $document Not used.
      * @return string UUID
      */
     public function generate(DocumentManager $dm, $document)
@@ -95,18 +106,18 @@ class UuidGenerator extends AbstractIdGenerator
      * Generates a v5 UUID
      *
      * @param string $namespace The UUID to seed with
-     * @param string $salt The string to salt this new UUID with
+     * @param string $salt      The string to salt this new UUID with
      * @throws \Exception when the provided namespace is invalid
      * @return string
      */
     public function generateV5($namespace, $salt)
     {
-        if ( ! $this->isValid($namespace)) {
+        if (! $this->isValid($namespace)) {
             throw new \Exception('Provided $namespace is invalid: ' . $namespace);
         }
 
         // Get hexadecimal components of namespace
-        $nhex = str_replace(array('-', '{', '}'), '', $namespace);
+        $nhex = str_replace(['-', '{', '}'], '', $namespace);
 
         // Binary Value
         $nstr = '';

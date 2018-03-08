@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use GeoJson\Geometry\Geometry;
+use function func_get_args;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -159,12 +162,12 @@ class Match extends Stage
      *
      * @see Expr::exists()
      * @see http://docs.mongodb.org/manual/reference/operator/exists/
-     * @param boolean $bool
+     * @param bool $bool
      * @return $this
      */
     public function exists($bool)
     {
-        $this->query->exists((boolean) $bool);
+        $this->query->exists((bool) $bool);
 
         return $this;
     }
@@ -220,7 +223,6 @@ class Match extends Stage
      *
      * @see Expr::geoWithin()
      * @see http://docs.mongodb.org/manual/reference/operator/geoWithin/
-     * @param Geometry $geometry
      * @return $this
      */
     public function geoWithin(Geometry $geometry)
@@ -306,9 +308,9 @@ class Match extends Stage
      *
      * @see Expr::geoWithinPolygon()
      * @see http://docs.mongodb.org/manual/reference/operator/polygon/
-     * @param array $point1 First point of the polygon
-     * @param array $point2 Second point of the polygon
-     * @param array $point3 Third point of the polygon
+     * @param array $point1    First point of the polygon
+     * @param array $point2    Second point of the polygon
+     * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
      * @return $this
      */
@@ -481,8 +483,8 @@ class Match extends Stage
      *
      * @see Expr::mod()
      * @see http://docs.mongodb.org/manual/reference/operator/mod/
-     * @param float|integer $divisor
-     * @param float|integer $remainder
+     * @param float|int $divisor
+     * @param float|int $remainder
      * @return $this
      */
     public function mod($divisor, $remainder = 0)
@@ -574,12 +576,12 @@ class Match extends Stage
      *
      * @see Expr::size()
      * @see http://docs.mongodb.org/manual/reference/operator/size/
-     * @param integer $size
+     * @param int $size
      * @return $this
      */
     public function size($size)
     {
-        $this->query->size((integer) $size);
+        $this->query->size((int) $size);
 
         return $this;
     }
@@ -608,7 +610,7 @@ class Match extends Stage
      *
      * @see Expr::type()
      * @see http://docs.mongodb.org/manual/reference/operator/type/
-     * @param integer $type
+     * @param int $type
      * @return $this
      */
     public function type($type)

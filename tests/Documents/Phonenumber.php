@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -13,7 +15,7 @@ class Phonenumber
     /** @ODM\ReferenceOne(targetDocument="User", cascade={"persist"}) */
     private $lastCalledBy;
 
-    public function __construct($phonenumber = null, User $lastCalledBy = null)
+    public function __construct($phonenumber = null, ?User $lastCalledBy = null)
     {
         $this->phonenumber = $phonenumber;
         $this->lastCalledBy = $lastCalledBy;
@@ -34,7 +36,7 @@ class Phonenumber
         return $this->lastCalledBy;
     }
 
-    public function setLastCalledBy(User $lastCalledBy = null)
+    public function setLastCalledBy(?User $lastCalledBy = null)
     {
         $this->lastCalledBy = $lastCalledBy;
     }

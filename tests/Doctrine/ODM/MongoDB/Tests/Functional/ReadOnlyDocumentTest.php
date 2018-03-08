@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 
-class ReadOnlyDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class ReadOnlyDocumentTest extends BaseTest
 {
     public function testCanBeInserted()
     {
@@ -53,7 +56,7 @@ class ReadOnlyDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $rod = new ReadOnlyDocument('yay');
         $this->dm->persist($rod);
         $this->dm->flush();
-        $rod->value = "o.O";
+        $rod->value = 'o.O';
         $this->uow->recomputeSingleDocumentChangeSet($this->dm->getClassMetadata(ReadOnlyDocument::class), $rod);
         $this->assertEmpty($this->uow->getDocumentChangeSet($rod));
     }
@@ -66,7 +69,7 @@ class ReadOnlyDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->clear();
 
         $rod = $this->dm->find(ReadOnlyDocument::class, $rod->id);
-        $rod->value = "o.O";
+        $rod->value = 'o.O';
         $this->dm->flush();
         $this->dm->clear();
 

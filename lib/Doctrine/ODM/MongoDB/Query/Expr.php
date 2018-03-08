@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -7,11 +9,24 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
+use MongoDB\BSON\Binary;
+use MongoDB\BSON\Javascript;
+use function array_key_exists;
+use function array_map;
+use function array_merge;
+use function array_values;
+use function explode;
+use function func_get_args;
+use function in_array;
+use function is_array;
+use function is_string;
+use function key;
+use function strpos;
+use function strtolower;
 
 /**
  * Query expression builder for ODM.
  *
- * @since       1.0
  */
 class Expr
 {
@@ -52,9 +67,6 @@ class Expr
      */
     private $class;
 
-    /**
-     * @param DocumentManager $dm
-     */
     public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
@@ -105,7 +117,9 @@ class Expr
 
         $this->query['$nor'] = array_merge(
             $this->query['$nor'],
-            array_map(function ($expression) { return $expression instanceof Expr ? $expression->getQuery() : $expression; }, func_get_args())
+            array_map(function ($expression) {
+                return $expression instanceof Expr ? $expression->getQuery() : $expression;
+            }, func_get_args())
         );
 
         return $this;
@@ -128,7 +142,9 @@ class Expr
 
         $this->query['$or'] = array_merge(
             $this->query['$or'],
-            array_map(function ($expression) { return $expression instanceof Expr ? $expression->getQuery() : $expression; }, func_get_args())
+            array_map(function ($expression) {
+                return $expression instanceof Expr ? $expression->getQuery() : $expression;
+            }, func_get_args())
         );
 
         return $this;
@@ -180,7 +196,7 @@ class Expr
      *
      * @see http://docs.mongodb.org/manual/reference/operator/update/bit/
      * @param string $operator
-     * @param int $value
+     * @param int    $value
      * @return $this
      */
     protected function bit($operator, $value)
@@ -222,7 +238,7 @@ class Expr
      *
      * @see Builder::bitsAllClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllClear/
-     * @param int|array|\MongoDB\BSON\Binary $value
+     * @param int|array|Binary $value
      * @return $this
      */
     public function bitsAllClear($value)
@@ -237,7 +253,7 @@ class Expr
      *
      * @see Builder::bitsAllSet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllSet/
-     * @param int|array|\MongoDB\BSON\Binary $value
+     * @param int|array|Binary $value
      * @return $this
      */
     public function bitsAllSet($value)
@@ -252,7 +268,7 @@ class Expr
      *
      * @see Builder::bitsAnyClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnyClear/
-     * @param int|array|\MongoDB\BSON\Binary $value
+     * @param int|array|Binary $value
      * @return $this
      */
     public function bitsAnyClear($value)
@@ -267,7 +283,7 @@ class Expr
      *
      * @see Builder::bitsAnySet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnySet/
-     * @param int|array|\MongoDB\BSON\Binary $value
+     * @param int|array|Binary $value
      * @return $this
      */
     public function bitsAnySet($value)
@@ -301,11 +317,10 @@ class Expr
      * @return $this
      * @throws \BadMethodCallException if the query does not already have $text criteria
      *
-     * @since 1.3
      */
     public function caseSensitive($caseSensitive)
     {
-        if ( ! isset($this->query['$text'])) {
+        if (! isset($this->query['$text'])) {
             throw new \BadMethodCallException('This method requires a $text operator (call text() first)');
         }
 
@@ -365,11 +380,10 @@ class Expr
      * @return $this
      * @throws \BadMethodCallException if the query does not already have $text criteria
      *
-     * @since 1.3
      */
     public function diacriticSensitive($diacriticSensitive)
     {
-        if ( ! isset($this->query['$text'])) {
+        if (! isset($this->query['$text'])) {
             throw new \BadMethodCallException('This method requires a $text operator (call text() first)');
         }
 
@@ -431,12 +445,12 @@ class Expr
      *
      * @see Builder::exists()
      * @see http://docs.mongodb.org/manual/reference/operator/exists/
-     * @param boolean $bool
+     * @param bool $bool
      * @return $this
      */
     public function exists($bool)
     {
-        return $this->operator('$exists', (boolean) $bool);
+        return $this->operator('$exists', (bool) $bool);
     }
 
     /**
@@ -568,9 +582,9 @@ class Expr
      *
      * @see Builder::geoWithinPolygon()
      * @see http://docs.mongodb.org/manual/reference/operator/polygon/
-     * @param array $point1 First point of the polygon
-     * @param array $point2 Second point of the polygon
-     * @param array $point3 Third point of the polygon
+     * @param array $point1    First point of the polygon
+     * @param array $point2    Second point of the polygon
+     * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
      * @return $this
      * @throws \InvalidArgumentException if less than three points are given
@@ -662,7 +676,7 @@ class Expr
      *
      * @see Builder::inc()
      * @see http://docs.mongodb.org/manual/reference/operator/inc/
-     * @param float|integer $value
+     * @param float|int $value
      * @return $this
      */
     public function inc($value)
@@ -733,7 +747,7 @@ class Expr
      */
     public function language($language)
     {
-        if ( ! isset($this->query['$text'])) {
+        if (! isset($this->query['$text'])) {
             throw new \BadMethodCallException('This method requires a $text operator (call text() first)');
         }
 
@@ -803,8 +817,8 @@ class Expr
      *
      * @see Builder::mod()
      * @see http://docs.mongodb.org/manual/reference/operator/mod/
-     * @param float|integer $divisor
-     * @param float|integer $remainder
+     * @param float|int $divisor
+     * @param float|int $remainder
      * @return $this
      */
     public function mod($divisor, $remainder = 0)
@@ -819,7 +833,7 @@ class Expr
      *
      * @see Builder::mul()
      * @see http://docs.mongodb.org/manual/reference/operator/mul/
-     * @param float|integer $value
+     * @param float|int $value
      * @return $this
      */
     public function mul($value)
@@ -839,7 +853,7 @@ class Expr
      * @see Builder::near()
      * @see http://docs.mongodb.org/manual/reference/operator/near/
      * @param float|array|Point $x
-     * @param float $y
+     * @param float             $y
      * @return $this
      */
     public function near($x, $y = null)
@@ -865,7 +879,7 @@ class Expr
      * @see Builder::nearSphere()
      * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
      * @param float|array|Point $x
-     * @param float $y
+     * @param float             $y
      * @return $this
      */
     public function nearSphere($x, $y = null)
@@ -927,7 +941,7 @@ class Expr
      * the operator is set at the top level of the query.
      *
      * @param string $operator
-     * @param mixed $value
+     * @param mixed  $value
      * @return $this
      */
     public function operator($operator, $value)
@@ -977,7 +991,7 @@ class Expr
      * {@link Expr::push()} operation.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/update/position/
-     * @param integer $position
+     * @param int $position
      * @return $this
      */
     public function position($position)
@@ -1143,7 +1157,7 @@ class Expr
      * @see Builder::set()
      * @see http://docs.mongodb.org/manual/reference/operator/set/
      * @param mixed $value
-     * @param boolean $atomic
+     * @param bool  $atomic
      * @return $this
      */
     public function set($value, $atomic = true)
@@ -1173,7 +1187,6 @@ class Expr
     /**
      * Sets ClassMetadata for document being queried.
      *
-     * @param ClassMetadata $class
      */
     public function setClassMetadata(ClassMetadata $class)
     {
@@ -1233,12 +1246,12 @@ class Expr
      *
      * @see Builder::size()
      * @see http://docs.mongodb.org/manual/reference/operator/size/
-     * @param integer $size
+     * @param int $size
      * @return $this
      */
     public function size($size)
     {
-        return $this->operator('$size', (integer) $size);
+        return $this->operator('$size', (int) $size);
     }
 
     /**
@@ -1249,7 +1262,7 @@ class Expr
      * used for specifying $slice for a query projection.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/slice/
-     * @param integer $slice
+     * @param int $slice
      * @return $this
      */
     public function slice($slice)
@@ -1269,7 +1282,7 @@ class Expr
      *
      * @see http://docs.mongodb.org/manual/reference/operator/sort/
      * @param array|string $fieldName Field name or array of field/order pairs
-     * @param int|string $order       Field order (if one field is specified)
+     * @param int|string   $order     Field order (if one field is specified)
      * @return $this
      */
     public function sort($fieldName, $order = null)
@@ -1301,7 +1314,7 @@ class Expr
      * @todo Remove support for string $type argument in 2.0
      * @see Builder::type()
      * @see http://docs.mongodb.org/manual/reference/operator/type/
-     * @param integer $type
+     * @param int $type
      * @return $this
      */
     public function type($type)
@@ -1356,7 +1369,7 @@ class Expr
      *
      * @see Builder::where()
      * @see http://docs.mongodb.org/manual/reference/operator/where/
-     * @param string|\MongoDB\BSON\Javascript $javascript
+     * @param string|Javascript $javascript
      * @return $this
      */
     public function where($javascript)
@@ -1401,7 +1414,6 @@ class Expr
     /**
      * @param int|string $order
      *
-     * @return int
      */
     private function normalizeSortOrder($order): int
     {
@@ -1419,7 +1431,7 @@ class Expr
      */
     private function requiresCurrentField()
     {
-        if ( ! $this->currentField) {
+        if (! $this->currentField) {
             throw new \LogicException('This method requires you set a current field using field().');
         }
     }

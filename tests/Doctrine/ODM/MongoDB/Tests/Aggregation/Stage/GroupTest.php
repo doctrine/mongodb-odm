@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
@@ -41,7 +43,9 @@ class GroupTest extends BaseTest
         return [
             'addToSet()' => ['addToSet', ['$field']],
             'avg()' => ['avg', ['$field']],
-            'expression()' => ['expression', function (Expr $expr) {
+            'expression()' => [
+        'expression',
+        function (Expr $expr) {
                 $expr
                     ->field('dayOfMonth')
                     ->dayOfMonth('$dateField')
@@ -49,7 +53,8 @@ class GroupTest extends BaseTest
                     ->dayOfWeek('$dateField');
 
                 return [$expr];
-            }],
+        },
+            ],
             'first()' => ['first', ['$field']],
             'last()' => ['last', ['$field']],
             'max()' => ['max', ['$field']],

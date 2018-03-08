@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 
-class FindAndModifyTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class FindAndModifyTest extends BaseTest
 {
     public function testFindAndModify()
     {
         $coll = $this->dm->getDocumentCollection('Documents\User');
-        $docs = array(array('count' => 0), array('count' => 0));
+        $docs = [['count' => 0], ['count' => 0]];
         $coll->insertMany($docs);
 
         // test update findAndModify

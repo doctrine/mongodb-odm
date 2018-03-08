@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+use function array_map;
 
 /**
  * Fluent interface for adding a $facet stage to an aggregation pipeline.
  *
- * @author alcaeus <alcaeus@alcaeus.org>
- * @since 1.5
  */
 class Facet extends Stage
 {
@@ -29,7 +30,9 @@ class Facet extends Stage
     public function getExpression()
     {
         return [
-            '$facet' => array_map(function (Builder $builder) { return $builder->getPipeline(); }, $this->pipelines),
+            '$facet' => array_map(function (Builder $builder) {
+                return $builder->getPipeline();
+            }, $this->pipelines),
         ];
     }
 

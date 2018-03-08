@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
+
+use MongoDB\BSON\Binary;
 
 /**
  * The BinData type for function data.
  *
- * @since       1.0
  */
 class BinDataFuncType extends BinDataType
 {
-    protected $binDataType = \MongoDB\BSON\Binary::TYPE_FUNCTION;
+    protected $binDataType = Binary::TYPE_FUNCTION;
 }

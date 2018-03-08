@@ -1,10 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use MongoDB\BSON\Binary;
+use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
+use function class_exists;
+use function date;
+use function get_class;
+use function gettype;
+use function is_object;
+use function md5;
+use function serialize;
+use function sprintf;
+use function ucfirst;
+use function unserialize;
 
-class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class IdTest extends BaseTest
 {
     public function testUuidId()
     {
@@ -14,15 +31,15 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $id = $user->id;
 
         $this->dm->clear();
-        $check1 = $this->dm->getRepository(__NAMESPACE__.'\UuidUser')->findOneBy(array('id' => $id));
+        $check1 = $this->dm->getRepository(__NAMESPACE__ . '\UuidUser')->findOneBy(['id' => $id]);
         $this->assertNotNull($check1);
 
-        $check2 = $this->dm->createQueryBuilder(__NAMESPACE__.'\UuidUser')
+        $check2 = $this->dm->createQueryBuilder(__NAMESPACE__ . '\UuidUser')
             ->field('id')->equals($id)->getQuery()->getSingleResult();
         $this->assertNotNull($check2);
         $this->assertSame($check1, $check2);
 
-        $check3 = $this->dm->createQueryBuilder(__NAMESPACE__.'\UuidUser')
+        $check3 = $this->dm->createQueryBuilder(__NAMESPACE__ . '\UuidUser')
             ->field('name')->equals('Jonathan H. Wage')->getQuery()->getSingleResult();
         $this->assertNotNull($check3);
         $this->assertSame($check2, $check3);
@@ -37,15 +54,15 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
 
         $this->dm->clear();
-        $check1 = $this->dm->getRepository(__NAMESPACE__.'\AlnumCharsUser')->findOneBy(array('id' => 'x'));
+        $check1 = $this->dm->getRepository(__NAMESPACE__ . '\AlnumCharsUser')->findOneBy(['id' => 'x']);
         $this->assertNotNull($check1);
 
-        $check2 = $this->dm->createQueryBuilder(__NAMESPACE__.'\AlnumCharsUser')
+        $check2 = $this->dm->createQueryBuilder(__NAMESPACE__ . '\AlnumCharsUser')
             ->field('id')->equals('x')->getQuery()->getSingleResult();
         $this->assertNotNull($check2);
         $this->assertSame($check1, $check2);
 
-        $check3 = $this->dm->createQueryBuilder(__NAMESPACE__.'\AlnumCharsUser')
+        $check3 = $this->dm->createQueryBuilder(__NAMESPACE__ . '\AlnumCharsUser')
             ->field('name')->equals('Kathrine R. Cage')->getQuery()->getSingleResult();
         $this->assertNotNull($check3);
         $this->assertSame($check2, $check3);
@@ -73,17 +90,16 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($reference1->id, 1);
         $this->assertEquals($reference2->id, 2);
 
-        $check1 = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->findOneBy(array('id' => $user1->id));
-        $check2 = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->findOneBy(array('id' => $user2->id));
+        $check1 = $this->dm->getRepository(__NAMESPACE__ . '\CollectionIdUser')->findOneBy(['id' => $user1->id]);
+        $check2 = $this->dm->getRepository(__NAMESPACE__ . '\CollectionIdUser')->findOneBy(['id' => $user2->id]);
         $this->assertNotNull($check1);
         $this->assertNotNull($check2);
 
         $this->assertEquals('referenced 1', $check1->reference->getName());
         $this->assertEquals('referenced 2', $check2->reference->getName());
 
-        $check = $this->dm->getRepository(__NAMESPACE__.'\CollectionIdUser')->find($user1->id);
+        $check = $this->dm->getRepository(__NAMESPACE__ . '\CollectionIdUser')->find($user1->id);
         $this->assertNotNull($check);
-
     }
 
     public function testCollectionIdWithStartingId()
@@ -126,17 +142,17 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testIdGeneratorInstance()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__.'\UuidUser');
-        $this->assertEquals(\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
-        $this->assertEquals(array('salt' => 'test'), $class->generatorOptions);
+        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\UuidUser');
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
+        $this->assertEquals(['salt' => 'test'], $class->generatorOptions);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Id\UuidGenerator', $class->idGenerator);
         $this->assertEquals('test', $class->idGenerator->getSalt());
 
         $serialized = serialize($class);
         $class = unserialize($serialized);
 
-        $this->assertEquals(\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
-        $this->assertEquals(array('salt' => 'test'), $class->generatorOptions);
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
+        $this->assertEquals(['salt' => 'test'], $class->generatorOptions);
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\Id\UuidGenerator', $class->idGenerator);
         $this->assertEquals('test', $class->idGenerator->getSalt());
     }
@@ -146,11 +162,6 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     public function testEqualButNotIdenticalIds($user1Id, $user2Id)
     {
-        /* Do not use assertEquals(), since the Scalar comparator tends to cast
-         * scalars of different types to strings before comparison. We actually
-         * want to check against PHP's loose equality logic here.
-         */
-        $this->assertTrue($user1Id == $user2Id);
         $this->assertNotSame($user1Id, $user2Id);
 
         $user1 = new CustomIdUser(sprintf('User1 with %s ID', gettype($user1Id)));
@@ -167,8 +178,8 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertSame($user1->id, $user1Id);
         $this->assertSame($user2->id, $user2Id);
 
-        $user1 = $this->dm->find(__NAMESPACE__.'\CustomIdUser', $user1Id);
-        $user2 = $this->dm->find(__NAMESPACE__.'\CustomIdUser', $user2Id);
+        $user1 = $this->dm->find(__NAMESPACE__ . '\CustomIdUser', $user1Id);
+        $user2 = $this->dm->find(__NAMESPACE__ . '\CustomIdUser', $user2Id);
 
         $this->assertNotSame($user1, $user2);
         $this->assertSame($user1->id, $user1Id);
@@ -182,12 +193,12 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
          *
          * See: http://docs.mongodb.org/manual/faq/developers/#what-is-the-compare-order-for-bson-types
          */
-        return array(
-            array('123', 123),
-            array('123', 123.0),
-            array('', 0),
-            array('0', 0),
-        );
+        return [
+            ['123', 123],
+            ['123', 123.0],
+            ['', 0],
+            ['0', 0],
+        ];
     }
 
     /**
@@ -207,7 +218,7 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertNotNull($object->id);
 
         if ($expectedMongoType !== null) {
-            $check = $this->dm->getDocumentCollection(get_class($object))->findOne(array());
+            $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
             $this->assertEquals($expectedMongoType, is_object($check['_id']) ? get_class($check['_id']) : gettype($check['_id']));
         }
 
@@ -232,59 +243,59 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function getTestIdTypesAndStrategiesData()
     {
-        $identifier = new \MongoDB\BSON\ObjectId();
+        $identifier = new ObjectId();
 
-        return array(
+        return [
             // boolean
-            array('boolean', 'none', true,  true, 'boolean'),
-            array('boolean', 'none', 1,  true, 'boolean'),
-            array('boolean', 'none', false, false, 'boolean'),
+            ['boolean', 'none', true,  true, 'boolean'],
+            ['boolean', 'none', 1,  true, 'boolean'],
+            ['boolean', 'none', false, false, 'boolean'],
 
             // integer
-            array('int', 'none', 0, 0, 'integer'),
-            array('int', 'none', 1, 1, 'integer'),
-            array('int', 'none', '1', 1, 'integer'),
-            array('int', 'increment', null, 1, 'integer'),
+            ['int', 'none', 0, 0, 'integer'],
+            ['int', 'none', 1, 1, 'integer'],
+            ['int', 'none', '1', 1, 'integer'],
+            ['int', 'increment', null, 1, 'integer'],
 
             // raw
-            array('raw', 'none', 0, 0, 'integer'),
-            array('raw', 'none', '1', '1', 'string'),
-            array('raw', 'none', true, true, 'boolean'),
-            array('raw', 'increment', null, 1, 'integer'),
+            ['raw', 'none', 0, 0, 'integer'],
+            ['raw', 'none', '1', '1', 'string'],
+            ['raw', 'none', true, true, 'boolean'],
+            ['raw', 'increment', null, 1, 'integer'],
 
             // float
-            array('float', 'none', 1.1, 1.1, 'double'),
-            array('float', 'none', '1.1', 1.1, 'double'),
+            ['float', 'none', 1.1, 1.1, 'double'],
+            ['float', 'none', '1.1', 1.1, 'double'],
 
             // string
-            array('string', 'none', '', '', 'string'),
-            array('string', 'none', 1, '1', 'string'),
-            array('string', 'none', 'test', 'test', 'string'),
-            array('string', 'increment', null, '1', 'string'),
+            ['string', 'none', '', '', 'string'],
+            ['string', 'none', 1, '1', 'string'],
+            ['string', 'none', 'test', 'test', 'string'],
+            ['string', 'increment', null, '1', 'string'],
 
             // custom_id
-            array('custom_id', 'none', 0, 0, 'integer'),
-            array('custom_id', 'none', '1', '1', 'string'),
-            array('custom_id', 'increment', null, 1, 'integer'),
+            ['custom_id', 'none', 0, 0, 'integer'],
+            ['custom_id', 'none', '1', '1', 'string'],
+            ['custom_id', 'increment', null, 1, 'integer'],
 
             // object_id
-            array('object_id', 'none', (string) $identifier, (string) $identifier, \MongoDB\BSON\ObjectId::class),
+            ['object_id', 'none', (string) $identifier, (string) $identifier, ObjectId::class],
 
             // date
-            array('date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), \MongoDB\BSON\UTCDateTime::class),
+            ['date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), UTCDateTime::class],
 
             // bin
-            array('bin', 'none', 'test-data', 'test-data', \MongoDB\BSON\Binary::class),
-            array('bin', 'uuid', null, null, \MongoDB\BSON\Binary::class),
-            array('bin_func', 'none', 'test-data', 'test-data', \MongoDB\BSON\Binary::class),
-            array('bin_bytearray', 'none', 'test-data', 'test-data', \MongoDB\BSON\Binary::class),
-            array('bin_uuid', 'none', 'TestTestTestTest', 'TestTestTestTest', \MongoDB\BSON\Binary::class),
-            array('bin_md5', 'none', md5('test'), md5('test'), \MongoDB\BSON\Binary::class),
-            array('bin_custom', 'none', 'test-data', 'test-data', \MongoDB\BSON\Binary::class),
+            ['bin', 'none', 'test-data', 'test-data', Binary::class],
+            ['bin', 'uuid', null, null, Binary::class],
+            ['bin_func', 'none', 'test-data', 'test-data', Binary::class],
+            ['bin_bytearray', 'none', 'test-data', 'test-data', Binary::class],
+            ['bin_uuid', 'none', 'TestTestTestTest', 'TestTestTestTest', Binary::class],
+            ['bin_md5', 'none', md5('test'), md5('test'), Binary::class],
+            ['bin_custom', 'none', 'test-data', 'test-data', Binary::class],
 
             // hash
-            array('hash', 'none', array('key' => 'value'), array('key' => 'value'), 'array'),
-        );
+            ['hash', 'none', ['key' => 'value'], ['key' => 'value'], 'array'],
+        ];
     }
 
     /**
@@ -301,22 +312,22 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($object))->findOne(array());
+        $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
 
-        $this->assertEquals(\MongoDB\BSON\Binary::class, get_class($check['_id']));
+        $this->assertEquals(Binary::class, get_class($check['_id']));
         $this->assertEquals($expectedMongoBinDataType, $check['_id']->getType());
     }
 
     public function getTestBinIdsData()
     {
-        return array(
-            array('bin', 0, 'test-data'),
-            array('bin_func', \MongoDB\BSON\Binary::TYPE_FUNCTION, 'test-data'),
-            array('bin_bytearray', \MongoDB\BSON\Binary::TYPE_OLD_BINARY, 'test-data'),
-            array('bin_uuid', \MongoDB\BSON\Binary::TYPE_OLD_UUID, 'testtesttesttest'),
-            array('bin_md5', \MongoDB\BSON\Binary::TYPE_MD5, md5('test')),
-            array('bin_custom', \MongoDB\BSON\Binary::TYPE_USER_DEFINED, 'test-data'),
-        );
+        return [
+            ['bin', 0, 'test-data'],
+            ['bin_func', Binary::TYPE_FUNCTION, 'test-data'],
+            ['bin_bytearray', Binary::TYPE_OLD_BINARY, 'test-data'],
+            ['bin_uuid', Binary::TYPE_OLD_UUID, 'testtesttesttest'],
+            ['bin_md5', Binary::TYPE_MD5, md5('test')],
+            ['bin_custom', Binary::TYPE_USER_DEFINED, 'test-data'],
+        ];
     }
 
     /**
@@ -343,11 +354,11 @@ class IdTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     private function createIdTestClass($type, $strategy)
     {
         $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));
-        $className = sprintf(__NAMESPACE__.'\\%s', $shortClassName);
+        $className = sprintf(__NAMESPACE__ . '\\%s', $shortClassName);
 
-        if (!class_exists($className)) {
+        if (! class_exists($className)) {
             $code = sprintf(
-'namespace Doctrine\ODM\MongoDB\Tests\Functional;
+                'namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -359,7 +370,11 @@ class %s
 
     /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Field("type=string") **/
     public $test = "test";
-}', $shortClassName, $strategy, $type);
+}',
+                $shortClassName,
+                $strategy,
+                $type
+            );
 
             eval($code);
         }
@@ -396,7 +411,7 @@ class CollectionIdUser
     public $reference;
 
     /** @ODM\EmbedMany(targetDocument="EmbeddedCollectionId") */
-    public $embedded = array();
+    public $embedded = [];
 
     public function __construct($name)
     {
@@ -417,7 +432,7 @@ class CollectionIdUserWithStartingId
     public $reference;
 
     /** @ODM\EmbedMany(targetDocument="EmbeddedCollectionId") */
-    public $embedded = array();
+    public $embedded = [];
 
     public function __construct($name)
     {

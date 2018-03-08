@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -14,7 +16,7 @@ abstract class BaseEmployee
     protected $changes = 0;
 
     /** @ODM\Field(type="collection") */
-    protected $notes = array();
+    protected $notes = [];
 
     /** @ODM\Field(type="string") */
     protected $name;

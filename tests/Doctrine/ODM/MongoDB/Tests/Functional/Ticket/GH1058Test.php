@@ -1,11 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use MongoDB\BSON\ObjectId;
+use function array_merge;
+use function get_class;
 
 class GH1058Test extends BaseTest
 {
@@ -14,7 +19,7 @@ class GH1058Test extends BaseTest
      */
     public function testModifyingDuringOnFlushEventNewDocument()
     {
-        $this->dm->getEventManager()->addEventListener(array(Events::onFlush), new GH1058Listener());
+        $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());
         $document = new GH1058PersistDocument();
         $document->setValue('value 1');
         $this->dm->persist($document);
@@ -26,7 +31,7 @@ class GH1058Test extends BaseTest
      */
     public function testModifyingDuringOnFlushEventNewDocumentWithId()
     {
-        $this->dm->getEventManager()->addEventListener(array(Events::onFlush), new GH1058Listener());
+        $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());
         $document = new GH1058UpsertDocument();
         $document->generateId();
         $document->setValue('value 1');
@@ -37,7 +42,8 @@ class GH1058Test extends BaseTest
 
 class GH1058Listener
 {
-    public function onFlush(OnFlushEventArgs $args) {
+    public function onFlush(OnFlushEventArgs $args)
+    {
         $dm = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
 
@@ -87,10 +93,10 @@ class GH1058UpsertDocument
         return $this->id;
     }
 
-    public final function generateId()
+    final public function generateId()
     {
-        if (!isset($this->id)) {
-            $this->id = (string) new \MongoDB\BSON\ObjectId();
+        if (! isset($this->id)) {
+            $this->id = (string) new ObjectId();
         }
     }
 
@@ -99,4 +105,3 @@ class GH1058UpsertDocument
         $this->value = $value;
     }
 }
-

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
@@ -14,10 +16,6 @@ class Match extends BaseMatch
      */
     private $graphLookup;
 
-    /**
-     * @param Builder $builder
-     * @param GraphLookup $graphLookup
-     */
     public function __construct(Builder $builder, GraphLookup $graphLookup)
     {
         parent::__construct($builder);

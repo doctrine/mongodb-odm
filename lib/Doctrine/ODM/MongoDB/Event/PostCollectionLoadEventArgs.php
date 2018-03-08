@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -8,7 +10,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 /**
  * Class that holds arguments for postCollectionLoad event.
  *
- * @since 1.1
  */
 class PostCollectionLoadEventArgs extends ManagerEventArgs
 {
@@ -17,10 +18,6 @@ class PostCollectionLoadEventArgs extends ManagerEventArgs
      */
     private $collection;
 
-    /**
-     * @param PersistentCollectionInterface $collection
-     * @param DocumentManager $dm
-     */
     public function __construct(PersistentCollectionInterface $collection, DocumentManager $dm)
     {
         parent::__construct($dm);

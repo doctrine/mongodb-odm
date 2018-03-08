@@ -1,21 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Types;
+
+use MongoDB\BSON\Binary;
+use function sprintf;
 
 /**
  * The BinData type for generic data.
  *
- * @since       1.0
  */
 class BinDataType extends Type
 {
     /**
      * Data type for binary data
      *
-     * @var integer
+     * @var int
      * @see http://bsonspec.org/#/specification
      */
-    protected $binDataType = \MongoDB\BSON\Binary::TYPE_GENERIC;
+    protected $binDataType = Binary::TYPE_GENERIC;
 
     public function convertToDatabaseValue($value)
     {
@@ -23,12 +27,12 @@ class BinDataType extends Type
             return null;
         }
 
-        if ( ! $value instanceof \MongoDB\BSON\Binary) {
-            return new \MongoDB\BSON\Binary($value, $this->binDataType);
+        if (! $value instanceof Binary) {
+            return new Binary($value, $this->binDataType);
         }
 
         if ($value->getType() !== $this->binDataType) {
-            return new \MongoDB\BSON\Binary($value->getData(), $this->binDataType);
+            return new Binary($value->getData(), $this->binDataType);
         }
 
         return $value;
@@ -36,7 +40,7 @@ class BinDataType extends Type
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? ($value instanceof \MongoDB\BSON\Binary ? $value->getData() : $value) : null;
+        return $value !== null ? ($value instanceof Binary ? $value->getData() : $value) : null;
     }
 
     public function closureToMongo()

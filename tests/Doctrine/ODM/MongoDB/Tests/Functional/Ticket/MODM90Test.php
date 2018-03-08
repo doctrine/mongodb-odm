@@ -1,20 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function get_class;
 
-class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM90Test extends BaseTest
 {
     private function getDocumentManager()
     {
         $this->listener = new MODM90EventListener();
         $evm = $this->dm->getEventManager();
-        $events = array(
+        $events = [
             Events::preUpdate,
             Events::postUpdate,
-        );
+        ];
         $evm->addEventListener($events, $this->listener);
         return $this->dm;
     }
@@ -31,14 +35,14 @@ class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
         $dm->clear();
 
-        $testDoc = $dm->find(__NAMESPACE__.'\MODM90TestDocument', $testDoc->id);
+        $testDoc = $dm->find(__NAMESPACE__ . '\MODM90TestDocument', $testDoc->id);
 
         // run a flush, in theory, nothing should be flushed.
         $dm->flush();
         $dm->clear();
 
         // no update events should be called
-        $called = array();
+        $called = [];
         $this->assertEquals($called, $this->listener->called);
     }
 
@@ -58,7 +62,7 @@ class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm->flush();
         $dm->clear();
 
-        $testDoc = $dm->find(__NAMESPACE__.'\MODM90TestDocument', $testDoc->id);
+        $testDoc = $dm->find(__NAMESPACE__ . '\MODM90TestDocument', $testDoc->id);
 
         $this->assertEquals($testDoc->embedded->type, 'test2');
     }
@@ -66,7 +70,7 @@ class MODM90Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
 class MODM90EventListener
 {
-    public $called = array();
+    public $called = [];
     public function __call($method, $args)
     {
         $document = $args[0]->getDocument();

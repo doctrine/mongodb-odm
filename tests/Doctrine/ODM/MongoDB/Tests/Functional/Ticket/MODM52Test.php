@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function count;
 
-class MODM52Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
+class MODM52Test extends BaseTest
 {
     public function testTest()
     {
-        $emb = new MODM52Embedded(array(new MODM52Embedded(null, 'c1'), new MODM52Embedded(null, 'c2')), 'b');
-        $doc = new MODM52Doc(array($emb), 'a');
+        $emb = new MODM52Embedded([new MODM52Embedded(null, 'c1'), new MODM52Embedded(null, 'c2')], 'b');
+        $doc = new MODM52Doc([$emb], 'a');
 
         $this->dm->persist($doc);
         $this->dm->flush();
@@ -39,7 +43,7 @@ class MODM52Container
     public $value;
 
     /** @ODM\EmbedMany(targetDocument="MODM52Embedded", strategy="set") */
-    public $items = array();
+    public $items = [];
 
     public function __construct($items = null, $value = null)
     {
@@ -67,7 +71,8 @@ class MODM52Container
 
 /** @ODM\EmbeddedDocument */
 class MODM52Embedded extends MODM52Container
-{}
+{
+}
 
 /** @ODM\Document */
 class MODM52Doc extends MODM52Container

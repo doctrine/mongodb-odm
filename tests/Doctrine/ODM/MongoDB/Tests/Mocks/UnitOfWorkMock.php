@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
-class UnitOfWorkMock extends \Doctrine\ODM\MongoDB\UnitOfWork
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use function spl_object_hash;
+
+class UnitOfWorkMock extends UnitOfWork
 {
-    private $_mockDataChangeSets = array();
+    private $_mockDataChangeSets = [];
     private $_persisterMock;
 
-    /**
-     * @override
-     */
     public function getDocumentPersister($documentName)
     {
         return $this->_persisterMock[$documentName] ?? parent::getDocumentPersister($documentName);

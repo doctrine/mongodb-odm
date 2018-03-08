@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Command\Command;
 
 abstract class AbstractCommand extends Command
 {
-    const DB = 'db';
-    const COLLECTION = 'collection';
-    const INDEX = 'index';
+    public const DB = 'db';
+    public const COLLECTION = 'collection';
+    public const INDEX = 'index';
 
     abstract protected function processDocumentCollection(SchemaManager $sm, $document);
 
@@ -32,7 +36,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentManager
+     * @return DocumentManager
      */
     protected function getDocumentManager()
     {
@@ -40,7 +44,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory
+     * @return ClassMetadataFactory
      */
     protected function getMetadataFactory()
     {

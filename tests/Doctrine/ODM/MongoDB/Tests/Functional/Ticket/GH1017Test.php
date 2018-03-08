@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use function in_array;
+use function spl_object_hash;
 
 class GH1017Test extends BaseTest
 {
     public function testSPLObjectHashCollisionOnReplacingEmbeddedDoc()
     {
-        $usedHashes = array();
+        $usedHashes = [];
         $owner = new GH1017Document();
         $this->dm->persist($owner);
         $this->dm->flush();

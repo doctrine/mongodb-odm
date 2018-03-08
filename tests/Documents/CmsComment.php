@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -32,11 +34,13 @@ class CmsComment
     /** @ODM\Field(name="ip", type="string") */
     public $authorIp;
 
-    public function setArticle(CmsArticle $article) {
+    public function setArticle(CmsArticle $article)
+    {
         $this->article = $article;
     }
 
-    public function __toString() {
-        return __CLASS__."[id=".$this->id."]";
+    public function __toString()
+    {
+        return __CLASS__ . '[id=' . $this->id . ']';
     }
 }
