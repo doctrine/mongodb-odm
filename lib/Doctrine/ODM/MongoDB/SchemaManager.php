@@ -609,10 +609,26 @@ class SchemaManager
         $shardKey = $class->getShardKey();
         $adminDb = $this->dm->getConnection()->selectDatabase('admin');
 
+        $shardKeyPart = array();
+        foreach ($shardKey['keys'] as $key => $order) {
+            if ($class->hasField($key)) {
+                $mapping = $class->getFieldMapping($key);
+                $fieldName = $mapping['name'];
+
+                if ($class->isSingleValuedReference($key)) {
+                    $fieldName = ClassMetadataInfo::getReferenceFieldName($mapping['storeAs'], $fieldName);
+                }
+            } else {
+                $fieldName = $key;
+            }
+
+            $shardKeyPart[$fieldName] = $order;
+        }
+
         $result = $adminDb->command(
             array(
                 'shardCollection' => $dbName . '.' . $class->getCollection(),
-                'key'             => $shardKey['keys']
+                'key'             => $shardKeyPart,
             )
         );
 
