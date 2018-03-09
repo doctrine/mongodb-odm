@@ -59,9 +59,10 @@ EOT
 
         $metadatas = $dm->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
+        $destPath = $input->getArgument('dest-path');
 
         // Process destination directory
-        if (($destPath = $input->getArgument('dest-path')) === null) {
+        if ($destPath === null) {
             $destPath = $dm->getConfiguration()->getPersistentCollectionDir();
         }
 

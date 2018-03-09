@@ -26,7 +26,6 @@ use function count;
 use function get_class;
 use function in_array;
 use function is_array;
-use function is_null;
 use function is_string;
 use function is_subclass_of;
 use function ltrim;
@@ -886,7 +885,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setShardKey(array $keys, array $options = [])
     {
-        if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && ! is_null($this->shardKey)) {
+        if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && $this->shardKey !== null) {
             throw MappingException::shardKeyInSingleCollInheritanceSubclass($this->getName());
         }
 

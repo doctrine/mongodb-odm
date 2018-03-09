@@ -108,7 +108,8 @@ class DocumentRepository implements ObjectRepository, Selectable
         }
 
         // Check identity map first
-        if ($document = $this->uow->tryGetById($id, $this->class)) {
+        $document = $this->uow->tryGetById($id, $this->class);
+        if ($document) {
             if ($lockMode !== LockMode::NONE) {
                 $this->dm->lock($document, $lockMode, $lockVersion);
             }
@@ -126,7 +127,9 @@ class DocumentRepository implements ObjectRepository, Selectable
             if (! $this->class->isVersioned) {
                 throw LockException::notVersioned($this->documentName);
             }
-            if ($document = $this->getDocumentPersister()->load($criteria)) {
+
+            $document = $this->getDocumentPersister()->load($criteria);
+            if ($document) {
                 $this->uow->lock($document, $lockMode, $lockVersion);
             }
 

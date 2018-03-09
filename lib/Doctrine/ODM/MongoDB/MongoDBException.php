@@ -7,9 +7,9 @@ namespace Doctrine\ODM\MongoDB;
 use function array_slice;
 use function end;
 use function get_class;
+use function implode;
 use function is_array;
 use function is_object;
-use function join;
 use function sprintf;
 
 /**
@@ -90,7 +90,7 @@ class MongoDBException extends \Exception
         if (is_array($expected)) {
             $expected = sprintf(
                 '%s or %s',
-                join(', ', array_slice($expected, 0, -1)),
+                implode(', ', array_slice($expected, 0, -1)),
                 end($expected)
             );
         }

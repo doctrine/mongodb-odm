@@ -999,7 +999,8 @@ class DocumentPersister
          * @todo Consider recursive merging in case the filter criteria and
          * prepared query both contain top-level $and/$or operators.
          */
-        if ($filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($this->class)) {
+        $filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($this->class);
+        if ($filterCriteria) {
             $preparedQuery = $this->cm->merge($preparedQuery, $this->prepareQueryOrNewObj($filterCriteria));
         }
 
@@ -1344,7 +1345,8 @@ class DocumentPersister
     {
         $discriminatorValues = [$metadata->discriminatorValue];
         foreach ($metadata->subClasses as $className) {
-            if ($key = array_search($className, $metadata->discriminatorMap)) {
+            $key = array_search($className, $metadata->discriminatorMap);
+            if ($key) {
                 $discriminatorValues[] = $key;
             }
         }

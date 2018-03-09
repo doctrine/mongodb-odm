@@ -17,7 +17,6 @@ use function implode;
 use function interface_exists;
 use function is_dir;
 use function is_writable;
-use function join;
 use function method_exists;
 use function mkdir;
 use function rename;
@@ -115,7 +114,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
     {
         $exploded = explode('\\', $targetFqcn);
         $class = array_pop($exploded);
-        $namespace = join('\\', $exploded);
+        $namespace = implode('\\', $exploded);
         $code = <<<CODE
 <?php
 
@@ -218,8 +217,9 @@ CODE;
         /* @var $param \ReflectionParameter */
         foreach ($parameters as $param) {
             $parameterDefinition = '';
+            $parameterType = $this->getParameterType($param);
 
-            if ($parameterType = $this->getParameterType($param)) {
+            if ($parameterType) {
                 $parameterDefinition .= $parameterType . ' ';
             }
 
