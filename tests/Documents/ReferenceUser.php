@@ -13,9 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class ReferenceUser
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
 
     /**

@@ -38,9 +38,7 @@ class Builder
      */
     private $class;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $hydrationClass;
 
     /**
@@ -50,9 +48,7 @@ class Builder
      */
     private $collection;
 
-    /**
-     * @var Stage[]
-     */
+    /** @var Stage[] */
     private $stages = [];
 
     /**

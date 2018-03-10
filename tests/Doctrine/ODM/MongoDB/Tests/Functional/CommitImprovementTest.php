@@ -17,9 +17,7 @@ use function get_class;
 
 class CommitImprovementTest extends BaseTest
 {
-    /**
-     * @var Doctrine\ODM\MongoDB\Tests\QueryLogger
-     */
+    /** @var Doctrine\ODM\MongoDB\Tests\QueryLogger */
     private $ql;
 
     protected function getConfiguration()

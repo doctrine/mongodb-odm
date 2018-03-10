@@ -15,24 +15,16 @@ use function in_array;
  */
 class ConfigurableProduct
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     protected $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument="Documents\Ecommerce\Option")
-     */
+    /** @ODM\EmbedMany(targetDocument="Documents\Ecommerce\Option") */
     protected $options = [];
 
-    /**
-     * @var Documents\Option
-     */
+    /** @var Documents\Option */
     protected $selectedOption;
 
     public function __construct($name)

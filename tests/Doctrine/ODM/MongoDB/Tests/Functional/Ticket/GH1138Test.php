@@ -12,9 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 
 class GH1138Test extends BaseTest
 {
-    /**
-     * @var Doctrine\ODM\MongoDB\Tests\QueryLogger
-     */
+    /** @var Doctrine\ODM\MongoDB\Tests\QueryLogger */
     private $ql;
 
     protected function getConfiguration()

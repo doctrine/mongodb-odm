@@ -14,9 +14,7 @@ use function get_class;
 
 class ShardKeyTest extends BaseTest
 {
-    /**
-     * @var QueryLogger
-     */
+    /** @var QueryLogger */
     private $ql;
 
     protected function getConfiguration()

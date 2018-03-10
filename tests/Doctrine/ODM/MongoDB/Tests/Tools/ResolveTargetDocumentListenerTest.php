@@ -12,14 +12,10 @@ use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 
 class ResolveTargetDocumentListenerTest extends BaseTest
 {
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     protected $dm;
 
-    /**
-     * @var ResolveTargetDocumentListener
-     */
+    /** @var ResolveTargetDocumentListener */
     protected $listener;
 
     public function setUp()
@@ -71,29 +67,19 @@ interface TargetInterface extends ResolveTargetInterface
  */
 class ResolveTargetDocument implements ResolveTargetInterface
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     private $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface")
-     */
+    /** @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface") */
     private $refOne;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface")
-     */
+    /** @ODM\ReferenceMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface") */
     private $refMany;
 
-    /**
-     * @ODM\EmbedOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface")
-     */
+    /** @ODM\EmbedOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface") */
     private $embedOne;
 
-    /**
-     * @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface")
-     */
+    /** @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface") */
     private $embedMany;
 
     public function getId()
@@ -107,9 +93,7 @@ class ResolveTargetDocument implements ResolveTargetInterface
  */
 class TargetDocument implements TargetInterface
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     private $id;
 
     public function getId()

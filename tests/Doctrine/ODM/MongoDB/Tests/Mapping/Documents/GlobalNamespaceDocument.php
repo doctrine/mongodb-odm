@@ -9,29 +9,19 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class DoctrineGlobal_Article
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     protected $headline;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     protected $text;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="DoctrineGlobal_User")
-     */
+    /** @ODM\ReferenceMany(targetDocument="DoctrineGlobal_User") */
     protected $author;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="\DoctrineGlobal_User")
-     */
+    /** @ODM\ReferenceMany(targetDocument="\DoctrineGlobal_User") */
     protected $editor;
 }
 
@@ -40,9 +30,7 @@ class DoctrineGlobal_Article
  */
 class DoctrineGlobal_User
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     private $id;
 
     /**

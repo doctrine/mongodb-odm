@@ -17,39 +17,25 @@ use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
  */
 class Lookup extends Stage
 {
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $class;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $targetClass;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $from;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $localField;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $foreignField;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $as;
 
     /**

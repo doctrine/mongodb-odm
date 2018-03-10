@@ -14,14 +14,10 @@ use function array_map;
  */
 class Facet extends Stage
 {
-    /**
-     * @var Builder[]
-     */
+    /** @var Builder[] */
     private $pipelines = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $field;
 
     /**

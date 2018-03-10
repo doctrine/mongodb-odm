@@ -437,9 +437,7 @@ abstract class AbstractVersionBase
     /** @ODM\Lock @ODM\Field(type="int") */
     public $locked;
 
-    /**
-     * @ODM\EmbedMany(targetDocument="Documents\Issue")
-     */
+    /** @ODM\EmbedMany(targetDocument="Documents\Issue") */
     public $issues;
 
     public function __construct($title = null)

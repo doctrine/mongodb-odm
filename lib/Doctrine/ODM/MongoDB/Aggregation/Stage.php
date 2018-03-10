@@ -14,9 +14,7 @@ use GeoJson\Geometry\Point;
  */
 abstract class Stage
 {
-    /**
-     * @var Builder
-     */
+    /** @var Builder */
     protected $builder;
 
     public function __construct(Builder $builder)

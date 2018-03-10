@@ -15,14 +15,10 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 abstract class AbstractOutput extends Stage
 {
-    /**
-     * @var Stage\AbstractBucket
-     */
+    /** @var Stage\AbstractBucket */
     protected $bucket;
 
-    /**
-     * @var Expr
-     */
+    /** @var Expr */
     private $expr;
 
     public function __construct(Builder $builder, Stage\AbstractBucket $bucket)

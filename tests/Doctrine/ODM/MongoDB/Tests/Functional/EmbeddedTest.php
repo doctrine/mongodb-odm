@@ -625,19 +625,13 @@ class EmbeddedTest extends BaseTest
  */
 class ChangeEmbeddedIdTest
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId")
-     */
+    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId") */
     public $embed;
 
-    /**
-     * @ODM\EmbedMany(targetDocument="EmbeddedDocumentWithId")
-     */
+    /** @ODM\EmbedMany(targetDocument="EmbeddedDocumentWithId") */
     public $embedMany;
 
     public function __construct()
@@ -660,19 +654,13 @@ class EmbeddedDocumentWithId
  */
 class ChangeEmbeddedWithNameAnnotationTest
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithAnotherEmbedded")
-     */
+    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithAnotherEmbedded") */
     public $embedOne;
 
-    /**
-     * @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithAnotherEmbedded")
-     */
+    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithAnotherEmbedded") */
     public $embedTwo;
 }
 
@@ -681,8 +669,6 @@ class ChangeEmbeddedWithNameAnnotationTest
  */
 class EmbedDocumentWithAnotherEmbed
 {
-    /**
-     * @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId", name="m_id")
-     */
+    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId", name="m_id") */
     public $embed;
 }

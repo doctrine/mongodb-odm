@@ -12,44 +12,28 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class CmsUser
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     public $status;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     public $name;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="CmsPhonenumber", mappedBy="user", cascade={"persist", "remove", "merge"})
-     */
+    /** @ODM\ReferenceMany(targetDocument="CmsPhonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}) */
     public $phonenumbers;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="CmsArticle")
-     */
+    /** @ODM\ReferenceMany(targetDocument="CmsArticle") */
     public $articles;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="CmsAddress", cascade={"persist"})
-     */
+    /** @ODM\ReferenceOne(targetDocument="CmsAddress", cascade={"persist"}) */
     public $address;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="CmsGroup", cascade={"persist", "merge"})
-     */
+    /** @ODM\ReferenceMany(targetDocument="CmsGroup", cascade={"persist", "merge"}) */
     public $groups;
 
     public function __construct()

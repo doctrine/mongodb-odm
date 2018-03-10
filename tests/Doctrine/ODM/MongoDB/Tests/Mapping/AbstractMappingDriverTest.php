@@ -404,9 +404,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
  */
 class AbstractMappingDriverUser
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
 
     /**
@@ -439,44 +437,28 @@ class AbstractMappingDriverUser
      */
     public $mysqlProfileId;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="Address", cascade={"remove"})
-     */
+    /** @ODM\ReferenceOne(targetDocument="Address", cascade={"remove"}) */
     public $address;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="Phonenumber", collectionClass="PhonenumberCollection", cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home")
-     */
+    /** @ODM\ReferenceMany(targetDocument="Phonenumber", collectionClass="PhonenumberCollection", cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home") */
     public $phonenumbers;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="Group", cascade={"all"})
-     */
+    /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
     public $groups;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="Phonenumber", collectionClass="PhonenumberCollection", name="more_phone_numbers")
-     */
+    /** @ODM\ReferenceMany(targetDocument="Phonenumber", collectionClass="PhonenumberCollection", name="more_phone_numbers") */
     public $morePhoneNumbers;
 
-    /**
-     * @ODM\EmbedMany(targetDocument="Phonenumber", name="embedded_phone_number")
-     */
+    /** @ODM\EmbedMany(targetDocument="Phonenumber", name="embedded_phone_number") */
     public $embeddedPhonenumber;
 
-    /**
-     * @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home")
-     */
+    /** @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home") */
     public $otherPhonenumbers;
 
-    /**
-     * @ODM\Field(type="date")
-     */
+    /** @ODM\Field(type="date") */
     public $createdAt;
 
-    /**
-     * @ODM\Field(type="collection")
-     */
+    /** @ODM\Field(type="collection") */
     public $roles = [];
 
     /**

@@ -15,9 +15,7 @@ class Feature
     /** @ODM\Field(type="string") */
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="Product", inversedBy="features", cascade={"all"})
-     */
+    /** @ODM\ReferenceOne(targetDocument="Product", inversedBy="features", cascade={"all"}) */
     public $product;
 
     public function __construct($name)

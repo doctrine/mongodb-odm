@@ -6,14 +6,10 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 class BucketAuto extends AbstractBucket
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $buckets;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $granularity;
 
     /**

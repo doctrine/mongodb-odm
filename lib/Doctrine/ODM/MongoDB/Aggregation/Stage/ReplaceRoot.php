@@ -17,19 +17,13 @@ use function substr;
 
 class ReplaceRoot extends Operator
 {
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $class;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $expression;
 
     public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class, $expression = null)

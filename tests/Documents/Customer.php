@@ -18,8 +18,6 @@ class Customer
     /** @ODM\Field(name="cart", type="string") */
     public $cartTest;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="Cart", mappedBy="customer")
-     */
+    /** @ODM\ReferenceOne(targetDocument="Cart", mappedBy="customer") */
     public $cart;
 }

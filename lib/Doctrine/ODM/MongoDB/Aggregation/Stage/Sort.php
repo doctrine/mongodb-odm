@@ -17,9 +17,7 @@ use function strtolower;
  */
 class Sort extends Stage
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $sort = [];
 
     /**

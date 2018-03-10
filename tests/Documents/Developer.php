@@ -13,19 +13,13 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Developer
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     private $name;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="Documents\Project", cascade="all")
-     */
+    /** @ODM\ReferenceMany(targetDocument="Documents\Project", cascade="all") */
     private $projects;
 
     public function __construct($name, ?Collection $projects = null)

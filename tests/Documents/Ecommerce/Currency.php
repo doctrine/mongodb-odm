@@ -18,19 +18,13 @@ class Currency
         EURO  = 'EURO',
         JPN   = 'JPN';
 
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     protected $name;
 
-    /**
-     * @ODM\Field(type="float")
-     */
+    /** @ODM\Field(type="float") */
     protected $multiplier;
 
     public function __construct($name, $multiplier = 1)

@@ -13,9 +13,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
  */
 class PostCollectionLoadEventArgs extends ManagerEventArgs
 {
-    /**
-     * @var PersistentCollectionInterface
-     */
+    /** @var PersistentCollectionInterface */
     private $collection;
 
     public function __construct(PersistentCollectionInterface $collection, DocumentManager $dm)

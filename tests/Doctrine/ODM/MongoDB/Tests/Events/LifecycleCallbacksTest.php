@@ -265,9 +265,7 @@ class Cart extends BaseDocument
     /** @ODM\Id */
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="Customer", inversedBy="cart")
-     */
+    /** @ODM\ReferenceOne(targetDocument="Customer", inversedBy="cart") */
     public $customer;
 }
 
@@ -277,9 +275,7 @@ class Customer extends BaseDocument
     /** @ODM\Id */
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="Cart", mappedBy="customer")
-     */
+    /** @ODM\ReferenceOne(targetDocument="Cart", mappedBy="customer") */
     public $cart;
 }
 

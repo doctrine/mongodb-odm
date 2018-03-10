@@ -15,9 +15,7 @@ class DocumentPersisterTest extends BaseTest
 {
     private $class;
 
-    /**
-     * @var DocumentPersister
-     */
+    /** @var DocumentPersister */
     private $documentPersister;
 
     public function setUp()

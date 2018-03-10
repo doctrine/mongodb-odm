@@ -20,19 +20,13 @@ use function substr;
  */
 class Expr
 {
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $class;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $expr = [];
 
     /**
@@ -42,9 +36,7 @@ class Expr
      */
     private $currentField;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $switchBranch;
 
     /**

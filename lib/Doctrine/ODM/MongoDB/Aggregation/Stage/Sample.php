@@ -13,9 +13,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Sample extends Stage
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $size;
 
     /**
