@@ -116,8 +116,7 @@ class UnitOfWorkTest extends BaseTest
     }
 
 
-    /* Operational tests */
-
+    /** Operational tests */
     public function testSavingSingleDocumentWithIdentityFieldForcesInsert()
     {
         // Setup fake persister and id generator for identity generation

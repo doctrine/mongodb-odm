@@ -315,7 +315,7 @@ class CollectionPersisterPost
   /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */
     public $comments = [];
 
-    function __construct($post)
+    public function __construct($post)
     {
         $this->comments = new ArrayCollection();
         $this->post = $post;
@@ -337,7 +337,7 @@ class CollectionPersisterComment
   /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */
     public $comments = [];
 
-    function __construct($comment, $by)
+    public function __construct($comment, $by)
     {
         $this->comments = new ArrayCollection();
         $this->comment = $comment;

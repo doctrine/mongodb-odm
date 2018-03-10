@@ -48,7 +48,7 @@ class GH1294User
     /** @ODM\Field(type="string") */
     public $name = false;
 
-    // Return the identifier without triggering Proxy initialization
+    /** Return the identifier without triggering Proxy initialization */
     public function getId()
     {
         return $this->id;

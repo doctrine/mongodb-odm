@@ -75,7 +75,7 @@ abstract class Type
         self::RAW => Types\RawType::class,
     ];
 
-    /* Prevent instantiation and force use of the factory method. */
+    /** Prevent instantiation and force use of the factory method. */
     final private function __construct()
     {
     }

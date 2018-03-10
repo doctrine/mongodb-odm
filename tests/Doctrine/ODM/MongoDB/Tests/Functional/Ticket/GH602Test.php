@@ -116,7 +116,7 @@ class GH602User
         $this->likes = new ArrayCollection();
     }
 
-    // Return the identifier without triggering Proxy initialization
+    /** Return the identifier without triggering Proxy initialization */
     public function getId()
     {
         return $this->id;
@@ -140,7 +140,7 @@ class GH602Thing
         $this->likedBy = new ArrayCollection();
     }
 
-    // Return the identifier without triggering Proxy initialization
+    /** Return the identifier without triggering Proxy initialization */
     public function getId()
     {
         return $this->id;

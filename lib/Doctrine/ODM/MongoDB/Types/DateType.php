@@ -66,7 +66,6 @@ class DateType extends Type
         return $datetime;
     }
 
-    // @todo fix typing for $microseconds
     private static function craftDateTime(int $seconds, $microseconds = 0)
     {
         $datetime = new \DateTime();

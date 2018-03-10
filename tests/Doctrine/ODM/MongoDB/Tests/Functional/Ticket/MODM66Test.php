@@ -70,12 +70,12 @@ class MODM52A
     /** @ODM\ReferenceMany(targetDocument="MODM52B", cascade="all") */
     protected $b;
 
-    function __construct($b)
+    public function __construct($b)
     {
         $this->b = new ArrayCollection($b);
     }
 
-    function getB()
+    public function getB()
     {
         return $this->b;
     }
@@ -90,7 +90,7 @@ class MODM52B
     /** @ODM\Field(type="string") */
     protected $value;
 
-    function __construct($v)
+    public function __construct($v)
     {
         $this->value = $v;
     }

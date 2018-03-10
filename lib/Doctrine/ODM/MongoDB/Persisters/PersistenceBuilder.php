@@ -407,12 +407,12 @@ class PersistenceBuilder
         return $embeddedDocumentValue;
     }
 
-    /*
+    /**
      * Returns the embedded document or reference representation to be stored.
      *
-     * @param array $mapping
+     * @param array  $mapping
      * @param object $document
-     * @param boolean $includeNestedCollections
+     * @param bool   $includeNestedCollections
      * @return array|object|null
      * @throws \InvalidArgumentException if the mapping is neither embedded nor reference
      */

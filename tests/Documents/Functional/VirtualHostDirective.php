@@ -46,8 +46,7 @@ class VirtualHostDirective
         $this->recId = $value;
     }
 
-    /* Added automatically 2010-08-03 */
-
+    /** Added automatically 2010-08-03 */
     public function getName()
     {
         return $this->name;
