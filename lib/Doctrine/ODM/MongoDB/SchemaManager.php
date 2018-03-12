@@ -224,7 +224,9 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new \InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or query result documents.');
         }
-        if ($indexes = $this->getDocumentIndexes($documentName)) {
+
+        $indexes = $this->getDocumentIndexes($documentName);
+        if ($indexes) {
             $collection = $this->dm->getDocumentCollection($class->name);
             foreach ($indexes as $index) {
                 $keys = $index['keys'];

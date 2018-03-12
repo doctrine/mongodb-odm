@@ -85,7 +85,8 @@ class ConfigurableProduct
 
     public function removeOption($name)
     {
-        if (($option = $this->_findOption($name)) === null) {
+        $option = $this->_findOption($name);
+        if ($option === null) {
             throw new \InvalidArgumentException('option ' . $name . ' doesn\'t exist');
         }
         if ($this->options instanceof Collection) {

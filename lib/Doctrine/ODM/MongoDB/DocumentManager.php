@@ -143,7 +143,9 @@ class DocumentManager implements ObjectManager
         $this->metadataFactory = new $metadataFactoryClassName();
         $this->metadataFactory->setDocumentManager($this);
         $this->metadataFactory->setConfiguration($this->config);
-        if ($cacheDriver = $this->config->getMetadataCacheImpl()) {
+
+        $cacheDriver = $this->config->getMetadataCacheImpl();
+        if ($cacheDriver) {
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
 
@@ -536,9 +538,10 @@ class DocumentManager implements ObjectManager
     {
         /* @var $class \Doctrine\ODM\MongoDB\Mapping\ClassMetadata */
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
+        $document = $this->unitOfWork->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
-        if ($document = $this->unitOfWork->tryGetById($identifier, $class)) {
+        if ($document) {
             return $document;
         }
 
@@ -570,9 +573,10 @@ class DocumentManager implements ObjectManager
     public function getPartialReference($documentName, $identifier)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
+        $document = $this->unitOfWork->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
-        if ($document = $this->unitOfWork->tryGetById($identifier, $class)) {
+        if ($document) {
             return $document;
         }
         $document = $class->newInstance();

@@ -13,7 +13,6 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use function array_search;
 use function array_values;
 use function get_class;
-use function is_null;
 
 /**
  * PersistenceBuilder builds the queries used by the persisters to update and insert
@@ -186,7 +185,7 @@ class PersistenceBuilder
             // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
+                    $updateData['$set'][$mapping['name']] = $new === null ? null : $this->prepareReferencedDocumentValue($mapping, $new);
                 } else {
                     $updateData['$unset'][$mapping['name']] = true;
                 }
@@ -257,7 +256,7 @@ class PersistenceBuilder
             // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 if (isset($new) || $mapping['nullable'] === true) {
-                    $updateData['$set'][$mapping['name']] = (is_null($new) ? null : $this->prepareReferencedDocumentValue($mapping, $new));
+                    $updateData['$set'][$mapping['name']] = $new === null ? null : $this->prepareReferencedDocumentValue($mapping, $new);
                 }
 
             // @ReferenceMany, @EmbedMany

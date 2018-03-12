@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
-if (! file_exists($file = __DIR__ . '/../vendor/autoload.php')) {
+$file = __DIR__ . '/../vendor/autoload.php';
+
+if (! file_exists($file)) {
     throw new RuntimeException('Install dependencies to run test suite.');
 }
 
