@@ -14,21 +14,13 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class CmsComment
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
-    /**
-     * @ODM\Field
-     */
+    /** @ODM\Field */
     public $topic;
-    /**
-     * @ODM\Field
-     */
+    /** @ODM\Field */
     public $text;
-    /**
-     * @ODM\ReferenceOne(targetDocument="CmsArticle")
-     */
+    /** @ODM\ReferenceOne(targetDocument="CmsArticle") */
     public $article;
 
     /** @ODM\Field(name="ip", type="string") */

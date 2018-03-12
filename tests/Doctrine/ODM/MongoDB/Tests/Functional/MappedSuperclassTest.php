@@ -47,9 +47,7 @@ class MappedSuperclassBase
     /** @ODM\Field(type="string") */
     private $mapped2;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="MappedSuperclassRelated1")
-     */
+    /** @ODM\ReferenceOne(targetDocument="MappedSuperclassRelated1") */
     private $mappedRelated1;
 
     private $transient;

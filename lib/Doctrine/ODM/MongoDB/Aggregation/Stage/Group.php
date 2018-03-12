@@ -13,9 +13,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
  */
 class Group extends Operator
 {
-    /**
-     * @var Expr
-     */
+    /** @var Expr */
     protected $expr;
 
     /**

@@ -13,19 +13,13 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Unwind extends Stage
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $fieldName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $includeArrayIndex;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $preserveNullAndEmptyArrays = false;
 
     /**

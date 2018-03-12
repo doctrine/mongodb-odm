@@ -23,24 +23,16 @@ use function substr;
  */
 abstract class AbstractBucket extends Stage
 {
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $class;
 
-    /**
-     * @var Bucket\BucketOutput|null
-     */
+    /** @var Bucket\BucketOutput|null */
     protected $output;
 
-    /**
-     * @var Expr
-     */
+    /** @var Expr */
     protected $groupBy;
 
     public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class)

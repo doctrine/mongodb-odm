@@ -17,14 +17,10 @@ class CollStats extends Stage
     public const LATENCY_STATS_SIMPLE = 1;
     public const LATENCY_STATS_HISTOGRAMS = 2;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $latencyStats = self::LATENCY_STATS_NONE;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $storageStats = false;
 
     public function __construct(Builder $builder)

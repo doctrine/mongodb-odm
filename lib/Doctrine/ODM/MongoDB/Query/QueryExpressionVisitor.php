@@ -44,9 +44,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
         CompositeExpression::TYPE_OR => 'addOr',
     ];
 
-    /**
-     * @var Builder
-     */
+    /** @var Builder */
     protected $builder;
 
     public function __construct(Builder $builder)

@@ -11,8 +11,6 @@ use Doctrine\Common\Annotations\Annotation;
  */
 final class ReadPreference extends Annotation
 {
-    /**
-     * @var array|null
-     */
+    /** @var array|null */
     public $tags;
 }

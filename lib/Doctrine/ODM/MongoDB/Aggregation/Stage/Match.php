@@ -15,9 +15,7 @@ use function func_get_args;
  */
 class Match extends Stage
 {
-    /**
-     * @var Expr
-     */
+    /** @var Expr */
     protected $query;
 
     /**

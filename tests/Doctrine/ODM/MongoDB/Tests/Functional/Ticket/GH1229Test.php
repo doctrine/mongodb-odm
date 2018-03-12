@@ -12,14 +12,10 @@ use function end;
 
 class GH1229Test extends BaseTest
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $firstParentId;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $secondParentId;
 
     /**

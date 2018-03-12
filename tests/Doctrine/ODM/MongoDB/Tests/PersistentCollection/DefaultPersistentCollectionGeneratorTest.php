@@ -15,9 +15,7 @@ use function sprintf;
  */
 class DefaultPersistentCollectionGeneratorTest extends BaseTest
 {
-    /**
-     * @var DefaultPersistentCollectionGenerator
-     */
+    /** @var DefaultPersistentCollectionGenerator */
     private $generator;
 
     public function setUp()

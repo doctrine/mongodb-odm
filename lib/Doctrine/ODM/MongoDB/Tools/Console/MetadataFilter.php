@@ -27,9 +27,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
         return iterator_to_array($metadatas);
     }
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $_filter = [];
 
     /**

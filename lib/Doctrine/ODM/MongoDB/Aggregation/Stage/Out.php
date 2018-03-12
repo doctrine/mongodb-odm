@@ -13,14 +13,10 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 class Out extends Stage
 {
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $collection;
 
     /**

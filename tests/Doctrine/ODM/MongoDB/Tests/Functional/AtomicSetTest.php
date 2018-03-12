@@ -24,9 +24,7 @@ use function get_class;
  */
 class AtomicSetTest extends BaseTest
 {
-    /**
-     * @var QueryLogger
-     */
+    /** @var QueryLogger */
     private $ql;
 
     protected function getConfiguration()

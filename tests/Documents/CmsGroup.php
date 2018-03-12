@@ -11,17 +11,11 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class CmsGroup
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     public $name;
-    /**
-     * @ODM\ReferenceMany(targetDocument="CmsUser")
-     */
+    /** @ODM\ReferenceMany(targetDocument="CmsUser") */
     public $users;
 
     public function setName($name)

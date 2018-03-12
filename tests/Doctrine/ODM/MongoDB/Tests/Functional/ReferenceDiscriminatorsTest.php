@@ -123,9 +123,7 @@ class Action
 /** @ODM\Document */
 class CommentableAction extends Action
 {
-    /**
-     * @ODM\Field(type="collection")
-     **/
+    /** @ODM\Field(type="collection") **/
     protected $comments = [];
 
     public function __construct($type, array $comments = [])

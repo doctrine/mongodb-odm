@@ -71,14 +71,10 @@ class GH1435Test extends BaseTest
  */
 class GH1435Document
 {
-    /**
-     * @ODM\Id()
-     */
+    /** @ODM\Id() */
     public $id;
 
-    /**
-     * @ODM\Field(type="string", nullable=true)
-     */
+    /** @ODM\Field(type="string", nullable=true) */
     public $name;
 }
 
@@ -87,13 +83,9 @@ class GH1435Document
  */
 class GH1435DocumentIncrement
 {
-    /**
-     * @ODM\Id(strategy="increment")
-     */
+    /** @ODM\Id(strategy="increment") */
     public $id;
 
-    /**
-     * @ODM\Field(type="string", nullable=true)
-     */
+    /** @ODM\Field(type="string", nullable=true) */
     public $name;
 }

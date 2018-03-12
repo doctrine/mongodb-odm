@@ -16,9 +16,7 @@ use function ltrim;
  */
 class ResolveTargetDocumentListener
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $resolveTargetDocuments = [];
 
     /**

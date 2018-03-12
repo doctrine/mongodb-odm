@@ -13,9 +13,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Count extends Stage
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $fieldName;
 
     /**

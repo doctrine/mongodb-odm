@@ -20,59 +20,37 @@ use function substr;
 
 class GraphLookup extends Stage
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $from;
 
-    /**
-     * @var string|Expr|array
-     */
+    /** @var string|Expr|array */
     private $startWith;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $connectFromField;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $connectToField;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $as;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $maxDepth;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $depthField;
 
-    /**
-     * @var Stage\GraphLookup\Match
-     */
+    /** @var Stage\GraphLookup\Match */
     private $restrictSearchWithMatch;
 
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $class;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $targetClass;
 
     /**

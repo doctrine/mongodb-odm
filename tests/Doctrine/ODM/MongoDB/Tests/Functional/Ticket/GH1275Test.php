@@ -196,9 +196,7 @@ class Item
     /** @ODM\Field(type="string") */
     public $name;
 
-    /**
-     * @var Container
-     */
+    /** @var Container */
     protected $container;
 
     public function __construct(Container $c, $name)

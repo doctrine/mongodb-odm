@@ -27,24 +27,16 @@ use function get_class;
  */
 class ProxyFactory extends AbstractProxyFactory
 {
-    /**
-     * @var ClassMetadataFactory
-     */
+    /** @var ClassMetadataFactory */
     private $metadataFactory;
 
-    /**
-     * @var UnitOfWork The UnitOfWork this factory is bound to.
-     */
+    /** @var UnitOfWork The UnitOfWork this factory is bound to. */
     private $uow;
 
-    /**
-     * @var string The namespace that contains all proxy classes.
-     */
+    /** @var string The namespace that contains all proxy classes. */
     private $proxyNamespace;
 
-    /**
-     * @var EventManager
-     */
+    /** @var EventManager */
     private $lifecycleEventManager;
 
     /**

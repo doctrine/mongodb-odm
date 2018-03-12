@@ -12,8 +12,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
  */
 final class MappedSuperclass extends AbstractDocument
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $repositoryClass;
 }

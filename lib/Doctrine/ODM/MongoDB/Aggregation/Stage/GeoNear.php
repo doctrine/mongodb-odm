@@ -14,49 +14,31 @@ use function is_array;
  */
 class GeoNear extends Match
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $distanceField;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     private $distanceMultiplier;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $includeLocs;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     private $maxDistance;
 
-    /**
-     * @var float
-     */
+    /** @var float */
     private $minDistance;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $near;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $num;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $spherical = false;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $uniqueDocs;
 
     /**

@@ -32,14 +32,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class DocumentNotFoundEventArgs extends LifecycleEventArgs
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $identifier;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $disableException = false;
 
     /**

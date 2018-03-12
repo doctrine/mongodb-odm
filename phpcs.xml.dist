@@ -47,7 +47,6 @@
         <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace" />
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenercase" />
-        <exclude name="SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment" />
         <exclude name="SlevomatCodingStandard.ControlStructures.AssignmentInCondition.AssignmentInCondition" />
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit" />
         <exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod" />

@@ -21,19 +21,13 @@ use function get_class;
  */
 class LifecycleEventManager
 {
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
-    /**
-     * @var EventManager
-     */
+    /** @var EventManager */
     private $evm;
 
-    /**
-     * @var UnitOfWork
-     */
+    /** @var UnitOfWork */
     private $uow;
 
     public function __construct(DocumentManager $dm, UnitOfWork $uow, EventManager $evm)

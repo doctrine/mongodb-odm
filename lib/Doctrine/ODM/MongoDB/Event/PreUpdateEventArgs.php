@@ -14,9 +14,7 @@ use function sprintf;
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $documentChangeSet;
 
     /**

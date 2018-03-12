@@ -15,15 +15,10 @@ use function strpos;
 
 class SchemaManager
 {
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     protected $dm;
 
-    /**
-     *
-     * @var ClassMetadataFactory
-     */
+    /** @var ClassMetadataFactory */
     protected $metadataFactory;
 
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)

@@ -102,9 +102,7 @@ class Query implements \IteratorAggregate
      */
     private $query;
 
-    /**
-     * @var Iterator
-     */
+    /** @var Iterator */
     private $iterator;
 
     /**

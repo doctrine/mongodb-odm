@@ -59,9 +59,7 @@ class SchemaManagerTest extends TestCase
     private $documentCollections = [];
     private $documentDatabases = [];
 
-    /**
-     * @var SchemaManager
-     */
+    /** @var SchemaManager */
     private $schemaManager;
 
     public function setUp()

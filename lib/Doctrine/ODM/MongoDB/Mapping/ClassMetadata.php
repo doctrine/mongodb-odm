@@ -458,9 +458,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public $isReadOnly;
 
-    /**
-     * @var InstantiatorInterface|null
-     */
+    /** @var InstantiatorInterface|null */
     private $instantiator;
 
     /**

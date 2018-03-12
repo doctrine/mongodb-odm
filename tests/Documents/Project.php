@@ -25,9 +25,7 @@ class Project
     /** @ODM\EmbedOne(targetDocument="Address") */
     private $address;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="SubProject", cascade="all")
-     */
+    /** @ODM\ReferenceMany(targetDocument="SubProject", cascade="all") */
     private $subProjects;
 
     public function __construct($name, ?Collection $subProjects = null)

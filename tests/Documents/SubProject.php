@@ -10,9 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class SubProject extends Project
 {
-    /**
-     * @ODM\EmbedMany(targetDocument="Documents\Issue")
-     */
+    /** @ODM\EmbedMany(targetDocument="Documents\Issue") */
     private $issues;
 
     public function getIssues()

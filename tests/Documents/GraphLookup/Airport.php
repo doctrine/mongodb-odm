@@ -18,14 +18,10 @@ class Airport
     /** @ODM\Field(type="string") */
     public $code;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Airport::class, cascade={"persist"}, storeAs="ref")
-     */
+    /** @ODM\ReferenceMany(targetDocument=Airport::class, cascade={"persist"}, storeAs="ref") */
     protected $connections;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Airport::class, cascade={"persist"}, storeAs="id")
-     */
+    /** @ODM\ReferenceMany(targetDocument=Airport::class, cascade={"persist"}, storeAs="id") */
     protected $connectionIds;
 
     public function __construct($code)

@@ -11,24 +11,16 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class StockItem
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     private $name;
 
-    /**
-     * @ODM\Field(type="int")
-     */
+    /** @ODM\Field(type="int") */
     private $inventory;
 
-    /**
-     * @ODM\EmbedOne(targetDocument="Documents\Ecommerce\Money")
-     */
+    /** @ODM\EmbedOne(targetDocument="Documents\Ecommerce\Money") */
     private $cost;
 
     public function getId()

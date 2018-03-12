@@ -6,14 +6,10 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 class Bucket extends AbstractBucket
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $boundaries;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     private $default;
 
     /**

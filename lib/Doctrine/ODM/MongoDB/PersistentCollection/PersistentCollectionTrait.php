@@ -38,9 +38,7 @@ trait PersistentCollectionTrait
      */
     private $owner;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $mapping;
 
     /**

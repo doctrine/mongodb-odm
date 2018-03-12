@@ -23,24 +23,16 @@ use function is_array;
  */
 class DocumentRepository implements ObjectRepository, Selectable
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $documentName;
 
-    /**
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     protected $dm;
 
-    /**
-     * @var UnitOfWork
-     */
+    /** @var UnitOfWork */
     protected $uow;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     protected $class;
 
     /**

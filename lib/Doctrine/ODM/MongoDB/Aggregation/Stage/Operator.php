@@ -19,9 +19,7 @@ use function func_get_args;
  */
 abstract class Operator extends Stage
 {
-    /**
-     * @var Expr
-     */
+    /** @var Expr */
     protected $expr;
 
     /**

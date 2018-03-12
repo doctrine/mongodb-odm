@@ -41,23 +41,17 @@ class UpsertTest extends BaseTest
 /** @ODM\Document */
 class UpsertTestUser
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
 
-    /**
-     * @ODM\EmbedMany(targetDocument="UpsertTestUserEmbedded")
-     */
+    /** @ODM\EmbedMany(targetDocument="UpsertTestUserEmbedded") */
     public $embedMany;
 }
 
 /** @ODM\EmbeddedDocument */
 class UpsertTestUserEmbedded
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
 
     /** @ODM\Field(type="string") */

@@ -34,9 +34,7 @@ class MODM65Test extends BaseTest
  */
 class MODM65User
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     public $id;
     /**
      * @ODM\EmbedOne(

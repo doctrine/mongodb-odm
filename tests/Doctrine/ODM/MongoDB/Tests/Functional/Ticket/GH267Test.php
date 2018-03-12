@@ -67,9 +67,7 @@ class GH267User
     /** @ODM\Field(type="string") */
     protected $name;
 
-    /**
-     * @ODM\ReferenceOne(name="company", targetDocument="GH267Company", discriminatorMap={"seller"="SellerCompany", "buyer"="BuyerCompany"}, inversedBy="users")
-     */
+    /** @ODM\ReferenceOne(name="company", targetDocument="GH267Company", discriminatorMap={"seller"="SellerCompany", "buyer"="BuyerCompany"}, inversedBy="users") */
     protected $company;
 
     public function __construct($name)
@@ -119,9 +117,7 @@ class GH267Company
     /** @ODM\Id */
     protected $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument="GH267User", mappedBy="company")
-     */
+    /** @ODM\ReferenceMany(targetDocument="GH267User", mappedBy="company") */
     protected $users;
 
     public function setId($id)

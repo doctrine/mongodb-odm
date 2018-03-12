@@ -243,9 +243,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $parentAssociations = [];
 
-    /**
-     * @var LifecycleEventManager
-     */
+    /** @var LifecycleEventManager */
     private $lifecycleEventManager;
 
     /**
@@ -257,9 +255,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $embeddedDocumentsRegistry = [];
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $commitsInProgress = 0;
 
     /**

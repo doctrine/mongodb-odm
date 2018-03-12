@@ -12,9 +12,7 @@ use function substr;
 
 class SortByCount extends Stage
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $fieldName;
 
     /**
