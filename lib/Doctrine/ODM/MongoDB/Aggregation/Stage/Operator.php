@@ -542,8 +542,8 @@ abstract class Operator extends Stage
     }
 
     /**
-     * Searches an array for an occurence of a specified value and returns the
-     * array index (zero-based) of the first occurence. If the value is not
+     * Searches an array for an occurrence of a specified value and returns the
+     * array index (zero-based) of the first occurrence. If the value is not
      * found, returns -1.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfArray/
@@ -562,8 +562,8 @@ abstract class Operator extends Stage
     }
 
     /**
-     * Searches a string for an occurence of a substring and returns the UTF-8
-     * byte index (zero-based) of the first occurence. If the substring is not
+     * Searches a string for an occurrence of a substring and returns the UTF-8
+     * byte index (zero-based) of the first occurrence. If the substring is not
      * found, returns -1.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfBytes/
@@ -582,8 +582,8 @@ abstract class Operator extends Stage
     }
 
     /**
-     * Searches a string for an occurence of a substring and returns the UTF-8
-     * code point index (zero-based) of the first occurence. If the substring is
+     * Searches a string for an occurrence of a substring and returns the UTF-8
+     * code point index (zero-based) of the first occurrence. If the substring is
      * not found, returns -1.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfCP/
