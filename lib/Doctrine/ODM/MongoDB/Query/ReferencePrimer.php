@@ -94,7 +94,7 @@ class ReferencePrimer
      * @param callable           $primer    Optional primer callable
      * @throws \InvalidArgumentException If the mapped field is not the owning
      *                                   side of a reference relationship.
-     * @throws \InvalidArgumentException If $primer is not callable
+     * @throws \InvalidArgumentException If $primer is not callable.
      * @throws \LogicException If the mapped field is a simple reference and is
      *                         missing a target document class.
      */

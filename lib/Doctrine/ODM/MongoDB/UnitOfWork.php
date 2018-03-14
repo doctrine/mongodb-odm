@@ -1477,7 +1477,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param mixed         $id    Document identifier
      * @param ClassMetadata $class Document class
      * @return object
-     * @throws InvalidArgumentException if the class does not have an identifier
+     * @throws InvalidArgumentException If the class does not have an identifier.
      */
     public function getById($id, ClassMetadata $class)
     {
@@ -1499,7 +1499,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param mixed         $id    Document identifier
      * @param ClassMetadata $class Document class
      * @return mixed The found document or FALSE.
-     * @throws InvalidArgumentException if the class does not have an identifier
+     * @throws InvalidArgumentException If the class does not have an identifier.
      */
     public function tryGetById($id, ClassMetadata $class)
     {
@@ -2502,7 +2502,7 @@ class UnitOfWork implements PropertyChangedListener
      * we find a top-level document.
      *
      * @param object $document
-     * @throws \UnexpectedValueException when a top-level document could not be found
+     * @throws \UnexpectedValueException When a top-level document could not be found.
      * @return object
      */
     public function getOwningDocument($document)

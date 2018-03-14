@@ -260,8 +260,8 @@ class Query implements \IteratorAggregate
      *
      * @see http://php.net/manual/en/iteratoraggregate.getiterator.php
      * @return Iterator
-     * @throws \BadMethodCallException if the query type would not return an Iterator
-     * @throws \UnexpectedValueException if the query did not return an Iterator
+     * @throws \BadMethodCallException If the query type would not return an Iterator.
+     * @throws \UnexpectedValueException If the query did not return an Iterator.
      */
     public function getIterator()
     {

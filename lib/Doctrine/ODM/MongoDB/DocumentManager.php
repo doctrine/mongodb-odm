@@ -315,7 +315,7 @@ class DocumentManager implements ObjectManager
      * Returns the MongoCollection instance for a class.
      *
      * @param string $className The class name.
-     * @throws MongoDBException When the $className param is not mapped to a collection
+     * @throws MongoDBException When the $className param is not mapped to a collection.
      * @return Collection
      */
     public function getDocumentCollection($className)
@@ -385,7 +385,7 @@ class DocumentManager implements ObjectManager
      * this DocumentManager as NEW. Do not pass detached documents to the persist operation.
      *
      * @param object $document The instance to make managed and persistent.
-     * @throws \InvalidArgumentException When the given $document param is not an object
+     * @throws \InvalidArgumentException When the given $document param is not an object.
      */
     public function persist($document)
     {
@@ -403,7 +403,7 @@ class DocumentManager implements ObjectManager
      * or as a result of the flush operation.
      *
      * @param object $document The document instance to remove.
-     * @throws \InvalidArgumentException when the $document param is not an object
+     * @throws \InvalidArgumentException When the $document param is not an object.
      */
     public function remove($document)
     {
@@ -419,7 +419,7 @@ class DocumentManager implements ObjectManager
      * overriding any local changes that have not yet been persisted.
      *
      * @param object $document The document to refresh.
-     * @throws \InvalidArgumentException When the given $document param is not an object
+     * @throws \InvalidArgumentException When the given $document param is not an object.
      */
     public function refresh($document)
     {
@@ -438,7 +438,7 @@ class DocumentManager implements ObjectManager
      * reference it.
      *
      * @param object $document The document to detach.
-     * @throws \InvalidArgumentException when the $document param is not an object
+     * @throws \InvalidArgumentException When the $document param is not an object.
      */
     public function detach($document)
     {
@@ -455,7 +455,7 @@ class DocumentManager implements ObjectManager
      *
      * @param object $document The detached document to merge into the persistence context.
      * @throws LockException
-     * @throws \InvalidArgumentException if the $document param is not an object
+     * @throws \InvalidArgumentException If the $document param is not an object.
      * @return object The managed copy of the document.
      */
     public function merge($document)
@@ -487,7 +487,7 @@ class DocumentManager implements ObjectManager
      * Releases a lock on the given document.
      *
      * @param object $document
-     * @throws \InvalidArgumentException if the $document param is not an object
+     * @throws \InvalidArgumentException If the $document param is not an object.
      */
     public function unlock($document)
     {
@@ -630,7 +630,7 @@ class DocumentManager implements ObjectManager
      * Determines whether a document instance is managed in this DocumentManager.
      *
      * @param object $document
-     * @throws \InvalidArgumentException When the $document param is not an object
+     * @throws \InvalidArgumentException When the $document param is not an object.
      * @return bool TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
      */
     public function contains($document)

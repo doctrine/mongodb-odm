@@ -309,7 +309,7 @@ class PersistenceBuilder
      * @param object $embeddedDocument
      * @param bool   $includeNestedCollections
      * @return array|object
-     * @throws \UnexpectedValueException if an unsupported associating mapping is found
+     * @throws \UnexpectedValueException If an unsupported associating mapping is found.
      */
     public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
     {
@@ -414,7 +414,7 @@ class PersistenceBuilder
      * @param object $document
      * @param bool   $includeNestedCollections
      * @return array|object|null
-     * @throws \InvalidArgumentException if the mapping is neither embedded nor reference
+     * @throws \InvalidArgumentException If the mapping is neither embedded nor reference.
      */
     public function prepareAssociatedDocumentValue(array $mapping, $document, $includeNestedCollections = false)
     {

@@ -626,8 +626,8 @@ class ClassMetadata implements BaseClassMetadata
      * @param string $event     Lifecycle event
      * @param object $document  Document on which the event occurred
      * @param array  $arguments Arguments to pass to all callbacks
-     * @throws \InvalidArgumentException if document class is not this class or
-     *                                   a Proxy of this class
+     * @throws \InvalidArgumentException If document class is not this class or
+     *                                   a Proxy of this class.
      */
     public function invokeLifecycleCallbacks($event, $document, ?array $arguments = null)
     {
@@ -1545,7 +1545,7 @@ class ClassMetadata implements BaseClassMetadata
      *
      * @return array  The field mapping.
      *
-     * @throws MappingException if the $fieldName is not found in the fieldMappings array
+     * @throws MappingException If the $fieldName is not found in the fieldMappings array.
      */
     public function getFieldMapping($fieldName)
     {

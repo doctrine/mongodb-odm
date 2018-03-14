@@ -315,7 +315,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/text/
      * @param bool $caseSensitive
      * @return $this
-     * @throws \BadMethodCallException if the query does not already have $text criteria
+     * @throws \BadMethodCallException If the query does not already have $text criteria.
      *
      */
     public function caseSensitive($caseSensitive)
@@ -355,7 +355,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/update/currentDate/
      * @param string $type
      * @return $this
-     * @throws \InvalidArgumentException if an invalid type is given
+     * @throws \InvalidArgumentException If an invalid type is given.
      */
     public function currentDate($type = 'date')
     {
@@ -378,7 +378,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/text/
      * @param bool $diacriticSensitive
      * @return $this
-     * @throws \BadMethodCallException if the query does not already have $text criteria
+     * @throws \BadMethodCallException If the query does not already have $text criteria.
      *
      */
     public function diacriticSensitive($diacriticSensitive)
@@ -587,7 +587,7 @@ class Expr
      * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
      * @return $this
-     * @throws \InvalidArgumentException if less than three points are given
+     * @throws \InvalidArgumentException If less than three points are given.
      */
     public function geoWithinPolygon($point1, $point2, $point3, ...$points)
     {
@@ -743,7 +743,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/text/
      * @param string $language
      * @return $this
-     * @throws \BadMethodCallException if the query does not already have $text criteria
+     * @throws \BadMethodCallException If the query does not already have $text criteria.
      */
     public function language($language)
     {
@@ -1427,7 +1427,7 @@ class Expr
     /**
      * Ensure that a current field has been set.
      *
-     * @throws \LogicException if a current field has not been set
+     * @throws \LogicException If a current field has not been set.
      */
     private function requiresCurrentField()
     {

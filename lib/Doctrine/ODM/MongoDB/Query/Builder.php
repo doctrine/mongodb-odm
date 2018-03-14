@@ -322,7 +322,7 @@ class Builder
      * @see http://docs.mongodb.org/manual/reference/operator/text/
      * @param bool $caseSensitive
      * @return $this
-     * @throws \BadMethodCallException if the query does not already have $text criteria
+     * @throws \BadMethodCallException If the query does not already have $text criteria.
      *
      */
     public function caseSensitive($caseSensitive)
@@ -395,7 +395,7 @@ class Builder
      * @see http://docs.mongodb.org/manual/reference/operator/text/
      * @param bool $diacriticSensitive
      * @return $this
-     * @throws \BadMethodCallException if the query does not already have $text criteria
+     * @throws \BadMethodCallException If the query does not already have $text criteria.
      *
      */
     public function diacriticSensitive($diacriticSensitive)
@@ -533,7 +533,7 @@ class Builder
      *
      * @param string|Javascript $finalize
      * @return $this
-     * @throws \BadMethodCallException if the query is not a mapReduce or group command
+     * @throws \BadMethodCallException If the query is not a mapReduce or group command.
      */
     public function finalize($finalize)
     {
@@ -1033,7 +1033,7 @@ class Builder
      *
      * @param array $options
      * @return $this
-     * @throws \BadMethodCallException if the query is not a mapReduce command
+     * @throws \BadMethodCallException If the query is not a mapReduce command.
      */
     public function mapReduceOptions(array $options)
     {
@@ -1203,7 +1203,7 @@ class Builder
      *
      * @param array|string $out
      * @return $this
-     * @throws \BadMethodCallException if the query is not a mapReduce command
+     * @throws \BadMethodCallException If the query is not a mapReduce command.
      */
     public function out($out)
     {
@@ -1257,7 +1257,7 @@ class Builder
      *
      * @param bool|callable $primer
      * @return $this
-     * @throws \InvalidArgumentException If $primer is not boolean or callable
+     * @throws \InvalidArgumentException If $primer is not boolean or callable.
      */
     public function prime($primer = true)
     {
@@ -1366,7 +1366,7 @@ class Builder
      *
      * @param string|Javascript $reduce
      * @return $this
-     * @throws \BadMethodCallException if the query is not a mapReduce or group command
+     * @throws \BadMethodCallException If the query is not a mapReduce or group command.
      */
     public function reduce($reduce)
     {
@@ -1799,7 +1799,7 @@ class Builder
      *
      * @param \Traversable $classNames
      * @return array an array of discriminatorValues (mixed type)
-     * @throws \InvalidArgumentException if the number of found collections > 1
+     * @throws \InvalidArgumentException If the number of found collections > 1.
      */
     private function getDiscriminatorValues($classNames)
     {
