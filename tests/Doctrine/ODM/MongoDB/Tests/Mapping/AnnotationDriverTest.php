@@ -14,6 +14,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 {
     public function testFieldInheritance()
     {
+        // @TODO: This can be a generic test for all drivers
         $super = $this->dm->getClassMetadata(AnnotationDriverTestSuper::class);
         $parent = $this->dm->getClassMetadata(AnnotationDriverTestParent::class);
         $child = $this->dm->getClassMetadata(AnnotationDriverTestChild::class);

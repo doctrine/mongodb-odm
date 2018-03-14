@@ -389,7 +389,6 @@ class QueryTest extends BaseTest
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
-    /** search for articles that have the "pet" tag in their tags collection */
     public function testQueryWhereOneValueOfCollection()
     {
         $qb = $this->dm->createQueryBuilder('Documents\Article');

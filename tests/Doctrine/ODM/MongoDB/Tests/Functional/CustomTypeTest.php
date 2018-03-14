@@ -51,7 +51,9 @@ class DateCollectionType
 {
     use ClosureToPHP;
 
-    /** Note: this method is called by PersistenceBuilder */
+    /**
+     * Method called by PersistenceBuilder
+     */
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
@@ -90,7 +92,9 @@ class DateCollectionType
         return $value;
     }
 
-    /** Note: this method is never called */
+    /**
+     * Method never called
+     */
     public function closureToMongo()
     {
         // todo: microseconds o.O
