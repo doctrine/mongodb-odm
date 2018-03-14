@@ -115,9 +115,6 @@ class UnitOfWorkTest extends BaseTest
         $this->assertFalse($this->uow->isScheduledForDelete($user));
     }
 
-
-    /* Operational tests */
-
     public function testSavingSingleDocumentWithIdentityFieldForcesInsert()
     {
         // Setup fake persister and id generator for identity generation

@@ -53,9 +53,7 @@
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps" />
         <exclude name="Squiz.Commenting.FunctionComment.ThrowsNotCapital" />
         <exclude name="Squiz.Commenting.FunctionComment.ThrowsNoFullStop" />
-        <exclude name="Squiz.Commenting.FunctionComment.WrongStyle" />
         <exclude name="Squiz.Classes.ClassFileName.NoMatch" />
-        <exclude name="Squiz.Scope.MethodScope.Missing" />
         <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />
     </rule>
 

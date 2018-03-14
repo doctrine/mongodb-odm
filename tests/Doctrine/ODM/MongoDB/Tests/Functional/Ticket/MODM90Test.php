@@ -46,7 +46,7 @@ class MODM90Test extends BaseTest
         $this->assertEquals($called, $this->listener->called);
     }
 
-    /*
+    /**
      * Ensures that the descriminator field is not unset if it's a
      * real property on the document.
      */

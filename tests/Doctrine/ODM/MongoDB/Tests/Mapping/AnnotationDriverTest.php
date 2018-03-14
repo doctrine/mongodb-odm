@@ -12,9 +12,9 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
-    // @TODO: This can be a generic test for all drivers
     public function testFieldInheritance()
     {
+        // @TODO: This can be a generic test for all drivers
         $super = $this->dm->getClassMetadata(AnnotationDriverTestSuper::class);
         $parent = $this->dm->getClassMetadata(AnnotationDriverTestParent::class);
         $child = $this->dm->getClassMetadata(AnnotationDriverTestChild::class);
