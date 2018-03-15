@@ -1627,7 +1627,7 @@ class Expr
      *
      * @param string $method
      *
-     * @throws \LogicException if a current field has not been set
+     * @throws \LogicException If a current field has not been set.
      */
     private function requiresCurrentField($method = null)
     {
@@ -1639,7 +1639,7 @@ class Expr
     /**
      * @param string $method
      *
-     * @throws \BadMethodCallException if there is no current switch operator
+     * @throws \BadMethodCallException If there is no current switch operator.
      */
     private function requiresSwitchStatement($method = null)
     {

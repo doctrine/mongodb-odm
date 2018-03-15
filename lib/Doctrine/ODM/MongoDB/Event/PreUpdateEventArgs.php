@@ -95,7 +95,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      * Asserts the field exists in changeset.
      *
      * @param string $field
-     * @throws \InvalidArgumentException if the field has no changeset
+     * @throws \InvalidArgumentException If the field has no changeset.
      */
     private function assertValidField($field)
     {

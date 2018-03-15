@@ -476,7 +476,7 @@ class Configuration
      * @param string $className
      *
      *
-     * @throws MongoDBException If not is a ObjectRepository
+     * @throws MongoDBException If not is a ObjectRepository.
      */
     public function setDefaultRepositoryClassName($className)
     {
