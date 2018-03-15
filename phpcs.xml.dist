@@ -41,7 +41,6 @@
 
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit" />
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint" />
-        <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps" />
         <exclude name="Squiz.Classes.ClassFileName.NoMatch" />
         <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />
     </rule>
@@ -57,6 +56,10 @@
         <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
     </rule>
 
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
+    </rule>
+    
     <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
         <exclude-pattern>lib/Doctrine/ODM/MongoDB/Events.php</exclude-pattern>
     </rule>
