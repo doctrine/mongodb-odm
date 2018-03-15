@@ -46,7 +46,6 @@
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit" />
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint" />
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps" />
-        <exclude name="Squiz.Commenting.FunctionComment.ThrowsNoFullStop" />
         <exclude name="Squiz.Classes.ClassFileName.NoMatch" />
         <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />
     </rule>
