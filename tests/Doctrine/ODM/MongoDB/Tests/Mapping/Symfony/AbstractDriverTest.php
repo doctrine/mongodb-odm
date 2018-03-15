@@ -85,19 +85,4 @@ abstract class AbstractDriverTest extends TestCase
 
     abstract protected function getFileExtension();
     abstract protected function getDriver(array $paths = []);
-
-    private function setField($obj, $field, $value)
-    {
-        $ref = new \ReflectionProperty($obj, $field);
-        $ref->setAccessible(true);
-        $ref->setValue($obj, $value);
-    }
-
-    private function invoke($obj, $method, array $args = [])
-    {
-        $ref = new \ReflectionMethod($obj, $method);
-        $ref->setAccessible(true);
-
-        return $ref->invokeArgs($obj, $args);
-    }
 }
