@@ -171,12 +171,14 @@ class PersistenceBuilder
                     $this->uow->unscheduleCollectionDeletion($old);
                 } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY) {
                     foreach ($new as $key => $embeddedDoc) {
-                        if (! $this->uow->isScheduledForInsert($embeddedDoc)) {
-                            $update = $this->prepareUpdateData($embeddedDoc);
-                            foreach ($update as $cmd => $values) {
-                                foreach ($values as $name => $value) {
-                                    $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
-                                }
+                        if ($this->uow->isScheduledForInsert($embeddedDoc)) {
+                            continue;
+                        }
+
+                        $update = $this->prepareUpdateData($embeddedDoc);
+                        foreach ($update as $cmd => $values) {
+                            foreach ($values as $name => $value) {
+                                $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
                             }
                         }
                     }

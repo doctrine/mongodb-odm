@@ -1398,13 +1398,15 @@ class Expr
             $foundIn = null;
             foreach ($this->class->discriminatorMap as $child) {
                 $childClass = $this->dm->getClassMetadata($child);
-                if ($childClass->hasAssociation($this->currentField)) {
-                    if ($mapping !== null && $mapping !== $childClass->getFieldMapping($this->currentField)) {
-                        throw MappingException::referenceFieldConflict($this->currentField, $foundIn->name, $childClass->name);
-                    }
-                    $mapping = $childClass->getFieldMapping($this->currentField);
-                    $foundIn = $childClass;
+                if (! $childClass->hasAssociation($this->currentField)) {
+                    continue;
                 }
+
+                if ($mapping !== null && $mapping !== $childClass->getFieldMapping($this->currentField)) {
+                    throw MappingException::referenceFieldConflict($this->currentField, $foundIn->name, $childClass->name);
+                }
+                $mapping = $childClass->getFieldMapping($this->currentField);
+                $foundIn = $childClass;
             }
             if ($mapping === null) {
                 throw MappingException::mappingNotFoundInClassNorDescendants($this->class->name, $this->currentField);

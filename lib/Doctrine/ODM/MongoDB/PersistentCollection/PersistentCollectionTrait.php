@@ -145,17 +145,19 @@ trait PersistentCollectionTrait
         $this->mongoData = [];
 
         // Reattach any NEW objects added through add()
-        if ($newObjects) {
-            foreach ($newObjects as $key => $obj) {
-                if (CollectionHelper::isHash($this->mapping['strategy'])) {
-                    $this->coll->set($key, $obj);
-                } else {
-                    $this->coll->add($obj);
-                }
-            }
-
-            $this->isDirty = true;
+        if (! $newObjects) {
+            return;
         }
+
+        foreach ($newObjects as $key => $obj) {
+            if (CollectionHelper::isHash($this->mapping['strategy'])) {
+                $this->coll->set($key, $obj);
+            } else {
+                $this->coll->add($obj);
+            }
+        }
+
+        $this->isDirty = true;
     }
 
     /**
@@ -169,9 +171,11 @@ trait PersistentCollectionTrait
 
         $this->isDirty = true;
 
-        if ($this->needsSchedulingForDirtyCheck()) {
-            $this->uow->scheduleForDirtyCheck($this->owner);
+        if (! $this->needsSchedulingForDirtyCheck()) {
+            return;
         }
+
+        $this->uow->scheduleForDirtyCheck($this->owner);
     }
 
     /** {@inheritdoc} */

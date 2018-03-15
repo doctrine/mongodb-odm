@@ -34,8 +34,10 @@ class Employee
         $this->reportsToId = $reportsTo;
         $this->reportingEmployees = new ArrayCollection();
 
-        if ($reportsTo) {
-            $reportsTo->reportingEmployees[] = $this;
+        if (! $reportsTo) {
+            return;
         }
+
+        $reportsTo->reportingEmployees[] = $this;
     }
 }

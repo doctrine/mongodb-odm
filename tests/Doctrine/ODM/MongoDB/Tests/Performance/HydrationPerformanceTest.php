@@ -30,10 +30,12 @@ class HydrationPerformanceTest extends BaseTest
             $user->username = 'user' . $i;
             $user->name = 'Mr.Smith-' . $i;
             $this->dm->persist($user);
-            if (($i % $batchSize) === 0) {
-                $this->dm->flush();
-                $this->dm->clear();
+            if (($i % $batchSize) !== 0) {
+                continue;
             }
+
+            $this->dm->flush();
+            $this->dm->clear();
         }
 
         gc_collect_cycles();

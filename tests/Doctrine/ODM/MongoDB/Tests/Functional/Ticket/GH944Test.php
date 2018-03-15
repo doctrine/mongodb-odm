@@ -57,9 +57,11 @@ class GH944Document
     public function removeByText($text)
     {
         foreach ($this->data as $d) {
-            if ($d->text === $text) {
-                $this->data->removeElement($d);
+            if ($d->text !== $text) {
+                continue;
             }
+
+            $this->data->removeElement($d);
         }
     }
 }

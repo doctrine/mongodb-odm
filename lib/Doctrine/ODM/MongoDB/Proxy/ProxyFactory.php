@@ -115,9 +115,11 @@ class ProxyFactory extends AbstractProxyFactory
                 $properties = $proxy->__getLazyProperties();
 
                 foreach ($properties as $propertyName => $property) {
-                    if (! isset($proxy->$propertyName)) {
-                        $proxy->$propertyName = $properties[$propertyName];
+                    if (isset($proxy->$propertyName)) {
+                        continue;
                     }
+
+                    $proxy->$propertyName = $properties[$propertyName];
                 }
 
                 $proxy->__setInitialized(true);
@@ -131,9 +133,11 @@ class ProxyFactory extends AbstractProxyFactory
                     }
                 }
 
-                if ($proxy instanceof NotifyPropertyChanged) {
-                    $proxy->addPropertyChangedListener($this->uow);
+                if (! ($proxy instanceof NotifyPropertyChanged)) {
+                    return;
                 }
+
+                $proxy->addPropertyChangedListener($this->uow);
             };
         }
 
@@ -148,9 +152,11 @@ class ProxyFactory extends AbstractProxyFactory
             $properties = $proxy->__getLazyProperties();
 
             foreach ($properties as $propertyName => $property) {
-                if (! isset($proxy->$propertyName)) {
-                    $proxy->$propertyName = $properties[$propertyName];
+                if (isset($proxy->$propertyName)) {
+                    continue;
                 }
+
+                $proxy->$propertyName = $properties[$propertyName];
             }
 
             $proxy->__setInitialized(true);
@@ -163,9 +169,11 @@ class ProxyFactory extends AbstractProxyFactory
                 }
             }
 
-            if ($proxy instanceof NotifyPropertyChanged) {
-                $proxy->addPropertyChangedListener($this->uow);
+            if (! ($proxy instanceof NotifyPropertyChanged)) {
+                return;
             }
+
+            $proxy->addPropertyChangedListener($this->uow);
         };
     }
 
@@ -202,10 +210,12 @@ class ProxyFactory extends AbstractProxyFactory
             foreach ($classMetadata->getReflectionClass()->getProperties() as $reflectionProperty) {
                 $propertyName = $reflectionProperty->getName();
 
-                if ($classMetadata->hasField($propertyName) || $classMetadata->hasAssociation($propertyName)) {
-                    $reflectionProperty->setAccessible(true);
-                    $reflectionProperty->setValue($proxy, $reflectionProperty->getValue($original));
+                if (! $classMetadata->hasField($propertyName) && ! $classMetadata->hasAssociation($propertyName)) {
+                    continue;
                 }
+
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($proxy, $reflectionProperty->getValue($original));
             }
         };
     }

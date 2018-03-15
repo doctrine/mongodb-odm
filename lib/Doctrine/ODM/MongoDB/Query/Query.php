@@ -164,9 +164,11 @@ class Query implements \IteratorAggregate
         $this->setReadOnly($readOnly);
         $this->setRefresh($refresh);
 
-        if (isset($query['readPreference'])) {
-            $this->unitOfWorkHints[self::HINT_READ_PREFERENCE] = $query['readPreference'];
+        if (! isset($query['readPreference'])) {
+            return;
         }
+
+        $this->unitOfWorkHints[self::HINT_READ_PREFERENCE] = $query['readPreference'];
     }
 
     public function __clone()

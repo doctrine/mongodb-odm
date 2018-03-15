@@ -70,11 +70,13 @@ class GH1138Listener
 
         foreach ($uow->getScheduledDocumentInsertions() as $document) {
             $this->inserts++;
-            if ($document instanceof GH1138Document) {
-                $document->name .= '-changed';
-                $cm = $dm->getClassMetadata(GH1138Document::CLASSNAME);
-                $uow->recomputeSingleDocumentChangeSet($cm, $document);
+            if (! ($document instanceof GH1138Document)) {
+                continue;
             }
+
+            $document->name .= '-changed';
+            $cm = $dm->getClassMetadata(GH1138Document::CLASSNAME);
+            $uow->recomputeSingleDocumentChangeSet($cm, $document);
         }
 
         foreach ($uow->getScheduledDocumentUpdates() as $document) {

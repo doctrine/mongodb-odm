@@ -163,13 +163,15 @@ class PhonenumberMachine implements EventSubscriber
 
         // recomputing change set in postPersist will schedule document for update
         // which would be handled in same commit(), we're not checking for this
-        if ($eventName === Events::postUpdate) {
-            // prove that even this won't break our flow
-            $dm = $args[0]->getDocumentManager();
-            $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet(
-                $dm->getClassMetadata(get_class($document)),
-                $document
-            );
+        if ($eventName !== Events::postUpdate) {
+            return;
         }
+
+        // prove that even this won't break our flow
+        $dm = $args[0]->getDocumentManager();
+        $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet(
+            $dm->getClassMetadata(get_class($document)),
+            $document
+        );
     }
 }

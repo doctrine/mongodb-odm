@@ -131,18 +131,22 @@ class XmlDriver extends FileDriver
                 foreach ($attributes as $key => $value) {
                     $mapping[$key] = (string) $value;
                     $booleanAttributes = ['id', 'reference', 'embed', 'unique', 'sparse'];
-                    if (in_array($key, $booleanAttributes)) {
-                        $mapping[$key] = ($mapping[$key] === 'true');
+                    if (! in_array($key, $booleanAttributes)) {
+                        continue;
                     }
+
+                    $mapping[$key] = ($mapping[$key] === 'true');
                 }
                 if (isset($mapping['id']) && $mapping['id'] === true && isset($mapping['strategy'])) {
                     $mapping['options'] = [];
                     if (isset($field->{'id-generator-option'})) {
                         foreach ($field->{'id-generator-option'} as $generatorOptions) {
                             $attributesGenerator = iterator_to_array($generatorOptions->attributes());
-                            if (isset($attributesGenerator['name']) && isset($attributesGenerator['value'])) {
-                                $mapping['options'][(string) $attributesGenerator['name']] = (string) $attributesGenerator['value'];
+                            if (! isset($attributesGenerator['name']) || ! isset($attributesGenerator['value'])) {
+                                continue;
                             }
+
+                            $mapping['options'][(string) $attributesGenerator['name']] = (string) $attributesGenerator['value'];
                         }
                     }
                 }
@@ -187,10 +191,12 @@ class XmlDriver extends FileDriver
                 $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\Events::' . (string) $lifecycleCallback['type']));
             }
         }
-        if (isset($xmlRoot->{'also-load-methods'})) {
-            foreach ($xmlRoot->{'also-load-methods'}->{'also-load-method'} as $alsoLoadMethod) {
-                $class->registerAlsoLoadMethod((string) $alsoLoadMethod['method'], (string) $alsoLoadMethod['field']);
-            }
+        if (! isset($xmlRoot->{'also-load-methods'})) {
+            return;
+        }
+
+        foreach ($xmlRoot->{'also-load-methods'}->{'also-load-method'} as $alsoLoadMethod) {
+            $class->registerAlsoLoadMethod((string) $alsoLoadMethod['method'], (string) $alsoLoadMethod['field']);
         }
     }
 
@@ -513,11 +519,13 @@ class XmlDriver extends FileDriver
         $xmlElement = simplexml_load_file($file);
 
         foreach (['document', 'embedded-document', 'mapped-superclass', 'query-result-document'] as $type) {
-            if (isset($xmlElement->$type)) {
-                foreach ($xmlElement->$type as $documentElement) {
-                    $documentName = (string) $documentElement['name'];
-                    $result[$documentName] = $documentElement;
-                }
+            if (! isset($xmlElement->$type)) {
+                continue;
+            }
+
+            foreach ($xmlElement->$type as $documentElement) {
+                $documentName = (string) $documentElement['name'];
+                $result[$documentName] = $documentElement;
             }
         }
 

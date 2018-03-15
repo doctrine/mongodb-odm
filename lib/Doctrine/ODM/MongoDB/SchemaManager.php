@@ -226,18 +226,20 @@ class SchemaManager
         }
 
         $indexes = $this->getDocumentIndexes($documentName);
-        if ($indexes) {
-            $collection = $this->dm->getDocumentCollection($class->name);
-            foreach ($indexes as $index) {
-                $keys = $index['keys'];
-                $options = $index['options'];
+        if (! $indexes) {
+            return;
+        }
 
-                if (! isset($options['timeout']) && isset($timeout)) {
-                    $options['timeout'] = $timeout;
-                }
+        $collection = $this->dm->getDocumentCollection($class->name);
+        foreach ($indexes as $index) {
+            $keys = $index['keys'];
+            $options = $index['options'];
 
-                $collection->createIndex($keys, $options);
+            if (! isset($options['timeout']) && isset($timeout)) {
+                $options['timeout'] = $timeout;
             }
+
+            $collection->createIndex($keys, $options);
         }
     }
 
