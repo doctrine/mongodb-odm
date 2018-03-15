@@ -44,7 +44,7 @@ class ClassMetadataFactoryTest extends BaseTest
         $this->assertTrue($cm1->hasField('name'));
     }
 
-    public function testHasGetMetadata_NamespaceSeparatorIsNotNormalized()
+    public function testHasGetMetadataNamespaceSeparatorIsNotNormalized()
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 

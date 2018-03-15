@@ -39,7 +39,6 @@
 
         <!-- The following rules are intended to be enabled one-by-one to have reviewable diffs -->
 
-        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenercase" />
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit" />
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint" />
