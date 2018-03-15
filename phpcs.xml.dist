@@ -44,7 +44,6 @@
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenercase" />
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit" />
-        <exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty" />
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint" />
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps" />
         <exclude name="Squiz.Commenting.FunctionComment.ThrowsNoFullStop" />

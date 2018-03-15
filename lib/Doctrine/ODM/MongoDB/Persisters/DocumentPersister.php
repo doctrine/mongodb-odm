@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
@@ -73,13 +72,6 @@ class DocumentPersister
     private $dm;
 
     /**
-     * The EventManager instance
-     *
-     * @var EventManager
-     */
-    private $evm;
-
-    /**
      * The UnitOfWork instance.
      *
      * @var UnitOfWork
@@ -142,7 +134,6 @@ class DocumentPersister
     public function __construct(
         PersistenceBuilder $pb,
         DocumentManager $dm,
-        EventManager $evm,
         UnitOfWork $uow,
         HydratorFactory $hydratorFactory,
         ClassMetadata $class,
@@ -150,7 +141,6 @@ class DocumentPersister
     ) {
         $this->pb = $pb;
         $this->dm = $dm;
-        $this->evm = $evm;
         $this->cm = $cm ?: new CriteriaMerger();
         $this->uow = $uow;
         $this->hydratorFactory = $hydratorFactory;

@@ -62,14 +62,20 @@ class GeoNear extends Match
             'spherical' => $this->spherical,
             'distanceField' => $this->distanceField,
             'query' => $this->query->getQuery(),
+            'distanceMultiplier' => $this->distanceMultiplier,
+            'includeLocs' => $this->includeLocs,
+            'maxDistance' => $this->maxDistance,
+            'minDistance' => $this->minDistance,
+            'num' => $this->num,
+            'uniqueDocs' => $this->uniqueDocs,
         ];
 
         foreach (['distanceMultiplier', 'includeLocs', 'maxDistance', 'minDistance', 'num', 'uniqueDocs'] as $option) {
-            if (! $this->$option) {
+            if ($geoNear[$option]) {
                 continue;
             }
 
-            $geoNear[$option] = $this->$option;
+            unset($geoNear[$option]);
         }
 
         return ['$geoNear' => $geoNear];
