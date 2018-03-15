@@ -44,7 +44,6 @@
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenercase" />
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit" />
-        <exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty" />
         <exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty" />
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint" />
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps" />
@@ -71,6 +70,22 @@
 
     <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
         <exclude-pattern>lib/Doctrine/ODM/MongoDB/Events.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
+        <properties>
+            <property name="alwaysUsedPropertiesAnnotations" type="array" value="
+                @ODM\Id,
+                @ODM\Field,
+                @ODM\EmbedOne,
+                @ODM\EmbedMany,
+                @ODM\ReferenceOne,
+                @ODM\ReferenceMany
+            "/>
+        </properties>
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataFactoryTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php</exclude-pattern>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
