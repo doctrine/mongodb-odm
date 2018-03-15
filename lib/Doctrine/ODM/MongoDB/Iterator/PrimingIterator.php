@@ -11,11 +11,22 @@ use function iterator_to_array;
 
 final class PrimingIterator implements Iterator
 {
+    /** @var \Iterator */
     private $iterator;
+
+    /** @var ClassMetadata */
     private $class;
+
+    /** @var ReferencePrimer */
     private $referencePrimer;
+
+    /** @var array */
     private $primers;
+
+    /** @var array */
     private $unitOfWorkHints;
+
+    /** @var bool */
     private $referencesPrimed = false;
 
     public function __construct(\Iterator $iterator, ClassMetadata $class, ReferencePrimer $referencePrimer, array $primers, array $unitOfWorkHints = [])

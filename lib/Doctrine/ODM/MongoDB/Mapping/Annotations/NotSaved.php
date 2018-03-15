@@ -11,5 +11,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
  */
 final class NotSaved extends AbstractField
 {
+    /** @var bool */
     public $notSaved = true;
 }

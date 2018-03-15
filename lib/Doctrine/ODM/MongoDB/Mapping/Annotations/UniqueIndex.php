@@ -11,5 +11,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
  */
 final class UniqueIndex extends AbstractIndex
 {
+    /** @var bool */
     public $unique = true;
 }

@@ -11,5 +11,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
  */
 final class EmbeddedDocument extends AbstractDocument
 {
+    /** @var Index[] */
     public $indexes = [];
 }

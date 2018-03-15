@@ -15,8 +15,10 @@ use function ucfirst;
 
 class CreateCommand extends AbstractCommand
 {
+    /** @var string[] */
     private $createOrder = [self::COLLECTION, self::INDEX];
 
+    /** @var int|null */
     private $timeout;
 
     protected function configure()

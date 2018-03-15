@@ -20,9 +20,16 @@ use function reset;
  */
 final class CachingIterator implements Iterator
 {
+    /** @var array */
     private $items = [];
+
+    /** @var \Generator */
     private $iterator;
+
+    /** @var bool */
     private $iteratorAdvanced = false;
+
+    /** @var bool */
     private $iteratorExhausted = false;
 
     /**

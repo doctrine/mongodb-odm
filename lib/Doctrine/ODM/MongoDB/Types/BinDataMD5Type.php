@@ -15,5 +15,6 @@ use MongoDB\BSON\Binary;
  */
 class BinDataMD5Type extends BinDataType
 {
+    /** @var int */
     protected $binDataType = Binary::TYPE_MD5;
 }

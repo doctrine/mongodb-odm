@@ -27,6 +27,7 @@ use function trigger_error;
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {
+    /** @var int[] */
     protected $entityAnnotationClasses = [
         ODM\Document::class            => 1,
         ODM\MappedSuperclass::class    => 2,

@@ -13,6 +13,7 @@ use Symfony\Component\Console\Helper\Helper;
  */
 class DocumentManagerHelper extends Helper
 {
+    /** @var DocumentManager */
     protected $dm;
 
     public function __construct(DocumentManager $dm)

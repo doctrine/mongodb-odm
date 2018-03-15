@@ -29,12 +29,16 @@ use function strlen;
  */
 class AlnumGenerator extends IncrementGenerator
 {
+    /** @var int|null */
     protected $pad = null;
 
+    /** @var bool */
     protected $awkwardSafeMode = false;
 
+    /** @var string */
     protected $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
+    /** @var string */
     protected $awkwardSafeChars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
 
     /**

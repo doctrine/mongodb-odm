@@ -22,20 +22,34 @@ use function get_class;
  */
 class IncrementGenerator extends AbstractIdGenerator
 {
+    /** @var string|null */
     protected $collection = null;
+
+    /** @var string|null */
     protected $key = null;
+
+    /** @var int */
     protected $startingId = 1;
 
+    /**
+     * @param string $collection
+     */
     public function setCollection($collection)
     {
         $this->collection = $collection;
     }
 
+    /**
+     * @param string $key
+     */
     public function setKey($key)
     {
         $this->key = $key;
     }
 
+    /**
+     * @param int $startingId
+     */
     public function setStartingId($startingId)
     {
         $this->startingId = $startingId;
