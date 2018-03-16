@@ -38,7 +38,7 @@ class DocumentPersisterTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $updatedData = $this->dm->getDocumentCollection($this->class)->findOne(array('_id' => $originalData['_id']));
 
-        $this->assertEquals($originalData, $updatedData);
+        $this->assertEquals(['_id' => $originalData['_id']], $updatedData);
     }
 
     public function testExistsReturnsTrueForExistentDocuments()

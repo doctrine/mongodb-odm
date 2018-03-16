@@ -207,7 +207,10 @@ class PersistenceBuilderTest extends BaseTest
                     '$ref' => 'CmsArticle'
                 ),
                 '_id' => new \MongoId($comment->id),
-            )
+            ),
+            '$unset' => array(
+                'ip' => true,
+            ),
         );
         $this->assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
     }
