@@ -62,12 +62,7 @@
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
-        <exclude-pattern>tests/NativePhpunitTask.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
-    </rule>
-
-    <rule ref="Generic.NamingConventions.UpperCaseConstantName.ConstantNotUpperCase">
-        <exclude-pattern>tests/NativePhpunitTask.php</exclude-pattern>
     </rule>
 
     <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
