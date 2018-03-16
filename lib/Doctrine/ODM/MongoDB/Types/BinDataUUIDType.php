@@ -15,5 +15,6 @@ use MongoDB\BSON\Binary;
  */
 class BinDataUUIDType extends BinDataType
 {
+    /** @var int */
     protected $binDataType = Binary::TYPE_OLD_UUID;
 }

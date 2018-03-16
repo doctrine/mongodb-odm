@@ -15,5 +15,6 @@ use MongoDB\BSON\Binary;
  */
 class BinDataByteArrayType extends BinDataType
 {
+    /** @var int */
     protected $binDataType = Binary::TYPE_OLD_BINARY;
 }

@@ -12,6 +12,7 @@ use function sprintf;
 
 class UpdateCommand extends AbstractCommand
 {
+    /** @var int|null */
     private $timeout;
 
     protected function configure()

@@ -40,7 +40,6 @@
         <!-- The following rules are intended to be enabled one-by-one to have reviewable diffs -->
 
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit" />
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint" />
         <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />
     </rule>
 
@@ -85,5 +84,10 @@
 
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
         <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
     </rule>
 </ruleset>

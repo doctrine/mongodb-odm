@@ -45,10 +45,10 @@ abstract class Type
     public const OBJECTID = 'object_id';
     public const RAW = 'raw';
 
-    /** Map of already instantiated type objects. One instance per type (flyweight). */
+    /** @var string[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static $typeObjects = [];
 
-    /** The map of supported doctrine mapping types. */
+    /** @var string[] The map of supported doctrine mapping types. */
     private static $typesMap = [
         self::ID => Types\IdType::class,
         self::INTID => Types\IntIdType::class,

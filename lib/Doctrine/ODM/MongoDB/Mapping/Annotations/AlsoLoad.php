@@ -13,5 +13,6 @@ use Doctrine\Common\Annotations\Annotation;
  */
 final class AlsoLoad extends Annotation
 {
+    /** @var string */
     public $name;
 }

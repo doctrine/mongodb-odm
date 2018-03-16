@@ -10,8 +10,13 @@ namespace Doctrine\ODM\MongoDB;
  */
 class LockException extends MongoDBException
 {
+    /** @var object|null */
     private $document;
 
+    /**
+     * @param string      $msg
+     * @param object|null $document
+     */
     public function __construct($msg, $document = null)
     {
         parent::__construct($msg);
@@ -21,7 +26,7 @@ class LockException extends MongoDBException
     /**
      * Gets the document that caused the exception.
      *
-     * @return object
+     * @return object|null
      */
     public function getDocument()
     {

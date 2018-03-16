@@ -14,6 +14,7 @@ use function ucfirst;
 
 class DropCommand extends AbstractCommand
 {
+    /** @var string[] */
     private $dropOrder = [self::INDEX, self::COLLECTION, self::DB];
 
     protected function configure()

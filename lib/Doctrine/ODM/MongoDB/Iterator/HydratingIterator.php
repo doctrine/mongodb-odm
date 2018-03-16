@@ -14,9 +14,16 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
  */
 final class HydratingIterator implements \Iterator
 {
+    /** @var \Generator */
     private $iterator;
+
+    /** @var UnitOfWork */
     private $unitOfWork;
+
+    /** @var ClassMetadata */
     private $class;
+
+    /** @var array */
     private $unitOfWorkHints;
 
     public function __construct(\Traversable $traversable, UnitOfWork $unitOfWork, ClassMetadata $class, array $unitOfWorkHints = [])

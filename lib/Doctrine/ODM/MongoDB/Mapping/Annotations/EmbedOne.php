@@ -11,10 +11,21 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
  */
 final class EmbedOne extends AbstractField
 {
+    /** @var string */
     public $type = 'one';
+
+    /** @var bool */
     public $embedded = true;
+
+    /** @var string|null */
     public $targetDocument;
+
+    /** @var string|null */
     public $discriminatorField;
+
+    /** @var string|null */
     public $discriminatorMap;
+
+    /** @var string|null */
     public $defaultDiscriminatorValue;
 }

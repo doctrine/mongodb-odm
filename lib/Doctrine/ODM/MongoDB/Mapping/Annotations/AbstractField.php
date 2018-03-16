@@ -10,10 +10,19 @@ use function sprintf;
 
 abstract class AbstractField extends Annotation
 {
+    /** @var string */
     public $name;
+
+    /** @var string */
     public $type = 'string';
+
+    /** @var bool */
     public $nullable = false;
+
+    /** @var mixed[] */
     public $options = [];
+
+    /** @var string|null */
     public $strategy;
 
     /**

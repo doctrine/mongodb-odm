@@ -175,62 +175,74 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
+     * @var string
      */
     public $db;
 
     /**
      * READ-ONLY: The name of the mongo collection the document is mapped to.
+     * @var string
      */
     public $collection;
 
     /**
      * READ-ONLY: If the collection should be a fixed size.
+     * @var bool
      */
     public $collectionCapped;
 
     /**
      * READ-ONLY: If the collection is fixed size, its size in bytes.
+     * @var int|null
      */
     public $collectionSize;
 
     /**
      * READ-ONLY: If the collection is fixed size, the maximum number of elements to store in the collection.
+     * @var int|null
      */
     public $collectionMax;
 
     /**
      * READ-ONLY Describes how MongoDB clients route read operations to the members of a replica set.
+     * @var string|int|null
      */
     public $readPreference;
 
     /**
      * READ-ONLY Associated with readPreference Allows to specify criteria so that your application can target read
      * operations to specific members, based on custom parameters.
+     * @var string[][]|null
      */
     public $readPreferenceTags;
 
     /**
      * READ-ONLY: Describes the level of acknowledgement requested from MongoDB for write operations.
+     * @var string|int|null
      */
     public $writeConcern;
 
     /**
      * READ-ONLY: The field name of the document identifier.
+     * @var string|null
      */
     public $identifier;
 
     /**
      * READ-ONLY: The array of indexes for the document collection.
+     * @var array
      */
     public $indexes = [];
 
     /**
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
+     * @var string|null
      */
     public $shardKey;
 
     /**
      * READ-ONLY: The name of the document class.
+     * @var string
      */
     public $name;
 

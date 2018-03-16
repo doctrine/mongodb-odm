@@ -31,6 +31,7 @@ use function ucfirst;
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
+    /** @var string */
     protected $cacheSalt = '$MONGODBODMCLASSMETADATA';
 
     /** @var DocumentManager The DocumentManager instance */
