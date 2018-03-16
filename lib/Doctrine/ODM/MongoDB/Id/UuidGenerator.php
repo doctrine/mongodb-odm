@@ -107,7 +107,7 @@ class UuidGenerator extends AbstractIdGenerator
      *
      * @param string $namespace The UUID to seed with
      * @param string $salt      The string to salt this new UUID with
-     * @throws \Exception When the provided namespace is invalid
+     * @throws \Exception When the provided namespace is invalid.
      * @return string
      */
     public function generateV5($namespace, $salt)

@@ -263,7 +263,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
                 $class->setIdGenerator($customGenerator);
                 break;
-            case ClassMetadata::GENERATOR_TYPE_NONE;
+            case ClassMetadata::GENERATOR_TYPE_NONE:
                 break;
             default:
                 throw new MappingException('Unknown generator type: ' . $class->generatorType);

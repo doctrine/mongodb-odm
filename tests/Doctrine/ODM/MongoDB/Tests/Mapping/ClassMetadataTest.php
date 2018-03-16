@@ -172,7 +172,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals('string', $cm->fieldMappings['name']['type']);
     }
 
-    public function testDuplicateColumnName_DiscriminatorColumn_ThrowsMappingException()
+    public function testDuplicateColumnNameDiscriminatorColumnThrowsMappingException()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
         $cm->mapField(['fieldName' => 'name']);
@@ -181,7 +181,7 @@ class ClassMetadataTest extends BaseTest
         $cm->setDiscriminatorField('name');
     }
 
-    public function testDuplicateFieldName_DiscriminatorColumn2_ThrowsMappingException()
+    public function testDuplicateFieldNameDiscriminatorColumn2ThrowsMappingException()
     {
         $cm = new ClassMetadata('Documents\CmsUser');
         $cm->setDiscriminatorField('name');

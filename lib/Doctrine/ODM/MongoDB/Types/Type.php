@@ -162,7 +162,7 @@ abstract class Type
         } else {
             $type = gettype($variable);
             switch ($type) {
-                case 'integer';
+                case 'integer':
                     return self::getType('int');
             }
         }
