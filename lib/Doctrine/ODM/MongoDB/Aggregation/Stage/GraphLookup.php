@@ -201,14 +201,16 @@ class GraphLookup extends Stage
             'connectToField' => $this->connectToField,
             'as' => $this->as,
             'restrictSearchWithMatch' => $this->restrictSearchWithMatch->getExpression(),
+            'maxDepth' => $this->maxDepth,
+            'depthField' => $this->depthField,
         ];
 
         foreach (['maxDepth', 'depthField'] as $field) {
-            if ($this->$field === null) {
+            if ($graphLookup[$field] !== null) {
                 continue;
             }
 
-            $graphLookup[$field] = $this->$field;
+            unset($graphLookup[$field]);
         }
 
         return ['$graphLookup' => $graphLookup];

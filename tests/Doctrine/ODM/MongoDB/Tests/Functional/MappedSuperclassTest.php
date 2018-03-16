@@ -50,8 +50,6 @@ class MappedSuperclassBase
     /** @ODM\ReferenceOne(targetDocument="MappedSuperclassRelated1") */
     private $mappedRelated1;
 
-    private $transient;
-
     public function setMapped1($val)
     {
         $this->mapped1 = $val;

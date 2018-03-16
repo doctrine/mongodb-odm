@@ -16,7 +16,6 @@ class DocumentPersisterMock extends DocumentPersister
     private $updates = [];
     private $deletes = [];
     private $identityColumnValueCounter = 1;
-    private $mockIdGeneratorType;
     private $postInsertIds = [];
     private $existsCalled = false;
 
