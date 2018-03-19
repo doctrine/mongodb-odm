@@ -251,9 +251,12 @@ class PersistenceBuilder
                         $operator = '$set';
                         $value = $new === null ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new);
                     }
-
-                    $updateData[$operator][$mapping['name']] = $value;
+                } else {
+                    $operator = '$unset';
+                    $value = true;
                 }
+
+                $updateData[$operator][$mapping['name']] = $value;
 
             // @EmbedOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
