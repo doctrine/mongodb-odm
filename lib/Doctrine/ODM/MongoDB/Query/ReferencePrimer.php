@@ -261,10 +261,12 @@ class ReferencePrimer
 
             $document = $this->uow->tryGetById($id, $class);
 
-            if (! $document || ($document instanceof Proxy && ! $document->__isInitialized())) {
-                $id = $class->getPHPIdentifierValue($id);
-                $groupedIds[$className][serialize($id)] = $id;
+            if ($document && ! (($document instanceof Proxy && ! $document->__isInitialized()))) {
+                continue;
             }
+
+            $id = $class->getPHPIdentifierValue($id);
+            $groupedIds[$className][serialize($id)] = $id;
         }
     }
 }

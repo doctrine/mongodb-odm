@@ -95,9 +95,11 @@ class GH1058UpsertDocument
 
     final public function generateId()
     {
-        if (! isset($this->id)) {
-            $this->id = (string) new ObjectId();
+        if (isset($this->id)) {
+            return;
         }
+
+        $this->id = (string) new ObjectId();
     }
 
     public function setValue($value)

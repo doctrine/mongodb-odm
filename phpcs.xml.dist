@@ -39,7 +39,6 @@
 
         <!-- The following rules are intended to be enabled one-by-one to have reviewable diffs -->
 
-        <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit" />
         <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />
     </rule>
 

@@ -174,10 +174,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $class->setParentClasses($nonSuperclassParents);
 
-        if ($this->evm->hasListeners(Events::loadClassMetadata)) {
-            $eventArgs = new LoadClassMetadataEventArgs($class, $this->dm);
-            $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+        if (! $this->evm->hasListeners(Events::loadClassMetadata)) {
+            return;
         }
+
+        $eventArgs = new LoadClassMetadataEventArgs($class, $this->dm);
+        $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
     }
 
     /**
@@ -333,11 +335,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function setInheritedShardKey(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        if ($parentClass->isSharded()) {
-            $subClass->setShardKey(
-                $parentClass->shardKey['keys'],
-                $parentClass->shardKey['options']
-            );
+        if (! $parentClass->isSharded()) {
+            return;
         }
+
+        $subClass->setShardKey(
+            $parentClass->shardKey['keys'],
+            $parentClass->shardKey['options']
+        );
     }
 }

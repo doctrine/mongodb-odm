@@ -857,7 +857,9 @@ class ClassMetadata implements BaseClassMetadata
                     $lower = strtolower($value);
                     if ($lower === 'asc') {
                         return 1;
-                    } elseif ($lower === 'desc') {
+                    }
+
+                    if ($lower === 'desc') {
                         return -1;
                     }
                 }
@@ -928,7 +930,9 @@ class ClassMetadata implements BaseClassMetadata
                     $lower = strtolower($value);
                     if ($lower === 'asc') {
                         return 1;
-                    } elseif ($lower === 'desc') {
+                    }
+
+                    if ($lower === 'desc') {
                         return -1;
                     }
                 }
@@ -1306,9 +1310,11 @@ class ClassMetadata implements BaseClassMetadata
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
 
-        if (isset($fieldMapping['association'])) {
-            $this->associationMappings[$fieldMapping['fieldName']] = $fieldMapping;
+        if (! isset($fieldMapping['association'])) {
+            return;
         }
+
+        $this->associationMappings[$fieldMapping['fieldName']] = $fieldMapping;
     }
 
     /**
@@ -1703,9 +1709,11 @@ class ClassMetadata implements BaseClassMetadata
     {
         $this->parentClasses = $classNames;
 
-        if (count($classNames) > 0) {
-            $this->rootDocumentName = array_pop($classNames);
+        if (count($classNames) <= 0) {
+            return;
         }
+
+        $this->rootDocumentName = array_pop($classNames);
     }
 
     /**
@@ -1949,9 +1957,11 @@ class ClassMetadata implements BaseClassMetadata
 
         if (isset($mapping['discriminatorMap'])) {
             foreach ($mapping['discriminatorMap'] as $key => $class) {
-                if (strpos($class, '\\') === false && strlen($this->namespace)) {
-                    $mapping['discriminatorMap'][$key] = $this->namespace . '\\' . $class;
+                if (strpos($class, '\\') !== false || ! strlen($this->namespace)) {
+                    continue;
                 }
+
+                $mapping['discriminatorMap'][$key] = $this->namespace . '\\' . $class;
             }
         }
 

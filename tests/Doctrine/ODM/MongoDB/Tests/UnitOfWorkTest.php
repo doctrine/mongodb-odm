@@ -733,10 +733,12 @@ class NotifyChangedDocument implements NotifyPropertyChanged
 
     public function setData($data)
     {
-        if ($data !== $this->data) {
-            $this->_onPropertyChanged('data', $this->data, $data);
-            $this->data = $data;
+        if ($data === $this->data) {
+            return;
         }
+
+        $this->_onPropertyChanged('data', $this->data, $data);
+        $this->data = $data;
     }
 
     public function getItems()
@@ -746,10 +748,12 @@ class NotifyChangedDocument implements NotifyPropertyChanged
 
     public function setTransient($value)
     {
-        if ($value !== $this->transient) {
-            $this->_onPropertyChanged('transient', $this->transient, $value);
-            $this->transient = $value;
+        if ($value === $this->transient) {
+            return;
         }
+
+        $this->_onPropertyChanged('transient', $this->transient, $value);
+        $this->transient = $value;
     }
 
     public function addPropertyChangedListener(PropertyChangedListener $listener)

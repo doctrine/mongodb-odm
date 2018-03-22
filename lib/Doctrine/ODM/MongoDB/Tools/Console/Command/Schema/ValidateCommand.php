@@ -42,10 +42,12 @@ EOT
 
         $errors = 0;
         foreach ($metadataFactory->getAllMetadata() as $meta) {
-            if ($meta !== unserialize(serialize($meta))) {
-                ++$errors;
-                $output->writeln(sprintf('%s has mapping issues.', $meta->name));
+            if ($meta === unserialize(serialize($meta))) {
+                continue;
             }
+
+            ++$errors;
+            $output->writeln(sprintf('%s has mapping issues.', $meta->name));
         }
         if ($errors) {
             $output->writeln(sprintf('<error>%d document(s) have mapping issues.</error>', $errors));

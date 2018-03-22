@@ -112,9 +112,11 @@ class Builder
     {
         $this->dm = $dm;
         $this->expr = new Expr($dm);
-        if ($documentName !== null) {
-            $this->setDocumentName($documentName);
+        if ($documentName === null) {
+            return;
         }
+
+        $this->setDocumentName($documentName);
     }
 
     public function __clone()
@@ -1838,12 +1840,14 @@ class Builder
             $this->field($discriminatorField)->in($discriminatorValues);
         }
 
-        if ($documentName !== null) {
-            $this->collection = $this->dm->getDocumentCollection($documentName);
-            $this->class = $this->dm->getClassMetadata($documentName);
-
-            // Expr also needs to know
-            $this->expr->setClassMetadata($this->class);
+        if ($documentName === null) {
+            return;
         }
+
+        $this->collection = $this->dm->getDocumentCollection($documentName);
+        $this->class = $this->dm->getClassMetadata($documentName);
+
+        // Expr also needs to know
+        $this->expr->setClassMetadata($this->class);
     }
 }

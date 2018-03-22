@@ -310,9 +310,11 @@ class Container
     public function add(Item $item)
     {
         $this->items->add($item);
-        if ($this->items->count() === 1) {
-            $this->firstItem = $item;
+        if ($this->items->count() !== 1) {
+            return;
         }
+
+        $this->firstItem = $item;
     }
 
     public function flip($a, $b)

@@ -66,33 +66,41 @@ class MODM67TestEventListener
     public function prePersist(LifecycleEventArgs $eventArgs)
     {
         $document = $eventArgs->getDocument();
-        if ($document instanceof MODM67EmbeddedObject) {
-            $document->prePersist = true;
+        if (! ($document instanceof MODM67EmbeddedObject)) {
+            return;
         }
+
+        $document->prePersist = true;
     }
 
     public function postPersist(LifecycleEventArgs $eventArgs)
     {
         $document = $eventArgs->getDocument();
-        if ($document instanceof MODM67EmbeddedObject) {
-            $document->postPersist = true;
+        if (! ($document instanceof MODM67EmbeddedObject)) {
+            return;
         }
+
+        $document->postPersist = true;
     }
 
     public function preUpdate(LifecycleEventArgs $eventArgs)
     {
         $document = $eventArgs->getDocument();
-        if ($document instanceof MODM67EmbeddedObject) {
-            $document->preUpdate = true;
+        if (! ($document instanceof MODM67EmbeddedObject)) {
+            return;
         }
+
+        $document->preUpdate = true;
     }
 
     public function postUpdate(LifecycleEventArgs $eventArgs)
     {
         $document = $eventArgs->getDocument();
-        if ($document instanceof MODM67EmbeddedObject) {
-            $document->postUpdate = true;
+        if (! ($document instanceof MODM67EmbeddedObject)) {
+            return;
         }
+
+        $document->postUpdate = true;
     }
 }
 

@@ -113,9 +113,11 @@ class CmsUser
 
     public function setAddress(CmsAddress $address)
     {
-        if ($this->address !== $address) {
-            $this->address = $address;
-            $address->setUser($this);
+        if ($this->address === $address) {
+            return;
         }
+
+        $this->address = $address;
+        $address->setUser($this);
     }
 }

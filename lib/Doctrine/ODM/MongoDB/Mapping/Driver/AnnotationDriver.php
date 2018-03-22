@@ -156,12 +156,14 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $class->mapField($mapping);
             }
 
-            if ($indexes) {
-                foreach ($indexes as $index) {
-                    $name = $mapping['name'] ?? $mapping['fieldName'];
-                    $keys = [$name => $index->order ?: 'asc'];
-                    $this->addIndex($class, $index, $keys);
-                }
+            if (! $indexes) {
+                continue;
+            }
+
+            foreach ($indexes as $index) {
+                $name = $mapping['name'] ?? $mapping['fieldName'];
+                $keys = [$name => $index->order ?: 'asc'];
+                $this->addIndex($class, $index, $keys);
             }
         }
 
@@ -217,9 +219,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $options = [];
         $allowed = ['name', 'dropDups', 'background', 'unique', 'sparse', 'expireAfterSeconds'];
         foreach ($allowed as $name) {
-            if (isset($index->$name)) {
-                $options[$name] = $index->$name;
+            if (! isset($index->$name)) {
+                continue;
             }
+
+            $options[$name] = $index->$name;
         }
         if (! empty($index->partialFilterExpression)) {
             $options['partialFilterExpression'] = $index->partialFilterExpression;
@@ -237,9 +241,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $options = [];
         $allowed = ['unique', 'numInitialChunks'];
         foreach ($allowed as $name) {
-            if (isset($shardKey->$name)) {
-                $options[$name] = $shardKey->$name;
+            if (! isset($shardKey->$name)) {
+                continue;
             }
+
+            $options[$name] = $shardKey->$name;
         }
 
         $class->setShardKey($shardKey->keys, $options);

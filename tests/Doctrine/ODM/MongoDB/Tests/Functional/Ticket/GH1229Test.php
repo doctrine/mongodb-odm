@@ -175,9 +175,11 @@ class GH1229Parent
     public function reorderChildren($starting, $change)
     {
         foreach ($this->children as $child) {
-            if ($child->getOrder() >= $starting) {
-                $child->setOrder($child->getOrder() + $change);
+            if ($child->getOrder() < $starting) {
+                continue;
             }
+
+            $child->setOrder($child->getOrder() + $change);
         }
     }
 }

@@ -41,10 +41,12 @@ class Person
     public function preLoad(PreLoadEventArgs $e)
     {
         $data =& $e->getData();
-        if (isset($data['name'])) {
-            $e = explode(' ', $data['name']);
-            $data['firstName'] = $e[0];
-            $data['lastName'] = $e[1];
+        if (! isset($data['name'])) {
+            return;
         }
+
+        $e = explode(' ', $data['name']);
+        $data['firstName'] = $e[0];
+        $data['lastName'] = $e[1];
     }
 }

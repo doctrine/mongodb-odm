@@ -464,9 +464,11 @@ EOF
             // lazy properties may be left uninitialized
             $properties = $document->__getLazyProperties();
             foreach ($properties as $propertyName => $property) {
-                if (! isset($document->$propertyName)) {
-                    $document->$propertyName = $properties[$propertyName];
+                if (isset($document->$propertyName)) {
+                    continue;
                 }
+
+                $document->$propertyName = $properties[$propertyName];
             }
         }
 

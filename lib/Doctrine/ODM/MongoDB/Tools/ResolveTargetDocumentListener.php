@@ -41,9 +41,11 @@ class ResolveTargetDocumentListener
         /** @var ClassMetadata $cm */
         $cm = $args->getClassMetadata();
         foreach ($cm->associationMappings as $mapping) {
-            if (isset($this->resolveTargetDocuments[$mapping['targetDocument']])) {
-                $this->remapAssociation($cm, $mapping);
+            if (! isset($this->resolveTargetDocuments[$mapping['targetDocument']])) {
+                continue;
             }
+
+            $this->remapAssociation($cm, $mapping);
         }
     }
 

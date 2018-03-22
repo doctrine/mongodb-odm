@@ -692,25 +692,27 @@ class DocumentPersister
         $embeddedDocuments = $collection->getMongoData();
         $mapping = $collection->getMapping();
         $owner = $collection->getOwner();
-        if ($embeddedDocuments) {
-            foreach ($embeddedDocuments as $key => $embeddedDocument) {
-                $className = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
-                $embeddedMetadata = $this->dm->getClassMetadata($className);
-                $embeddedDocumentObject = $embeddedMetadata->newInstance();
+        if (! $embeddedDocuments) {
+            return;
+        }
 
-                $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
+        foreach ($embeddedDocuments as $key => $embeddedDocument) {
+            $className = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
+            $embeddedMetadata = $this->dm->getClassMetadata($className);
+            $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
-                $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
-                $id = $data[$embeddedMetadata->identifier] ?? null;
+            $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
-                if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
-                    $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
-                }
-                if (CollectionHelper::isHash($mapping['strategy'])) {
-                    $collection->set($key, $embeddedDocumentObject);
-                } else {
-                    $collection->add($embeddedDocumentObject);
-                }
+            $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
+            $id = $data[$embeddedMetadata->identifier] ?? null;
+
+            if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
+                $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
+            }
+            if (CollectionHelper::isHash($mapping['strategy'])) {
+                $collection->set($key, $embeddedDocumentObject);
+            } else {
+                $collection->add($embeddedDocumentObject);
             }
         }
     }
@@ -741,9 +743,11 @@ class DocumentPersister
             }
 
             // only query for the referenced object if it is not already initialized or the collection is sorted
-            if (($reference instanceof Proxy && ! $reference->__isInitialized__) || $sorted) {
-                $groupedIds[$className][] = $identifier;
+            if (! (($reference instanceof Proxy && ! $reference->__isInitialized__)) && ! $sorted) {
+                continue;
             }
+
+            $groupedIds[$className][] = $identifier;
         }
         foreach ($groupedIds as $className => $ids) {
             $class = $this->dm->getClassMetadata($className);
@@ -778,9 +782,11 @@ class DocumentPersister
                     $this->uow->setOriginalDocumentData($document, $data);
                     $document->__isInitialized__ = true;
                 }
-                if ($sorted) {
-                    $collection->add($document);
+                if (! $sorted) {
+                    continue;
                 }
+
+                $collection->add($document);
             }
         }
     }
@@ -1336,9 +1342,11 @@ class DocumentPersister
         $discriminatorValues = [$metadata->discriminatorValue];
         foreach ($metadata->subClasses as $className) {
             $key = array_search($className, $metadata->discriminatorMap);
-            if ($key) {
-                $discriminatorValues[] = $key;
+            if (! $key) {
+                continue;
             }
+
+            $discriminatorValues[] = $key;
         }
 
         // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
@@ -1353,15 +1361,19 @@ class DocumentPersister
     {
         // Collection deletions (deletions of complete collections)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
-            if ($this->uow->isCollectionScheduledForDeletion($coll)) {
-                $this->cp->delete($coll, $options);
+            if (! $this->uow->isCollectionScheduledForDeletion($coll)) {
+                continue;
             }
+
+            $this->cp->delete($coll, $options);
         }
         // Collection updates (deleteRows, updateRows, insertRows)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
-            if ($this->uow->isCollectionScheduledForUpdate($coll)) {
-                $this->cp->update($coll, $options);
+            if (! $this->uow->isCollectionScheduledForUpdate($coll)) {
+                continue;
             }
+
+            $this->cp->update($coll, $options);
         }
         // Take new snapshots from visited collections
         foreach ($this->uow->getVisitedCollections($document) as $coll) {

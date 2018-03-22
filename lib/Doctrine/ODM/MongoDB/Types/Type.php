@@ -156,7 +156,9 @@ abstract class Type
         if (is_object($variable)) {
             if ($variable instanceof \DateTimeInterface) {
                 return self::getType('date');
-            } elseif ($variable instanceof ObjectId) {
+            }
+
+            if ($variable instanceof ObjectId) {
                 return self::getType('id');
             }
         } else {
