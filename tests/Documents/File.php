@@ -6,64 +6,54 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+/** @ODM\File */
 class File
 {
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\Field(type="string") */
-    private $name;
-
-    /** @ODM\Field(type="string") */
+    /** @ODM\File\Filename */
     private $filename;
 
-    /** @ODM\NotSaved(type="int") */
+    /** @ODM\File\ChunkSize */
+    private $chunkSize;
+
+    /** @ODM\File\Length */
     private $length;
 
-    /** @ODM\NotSaved(type="string") */
-    private $md5;
-
-    /** @ODM\NotSaved(type="date") */
+    /** @ODM\File\UploadDate */
     private $uploadDate;
 
-    public function getId()
+    /** @ODM\File\Metadata(targetDocument=FileMetadata::class) */
+    private $metadata;
+
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setFilename($filename)
-    {
-        $this->filename = $filename;
-    }
-
-    public function getFilename()
+    public function getFilename(): ?string
     {
         return $this->filename;
     }
 
-    public function getLength()
+    public function getChunkSize(): ?int
+    {
+        return $this->chunkSize;
+    }
+
+    public function getLength(): ?int
     {
         return $this->length;
     }
 
-    public function getMd5()
-    {
-        return $this->md5;
-    }
-
-    public function getUploadDate()
+    public function getUploadDate(): \DateTimeInterface
     {
         return $this->uploadDate;
+    }
+
+    public function getMetadata(): ?FileMetadata
+    {
+        return $this->metadata;
     }
 }
