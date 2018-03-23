@@ -33,6 +33,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         ODM\MappedSuperclass::class    => 2,
         ODM\EmbeddedDocument::class    => 3,
         ODM\QueryResultDocument::class => 4,
+        ODM\File::class                => 5,
     ];
 
     /**
@@ -95,12 +96,19 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $class->isEmbeddedDocument = true;
         } elseif ($documentAnnot instanceof ODM\QueryResultDocument) {
             $class->isQueryResultDocument = true;
+        } elseif ($documentAnnot instanceof ODM\File) {
+            $class->isFile = true;
         }
+
         if (isset($documentAnnot->db)) {
             $class->setDatabase($documentAnnot->db);
         }
         if (isset($documentAnnot->collection)) {
             $class->setCollection($documentAnnot->collection);
+        }
+        // Store bucketName as collection name for GridFS files
+        if (isset($documentAnnot->bucketName)) {
+            $class->setCollection($documentAnnot->bucketName);
         }
         if (isset($documentAnnot->repositoryClass)) {
             $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
