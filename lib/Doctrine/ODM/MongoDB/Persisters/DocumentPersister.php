@@ -48,6 +48,7 @@ use function is_object;
 use function is_scalar;
 use function max;
 use function spl_object_hash;
+use function sprintf;
 use function strpos;
 use function strtolower;
 
@@ -870,7 +871,7 @@ class DocumentPersister
             ->$repositoryMethod($collection->getOwner());
 
         if (! $cursor instanceof Iterator) {
-            throw new \BadMethodCallException("Expected repository method {$repositoryMethod} to return an iterable object");
+            throw new \BadMethodCallException(sprintf('Expected repository method %s to return an iterable object', $repositoryMethod));
         }
 
         if (! empty($mapping['prime'])) {
@@ -1475,7 +1476,7 @@ class DocumentPersister
                 break;
 
             default:
-                throw new \InvalidArgumentException("Reference type {$mapping['storeAs']} is invalid.");
+                throw new \InvalidArgumentException(sprintf('Reference type %s is invalid.', $mapping['storeAs']));
         }
 
         if ($mapping['type'] === 'many') {

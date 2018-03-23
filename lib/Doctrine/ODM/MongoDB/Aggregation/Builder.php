@@ -18,6 +18,7 @@ use function array_map;
 use function array_merge;
 use function array_unshift;
 use function is_array;
+use function sprintf;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -249,7 +250,7 @@ class Builder
     public function getStage($index)
     {
         if (! isset($this->stages[$index])) {
-            throw new \OutOfRangeException("Could not find stage with index {$index}.");
+            throw new \OutOfRangeException(sprintf('Could not find stage with index %d.', $index));
         }
 
         return $this->stages[$index];

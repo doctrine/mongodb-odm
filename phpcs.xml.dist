@@ -36,10 +36,6 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
-
-        <!-- The following rules are intended to be enabled one-by-one to have reviewable diffs -->
-
-        <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />
     </rule>
 
     <!-- Require no space around colon in return types -->

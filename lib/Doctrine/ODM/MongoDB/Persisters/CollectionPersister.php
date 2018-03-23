@@ -15,6 +15,7 @@ use function array_reverse;
 use function array_values;
 use function get_class;
 use function implode;
+use function sprintf;
 
 /**
  * The CollectionPersister is responsible for persisting collections of embedded
@@ -199,7 +200,7 @@ class CollectionPersister
                 break;
 
             default:
-                throw new \LogicException("Invalid strategy {$mapping['strategy']} given for insertElements");
+                throw new \LogicException(sprintf('Invalid strategy %s given for insertElements', $mapping['strategy']));
         }
 
         list($propertyPath, $parent) = $this->getPathAndParent($coll);

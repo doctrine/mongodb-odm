@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
+use function sprintf;
 
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM
@@ -18,7 +20,7 @@ class MappingException extends BaseMappingException
      */
     public static function typeExists($name)
     {
-        return new self('Type ' . $name . ' already exists.');
+        return new self(sprintf('Type %s already exists.', $name));
     }
 
     /**
@@ -27,7 +29,7 @@ class MappingException extends BaseMappingException
      */
     public static function typeNotFound($name)
     {
-        return new self('Type to be overwritten ' . $name . ' does not exist.');
+        return new self(sprintf('Type to be overwritten %s does not exist.', $name));
     }
 
     /**
@@ -37,7 +39,7 @@ class MappingException extends BaseMappingException
      */
     public static function mappingNotFound($className, $fieldName)
     {
-        return new self("No mapping found for field '$fieldName' in class '$className'.");
+        return new self(sprintf("No mapping found for field '%s' in class '%s'.", $fieldName, $className));
     }
 
     /**
@@ -47,7 +49,7 @@ class MappingException extends BaseMappingException
      */
     public static function referenceMappingNotFound($className, $fieldName)
     {
-        return new self("No reference mapping found for field '$fieldName' in class '$className'.");
+        return new self(sprintf("No reference mapping found for field '%s' in class '%s'.", $fieldName, $className));
     }
 
     /**
@@ -57,7 +59,7 @@ class MappingException extends BaseMappingException
      */
     public static function mappingNotFoundInClassNorDescendants($className, $fieldName)
     {
-        return new self("No mapping found for field '$fieldName' in class '$className' nor its descendants.");
+        return new self(sprintf("No mapping found for field '%s' in class '%s' nor its descendants.", $fieldName, $className));
     }
 
     /**
@@ -68,7 +70,7 @@ class MappingException extends BaseMappingException
      */
     public static function referenceFieldConflict($fieldName, $className, $className2)
     {
-        return new self("Reference mapping for field '$fieldName' in class '$className' conflicts with one mapped in class '$className2'.");
+        return new self(sprintf("Reference mapping for field '%s' in class '%s' conflicts with one mapped in class '%s'.", $fieldName, $className, $className2));
     }
 
     /**
@@ -78,7 +80,7 @@ class MappingException extends BaseMappingException
      */
     public static function mappingNotFoundByDbName($className, $dbFieldName)
     {
-        return new self("No mapping found for field by DB name '$dbFieldName' in class '$className'.");
+        return new self(sprintf("No mapping found for field by DB name '%s' in class '%s'.", $dbFieldName, $className));
     }
 
     /**
@@ -88,7 +90,7 @@ class MappingException extends BaseMappingException
      */
     public static function duplicateFieldMapping($document, $fieldName)
     {
-        return new self('Property "' . $fieldName . '" in "' . $document . '" was already declared, but it must be declared only once');
+        return new self(sprintf('Property "%s" in "%s" was already declared, but it must be declared only once', $fieldName, $document));
     }
 
     /**
@@ -98,7 +100,7 @@ class MappingException extends BaseMappingException
      */
     public static function discriminatorFieldConflict($document, $fieldName)
     {
-        return new self('Discriminator field "' . $fieldName . '" in "' . $document . '" conflicts with a mapped field\'s "name" attribute.');
+        return new self(sprintf('Discriminator field "%s" in "%s" conflicts with a mapped field\'s "name" attribute.', $fieldName, $document));
     }
 
     /**
@@ -111,10 +113,7 @@ class MappingException extends BaseMappingException
      */
     public static function invalidClassInDiscriminatorMap($className, $owningClass)
     {
-        return new self(
-            "Document class '$className' used in the discriminator map of class '$owningClass' " .
-            'does not exist.'
-        );
+        return new self(sprintf("Document class '%s' used in the discriminator map of class '%s' does not exist.", $className, $owningClass));
     }
 
     /**
@@ -126,7 +125,7 @@ class MappingException extends BaseMappingException
      */
     public static function invalidDiscriminatorValue($value, $owningClass)
     {
-        return new self("Discriminator value '$value' used in the declaration of class '$owningClass' does not exist.");
+        return new self(sprintf("Discriminator value '%s' used in the declaration of class '%s' does not exist.", $value, $owningClass));
     }
 
     /**
@@ -135,7 +134,7 @@ class MappingException extends BaseMappingException
      */
     public static function missingFieldName($className)
     {
-        return new self("The Document class '$className' field mapping misses the 'fieldName' attribute.");
+        return new self(sprintf("The Document class '%s' field mapping misses the 'fieldName' attribute.", $className));
     }
 
     /**
@@ -144,7 +143,7 @@ class MappingException extends BaseMappingException
      */
     public static function classIsNotAValidDocument($className)
     {
-        return new self('Class ' . $className . ' is not a valid document or mapped super class.');
+        return new self(sprintf('Class %s is not a valid document or mapped super class.', $className));
     }
 
     /**
@@ -166,8 +165,7 @@ class MappingException extends BaseMappingException
      */
     public static function identifierRequired($documentName)
     {
-        return new self("No identifier/primary key specified for Document '$documentName'."
-            . ' Every Document must have an identifier/primary key.');
+        return new self(sprintf("No identifier/primary key specified for Document '%s'. Every Document must have an identifier/primary key.", $documentName));
     }
 
     /**
@@ -177,7 +175,7 @@ class MappingException extends BaseMappingException
      */
     public static function missingIdentifierField($className, $fieldName)
     {
-        return new self("The identifier $fieldName is missing for a query of " . $className);
+        return new self(sprintf('The identifier %s is missing for a query of %s', $fieldName, $className));
     }
 
     /**
@@ -186,7 +184,7 @@ class MappingException extends BaseMappingException
      */
     public static function missingIdGeneratorClass($className)
     {
-        return new self("The class-option for the custom ID generator is missing in class $className.");
+        return new self(sprintf('The class-option for the custom ID generator is missing in class %s.', $className));
     }
 
     /**
@@ -195,7 +193,7 @@ class MappingException extends BaseMappingException
      */
     public static function classIsNotAValidGenerator($className)
     {
-        return new self("The class $className if not a valid ID generator of type AbstractIdGenerator.");
+        return new self(sprintf('The class %s if not a valid ID generator of type AbstractIdGenerator.', $className));
     }
 
     /**
@@ -205,7 +203,7 @@ class MappingException extends BaseMappingException
      */
     public static function missingGeneratorSetter($className, $optionName)
     {
-        return new self("The class $className is missing a setter for the option $optionName.");
+        return new self(sprintf('The class %s is missing a setter for the option %s.', $className, $optionName));
     }
 
     /**
@@ -215,7 +213,7 @@ class MappingException extends BaseMappingException
      */
     public static function cascadeOnEmbeddedNotAllowed($className, $fieldName)
     {
-        return new self("Cascade on $className::$fieldName is not allowed.");
+        return new self(sprintf('Cascade on %s::%s is not allowed.', $className, $fieldName));
     }
 
     /**
@@ -225,7 +223,7 @@ class MappingException extends BaseMappingException
      */
     public static function simpleReferenceRequiresTargetDocument($className, $fieldName)
     {
-        return new self("Target document must be specified for simple reference: $className::$fieldName");
+        return new self(sprintf('Target document must be specified for simple reference: %s::%s', $className, $fieldName));
     }
 
     /**
@@ -234,7 +232,7 @@ class MappingException extends BaseMappingException
      */
     public static function simpleReferenceMustNotTargetDiscriminatedDocument($targetDocument)
     {
-        return new self("Simple reference must not target document using Single Collection Inheritance, $targetDocument targeted.");
+        return new self(sprintf('Simple reference must not target document using Single Collection Inheritance, %s targeted.', $targetDocument));
     }
 
     /**
@@ -245,7 +243,7 @@ class MappingException extends BaseMappingException
      */
     public static function atomicCollectionStrategyNotAllowed($strategy, $className, $fieldName)
     {
-        return new self("$strategy collection strategy can be used only in top level document, used in $className::$fieldName");
+        return new self(sprintf('%s collection strategy can be used only in top level document, used in %s::%s', $strategy, $className, $fieldName));
     }
 
     /**
@@ -255,7 +253,7 @@ class MappingException extends BaseMappingException
      */
     public static function owningAndInverseReferencesRequireTargetDocument($className, $fieldName)
     {
-        return new self("Target document must be specified for owning/inverse sides of reference: $className::$fieldName");
+        return new self(sprintf('Target document must be specified for owning/inverse sides of reference: %s::%s', $className, $fieldName));
     }
 
     /**
@@ -265,7 +263,7 @@ class MappingException extends BaseMappingException
      */
     public static function mustNotChangeIdentifierFieldsType($className, $fieldName)
     {
-        return new self("$className::$fieldName was declared an identifier and must stay this way.");
+        return new self(sprintf('%s::%s was declared an identifier and must stay this way.', $className, $fieldName));
     }
 
     /**
@@ -276,7 +274,7 @@ class MappingException extends BaseMappingException
      */
     public static function referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($className, $fieldName, $strategy)
     {
-        return new self("ReferenceMany's sort can not be used with addToSet and pushAll strategies, $strategy used in $className::$fieldName");
+        return new self(sprintf("ReferenceMany's sort can not be used with addToSet and pushAll strategies, %s used in %s::%s", $strategy, $className, $fieldName));
     }
 
     /**
@@ -288,7 +286,7 @@ class MappingException extends BaseMappingException
      */
     public static function invalidStorageStrategy($className, $fieldName, $type, $strategy)
     {
-        return new self("Invalid strategy $strategy used in $className::$fieldName with type $type");
+        return new self(sprintf('Invalid strategy %s used in %s::%s with type %s', $strategy, $className, $fieldName, $type));
     }
 
     /**
@@ -299,7 +297,7 @@ class MappingException extends BaseMappingException
      */
     public static function collectionClassDoesNotImplementCommonInterface($className, $fieldName, $collectionClass)
     {
-        return new self("$collectionClass used as custom collection class for $className::$fieldName has to implement Doctrine\\Common\\Collections\\Collection interface.");
+        return new self(sprintf('%s used as custom collection class for %s::%s has to implement %s interface.', $collectionClass, $className, $fieldName, Collection::class));
     }
 
     /**
@@ -308,7 +306,7 @@ class MappingException extends BaseMappingException
      */
     public static function shardKeyInSingleCollInheritanceSubclass($subclassName)
     {
-        return new self("Shard key overriding in subclass is forbidden for single collection inheritance: $subclassName");
+        return new self(sprintf('Shard key overriding in subclass is forbidden for single collection inheritance: %s', $subclassName));
     }
 
     /**
@@ -317,7 +315,7 @@ class MappingException extends BaseMappingException
      */
     public static function embeddedDocumentCantHaveShardKey($className)
     {
-        return new self("Embedded document can't have shard key: $className");
+        return new self(sprintf("Embedded document can't have shard key: %s", $className));
     }
 
     /**
@@ -327,7 +325,7 @@ class MappingException extends BaseMappingException
      */
     public static function onlySetStrategyAllowedInShardKey($className, $fieldName)
     {
-        return new self("Only fields using the SET strategy can be used in the shard key: $className::$fieldName");
+        return new self(sprintf('Only fields using the SET strategy can be used in the shard key: %s::%s', $className, $fieldName));
     }
 
     /**
@@ -337,7 +335,7 @@ class MappingException extends BaseMappingException
      */
     public static function noMultiKeyShardKeys($className, $fieldName)
     {
-        return new self("No multikey indexes are allowed in the shard key: $className::$fieldName");
+        return new self(sprintf('No multikey indexes are allowed in the shard key: %s::%s', $className, $fieldName));
     }
 
     /**
@@ -347,7 +345,7 @@ class MappingException extends BaseMappingException
      */
     public static function cannotLookupDbRefReference($className, $fieldName)
     {
-        return new self("Cannot use reference '$fieldName' in class '$className' for lookup or graphLookup: dbRef references are not supported.");
+        return new self(sprintf("Cannot use reference '%s' in class '%s' for lookup or graphLookup: dbRef references are not supported.", $fieldName, $className));
     }
 
     /**
@@ -357,7 +355,7 @@ class MappingException extends BaseMappingException
      */
     public static function repositoryMethodLookupNotAllowed($className, $fieldName)
     {
-        return new self("Cannot use reference '$fieldName' in class '$className' for lookup or graphLookup. repositoryMethod is not supported in \$lookup and \$graphLookup stages.");
+        return new self(sprintf("Cannot use reference '%s' in class '%s' for lookup or graphLookup. repositoryMethod is not supported in \$lookup and \$graphLookup stages.", $fieldName, $className));
     }
 
     /**
@@ -366,7 +364,7 @@ class MappingException extends BaseMappingException
      */
     public static function cannotUseShardedCollectionInOutStage($className)
     {
-        return new self("Cannot use class '$className' as collection for out stage. Sharded collections are not allowed.");
+        return new self(sprintf("Cannot use class '%s' as collection for out stage. Sharded collections are not allowed.", $className));
     }
 
     /**
@@ -375,7 +373,7 @@ class MappingException extends BaseMappingException
      */
     public static function cannotUseShardedCollectionInLookupStages($className)
     {
-        return new self("Cannot use class '$className' as collection for lookup or graphLookup stage. Sharded collections are not allowed.");
+        return new self(sprintf("Cannot use class '%s' as collection for lookup or graphLookup stage. Sharded collections are not allowed.", $className));
     }
 
     /**
@@ -386,11 +384,11 @@ class MappingException extends BaseMappingException
      */
     public static function referencePrimersOnlySupportedForInverseReferenceMany($className, $fieldName)
     {
-        return new self("Cannot use reference priming on '$fieldName' in class '$className'. Reference priming is only supported for inverse references");
+        return new self(sprintf("Cannot use reference priming on '%s' in class '%s'. Reference priming is only supported for inverse references", $fieldName, $className));
     }
 
     public static function connectFromFieldMustReferenceSameDocument($fieldName)
     {
-        return new self("Cannot use field '$fieldName' as connectFromField in a \$graphLookup stage. Reference must target the document itself.");
+        return new self(sprintf("Cannot use field '%s' as connectFromField in a \$graphLookup stage. Reference must target the document itself.", $fieldName));
     }
 }
