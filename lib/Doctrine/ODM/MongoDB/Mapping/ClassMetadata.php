@@ -409,6 +409,13 @@ class ClassMetadata implements BaseClassMetadata
     public $isQueryResultDocument = false;
 
     /**
+     * READ-ONLY: Whether this class describes the mapping of a gridFS file
+     *
+     * @var bool
+     */
+    public $isFile = false;
+
+    /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
      *
      * @var int
@@ -2116,6 +2123,10 @@ class ClassMetadata implements BaseClassMetadata
 
         if ($this->isQueryResultDocument) {
             $serialized[] = 'isQueryResultDocument';
+        }
+
+        if ($this->isFile) {
+            $serialized[] = 'isFile';
         }
 
         if ($this->isVersioned) {
