@@ -21,6 +21,7 @@ use function in_array;
 use function is_array;
 use function is_string;
 use function key;
+use function sprintf;
 use function strpos;
 use function strtolower;
 
@@ -724,7 +725,7 @@ class Expr
                 break;
 
             default:
-                throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
+                throw new \InvalidArgumentException(sprintf('Reference type %s is invalid.', $storeAs));
         }
 
         foreach ($keys as $key => $value) {
@@ -1122,7 +1123,7 @@ class Expr
                 break;
 
             default:
-                throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
+                throw new \InvalidArgumentException(sprintf('Reference type %s is invalid.', $storeAs));
         }
 
         foreach ($keys as $key => $value) {

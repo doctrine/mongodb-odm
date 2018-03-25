@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use function sprintf;
 
 class ClassMetadataFactoryTest extends BaseTest
 {
@@ -91,7 +92,7 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
     {
         $this->_requestedClasses[] = $className;
         if (! isset($this->_mockMetadata[$className])) {
-            throw new InvalidArgumentException("No mock metadata found for class $className.");
+            throw new \InvalidArgumentException(sprintf('No mock metadata found for class %s.', $className));
         }
         return $this->_mockMetadata[$className];
     }

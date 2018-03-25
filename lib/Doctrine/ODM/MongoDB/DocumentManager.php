@@ -709,7 +709,7 @@ class DocumentManager implements ObjectManager
                 break;
 
             default:
-                throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
+                throw new \InvalidArgumentException(sprintf('Reference type %s is invalid.', $storeAs));
         }
 
         /* If the class has a discriminator (field and value), use it. A child

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use function array_slice;
 use function end;
 use function get_class;
@@ -58,7 +59,7 @@ class MongoDBException extends \Exception
      */
     public static function unknownDocumentNamespace($documentNamespaceAlias)
     {
-        return new self("Unknown Document namespace alias '$documentNamespaceAlias'.");
+        return new self(sprintf("Unknown Document namespace alias '%s'.", $documentNamespaceAlias));
     }
 
     /**
@@ -76,7 +77,7 @@ class MongoDBException extends \Exception
      */
     public static function invalidDocumentRepository($className)
     {
-        return new self("Invalid repository class '" . $className . "'. It must be a Doctrine\Common\Persistence\ObjectRepository.");
+        return new self(sprintf("Invalid repository class '%s'. It must be a %s.", $className, ObjectRepository::class));
     }
 
     /**
