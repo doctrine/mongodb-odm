@@ -19,14 +19,12 @@
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 
 /**
  * A DocumentRepository serves as a repository for documents with generic as well as
@@ -282,28 +280,9 @@ class DocumentRepository implements ObjectRepository, Selectable
      */
     public function matching(Criteria $criteria)
     {
-        $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
         $queryBuilder = $this->createQueryBuilder();
 
-        if ($criteria->getWhereExpression() !== null) {
-            $expr = $visitor->dispatch($criteria->getWhereExpression());
-            $queryBuilder->setQueryArray($expr->getQuery());
-        }
-
-        if ($criteria->getMaxResults() !== null) {
-            $queryBuilder->limit($criteria->getMaxResults());
-        }
-
-        if ($criteria->getFirstResult() !== null) {
-            $queryBuilder->skip($criteria->getFirstResult());
-        }
-
-        if ($criteria->getOrderings() !== null) {
-            $queryBuilder->sort($criteria->getOrderings());
-        }
-
-        // @TODO: wrap around a specialized Collection for efficient count on large collections
-        return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray(false));
+        return new LazyCriteriaCollection($queryBuilder, $criteria);
     }
 
     protected function getDocumentPersister()
