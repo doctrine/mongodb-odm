@@ -147,6 +147,7 @@ class PersistenceBuilderTest extends BaseTest
                 '$id' => new ObjectId($article->id),
                 '$ref' => 'CmsArticle',
             ],
+            'nullableField' => null,
         ];
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
@@ -171,6 +172,7 @@ class PersistenceBuilderTest extends BaseTest
                 '$id' => new ObjectId($article->id),
                 '$ref' => 'CmsArticle',
             ],
+            'nullableField' => null,
         ];
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
@@ -202,6 +204,7 @@ class PersistenceBuilderTest extends BaseTest
                 ],
                 '_id' => new ObjectId($comment->id),
             ],
+            '$setOnInsert' => ['nullableField' => null],
         ];
         $this->assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
     }

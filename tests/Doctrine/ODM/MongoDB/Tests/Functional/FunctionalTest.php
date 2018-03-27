@@ -70,6 +70,8 @@ class FunctionalTest extends BaseTest
         $this->assertEquals((string) $id, (string) $check['_id']);
         $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
         $this->assertEquals($discriminator, $check['discriminator']);
+        $this->assertArrayHasKey('nullableField', $check);
+        $this->assertNull($check['nullableField']);
 
         $group2 = new Group('Group');
 
@@ -78,6 +80,7 @@ class FunctionalTest extends BaseTest
         $user->hits = 5;
         $user->count = 2;
         $user->groups = [$group2];
+        $user->nullableField = 'foo';
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
@@ -91,6 +94,7 @@ class FunctionalTest extends BaseTest
         $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
         $this->assertArrayHasKey('username', $check);
         $this->assertEquals('test', $check['username']);
+        $this->assertEquals('foo', $check['nullableField']);
 
         $user = new $className();
         $user->id = $id;
@@ -107,6 +111,7 @@ class FunctionalTest extends BaseTest
         $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
         $this->assertArrayHasKey('username', $check);
         $this->assertEquals('test', $check['username']);
+        $this->assertEquals('foo', $check['nullableField']);
     }
 
     public function testInheritedAssociationMappings()
