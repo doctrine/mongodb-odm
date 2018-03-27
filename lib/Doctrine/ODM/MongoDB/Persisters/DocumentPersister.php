@@ -333,11 +333,17 @@ class DocumentPersister
 
         foreach (array_keys($criteria) as $field) {
             unset($data['$set'][$field]);
+            unset($data['$inc'][$field]);
+            unset($data['$setOnInsert'][$field]);
         }
 
-        // Do not send an empty $set modifier
-        if (empty($data['$set'])) {
-            unset($data['$set']);
+        // Do not send empty update operators
+        foreach (['$set', '$inc', '$setOnInsert'] as $operator) {
+            if (! empty($data[$operator])) {
+                continue;
+            }
+
+            unset($data[$operator]);
         }
 
         /* If there are no modifiers remaining, we're upserting a document with
