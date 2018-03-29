@@ -28,4 +28,7 @@ class UserUpsertIdStrategyNone
 
     /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
     public $groups;
+
+    /** @ODM\Field(type="string", nullable=true) */
+    public $nullableField;
 }

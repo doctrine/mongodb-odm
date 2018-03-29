@@ -150,7 +150,8 @@ class PersistenceBuilderTest extends BaseTest
                 '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
                 '$ref' => 'CmsArticle'
-            )
+            ),
+            'nullableField' => null,
         );
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
@@ -175,7 +176,8 @@ class PersistenceBuilderTest extends BaseTest
                 '$db' => DOCTRINE_MONGODB_DATABASE,
                 '$id' => new \MongoId($article->id),
                 '$ref' => 'CmsArticle'
-            )
+            ),
+            'nullableField' => null,
         );
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
@@ -207,6 +209,9 @@ class PersistenceBuilderTest extends BaseTest
                     '$ref' => 'CmsArticle'
                 ),
                 '_id' => new \MongoId($comment->id),
+            ),
+            '$setOnInsert' => array(
+                'nullableField' => null,
             )
         );
         $this->assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
