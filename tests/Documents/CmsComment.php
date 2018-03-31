@@ -26,6 +26,9 @@ class CmsComment
     /** @ODM\Field(name="ip", type="string") */
     public $authorIp;
 
+    /** @ODM\Field(type="string", nullable=true) */
+    public $nullableField;
+
     public function setArticle(CmsArticle $article)
     {
         $this->article = $article;

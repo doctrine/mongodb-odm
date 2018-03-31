@@ -3,6 +3,17 @@ CHANGELOG for 1.2.x
 
 This changelog references the relevant changes done in 1.2 patch versions.
 
+1.2.2 (2018-03-31)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.2.2 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.2.2).
+
+* [#1764](https://github.com/doctrine/mongodb-odm/pull/1764) fixes upserting documents with nullable fields.
+* [#1748](https://github.com/doctrine/mongodb-odm/pull/1748) fixes the usage of references as shard keys.
+* [#1732](https://github.com/doctrine/mongodb-odm/pull/1732) adds missing `cascade-detach` to the XML mapping schema.
+* [#1731](https://github.com/doctrine/mongodb-odm/pull/1731) fixes some errors in the XML mapping schema. 
+
 1.2.1 (2017-12-08)
 ------------------
 
