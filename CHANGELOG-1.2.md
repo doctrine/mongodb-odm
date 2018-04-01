@@ -3,6 +3,11 @@ CHANGELOG for 1.2.x
 
 This changelog references the relevant changes done in 1.2 patch versions.
 
+1.2.3 (2018-04-01)
+------------------
+
+Re-tag since 1.2.2 was inadvertedly tagged from master.
+
 1.2.2 (2018-03-31)
 ------------------
 
