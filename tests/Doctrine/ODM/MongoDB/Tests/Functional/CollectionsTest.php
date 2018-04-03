@@ -22,7 +22,7 @@ class CollectionsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
+        $bar = $this->dm->find(Bar::class, $bar->getId());
 
         $this->assertNotNull($bar);
         $locations = $bar->getLocations();
@@ -31,10 +31,10 @@ class CollectionsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getDocumentCollection('Documents\Bars\Bar')->findOne();
+        $test = $this->dm->getDocumentCollection(Bar::class)->findOne();
         $this->assertCount(2, $test['locations']);
 
-        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
+        $bar = $this->dm->find(Bar::class, $bar->getId());
         $this->assertNotNull($bar);
         $locations = $bar->getLocations();
         $this->assertCount(2, $locations);
@@ -44,7 +44,7 @@ class CollectionsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
+        $bar = $this->dm->find(Bar::class, $bar->getId());
         $this->assertNotNull($bar);
         $locations = $bar->getLocations();
         $this->assertCount(0, $locations);
@@ -55,7 +55,7 @@ class CollectionsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
+        $bar = $this->dm->find(Bar::class, $bar->getId());
         $this->assertEquals($bar->getId(), $this->dm->getUnitOfWork()->getDocumentIdentifier($bar));
 
         $this->assertNotNull($bar);
@@ -66,7 +66,7 @@ class CollectionsTest extends BaseTest
         $this->assertCount(0, $locations);
         $this->dm->flush();
         $this->dm->clear();
-        $bar = $this->dm->find('Documents\Bars\Bar', $bar->getId());
+        $bar = $this->dm->find(Bar::class, $bar->getId());
         $locations = $bar->getLocations();
         $this->assertCount(0, $locations);
         $this->dm->flush();

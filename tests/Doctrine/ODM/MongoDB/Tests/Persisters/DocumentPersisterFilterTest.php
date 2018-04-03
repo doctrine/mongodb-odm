@@ -7,17 +7,18 @@ namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\BlogPost;
 use Documents\Comment;
+use Documents\User;
 
 class DocumentPersisterFilterTest extends BaseTest
 {
     public function testAddFilterToPreparedQuery()
     {
-        $persister = $this->uow->getDocumentPersister('Documents\User');
+        $persister = $this->uow->getDocumentPersister(User::class);
         $filterCollection = $this->dm->getFilterCollection();
 
         $filterCollection->enable('testFilter');
         $testFilter = $filterCollection->getFilter('testFilter');
-        $testFilter->setParameter('class', 'Documents\User');
+        $testFilter->setParameter('class', User::class);
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
 
@@ -47,11 +48,11 @@ class DocumentPersisterFilterTest extends BaseTest
 
         $filterCollection->enable('testFilter');
         $testFilter = $filterCollection->getFilter('testFilter');
-        $testFilter->setParameter('class', 'Documents\Comment');
+        $testFilter->setParameter('class', Comment::class);
         $testFilter->setParameter('field', 'isByAdmin');
         $testFilter->setParameter('value', false);
 
-        $blogPost = $this->dm->getRepository('Documents\BlogPost')->find($blogPost->id);
+        $blogPost = $this->dm->getRepository(BlogPost::class)->find($blogPost->id);
 
         // Admin comments should be removed by the filter
         $this->assertCount(1, $blogPost->comments);

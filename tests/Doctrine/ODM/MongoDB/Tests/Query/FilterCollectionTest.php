@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
+use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\User;
 
 class FilterCollectionTest extends BaseTest
 {
@@ -18,7 +20,7 @@ class FilterCollectionTest extends BaseTest
 
         $enabledFilters = $filterCollection->getEnabledFilters();
         $this->assertCount(1, $enabledFilters);
-        $this->assertContainsOnly('Doctrine\ODM\MongoDB\Query\Filter\BsonFilter', $enabledFilters);
+        $this->assertContainsOnly(BsonFilter::class, $enabledFilters);
 
         $filterCollection->disable('testFilter');
         $this->assertCount(0, $filterCollection->getEnabledFilters());
@@ -59,19 +61,19 @@ class FilterCollectionTest extends BaseTest
     {
         $filterCollection = $this->dm->getFilterCollection();
         $filterCollection->enable('testFilter');
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter', $filterCollection->getFilter('testFilter'));
+        $this->assertInstanceOf(Filter\Filter::class, $filterCollection->getFilter('testFilter'));
     }
 
     public function testGetFilterCriteria()
     {
-        $class = $this->dm->getClassMetadata('Documents\User');
+        $class = $this->dm->getClassMetadata(User::class);
         $filterCollection = $this->dm->getFilterCollection();
 
         $this->assertEmpty($filterCollection->getFilterCriteria($class));
 
         $filterCollection->enable('testFilter');
         $testFilter = $filterCollection->getFilter('testFilter');
-        $testFilter->setParameter('class', 'Documents\User');
+        $testFilter->setParameter('class', User::class);
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
 
@@ -80,18 +82,18 @@ class FilterCollectionTest extends BaseTest
 
     public function testGetFilterCriteriaMergesCriteria()
     {
-        $class = $this->dm->getClassMetadata('Documents\User');
+        $class = $this->dm->getClassMetadata(User::class);
         $filterCollection = $this->dm->getFilterCollection();
 
         $filterCollection->enable('testFilter');
         $testFilter = $filterCollection->getFilter('testFilter');
-        $testFilter->setParameter('class', 'Documents\User');
+        $testFilter->setParameter('class', User::class);
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
 
         $filterCollection->enable('testFilter2');
         $testFilter = $filterCollection->getFilter('testFilter2');
-        $testFilter->setParameter('class', 'Documents\User');
+        $testFilter->setParameter('class', User::class);
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'John');
 

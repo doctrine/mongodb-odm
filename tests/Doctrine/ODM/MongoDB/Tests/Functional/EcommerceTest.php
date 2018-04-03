@@ -48,7 +48,7 @@ class EcommerceTest extends BaseTest
         $this->assertCount(3, $product->getOptions());
         $this->assertEquals(12.99, $product->getOption('small')->getPrice());
 
-        $usdCurrency = $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(['name' => 'USD']);
+        $usdCurrency = $this->dm->getRepository(Currency::class)->findOneBy(['name' => 'USD']);
         $this->assertNotNull($usdCurrency);
         $usdCurrency->setMultiplier('2');
 
@@ -64,7 +64,7 @@ class EcommerceTest extends BaseTest
         $currency = $price->getCurrency();
         $this->assertInstanceOf(Currency::class, $currency);
         $this->assertNotNull($currency->getId());
-        $this->assertEquals($currency, $this->dm->getRepository('Documents\Ecommerce\Currency')->findOneBy(['name' => Currency::USD]));
+        $this->assertEquals($currency, $this->dm->getRepository(Currency::class)->findOneBy(['name' => Currency::USD]));
     }
 
     public function testRemoveOption()
@@ -85,7 +85,7 @@ class EcommerceTest extends BaseTest
 
     protected function getProduct()
     {
-        $products = $this->dm->getRepository('Documents\Ecommerce\ConfigurableProduct')
+        $products = $this->dm->getRepository(ConfigurableProduct::class)
             ->createQueryBuilder()
             ->getQuery()
             ->execute();

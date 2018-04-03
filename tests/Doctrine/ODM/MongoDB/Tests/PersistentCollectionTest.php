@@ -71,7 +71,7 @@ class PersistentCollectionTest extends BaseTest
         /** @var PersistentCollection $unserialized */
         $unserialized = unserialize($serialized);
 
-        $unserialized->setOwner(new User(), $this->dm->getClassMetadata('Documents\\User')->getFieldMapping('phonebooks'));
+        $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('phonebooks'));
         $unserialized->setDocumentManager($this->dm);
         $this->assertInstanceOf(ClassMetadata::class, $unserialized->getTypeClass());
     }
@@ -279,7 +279,7 @@ class PersistentCollectionTest extends BaseTest
      */
     private function getMockDocumentManager()
     {
-        return $this->createMock('Doctrine\ODM\MongoDB\DocumentManager');
+        return $this->createMock(DocumentManager::class);
     }
 
     /**
@@ -287,7 +287,7 @@ class PersistentCollectionTest extends BaseTest
      */
     private function getMockUnitOfWork()
     {
-        return $this->createMock('Doctrine\ODM\MongoDB\UnitOfWork');
+        return $this->createMock(UnitOfWork::class);
     }
 
     /**
@@ -295,6 +295,6 @@ class PersistentCollectionTest extends BaseTest
      */
     private function getMockCollection()
     {
-        return $this->createMock('Doctrine\Common\Collections\Collection');
+        return $this->createMock(Collection::class);
     }
 }

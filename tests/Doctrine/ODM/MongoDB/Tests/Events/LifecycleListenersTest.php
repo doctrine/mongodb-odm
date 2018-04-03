@@ -12,6 +12,9 @@ use function get_class;
 
 class LifecycleListenersTest extends BaseTest
 {
+    /** @var MyEventListener */
+    private $listener;
+
     private function getDocumentManager()
     {
         $this->listener = new MyEventListener();
@@ -40,8 +43,8 @@ class LifecycleListenersTest extends BaseTest
         $dm->flush();
 
         $called = [
-            Events::prePersist => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
-            Events::postPersist => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::prePersist => [TestDocument::class],
+            Events::postPersist => [TestDocument::class],
         ];
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
@@ -52,19 +55,19 @@ class LifecycleListenersTest extends BaseTest
         $dm->clear();
 
         $called = [
-            Events::prePersist => ['Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
-            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
-            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
-            Events::postPersist => ['Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
+            Events::prePersist => [TestEmbeddedDocument::class],
+            Events::preUpdate => [TestDocument::class],
+            Events::postUpdate => [TestDocument::class],
+            Events::postPersist => [TestEmbeddedDocument::class],
         ];
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
 
-        $document = $dm->find(__NAMESPACE__ . '\TestDocument', $test->id);
+        $document = $dm->find(TestDocument::class, $test->id);
         $document->embedded->initialize();
         $called = [
-            Events::preLoad => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
-            Events::postLoad => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
+            Events::preLoad => [TestDocument::class, TestEmbeddedDocument::class],
+            Events::postLoad => [TestDocument::class, TestEmbeddedDocument::class],
         ];
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
@@ -73,8 +76,8 @@ class LifecycleListenersTest extends BaseTest
         $dm->flush();
 
         $called = [
-            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
-            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument'],
+            Events::preUpdate => [TestDocument::class, TestEmbeddedDocument::class],
+            Events::postUpdate => [TestDocument::class, TestEmbeddedDocument::class],
         ];
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
@@ -83,8 +86,8 @@ class LifecycleListenersTest extends BaseTest
         $dm->flush();
 
         $called = [
-            Events::preRemove => ['Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
-            Events::postRemove => ['Doctrine\ODM\MongoDB\Tests\Events\TestEmbeddedDocument', 'Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::preRemove => [TestEmbeddedDocument::class, TestDocument::class],
+            Events::postRemove => [TestEmbeddedDocument::class, TestDocument::class],
         ];
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
@@ -103,8 +106,8 @@ class LifecycleListenersTest extends BaseTest
         $dm->clear();
 
         $called = [
-            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
-            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::preUpdate => [TestDocument::class],
+            Events::postUpdate => [TestDocument::class],
         ];
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
@@ -121,17 +124,17 @@ class LifecycleListenersTest extends BaseTest
         $dm->flush();
         $dm->clear();
 
-        $test = $dm->find(__NAMESPACE__ . '\TestProfile', $test->id);
+        $test = $dm->find(TestProfile::class, $test->id);
         $this->listener->called = [];
 
         $test->image->thumbnails[] = new Thumbnail('Thumbnail #1');
 
         $dm->flush();
         $called = [
-            Events::prePersist => ['Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'],
-            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image'],
-            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image'],
-            Events::postPersist => ['Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'],
+            Events::prePersist => [Thumbnail::class],
+            Events::preUpdate => [TestProfile::class, Image::class],
+            Events::postUpdate => [TestProfile::class, Image::class],
+            Events::postPersist => [Thumbnail::class],
         ];
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
@@ -139,8 +142,8 @@ class LifecycleListenersTest extends BaseTest
         $test->image->thumbnails[0]->name = 'ok';
         $dm->flush();
         $called = [
-            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'],
-            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestProfile', 'Doctrine\ODM\MongoDB\Tests\Events\Image', 'Doctrine\ODM\MongoDB\Tests\Events\Thumbnail'],
+            Events::preUpdate => [TestProfile::class, Image::class, Thumbnail::class],
+            Events::postUpdate => [TestProfile::class, Image::class, Thumbnail::class],
         ];
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
@@ -160,8 +163,8 @@ class LifecycleListenersTest extends BaseTest
         $this->listener->called = [];
 
         $called = [
-            Events::preUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
-            Events::postUpdate => ['Doctrine\ODM\MongoDB\Tests\Events\TestDocument'],
+            Events::preUpdate => [TestDocument::class],
+            Events::postUpdate => [TestDocument::class],
         ];
 
         $document = $dm->getRepository(get_class($document))->find($document->id);

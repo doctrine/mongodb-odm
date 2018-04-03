@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Documents\User;
 use MongoDB\BSON\ObjectId;
 
 class GH385Test extends BaseTest
@@ -12,7 +13,7 @@ class GH385Test extends BaseTest
     {
         $identifier = new ObjectId();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->upsert()
             ->updateOne()
             ->field('id')->equals($identifier)
@@ -25,7 +26,7 @@ class GH385Test extends BaseTest
 
         $qb->getQuery()->execute();
 
-        $check = $this->dm->getDocumentCollection('Documents\User')->findOne(['_id' => $identifier]);
+        $check = $this->dm->getDocumentCollection(User::class)->findOne(['_id' => $identifier]);
         $this->assertNotNull($check);
         $this->assertTrue(isset($check['foo']['bar']['level3a']));
         $this->assertTrue(isset($check['foo']['bar']['level3b']));

@@ -27,7 +27,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+        $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
 
@@ -73,7 +73,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
 
     public function testSetStrategy()
     {
-        $repo = $this->dm->getRepository('Documents\BlogPost');
+        $repo = $this->dm->getRepository(BlogPost::class);
 
         $blogPost = new BlogPost('Test');
 
@@ -82,7 +82,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+        $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
                   ->getQuery()
                   ->getSingleResult();
         $this->assertEquals('Comment', $blogPost->repoCommentsSet[0]->getText());
@@ -97,7 +97,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+        $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
         $this->assertCount(1, $blogPost->repoCommentsWithoutMappedBy);

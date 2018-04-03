@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\CmsAddress;
 use Documents\CmsArticle;
 use Documents\CmsComment;
@@ -632,7 +635,7 @@ class SchemaManagerTest extends TestCase
         $config = new Configuration();
         $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/../../../../Documents'));
 
-        $em = $this->createMock('Doctrine\Common\EventManager');
+        $em = $this->createMock(EventManager::class);
 
         $dm = new DocumentManagerMock();
         $dm->eventManager = $em;
@@ -643,13 +646,13 @@ class SchemaManagerTest extends TestCase
 
     private function getMockUnitOfWork()
     {
-        $documentPersister = $this->createMock('Doctrine\ODM\MongoDB\Persisters\DocumentPersister');
+        $documentPersister = $this->createMock(DocumentPersister::class);
 
         $documentPersister->expects($this->any())
             ->method('prepareFieldName')
             ->will($this->returnArgument(0));
 
-        $uow = $this->createMock('Doctrine\ODM\MongoDB\UnitOfWork');
+        $uow = $this->createMock(UnitOfWork::class);
 
         $uow->expects($this->any())
             ->method('getDocumentPersister')

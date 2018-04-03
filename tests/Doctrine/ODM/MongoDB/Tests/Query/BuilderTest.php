@@ -24,7 +24,7 @@ class BuilderTest extends BaseTest
      */
     public function testPrimeRequiresBooleanOrCallable()
     {
-        $this->dm->createQueryBuilder('Documents\User')
+        $this->dm->createQueryBuilder(User::class)
             ->field('groups')->prime(1);
     }
 

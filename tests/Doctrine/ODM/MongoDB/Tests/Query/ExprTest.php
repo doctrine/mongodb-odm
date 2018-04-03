@@ -11,13 +11,15 @@ use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\User;
+use GeoJson\Geometry\Point;
+use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
 
 class ExprTest extends BaseTest
 {
     public function testSelectIsPrepared()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->select('id');
         $query = $qb->getQuery();
 
@@ -28,7 +30,7 @@ class ExprTest extends BaseTest
     {
         $ids = ['4f28aa84acee41388900000a'];
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->in($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
@@ -42,7 +44,7 @@ class ExprTest extends BaseTest
     {
         $ids = ['4f28aa84acee41388900000a'];
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->all($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
@@ -56,7 +58,7 @@ class ExprTest extends BaseTest
     {
         $id = '4f28aa84acee41388900000a';
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->notEqual($id)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
@@ -70,7 +72,7 @@ class ExprTest extends BaseTest
     {
         $ids = ['4f28aa84acee41388900000a'];
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->notIn($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
@@ -84,7 +86,7 @@ class ExprTest extends BaseTest
     {
         $ids = ['4f28aa84acee41388900000a'];
 
-        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $qb = $this->dm->createQueryBuilder(User::class);
         $qb
             ->addAnd($qb->expr()->field('groups.id')->in($ids))
             ->select('id')->hydrate(false);
@@ -99,7 +101,7 @@ class ExprTest extends BaseTest
     {
         $ids = ['4f28aa84acee41388900000a'];
 
-        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $qb = $this->dm->createQueryBuilder(User::class);
         $qb
             ->addOr($qb->expr()->field('groups.id')->in($ids))
             ->select('id')->hydrate(false);
@@ -117,7 +119,7 @@ class ExprTest extends BaseTest
         $ne = '4f28aa84acee41388900000c';
         $nin = ['4f28aa84acee41388900000d'];
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->all($all)
             ->field('groups.id')->in($in)
             ->field('groups.id')->notEqual($ne)
@@ -138,7 +140,7 @@ class ExprTest extends BaseTest
 
     public function testPrepareNestedDocuments()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('address.subAddress.subAddress.subAddress.test')->equals('test');
         $query = $qb->getQuery();
         $debug = $query->debug('query');
@@ -147,7 +149,7 @@ class ExprTest extends BaseTest
 
     public function testPreparePositionalOperator()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
             ->field('phonenumbers.$.phonenumber')->equals('foo')
             ->field('phonenumbers.$')->set(['phonenumber' => 'bar']);
@@ -158,13 +160,13 @@ class ExprTest extends BaseTest
 
     public function testSortIsPrepared()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->sort('id', 'desc');
         $query = $qb->getQuery();
         $query = $query->getQuery();
         $this->assertEquals(['_id' => -1], $query['sort']);
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->sort('address.subAddress.subAddress.subAddress.test', 'asc');
         $query = $qb->getQuery();
         $query = $query->getQuery();
@@ -173,7 +175,7 @@ class ExprTest extends BaseTest
 
     public function testNestedWithOperator()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('address.subAddress.subAddress.subAddress.test')->notIn(['test']);
         $query = $qb->getQuery();
         $query = $query->getQuery();
@@ -182,7 +184,7 @@ class ExprTest extends BaseTest
 
     public function testNewObjectIsPrepared()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
             ->field('address.subAddress.subAddress.subAddress.test')->popFirst();
         $query = $qb->getQuery();
@@ -788,7 +790,7 @@ class ExprTest extends BaseTest
 
     private function getMockPoint($json)
     {
-        $point = $this->getMockBuilder('GeoJson\Geometry\Point')
+        $point = $this->getMockBuilder(Point::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -801,7 +803,7 @@ class ExprTest extends BaseTest
 
     private function getMockPolygon($json)
     {
-        $point = $this->getMockBuilder('GeoJson\Geometry\Polygon')
+        $point = $this->getMockBuilder(Polygon::class)
             ->disableOriginalConstructor()
             ->getMock();
 

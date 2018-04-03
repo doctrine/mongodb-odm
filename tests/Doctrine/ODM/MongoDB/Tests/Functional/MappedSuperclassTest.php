@@ -27,12 +27,12 @@ class MappedSuperclassTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $e2 = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\DocumentSubClass', 1);
+        $e2 = $this->dm->find(DocumentSubClass::class, 1);
         $this->assertNotNull($e2);
         $this->assertEquals(1, $e2->getId());
         $this->assertEquals('Roman', $e2->getName());
         $this->assertNotNull($e2->getMappedRelated1());
-        $this->assertInstanceOf(__NAMESPACE__ . '\MappedSuperclassRelated1', $e2->getMappedRelated1());
+        $this->assertInstanceOf(MappedSuperclassRelated1::class, $e2->getMappedRelated1());
         $this->assertEquals(42, $e2->getMapped1());
         $this->assertEquals('bar', $e2->getMapped2());
     }

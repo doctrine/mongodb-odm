@@ -33,16 +33,16 @@ class RemoveTest extends BaseTest
         $this->dm->remove($user);
         $this->dm->flush();
 
-        $account = $this->dm->find('Documents\Account', $account->getId());
+        $account = $this->dm->find(Account::class, $account->getId());
         $this->assertNull($account);
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $user = $this->dm->find(User::class, $user->getId());
         $this->assertNull($user);
     }
 
     public function testUnsetFromEmbeddedCollection()
     {
-        $userRepository = $this->dm->getRepository('Documents\User');
+        $userRepository = $this->dm->getRepository(User::class);
 
         $user = new User();
         $user->addGroup(new Group('group1'));
@@ -68,8 +68,8 @@ class RemoveTest extends BaseTest
 
     public function testUnsetFromReferencedCollectionWithCascade()
     {
-        $developerRepository = $this->dm->getRepository('Documents\Developer');
-        $projectRepository = $this->dm->getRepository('Documents\Project');
+        $developerRepository = $this->dm->getRepository(Developer::class);
+        $projectRepository = $this->dm->getRepository(Project::class);
 
         // Developer owns the one-to-many relationship and cascades
         $developer = new Developer('developer');
@@ -125,8 +125,8 @@ class RemoveTest extends BaseTest
 
     public function testUnsetFromReferencedCollectionWithoutCascade()
     {
-        $articleRepository = $this->dm->getRepository('Documents\CmsArticle');
-        $commentRepository = $this->dm->getRepository('Documents\CmsComment');
+        $articleRepository = $this->dm->getRepository(CmsArticle::class);
+        $commentRepository = $this->dm->getRepository(CmsComment::class);
 
         // CmsArticle owns the one-to-many relationship but does not cascade
         $article = new CmsArticle();
@@ -184,8 +184,8 @@ class RemoveTest extends BaseTest
 
     public function testUnsetFromReferencedCollectionWithCascadeAndMappedBy()
     {
-        $blogPostRepository = $this->dm->getRepository('Documents\BlogPost');
-        $commentRepository = $this->dm->getRepository('Documents\Comment');
+        $blogPostRepository = $this->dm->getRepository(BlogPost::class);
+        $commentRepository = $this->dm->getRepository(Comment::class);
 
         /* CmsComment owns the one-to-many relationship, since BlogPost uses
          * mappedBy. Both sides cascade operations.

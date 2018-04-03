@@ -26,7 +26,7 @@ class GH499Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH499Document');
+        $collection = $this->dm->getDocumentCollection(GH499Document::class);
 
         $a = $collection->findOne(['_id' => new ObjectId($a->getId())]);
 

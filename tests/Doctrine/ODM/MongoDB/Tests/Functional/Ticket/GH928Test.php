@@ -19,11 +19,11 @@ class GH928Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH928Document');
+        $collection = $this->dm->getDocumentCollection(GH928Document::class);
 
         $this->assertEquals(2, $collection->count());
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH928Document')
+        $qb = $this->dm->createQueryBuilder(GH928Document::class)
             ->remove()
             ->field('id')->equals(null)
             ->getQuery()

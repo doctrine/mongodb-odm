@@ -256,7 +256,7 @@ class LockTest extends BaseTest
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $coll = $this->dm->getDocumentCollection(__NAMESPACE__ . '\LockInt');
+        $coll = $this->dm->getDocumentCollection(LockInt::class);
         $coll->replaceOne(['_id' => new ObjectId($article->id)], ['locked' => LockMode::PESSIMISTIC_READ]);
 
         $this->expectException(LockException::class);
@@ -273,7 +273,7 @@ class LockTest extends BaseTest
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $coll = $this->dm->getDocumentCollection(__NAMESPACE__ . '\LockInt');
+        $coll = $this->dm->getDocumentCollection(LockInt::class);
         $coll->replaceOne(['_id' => new ObjectId($article->id)], ['locked' => LockMode::PESSIMISTIC_READ]);
 
         $this->expectException(LockException::class);
@@ -290,7 +290,7 @@ class LockTest extends BaseTest
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $coll = $this->dm->getDocumentCollection(__NAMESPACE__ . '\LockInt');
+        $coll = $this->dm->getDocumentCollection(LockInt::class);
         $coll->replaceOne(['_id' => new ObjectId($article->id)], ['locked' => LockMode::PESSIMISTIC_WRITE]);
 
         $this->expectException(LockException::class);
@@ -307,7 +307,7 @@ class LockTest extends BaseTest
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $coll = $this->dm->getDocumentCollection(__NAMESPACE__ . '\LockInt');
+        $coll = $this->dm->getDocumentCollection(LockInt::class);
         $coll->replaceOne(['_id' => new ObjectId($article->id)], ['locked' => LockMode::PESSIMISTIC_WRITE]);
 
         $this->expectException(LockException::class);
@@ -324,13 +324,13 @@ class LockTest extends BaseTest
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $coll = $this->dm->getDocumentCollection(__NAMESPACE__ . '\LockInt');
+        $coll = $this->dm->getDocumentCollection(LockInt::class);
         $coll->replaceOne(['_id' => new ObjectId($article->id)], ['locked' => LockMode::PESSIMISTIC_WRITE]);
 
         $this->expectException(LockException::class);
 
         $this->dm->clear();
-        $article = $this->dm->find(__NAMESPACE__ . '\LockInt', $article->id);
+        $article = $this->dm->find(LockInt::class, $article->id);
     }
 
     public function testPessimisticReadLockFunctional()
@@ -346,7 +346,7 @@ class LockTest extends BaseTest
         $article->title = 'test';
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\LockInt')->findOne();
+        $check = $this->dm->getDocumentCollection(LockInt::class)->findOne();
         $this->assertEquals(2, $check['version']);
         $this->assertArrayNotHasKey('locked', $check);
         $this->assertEquals('test', $check['title']);
@@ -365,7 +365,7 @@ class LockTest extends BaseTest
         $article->title = 'test';
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\LockInt')->findOne();
+        $check = $this->dm->getDocumentCollection(LockInt::class)->findOne();
         $this->assertEquals(2, $check['version']);
         $this->assertArrayNotHasKey('locked', $check);
         $this->assertEquals('test', $check['title']);
@@ -375,14 +375,14 @@ class LockTest extends BaseTest
     {
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage('Invalid lock field type string. Lock field must be int.');
-        $this->dm->getClassMetadata(__NAMESPACE__ . '\InvalidLockDocument');
+        $this->dm->getClassMetadata(InvalidLockDocument::class);
     }
 
     public function testInvalidVersionDocument()
     {
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage('Invalid version field type string. Version field must be int or date.');
-        $this->dm->getClassMetadata(__NAMESPACE__ . '\InvalidVersionDocument');
+        $this->dm->getClassMetadata(InvalidVersionDocument::class);
     }
 
     /**
@@ -396,7 +396,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
 
         // simulate another request updating document in the meantime
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\LockInt')->updateOne(
+        $this->dm->getDocumentCollection(LockInt::class)->updateOne(
             ['_id' => new ObjectId($d->id)],
             ['$set' => ['version' => 2]]
         );
@@ -416,7 +416,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
 
         // simulate another request updating document in the meantime
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\LockInt')->updateOne(
+        $this->dm->getDocumentCollection(LockInt::class)->updateOne(
             ['_id' => new ObjectId($d->id)],
             ['$set' => ['version' => 2]]
         );

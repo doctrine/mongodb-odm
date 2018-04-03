@@ -15,14 +15,14 @@ class GH596Test extends BaseTest
 
         $this->dm->getFilterCollection()->enable('testFilter');
         $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
-        $filter->setParameter('class', __NAMESPACE__ . '\GH596Document');
+        $filter->setParameter('class', GH596Document::class);
         $filter->setParameter('field', 'deleted');
         $filter->setParameter('value', false);
     }
 
     public function testExpressionPreparationDoesNotInjectFilterCriteria()
     {
-        $class = __NAMESPACE__ . '\GH596Document';
+        $class = GH596Document::class;
 
         $repository = $this->dm->getRepository($class);
         $qb = $repository->createQueryBuilder();

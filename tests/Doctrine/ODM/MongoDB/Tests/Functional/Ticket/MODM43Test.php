@@ -18,8 +18,8 @@ class MODM43Test extends BaseTest
             '_id' => new ObjectId(),
             'name' => 'Jonathan Wage',
         ];
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\Person')->insertOne($person);
-        $user = $this->dm->find(__NAMESPACE__ . '\Person', $person['_id']);
+        $this->dm->getDocumentCollection(Person::class)->insertOne($person);
+        $user = $this->dm->find(Person::class, $person['_id']);
         $this->assertEquals('Jonathan', $user->firstName);
         $this->assertEquals('Wage', $user->lastName);
     }

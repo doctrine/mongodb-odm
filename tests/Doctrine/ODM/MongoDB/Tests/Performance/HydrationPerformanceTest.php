@@ -42,7 +42,7 @@ class HydrationPerformanceTest extends BaseTest
 
         echo 'Memory usage before: ' . (memory_get_usage() / 1024) . ' KB' . PHP_EOL;
 
-        $this->dm->getRepository('Documents\CmsUser')->findAll();
+        $this->dm->getRepository(CmsUser::class)->findAll();
 
         $this->dm->clear();
         gc_collect_cycles();

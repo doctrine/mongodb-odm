@@ -4,21 +4,24 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 
 class HydratorTest extends BaseTest
 {
     public function testHydrator()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\HydrationClosureUser');
+        $class = $this->dm->getClassMetadata(HydrationClosureUser::class);
 
         $user = new HydrationClosureUser();
         $this->dm->getHydratorFactory()->hydrate($user, [
             '_id' => 1,
             'title' => null,
             'name' => 'jon',
-            'birthdate' => new \DateTime('1961-01-01'),
+            'birthdate' => new DateTime('1961-01-01'),
             'referenceOne' => ['$id' => '1'],
             'referenceMany' => [
                 ['$id' => '1'],
@@ -33,25 +36,25 @@ class HydratorTest extends BaseTest
         $this->assertEquals(1, $user->id);
         $this->assertNull($user->title);
         $this->assertEquals('jon', $user->name);
-        $this->assertInstanceOf('DateTime', $user->birthdate);
-        $this->assertInstanceOf(__NAMESPACE__ . '\HydrationClosureReferenceOne', $user->referenceOne);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->referenceMany);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user->referenceMany[0]);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user->referenceMany[1]);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->embedMany);
+        $this->assertInstanceOf(DateTime::class, $user->birthdate);
+        $this->assertInstanceOf(HydrationClosureReferenceOne::class, $user->referenceOne);
+        $this->assertInstanceOf(PersistentCollection::class, $user->referenceMany);
+        $this->assertInstanceOf(Proxy::class, $user->referenceMany[0]);
+        $this->assertInstanceOf(Proxy::class, $user->referenceMany[1]);
+        $this->assertInstanceOf(PersistentCollection::class, $user->embedMany);
         $this->assertEquals('jon', $user->embedOne->name);
         $this->assertEquals('jon', $user->embedMany[0]->name);
     }
 
     public function testReadOnly()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\HydrationClosureUser');
+        $class = $this->dm->getClassMetadata(HydrationClosureUser::class);
 
         $user = new HydrationClosureUser();
         $this->dm->getHydratorFactory()->hydrate($user, [
             '_id' => 1,
             'name' => 'maciej',
-            'birthdate' => new \DateTime('1961-01-01'),
+            'birthdate' => new DateTime('1961-01-01'),
             'embedOne' => ['name' => 'maciej'],
             'embedMany' => [
                 ['name' => 'maciej'],

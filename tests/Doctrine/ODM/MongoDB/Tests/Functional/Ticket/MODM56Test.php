@@ -23,7 +23,7 @@ class MODM56Test extends BaseTest
         $parent->children[] = $childTwo;
         $this->dm->flush();
 
-        $test = $this->dm->getDocumentCollection(__NAMESPACE__ . '\MODM56Parent')->findOne();
+        $test = $this->dm->getDocumentCollection(MODM56Parent::class)->findOne();
 
         $this->assertEquals('Parent', $test['name']);
         $this->assertInstanceOf(UTCDateTime::class, $test['updatedAt']);

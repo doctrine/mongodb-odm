@@ -18,7 +18,7 @@ class MODM45Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $a = $this->dm->find(__NAMESPACE__ . '\MODM45A', $a->getId());
+        $a = $this->dm->find(MODM45A::class, $a->getId());
         $c = ($a->getB() !== null);
         $this->assertTrue($c); // returns false, while expecting true
     }

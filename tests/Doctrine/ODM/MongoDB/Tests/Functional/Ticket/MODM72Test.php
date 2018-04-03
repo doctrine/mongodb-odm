@@ -11,7 +11,7 @@ class MODM72Test extends BaseTest
 {
     public function testTest()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\MODM72User');
+        $class = $this->dm->getClassMetadata(MODM72User::class);
         $this->assertEquals(['test' => 'test'], $class->fieldMappings['name']['options']);
     }
 }

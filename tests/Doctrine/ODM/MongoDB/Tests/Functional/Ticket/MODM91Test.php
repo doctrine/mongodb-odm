@@ -35,7 +35,7 @@ class MODM91Test extends BaseTest
         $dm->flush();
         $dm->clear();
 
-        $testDoc = $dm->find(__NAMESPACE__ . '\MODM91TestDocument', $testDoc->id);
+        $testDoc = $dm->find(MODM91TestDocument::class, $testDoc->id);
         $dm->flush();
         $dm->clear();
 

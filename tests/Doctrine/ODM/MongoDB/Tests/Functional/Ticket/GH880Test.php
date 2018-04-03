@@ -18,18 +18,18 @@ class GH880Test extends BaseTest
             $this->dm->persist($doc);
         }
         $this->dm->flush();
-        $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH880Document');
+        $query = $this->dm->createQueryBuilder(GH880Document::class);
         $cursor = $query->find()->getQuery()->execute();
         foreach ($cursor as $c) {
             $this->assertEquals(1, $c->category);
         }
-        $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH880Document');
+        $query = $this->dm->createQueryBuilder(GH880Document::class);
         $query->updateMany()
             ->field('category')->equals(1)
             ->field('category')->set(3)
             ->getQuery()
             ->execute();
-        $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH880Document');
+        $query = $this->dm->createQueryBuilder(GH880Document::class);
         // here ->refresh() was needed for the test to pass
         $cursor = $query->find()->refresh()->getQuery()->execute();
         foreach ($cursor as $c) {

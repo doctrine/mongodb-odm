@@ -24,11 +24,11 @@ class GH788Test extends BaseTest
         $this->dm->clear();
 
         $doc = $this->dm->find(get_class($listed), $listed->id);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788DocumentListed', $doc);
+        $this->assertInstanceOf(GH788DocumentListed::class, $doc);
         $this->assertEquals('listed', $doc->name);
 
         $doc = $this->dm->find(get_class($unlisted), $unlisted->id);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788DocumentUnlisted', $doc);
+        $this->assertInstanceOf(GH788DocumentUnlisted::class, $doc);
         $this->assertEquals('unlisted', $doc->name);
 
         /* Attempting to find the unlisted class by the parent class will not
@@ -60,9 +60,9 @@ class GH788Test extends BaseTest
         $collection = $doc->externEmbedMany;
 
         $this->assertCount(2, $collection);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternEmbedListed', $collection[0]);
+        $this->assertInstanceOf(GH788ExternEmbedListed::class, $collection[0]);
         $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternEmbedUnlisted', $collection[1]);
+        $this->assertInstanceOf(GH788ExternEmbedUnlisted::class, $collection[1]);
         $this->assertEquals('unlisted', $collection[1]->name);
     }
 
@@ -86,9 +86,9 @@ class GH788Test extends BaseTest
         $collection = $doc->inlineEmbedMany;
 
         $this->assertCount(2, $collection);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788InlineEmbedListed', $collection[0]);
+        $this->assertInstanceOf(GH788InlineEmbedListed::class, $collection[0]);
         $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788InlineEmbedUnlisted', $collection[1]);
+        $this->assertInstanceOf(GH788InlineEmbedUnlisted::class, $collection[1]);
         $this->assertEquals('unlisted', $collection[1]->name);
     }
 
@@ -112,9 +112,9 @@ class GH788Test extends BaseTest
         $collection = $doc->noTargetEmbedMany;
 
         $this->assertCount(2, $collection);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternEmbedListed', $collection[0]);
+        $this->assertInstanceOf(GH788ExternEmbedListed::class, $collection[0]);
         $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternEmbedUnlisted', $collection[1]);
+        $this->assertInstanceOf(GH788ExternEmbedUnlisted::class, $collection[1]);
         $this->assertEquals('unlisted', $collection[1]->name);
     }
 
@@ -132,7 +132,7 @@ class GH788Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternEmbedUnlisted', $doc->externEmbedOne);
+        $this->assertInstanceOf(GH788ExternEmbedUnlisted::class, $doc->externEmbedOne);
         $this->assertEquals('unlisted', $doc->externEmbedOne->name);
     }
 
@@ -150,7 +150,7 @@ class GH788Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788InlineEmbedUnlisted', $doc->inlineEmbedOne);
+        $this->assertInstanceOf(GH788InlineEmbedUnlisted::class, $doc->inlineEmbedOne);
         $this->assertEquals('unlisted', $doc->inlineEmbedOne->name);
     }
 
@@ -168,7 +168,7 @@ class GH788Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternEmbedUnlisted', $doc->noTargetEmbedOne);
+        $this->assertInstanceOf(GH788ExternEmbedUnlisted::class, $doc->noTargetEmbedOne);
         $this->assertEquals('unlisted', $doc->noTargetEmbedOne->name);
     }
 
@@ -192,10 +192,10 @@ class GH788Test extends BaseTest
         $collection = $doc->externRefMany;
 
         $this->assertCount(2, $collection);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternRefListed', $collection[0]);
+        $this->assertInstanceOf(GH788ExternRefListed::class, $collection[0]);
         $this->assertEquals($listed->id, $collection[0]->id);
         $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternRefUnlisted', $collection[1]);
+        $this->assertInstanceOf(GH788ExternRefUnlisted::class, $collection[1]);
         $this->assertEquals($unlisted->id, $collection[1]->id);
         $this->assertEquals('unlisted', $collection[1]->name);
     }
@@ -220,10 +220,10 @@ class GH788Test extends BaseTest
         $collection = $doc->inlineRefMany;
 
         $this->assertCount(2, $collection);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788InlineRefListed', $collection[0]);
+        $this->assertInstanceOf(GH788InlineRefListed::class, $collection[0]);
         $this->assertEquals($listed->id, $collection[0]->id);
         $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788InlineRefUnlisted', $collection[1]);
+        $this->assertInstanceOf(GH788InlineRefUnlisted::class, $collection[1]);
         $this->assertEquals($unlisted->id, $collection[1]->id);
         $this->assertEquals('unlisted', $collection[1]->name);
     }
@@ -248,10 +248,10 @@ class GH788Test extends BaseTest
         $collection = $doc->noTargetRefMany;
 
         $this->assertCount(2, $collection);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternRefListed', $collection[0]);
+        $this->assertInstanceOf(GH788ExternRefListed::class, $collection[0]);
         $this->assertEquals($listed->id, $collection[0]->id);
         $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternRefUnlisted', $collection[1]);
+        $this->assertInstanceOf(GH788ExternRefUnlisted::class, $collection[1]);
         $this->assertEquals($unlisted->id, $collection[1]->id);
         $this->assertEquals('unlisted', $collection[1]->name);
     }
@@ -270,7 +270,7 @@ class GH788Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternRefUnlisted', $doc->externRefOne);
+        $this->assertInstanceOf(GH788ExternRefUnlisted::class, $doc->externRefOne);
         $this->assertEquals($unlisted->id, $doc->externRefOne->id);
         $this->assertEquals('unlisted', $doc->externRefOne->name);
     }
@@ -289,7 +289,7 @@ class GH788Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788InlineRefUnlisted', $doc->inlineRefOne);
+        $this->assertInstanceOf(GH788InlineRefUnlisted::class, $doc->inlineRefOne);
         $this->assertEquals($unlisted->id, $doc->inlineRefOne->id);
         $this->assertEquals('unlisted', $doc->inlineRefOne->name);
     }
@@ -308,7 +308,7 @@ class GH788Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH788ExternRefUnlisted', $doc->noTargetRefOne);
+        $this->assertInstanceOf(GH788ExternRefUnlisted::class, $doc->noTargetRefOne);
         $this->assertEquals($unlisted->id, $doc->noTargetRefOne->id);
         $this->assertEquals('unlisted', $doc->noTargetRefOne->name);
     }

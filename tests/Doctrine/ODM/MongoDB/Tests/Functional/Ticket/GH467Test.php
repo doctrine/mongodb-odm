@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH467Test extends BaseTest
@@ -20,9 +21,9 @@ class GH467Test extends BaseTest
         $doc = $this->dm->merge($doc);
 
         $this->assertNull($doc->col, 'Unset basic collections are not initialized');
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $doc->embedMany, 'Unset EmbedMany collections are initialized as empty PersistentCollections');
+        $this->assertInstanceOf(PersistentCollection::class, $doc->embedMany, 'Unset EmbedMany collections are initialized as empty PersistentCollections');
         $this->assertCount(0, $doc->embedMany, 'Unset EmbedMany collections are initialized as empty PersistentCollections');
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $doc->refMany, 'Unset ReferenceMany collections are initialized as empty PersistentCollections');
+        $this->assertInstanceOf(PersistentCollection::class, $doc->refMany, 'Unset ReferenceMany collections are initialized as empty PersistentCollections');
         $this->assertCount(0, $doc->refMany, 'Unset ReferenceMany collections are initialized as empty PersistentCollections');
     }
 }

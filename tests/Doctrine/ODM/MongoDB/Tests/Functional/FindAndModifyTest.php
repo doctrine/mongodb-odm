@@ -11,13 +11,13 @@ class FindAndModifyTest extends BaseTest
 {
     public function testFindAndModify()
     {
-        $coll = $this->dm->getDocumentCollection('Documents\User');
+        $coll = $this->dm->getDocumentCollection(User::class);
         $docs = [['count' => 0], ['count' => 0]];
         $coll->insertMany($docs);
 
         // test update findAndModify
         $q = $this->dm->createQueryBuilder()
-            ->findAndUpdate('Documents\User')
+            ->findAndUpdate(User::class)
             ->returnNew(true)
             ->field('count')->inc(5)
             ->field('username')->set('jwage')
@@ -30,7 +30,7 @@ class FindAndModifyTest extends BaseTest
 
         // Test remove findAndModify
         $q = $this->dm->createQueryBuilder()
-            ->findAndRemove('Documents\User')
+            ->findAndRemove(User::class)
             ->field('username')->equals('jwage')
             ->getQuery();
         $result = $q->execute();
@@ -52,7 +52,7 @@ class FindAndModifyTest extends BaseTest
 
         // test update findAndModify
         $q = $this->dm->createQueryBuilder()
-            ->findAndUpdate('Documents\User')
+            ->findAndUpdate(User::class)
             ->returnNew(true)
             ->field('username')->equals('jwage')
             ->field('username')->set('Romain Neutron')

@@ -27,7 +27,7 @@ class ReadPreferenceTest extends BaseTest
 
     public function testHintIsNotSetByDefault()
     {
-        $query = $this->dm->getRepository('Documents\User')
+        $query = $this->dm->getRepository(User::class)
             ->createQueryBuilder()
             ->getQuery();
 
@@ -45,7 +45,7 @@ class ReadPreferenceTest extends BaseTest
      */
     public function testHintIsSetOnQuery($readPreference, array $tags = [])
     {
-        $query = $this->dm->getRepository('Documents\User')
+        $query = $this->dm->getRepository(User::class)
             ->createQueryBuilder()
             ->setReadPreference(new ReadPreference($readPreference, $tags))
             ->getQuery();

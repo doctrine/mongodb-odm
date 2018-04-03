@@ -30,7 +30,7 @@ class GH232Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $product = $this->dm->getRepository(__NAMESPACE__ . '\Product')->findOneBy(['name' => 'Product']);
+        $product = $this->dm->getRepository(Product::class)->findOneBy(['name' => 'Product']);
 
         $this->assertEquals(1, $product->subproducts->count());
         $this->assertEquals(1, $product->subproducts[0]->prices->count());

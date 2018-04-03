@@ -13,7 +13,7 @@ class GH566Test extends BaseTest
 {
     public function testFoo()
     {
-        $class = __NAMESPACE__ . '\GH566Document';
+        $class = GH566Document::class;
 
         $doc1 = new GH566Document();
         $doc2 = new GH566Document();

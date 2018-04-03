@@ -39,8 +39,8 @@ class QueryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User');
-        $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
+        $qb = $this->dm->createQueryBuilder(User::class);
+        $embeddedQb = $this->dm->createQueryBuilder(Phonenumber::class);
 
         $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('phonenumber')->equals('6155139185'));
         $query = $qb->getQuery();
@@ -62,8 +62,8 @@ class QueryTest extends BaseTest
         $this->dm->persist($user2);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User');
-        $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
+        $qb = $this->dm->createQueryBuilder(User::class);
+        $embeddedQb = $this->dm->createQueryBuilder(Phonenumber::class);
 
         $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new ObjectId($user1->getId())));
         $query = $qb->getQuery();
@@ -79,7 +79,7 @@ class QueryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $qb = $this->dm->createQueryBuilder(User::class);
         $qb->field('username')->not($qb->expr()->in(['boo']));
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
@@ -114,14 +114,14 @@ class QueryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->distinct('count')
             ->field('username')->equals('distinct_test');
         $q = $qb->getQuery();
         $results = $q->execute();
         $this->assertEquals([1, 2, 3], $results);
 
-        $results = $this->dm->createQueryBuilder('Documents\User')
+        $results = $this->dm->createQueryBuilder(User::class)
             ->distinct('count')
             ->field('username')->equals('distinct_test')
             ->getQuery()
@@ -151,7 +151,7 @@ class QueryTest extends BaseTest
 
     public function testFindQuery()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->where("function() { return this.username == 'boo' }");
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
@@ -160,7 +160,7 @@ class QueryTest extends BaseTest
 
     public function testUpdateQuery()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
             ->field('username')
             ->set('crap')
@@ -174,7 +174,7 @@ class QueryTest extends BaseTest
 
     public function testUpsertUpdateQuery()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
             ->upsert(true)
             ->field('username')
@@ -183,7 +183,7 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $result = $query->execute();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->find()
             ->field('username')->equals('crap');
         $query = $qb->getQuery();
@@ -214,14 +214,14 @@ class QueryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->updateMany()
             ->field('username')->equals('multiple_test')
             ->field('username')->set('foo');
         $q = $qb->getQuery();
         $results = $q->execute();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->find()
             ->field('username')->equals('foo');
         $q = $qb->getQuery();
@@ -243,7 +243,7 @@ class QueryTest extends BaseTest
 
     public function testIncUpdateQuery()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
             ->field('hits')->inc(5)
             ->field('username')->equals('boo');
@@ -251,7 +251,7 @@ class QueryTest extends BaseTest
         $query->execute();
         $query->execute();
 
-        $qb->find('Documents\User')
+        $qb->find(User::class)
             ->hydrate(false);
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
@@ -260,14 +260,14 @@ class QueryTest extends BaseTest
 
     public function testUnsetFieldUpdateQuery()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
             ->field('hits')->unsetField()
             ->field('username')->equals('boo');
         $query = $qb->getQuery();
         $result = $query->execute();
 
-        $qb->find('Documents\User')
+        $qb->find(User::class)
             ->hydrate(false);
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
@@ -277,14 +277,14 @@ class QueryTest extends BaseTest
     public function testUnsetField()
     {
         $qb = $this->dm->createQueryBuilder()
-            ->updateOne('Documents\User')
+            ->updateOne(User::class)
             ->field('nullTest')
             ->type('null')
             ->unsetField('nullTest');
         $query = $qb->getQuery();
         $query->execute();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('nullTest')->type('null');
         $query = $qb->getQuery();
         $user = $query->getSingleResult();
@@ -321,7 +321,7 @@ class QueryTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\Article');
+        $qb = $this->dm->createQueryBuilder(Article::class);
         $qb->field('createdAt')->range(
             new UTCDateTime(strtotime('1985-09-01 01:00:00') * 1000),
             new UTCDateTime(strtotime('1985-09-04') * 1000)
@@ -340,11 +340,11 @@ class QueryTest extends BaseTest
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\Article');
+        $qb = $this->dm->createQueryBuilder(Article::class);
         $query = $qb->getQuery();
         $this->assertInstanceOf(\IteratorAggregate::class, $query);
         foreach ($query as $article) {
-            $this->assertEquals('Documents\Article', get_class($article));
+            $this->assertEquals(Article::class, get_class($article));
         }
     }
 
@@ -359,7 +359,7 @@ class QueryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('groups')->references($group);
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
@@ -368,7 +368,7 @@ class QueryTest extends BaseTest
 
     public function testQueryWhereIn()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $qb = $this->dm->createQueryBuilder(User::class);
         $choices = ['a', 'b'];
         $qb->field('username')->in($choices);
         $expected = [
@@ -379,7 +379,7 @@ class QueryTest extends BaseTest
 
     public function testQueryWhereInReferenceId()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $qb = $this->dm->createQueryBuilder(User::class);
         $choices = [new ObjectId(), new ObjectId()];
         $qb->field('account.$id')->in($choices);
         $expected = [
@@ -391,7 +391,7 @@ class QueryTest extends BaseTest
 
     public function testQueryWhereOneValueOfCollection()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\Article');
+        $qb = $this->dm->createQueryBuilder(Article::class);
         $qb->field('tags')->equals('pet');
         $expected = ['tags' => 'pet'];
         $this->assertSame($expected, $qb->getQueryArray());
@@ -401,7 +401,7 @@ class QueryTest extends BaseTest
     /** search for articles where tags exactly equal [pet, blue] */
     public function testQueryWhereAllValuesOfCollection()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\Article');
+        $qb = $this->dm->createQueryBuilder(Article::class);
         $qb->field('tags')->equals(['pet', 'blue']);
         $expected = [
             'tags' => ['pet', 'blue'],

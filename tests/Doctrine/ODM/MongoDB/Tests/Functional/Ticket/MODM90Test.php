@@ -35,7 +35,7 @@ class MODM90Test extends BaseTest
         $dm->flush();
         $dm->clear();
 
-        $testDoc = $dm->find(__NAMESPACE__ . '\MODM90TestDocument', $testDoc->id);
+        $testDoc = $dm->find(MODM90TestDocument::class, $testDoc->id);
 
         // run a flush, in theory, nothing should be flushed.
         $dm->flush();
@@ -62,7 +62,7 @@ class MODM90Test extends BaseTest
         $dm->flush();
         $dm->clear();
 
-        $testDoc = $dm->find(__NAMESPACE__ . '\MODM90TestDocument', $testDoc->id);
+        $testDoc = $dm->find(MODM90TestDocument::class, $testDoc->id);
 
         $this->assertEquals($testDoc->embedded->type, 'test2');
     }

@@ -20,7 +20,7 @@ class RepositoriesTest extends BaseTest
         $this->dm->persist($this->user);
         $this->dm->flush();
 
-        $this->repository = $this->dm->getRepository('Documents\User');
+        $this->repository = $this->dm->getRepository(User::class);
     }
 
     public function testFindAll()

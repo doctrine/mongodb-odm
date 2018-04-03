@@ -145,7 +145,7 @@ class OrphanRemovalEmbedTest extends BaseTest
      */
     private function getUserRepository()
     {
-        return $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalCascadeUser');
+        return $this->dm->getRepository(OrphanRemovalCascadeUser::class);
     }
 
     /**
@@ -153,7 +153,7 @@ class OrphanRemovalEmbedTest extends BaseTest
      */
     private function getAddressRepository()
     {
-        return $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalCascadeAddress');
+        return $this->dm->getRepository(OrphanRemovalCascadeAddress::class);
     }
 }
 

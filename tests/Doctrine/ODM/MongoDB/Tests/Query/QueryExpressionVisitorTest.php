@@ -8,8 +8,10 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\ExpressionBuilder;
+use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Bars\Bar;
 use MongoDB\BSON\Regex;
 
 class QueryExpressionVisitorTest extends BaseTest
@@ -20,7 +22,7 @@ class QueryExpressionVisitorTest extends BaseTest
     public function setUp()
     {
         parent::setUp();
-        $this->queryBuilder = $this->dm->createQueryBuilder('Documents\Bars\Bar');
+        $this->queryBuilder = $this->dm->createQueryBuilder(Bar::class);
         $this->visitor = new QueryExpressionVisitor($this->queryBuilder);
     }
 
@@ -31,7 +33,7 @@ class QueryExpressionVisitorTest extends BaseTest
     {
         $expr = $this->visitor->dispatch($comparison);
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Query\Expr', $expr);
+        $this->assertInstanceOf(Expr::class, $expr);
         $this->assertEquals($expectedQuery, $expr->getQuery());
     }
 
@@ -82,7 +84,7 @@ class QueryExpressionVisitorTest extends BaseTest
 
         $expr = $this->visitor->dispatch($compositeExpr);
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Query\Expr', $expr);
+        $this->assertInstanceOf(Expr::class, $expr);
         $this->assertEquals($expectedQuery, $expr->getQuery());
     }
 

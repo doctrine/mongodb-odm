@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -31,15 +32,15 @@ class IdTest extends BaseTest
         $id = $user->id;
 
         $this->dm->clear();
-        $check1 = $this->dm->getRepository(__NAMESPACE__ . '\UuidUser')->findOneBy(['id' => $id]);
+        $check1 = $this->dm->getRepository(UuidUser::class)->findOneBy(['id' => $id]);
         $this->assertNotNull($check1);
 
-        $check2 = $this->dm->createQueryBuilder(__NAMESPACE__ . '\UuidUser')
+        $check2 = $this->dm->createQueryBuilder(UuidUser::class)
             ->field('id')->equals($id)->getQuery()->getSingleResult();
         $this->assertNotNull($check2);
         $this->assertSame($check1, $check2);
 
-        $check3 = $this->dm->createQueryBuilder(__NAMESPACE__ . '\UuidUser')
+        $check3 = $this->dm->createQueryBuilder(UuidUser::class)
             ->field('name')->equals('Jonathan H. Wage')->getQuery()->getSingleResult();
         $this->assertNotNull($check3);
         $this->assertSame($check2, $check3);
@@ -54,15 +55,15 @@ class IdTest extends BaseTest
         $this->dm->flush();
 
         $this->dm->clear();
-        $check1 = $this->dm->getRepository(__NAMESPACE__ . '\AlnumCharsUser')->findOneBy(['id' => 'x']);
+        $check1 = $this->dm->getRepository(AlnumCharsUser::class)->findOneBy(['id' => 'x']);
         $this->assertNotNull($check1);
 
-        $check2 = $this->dm->createQueryBuilder(__NAMESPACE__ . '\AlnumCharsUser')
+        $check2 = $this->dm->createQueryBuilder(AlnumCharsUser::class)
             ->field('id')->equals('x')->getQuery()->getSingleResult();
         $this->assertNotNull($check2);
         $this->assertSame($check1, $check2);
 
-        $check3 = $this->dm->createQueryBuilder(__NAMESPACE__ . '\AlnumCharsUser')
+        $check3 = $this->dm->createQueryBuilder(AlnumCharsUser::class)
             ->field('name')->equals('Kathrine R. Cage')->getQuery()->getSingleResult();
         $this->assertNotNull($check3);
         $this->assertSame($check2, $check3);
@@ -90,15 +91,15 @@ class IdTest extends BaseTest
         $this->assertEquals($reference1->id, 1);
         $this->assertEquals($reference2->id, 2);
 
-        $check1 = $this->dm->getRepository(__NAMESPACE__ . '\CollectionIdUser')->findOneBy(['id' => $user1->id]);
-        $check2 = $this->dm->getRepository(__NAMESPACE__ . '\CollectionIdUser')->findOneBy(['id' => $user2->id]);
+        $check1 = $this->dm->getRepository(CollectionIdUser::class)->findOneBy(['id' => $user1->id]);
+        $check2 = $this->dm->getRepository(CollectionIdUser::class)->findOneBy(['id' => $user2->id]);
         $this->assertNotNull($check1);
         $this->assertNotNull($check2);
 
         $this->assertEquals('referenced 1', $check1->reference->getName());
         $this->assertEquals('referenced 2', $check2->reference->getName());
 
-        $check = $this->dm->getRepository(__NAMESPACE__ . '\CollectionIdUser')->find($user1->id);
+        $check = $this->dm->getRepository(CollectionIdUser::class)->find($user1->id);
         $this->assertNotNull($check);
     }
 
@@ -142,10 +143,10 @@ class IdTest extends BaseTest
 
     public function testIdGeneratorInstance()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\UuidUser');
+        $class = $this->dm->getClassMetadata(UuidUser::class);
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
         $this->assertEquals(['salt' => 'test'], $class->generatorOptions);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Id\UuidGenerator', $class->idGenerator);
+        $this->assertInstanceOf(UuidGenerator::class, $class->idGenerator);
         $this->assertEquals('test', $class->idGenerator->getSalt());
 
         $serialized = serialize($class);
@@ -153,7 +154,7 @@ class IdTest extends BaseTest
 
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
         $this->assertEquals(['salt' => 'test'], $class->generatorOptions);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Id\UuidGenerator', $class->idGenerator);
+        $this->assertInstanceOf(UuidGenerator::class, $class->idGenerator);
         $this->assertEquals('test', $class->idGenerator->getSalt());
     }
 
@@ -178,8 +179,8 @@ class IdTest extends BaseTest
         $this->assertSame($user1->id, $user1Id);
         $this->assertSame($user2->id, $user2Id);
 
-        $user1 = $this->dm->find(__NAMESPACE__ . '\CustomIdUser', $user1Id);
-        $user2 = $this->dm->find(__NAMESPACE__ . '\CustomIdUser', $user2Id);
+        $user1 = $this->dm->find(CustomIdUser::class, $user1Id);
+        $user2 = $this->dm->find(CustomIdUser::class, $user2Id);
 
         $this->assertNotSame($user1, $user2);
         $this->assertSame($user1->id, $user1Id);

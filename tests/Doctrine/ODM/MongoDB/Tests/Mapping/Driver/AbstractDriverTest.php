@@ -5,8 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Documents\Account;
+use Documents\Address;
+use Documents\Group;
+use Documents\Phonenumber;
+use Documents\Profile;
 use PHPUnit\Framework\TestCase;
+use TestDocuments\EmbeddedDocument;
+use TestDocuments\PartialFilterDocument;
 use TestDocuments\PrimedCollectionDocument;
+use TestDocuments\QueryResultDocument;
+use TestDocuments\User;
 
 require_once 'fixtures/InvalidPartialFilterDocument.php';
 require_once 'fixtures/PartialFilterDocument.php';
@@ -31,8 +40,8 @@ abstract class AbstractDriverTest extends TestCase
 
     public function testDriver()
     {
-        $classMetadata = new ClassMetadata('TestDocuments\User');
-        $this->driver->loadMetadataForClass('TestDocuments\User', $classMetadata);
+        $classMetadata = new ClassMetadata(User::class);
+        $this->driver->loadMetadataForClass(User::class, $classMetadata);
 
         $this->assertEquals([
             'fieldName' => 'id',
@@ -109,7 +118,7 @@ abstract class AbstractDriverTest extends TestCase
             'name' => 'address',
             'type' => 'one',
             'embedded' => true,
-            'targetDocument' => 'Documents\Address',
+            'targetDocument' => Address::class,
             'collectionClass' => null,
             'isCascadeDetach' => true,
             'isCascadeMerge' => true,
@@ -128,7 +137,7 @@ abstract class AbstractDriverTest extends TestCase
             'name' => 'phonenumbers',
             'type' => 'many',
             'embedded' => true,
-            'targetDocument' => 'Documents\Phonenumber',
+            'targetDocument' => Phonenumber::class,
             'collectionClass' => null,
             'isCascadeDetach' => true,
             'isCascadeMerge' => true,
@@ -148,7 +157,7 @@ abstract class AbstractDriverTest extends TestCase
             'type' => 'one',
             'reference' => true,
             'storeAs' => ClassMetadata::REFERENCE_STORE_AS_ID,
-            'targetDocument' => 'Documents\Profile',
+            'targetDocument' => Profile::class,
             'collectionClass' => null,
             'cascade' => ['remove', 'persist', 'refresh', 'merge', 'detach'],
             'isCascadeDetach' => true,
@@ -176,7 +185,7 @@ abstract class AbstractDriverTest extends TestCase
             'type' => 'one',
             'reference' => true,
             'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF,
-            'targetDocument' => 'Documents\Account',
+            'targetDocument' => Account::class,
             'collectionClass' => null,
             'cascade' => ['remove', 'persist', 'refresh', 'merge', 'detach'],
             'isCascadeDetach' => true,
@@ -204,7 +213,7 @@ abstract class AbstractDriverTest extends TestCase
             'type' => 'many',
             'reference' => true,
             'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF,
-            'targetDocument' => 'Documents\Group',
+            'targetDocument' => Group::class,
             'collectionClass' => null,
             'cascade' => ['remove', 'persist', 'refresh', 'merge', 'detach'],
             'isCascadeDetach' => true,
@@ -240,8 +249,8 @@ abstract class AbstractDriverTest extends TestCase
             $classMetadata->alsoLoadMethods
         );
 
-        $classMetadata = new ClassMetadata('TestDocuments\EmbeddedDocument');
-        $this->driver->loadMetadataForClass('TestDocuments\EmbeddedDocument', $classMetadata);
+        $classMetadata = new ClassMetadata(EmbeddedDocument::class);
+        $this->driver->loadMetadataForClass(EmbeddedDocument::class, $classMetadata);
 
         $this->assertEquals([
             'fieldName' => 'name',
@@ -258,8 +267,8 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $classMetadata->fieldMappings['name']);
 
-        $classMetadata = new ClassMetadata('TestDocuments\QueryResultDocument');
-        $this->driver->loadMetadataForClass('TestDocuments\QueryResultDocument', $classMetadata);
+        $classMetadata = new ClassMetadata(QueryResultDocument::class);
+        $this->driver->loadMetadataForClass(QueryResultDocument::class, $classMetadata);
 
         $this->assertEquals([
             'fieldName' => 'name',
@@ -294,8 +303,8 @@ abstract class AbstractDriverTest extends TestCase
 
     public function testPartialFilterExpressions()
     {
-        $classMetadata = new ClassMetadata('TestDocuments\PartialFilterDocument');
-        $this->driver->loadMetadataForClass('TestDocuments\PartialFilterDocument', $classMetadata);
+        $classMetadata = new ClassMetadata(PartialFilterDocument::class);
+        $this->driver->loadMetadataForClass(PartialFilterDocument::class, $classMetadata);
 
         $this->assertEquals([
             [

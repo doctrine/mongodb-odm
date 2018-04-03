@@ -30,8 +30,8 @@ class GH560Test extends BaseTest
         $this->dm->clear();
 
         $called = [
-            [Events::prePersist, __NAMESPACE__ . '\GH560Document'],
-            [Events::postPersist, __NAMESPACE__ . '\GH560Document'],
+            [Events::prePersist, GH560Document::class],
+            [Events::postPersist, GH560Document::class],
         ];
 
         $this->assertEquals($called, $listener->called);
@@ -47,7 +47,7 @@ class GH560Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(__NAMESPACE__ . '\GH560Document', $id);
+        $doc = $this->dm->find(GH560Document::class, $id);
         $this->assertEquals($id, $doc->id);
     }
 
@@ -72,8 +72,8 @@ class GH560Test extends BaseTest
         $this->dm->clear();
 
         $called = [
-            [Events::preUpdate, __NAMESPACE__ . '\GH560Document'],
-            [Events::postUpdate, __NAMESPACE__ . '\GH560Document'],
+            [Events::preUpdate, GH560Document::class],
+            [Events::postUpdate, GH560Document::class],
         ];
 
         $this->assertEquals($called, $listener->called);

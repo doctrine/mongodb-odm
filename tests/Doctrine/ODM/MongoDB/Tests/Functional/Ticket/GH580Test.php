@@ -12,7 +12,7 @@ class GH580Test extends BaseTest
 {
     public function testDocumentPersisterShouldClearQueuedInsertsOnMongoException()
     {
-        $class = __NAMESPACE__ . '\GH580Document';
+        $class = GH580Document::class;
 
         $schemaManager = $this->dm->getSchemaManager();
         $schemaManager->updateDocumentIndexes($class);

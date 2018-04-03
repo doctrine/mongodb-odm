@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Address;
 use Documents\Functional\EmbeddedTestLevel0;
@@ -35,7 +36,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
         $userId = $user->getId();
 
-        $user = $this->dm->getRepository('Documents\User')->find($userId);
+        $user = $this->dm->getRepository(User::class)->find($userId);
         $this->assertEquals($userId, $user->getId());
         $this->assertNull($user->getAddress());
     }
@@ -49,8 +50,8 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(['name' => 'test']);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
+        $test = $this->dm->getRepository(EmbeddedTestLevel0::class)->findOneBy(['name' => 'test']);
+        $this->assertInstanceOf(EmbeddedTestLevel0::class, $test);
 
         // Adding this flush here makes level1 not to be inserted.
         $this->dm->flush();
@@ -62,9 +63,9 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0', $test->id);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $test->level1[0]);
+        $test = $this->dm->find(EmbeddedTestLevel0::class, $test->id);
+        $this->assertInstanceOf(EmbeddedTestLevel0::class, $test);
+        $this->assertInstanceOf(EmbeddedTestLevel1::class, $test->level1[0]);
 
         $test->level1[0]->name = 'changed';
         $level1 = new EmbeddedTestLevel1();
@@ -73,7 +74,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0', $test->id);
+        $test = $this->dm->find(EmbeddedTestLevel0::class, $test->id);
         $this->assertCount(2, $test->level1);
         $this->assertEquals('changed', $test->level1[0]->name);
         $this->assertEquals('testing', $test->level1[1]->name);
@@ -106,7 +107,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->createQueryBuilder('Documents\User')
+        $user = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId())
             ->getQuery()
             ->getSingleResult();
@@ -142,7 +143,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->createQueryBuilder('Documents\User')
+        $user = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId())
             ->getQuery()
             ->getSingleResult();
@@ -160,7 +161,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user2 = $this->dm->createQueryBuilder('Documents\User')
+        $user2 = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId())
             ->getQuery()
             ->getSingleResult();
@@ -242,7 +243,7 @@ class EmbeddedTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $test->level1);
+        $this->assertInstanceOf(PersistentCollection::class, $test->level1);
 
         // verify that test has no more level1
         $this->assertEquals(0, $test->level1->count());
@@ -382,7 +383,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $user = $this->dm->find(User::class, $user->getId());
         $this->assertNotNull($user);
         $address = $user->getAddress();
         $address->setAddress('changed');
@@ -390,7 +391,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $user = $this->dm->find(User::class, $user->getId());
         $this->assertEquals('changed', $user->getAddress()->getAddress());
     }
 
@@ -414,7 +415,7 @@ class EmbeddedTest extends BaseTest
 
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection('Documents\User')->findOne();
+        $check = $this->dm->getDocumentCollection(User::class)->findOne();
         $this->assertEmpty($check['phonenumbers']);
         $this->assertArrayNotHasKey('address', $check);
     }
@@ -446,7 +447,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $vhost = $this->dm->find('Documents\Functional\VirtualHost', $vhost->getId());
+        $vhost = $this->dm->find(VirtualHost::class, $vhost->getId());
 
         foreach ($vhost->getVHostDirective()->getDirectives() as $directive) {
             $this->assertNotEmpty($directive->getName());
@@ -464,7 +465,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->find('Documents\Functional\NotSaved', $document->id);
+        $document = $this->dm->find(NotSaved::class, $document->id);
 
         $this->assertEquals('foo', $document->embedded->name);
         $this->assertNull($document->embedded->notSaved);

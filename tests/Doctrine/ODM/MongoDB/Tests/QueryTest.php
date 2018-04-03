@@ -8,6 +8,8 @@ use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Documents\Phonenumber;
+use Documents\Project;
 use Documents\SubProject;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
@@ -20,7 +22,7 @@ class QueryTest extends BaseTest
 {
     public function testSelectAndSelectSliceOnSameField()
     {
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person')
+        $qb = $this->dm->createQueryBuilder(Person::class)
             ->exclude('comments')
             ->select('comments')
             ->selectSlice('comments', 0, 10);
@@ -41,7 +43,7 @@ class QueryTest extends BaseTest
         $this->dm->persist($chris);
         $this->dm->flush();
 
-        $class = __NAMESPACE__ . '\Person';
+        $class = Person::class;
         $expression1 = ['firstName' => 'Kris'];
         $expression2 = ['firstName' => 'Chris'];
 
@@ -75,7 +77,7 @@ class QueryTest extends BaseTest
         $kris->bestFriend = $jon;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
+        $qb = $this->dm->createQueryBuilder(Person::class);
         $qb->field('bestFriend')->references($jon);
 
         $queryArray = $qb->getQueryArray();
@@ -103,7 +105,7 @@ class QueryTest extends BaseTest
         $kris->bestFriendSimple = $jon;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
+        $qb = $this->dm->createQueryBuilder(Person::class);
         $qb->field('bestFriendSimple')->references($jon);
 
         $queryArray = $qb->getQueryArray();
@@ -129,7 +131,7 @@ class QueryTest extends BaseTest
         $kris->bestFriendPartial = $jon;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
+        $qb = $this->dm->createQueryBuilder(Person::class);
         $qb->field('bestFriendPartial')->references($jon);
 
         $queryArray = $qb->getQueryArray();
@@ -156,7 +158,7 @@ class QueryTest extends BaseTest
         $jon->friends[] = $kris;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
+        $qb = $this->dm->createQueryBuilder(Person::class);
         $qb->field('friends')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
@@ -191,7 +193,7 @@ class QueryTest extends BaseTest
         $jon->friendsSimple[] = $jachim;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
+        $qb = $this->dm->createQueryBuilder(Person::class);
         $qb->field('friendsSimple')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
@@ -217,7 +219,7 @@ class QueryTest extends BaseTest
         $jon->friendsPartial[] = $kris;
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\Person');
+        $qb = $this->dm->createQueryBuilder(Person::class);
         $qb->field('friendsPartial')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
@@ -246,7 +248,7 @@ class QueryTest extends BaseTest
         $identifier = new ObjectId($user->getId());
         $ids = [$identifier];
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('_id')->in($ids);
         $query = $qb->getQuery();
         $results = $query->toArray();
@@ -255,7 +257,7 @@ class QueryTest extends BaseTest
 
     public function testEmbeddedSet()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->insert()
             ->field('testInt')->set('0')
             ->field('intfields.intone')->set('1')
@@ -267,8 +269,8 @@ class QueryTest extends BaseTest
     {
         $refId = '000000000000000000000001';
 
-        $qb = $this->dm->createQueryBuilder('Documents\User');
-        $embeddedQb = $this->dm->createQueryBuilder('Documents\Phonenumber');
+        $qb = $this->dm->createQueryBuilder(User::class);
+        $embeddedQb = $this->dm->createQueryBuilder(Phonenumber::class);
 
         $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()
             ->field('lastCalledBy.id')->equals($refId));
@@ -280,7 +282,7 @@ class QueryTest extends BaseTest
 
     public function testQueryWithMultipleEmbeddedDocuments()
     {
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\EmbedTest')
+        $qb = $this->dm->createQueryBuilder(EmbedTest::class)
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.name')->equals('Foo');
         $query = $qb->getQuery();
@@ -291,7 +293,7 @@ class QueryTest extends BaseTest
     {
         $identifier = new ObjectId();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\EmbedTest')
+        $qb = $this->dm->createQueryBuilder(EmbedTest::class)
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals((string) $identifier);
         $query = $qb->getQuery();
@@ -309,12 +311,12 @@ class QueryTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->createQueryBuilder()
-                ->find('Documents\Project')
+                ->find(Project::class)
                 ->select(['name'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
-        $this->assertInstanceOf('Documents\SubProject', $test);
+        $this->assertInstanceOf(SubProject::class, $test);
         $this->assertEquals('SubProject', $test->getName());
     }
 
@@ -326,12 +328,12 @@ class QueryTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->createQueryBuilder()
-                ->find('Documents\Project')
+                ->find(Project::class)
                 ->select([])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
-        $this->assertInstanceOf('Documents\SubProject', $test);
+        $this->assertInstanceOf(SubProject::class, $test);
         $this->assertEquals('SubProject', $test->getName());
     }
 
@@ -343,7 +345,7 @@ class QueryTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->createQueryBuilder()
-                ->find('Documents\Project')->hydrate(false)
+                ->find(Project::class)->hydrate(false)
                 ->select(['name'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
@@ -359,12 +361,12 @@ class QueryTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->createQueryBuilder()
-                ->find('Documents\SubProject')
+                ->find(SubProject::class)
                 ->exclude(['name', 'issues'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
         $this->assertNotNull($test);
-        $this->assertInstanceOf('Documents\SubProject', $test);
+        $this->assertInstanceOf(SubProject::class, $test);
         $this->assertNull($test->getName());
     }
 

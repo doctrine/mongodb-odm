@@ -51,7 +51,7 @@ class FilterTest extends BaseTest
     {
         $this->fc->enable('testFilter');
         $testFilter = $this->fc->getFilter('testFilter');
-        $testFilter->setParameter('class', 'Documents\User');
+        $testFilter->setParameter('class', User::class);
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
     }
@@ -60,7 +60,7 @@ class FilterTest extends BaseTest
     {
         $this->fc->enable('testFilter');
         $testFilter = $this->fc->getFilter('testFilter');
-        $testFilter->setParameter('class', 'Documents\Group');
+        $testFilter->setParameter('class', Group::class);
         $testFilter->setParameter('field', 'name');
         $testFilter->setParameter('value', 'groupA');
     }
@@ -69,7 +69,7 @@ class FilterTest extends BaseTest
     {
         $this->fc->enable('testFilter');
         $testFilter = $this->fc->getFilter('testFilter');
-        $testFilter->setParameter('class', 'Documents\Profile');
+        $testFilter->setParameter('class', Profile::class);
         $testFilter->setParameter('field', 'firstname');
         $testFilter->setParameter('value', 'Something Else');
     }
@@ -89,7 +89,7 @@ class FilterTest extends BaseTest
 
     protected function getUsernamesWithFind()
     {
-        $repository = $this->dm->getRepository('Documents\User');
+        $repository = $this->dm->getRepository(User::class);
 
         $tim = $repository->find($this->ids['tim']);
         $john = $repository->find($this->ids['john']);
@@ -122,7 +122,7 @@ class FilterTest extends BaseTest
 
     protected function getUsernamesWithFindBy()
     {
-        $all = $this->dm->getRepository('Documents\User')->findBy(['hits' => 10]);
+        $all = $this->dm->getRepository(User::class)->findBy(['hits' => 10]);
 
         $usernames = [];
         foreach ($all as $user) {
@@ -147,7 +147,7 @@ class FilterTest extends BaseTest
 
     protected function getJohnsUsernameWithFindOneBy()
     {
-        $john = $this->dm->getRepository('Documents\User')->findOneBy(['id' => $this->ids['john']]);
+        $john = $this->dm->getRepository(User::class)->findOneBy(['id' => $this->ids['john']]);
 
         return isset($john) ? $john->getUsername() : null;
     }
@@ -167,7 +167,7 @@ class FilterTest extends BaseTest
 
     protected function getUsernamesWithFindAll()
     {
-        $all = $this->dm->getRepository('Documents\User')->findAll();
+        $all = $this->dm->getRepository(User::class)->findAll();
 
         $usernames = [];
         foreach ($all as $user) {
@@ -192,7 +192,7 @@ class FilterTest extends BaseTest
 
     protected function getGroupsByReference()
     {
-        $tim = $this->dm->getRepository('Documents\User')->find($this->ids['tim']);
+        $tim = $this->dm->getRepository(User::class)->find($this->ids['tim']);
 
         $groupnames = [];
         foreach ($tim->getGroups() as $group) {
@@ -221,7 +221,7 @@ class FilterTest extends BaseTest
 
     protected function getProfileByReference()
     {
-        $tim = $this->dm->getRepository('Documents\User')->find($this->ids['tim']);
+        $tim = $this->dm->getRepository(User::class)->find($this->ids['tim']);
 
         $profile = $tim->getProfile();
         try {
@@ -247,8 +247,8 @@ class FilterTest extends BaseTest
 
     protected function getUsernamesWithDocumentManager()
     {
-        $tim = $this->dm->getReference('Documents\User', $this->ids['tim']);
-        $john = $this->dm->getReference('Documents\User', $this->ids['john']);
+        $tim = $this->dm->getReference(User::class, $this->ids['tim']);
+        $john = $this->dm->getReference(User::class, $this->ids['john']);
 
         $usernames = [];
 
@@ -283,7 +283,7 @@ class FilterTest extends BaseTest
 
     protected function getUsernamesWithQuery()
     {
-        $qb = $this->dm->createQueryBuilder('Documents\User');
+        $qb = $this->dm->createQueryBuilder(User::class);
         $query = $qb->getQuery();
         $all = $query->execute();
 
@@ -299,13 +299,13 @@ class FilterTest extends BaseTest
     {
         $this->fc->enable('testFilter');
         $testFilter = $this->fc->getFilter('testFilter');
-        $testFilter->setParameter('class', 'Documents\User');
+        $testFilter->setParameter('class', User::class);
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
 
         $this->fc->enable('testFilter2');
         $testFilter2 = $this->fc->getFilter('testFilter2');
-        $testFilter2->setParameter('class', 'Documents\User');
+        $testFilter2->setParameter('class', User::class);
         $testFilter2->setParameter('field', 'username');
         $testFilter2->setParameter('value', 'John');
 

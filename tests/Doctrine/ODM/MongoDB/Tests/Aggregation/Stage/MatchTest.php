@@ -8,6 +8,8 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Match;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\User;
+use GeoJson\Geometry\Geometry;
 use MongoDB\BSON\UTCDateTime;
 
 class MatchTest extends BaseTest
@@ -95,7 +97,7 @@ class MatchTest extends BaseTest
 
     public function testTypeConversion()
     {
-        $builder = $this->dm->createAggregationBuilder('Documents\User');
+        $builder = $this->dm->createAggregationBuilder(User::class);
 
         $date = new \DateTime();
         $mongoDate = new UTCDateTime((int) $date->format('Uv'));
@@ -116,7 +118,7 @@ class MatchTest extends BaseTest
 
     private function getMockGeometry()
     {
-        return $this->getMockBuilder('GeoJson\Geometry\Geometry')
+        return $this->getMockBuilder(Geometry::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

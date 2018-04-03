@@ -26,8 +26,8 @@ class GH1346Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $gH1346Document = $this->dm->getRepository(__NAMESPACE__ . '\GH1346Document')->find($gH1346Document->getId());
-        $referenced2 = $this->dm->getRepository(__NAMESPACE__ . '\GH1346ReferencedDocument')->find($referenced2->getId());
+        $gH1346Document = $this->dm->getRepository(GH1346Document::class)->find($gH1346Document->getId());
+        $referenced2 = $this->dm->getRepository(GH1346ReferencedDocument::class)->find($referenced2->getId());
 
         $gH1346Document->addReference($referenced2);
 

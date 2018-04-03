@@ -61,7 +61,7 @@ class IdentifiersTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
 
         $user = $qb->getQuery()->getSingleResult();
@@ -87,7 +87,7 @@ class IdentifiersTest extends BaseTest
         $user4 = $qb->getQuery()->getSingleResult();
         $this->assertEquals('changed', $user4->getUsername());
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->findAndUpdate()
             ->returnNew(true)
             ->hydrate(true)

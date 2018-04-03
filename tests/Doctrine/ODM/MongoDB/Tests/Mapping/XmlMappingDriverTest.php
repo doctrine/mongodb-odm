@@ -45,6 +45,6 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $m->setAccessible(true);
         $m->invoke($driver, $class, $element, 'many');
 
-        $this->assertEquals('Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection', $class->getAssociationCollectionClass('phonenumbers'));
+        $this->assertEquals(PhonenumberCollection::class, $class->getAssociationCollectionClass('phonenumbers'));
     }
 }

@@ -21,7 +21,7 @@ class MODM92Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $testDoc = $this->dm->find(__NAMESPACE__ . '\MODM92TestDocument', $testDoc->id);
+        $testDoc = $this->dm->find(MODM92TestDocument::class, $testDoc->id);
         $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
 
         $embeddedDocuments = [new MODM92TestEmbeddedDocument('bar')];
@@ -31,7 +31,7 @@ class MODM92Test extends BaseTest
 
         $this->dm->flush();
         $this->dm->clear();
-        $testDoc = $this->dm->find(__NAMESPACE__ . '\MODM92TestDocument', $testDoc->id);
+        $testDoc = $this->dm->find(MODM92TestDocument::class, $testDoc->id);
 
         $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
     }

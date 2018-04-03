@@ -6,6 +6,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
+use TestDocuments\CustomIdGenerator;
+use TestDocuments\InvalidPartialFilterDocument;
+use TestDocuments\UserCustomIdGenerator;
+use TestDocuments\UserNonStringOptions;
 
 class XmlDriverTest extends AbstractDriverTest
 {
@@ -16,13 +20,13 @@ class XmlDriverTest extends AbstractDriverTest
 
     public function testDriverShouldReturnOptionsForCustomIdGenerator()
     {
-        $classMetadata = new ClassMetadata('TestDocuments\UserCustomIdGenerator');
-        $this->driver->loadMetadataForClass('TestDocuments\UserCustomIdGenerator', $classMetadata);
+        $classMetadata = new ClassMetadata(UserCustomIdGenerator::class);
+        $this->driver->loadMetadataForClass(UserCustomIdGenerator::class, $classMetadata);
         $this->assertEquals([
             'fieldName' => 'id',
             'strategy' => 'custom',
             'options' => [
-                'class' => 'TestDocuments\CustomIdGenerator',
+                'class' => CustomIdGenerator::class,
                 'someOption' => 'some-option',
             ],
             'id' => true,
@@ -41,8 +45,8 @@ class XmlDriverTest extends AbstractDriverTest
 
     public function testDriverShouldParseNonStringAttributes()
     {
-        $classMetadata = new ClassMetadata('TestDocuments\UserNonStringOptions');
-        $this->driver->loadMetadataForClass('TestDocuments\UserNonStringOptions', $classMetadata);
+        $classMetadata = new ClassMetadata(UserNonStringOptions::class);
+        $this->driver->loadMetadataForClass(UserNonStringOptions::class, $classMetadata);
 
         $profileMapping = $classMetadata->fieldMappings['profile'];
         $this->assertSame(ClassMetadata::REFERENCE_STORE_AS_ID, $profileMapping['storeAs']);
@@ -57,8 +61,8 @@ class XmlDriverTest extends AbstractDriverTest
 
     public function testInvalidPartialFilterExpressions()
     {
-        $classMetadata = new ClassMetadata('TestDocuments\InvalidPartialFilterDocument');
-        $this->driver->loadMetadataForClass('TestDocuments\InvalidPartialFilterDocument', $classMetadata);
+        $classMetadata = new ClassMetadata(InvalidPartialFilterDocument::class);
+        $this->driver->loadMetadataForClass(InvalidPartialFilterDocument::class, $classMetadata);
 
         $this->assertEquals([
             [

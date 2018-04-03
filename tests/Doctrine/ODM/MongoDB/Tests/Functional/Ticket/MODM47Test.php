@@ -16,9 +16,9 @@ class MODM47Test extends BaseTest
             '_id' => new ObjectId(),
             'c' => 'c value',
         ];
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\MODM47A')->insertOne($a);
+        $this->dm->getDocumentCollection(MODM47A::class)->insertOne($a);
 
-        $a = $this->dm->find(__NAMESPACE__ . '\MODM47A', $a['_id']);
+        $a = $this->dm->find(MODM47A::class, $a['_id']);
         $this->assertEquals('c value', $a->b);
     }
 }

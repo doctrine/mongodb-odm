@@ -35,7 +35,7 @@ class ReferencesTest extends BaseTest
 
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')
             ->equals($user->getId());
         $query = $qb->getQuery();
@@ -44,7 +44,7 @@ class ReferencesTest extends BaseTest
         $this->dm->remove($user2);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\Group');
+        $qb = $this->dm->createQueryBuilder(Group::class);
         $query = $qb->getQuery();
         $groups = $query->execute();
 
@@ -64,7 +64,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
 
@@ -124,7 +124,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
@@ -141,7 +141,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
@@ -187,7 +187,7 @@ class ReferencesTest extends BaseTest
         $this->assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')
             ->equals($user->getId());
         $query = $qb->getQuery();
@@ -215,7 +215,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user3 = $query->getSingleResult();
@@ -233,7 +233,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->find($user->getId());
+        $user = $this->dm->getRepository(User::class)->find($user->getId());
 
         $user->addGroup(new Group('Group 1'));
         $user->addGroup(new Group('Group 2'));
@@ -255,7 +255,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->find($user->getId());
+        $user = $this->dm->getRepository(User::class)->find($user->getId());
 
         $user->addGroup(new Group('Group 1'));
         $user->addGroup(new Group('Group 2'));
@@ -286,7 +286,7 @@ class ReferencesTest extends BaseTest
         $this->assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')
             ->equals($user->getId());
         $query = $qb->getQuery();
@@ -314,7 +314,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\User')
+        $qb = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user3 = $query->getSingleResult();

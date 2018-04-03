@@ -17,7 +17,7 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $test = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CustomFieldName')->findOne();
+        $test = $this->dm->getDocumentCollection(CustomFieldName::class)->findOne();
         $this->assertArrayHasKey('login', $test);
         $this->assertEquals('test', $test['login']);
     }
@@ -31,7 +31,7 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find(__NAMESPACE__ . '\CustomFieldName', $test->id);
+        $test = $this->dm->find(CustomFieldName::class, $test->id);
         $this->assertNotNull($test);
         $this->assertEquals('test', $test->username);
     }
@@ -45,12 +45,12 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find(__NAMESPACE__ . '\CustomFieldName', $test->id);
+        $test = $this->dm->find(CustomFieldName::class, $test->id);
 
         $test->username = 'ok';
         $this->dm->flush();
 
-        $test = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CustomFieldName')->findOne();
+        $test = $this->dm->getDocumentCollection(CustomFieldName::class)->findOne();
         $this->assertArrayHasKey('login', $test);
         $this->assertEquals('ok', $test['login']);
     }
@@ -64,7 +64,7 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository(__NAMESPACE__ . '\CustomFieldName')->findOneBy(['username' => 'test']);
+        $test = $this->dm->getRepository(CustomFieldName::class)->findOneBy(['username' => 'test']);
         $this->assertNotNull($test);
         $this->assertEquals('test', $test->username);
     }
@@ -78,7 +78,7 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository(__NAMESPACE__ . '\CustomFieldName')->findOneBy(['username' => 'test']);
+        $test = $this->dm->getRepository(CustomFieldName::class)->findOneBy(['username' => 'test']);
         $this->assertNotNull($test);
         $this->assertEquals('test', $test->username);
     }
@@ -92,7 +92,7 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\CustomFieldName')->field('username')->equals('test');
+        $qb = $this->dm->createQueryBuilder(CustomFieldName::class)->field('username')->equals('test');
         $query = $qb->getQuery();
         $test = $query->getSingleResult();
         $this->assertNotNull($test);

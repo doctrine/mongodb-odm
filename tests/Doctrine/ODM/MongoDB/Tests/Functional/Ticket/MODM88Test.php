@@ -18,7 +18,7 @@ class MODM88Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder('Documents\Article')
+        $qb = $this->dm->createQueryBuilder(Article::class)
             ->select('_id', 'title');
         $q = $qb->getQuery();
         $document = $q->getSingleResult();
@@ -29,7 +29,7 @@ class MODM88Test extends BaseTest
         $document->setTitle('changed');
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection('Documents\Article')->findOne();
+        $check = $this->dm->getDocumentCollection(Article::class)->findOne();
         $this->assertEquals('changed', $check['title']);
         $this->assertEquals('Test Body', $check['body']);
     }

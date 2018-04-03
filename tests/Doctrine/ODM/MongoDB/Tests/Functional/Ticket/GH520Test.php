@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 
 class GH520Test extends BaseTest
 {
@@ -19,14 +20,14 @@ class GH520Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH520Document')
+        $query = $this->dm->createQueryBuilder(GH520Document::class)
             ->field('id')->equals($document->id)
             ->field('ref')->prime(true)
             ->getQuery();
 
         $document = $query->getSingleResult();
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $document->ref);
+        $this->assertInstanceOf(Proxy::class, $document->ref);
         $this->assertTrue($document->ref->__isInitialized());
     }
 
@@ -50,7 +51,7 @@ class GH520Test extends BaseTest
             $primedIds = $ids;
         };
 
-        $query = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH520Document')
+        $query = $this->dm->createQueryBuilder(GH520Document::class)
             ->field('ref')->exists(true)->prime($primer)
             ->getQuery();
 
