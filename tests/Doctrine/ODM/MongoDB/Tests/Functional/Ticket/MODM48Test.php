@@ -17,7 +17,7 @@ class MODM48Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $a = $this->dm->find(__NAMESPACE__ . '\MODM48A', $a->id);
+        $a = $this->dm->find(MODM48A::class, $a->id);
         $this->assertNotNull($a);
 
         $a->getB()->setVal('test');
@@ -25,7 +25,7 @@ class MODM48Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $a = $this->dm->find(__NAMESPACE__ . '\MODM48A', $a->id);
+        $a = $this->dm->find(MODM48A::class, $a->id);
         $this->assertEquals('test', $a->getB()->getVal());
     }
 }

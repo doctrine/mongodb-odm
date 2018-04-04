@@ -48,7 +48,7 @@ class EmbeddedReferenceTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $offer = $this->dm->getRepository(__NAMESPACE__ . '\Offer')->findOneBy(['name' => 'My Offer']);
+        $offer = $this->dm->getRepository(Offer::class)->findOneBy(['name' => 'My Offer']);
 
         // Should be: 1 Link, 5 referenced documents
         // Actual Result: 1 link, 10 referenced documents

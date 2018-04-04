@@ -13,22 +13,22 @@ class GH816Test extends BaseTest
     {
         $d=new GH816Document();
         $d->_id=new ObjectId();
-        $this->assertEmpty($this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
+        $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
         $this->dm->flush();
-        $this->assertEmpty($this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
+        $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
     }
 
     public function testPersistAfterDetachWithTitleSet()
     {
         $d=new GH816Document();
         $d->title='Test';
-        $this->assertEmpty($this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
+        $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
         $this->dm->flush();
-        $this->assertEmpty($this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\GH816Document')->findAll());
+        $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
     }
 }
 

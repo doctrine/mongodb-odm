@@ -47,7 +47,7 @@ class PersistenceBuilderTest extends BaseTest
         /**
          * @var Builder $qb
          */
-        $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
+        $qb = $this->dm->createQueryBuilder(SameCollection1::class);
         $qb->updateOne()
             ->field('ok')->set(true)
             ->field('test')->set('OK! TEST')
@@ -271,7 +271,7 @@ class PersistenceBuilderTest extends BaseTest
         /**
          * @var Builder $qb
          */
-        $qb = $this->dm->createQueryBuilder('Documents\CmsComment');
+        $qb = $this->dm->createQueryBuilder(CmsComment::class);
         $qb
             ->field('article.id')->in([$articleId]);
         $query = $qb->getQuery();

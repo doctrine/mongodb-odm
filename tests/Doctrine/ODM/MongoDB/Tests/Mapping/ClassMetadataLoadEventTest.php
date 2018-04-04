@@ -16,7 +16,7 @@ class ClassMetadataLoadEventTest extends BaseTest
         $metadataFactory = $this->dm->getMetadataFactory();
         $evm = $this->dm->getEventManager();
         $evm->addEventListener(Events::loadClassMetadata, $this);
-        $classMetadata = $metadataFactory->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\LoadEventTestDocument');
+        $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestDocument::class);
         $this->assertTrue($classMetadata->hasField('about'));
     }
 

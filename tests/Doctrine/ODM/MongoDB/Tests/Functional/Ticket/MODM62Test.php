@@ -20,7 +20,7 @@ class MODM62Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find(__NAMESPACE__ . '\MODM62Document', $test->id);
+        $test = $this->dm->find(MODM62Document::class, $test->id);
         $this->assertEquals(['test', 'test2'], $test->b);
     }
 }

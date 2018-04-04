@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
@@ -29,14 +30,19 @@ use Documents\Functional\PreUpdateTestSeller;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
 use Documents\Functional\SameCollection3;
+use Documents\Functional\SimpleEmbedAndReference;
 use Documents\Group;
 use Documents\GuestServer;
 use Documents\Manager;
 use Documents\Phonenumber;
+use Documents\Profile;
 use Documents\Project;
 use Documents\Song;
 use Documents\SubCategory;
 use Documents\User;
+use Documents\UserUpsert;
+use Documents\UserUpsertChild;
+use Documents\UserUpsertIdStrategyNone;
 use MongoDB\BSON\ObjectId;
 
 class FunctionalTest extends BaseTest
@@ -44,9 +50,9 @@ class FunctionalTest extends BaseTest
     public function provideUpsertObjects()
     {
         return [
-            ['Documents\\UserUpsert', new ObjectId('4f18f593acee41d724000005'), 'user'],
-            ['Documents\\UserUpsertIdStrategyNone', 'jwage', 'user'],
-            ['Documents\\UserUpsertChild', new ObjectId('4f18f593acee41d724000005'), 'child'],
+            [UserUpsert::class, new ObjectId('4f18f593acee41d724000005'), 'user'],
+            [UserUpsertIdStrategyNone::class, 'jwage', 'user'],
+            [UserUpsertChild::class, new ObjectId('4f18f593acee41d724000005'), 'child'],
         ];
     }
 
@@ -116,7 +122,7 @@ class FunctionalTest extends BaseTest
 
     public function testInheritedAssociationMappings()
     {
-        $class = $this->dm->getClassMetadata('Documents\UserUpsertChild');
+        $class = $this->dm->getClassMetadata(UserUpsertChild::class);
         $this->assertTrue(isset($class->associationMappings['groups']));
     }
 
@@ -136,7 +142,7 @@ class FunctionalTest extends BaseTest
         $root->setName('Root Changed');
         $this->dm->flush();
 
-        $test = $this->dm->getDocumentCollection('Documents\Category')->findOne();
+        $test = $this->dm->getDocumentCollection(Category::class)->findOne();
         $this->assertEquals('Child 1 Changed', $test['children'][0]['name']);
         $this->assertEquals('Child 2 Changed', $test['children'][0]['children'][0]['name']);
         $this->assertEquals('Root Changed', $test['name']);
@@ -156,7 +162,7 @@ class FunctionalTest extends BaseTest
         $songs->add(new Song('Song #3'));
         $this->dm->flush();
 
-        $test = $this->dm->getDocumentCollection('Documents\Album')->findOne(['name' => 'Jon']);
+        $test = $this->dm->getDocumentCollection(Album::class)->findOne(['name' => 'Jon']);
         $this->assertEquals('Song #1 Changed', $test['songs'][0]['name']);
 
         $album->setName('jwage');
@@ -166,7 +172,7 @@ class FunctionalTest extends BaseTest
         unset($songs[0]);
         $this->dm->flush();
 
-        $test = $this->dm->getDocumentCollection('Documents\Album')->findOne(['name' => 'jwage']);
+        $test = $this->dm->getDocumentCollection(Album::class)->findOne(['name' => 'jwage']);
 
         $this->assertEquals('jwage', $test['name']);
         $this->assertEquals('ok', $test['songs'][0]['name']);
@@ -179,7 +185,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getDocumentCollection('Documents\Album')->findOne(['name' => 'jwage']);
+        $test = $this->dm->getDocumentCollection(Album::class)->findOne(['name' => 'jwage']);
         $this->assertFalse(isset($test['songs']));
     }
 
@@ -201,7 +207,7 @@ class FunctionalTest extends BaseTest
         $subAddress->setCity('New Sub-City');
         $this->dm->flush();
 
-        $test = $this->dm->getDocumentCollection('Documents\Project')->findOne(['name' => 'Project']);
+        $test = $this->dm->getDocumentCollection(Project::class)->findOne(['name' => 'Project']);
 
         $this->assertEquals('New Sub-City', $test['address']['subAddress']['city']);
         $this->assertEquals('New City', $test['address']['city']);
@@ -217,7 +223,7 @@ class FunctionalTest extends BaseTest
 
         $this->dm->clear();
 
-        $server = $this->dm->getReference('Documents\GuestServer', $id);
+        $server = $this->dm->getReference(GuestServer::class, $id);
 
         $agent = new Agent();
         $agent->server = $server;
@@ -225,7 +231,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getDocumentCollection('Documents\Agent')->findOne();
+        $test = $this->dm->getDocumentCollection(Agent::class)->findOne();
 
         $this->assertEquals('servers', $test['server']['$ref']);
         $this->assertTrue(isset($test['server']['$id']));
@@ -242,23 +248,23 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $coll = $this->dm->getDocumentCollection('Documents\User');
+        $coll = $this->dm->getDocumentCollection(User::class);
         $document = $coll->findOne(['username' => 'joncolltest']);
         $this->assertCount(2, $document['logs']);
 
-        $document = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'joncolltest']);
+        $document = $this->dm->getRepository(User::class)->findOneBy(['username' => 'joncolltest']);
         $this->assertCount(2, $document->getLogs());
         $document->log(['test']);
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'joncolltest']);
+        $document = $this->dm->getRepository(User::class)->findOneBy(['username' => 'joncolltest']);
         $this->assertCount(3, $document->getLogs());
         $document->setLogs(['ok', 'test']);
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'joncolltest']);
+        $document = $this->dm->getRepository(User::class)->findOneBy(['username' => 'joncolltest']);
         $this->assertEquals(['ok', 'test'], $document->getLogs());
     }
 
@@ -272,7 +278,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'testing']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'testing']);
         $this->assertCount(2, $user->getPhonenumbers());
     }
 
@@ -287,14 +293,14 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jon']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
 
         $user->incrementCount(5);
         $user->incrementFloatCount(5);
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jon']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(105, $user->getCount());
         $this->assertSame(105.0, $user->getFloatCount());
 
@@ -303,7 +309,7 @@ class FunctionalTest extends BaseTest
 
         $this->dm->flush();
         $this->dm->clear();
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jon']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(50, $user->getCount());
         $this->assertSame(50.0, $user->getFloatCount());
     }
@@ -319,14 +325,14 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jon']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
 
         $user->incrementCount(1.337);
         $user->incrementFloatCount(1.337);
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jon']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(101, $user->getCount());
         $this->assertSame(101.337, $user->getFloatCount());
 
@@ -335,7 +341,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jon']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(110, $user->getCount());
         $this->assertSame(110.5, $user->getFloatCount());
     }
@@ -351,7 +357,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jon']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(10, $user->getCount());
         $this->assertSame(10.0, $user->getFloatCount());
 
@@ -360,7 +366,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jon']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(11, $user->getCount());
         $this->assertSame(11.0, $user->getFloatCount());
 
@@ -369,7 +375,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'jon']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertNull($user->getCount());
         $this->assertNull($user->getFloatCount());
     }
@@ -410,7 +416,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $result = $this->dm->createQueryBuilder('Documents\Manager')
+        $result = $this->dm->createQueryBuilder(Manager::class)
             ->field('name')->equals('Manager')
             ->hydrate(false)
             ->getQuery()
@@ -424,7 +430,7 @@ class FunctionalTest extends BaseTest
 
     public function testNotAnnotatedDocument()
     {
-        $this->dm->getDocumentCollection('Documents\Functional\NotAnnotatedDocument')->drop();
+        $this->dm->getDocumentCollection(NotAnnotatedDocument::class)->drop();
 
         $test = new NotAnnotatedDocument();
         $test->field = 'test';
@@ -433,21 +439,21 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find('Documents\Functional\NotAnnotatedDocument', $test->id);
+        $test = $this->dm->find(NotAnnotatedDocument::class, $test->id);
         $this->assertNotNull($test);
         $this->assertFalse(isset($test->transientField));
     }
 
     public function testNullFieldValuesAllowed()
     {
-        $this->dm->getDocumentCollection('Documents\Functional\NullFieldValues')->drop();
+        $this->dm->getDocumentCollection(NullFieldValues::class)->drop();
 
         $test = new NullFieldValues();
         $test->field = null;
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $document = $this->dm->createQueryBuilder('Documents\Functional\NullFieldValues')
+        $document = $this->dm->createQueryBuilder(NullFieldValues::class)
             ->hydrate(false)
             ->getQuery()
             ->getSingleResult();
@@ -455,18 +461,18 @@ class FunctionalTest extends BaseTest
         $this->assertNotNull($document);
         $this->assertNull($document['field']);
 
-        $document = $this->dm->find('Documents\Functional\NullFieldValues', $test->id);
+        $document = $this->dm->find(NullFieldValues::class, $test->id);
         $document->field = 'test';
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->find('Documents\Functional\NullFieldValues', $test->id);
+        $document = $this->dm->find(NullFieldValues::class, $test->id);
         $this->assertEquals('test', $document->field);
         $document->field = null;
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->createQueryBuilder('Documents\Functional\NullFieldValues')
+        $test = $this->dm->createQueryBuilder(NullFieldValues::class)
             ->hydrate(false)
             ->getQuery()
             ->getSingleResult();
@@ -476,7 +482,7 @@ class FunctionalTest extends BaseTest
 
     public function testSimplerEmbedAndReference()
     {
-        $class = $this->dm->getClassMetadata('Documents\Functional\SimpleEmbedAndReference');
+        $class = $this->dm->getClassMetadata(SimpleEmbedAndReference::class);
         $this->assertEquals('many', $class->fieldMappings['embedMany']['type']);
         $this->assertEquals('one', $class->fieldMappings['embedOne']['type']);
         $this->assertEquals('many', $class->fieldMappings['referenceMany']['type']);
@@ -485,7 +491,7 @@ class FunctionalTest extends BaseTest
 
     public function testNotSavedFields()
     {
-        $collection = $this->dm->getDocumentCollection('Documents\Functional\NotSaved');
+        $collection = $this->dm->getDocumentCollection(NotSaved::class);
         $collection->drop();
         $test = [
             '_id' => new ObjectId(),
@@ -493,7 +499,7 @@ class FunctionalTest extends BaseTest
             'notSaved' => 'test',
         ];
         $collection->insertOne($test);
-        $notSaved = $this->dm->find('Documents\Functional\NotSaved', $test['_id']);
+        $notSaved = $this->dm->find(NotSaved::class, $test['_id']);
         $this->assertEquals('Jonathan Wage', $notSaved->name);
         $this->assertEquals('test', $notSaved->notSaved);
 
@@ -531,7 +537,7 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         /** @var FavoritesUser $test */
-        $test = $this->dm->find('Documents\Functional\FavoritesUser', $user->getId());
+        $test = $this->dm->find(FavoritesUser::class, $user->getId());
 
         /** @var PersistentCollection $collection */
         $collection = $test->getFavorites();
@@ -549,11 +555,11 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         /** @var Bar $test */
-        $test = $this->dm->find('Documents\Bars\Bar', $bar->getId());
+        $test = $this->dm->find(Bar::class, $bar->getId());
 
         /** @var PersistentCollection $collection */
         $collection = $test->getLocations();
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Mapping\ClassMetadata', $collection->getTypeClass());
+        $this->assertInstanceOf(ClassMetadata::class, $collection->getTypeClass());
     }
 
     public function testFavoritesReference()
@@ -588,24 +594,24 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getDocumentCollection('Documents\Functional\FavoritesUser')->findOne(['name' => 'favorites']);
+        $test = $this->dm->getDocumentCollection(FavoritesUser::class)->findOne(['name' => 'favorites']);
         $this->assertTrue(isset($test['favorites'][0]['type']));
         $this->assertEquals('project', $test['favorites'][0]['type']);
         $this->assertEquals('group', $test['favorites'][1]['type']);
         $this->assertTrue(isset($test['favorite']['_doctrine_class_name']));
-        $this->assertEquals('Documents\Project', $test['favorite']['_doctrine_class_name']);
+        $this->assertEquals(Project::class, $test['favorite']['_doctrine_class_name']);
 
-        $user = $this->dm->getRepository('Documents\Functional\FavoritesUser')->findOneBy(['name' => 'favorites']);
+        $user = $this->dm->getRepository(FavoritesUser::class)->findOneBy(['name' => 'favorites']);
         $favorites = $user->getFavorites();
-        $this->assertInstanceOf('Documents\Project', $favorites[0]);
-        $this->assertInstanceOf('Documents\Group', $favorites[1]);
+        $this->assertInstanceOf(Project::class, $favorites[0]);
+        $this->assertInstanceOf(Group::class, $favorites[1]);
 
         $embedded = $user->getEmbedded();
-        $this->assertInstanceOf('Documents\Address', $embedded[0]);
-        $this->assertInstanceOf('Documents\Phonenumber', $embedded[1]);
+        $this->assertInstanceOf(Address::class, $embedded[0]);
+        $this->assertInstanceOf(Phonenumber::class, $embedded[1]);
 
-        $this->assertInstanceOf('Documents\Address', $user->getEmbed());
-        $this->assertInstanceOf('Documents\Project', $user->getFavorite());
+        $this->assertInstanceOf(Address::class, $user->getEmbed());
+        $this->assertInstanceOf(Project::class, $user->getFavorite());
     }
 
     public function testPreUpdate()
@@ -629,11 +635,11 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $product = $this->dm->getRepository('Documents\Functional\PreUpdateTestProduct')->findOneBy(['name' => 'Product']);
+        $product = $this->dm->getRepository(PreUpdateTestProduct::class)->findOneBy(['name' => 'Product']);
 
-        $this->assertInstanceOf('Documents\Functional\PreUpdateTestSellable', $product->sellable);
-        $this->assertInstanceOf('Documents\Functional\PreUpdateTestProduct', $product->sellable->getProduct());
-        $this->assertInstanceOf('Documents\Functional\PreUpdateTestSeller', $product->sellable->getSeller());
+        $this->assertInstanceOf(PreUpdateTestSellable::class, $product->sellable);
+        $this->assertInstanceOf(PreUpdateTestProduct::class, $product->sellable->getProduct());
+        $this->assertInstanceOf(PreUpdateTestSeller::class, $product->sellable->getSeller());
 
         $product = new PreUpdateTestProduct();
         $product->name = 'Product2';
@@ -643,14 +649,14 @@ class FunctionalTest extends BaseTest
 
         $sellable = new PreUpdateTestSellable();
         $sellable->product = $product;
-        $sellable->seller = $this->dm->getRepository('Documents\Functional\PreUpdateTestSeller')->findOneBy(['name' => 'Seller']);
+        $sellable->seller = $this->dm->getRepository(PreUpdateTestSeller::class)->findOneBy(['name' => 'Seller']);
 
         $product->sellable = $sellable;
 
         $this->dm->flush();
         $this->dm->clear();
 
-        $product = $this->dm->getRepository('Documents\Functional\PreUpdateTestProduct')->findOneBy(['name' => 'Product2']);
+        $product = $this->dm->getRepository(PreUpdateTestProduct::class)->findOneBy(['name' => 'Product2']);
         $this->assertEquals('Seller', $product->sellable->getSeller()->getName());
         $this->assertEquals('Product2', $product->sellable->getProduct()->getName());
     }
@@ -671,33 +677,33 @@ class FunctionalTest extends BaseTest
         $this->dm->persist($test3);
         $this->dm->flush();
 
-        $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findOneBy(['name' => 'test1']);
+        $test = $this->dm->getRepository(SameCollection1::class)->findOneBy(['name' => 'test1']);
         $this->assertNotNull($test);
-        $this->assertInstanceOf('Documents\Functional\SameCollection1', $test);
+        $this->assertInstanceOf(SameCollection1::class, $test);
 
-        $test = $this->dm->getRepository('Documents\Functional\SameCollection2')->findOneBy(['name' => 'test2']);
+        $test = $this->dm->getRepository(SameCollection2::class)->findOneBy(['name' => 'test2']);
         $this->assertNotNull($test);
-        $this->assertInstanceOf('Documents\Functional\SameCollection2', $test);
+        $this->assertInstanceOf(SameCollection2::class, $test);
 
-        $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findOneBy(['name' => 'test3']);
+        $test = $this->dm->getRepository(SameCollection1::class)->findOneBy(['name' => 'test3']);
         $this->assertNotNull($test);
-        $this->assertInstanceOf('Documents\Functional\SameCollection1', $test);
+        $this->assertInstanceOf(SameCollection1::class, $test);
 
-        $test = $this->dm->getRepository('Documents\Functional\SameCollection2')->findOneBy(['name' => 'test1']);
+        $test = $this->dm->getRepository(SameCollection2::class)->findOneBy(['name' => 'test1']);
         $this->assertNull($test);
 
         $qb = $this->dm->createQueryBuilder([
-            'Documents\Functional\SameCollection1',
-            'Documents\Functional\SameCollection2',
+            SameCollection1::class,
+            SameCollection2::class,
         ]);
         $q = $qb->getQuery();
         $test = $q->execute()->toArray();
         $this->assertCount(3, $test);
 
-        $test = $this->dm->getRepository('Documents\Functional\SameCollection1')->findAll();
+        $test = $this->dm->getRepository(SameCollection1::class)->findAll();
         $this->assertCount(2, $test);
 
-        $qb = $this->dm->createQueryBuilder('Documents\Functional\SameCollection1');
+        $qb = $this->dm->createQueryBuilder(SameCollection1::class);
         $query = $qb->getQuery();
         $test = $query->execute()->toArray();
         $this->assertCount(2, $test);
@@ -709,8 +715,8 @@ class FunctionalTest extends BaseTest
     public function testNotSameCollectionThrowsException()
     {
         $test = $this->dm->createQueryBuilder([
-             'Documents\User',
-             'Documents\Profile',
+             User::class,
+             Profile::class,
         ])->getQuery()->execute();
     }
 
@@ -739,12 +745,12 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->find($test->id);
+        $check = $this->dm->getRepository(EmbeddedTestLevel0::class)->find($test->id);
         $this->assertEquals('test', $check->name);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $check->level1[0]);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel1', $check->level1[1]);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $check->level1[1]->level2[0]);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel2', $check->level1[1]->level2[1]);
+        $this->assertInstanceOf(EmbeddedTestLevel1::class, $check->level1[0]);
+        $this->assertInstanceOf(EmbeddedTestLevel1::class, $check->level1[1]);
+        $this->assertInstanceOf(EmbeddedTestLevel2::class, $check->level1[1]->level2[0]);
+        $this->assertInstanceOf(EmbeddedTestLevel2::class, $check->level1[1]->level2[1]);
         $this->assertCount(2, $check->level1);
         $this->assertCount(2, $check->level1[1]->level2);
     }
@@ -766,7 +772,7 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         // fetch the level0b from db
-        $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0b', $test->id);
+        $test = $this->dm->find(EmbeddedTestLevel0b::class, $test->id);
 
         // add a level2 in the level0b.level1
         $level2 = new EmbeddedTestLevel2();
@@ -781,7 +787,7 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         // fetch again
-        $test = $this->dm->find('Documents\Functional\EmbeddedTestLevel0b', $test->id);
+        $test = $this->dm->find(EmbeddedTestLevel0b::class, $test->id);
 
         // Uh oh, the level2 was not persisted!
         $this->assertCount(1, $test->oneLevel1->level2);
@@ -805,7 +811,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $user = $this->dm->find(User::class, $user->getId());
         $this->assertNotNull($user);
 
         // remove two of the groups and pass the groups back into the User
@@ -820,7 +826,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $user = $this->dm->find(User::class, $user->getId());
         $this->assertCount(1, $user->getGroups());
     }
 
@@ -843,7 +849,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $user = $this->dm->find(User::class, $user->getId());
         $this->assertNotNull($user);
 
         // Issue is collection must be initialized
@@ -861,7 +867,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $user = $this->dm->find(User::class, $user->getId());
         $this->assertCount(1, $user->getGroups());
     }
 

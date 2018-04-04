@@ -31,7 +31,7 @@ class InheritanceTest extends BaseTest
         $this->assertNotSame('', $user->getId());
         $this->assertNotSame('', $user->getProfile()->getProfileId());
 
-        $qb = $this->dm->createQueryBuilder('Documents\SpecialUser')
+        $qb = $this->dm->createQueryBuilder(SpecialUser::class)
             ->field('id')
             ->equals($user->getId());
         $query = $qb->getQuery();
@@ -53,7 +53,7 @@ class InheritanceTest extends BaseTest
         $this->dm->persist($subProject);
         $this->dm->flush();
 
-        $coll = $this->dm->getDocumentCollection('Documents\SubProject');
+        $coll = $this->dm->getDocumentCollection(SubProject::class);
         $document = $coll->findOne(['name' => 'Sub Project']);
         $this->assertEquals('sub-project', $document['type']);
 
@@ -61,28 +61,28 @@ class InheritanceTest extends BaseTest
         $this->dm->persist($project);
         $this->dm->flush();
 
-        $coll = $this->dm->getDocumentCollection('Documents\OtherSubProject');
+        $coll = $this->dm->getDocumentCollection(OtherSubProject::class);
         $document = $coll->findOne(['name' => 'Other Sub Project']);
         $this->assertEquals('other-sub-project', $document['type']);
 
         $this->dm->clear();
 
-        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(['name' => 'Sub Project']);
-        $this->assertInstanceOf('Documents\SubProject', $document);
+        $document = $this->dm->getRepository(SubProject::class)->findOneBy(['name' => 'Sub Project']);
+        $this->assertInstanceOf(SubProject::class, $document);
 
-        $document = $this->dm->getRepository('Documents\SubProject')->findOneBy(['name' => 'Sub Project']);
-        $this->assertInstanceOf('Documents\SubProject', $document);
+        $document = $this->dm->getRepository(SubProject::class)->findOneBy(['name' => 'Sub Project']);
+        $this->assertInstanceOf(SubProject::class, $document);
 
-        $document = $this->dm->getRepository('Documents\Project')->findOneBy(['name' => 'Sub Project']);
-        $this->assertInstanceOf('Documents\SubProject', $document);
+        $document = $this->dm->getRepository(Project::class)->findOneBy(['name' => 'Sub Project']);
+        $this->assertInstanceOf(SubProject::class, $document);
         $this->dm->clear();
 
         $id = $document->getId();
-        $document = $this->dm->find('Documents\Project', $id);
-        $this->assertInstanceOf('Documents\SubProject', $document);
+        $document = $this->dm->find(Project::class, $id);
+        $this->assertInstanceOf(SubProject::class, $document);
 
-        $document = $this->dm->getRepository('Documents\Project')->findOneBy(['name' => 'Other Sub Project']);
-        $this->assertInstanceOf('Documents\OtherSubProject', $document);
+        $document = $this->dm->getRepository(Project::class)->findOneBy(['name' => 'Other Sub Project']);
+        $this->assertInstanceOf(OtherSubProject::class, $document);
     }
 
     public function testPrePersistIsCalledFromMappedSuperClass()
@@ -108,13 +108,13 @@ class InheritanceTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $developer = $this->dm->find('Documents\Developer', $developer->getId());
+        $developer = $this->dm->find(Developer::class, $developer->getId());
         $projects  = $developer->getProjects();
 
         $this->assertEquals(3, $projects->count());
 
-        $this->assertInstanceOf('Documents\Project', $projects[0]);
-        $this->assertInstanceOf('Documents\SubProject', $projects[1]);
-        $this->assertInstanceOf('Documents\OtherSubProject', $projects[2]);
+        $this->assertInstanceOf(Project::class, $projects[0]);
+        $this->assertInstanceOf(SubProject::class, $projects[1]);
+        $this->assertInstanceOf(OtherSubProject::class, $projects[2]);
     }
 }

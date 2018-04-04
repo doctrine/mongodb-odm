@@ -32,7 +32,7 @@ class CustomIdTest extends BaseTest
 
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\CustomUser', $user->getId());
+        $user = $this->dm->find(CustomUser::class, $user->getId());
 
         $this->assertNotNull($user);
 
@@ -41,7 +41,7 @@ class CustomIdTest extends BaseTest
         $this->dm->clear();
         unset($user);
 
-        $user = $this->dm->find('Documents\CustomUser', 'userId');
+        $user = $this->dm->find(CustomUser::class, 'userId');
 
         $this->assertNotNull($user);
 
@@ -78,7 +78,7 @@ class CustomIdTest extends BaseTest
 
         unset($user1, $user2, $user3);
 
-        $users = $this->dm->getRepository('Documents\User')->findAll();
+        $users = $this->dm->getRepository(User::class)->findAll();
 
         $this->assertCount(2, $users);
 
@@ -91,7 +91,7 @@ class CustomIdTest extends BaseTest
             $results['ids'][] = $user->getId();
         }
 
-        $users = $this->dm->getRepository('Documents\CustomUser')->findAll();
+        $users = $this->dm->getRepository(CustomUser::class)->findAll();
 
         $this->assertCount(1, $users);
 
@@ -137,7 +137,7 @@ class CustomIdTest extends BaseTest
 
         unset($user1, $user2, $user3);
 
-        $user = $this->dm->find('Documents\CustomUser', 'userId');
+        $user = $this->dm->find(CustomUser::class, 'userId');
 
         $this->assertNotNull($user);
         $this->assertEquals('userId', $user->getId());
@@ -146,7 +146,7 @@ class CustomIdTest extends BaseTest
         $this->dm->clear();
         unset($user);
 
-        $this->assertNull($this->dm->find('Documents\User', 'userId'));
-        $this->assertNull($this->dm->find('Documents\CustomUser', 'asd'));
+        $this->assertNull($this->dm->find(User::class, 'userId'));
+        $this->assertNull($this->dm->find(CustomUser::class, 'asd'));
     }
 }

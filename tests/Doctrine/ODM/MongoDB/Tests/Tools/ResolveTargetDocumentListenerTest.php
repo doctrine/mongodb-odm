@@ -30,26 +30,26 @@ class ResolveTargetDocumentListenerTest extends BaseTest
         $evm = $this->dm->getEventManager();
 
         $this->listener->addResolveTargetDocument(
-            'Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface',
-            'Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetDocument',
+            ResolveTargetInterface::class,
+            ResolveTargetDocument::class,
             []
         );
 
         $this->listener->addResolveTargetDocument(
-            'Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface',
-            'Doctrine\ODM\MongoDB\Tests\Tools\TargetDocument',
+            TargetInterface::class,
+            TargetDocument::class,
             []
         );
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);
 
-        $cm = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetDocument');
+        $cm = $this->dm->getClassMetadata(ResolveTargetDocument::class);
         $meta = $cm->associationMappings;
 
-        $this->assertSame('Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetDocument', $meta['refOne']['targetDocument']);
-        $this->assertSame('Doctrine\ODM\MongoDB\Tests\Tools\TargetDocument', $meta['refMany']['targetDocument']);
-        $this->assertSame('Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetDocument', $meta['embedOne']['targetDocument']);
-        $this->assertSame('Doctrine\ODM\MongoDB\Tests\Tools\TargetDocument', $meta['embedMany']['targetDocument']);
+        $this->assertSame(ResolveTargetDocument::class, $meta['refOne']['targetDocument']);
+        $this->assertSame(TargetDocument::class, $meta['refMany']['targetDocument']);
+        $this->assertSame(ResolveTargetDocument::class, $meta['embedOne']['targetDocument']);
+        $this->assertSame(TargetDocument::class, $meta['embedMany']['targetDocument']);
     }
 }
 

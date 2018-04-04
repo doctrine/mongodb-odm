@@ -249,7 +249,7 @@ class OrphanRemovalTest extends BaseTest
      */
     private function getUserRepository()
     {
-        return $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalUser');
+        return $this->dm->getRepository(OrphanRemovalUser::class);
     }
 
     /**
@@ -257,7 +257,7 @@ class OrphanRemovalTest extends BaseTest
      */
     private function getProfileRepository()
     {
-        return $this->dm->getRepository('Doctrine\ODM\MongoDB\Tests\Functional\OrphanRemovalProfile');
+        return $this->dm->getRepository(OrphanRemovalProfile::class);
     }
 }
 

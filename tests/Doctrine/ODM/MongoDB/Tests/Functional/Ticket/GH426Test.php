@@ -19,13 +19,13 @@ class GH426Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $form = $this->dm->find('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH426Form', $form->id);
+        $form = $this->dm->find(GH426Form::class, $form->id);
 
         $this->assertEquals(2, $form->fields->count());
         $this->assertSame($form->fields[0], $form->firstField);
         $this->assertSame($form->fields[1], $form->lastField);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH426Field', $form->firstField);
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH426Field', $form->lastField);
+        $this->assertInstanceOf(GH426Field::class, $form->firstField);
+        $this->assertInstanceOf(GH426Field::class, $form->lastField);
     }
 }
 

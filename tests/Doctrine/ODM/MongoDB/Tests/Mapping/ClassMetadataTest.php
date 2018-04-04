@@ -9,13 +9,17 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Documents\Account;
+use Documents\Address;
 use Documents\Album;
+use Documents\Bar;
 use Documents\CmsUser;
 use Documents\SpecialUser;
 use Documents\User;
+use Documents\UserRepository;
 use function array_merge;
 use function get_class;
 use function serialize;
@@ -25,13 +29,13 @@ class ClassMetadataTest extends BaseTest
 {
     public function testClassMetadataInstanceSerialization()
     {
-        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
 
         // Test initial state
         $this->assertCount(0, $cm->getReflectionProperties());
         $this->assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
-        $this->assertEquals('Documents\CmsUser', $cm->name);
-        $this->assertEquals('Documents\CmsUser', $cm->rootDocumentName);
+        $this->assertEquals(CmsUser::class, $cm->name);
+        $this->assertEquals(CmsUser::class, $cm->rootDocumentName);
         $this->assertEquals([], $cm->subClasses);
         $this->assertEquals([], $cm->parentClasses);
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
@@ -58,18 +62,18 @@ class ClassMetadataTest extends BaseTest
         $this->assertGreaterThan(0, $cm->getReflectionProperties());
         $this->assertEquals('Documents', $cm->namespace);
         $this->assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
-        $this->assertEquals('Documents\CmsUser', $cm->name);
+        $this->assertEquals(CmsUser::class, $cm->name);
         $this->assertEquals('UserParent', $cm->rootDocumentName);
         $this->assertEquals(['Documents\One', 'Documents\Two', 'Documents\Three'], $cm->subClasses);
         $this->assertEquals(['UserParent'], $cm->parentClasses);
-        $this->assertEquals('Documents\UserRepository', $cm->customRepositoryClassName);
+        $this->assertEquals(UserRepository::class, $cm->customRepositoryClassName);
         $this->assertEquals('disc', $cm->discriminatorField);
         $this->assertInternalType('array', $cm->getFieldMapping('phonenumbers'));
         $this->assertCount(1, $cm->fieldMappings);
         $this->assertCount(1, $cm->associationMappings);
         $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $cm->getShardKey());
         $mapping = $cm->getFieldMapping('phonenumbers');
-        $this->assertEquals('Documents\Bar', $mapping['targetDocument']);
+        $this->assertEquals(Bar::class, $mapping['targetDocument']);
         $this->assertTrue($cm->getCollectionCapped());
         $this->assertEquals(1000, $cm->getCollectionMax());
         $this->assertEquals(500, $cm->getCollectionSize());
@@ -88,7 +92,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testFieldIsNullable()
     {
-        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
 
         // Explicit Nullable
         $cm->mapField(['fieldName' => 'status', 'nullable' => true, 'type' => 'string', 'length' => 50]);
@@ -121,7 +125,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testMapManyToManyJoinTableDefaults()
     {
-        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $cm->mapManyEmbedded(
             [
             'fieldName' => 'groups',
@@ -162,7 +166,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testDuplicateFieldMapping()
     {
-        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $a1 = ['reference' => true, 'type' => 'many', 'fieldName' => 'name', 'targetDocument' => 'stdClass'];
         $a2 = ['type' => 'string', 'fieldName' => 'name'];
 
@@ -174,7 +178,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testDuplicateColumnNameDiscriminatorColumnThrowsMappingException()
     {
-        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $cm->mapField(['fieldName' => 'name']);
 
         $this->expectException(MappingException::class);
@@ -183,7 +187,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testDuplicateFieldNameDiscriminatorColumn2ThrowsMappingException()
     {
-        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $cm->setDiscriminatorField('name');
 
         $this->expectException(MappingException::class);
@@ -192,7 +196,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testDuplicateFieldAndAssocationMapping1()
     {
-        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $cm->mapField(['fieldName' => 'name']);
         $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => 'CmsUser']);
 
@@ -201,7 +205,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testDuplicateFieldAndAssocationMapping2()
     {
-        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => 'CmsUser']);
         $cm->mapField(['fieldName' => 'name', 'columnName' => 'name', 'type' => 'string']);
 
@@ -213,7 +217,7 @@ class ClassMetadataTest extends BaseTest
      */
     public function testMapNotExistingFieldThrowsException()
     {
-        $cm = new ClassMetadata('Documents\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $cm->mapField(['fieldName' => 'namee', 'columnName' => 'name', 'type' => 'string']);
     }
 
@@ -307,7 +311,7 @@ class ClassMetadataTest extends BaseTest
     public function testGetFieldValue()
     {
         $document = new Album('ten');
-        $metadata = $this->dm->getClassMetadata('Documents\Album');
+        $metadata = $this->dm->getClassMetadata(Album::class);
 
         $this->assertEquals($document->getName(), $metadata->getFieldValue($document, 'name'));
     }
@@ -319,11 +323,11 @@ class ClassMetadataTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $proxy = $this->dm->getReference('Documents\Album', $document->getId());
-        $metadata = $this->dm->getClassMetadata('Documents\Album');
+        $proxy = $this->dm->getReference(Album::class, $document->getId());
+        $metadata = $this->dm->getClassMetadata(Album::class);
 
         $this->assertEquals($document->getName(), $metadata->getFieldValue($proxy, 'name'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $proxy);
+        $this->assertInstanceOf(Proxy::class, $proxy);
         $this->assertTrue($proxy->__isInitialized());
     }
 
@@ -334,18 +338,18 @@ class ClassMetadataTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $proxy = $this->dm->getReference('Documents\Album', $document->getId());
-        $metadata = $this->dm->getClassMetadata('Documents\Album');
+        $proxy = $this->dm->getReference(Album::class, $document->getId());
+        $metadata = $this->dm->getClassMetadata(Album::class);
 
         $this->assertEquals($document->getId(), $metadata->getFieldValue($proxy, 'id'));
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $proxy);
+        $this->assertInstanceOf(Proxy::class, $proxy);
         $this->assertFalse($proxy->__isInitialized());
     }
 
     public function testSetFieldValue()
     {
         $document = new Album('ten');
-        $metadata = $this->dm->getClassMetadata('Documents\Album');
+        $metadata = $this->dm->getClassMetadata(Album::class);
 
         $metadata->setFieldValue($document, 'name', 'nevermind');
 
@@ -359,17 +363,17 @@ class ClassMetadataTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $proxy = $this->dm->getReference('Documents\Album', $document->getId());
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $proxy);
+        $proxy = $this->dm->getReference(Album::class, $document->getId());
+        $this->assertInstanceOf(Proxy::class, $proxy);
 
-        $metadata = $this->dm->getClassMetadata('Documents\Album');
+        $metadata = $this->dm->getClassMetadata(Album::class);
         $metadata->setFieldValue($proxy, 'name', 'nevermind');
 
         $this->dm->flush();
         $this->dm->clear();
 
-        $proxy = $this->dm->getReference('Documents\Album', $document->getId());
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $proxy);
+        $proxy = $this->dm->getReference(Album::class, $document->getId());
+        $this->assertInstanceOf(Proxy::class, $proxy);
 
         $this->assertEquals('nevermind', $proxy->getName());
     }
@@ -390,7 +394,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testEmbeddedAssociationsAlwaysCascade()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\EmbeddedAssociationsCascadeTest');
+        $class = $this->dm->getClassMetadata(EmbeddedAssociationsCascadeTest::class);
 
         $this->assertTrue($class->fieldMappings['address']['isCascadeRemove']);
         $this->assertTrue($class->fieldMappings['address']['isCascadePersist']);
@@ -411,10 +415,10 @@ class ClassMetadataTest extends BaseTest
      */
     public function testEmbedWithCascadeThrowsMappingException()
     {
-        $class = new ClassMetadata(__NAMESPACE__ . '\EmbedWithCascadeTest');
+        $class = new ClassMetadata(EmbedWithCascadeTest::class);
         $class->mapOneEmbedded([
             'fieldName' => 'address',
-            'targetDocument' => 'Documents\Address',
+            'targetDocument' => Address::class,
             'cascade' => 'all',
         ]);
     }
@@ -425,7 +429,7 @@ class ClassMetadataTest extends BaseTest
      */
     public function testInvokeLifecycleCallbacksShouldRequireInstanceOfClass()
     {
-        $class = $this->dm->getClassMetadata('\Documents\User');
+        $class = $this->dm->getClassMetadata(User::class);
         $document = new \stdClass();
 
         $this->assertInstanceOf('\stdClass', $document);
@@ -435,10 +439,10 @@ class ClassMetadataTest extends BaseTest
 
     public function testInvokeLifecycleCallbacksAllowsInstanceOfClass()
     {
-        $class = $this->dm->getClassMetadata('\Documents\User');
+        $class = $this->dm->getClassMetadata(User::class);
         $document = new Specialuser();
 
-        $this->assertInstanceOf('\Documents\SpecialUser', $document);
+        $this->assertInstanceOf(SpecialUser::class, $document);
 
         $class->invokeLifecycleCallbacks(Events::prePersist, $document);
     }
@@ -450,10 +454,10 @@ class ClassMetadataTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $class = $this->dm->getClassMetadata('\Documents\User');
-        $proxy = $this->dm->getReference('\Documents\User', $document->getId());
+        $class = $this->dm->getClassMetadata(User::class);
+        $proxy = $this->dm->getReference(User::class, $document->getId());
 
-        $this->assertInstanceOf('\Documents\User', $proxy);
+        $this->assertInstanceOf(User::class, $proxy);
 
         $class->invokeLifecycleCallbacks(Events::prePersist, $proxy);
     }

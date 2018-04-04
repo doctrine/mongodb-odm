@@ -12,11 +12,11 @@ class ReferenceDiscriminatorsTest extends BaseTest
     public function setUp()
     {
         parent::setUp();
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\CommentableAction');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\GroupMainActivityStreamItem');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\GroupMembersActivityStreamItem');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\UserDashboardActivityStreamItem');
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(__NAMESPACE__ . '\UserProfileActivityStreamItem');
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(CommentableAction::class);
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(GroupMainActivityStreamItem::class);
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(GroupMembersActivityStreamItem::class);
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(UserDashboardActivityStreamItem::class);
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(UserProfileActivityStreamItem::class);
     }
 
     /**
@@ -33,11 +33,11 @@ class ReferenceDiscriminatorsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $commentableAction = $this->dm->find(__NAMESPACE__ . '\CommentableAction', $commentableAction->getId());
-        $groupMainActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\GroupMainActivityStreamItem', $groupMainActivityStreamItem->getId());
-        $groupMemberActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem->getId());
-        $userDashboardActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem->getId());
-        $userProfileActivityStreamItem = $this->dm->find(__NAMESPACE__ . '\UserProfileActivityStreamItem', $userProfileActivityStreamItem->getId());
+        $commentableAction = $this->dm->find(CommentableAction::class, $commentableAction->getId());
+        $groupMainActivityStreamItem = $this->dm->find(GroupMainActivityStreamItem::class, $groupMainActivityStreamItem->getId());
+        $groupMemberActivityStreamItem = $this->dm->find(GroupMembersActivityStreamItem::class, $groupMemberActivityStreamItem->getId());
+        $userDashboardActivityStreamItem = $this->dm->find(UserDashboardActivityStreamItem::class, $userDashboardActivityStreamItem->getId());
+        $userProfileActivityStreamItem = $this->dm->find(UserProfileActivityStreamItem::class, $userProfileActivityStreamItem->getId());
 
         $this->assertSame($commentableAction, $groupMainActivityStreamItem->getAction());
         $this->assertSame($commentableAction, $groupMemberActivityStreamItem->getAction());
@@ -66,17 +66,17 @@ class ReferenceDiscriminatorsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $commentableAction1 = $this->dm->find(__NAMESPACE__ . '\CommentableAction', $commentableAction1->getId());
-        $groupMainActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\GroupMainActivityStreamItem', $groupMainActivityStreamItem1->getId());
-        $groupMemberActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem1->getId());
-        $userDashboardActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem1->getId());
-        $userProfileActivityStreamItem1 = $this->dm->find(__NAMESPACE__ . '\UserProfileActivityStreamItem', $userProfileActivityStreamItem1->getId());
+        $commentableAction1 = $this->dm->find(CommentableAction::class, $commentableAction1->getId());
+        $groupMainActivityStreamItem1 = $this->dm->find(GroupMainActivityStreamItem::class, $groupMainActivityStreamItem1->getId());
+        $groupMemberActivityStreamItem1 = $this->dm->find(GroupMembersActivityStreamItem::class, $groupMemberActivityStreamItem1->getId());
+        $userDashboardActivityStreamItem1 = $this->dm->find(UserDashboardActivityStreamItem::class, $userDashboardActivityStreamItem1->getId());
+        $userProfileActivityStreamItem1 = $this->dm->find(UserProfileActivityStreamItem::class, $userProfileActivityStreamItem1->getId());
 
-        $commentableAction2 = $this->dm->find(__NAMESPACE__ . '\CommentableAction', $commentableAction2->getId());
-        $groupMainActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\GroupMainActivityStreamItem', $groupMainActivityStreamItem2->getId());
-        $groupMemberActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\GroupMembersActivityStreamItem', $groupMemberActivityStreamItem2->getId());
-        $userDashboardActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\UserDashboardActivityStreamItem', $userDashboardActivityStreamItem2->getId());
-        $userProfileActivityStreamItem2 = $this->dm->find(__NAMESPACE__ . '\UserProfileActivityStreamItem', $userProfileActivityStreamItem2->getId());
+        $commentableAction2 = $this->dm->find(CommentableAction::class, $commentableAction2->getId());
+        $groupMainActivityStreamItem2 = $this->dm->find(GroupMainActivityStreamItem::class, $groupMainActivityStreamItem2->getId());
+        $groupMemberActivityStreamItem2 = $this->dm->find(GroupMembersActivityStreamItem::class, $groupMemberActivityStreamItem2->getId());
+        $userDashboardActivityStreamItem2 = $this->dm->find(UserDashboardActivityStreamItem::class, $userDashboardActivityStreamItem2->getId());
+        $userProfileActivityStreamItem2 = $this->dm->find(UserProfileActivityStreamItem::class, $userProfileActivityStreamItem2->getId());
 
         $this->assertSame($commentableAction1, $groupMainActivityStreamItem1->getAction());
         $this->assertSame($commentableAction1, $groupMemberActivityStreamItem1->getAction());

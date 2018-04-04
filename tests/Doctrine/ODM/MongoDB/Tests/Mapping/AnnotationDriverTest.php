@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Documents\CmsUser;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -82,11 +83,11 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testColumnWithMissingTypeDefaultsToString()
     {
-        $cm = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ColumnWithoutType');
+        $cm = new ClassMetadata(ColumnWithoutType::class);
         $reader = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
-        $annotationDriver->loadMetadataForClass('Doctrine\ODM\MongoDB\Tests\Mapping\InvalidColumn', $cm);
+        $annotationDriver->loadMetadataForClass(InvalidColumn::class, $cm);
         $this->assertEquals('id', $cm->fieldMappings['id']['type']);
     }
 
@@ -123,12 +124,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate()
     {
-        $rightClassName = 'Documents\CmsUser';
-
         $annotationDriver = $this->_loadDriverForCMSDocuments();
         $classes = $annotationDriver->getAllClassNames();
 
-        $this->assertContains($rightClassName, $classes);
+        $this->assertContains(CmsUser::class, $classes);
     }
 
     /**

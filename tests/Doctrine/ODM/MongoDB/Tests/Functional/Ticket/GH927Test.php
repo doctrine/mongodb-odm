@@ -11,10 +11,10 @@ class GH927Test extends BaseTest
 {
     public function testInheritedClassHasAssociationMapping()
     {
-        $parentMetadata = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH927Parent');
+        $parentMetadata = $this->dm->getClassMetadata(GH927Parent::class);
         $this->assertArrayHasKey('reference', $parentMetadata->associationMappings);
 
-        $childMetadata = $this->dm->getClassMetadata('Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH927Child');
+        $childMetadata = $this->dm->getClassMetadata(GH927Child::class);
         $this->assertArrayHasKey('reference', $childMetadata->associationMappings);
     }
 }

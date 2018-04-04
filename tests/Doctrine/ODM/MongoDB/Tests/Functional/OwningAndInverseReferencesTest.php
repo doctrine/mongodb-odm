@@ -41,8 +41,8 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $customer = $this->dm->getRepository('Documents\Customer')->find($customer->id);
-        $this->assertInstanceOf('Documents\Cart', $customer->cart);
+        $customer = $this->dm->getRepository(Customer::class)->find($customer->id);
+        $this->assertInstanceOf(Cart::class, $customer->cart);
         $this->assertEquals($customer->cart->id, $customer->cart->id);
 
         $check = $this->dm->getDocumentCollection(get_class($customer))->findOne();
@@ -58,8 +58,8 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertArrayHasKey('cart', $check);
         $this->assertEquals('ok', $check['cart']);
 
-        $customer = $this->dm->getRepository('Documents\Customer')->find($customer->id);
-        $this->assertInstanceOf('Documents\Cart', $customer->cart);
+        $customer = $this->dm->getRepository(Customer::class)->find($customer->id);
+        $this->assertInstanceOf(Cart::class, $customer->cart);
         $this->assertEquals('ok', $customer->cartTest);
     }
 
@@ -75,7 +75,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $check = $this->dm->getDocumentCollection(get_class($product))->findOne();
         $this->assertArrayNotHasKey('tags', $check);
 
-        $check = $this->dm->getDocumentCollection('Documents\Feature')->findOne();
+        $check = $this->dm->getDocumentCollection(Feature::class)->findOne();
         $this->assertArrayHasKey('product', $check);
 
         $product = $this->dm->createQueryBuilder(get_class($product))
@@ -105,7 +105,7 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->field('children')->exists(false)
             ->getQuery()
             ->getSingleResult();
-        $this->assertInstanceOf('Documents\BrowseNode', $root);
+        $this->assertInstanceOf(BrowseNode::class, $root);
         $this->assertCount(2, $root->children);
 
         unset($root->children[0]);
@@ -131,17 +131,17 @@ class OwningAndInverseReferencesTest extends BaseTest
         $check = $this->dm->getDocumentCollection(get_class($blogPost))->findOne();
         $this->assertCount(1, $check['tags']);
 
-        $check = $this->dm->getDocumentCollection('Documents\Tag')->findOne();
+        $check = $this->dm->getDocumentCollection(Tag::class)->findOne();
         $this->assertArrayNotHasKey('blogPosts', $check);
 
-        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+        $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
         $this->assertCount(1, $blogPost->tags);
 
         $this->dm->clear();
 
-        $tag = $this->dm->createQueryBuilder('Documents\Tag')
+        $tag = $this->dm->createQueryBuilder(Tag::class)
             ->getQuery()
             ->getSingleResult();
         $this->assertEquals('baseball', $tag->name);
@@ -165,14 +165,14 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->createQueryBuilder('Documents\FriendUser')
+        $check = $this->dm->createQueryBuilder(FriendUser::class)
             ->field('name')->equals('fabpot')
             ->hydrate(false)
             ->getQuery()
             ->getSingleResult();
         $this->assertArrayNotHasKey('friendsWithMe', $check);
 
-        $user = $this->dm->createQueryBuilder('Documents\FriendUser')
+        $user = $this->dm->createQueryBuilder(FriendUser::class)
             ->field('name')->equals('fabpot')
             ->getQuery()
             ->getSingleResult();
@@ -182,7 +182,7 @@ class OwningAndInverseReferencesTest extends BaseTest
 
         $this->dm->clear();
 
-        $user = $this->dm->createQueryBuilder('Documents\FriendUser')
+        $user = $this->dm->createQueryBuilder(FriendUser::class)
             ->field('name')->equals('romanb')
             ->getQuery()
             ->getSingleResult();
@@ -192,7 +192,7 @@ class OwningAndInverseReferencesTest extends BaseTest
 
         $this->dm->clear();
 
-        $user = $this->dm->createQueryBuilder('Documents\FriendUser')
+        $user = $this->dm->createQueryBuilder(FriendUser::class)
             ->field('name')->equals('jwage')
             ->getQuery()
             ->getSingleResult();
@@ -224,7 +224,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+        $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
         $this->assertEquals('Comment 1', $blogPost->comments[0]->text);
@@ -234,14 +234,14 @@ class OwningAndInverseReferencesTest extends BaseTest
 
         $this->dm->clear();
 
-        $comment = $this->dm->createQueryBuilder('Documents\Comment')
+        $comment = $this->dm->createQueryBuilder(Comment::class)
             ->getQuery()
             ->getSingleResult();
         $this->assertEquals('Test', $comment->parent->getName());
 
         $this->dm->clear();
 
-        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+        $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
         $this->assertEquals('Comment 1', $blogPost->firstComment->getText());
@@ -253,7 +253,7 @@ class OwningAndInverseReferencesTest extends BaseTest
 
         $this->dm->clear();
 
-        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+        $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
 
@@ -262,7 +262,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $blogPost = $this->dm->createQueryBuilder('Documents\BlogPost')
+        $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
         $this->assertCount(2, $blogPost->adminComments);

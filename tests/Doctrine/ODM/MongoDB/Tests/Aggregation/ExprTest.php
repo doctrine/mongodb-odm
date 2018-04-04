@@ -114,7 +114,7 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
 
         $this->expectException(\BadMethodCallException::class);
-        $this->expectExceptionMessage('Doctrine\ODM\MongoDB\Aggregation\Expr::case requires a valid switch statement (call switch() first).');
+        $this->expectExceptionMessage(Expr::class . '::case requires a valid switch statement (call switch() first).');
 
         $expr->case('$field');
     }
@@ -124,7 +124,7 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
 
         $this->expectException(\BadMethodCallException::class);
-        $this->expectExceptionMessage('Doctrine\ODM\MongoDB\Aggregation\Expr::then requires a valid case statement (call case() first).');
+        $this->expectExceptionMessage(Expr::class . '::then requires a valid case statement (call case() first).');
 
         $expr->then('$field');
     }
@@ -138,7 +138,7 @@ class ExprTest extends BaseTest
             ->then('$field');
 
         $this->expectException(\BadMethodCallException::class);
-        $this->expectExceptionMessage('Doctrine\ODM\MongoDB\Aggregation\Expr::then requires a valid case statement (call case() first).');
+        $this->expectExceptionMessage(Expr::class . '::then requires a valid case statement (call case() first).');
 
         $expr->then('$field');
     }
@@ -148,7 +148,7 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
 
         $this->expectException(\BadMethodCallException::class);
-        $this->expectExceptionMessage('Doctrine\ODM\MongoDB\Aggregation\Expr::default requires a valid switch statement (call switch() first).');
+        $this->expectExceptionMessage(Expr::class . '::default requires a valid switch statement (call switch() first).');
 
         $expr->default('$field');
     }

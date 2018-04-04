@@ -20,7 +20,7 @@ class ReferenceEmbeddedDocumentsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $project = $this->dm->find('Documents\Project', $project->getId());
+        $project = $this->dm->find(Project::class, $project->getId());
 
         $subProjects = new ArrayCollection();
         $subProject1 = new SubProject('Sub Project #1');
@@ -44,7 +44,7 @@ class ReferenceEmbeddedDocumentsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $project = $this->dm->find('Documents\Project', $project->getId());
+        $project = $this->dm->find(Project::class, $project->getId());
 
         $subProjects = $project->getSubProjects();
 

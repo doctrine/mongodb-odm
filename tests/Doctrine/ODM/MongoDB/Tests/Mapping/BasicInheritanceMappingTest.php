@@ -27,12 +27,12 @@ class BasicInheritanceMappingTest extends BaseTest
      */
     public function testGetMetadataForTransientClassThrowsException()
     {
-        $this->factory->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\TransientBaseClass');
+        $this->factory->getMetadataFor(TransientBaseClass::class);
     }
 
     public function testGetMetadataForSubclassWithTransientBaseClass()
     {
-        $class = $this->factory->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\DocumentSubClass');
+        $class = $this->factory->getMetadataFor(DocumentSubClass::class);
 
         $this->assertEmpty($class->subClasses);
         $this->assertEmpty($class->parentClasses);
@@ -42,7 +42,7 @@ class BasicInheritanceMappingTest extends BaseTest
 
     public function testGetMetadataForSubclassWithMappedSuperclass()
     {
-        $class = $this->factory->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\DocumentSubClass2');
+        $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
         $this->assertEmpty($class->subClasses);
         $this->assertEmpty($class->parentClasses);
@@ -64,7 +64,7 @@ class BasicInheritanceMappingTest extends BaseTest
      */
     public function testSerializationWithPrivateFieldsFromMappedSuperclass()
     {
-        $class = $this->factory->getMetadataFor(__NAMESPACE__ . '\\DocumentSubClass2');
+        $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
         $class2 = unserialize(serialize($class));
 

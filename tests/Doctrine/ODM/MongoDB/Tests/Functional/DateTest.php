@@ -26,7 +26,7 @@ class DateTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'w00ting']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'w00ting']);
         $this->assertNotNull($user);
         $this->assertEquals('w00ting', $user->getUsername());
         $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());
@@ -96,10 +96,10 @@ class DateTest extends BaseTest
 
         $this->dm->clear();
 
-        $test = $this->dm->getDocumentCollection('Documents\User')->findOne(['username' => 'datetest2']);
+        $test = $this->dm->getDocumentCollection(User::class)->findOne(['username' => 'datetest2']);
         $this->assertArrayHasKey('createdAt', $test);
 
-        $user = $this->dm->getRepository('Documents\User')->findOneBy(['username' => 'datetest2']);
+        $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'datetest2']);
         $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());
         $this->assertEquals('1900-01-01', $user->getCreatedAt()->format('Y-m-d'));
     }

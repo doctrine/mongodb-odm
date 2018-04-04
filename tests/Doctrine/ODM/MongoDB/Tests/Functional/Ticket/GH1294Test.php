@@ -12,8 +12,6 @@ class GH1294Test extends BaseTest
 {
     public function testRegexSearchOnIdentifierWithUuidStrategy()
     {
-        $userClass = __NAMESPACE__ . '\GH1294User';
-
         $user1 = new GH1294User();
         $user1->id = 'aaa111aaa';
         $user1->name = 'Steven';
@@ -27,7 +25,7 @@ class GH1294Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder($userClass);
+        $qb = $this->dm->createQueryBuilder(GH1294User::class);
 
         $res = $qb->field('id')
             ->equals(new Regex('^bbb.*$', 'i'))

@@ -19,11 +19,11 @@ class MODM65Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\MODM65User')->findOne();
+        $user = $this->dm->getDocumentCollection(MODM65User::class)->findOne();
         $this->assertTrue(isset($user['snu']['lN']));
         $this->assertTrue(isset($user['snu']['fN']));
 
-        $user = $this->dm->find(__NAMESPACE__ . '\MODM65User', $user['_id']);
+        $user = $this->dm->find(MODM65User::class, $user['_id']);
         $this->assertEquals('Jonathan', $user->socialNetworkUser->firstName);
         $this->assertEquals('Wage', $user->socialNetworkUser->lastName);
     }

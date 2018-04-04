@@ -24,10 +24,10 @@ class GH389Test extends BaseTest
         unset($rootDocument);
 
         //Get root document
-        $rootDocument = $this->dm->getRepository(__NAMESPACE__ . '\RootDocument')->find($rootDocumentId);
+        $rootDocument = $this->dm->getRepository(RootDocument::class)->find($rootDocumentId);
 
         //Test
-        $this->assertInstanceOf(__NAMESPACE__ . '\EmptyEmbeddedDocument', $rootDocument->getEmptyEmbeddedDocument());
+        $this->assertInstanceOf(EmptyEmbeddedDocument::class, $rootDocument->getEmptyEmbeddedDocument());
     }
 }
 

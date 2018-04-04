@@ -255,7 +255,7 @@ class GH453Test extends BaseTest
             $criteria[$fieldName] = ['$type' => $bsonType];
         }
 
-        $this->assertNotNull($this->dm->getRepository(__NAMESPACE__ . '\GH453Document')->findOneBy($criteria));
+        $this->assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
     }
 
     private function assertBsonArrayAndValue($expectedValue, $documentId, $fieldName)
@@ -288,7 +288,7 @@ class GH453Test extends BaseTest
             $criteria['$and'][] = [$fieldName => ['$type' => $bsonType]];
         }
 
-        $this->assertNotNull($this->dm->getRepository(__NAMESPACE__ . '\GH453Document')->findOneBy($criteria));
+        $this->assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
     }
 }
 

@@ -22,8 +22,8 @@ class GH897Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $documentA = $this->dm->find(__NAMESPACE__ . '\GH897A', $documentA->id);
-        $documentB = $this->dm->find(__NAMESPACE__ . '\GH897B', $documentB->id);
+        $documentA = $this->dm->find(GH897A::class, $documentA->id);
+        $documentB = $this->dm->find(GH897B::class, $documentB->id);
         $documentB->refOne = $documentA;
 
         /* Necessary to inject DocumentManager since it is not currently
@@ -34,7 +34,7 @@ class GH897Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $documentA = $this->dm->find(__NAMESPACE__ . '\GH897A', $documentA->id);
+        $documentA = $this->dm->find(GH897A::class, $documentA->id);
 
         $this->assertSame('a-changed', $documentA->name);
     }

@@ -28,7 +28,7 @@ class MODM140Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneBy(['name' => 'My Category']);
+        $category = $this->dm->getRepository(Category::class)->findOneBy(['name' => 'My Category']);
         $post2 = new Post();
         $post2->versions->add(new PostVersion('P2V1'));
         $post2->versions->add(new PostVersion('P2V2'));
@@ -37,7 +37,7 @@ class MODM140Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneBy(['name' => 'My Category']);
+        $category = $this->dm->getRepository(Category::class)->findOneBy(['name' => 'My Category']);
         // Should be: 1 Category, 2 Post, 2 PostVersion in each Post
         $this->assertEquals(2, $category->posts->count());
         $this->assertEquals(2, $category->posts->get(0)->versions->count());
@@ -61,7 +61,7 @@ class MODM140Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $category = $this->dm->getRepository(__NAMESPACE__ . '\Category')->findOneBy(['name' => 'My Category']);
+        $category = $this->dm->getRepository(Category::class)->findOneBy(['name' => 'My Category']);
         $this->assertEquals(1, $category->posts->count());
         $this->assertEquals(1, $category->posts->get(0)->comments->count());
     }
@@ -75,8 +75,8 @@ class MODM140Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(['name' => 'test']);
-        $this->assertInstanceOf('Documents\Functional\EmbeddedTestLevel0', $test);
+        $test = $this->dm->getRepository(EmbeddedTestLevel0::class)->findOneBy(['name' => 'test']);
+        $this->assertInstanceOf(EmbeddedTestLevel0::class, $test);
 
         $level1 = new EmbeddedTestLevel1();
         $level1->name = 'test level 1 #1';
@@ -94,7 +94,7 @@ class MODM140Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(['name' => 'test']);
+        $test = $this->dm->getRepository(EmbeddedTestLevel0::class)->findOneBy(['name' => 'test']);
         $this->assertCount(1, $test->level1);
         $this->assertCount(2, $test->level1[0]->level2);
 
@@ -114,7 +114,7 @@ class MODM140Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository('Documents\Functional\EmbeddedTestLevel0')->findOneBy(['name' => 'test']);
+        $test = $this->dm->getRepository(EmbeddedTestLevel0::class)->findOneBy(['name' => 'test']);
         $this->assertCount(2, $test->level1);
         $this->assertCount(2, $test->level1[0]->level2);
         $this->assertCount(2, $test->level1[1]->level2);

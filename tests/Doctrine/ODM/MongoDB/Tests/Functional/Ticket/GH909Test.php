@@ -21,7 +21,7 @@ class GH909Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $user = $this->dm->find(User::class, $user->getId());
 
         $groups = $user->getGroups();
         $this->assertCount(2, $groups);
@@ -59,7 +59,7 @@ class GH909Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find('Documents\User', $user->getId());
+        $user = $this->dm->find(User::class, $user->getId());
 
         $phoneNumbers = $user->getPhoneNumbers();
         $this->assertCount(2, $phoneNumbers);

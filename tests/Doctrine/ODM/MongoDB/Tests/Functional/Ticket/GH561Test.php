@@ -22,16 +22,16 @@ class GH561Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->find(__NAMESPACE__ . '\GH561Document', $document->id);
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH561Document', $document);
+        $document = $this->dm->find(GH561Document::class, $document->id);
+        $this->assertInstanceOf(GH561Document::class, $document);
         $this->assertCount(1, $document->embeddedDocuments);
 
         $embeddedDocument = $document->embeddedDocuments->first();
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH561EmbeddedDocument', $embeddedDocument);
+        $this->assertInstanceOf(GH561EmbeddedDocument::class, $embeddedDocument);
         $this->assertCount(1, $embeddedDocument->embeddedDocuments);
 
         $anotherEmbeddedDocument = $embeddedDocument->embeddedDocuments->first();
-        $this->assertInstanceOf(__NAMESPACE__ . '\GH561AnotherEmbeddedDocument', $anotherEmbeddedDocument);
+        $this->assertInstanceOf(GH561AnotherEmbeddedDocument::class, $anotherEmbeddedDocument);
         $this->assertEquals('foo', $anotherEmbeddedDocument->name);
     }
 }

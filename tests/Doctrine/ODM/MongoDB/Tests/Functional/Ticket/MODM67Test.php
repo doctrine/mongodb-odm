@@ -45,7 +45,7 @@ class MODM67Test extends BaseTest
 
         $dm->clear();
 
-        $testDoc = $dm->find(__NAMESPACE__ . '\MODM67DerivedClass', $testDoc->id);
+        $testDoc = $dm->find(MODM67DerivedClass::class, $testDoc->id);
         $testDoc->embedOne->numAccesses = 1;
         $dm->flush();
 

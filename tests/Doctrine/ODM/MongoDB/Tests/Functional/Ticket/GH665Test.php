@@ -20,17 +20,17 @@ class GH665Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH665Document')
+        $check = $this->dm->getDocumentCollection(GH665Document::class)
             ->findOne(['embeddedPushAll.name' => 'foo']);
         $this->assertNotNull($check);
         $this->assertSame($document->id, (string) $check['_id']);
 
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH665Document')
+        $check = $this->dm->getDocumentCollection(GH665Document::class)
             ->findOne(['embeddedAddToSet.name' => 'bar']);
         $this->assertNotNull($check);
         $this->assertSame($document->id, (string) $check['_id']);
 
-        $persisted = $this->dm->createQueryBuilder(__NAMESPACE__ . '\GH665Document')
+        $persisted = $this->dm->createQueryBuilder(GH665Document::class)
             ->hydrate(false)
             ->field('id')->equals($document->id)
             ->getQuery()

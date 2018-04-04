@@ -39,7 +39,7 @@ class MODM81Test extends BaseTest
         $dm->flush();
         $dm->clear();
 
-        $doc1 = $dm->find(__NAMESPACE__ . '\MODM81TestDocument', $doc1->getId());
+        $doc1 = $dm->find(MODM81TestDocument::class, $doc1->getId());
         $doc1->setName('Document1Change');
 
         $this->assertSame($doc1, $doc1->getEmbeddedDocuments()->get(0)->getRefTodocument1());
@@ -47,7 +47,7 @@ class MODM81Test extends BaseTest
         $dm->flush();
         $dm->clear();
 
-        $doc1 = $dm->find(__NAMESPACE__ . '\MODM81TestDocument', $doc1->getId());
+        $doc1 = $dm->find(MODM81TestDocument::class, $doc1->getId());
         $this->assertNotNull($doc1);
         $this->assertEquals('Document1Change', $doc1->getName());
 
@@ -56,7 +56,7 @@ class MODM81Test extends BaseTest
         $dm->flush();
         $dm->clear();
 
-        $doc1 = $dm->find(__NAMESPACE__ . '\MODM81TestDocument', $doc1->getId());
+        $doc1 = $dm->find(MODM81TestDocument::class, $doc1->getId());
         $this->assertEquals('Document1ProxyChange', $doc1->getName());
     }
 }

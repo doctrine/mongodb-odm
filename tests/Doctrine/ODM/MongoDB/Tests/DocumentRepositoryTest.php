@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Documents\Account;
 use Documents\Address;
@@ -20,11 +21,11 @@ class DocumentRepositoryTest extends BaseTest
 {
     public function testMatchingAcceptsCriteriaWithNullWhereExpression()
     {
-        $repository = $this->dm->getRepository('Documents\User');
+        $repository = $this->dm->getRepository(User::class);
         $criteria = new Criteria();
 
         $this->assertNull($criteria->getWhereExpression());
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $repository->matching($criteria));
+        $this->assertInstanceOf(Collection::class, $repository->matching($criteria));
     }
 
     public function testFindByRefOneFull()

@@ -4,10 +4,26 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
+use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
+use Doctrine\ODM\MongoDB\SchemaManager;
+use Doctrine\ODM\MongoDB\UnitOfWork;
+use Documents\BaseCategory;
+use Documents\BaseCategoryRepository;
+use Documents\BlogPost;
+use Documents\Category;
 use Documents\CmsPhonenumber;
+use Documents\CmsUser;
+use Documents\CustomRepository\Document;
+use Documents\CustomRepository\Repository;
 use Documents\Tournament\ParticipantSolo;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
@@ -18,17 +34,17 @@ class DocumentManagerTest extends BaseTest
 {
     public function testCustomRepository()
     {
-        $this->assertInstanceOf('Documents\CustomRepository\Repository', $this->dm->getRepository('Documents\CustomRepository\Document'));
+        $this->assertInstanceOf(Repository::class, $this->dm->getRepository(Document::class));
     }
 
     public function testCustomRepositoryMappedsuperclass()
     {
-        $this->assertInstanceOf('Documents\BaseCategoryRepository', $this->dm->getRepository('Documents\BaseCategory'));
+        $this->assertInstanceOf(BaseCategoryRepository::class, $this->dm->getRepository(BaseCategory::class));
     }
 
     public function testCustomRepositoryMappedsuperclassChild()
     {
-        $this->assertInstanceOf('Documents\BaseCategoryRepository', $this->dm->getRepository('Documents\Category'));
+        $this->assertInstanceOf(BaseCategoryRepository::class, $this->dm->getRepository(Category::class));
     }
 
     public function testGetConnection()
@@ -38,53 +54,53 @@ class DocumentManagerTest extends BaseTest
 
     public function testGetMetadataFactory()
     {
-        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory', $this->dm->getMetadataFactory());
+        $this->assertInstanceOf(ClassMetadataFactory::class, $this->dm->getMetadataFactory());
     }
 
     public function testGetConfiguration()
     {
-        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Configuration', $this->dm->getConfiguration());
+        $this->assertInstanceOf(Configuration::class, $this->dm->getConfiguration());
     }
 
     public function testGetUnitOfWork()
     {
-        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\UnitOfWork', $this->dm->getUnitOfWork());
+        $this->assertInstanceOf(UnitOfWork::class, $this->dm->getUnitOfWork());
     }
 
     public function testGetProxyFactory()
     {
-        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Proxy\ProxyFactory', $this->dm->getProxyFactory());
+        $this->assertInstanceOf(ProxyFactory::class, $this->dm->getProxyFactory());
     }
 
     public function testGetEventManager()
     {
-        $this->assertInstanceOf('\Doctrine\Common\EventManager', $this->dm->getEventManager());
+        $this->assertInstanceOf(EventManager::class, $this->dm->getEventManager());
     }
 
     public function testGetSchemaManager()
     {
-        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\SchemaManager', $this->dm->getSchemaManager());
+        $this->assertInstanceOf(SchemaManager::class, $this->dm->getSchemaManager());
     }
 
     public function testCreateQueryBuilder()
     {
-        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\Builder', $this->dm->createQueryBuilder());
+        $this->assertInstanceOf(QueryBuilder::class, $this->dm->createQueryBuilder());
     }
 
     public function testCreateAggregationBuilder()
     {
-        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Aggregation\Builder', $this->dm->createAggregationBuilder('Documents\BlogPost'));
+        $this->assertInstanceOf(AggregationBuilder::class, $this->dm->createAggregationBuilder(BlogPost::class));
     }
 
     public function testGetFilterCollection()
     {
-        $this->assertInstanceOf('\Doctrine\ODM\MongoDB\Query\FilterCollection', $this->dm->getFilterCollection());
+        $this->assertInstanceOf(FilterCollection::class, $this->dm->getFilterCollection());
     }
 
     public function testGetPartialReference()
     {
         $id = new ObjectId();
-        $user = $this->dm->getPartialReference('Documents\CmsUser', $id);
+        $user = $this->dm->getPartialReference(CmsUser::class, $id);
         $this->assertTrue($this->dm->contains($user));
         $this->assertEquals($id, $user->id);
         $this->assertNull($user->getName());

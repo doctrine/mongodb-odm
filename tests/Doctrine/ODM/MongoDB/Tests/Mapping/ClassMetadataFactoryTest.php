@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
+use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
@@ -17,7 +18,7 @@ class ClassMetadataFactoryTest extends BaseTest
     public function testGetMetadataForSingleClass()
     {
         // Self-made metadata
-        $cm1 = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1');
+        $cm1 = new ClassMetadata(TestDocument1::class);
         $cm1->setCollection('group');
         // Add a mapped field
         $cm1->mapField(['fieldName' => 'name', 'type' => 'string']);
@@ -29,7 +30,7 @@ class ClassMetadataFactoryTest extends BaseTest
 
         // SUT
         $cmf = new ClassMetadataFactoryTestSubject();
-        $cmf->setMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1', $cm1);
+        $cmf->setMetadataFor(TestDocument1::class, $cm1);
 
         // Prechecks
         $this->assertEquals([], $cm1->parentClasses);
@@ -38,7 +39,7 @@ class ClassMetadataFactoryTest extends BaseTest
         $this->assertCount(4, $cm1->fieldMappings);
 
         // Go
-        $cm1 = $cmf->getMetadataFor('Doctrine\ODM\MongoDB\Tests\Mapping\TestDocument1');
+        $cm1 = $cmf->getMetadataFor(TestDocument1::class);
 
         $this->assertEquals('group', $cm1->collection);
         $this->assertEquals([], $cm1->parentClasses);
@@ -72,7 +73,7 @@ class ClassMetadataFactoryTest extends BaseTest
         $config = new Configuration();
         $config->setMetadataDriverImpl($driver);
 
-        $em = $this->createMock('Doctrine\Common\EventManager');
+        $em = $this->createMock(EventManager::class);
 
         $dm = new DocumentManagerMock();
         $dm->config = $config;

@@ -38,15 +38,15 @@ class MODM83Test extends BaseTest
         $dm->flush();
         $dm->clear();
 
-        $won = $dm->find(__NAMESPACE__ . '\MODM83TestDocument', $won->id);
-        $too = $dm->find(__NAMESPACE__ . '\MODM83OtherDocument', $too->id);
+        $won = $dm->find(MODM83TestDocument::class, $won->id);
+        $too = $dm->find(MODM83OtherDocument::class, $too->id);
         $too->name = 'Bob';
         $dm->flush();
         $dm->clear();
 
         $called = [
-            Events::preUpdate  => [__NAMESPACE__ . '\MODM83OtherDocument'],
-            Events::postUpdate => [__NAMESPACE__ . '\MODM83OtherDocument'],
+            Events::preUpdate  => [MODM83OtherDocument::class],
+            Events::postUpdate => [MODM83OtherDocument::class],
         ];
         $this->assertEquals($called, $this->listener->called);
     }

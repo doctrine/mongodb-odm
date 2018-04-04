@@ -11,7 +11,6 @@ class IndexesTest extends BaseTest
 {
     private function uniqueTest($class)
     {
-        $class = __NAMESPACE__ . '\\' . $class;
         $this->dm->getSchemaManager()->ensureDocumentIndexes($class);
 
         $test = new $class();
@@ -36,7 +35,7 @@ class IndexesTest extends BaseTest
 
     public function testEmbeddedIndexes()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\DocumentWithEmbeddedIndexes');
+        $class = $this->dm->getClassMetadata(DocumentWithEmbeddedIndexes::class);
         $sm = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
@@ -55,7 +54,7 @@ class IndexesTest extends BaseTest
 
     public function testDiscriminatedEmbeddedIndexes()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\DocumentWithIndexInDiscriminatedEmbeds');
+        $class = $this->dm->getClassMetadata(DocumentWithIndexInDiscriminatedEmbeds::class);
         $sm = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
@@ -71,7 +70,7 @@ class IndexesTest extends BaseTest
 
     public function testDiscriminatorIndexes()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\DocumentWithDiscriminatorIndex');
+        $class = $this->dm->getClassMetadata(DocumentWithDiscriminatorIndex::class);
         $sm = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
@@ -81,35 +80,35 @@ class IndexesTest extends BaseTest
 
     public function testIndexDefinitions()
     {
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\UniqueOnFieldTest');
+        $class = $this->dm->getClassMetadata(UniqueOnFieldTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\UniqueOnDocumentTest');
+        $class = $this->dm->getClassMetadata(UniqueOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\IndexesOnDocumentTest');
+        $class = $this->dm->getClassMetadata(IndexesOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\PartialIndexOnDocumentTest');
+        $class = $this->dm->getClassMetadata(PartialIndexOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['partialFilterExpression']));
         $this->assertSame(['counter' => ['$gt' => 5]], $indexes[0]['options']['partialFilterExpression']);
 
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\UniqueSparseOnFieldTest');
+        $class = $this->dm->getClassMetadata(UniqueSparseOnFieldTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -118,7 +117,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\UniqueSparseOnDocumentTest');
+        $class = $this->dm->getClassMetadata(UniqueSparseOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -127,7 +126,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\SparseIndexesOnDocumentTest');
+        $class = $this->dm->getClassMetadata(SparseIndexesOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -136,7 +135,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\MultipleFieldsUniqueIndexTest');
+        $class = $this->dm->getClassMetadata(MultipleFieldsUniqueIndexTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -145,7 +144,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\MultipleFieldsUniqueSparseIndexTest');
+        $class = $this->dm->getClassMetadata(MultipleFieldsUniqueSparseIndexTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -156,7 +155,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
-        $class = $this->dm->getClassMetadata(__NAMESPACE__ . '\MultipleFieldIndexes');
+        $class = $this->dm->getClassMetadata(MultipleFieldIndexes::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -176,7 +175,7 @@ class IndexesTest extends BaseTest
      */
     public function testUniqueIndexOnField()
     {
-        $this->uniqueTest('UniqueOnFieldTest');
+        $this->uniqueTest(UniqueOnFieldTest::class);
     }
 
     /**
@@ -185,7 +184,7 @@ class IndexesTest extends BaseTest
      */
     public function testUniqueIndexOnDocument()
     {
-        $this->uniqueTest('UniqueOnDocumentTest');
+        $this->uniqueTest(UniqueOnDocumentTest::class);
     }
 
     /**
@@ -194,7 +193,7 @@ class IndexesTest extends BaseTest
      */
     public function testIndexesOnDocument()
     {
-        $this->uniqueTest('IndexesOnDocumentTest');
+        $this->uniqueTest(IndexesOnDocumentTest::class);
     }
 
     /**
@@ -203,7 +202,7 @@ class IndexesTest extends BaseTest
      */
     public function testMultipleFieldsUniqueIndexOnDocument()
     {
-        $this->uniqueTest('MultipleFieldsUniqueIndexTest');
+        $this->uniqueTest(MultipleFieldsUniqueIndexTest::class);
     }
 
     /**
@@ -212,14 +211,14 @@ class IndexesTest extends BaseTest
      */
     public function testMultipleFieldIndexes()
     {
-        $this->uniqueTest('MultipleFieldIndexes');
+        $this->uniqueTest(MultipleFieldIndexes::class);
     }
 
     public function testPartialIndexCreation()
     {
         $this->requireMongoDB32('This test is not applicable to server versions < 3.2.0');
 
-        $className = __NAMESPACE__ . '\PartialIndexOnDocumentTest';
+        $className = PartialIndexOnDocumentTest::class;
         $this->dm->getSchemaManager()->ensureDocumentIndexes($className);
 
         $indexes = $this->dm->getSchemaManager()->getDocumentIndexes($className);

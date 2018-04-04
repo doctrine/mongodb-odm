@@ -19,9 +19,9 @@ class AlsoLoadTest extends BaseTest
             'zip' => 'zip',
         ];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadDocument::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
         $this->assertEquals('foo', $document->foo, '"foo" gets its own value and ignores "bar" and "zip"');
         $this->assertEquals('bar', $document->bar, '"bar" is hydrated normally');
@@ -32,9 +32,9 @@ class AlsoLoadTest extends BaseTest
     {
         $document = ['zip' => 'zip'];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadDocument::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
         $this->assertEquals('zip', $document->zap, '"zap" gets value from "zip", overwriting its default value');
         $this->assertEquals('zip', $document->zip, '"zip" is hydrated normally');
@@ -47,9 +47,9 @@ class AlsoLoadTest extends BaseTest
             'zip' => 'zip',
         ];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadDocument::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
         $this->assertEquals(null, $document->foo, '"foo" gets null value from "bar" and ignores "zip"');
         $this->assertEquals('zip', $document->baz, '"baz" gets value from "zip" and ignores "bar"');
@@ -61,9 +61,9 @@ class AlsoLoadTest extends BaseTest
     {
         $document = ['zip' => 'zip'];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadDocument::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
         $this->assertEquals('zip', $document->foo, '"foo" gets value from "zip" since "bar" was missing');
         $this->assertNull($document->bar, '"bar" is not hydrated');
@@ -77,9 +77,9 @@ class AlsoLoadTest extends BaseTest
             'testOld' => 'testOld',
         ];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadDocument::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
         $this->assertEquals('testNew', $document->test, '"test" gets value from "testNew"');
         $this->assertEquals('testNew', $document->testNew, '"testNew" is hydrated normally');
@@ -93,9 +93,9 @@ class AlsoLoadTest extends BaseTest
             'name' => 'Kris Wallsmith',
         ];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadDocument::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
         $this->assertEquals('Jonathan', $document->firstName, '"firstName" gets value from exploded "name" but is overwritten with normal hydration');
         $this->assertEquals('Wallsmith', $document->lastName, '"lastName" gets value from exploded "name"');
@@ -106,9 +106,9 @@ class AlsoLoadTest extends BaseTest
     {
         $document = ['testOld' => null];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadDocument::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
         $this->assertNull($document->test, '"test" gets value from "testOld", overwriting its default value');
         $this->assertNull($document->testOld, '"testOld" is hydrated normally"');
@@ -123,9 +123,9 @@ class AlsoLoadTest extends BaseTest
             'testOlder' => 'testOlder',
         ];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadDocument::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
         $this->assertEquals('Jonathan Wage', $document->name, '"name" is hydrated normally');
         $this->assertEquals('Kris Wallsmith', $document->fullName, '"fullName" is hydrated normally');
@@ -144,9 +144,9 @@ class AlsoLoadTest extends BaseTest
             'testOlder' => 'testOlder',
         ];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadDocument::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadDocument')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
         $this->assertNull($document->name, '"name" is not hydrated');
         $this->assertEquals('Kris Wallsmith', $document->fullName, '"fullName" is hydrated normally');
@@ -169,7 +169,7 @@ class AlsoLoadTest extends BaseTest
         $this->dm->persist($document);
         $this->dm->flush();
 
-        $document = $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadDocument')->findOne();
+        $document = $this->dm->getDocumentCollection(AlsoLoadDocument::class)->findOne();
 
         $this->assertEquals('Jonathan', $document['firstName'], '"firstName" is hydrated normally');
         $this->assertEquals('Wage', $document['lastName'], '"lastName" is hydrated normally');
@@ -186,9 +186,9 @@ class AlsoLoadTest extends BaseTest
             'testOlder' => 'testOlder',
         ];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadChild')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadChild::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadChild')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadChild::class)->findOneBy([]);
 
         $this->assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
         $this->assertEquals('test', $document->test, '"test" is hydrated normally, since "testOldest" was missing and parent method was overridden');
@@ -201,9 +201,9 @@ class AlsoLoadTest extends BaseTest
             'testReallyOldest' => 'testReallyOldest',
         ];
 
-        $this->dm->getDocumentCollection(__NAMESPACE__ . '\AlsoLoadGrandchild')->insertOne($document);
+        $this->dm->getDocumentCollection(AlsoLoadGrandchild::class)->insertOne($document);
 
-        $document = $this->dm->getRepository(__NAMESPACE__ . '\AlsoLoadGrandchild')->findOneBy([]);
+        $document = $this->dm->getRepository(AlsoLoadGrandchild::class)->findOneBy([]);
 
         $this->assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
         $this->assertEquals('testReallyOldest', $document->test, '"test" gets value from "testReallyOldest"');

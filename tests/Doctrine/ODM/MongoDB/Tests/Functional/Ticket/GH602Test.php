@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use function iterator_to_array;
 
@@ -14,8 +15,8 @@ class GH602Test extends BaseTest
 {
     public function testReferenceManyOwningSidePreparesFilterCriteriaForDifferentClass()
     {
-        $thingClass = __NAMESPACE__ . '\GH602Thing';
-        $userClass = __NAMESPACE__ . '\GH602User';
+        $thingClass = GH602Thing::class;
+        $userClass = GH602User::class;
         $this->enableDeletedFilter($thingClass);
 
         $user1 = new GH602User();
@@ -46,11 +47,11 @@ class GH602Test extends BaseTest
          */
         $this->assertCount(2, $user1likes);
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user1likes[0]);
+        $this->assertInstanceOf(Proxy::class, $user1likes[0]);
         $this->assertTrue($user1likes[0]->__isInitialized());
         $this->assertEquals($thing1->getId(), $user1likes[0]->getId());
 
-        $this->assertInstanceOf('Doctrine\ODM\MongoDB\Proxy\Proxy', $user1likes[1]);
+        $this->assertInstanceOf(Proxy::class, $user1likes[1]);
         $this->assertFalse($user1likes[1]->__isInitialized());
         $this->assertEquals($thing2->getId(), $user1likes[1]->getId());
 
@@ -60,8 +61,8 @@ class GH602Test extends BaseTest
 
     public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass()
     {
-        $thingClass = __NAMESPACE__ . '\GH602Thing';
-        $userClass = __NAMESPACE__ . '\GH602User';
+        $thingClass = GH602Thing::class;
+        $userClass = GH602User::class;
         $this->enableDeletedFilter($userClass);
 
         $user1 = new GH602User();

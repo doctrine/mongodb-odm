@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -27,18 +28,18 @@ class LifecycleCallbacksTest extends BaseTest
         $user = $this->createUser();
         $this->dm->clear();
 
-        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
-        $this->assertInstanceOf('DateTime', $user->createdAt);
-        $this->assertInstanceOf('DateTime', $user->profile->createdAt);
+        $user = $this->dm->find(User::class, $user->id);
+        $this->assertInstanceOf(DateTime::class, $user->createdAt);
+        $this->assertInstanceOf(DateTime::class, $user->profile->createdAt);
 
         $user->name = 'jon changed';
         $user->profile->name = 'changed';
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
-        $this->assertInstanceOf('DateTime', $user->updatedAt);
-        $this->assertInstanceOf('DateTime', $user->profile->updatedAt);
+        $user = $this->dm->find(User::class, $user->id);
+        $this->assertInstanceOf(DateTime::class, $user->updatedAt);
+        $this->assertInstanceOf(DateTime::class, $user->profile->updatedAt);
     }
 
     public function testPreAndPostPersist()
@@ -81,7 +82,7 @@ class LifecycleCallbacksTest extends BaseTest
         $user = $this->createUser();
         $this->dm->clear();
 
-        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
+        $user = $this->dm->find(User::class, $user->id);
 
         $this->assertTrue($user->preLoad);
         $this->assertTrue($user->profile->preLoad);
@@ -129,7 +130,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($profile->postUpdate);
 
         $this->dm->clear();
-        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
+        $user = $this->dm->find(User::class, $user->id);
         $profile = $user->profiles[0];
 
         $this->assertTrue($profile->preLoad);
@@ -175,7 +176,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($profile->postUpdate);
 
         $this->dm->clear();
-        $user = $this->dm->find(__NAMESPACE__ . '\User', $user->id);
+        $user = $this->dm->find(User::class, $user->id);
         $profile = $user->profile->profile;
         $profile->name = '2nd level changed again';
 
@@ -312,7 +313,7 @@ abstract class BaseDocument
     public function prePersist(Event\LifecycleEventArgs $e)
     {
         $this->prePersist = true;
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
     /** @ODM\PostPersist */
@@ -325,7 +326,7 @@ abstract class BaseDocument
     public function preUpdate(Event\PreUpdateEventArgs $e)
     {
         $this->preUpdate = true;
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new DateTime();
     }
 
     /** @ODM\PostUpdate */

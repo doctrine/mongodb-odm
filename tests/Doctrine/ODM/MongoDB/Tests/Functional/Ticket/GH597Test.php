@@ -23,7 +23,7 @@ class GH597Test extends BaseTest
         $this->assertPostDocument($expectedDocument, $post);
 
         // fill documents with comments
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(GH597Post::class, $post->getId());
         $post->comments = new ArrayCollection([
             new GH597Comment('Comment 1'),
             new GH597Comment('Comment 2'),
@@ -44,13 +44,13 @@ class GH597Test extends BaseTest
         $this->assertPostDocument($expectedDocument, $post);
 
         // trigger update
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(GH597Post::class, $post->getId());
         $this->assertCount(3, $post->getComments());
         $post->comments = null;
         $this->dm->flush();
         $this->dm->clear();
 
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(GH597Post::class, $post->getId());
         $this->assertCount(0, $post->getComments());
 
         // make sure embedded documents got unset
@@ -70,7 +70,7 @@ class GH597Test extends BaseTest
         $this->assertPostDocument($expectedDocument, $post);
 
         // associate post with many GH597ReferenceMany documents
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(GH597Post::class, $post->getId());
 
         $referenceMany1 = new GH597ReferenceMany('one');
         $this->dm->persist($referenceMany1);
@@ -92,13 +92,13 @@ class GH597Test extends BaseTest
         $this->assertPostDocument($expectedDocument, $post);
 
         // trigger update
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(GH597Post::class, $post->getId());
         $this->assertCount(2, $post->getReferenceMany());
         $post->referenceMany = null;
         $this->dm->flush();
         $this->dm->clear();
 
-        $post = $this->dm->find(__NAMESPACE__ . '\GH597Post', $post->getId());
+        $post = $this->dm->find(GH597Post::class, $post->getId());
         $this->assertCount(0, $post->getReferenceMany());
 
         // make sure reference-many documents got unset
@@ -113,7 +113,7 @@ class GH597Test extends BaseTest
      */
     private function assertPostDocument(array $expected, GH597Post $post)
     {
-        $collection = $this->dm->getDocumentCollection(__NAMESPACE__ . '\GH597Post');
+        $collection = $this->dm->getDocumentCollection(GH597Post::class);
         $document = $collection->findOne(['_id' => new ObjectId($post->getId())]);
         $this->assertEquals($expected, $document);
     }

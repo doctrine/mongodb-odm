@@ -18,7 +18,7 @@ class GH971Test extends BaseTest
         ];
 
         //first query, create Car with name "Ferrari"
-        $this->dm->createQueryBuilder(__NAMESPACE__ . '\Car')
+        $this->dm->createQueryBuilder(Car::class)
             ->findAndUpdate()
             ->upsert(true)
             ->field('name')->equals($name)
@@ -27,7 +27,7 @@ class GH971Test extends BaseTest
             ->getQuery()->execute();
 
         //second query: update existing "Ferrari" with new feature
-        $this->dm->createQueryBuilder(__NAMESPACE__ . '\Car')
+        $this->dm->createQueryBuilder(Car::class)
             ->findAndUpdate()
             ->upsert(true)
             ->field('name')->equals($name)
@@ -35,7 +35,7 @@ class GH971Test extends BaseTest
             ->field('features')->push($features[1])
             ->getQuery()->execute();
 
-        $results = $this->dm->getRepository(__NAMESPACE__ . '\Car')->findAll();
+        $results = $this->dm->getRepository(Car::class)->findAll();
         $this->assertCount(1, $results);
     }
 
@@ -45,7 +45,7 @@ class GH971Test extends BaseTest
      */
     public function testUpsertThrowsExceptionWithIndecisiveDiscriminator()
     {
-        $this->dm->createQueryBuilder(__NAMESPACE__ . '\Bicycle')
+        $this->dm->createQueryBuilder(Bicycle::class)
             ->findAndUpdate()
             ->upsert(true)
             ->field('name')->equals('Cool')
@@ -55,7 +55,7 @@ class GH971Test extends BaseTest
 
     public function testUpsertWillUseProvidedDiscriminator()
     {
-        $this->dm->createQueryBuilder(__NAMESPACE__ . '\Bicycle')
+        $this->dm->createQueryBuilder(Bicycle::class)
             ->findAndUpdate()
             ->upsert(true)
             ->field('type')->equals('tandem')
@@ -63,7 +63,7 @@ class GH971Test extends BaseTest
             ->field('features')->push('2 people')
             ->getQuery()->execute();
 
-        $results = $this->dm->getRepository(__NAMESPACE__ . '\Tandem')->findAll();
+        $results = $this->dm->getRepository(Tandem::class)->findAll();
         $this->assertCount(1, $results);
     }
 }

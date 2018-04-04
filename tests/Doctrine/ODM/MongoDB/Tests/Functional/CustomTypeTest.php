@@ -16,7 +16,7 @@ class CustomTypeTest extends BaseTest
 {
     public static function setUpBeforeClass()
     {
-        Type::addType('date_collection', __NAMESPACE__ . '\DateCollectionType');
+        Type::addType('date_collection', DateCollectionType::class);
     }
 
     public function testCustomTypeValueConversions()
@@ -29,7 +29,7 @@ class CustomTypeTest extends BaseTest
 
         $this->dm->clear();
 
-        $country = $this->dm->find(__NAMESPACE__ . '\Country', $country->id);
+        $country = $this->dm->find(Country::class, $country->id);
 
         $this->assertContainsOnly('DateTime', $country->nationalHolidays);
     }
