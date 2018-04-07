@@ -495,6 +495,33 @@ class ClassMetadataTest extends BaseTest
     }
 
     /**
+     * @dataProvider provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort
+     *
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage 'repositoryMethod' used on 'assoc' in class 'stdClass' can not be combined with skip, limit or sort.
+     */
+    public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort($prop, $value)
+    {
+        $cm = new ClassMetadata('stdClass');
+
+        $cm->mapField([
+            'fieldName' => 'assoc',
+            'reference' => true,
+            'type' => 'many',
+            'targetDocument' => 'stdClass',
+            'repositoryMethod' => 'fetch',
+            $prop => $value,
+        ]);
+    }
+
+    public function provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort()
+    {
+        yield ['skip', 5];
+        yield ['limit', 5];
+        yield ['sort', ['time' => 1]];
+    }
+
+    /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
      * @expectedExceptionMessage Target document must be specified for simple reference: stdClass::assoc
      */

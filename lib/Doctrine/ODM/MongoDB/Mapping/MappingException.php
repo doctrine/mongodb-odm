@@ -391,4 +391,9 @@ class MappingException extends BaseMappingException
     {
         return new self(sprintf("Cannot use field '%s' as connectFromField in a \$graphLookup stage. Reference must target the document itself.", $fieldName));
     }
+
+    public static function repositoryMethodCanNotBeCombinedWithSkipLimitAndSort($className, $fieldName)
+    {
+        return new self(sprintf("'repositoryMethod' used on '%s' in class '%s' can not be combined with skip, limit or sort.", $fieldName, $className));
+    }
 }
