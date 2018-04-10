@@ -371,6 +371,7 @@ namespace $namespace;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorInterface;
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
@@ -393,6 +394,9 @@ class $hydratorClassName implements HydratorInterface
 
     public function hydrate(\$document, \$data, array \$hints = array())
     {
+        if (\$document instanceof Proxy && ! \$document->__isInitialized()) {
+            \$document->__load();
+        } 
         \$hydratedData = array();
 %s        return \$hydratedData;
     }
