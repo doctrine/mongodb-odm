@@ -86,7 +86,7 @@ class will be discussed in the next section.
 
     class UserRepository extends DocumentRepository
     {
-        public function findDisabled()
+        public function findDisabled(): array
         {
             return $this->findBy(['disabled' => true, 'activated' => true]);
         }

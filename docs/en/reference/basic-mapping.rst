@@ -321,7 +321,7 @@ as an option for the ``CUSTOM`` strategy:
             /** @Id(strategy="CUSTOM", type="string", options={"class"="Vendor\Specific\Generator"}) */
             private $id;
 
-            public function setId($id)
+            public function setId(string $id)
             {
                 $this->id = $id;
             }
@@ -425,30 +425,31 @@ class:
     namespace My\Project\Types;
 
     use Doctrine\ODM\MongoDB\Types\Type;
+    use MongoDB\BSON\UTCDateTime;
 
     /**
      * My custom datatype.
      */
     class MyType extends Type
     {
-        public function convertToPHPValue($value)
+        public function convertToPHPValue($value): \DateTime
         {
             // Note: this function is only called when your custom type is used
             // as an identifier. For other cases, closureToPHP() will be called.
             return new \DateTime('@' . $value->sec);
         }
 
-        public function closureToPHP()
+        public function closureToPHP(): string
         {
             // Return the string body of a PHP closure that will receive $value
             // and store the result of a conversion in a $return variable
             return '$return = new \DateTime($value);';
         }
 
-        public function convertToDatabaseValue($value)
+        public function convertToDatabaseValue($value): UTCDateTime
         {
             // This is called to convert a PHP value to its Mongo equivalent
-            return new \MongoDB\BSON\UTCDateTime($value);
+            return new UTCDateTime($value);
         }
     }
 

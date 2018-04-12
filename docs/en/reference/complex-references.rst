@@ -134,12 +134,14 @@ is called to populate the reference, Doctrine will provide the Blogpost instance
 
     <?php
 
+    use Doctrine\MongoDB\CursorInterface;
+
     class CommentRepository extends \Doctrine\ODM\MongoDB\DocumentRepository
     {
         /**
          * @return \Doctrine\ODM\MongoDB\Cursor
          */
-        public function findSomeComments(BlogPost $blogPost)
+        public function findSomeComments(BlogPost $blogPost): CursorInterface
         {
             return $this->createQueryBuilder()
                 ->field('blogPost')->references($blogPost);

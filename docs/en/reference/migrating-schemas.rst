@@ -87,7 +87,7 @@ before normal hydration.
         public $lastName;
 
         /** @AlsoLoad({"name", "fullName"}) */
-        public function populateFirstAndLastName($fullName)
+        public function populateFirstAndLastName($fullName): void
         {
             list($this->firstName, $this->lastName) = explode(' ', $fullName);
         }
@@ -176,7 +176,7 @@ Later on, you may want to migrate this data into an embedded Address document:
         public $address;
 
         /** @PostLoad */
-        public function postLoad()
+        public function postLoad(): void
         {
             if ($this->street !== null || $this->city !== null)
             {
@@ -201,7 +201,7 @@ Alternatively, you could defer this migration until the Person is saved:
         // ...
 
         /** @PrePersist */
-        public function prePersist()
+        public function prePersist(): void
         {
             if ($this->street !== null || $this->city !== null)
             {
