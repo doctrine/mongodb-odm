@@ -176,7 +176,7 @@ You can implement the same repository interface for the ORM and MongoDB ODM easi
 
     class BlogPostRepository extends EntityRepository
     {
-        public function findPostById($id): ?BlogPost
+        public function findPostById(int $id): ?BlogPost
         {
             return $this->findOneBy(array('id' => $id));
         }
@@ -195,7 +195,7 @@ Now define the same repository methods for the MongoDB ODM:
 
     class BlogPostRepository extends DocumentRepository
     {
-        public function findPostById($id): ?BlogPost
+        public function findPostById(string $id): ?BlogPost
         {
             return $this->findOneBy(array('id' => $id));
         }
