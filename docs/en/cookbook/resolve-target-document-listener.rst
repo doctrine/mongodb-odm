@@ -105,7 +105,7 @@ An InvoiceSubjectInterface:
         /**
          * @return string
          */
-        public function getName();
+        public function getName(): string;
     }
 
 Next, we need to configure the listener. Add this to the area where you setup

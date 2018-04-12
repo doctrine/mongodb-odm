@@ -171,11 +171,12 @@ You can implement the same repository interface for the ORM and MongoDB ODM easi
 
     namespace Doctrine\Blog\ORM;
 
+    use Doctrine\Blog\BlogPost;
     use Doctrine\ORM\EntityRepository;
 
     class BlogPostRepository extends EntityRepository
     {
-        public function findPostById($id)
+        public function findPostById($id): ?BlogPost
         {
             return $this->findOneBy(array('id' => $id));
         }
@@ -189,11 +190,12 @@ Now define the same repository methods for the MongoDB ODM:
 
     namespace Doctrine\Blog\ODM\MongoDB;
 
+    use Documents\BlogPost;
     use Doctrine\ODM\MongoDB\DocumentRepository;
 
     class BlogPostRepository extends DocumentRepository
     {
-        public function findPostById($id)
+        public function findPostById($id): ?BlogPost
         {
             return $this->findOneBy(array('id' => $id));
         }

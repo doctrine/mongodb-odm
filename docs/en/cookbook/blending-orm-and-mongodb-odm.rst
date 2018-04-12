@@ -30,12 +30,12 @@ First lets define our `Product` document:
             return $this->id;
         }
 
-        public function getTitle()
+        public function getTitle(): string
         {
             return $this->title;
         }
 
-        public function setTitle($title)
+        public function setTitle(string $title)
         {
             $this->title = $title;
         }
@@ -76,12 +76,12 @@ Next create the `Order` entity that has a `$product` and `$productId` property l
          */
         private $product;
 
-        public function getId()
+        public function getId(): int
         {
             return $this->id;
         }
 
-        public function getProductId()
+        public function getProductId(): string
         {
             return $this->productId;
         }
@@ -92,7 +92,7 @@ Next create the `Order` entity that has a `$product` and `$productId` property l
             $this->product = $product;
         }
 
-        public function getProduct()
+        public function getProduct(): Product
         {
             return $this->product;
         }
@@ -128,7 +128,7 @@ So now we need to define a class named `MyEventSubscriber` and pass a dependency
             $this->dm = $dm;
         }
 
-        public function postLoad(LifecycleEventArgs $eventArgs)
+        public function postLoad(LifecycleEventArgs $eventArgs): void
         {
             $order = $eventArgs->getEntity();
             $em = $eventArgs->getEntityManager();
