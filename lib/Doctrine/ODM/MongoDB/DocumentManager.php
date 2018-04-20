@@ -18,6 +18,7 @@ use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver\ReadPreference;
+use MongoDB\GridFS\Bucket;
 use function array_search;
 use function get_class;
 use function gettype;
@@ -113,6 +114,13 @@ class DocumentManager implements ObjectManager
      * @var Collection[]
      */
     private $documentCollections = [];
+
+    /**
+     * Array of cached document bucket instances that are lazily loaded.
+     *
+     * @var Bucket[]
+     */
+    private $documentBuckets = [];
 
     /**
      * Whether the DocumentManager is closed or not.
@@ -312,7 +320,7 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Returns the MongoCollection instance for a class.
+     * Returns the collection instance for a class.
      *
      * @param string $className The class name.
      * @throws MongoDBException When the $className param is not mapped to a collection.
@@ -322,7 +330,12 @@ class DocumentManager implements ObjectManager
     {
         $className = ltrim($className, '\\');
 
+        /** @var ClassMetadata $metadata */
         $metadata = $this->metadataFactory->getMetadataFor($className);
+        if ($metadata->isFile) {
+            return $this->getDocumentBucket($className)->getFilesCollection();
+        }
+
         $collectionName = $metadata->getCollection();
 
         if (! $collectionName) {
@@ -341,6 +354,42 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->documentCollections[$className];
+    }
+
+    /**
+     * Returns the bucket instance for a class.
+     *
+     * @param string $className The class name.
+     * @throws MongoDBException When the $className param is not mapped to a collection.
+     */
+    public function getDocumentBucket(string $className): Bucket
+    {
+        $className = ltrim($className, '\\');
+
+        /** @var ClassMetadata $metadata */
+        $metadata = $this->metadataFactory->getMetadataFor($className);
+        if (! $metadata->isFile) {
+            throw MongoDBException::documentBucketOnlyAvailableForGridFSFiles($className);
+        }
+
+        $collectionName = $metadata->getCollection();
+
+        if (! $collectionName) {
+            throw MongoDBException::documentNotMappedToCollection($className);
+        }
+
+        if (! isset($this->documentBuckets[$className])) {
+            $db = $this->getDocumentDatabase($className);
+
+            $options = ['bucketName' => $collectionName];
+            if ($metadata->readPreference !== null) {
+                $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
+            }
+
+            $this->documentBuckets[$className] = $db->selectGridFSBucket($options);
+        }
+
+        return $this->documentBuckets[$className];
     }
 
     /**
