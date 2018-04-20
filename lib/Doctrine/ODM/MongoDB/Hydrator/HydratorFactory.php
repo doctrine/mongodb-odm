@@ -456,11 +456,15 @@ EOF
             }
         }
 
-        $data = $this->getHydratorFor($metadata->name)->hydrate($document, $data, $hints);
         if ($document instanceof Proxy) {
             $document->__isInitialized__ = true;
             $document->__setInitializer(null);
             $document->__setCloner(null);
+        }
+
+        $data = $this->getHydratorFor($metadata->name)->hydrate($document, $data, $hints);
+
+        if ($document instanceof Proxy) {
             // lazy properties may be left uninitialized
             $properties = $document->__getLazyProperties();
             foreach ($properties as $propertyName => $property) {
