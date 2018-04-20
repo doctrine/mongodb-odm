@@ -19,6 +19,7 @@
         <xs:element name="embedded-document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="mapped-superclass" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="query-result-document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="gridfs-file" type="odm:gridfs-file" minOccurs="0" maxOccurs="unbounded" />
       </xs:choice>
     </xs:complexType>
   </xs:element>
@@ -33,6 +34,31 @@
 
   <xs:complexType name="query-result-document">
     <xs:attribute name="name" type="xs:NMTOKEN" />
+  </xs:complexType>
+
+  <xs:complexType name="gridfs-file">
+    <xs:sequence>
+      <xs:element name="id" type="odm:id" minOccurs="0" maxOccurs="1"/>
+
+      <xs:element name="length" type="odm:gridfs-length-field" minOccurs="0" maxOccurs="1" />
+      <xs:element name="chunk-size" type="odm:gridfs-chunk-size-field" minOccurs="0" maxOccurs="1" />
+      <xs:element name="upload-date" type="odm:gridfs-upload-date-field" minOccurs="0" maxOccurs="1" />
+      <xs:element name="filename" type="odm:gridfs-filename-field" minOccurs="0" maxOccurs="1" />
+      <xs:element name="metadata" type="odm:gridfs-metadata-field" minOccurs="0" maxOccurs="1" />
+
+      <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0"/>
+      <xs:element name="indexes" type="odm:indexes" minOccurs="0"/>
+      <xs:element name="shard-key" type="odm:shard-key" minOccurs="0"/>
+      <xs:element name="read-preference" type="odm:read-preference" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="db" type="xs:NMTOKEN" />
+    <xs:attribute name="bucket-name" type="xs:NMTOKEN" default="fs" />
+    <xs:attribute name="repository-class" type="xs:string"/>
+    <xs:attribute name="writeConcern" type="xs:string" />
+    <xs:attribute name="inheritance-type" type="odm:inheritance-type"/>
+    <xs:attribute name="change-tracking-policy" type="odm:change-tracking-policy" />
   </xs:complexType>
 
   <xs:complexType name="document">
@@ -106,6 +132,33 @@
   <xs:complexType name="id-generator-option">
     <xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
     <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="gridfs-length-field">
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" default="length" />
+  </xs:complexType>
+
+  <xs:complexType name="gridfs-chunk-size-field">
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" default="chunkSize" />
+  </xs:complexType>
+
+  <xs:complexType name="gridfs-upload-date-field">
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" default="uploadDate" />
+  </xs:complexType>
+
+  <xs:complexType name="gridfs-filename-field">
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" default="filename" />
+  </xs:complexType>
+
+  <xs:complexType name="gridfs-metadata-field">
+    <xs:sequence>
+      <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
+      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
+      <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
+    </xs:sequence>
+
+    <xs:attribute name="target-document" type="xs:string" use="required" />
+    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
   </xs:complexType>
 
   <xs:complexType name="embed-one">

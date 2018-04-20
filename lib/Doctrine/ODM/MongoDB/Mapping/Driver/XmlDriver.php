@@ -38,6 +38,29 @@ class XmlDriver extends FileDriver
 {
     public const DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
+    private const DEFAULT_GRIDFS_MAPPINGS = [
+        'length' => [
+            'name' => 'length',
+            'type' => 'int',
+            'notSaved' => true,
+        ],
+        'chunk-size' => [
+            'name' => 'chunkSize',
+            'type' => 'int',
+            'notSaved' => true,
+        ],
+        'filename' => [
+            'name' => 'filename',
+            'type' => 'string',
+            'notSaved' => true,
+        ],
+        'upload-date' => [
+            'name' => 'uploadDate',
+            'type' => 'date',
+            'notSaved' => true,
+        ],
+    ];
+
     /**
      * {@inheritDoc}
      */
@@ -71,10 +94,14 @@ class XmlDriver extends FileDriver
             $class->isEmbeddedDocument = true;
         } elseif ($xmlRoot->getName() === 'query-result-document') {
             $class->isQueryResultDocument = true;
+        } elseif ($xmlRoot->getName() === 'gridfs-file') {
+            $class->isFile = true;
         }
+
         if (isset($xmlRoot['db'])) {
             $class->setDatabase((string) $xmlRoot['db']);
         }
+
         if (isset($xmlRoot['collection'])) {
             if (isset($xmlRoot['capped-collection'])) {
                 $config = ['name' => (string) $xmlRoot['collection']];
@@ -89,6 +116,9 @@ class XmlDriver extends FileDriver
             } else {
                 $class->setCollection((string) $xmlRoot['collection']);
             }
+        }
+        if (isset($xmlRoot['bucket-name'])) {
+            $class->setCollection((string) $xmlRoot['bucket-name']);
         }
         if (isset($xmlRoot['write-concern'])) {
             $class->setWriteConcern((string) $xmlRoot['write-concern']);
@@ -191,6 +221,9 @@ class XmlDriver extends FileDriver
                 $this->addFieldMapping($class, $mapping);
             }
         }
+
+        $this->addGridFSMappings($class, $xmlRoot);
+
         if (isset($xmlRoot->{'embed-one'})) {
             foreach ($xmlRoot->{'embed-one'} as $embed) {
                 $this->addEmbedMapping($class, $embed, 'one');
@@ -546,7 +579,7 @@ class XmlDriver extends FileDriver
 
         $xmlElement = simplexml_load_file($file);
 
-        foreach (['document', 'embedded-document', 'mapped-superclass', 'query-result-document'] as $type) {
+        foreach (['document', 'embedded-document', 'mapped-superclass', 'query-result-document', 'gridfs-file'] as $type) {
             if (! isset($xmlElement->$type)) {
                 continue;
             }
@@ -586,5 +619,31 @@ class XmlDriver extends FileDriver
         return implode("\n", array_map(function (LibXMLError $error): string {
             return sprintf('Line %d:%d: %s', $error->line, $error->column, $error->message);
         }, $xmlErrors));
+    }
+
+    private function addGridFSMappings(ClassMetadata $class, \SimpleXMLElement $xmlRoot): void
+    {
+        if (! $class->isFile) {
+            return;
+        }
+
+        foreach (self::DEFAULT_GRIDFS_MAPPINGS as $name => $mapping) {
+            if (! isset($xmlRoot->{$name})) {
+                continue;
+            }
+
+            if (isset($xmlRoot->{$name}->attributes()['fieldName'])) {
+                $mapping['fieldName'] = (string) $xmlRoot->{$name}->attributes()['fieldName'];
+            }
+
+            $this->addFieldMapping($class, $mapping);
+        }
+
+        if (! isset($xmlRoot->metadata)) {
+            return;
+        }
+
+        $xmlRoot->metadata->addAttribute('field', 'metadata');
+        $this->addEmbedMapping($class, $xmlRoot->metadata, 'one');
     }
 }
