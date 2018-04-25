@@ -126,7 +126,7 @@ The ``Comment`` class will need to have a custom repository class configured:
     }
 
 Lastly, the ``CommentRepository`` class will need a ``findSomeComments()``
-method which shall return ``Doctrine\MongoDB\CursorInterface``. When this method
+method which shall return ``Doctrine\ODM\MongoDB\Iterator\Iterator``. When this method
 is called to populate the reference, Doctrine will provide the Blogpost instance
 (i.e. owning document) as the first argument:
 
@@ -134,14 +134,11 @@ is called to populate the reference, Doctrine will provide the Blogpost instance
 
     <?php
 
-    use Doctrine\MongoDB\CursorInterface;
+    use Doctrine\ODM\MongoDB\Iterator\Iterator;
 
     class CommentRepository extends \Doctrine\ODM\MongoDB\DocumentRepository
     {
-        /**
-         * @return \Doctrine\ODM\MongoDB\Cursor
-         */
-        public function findSomeComments(BlogPost $blogPost): CursorInterface
+        public function findSomeComments(BlogPost $blogPost): Iterator
         {
             return $this->createQueryBuilder()
                 ->field('blogPost')->references($blogPost);
