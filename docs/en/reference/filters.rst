@@ -36,7 +36,7 @@ should be accessed via ``BsonFilter::getParameter()``.
 
     class MyLocaleFilter extends BsonFilter
     {
-        public function addFilterCriteria(ClassMetadata $targetDocument)
+        public function addFilterCriteria(ClassMetadata $targetDocument): array
         {
             // Check if the entity implements the LocalAware interface
             if ( ! $targetDocument->reflClass->implementsInterface('LocaleAware')) {

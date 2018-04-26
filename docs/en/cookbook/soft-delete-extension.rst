@@ -143,13 +143,13 @@ Using the events is easy, just define a class like the following:
 
     class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
     {
-        public function preSoftDelete(LifecycleEventArgs $args)
+        public function preSoftDelete(LifecycleEventArgs $args): void
         {
             $document = $args->getDocument();
             $sdm = $args->getSoftDeleteManager();
         }
 
-        public function getSubscribedEvents()
+        public function getSubscribedEvents(): array
         {
             return array(Events::preSoftDelete);
         }
@@ -191,7 +191,7 @@ You just need to setup an event listener like the following:
 
     class CascadingSoftDeleteListener implements EventSubscriber
     {
-        public function preSoftDelete(LifecycleEventArgs $args)
+        public function preSoftDelete(LifecycleEventArgs $args): void
         {
             $sdm = $args->getSoftDeleteManager();
             $document = $args->getDocument();
@@ -200,7 +200,7 @@ You just need to setup an event listener like the following:
             }
         }
 
-        public function preRestore(LifecycleEventArgs $args)
+        public function preRestore(LifecycleEventArgs $args): void
         {
             $sdm = $args->getSoftDeleteManager();
             $document = $args->getDocument();
@@ -209,7 +209,7 @@ You just need to setup an event listener like the following:
             }
         }
 
-        public function getSubscribedEvents()
+        public function getSubscribedEvents(): array
         {
             return array(
                 Events::preSoftDelete,

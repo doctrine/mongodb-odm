@@ -43,27 +43,27 @@ MongoGridFS:
         /** @Field */
         private $md5;
 
-        public function getId()
+        public function getId(): ?string
         {
             return $this->id;
         }
 
-        public function setName($name)
+        public function setName(string $name): void
         {
             $this->name = $name;
         }
 
-        public function getName()
+        public function getName(): ?string
         {
             return $this->name;
         }
 
-        public function getFile()
+        public function getFile(): ?string
         {
             return $this->file;
         }
 
-        public function setFile($file)
+        public function setFile(string $file): void
         {
             $this->file = $file;
         }
@@ -129,27 +129,27 @@ every Profile to have a profile image:
         /** @ReferenceOne(targetDocument="Documents\Image") */
         private $image;
 
-        public function getId()
+        public function getId(): ?string
         {
           return $this->id;
         }
 
-        public function getName()
+        public function getName(): ?string
         {
             return $this->name;
         }
 
-        public function setName($name)
+        public function setName(string $name): void
         {
             $this->name = $name;
         }
 
-        public function getImage()
+        public function getImage(): ?Image
         {
             return $this->image;
         }
 
-        public function setImage(Image $image)
+        public function setImage(Image $image): void
         {
             $this->image = $image;
         }

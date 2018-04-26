@@ -25,12 +25,12 @@ at runtime. Note that this implementation has 2 main caveats:
 
     abstract class DomainObject implements ArrayAccess
     {
-        public function offsetExists($offset)
+        public function offsetExists($offset): bool
         {
             return isset($this->$offset);
         }
 
-        public function offsetSet($offset, $value)
+        public function offsetSet($offset, $value): void
         {
             $this->$offset = $value;
         }
@@ -40,7 +40,7 @@ at runtime. Note that this implementation has 2 main caveats:
             return $this->$offset;
         }
 
-        public function offsetUnset($offset)
+        public function offsetUnset($offset): void
         {
             $this->$offset = null;
         }
@@ -64,14 +64,14 @@ caveats:
 
     abstract class DomainObject implements ArrayAccess
     {
-        public function offsetExists($offset)
+        public function offsetExists($offset): bool
         {
             // In this example we say that exists means it is not null
             $value = $this->{"get$offset"}();
             return $value !== null;
         }
 
-        public function offsetSet($offset, $value)
+        public function offsetSet($offset, $value): void
         {
             $this->{"set$offset"}($value);
         }
@@ -81,7 +81,7 @@ caveats:
             return $this->{"get$offset"}();
         }
 
-        public function offsetUnset($offset)
+        public function offsetUnset($offset): void
         {
             $this->{"set$offset"}(null);
         }
@@ -101,12 +101,12 @@ exception (i.e. BadMethodCallException).
 
     abstract class DomainObject implements ArrayAccess
     {
-        public function offsetExists($offset)
+        public function offsetExists($offset): bool
         {
             // option 1 or option 2
         }
 
-        public function offsetSet($offset, $value)
+        public function offsetSet($offset, $value): void
         {
             throw new BadMethodCallException("Array access of class " . get_class($this) . " is read-only!");
         }
@@ -116,7 +116,7 @@ exception (i.e. BadMethodCallException).
             // option 1 or option 2
         }
 
-        public function offsetUnset($offset)
+        public function offsetUnset($offset): void
         {
             throw new BadMethodCallException("Array access of class " . get_class($this) . " is read-only!");
         }

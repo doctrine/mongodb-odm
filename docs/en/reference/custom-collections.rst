@@ -90,7 +90,7 @@ to sprinkle it with some filtering methods, you may just extend it:
 
     class SectionCollection extends ArrayCollection
     {
-        public function getEnabled()
+        public function getEnabled(): SectionCollection
         {
             return $this->filter(function(Section $s) {
                 return $s->isEnabled();

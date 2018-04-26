@@ -33,7 +33,7 @@ is allowed to:
 
     class Order
     {
-        public function assertCustomerAllowedBuying()
+        public function assertCustomerAllowedBuying(): void
         {
             $orderLimit = $this->customer->getOrderLimit();
 
@@ -65,7 +65,7 @@ First Annotations:
         class Order
         {
             /** @PrePersist @PreUpdate */
-            public function assertCustomerAllowedBuying() {}
+            public function assertCustomerAllowedBuying(): void {}
         }
 
     .. code-block:: xml
@@ -97,7 +97,7 @@ validation callbacks.
     class Order
     {
         /** @PrePersist @PreUpdate */
-        public function validate()
+        public function validate(): void
         {
             if (!($this->plannedShipDate instanceof DateTime)) {
                 throw new ValidateException();

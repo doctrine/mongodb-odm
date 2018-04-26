@@ -208,7 +208,7 @@ Self-Referencing Many to Many
             $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
         }
 
-        public function addFriend(User $user)
+        public function addFriend(User $user): void
         {
             $user->friendsWithMe[] = $this;
             $this->myFriends[] = $user;

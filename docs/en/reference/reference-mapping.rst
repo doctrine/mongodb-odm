@@ -402,12 +402,12 @@ and StandingData:
             $this->addresses = new ArrayCollection();
         }
 
-        public function newStandingData(StandingData $sd)
+        public function newStandingData(StandingData $sd): void
         {
             $this->standingData = $sd;
         }
 
-        public function removeAddress($pos)
+        public function removeAddress($pos): void
         {
             unset($this->addresses[$pos]);
         }

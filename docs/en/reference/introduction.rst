@@ -55,19 +55,19 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\EmbedOne(targetDocument="Address") */
         private $address;
 
-        public function getId() { return $this->id; }
+        public function getId(): ?string { return $this->id; }
 
-        public function getChanges() { return $this->changes; }
-        public function incrementChanges() { $this->changes++; }
+        public function getChanges(): int { return $this->changes; }
+        public function incrementChanges(): void { $this->changes++; }
 
-        public function getNotes() { return $this->notes; }
+        public function getNotes(): array { return $this->notes; }
         public function addNote($note) { $this->notes[] = $note; }
 
-        public function getName() { return $this->name; }
-        public function setName($name) { $this->name = $name; }
+        public function getName(): ?string { return $this->name; }
+        public function setName(string $name): void { $this->name = $name; }
 
-        public function getSalary() { return $this->salary; }
-        public function setSalary($salary) { $this->salary = (int) $salary; }
+        public function getSalary(): ?int { return $this->salary; }
+        public function setSalary(int $salary): void { $this->salary = (int) $salary; }
 
         public function getStarted() { return $this->started; }
         public function setStarted(DateTime $started) { $this->started = $started; }
@@ -75,8 +75,8 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         public function getLeft() { return $this->left; }
         public function setLeft(DateTime $left) { $this->left = $left; }
 
-        public function getAddress() { return $this->address; }
-        public function setAddress(Address $address) { $this->address = $address; }
+        public function getAddress(): ?Address { return $this->address; }
+        public function setAddress(Address $address): void { $this->address = $address; }
     }
 
     /** @ODM\Document */
@@ -85,8 +85,8 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\ReferenceOne(targetDocument="Documents\Manager") */
         private $manager;
 
-        public function getManager() { return $this->manager; }
-        public function setManager(Manager $manager) { $this->manager = $manager; }
+        public function getManager(): ?Manager { return $this->manager; }
+        public function setManager(Manager $manager): void { $this->manager = $manager; }
     }
 
     /** @ODM\Document */
@@ -97,8 +97,8 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
 
         public __construct() { $this->projects = new ArrayCollection(); }
 
-        public function getProjects() { return $this->projects; }
-        public function addProject(Project $project) { $this->projects[] = $project; }
+        public function getProjects(): Collection { return $this->projects; }
+        public function addProject(Project $project): void { $this->projects[] = $project; }
     }
 
     /** @ODM\EmbeddedDocument */
@@ -116,17 +116,17 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\Field(type="string") */
         private $zipcode;
 
-        public function getAddress() { return $this->address; }
-        public function setAddress($address) { $this->address = $address; }
+        public function getAddress(): ?string { return $this->address; }
+        public function setAddress(string $address): void { $this->address = $address; }
 
-        public function getCity() { return $this->city; }
-        public function setCity($city) { $this->city = $city; }
+        public function getCity(): ?string { return $this->city; }
+        public function setCity(string $city): void { $this->city = $city; }
 
-        public function getState() { return $this->state; }
-        public function setState($state) { $this->state = $state; }
+        public function getState(): ?string { return $this->state; }
+        public function setState(string $state): void { $this->state = $state; }
 
-        public function getZipcode() { return $this->zipcode; }
-        public function setZipcode($zipcode) { $this->zipcode = $zipcode; }
+        public function getZipcode(): ?string { return $this->zipcode; }
+        public function setZipcode(string $zipcode): void { $this->zipcode = $zipcode; }
     }
 
     /** @ODM\Document */
@@ -140,10 +140,10 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
 
         public function __construct($name) { $this->name = $name; }
 
-        public function getId() { return $this->id; }
+        public function getId(): ?string { return $this->id; }
 
-        public function getName() { return $this->name; }
-        public function setName($name) { $this->name = $name; }
+        public function getName(): ?string { return $this->name; }
+        public function setName(string $name): void { $this->name = $name; }
     }
 
 Now those objects can be used just like you weren't using any
