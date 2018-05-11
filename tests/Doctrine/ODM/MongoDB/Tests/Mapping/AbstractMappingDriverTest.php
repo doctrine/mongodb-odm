@@ -21,13 +21,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
      */
     public function testLoadMapping()
     {
-        $className = AbstractMappingDriverUser::class;
-        $mappingDriver = $this->_loadDriver();
-
-        $class = new ClassMetadata($className);
-        $mappingDriver->loadMetadataForClass($className, $class);
-
-        return $class;
+        return $this->loadMetadata(AbstractMappingDriverUser::class);
     }
 
     /**
@@ -386,6 +380,59 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->assertTrue(isset($shardKey['options']['numInitialChunks']), 'Shard key option is not mapped');
         $this->assertEquals(4096, $shardKey['options']['numInitialChunks'], 'Shard key option has wrong value');
     }
+
+    public function testGridFSMapping()
+    {
+        $class = $this->loadMetadata(AbstractMappingDriverFile::class);
+
+        $this->assertTrue($class->isFile);
+
+        $this->assertArraySubset([
+            'name' => '_id',
+            'type' => 'id',
+        ], $class->getFieldMapping('id'), true);
+
+        $this->assertArraySubset([
+            'name' => 'length',
+            'type' => 'int',
+            'notSaved' => true,
+        ], $class->getFieldMapping('size'), true);
+
+        $this->assertArraySubset([
+            'name' => 'chunkSize',
+            'type' => 'int',
+            'notSaved' => true,
+        ], $class->getFieldMapping('chunkSize'), true);
+
+        $this->assertArraySubset([
+            'name' => 'filename',
+            'type' => 'string',
+            'notSaved' => true,
+        ], $class->getFieldMapping('name'), true);
+
+        $this->assertArraySubset([
+            'name' => 'uploadDate',
+            'type' => 'date',
+            'notSaved' => true,
+        ], $class->getFieldMapping('uploadDate'), true);
+
+        $this->assertArraySubset([
+            'name' => 'metadata',
+            'type' => 'one',
+            'embedded' => true,
+            'targetDocument' => AbstractMappingDriverFileMetadata::class,
+        ], $class->getFieldMapping('metadata'), true);
+    }
+
+    protected function loadMetadata($className): ClassMetadata
+    {
+        $mappingDriver = $this->_loadDriver();
+
+        $class = new ClassMetadata($className);
+        $mappingDriver->loadMetadataForClass($className, $class);
+
+        return $class;
+    }
 }
 
 /**
@@ -602,4 +649,34 @@ class Phonenumber
 class InvalidMappingDocument
 {
     public $id;
+}
+
+/**
+ * @ODM\File
+ */
+class AbstractMappingDriverFile
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\File\Length */
+    public $size;
+
+    /** @ODM\File\ChunkSize */
+    public $chunkSize;
+
+    /** @ODM\File\Filename */
+    public $name;
+
+    /** @ODM\File\Metadata(targetDocument=AbstractMappingDriverFileMetadata::class) */
+    public $metadata;
+
+    /** @ODM\File\UploadDate */
+    public $uploadDate;
+}
+
+class AbstractMappingDriverFileMetadata
+{
+    /** @ODM\Field */
+    public $contentType;
 }
