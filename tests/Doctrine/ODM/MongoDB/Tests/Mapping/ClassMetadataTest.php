@@ -786,6 +786,21 @@ class ClassMetadataTest extends BaseTest
         $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
         $cm->setShardKey(['referenceMany' => 1]);
     }
+
+    public function testArbitraryFieldInGridFSFileThrowsException(): void
+    {
+        $object = new class {
+            public $contentType;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
+        $cm->isFile = true;
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageRegExp("#^Field 'contentType' in class '.+' is not a valid field for GridFS documents. You should move it to an embedded metadata document.$#");
+
+        $cm->mapField(['type' => 'string', 'fieldName' => 'contentType']);
+    }
 }
 
 class TestCustomRepositoryClass extends DocumentRepository
