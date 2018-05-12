@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Documents;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 /** FIXME: reflection chokes if this class doesn't have a doc comment */
 class CommentRepository extends DocumentRepository

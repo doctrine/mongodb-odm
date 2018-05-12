@@ -2,15 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB;
+namespace Doctrine\ODM\MongoDB\Repository;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use function is_array;
 
 /**
@@ -54,7 +61,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Creates a new Query\Builder instance that is preconfigured for this document name.
      *
-     * @return Query\Builder $qb
+     * @return QueryBuilder $qb
      */
     public function createQueryBuilder()
     {
@@ -64,7 +71,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Creates a new Aggregation\Builder instance that is prepopulated for this document name.
      *
-     * @return Aggregation\Builder
+     * @return AggregationBuilder
      */
     public function createAggregationBuilder()
     {
@@ -86,7 +93,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * @param mixed $id          Identifier.
      * @param int   $lockMode    Optional. Lock mode; one of the LockMode constants.
      * @param int   $lockVersion Optional. Expected version.
-     * @throws Mapping\MappingException
+     * @throws MappingException
      * @throws LockException
      * @return object|null The document, if found, otherwise null.
      */
@@ -192,7 +199,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * @return Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     public function getClassMetadata()
     {
