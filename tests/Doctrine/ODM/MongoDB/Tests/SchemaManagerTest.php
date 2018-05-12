@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
@@ -20,12 +21,15 @@ use Documents\CmsPhonenumber;
 use Documents\CmsProduct;
 use Documents\CmsUser;
 use Documents\Comment;
+use Documents\File;
 use Documents\Sharded\ShardedUser;
 use Documents\SimpleReferenceUser;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
+use MongoDB\GridFS\Bucket;
 use MongoDB\Model\IndexInfoIteratorIterator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use const DOCTRINE_MONGODB_DATABASE;
 use function in_array;
@@ -58,8 +62,16 @@ class SchemaManagerTest extends TestCase
         'Documents/SubCategory',
     ];
 
+    /** @var ClassMetadata[] */
     private $classMetadatas = [];
+
+    /** @var Collection[]|MockObject[] */
     private $documentCollections = [];
+
+    /** @var Bucket[]|MockObject[] */
+    private $documentBuckets = [];
+
+    /** @var Database[]|MockObject[] */
     private $documentDatabases = [];
 
     /** @var SchemaManager */
@@ -76,7 +88,12 @@ class SchemaManagerTest extends TestCase
         $map = [];
 
         foreach ($cmf->getAllMetadata() as $cm) {
-            $this->documentCollections[$cm->name] = $this->getMockCollection();
+            if ($cm->isFile) {
+                $this->documentBuckets[$cm->name] = $this->getMockBucket();
+            } else {
+                $this->documentCollections[$cm->name] = $this->getMockCollection();
+            }
+
             $this->documentDatabases[$cm->name] = $this->getMockDatabase();
             $this->classMetadatas[$cm->name] = $cm;
         }
@@ -84,6 +101,7 @@ class SchemaManagerTest extends TestCase
         $this->dm->unitOfWork = $this->getMockUnitOfWork();
         $this->dm->metadataFactory = $cmf;
         $this->dm->documentCollections = $this->documentCollections;
+        $this->dm->documentBuckets = $this->documentBuckets;
         $this->dm->documentDatabases = $this->documentDatabases;
 
         $this->schemaManager = new SchemaManager($this->dm, $cmf);
@@ -100,6 +118,30 @@ class SchemaManagerTest extends TestCase
             }
         }
 
+        foreach ($this->documentBuckets as $class => $bucket) {
+            $bucket->getFilesCollection()
+                ->expects($this->any())
+                ->method('listIndexes')
+                ->willReturn([])
+            ;
+            $bucket->getFilesCollection()
+                ->expects($this->once())
+                ->method('createIndex')
+                ->with(['filename' => 1, 'uploadDate' => 1])
+            ;
+
+            $bucket->getChunksCollection()
+                ->expects($this->any())
+                ->method('listIndexes')
+                ->willReturn([])
+            ;
+            $bucket->getChunksCollection()
+                ->expects($this->once())
+                ->method('createIndex')
+                ->with(['files_id' => 1, 'n' => 1], ['unique' => true])
+            ;
+        }
+
         $this->schemaManager->ensureIndexes();
     }
 
@@ -114,6 +156,44 @@ class SchemaManagerTest extends TestCase
         }
 
         $this->schemaManager->ensureDocumentIndexes(CmsArticle::class);
+    }
+
+    public function testEnsureDocumentIndexesForGridFSFile()
+    {
+        foreach ($this->documentCollections as $class => $collection) {
+            $collection->expects($this->never())->method('createIndex');
+        }
+
+        foreach ($this->documentBuckets as $class => $bucket) {
+            if ($class === File::class) {
+                $bucket->getFilesCollection()
+                    ->expects($this->any())
+                    ->method('listIndexes')
+                    ->willReturn([])
+                ;
+                $bucket->getFilesCollection()
+                    ->expects($this->once())
+                    ->method('createIndex')
+                    ->with(['filename' => 1, 'uploadDate' => 1])
+                ;
+
+                $bucket->getChunksCollection()
+                    ->expects($this->any())
+                    ->method('listIndexes')
+                    ->willReturn([])
+                ;
+                $bucket->getChunksCollection()
+                    ->expects($this->once())
+                    ->method('createIndex')
+                    ->with(['files_id' => 1, 'n' => 1], ['unique' => true])
+                ;
+            } else {
+                $bucket->getFilesCollection()->expects($this->never())->method('createIndex');
+                $bucket->getChunksCollection()->expects($this->never())->method('createIndex');
+            }
+        }
+
+        $this->schemaManager->ensureDocumentIndexes(File::class);
     }
 
     public function testEnsureDocumentIndexesWithTwoLevelInheritance()
@@ -219,6 +299,21 @@ class SchemaManagerTest extends TestCase
         $this->schemaManager->createDocumentCollection(CmsArticle::class);
     }
 
+    public function testCreateDocumentCollectionForFile()
+    {
+        $database = $this->documentDatabases[File::class];
+        $database->expects($this->at(0))
+            ->method('createCollection')
+            ->with('fs.files')
+        ;
+        $database->expects($this->at(1))
+            ->method('createCollection')
+            ->with('fs.chunks')
+        ;
+
+        $this->schemaManager->createDocumentCollection(File::class);
+    }
+
     public function testCreateCollections()
     {
         foreach ($this->documentDatabases as $class => $database) {
@@ -260,6 +355,31 @@ class SchemaManagerTest extends TestCase
         }
 
         $this->schemaManager->dropDocumentCollection(CmsArticle::class);
+    }
+
+    public function testDropDocumentCollectionForGridFSFile()
+    {
+        foreach ($this->documentCollections as $class => $collection) {
+            $collection->expects($this->never())->method('drop');
+        }
+
+        foreach ($this->documentBuckets as $class => $bucket) {
+            if ($class === File::class) {
+                $bucket->getFilesCollection()
+                    ->expects($this->once())
+                    ->method('drop')
+                ;
+                $bucket->getChunksCollection()
+                    ->expects($this->once())
+                    ->method('drop')
+                ;
+            } else {
+                $bucket->getFilesCollection()->expects($this->never())->method('drop');
+                $bucket->getChunksCollection()->expects($this->never())->method('drop');
+            }
+        }
+
+        $this->schemaManager->dropDocumentCollection(File::class);
     }
 
     public function testDropDocumentDatabase()
@@ -770,11 +890,23 @@ class SchemaManagerTest extends TestCase
         $this->schemaManager->enableShardingForDbByDocumentName(ShardedUser::class);
     }
 
+    /** @return Bucket|MockObject */
+    private function getMockBucket()
+    {
+        $mock = $this->createMock(Bucket::class);
+        $mock->expects($this->any())->method('getFilesCollection')->willReturn($this->getMockCollection());
+        $mock->expects($this->any())->method('getChunksCollection')->willReturn($this->getMockCollection());
+
+        return $mock;
+    }
+
+    /** @return Collection|MockObject */
     private function getMockCollection()
     {
         return $this->createMock(Collection::class);
     }
 
+    /** @return Database|MockObject */
     private function getMockDatabase()
     {
         return $this->createMock(Database::class);
