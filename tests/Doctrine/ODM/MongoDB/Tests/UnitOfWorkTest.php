@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
@@ -20,6 +21,8 @@ use Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\Address;
 use Documents\CmsPhonenumber;
+use Documents\File;
+use Documents\FileWithoutMetadata;
 use Documents\ForumAvatar;
 use Documents\ForumUser;
 use Documents\Functional\NotSaved;
@@ -27,6 +30,7 @@ use Documents\User;
 use MongoDB\BSON\ObjectId;
 use function get_class;
 use function spl_object_hash;
+use function sprintf;
 use function ucfirst;
 
 class UnitOfWorkTest extends BaseTest
@@ -334,6 +338,67 @@ class UnitOfWorkTest extends BaseTest
         $this->assertArrayNotHasKey('notSaved', $changeset);
     }
 
+    public function testNoUpdatesOnGridFSFields(): void
+    {
+        $file = new File();
+
+        $access = \Closure::bind(function (string $property, $value): void {
+            $this->$property = $value;
+        }, $file, $file);
+
+        $access('id', 1234);
+        $access('filename', 'foo');
+        $access('length', 123);
+        $access('uploadDate', new \DateTime());
+        $access('chunkSize', 1234);
+
+        $owner = new User();
+        $this->uow->persist($owner);
+
+        $file->getOrCreateMetadata()->setOwner($owner);
+
+        $data = [
+            '_id' => 123,
+            'filename' => 'file.txt',
+            'chunkSize' => 256,
+            'length' => 0,
+            'uploadDate' => new \DateTime(),
+        ];
+
+        $this->uow->registerManaged($file, spl_object_hash($file), $data);
+
+        $this->uow->computeChangeSets();
+        $changeset = $this->uow->getDocumentChangeSet($file);
+        $this->assertArrayNotHasKey('filename', $changeset);
+        $this->assertArrayNotHasKey('chunkSize', $changeset);
+        $this->assertArrayNotHasKey('length', $changeset);
+        $this->assertArrayNotHasKey('uploadDate', $changeset);
+        $this->assertArrayHasKey('metadata', $changeset);
+    }
+
+    public function testComputingChangesetForFileWithoutMetadataThrowsNoError(): void
+    {
+        $file = new FileWithoutMetadata();
+
+        $access = \Closure::bind(function (string $property, $value): void {
+            $this->$property = $value;
+        }, $file, $file);
+
+        $access('filename', 'foo');
+
+        $data = [
+            '_id' => 123,
+            'filename' => 'file.txt',
+        ];
+
+        $this->uow->registerManaged($file, spl_object_hash($file), $data);
+
+        $this->uow->computeChangeSets();
+        $changeset = $this->uow->getDocumentChangeSet($file);
+
+        $this->assertSame([], $changeset);
+    }
+
     /**
      * @dataProvider getScheduleForUpdateWithArraysTests
      */
@@ -438,6 +503,16 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->registerManaged($document, null, []);
 
         $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
+    }
+
+    public function testPersistNewGridFSFile(): void
+    {
+        $file = new File();
+
+        $this->expectException(MongoDBException::class);
+        $this->expectExceptionMessage(sprintf('Cannot persist GridFS file for class "%s" through UnitOfWork', File::class));
+
+        $this->uow->persist($file);
     }
 
     public function testPersistRemovedDocument()

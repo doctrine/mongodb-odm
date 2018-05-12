@@ -165,4 +165,9 @@ class MongoDBException extends \Exception
     {
         return new self(sprintf('Cannot fetch document bucket for document "%s".', $className));
     }
+
+    public static function cannotPersistGridFSFile(string $className): self
+    {
+        return new self(sprintf('Cannot persist GridFS file for class "%s" through UnitOfWork.', $className));
+    }
 }

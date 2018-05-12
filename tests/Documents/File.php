@@ -56,4 +56,13 @@ class File
     {
         return $this->metadata;
     }
+
+    public function getOrCreateMetadata(): FileMetadata
+    {
+        if (! $this->metadata) {
+            $this->metadata = new FileMetadata();
+        }
+
+        return $this->getMetadata();
+    }
 }
