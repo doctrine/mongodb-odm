@@ -14,8 +14,10 @@ use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionFactory
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerator;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
+use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use function trim;
 
@@ -343,7 +345,7 @@ class Configuration
     /**
      * @throws MongoDBException If not is a ObjectRepository.
      */
-    public function setDefaultRepositoryClassName(string $className): void
+    public function setDefaultDocumentRepositoryClassName(string $className): void
     {
         $reflectionClass = new \ReflectionClass($className);
 
@@ -351,12 +353,31 @@ class Configuration
             throw MongoDBException::invalidDocumentRepository($className);
         }
 
-        $this->attributes['defaultRepositoryClassName'] = $className;
+        $this->attributes['defaultDocumentRepositoryClassName'] = $className;
     }
 
-    public function getDefaultRepositoryClassName(): string
+    public function getDefaultDocumentRepositoryClassName(): string
     {
-        return $this->attributes['defaultRepositoryClassName'] ?? DocumentRepository::class;
+        return $this->attributes['defaultDocumentRepositoryClassName'] ?? DocumentRepository::class;
+    }
+
+    /**
+     * @throws MongoDBException If the class does not implement the GridFSRepository interface.
+     */
+    public function setDefaultGridFSRepositoryClassName(string $className): void
+    {
+        $reflectionClass = new \ReflectionClass($className);
+
+        if (! $reflectionClass->implementsInterface(GridFSRepository::class)) {
+            throw MongoDBException::invalidGridFSRepository($className);
+        }
+
+        $this->attributes['defaultGridFSRepositoryClassName'] = $className;
+    }
+
+    public function getDefaultGridFSRepositoryClassName(): string
+    {
+        return $this->attributes['defaultGridFSRepositoryClassName'] ?? DefaultGridFSRepository::class;
     }
 
     public function setRepositoryFactory(RepositoryFactory $repositoryFactory): void

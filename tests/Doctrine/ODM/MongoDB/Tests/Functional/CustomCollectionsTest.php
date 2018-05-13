@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\File;
 use Documents\ProfileNotify;
@@ -143,10 +144,14 @@ class CustomCollectionsTest extends BaseTest
 
     public function testModifyingCollectionInChangeTrackingNotifyDocument()
     {
+        /** @var GridFSRepository $repository */
+        $repository = $this->dm->getRepository(File::class);
+
+        $f1 = $repository->uploadFromFile(__FILE__);
+        $f2 = $repository->uploadFromFile(__FILE__);
+
         $profile = new ProfileNotify();
-        $f1 = new File();
         $profile->getImages()->add($f1);
-        $f2 = new File();
         $profile->getImages()->add($f2);
         $this->dm->persist($profile);
         $this->dm->flush();

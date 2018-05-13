@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Doctrine\ODM\MongoDB\Repository;
+
+use Doctrine\Common\Persistence\ObjectRepository;
+
+interface GridFSRepository extends ObjectRepository
+{
+    /**
+     * Writes the contents of a GridFS file to a writable stream.
+     *
+     * @param mixed    $id          File ID
+     * @param resource $destination Writable Stream
+     */
+    public function downloadToStream($id, $destination): void;
+
+    /**
+     * Opens a writable stream for writing a GridFS file.
+     *
+     * @param object|null $metadata
+     * @return resource
+     */
+    public function openUploadStream(string $filename, $metadata = null);
+
+    /**
+     * Writes the contents of a readable stream to a GridFS file.
+     *
+     * @param resource    $source   Readable stream
+     * @param object|null $metadata
+     * @return object The newly created GridFS file
+     */
+    public function uploadFromStream(string $filename, $source, $metadata = null);
+
+    /**
+     * Writes the contents of a file to a GridFS file.
+     *
+     * @param string      $path
+     * @param string|null $filename The filename to upload the file with. If no filename is provided, the name of the source file will be used.
+     * @param object|null $metadata
+     * @return object The newly created GridFS file
+     */
+    public function uploadFromFile(string $source, ?string $filename = null, $metadata = null);
+}

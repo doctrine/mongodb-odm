@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use function array_slice;
 use function end;
 use function get_class;
@@ -78,6 +79,15 @@ class MongoDBException extends \Exception
     public static function invalidDocumentRepository($className)
     {
         return new self(sprintf("Invalid repository class '%s'. It must be a %s.", $className, ObjectRepository::class));
+    }
+
+    /**
+     * @param string $className
+     * @return MongoDBException
+     */
+    public static function invalidGridFSRepository($className)
+    {
+        return new self(sprintf("Invalid repository class '%s'. It must be a %s.", $className, GridFSRepository::class));
     }
 
     /**
@@ -169,5 +179,10 @@ class MongoDBException extends \Exception
     public static function cannotPersistGridFSFile(string $className): self
     {
         return new self(sprintf('Cannot persist GridFS file for class "%s" through UnitOfWork.', $className));
+    }
+
+    public static function cannotReadGridFSSourceFile(string $filename): self
+    {
+        return new self(sprintf('Cannot open file "%s" for uploading to GridFS.', $filename));
     }
 }
