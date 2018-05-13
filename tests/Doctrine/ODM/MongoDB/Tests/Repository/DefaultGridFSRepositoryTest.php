@@ -108,6 +108,19 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertInstanceOf(User::class, $file->getMetadata()->getOwner());
     }
 
+    public function testDeletingFileAlsoDropsChunks(): void
+    {
+        $file = $this->uploadFile(__FILE__);
+
+        $this->dm->remove($file);
+        $this->dm->flush();
+
+        $bucket = $this->dm->getDocumentBucket(File::class);
+
+        self::assertSame(0, $bucket->getFilesCollection()->count());
+        self::assertSame(0, $bucket->getChunksCollection()->count());
+    }
+
     private function getRepository(): GridFSRepository
     {
         return $this->dm->getRepository(File::class);
