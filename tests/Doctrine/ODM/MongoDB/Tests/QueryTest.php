@@ -299,8 +299,22 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertArrayHasKey('eO.eO.e1.eO.eP.pO._id', $debug);
-        $this->assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO._id']);
+        $this->assertArrayHasKey('eO.eO.e1.eO.eP.pO.$id', $debug);
+        $this->assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO.$id']);
+    }
+
+    public function testQueryWithMultipleEmbeddedDocumentsAndReferenceUsingDollarSign()
+    {
+        $identifier = new ObjectId();
+
+        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\EmbedTest')
+            ->find()
+            ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.$id')->equals((string) $identifier);
+        $query = $qb->getQuery();
+        $debug = $query->debug('query');
+
+        $this->assertArrayHasKey('eO.eO.e1.eO.eP.pO.$id', $debug);
+        $this->assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO.$id']);
     }
 
     public function testSelectVsSingleCollectionInheritance()
