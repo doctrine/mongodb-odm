@@ -79,11 +79,8 @@ class Configuration
 
     /**
      * Adds a namespace under a certain alias.
-     *
-     * @param string $alias
-     * @param string $namespace
      */
-    public function addDocumentNamespace($alias, $namespace)
+    public function addDocumentNamespace(string $alias, string $namespace): void
     {
         $this->attributes['documentNamespaces'][$alias] = $namespace;
     }
@@ -91,11 +88,9 @@ class Configuration
     /**
      * Resolves a registered namespace alias to the full namespace.
      *
-     * @param string $documentNamespaceAlias
-     * @return string
      * @throws MongoDBException
      */
-    public function getDocumentNamespace($documentNamespaceAlias)
+    public function getDocumentNamespace(string $documentNamespaceAlias): string
     {
         if (! isset($this->attributes['documentNamespaces'][$documentNamespaceAlias])) {
             throw MongoDBException::unknownDocumentNamespace($documentNamespaceAlias);
@@ -106,20 +101,16 @@ class Configuration
 
     /**
      * Retrieves the list of registered document namespace aliases.
-     *
-     * @return array
      */
-    public function getDocumentNamespaces()
+    public function getDocumentNamespaces(): array
     {
         return $this->attributes['documentNamespaces'];
     }
 
     /**
      * Set the document alias map
-     *
-     * @param array $documentNamespaces
      */
-    public function setDocumentNamespaces(array $documentNamespaces)
+    public function setDocumentNamespaces(array $documentNamespaces): void
     {
         $this->attributes['documentNamespaces'] = $documentNamespaces;
     }
@@ -130,18 +121,15 @@ class Configuration
      * @todo Force parameter to be a Closure to ensure lazy evaluation
      *       (as soon as a metadata cache is in effect, the driver never needs to initialize).
      */
-    public function setMetadataDriverImpl(MappingDriver $driverImpl)
+    public function setMetadataDriverImpl(MappingDriver $driverImpl): void
     {
         $this->attributes['metadataDriverImpl'] = $driverImpl;
     }
 
     /**
      * Add a new default annotation driver with a correctly configured annotation reader.
-     *
-     * @param array $paths
-     * @return Mapping\Driver\AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = [])
+    public function newDefaultAnnotationDriver(array $paths = []): AnnotationDriver
     {
         $reader = new AnnotationReader();
 
@@ -150,49 +138,34 @@ class Configuration
 
     /**
      * Gets the cache driver implementation that is used for the mapping metadata.
-     *
-     * @return MappingDriver
      */
-    public function getMetadataDriverImpl()
+    public function getMetadataDriverImpl(): ?MappingDriver
     {
         return $this->attributes['metadataDriverImpl'] ?? null;
     }
 
-    /**
-     * Gets the cache driver implementation that is used for metadata caching.
-     *
-     * @return Cache
-     */
-    public function getMetadataCacheImpl()
+    public function getMetadataCacheImpl(): ?Cache
     {
         return $this->attributes['metadataCacheImpl'] ?? null;
     }
 
-    /**
-     * Sets the cache driver implementation that is used for metadata caching.
-     *
-     */
-    public function setMetadataCacheImpl(Cache $cacheImpl)
+    public function setMetadataCacheImpl(Cache $cacheImpl): void
     {
         $this->attributes['metadataCacheImpl'] = $cacheImpl;
     }
 
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
-     *
-     * @param string $dir
      */
-    public function setProxyDir($dir)
+    public function setProxyDir(string $dir): void
     {
         $this->attributes['proxyDir'] = $dir;
     }
 
     /**
      * Gets the directory where Doctrine generates any necessary proxy class files.
-     *
-     * @return string
      */
-    public function getProxyDir()
+    public function getProxyDir(): ?string
     {
         return $this->attributes['proxyDir'] ?? null;
     }
@@ -202,6 +175,9 @@ class Configuration
      * during each script execution.
      *
      * @return bool|int
+     *
+     * @todo: Check that it is safe to drop bool values as Doctrine\Common\Proxy\AbstractProxyFactory
+     *        has only int values.
      */
     public function getAutoGenerateProxyClasses()
     {
@@ -214,47 +190,27 @@ class Configuration
      *
      * @param bool|int $bool Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
      */
-    public function setAutoGenerateProxyClasses($bool)
+    public function setAutoGenerateProxyClasses($bool): void
     {
         $this->attributes['autoGenerateProxyClasses'] = $bool;
     }
 
-    /**
-     * Gets the namespace where proxy classes reside.
-     *
-     * @return string
-     */
-    public function getProxyNamespace()
+    public function getProxyNamespace(): ?string
     {
         return $this->attributes['proxyNamespace'] ?? null;
     }
 
-    /**
-     * Sets the namespace where proxy classes reside.
-     *
-     * @param string $ns
-     */
-    public function setProxyNamespace($ns)
+    public function setProxyNamespace(string $ns): void
     {
         $this->attributes['proxyNamespace'] = $ns;
     }
 
-    /**
-     * Sets the directory where Doctrine generates hydrator class files.
-     *
-     * @param string $dir
-     */
-    public function setHydratorDir($dir)
+    public function setHydratorDir(string $dir): void
     {
         $this->attributes['hydratorDir'] = $dir;
     }
 
-    /**
-     * Gets the directory where Doctrine generates hydrator class files.
-     *
-     * @return string
-     */
-    public function getHydratorDir()
+    public function getHydratorDir(): ?string
     {
         return $this->attributes['hydratorDir'] ?? null;
     }
@@ -276,47 +232,27 @@ class Configuration
      *
      * @param bool|int $bool
      */
-    public function setAutoGenerateHydratorClasses($bool)
+    public function setAutoGenerateHydratorClasses($bool): void
     {
         $this->attributes['autoGenerateHydratorClasses'] = $bool;
     }
 
-    /**
-     * Gets the namespace where hydrator classes reside.
-     *
-     * @return string
-     */
-    public function getHydratorNamespace()
+    public function getHydratorNamespace(): ?string
     {
         return $this->attributes['hydratorNamespace'] ?? null;
     }
 
-    /**
-     * Sets the namespace where hydrator classes reside.
-     *
-     * @param string $ns
-     */
-    public function setHydratorNamespace($ns)
+    public function setHydratorNamespace(string $ns): void
     {
         $this->attributes['hydratorNamespace'] = $ns;
     }
 
-    /**
-     * Sets the directory where Doctrine generates persistent collection class files.
-     *
-     * @param string $dir
-     */
-    public function setPersistentCollectionDir($dir)
+    public function setPersistentCollectionDir(string $dir): void
     {
         $this->attributes['persistentCollectionDir'] = $dir;
     }
 
-    /**
-     * Gets the directory where Doctrine generates persistent collection class files.
-     *
-     * @return string
-     */
-    public function getPersistentCollectionDir()
+    public function getPersistentCollectionDir(): ?string
     {
         return $this->attributes['persistentCollectionDir'] ?? null;
     }
@@ -324,10 +260,8 @@ class Configuration
     /**
      * Gets a integer flag that indicates how and when persistent collection
      * classes should be generated.
-     *
-     * @return int Possible values are defined constants
      */
-    public function getAutoGeneratePersistentCollectionClasses()
+    public function getAutoGeneratePersistentCollectionClasses(): int
     {
         return $this->attributes['autoGeneratePersistentCollectionClasses'] ?? self::AUTOGENERATE_ALWAYS;
     }
@@ -335,30 +269,18 @@ class Configuration
     /**
      * Sets a integer flag that indicates how and when persistent collection
      * classes should be generated.
-     *
-     * @param int $mode Possible values are defined constants
      */
-    public function setAutoGeneratePersistentCollectionClasses($mode)
+    public function setAutoGeneratePersistentCollectionClasses(int $mode): void
     {
         $this->attributes['autoGeneratePersistentCollectionClasses'] = $mode;
     }
 
-    /**
-     * Gets the namespace where persistent collection classes reside.
-     *
-     * @return string
-     */
-    public function getPersistentCollectionNamespace()
+    public function getPersistentCollectionNamespace(): ?string
     {
         return $this->attributes['persistentCollectionNamespace'] ?? null;
     }
 
-    /**
-     * Sets the namespace where persistent collection classes reside.
-     *
-     * @param string $ns
-     */
-    public function setPersistentCollectionNamespace($ns)
+    public function setPersistentCollectionNamespace(string $ns): void
     {
         $this->attributes['persistentCollectionNamespace'] = $ns;
     }
@@ -366,40 +288,26 @@ class Configuration
     /**
      * Sets the default DB to use for all Documents that do not specify
      * a database.
-     *
-     * @param string $defaultDB
      */
-    public function setDefaultDB($defaultDB)
+    public function setDefaultDB(string $defaultDB): void
     {
         $this->attributes['defaultDB'] = $defaultDB;
     }
 
     /**
      * Gets the default DB to use for all Documents that do not specify a database.
-     *
-     * @return string $defaultDB
      */
-    public function getDefaultDB()
+    public function getDefaultDB(): ?string
     {
         return $this->attributes['defaultDB'] ?? null;
     }
 
-    /**
-     * Set the class metadata factory class name.
-     *
-     * @param string $cmfName
-     */
-    public function setClassMetadataFactoryName($cmfName)
+    public function setClassMetadataFactoryName(string $cmfName): void
     {
         $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 
-    /**
-     * Gets the class metadata factory class name.
-     *
-     * @return string
-     */
-    public function getClassMetadataFactoryName()
+    public function getClassMetadataFactoryName(): string
     {
         if (! isset($this->attributes['classMetadataFactoryName'])) {
             $this->attributes['classMetadataFactoryName'] = ClassMetadataFactory::class;
@@ -407,34 +315,20 @@ class Configuration
         return $this->attributes['classMetadataFactoryName'];
     }
 
-    /**
-     * Gets array of default commit options.
-     *
-     * @return array
-     */
-    public function getDefaultCommitOptions()
+    public function getDefaultCommitOptions(): array
     {
         return $this->attributes['defaultCommitOptions'] ?? ['w' => 1];
     }
 
-    /**
-     * Sets array of default commit options.
-     *
-     * @param array $defaultCommitOptions
-     */
-    public function setDefaultCommitOptions($defaultCommitOptions)
+    public function setDefaultCommitOptions(array $defaultCommitOptions): void
     {
         $this->attributes['defaultCommitOptions'] = $defaultCommitOptions;
     }
 
     /**
      * Add a filter to the list of possible filters.
-     *
-     * @param string $name       The name of the filter.
-     * @param string $className  The class name of the filter.
-     * @param array  $parameters The parameters for the filter.
      */
-    public function addFilter($name, $className, array $parameters = [])
+    public function addFilter(string $name, string $className, array $parameters = []): void
     {
         $this->attributes['filters'][$name] = [
             'class' => $className,
@@ -442,28 +336,14 @@ class Configuration
         ];
     }
 
-    /**
-     * Gets the class name for a given filter name.
-     *
-     * @param string $name The name of the filter.
-     *
-     * @return string|null The filter class name, or null if it is undefined
-     */
-    public function getFilterClassName($name)
+    public function getFilterClassName(string $name): ?string
     {
         return isset($this->attributes['filters'][$name])
             ? $this->attributes['filters'][$name]['class']
             : null;
     }
 
-    /**
-     * Gets the parameters for a given filter name.
-     *
-     * @param string $name The name of the filter.
-     *
-     * @return array|null The filter parameters, or null if it is undefined
-     */
-    public function getFilterParameters($name)
+    public function getFilterParameters(string $name): ?array
     {
         return isset($this->attributes['filters'][$name])
             ? $this->attributes['filters'][$name]['parameters']
@@ -471,14 +351,9 @@ class Configuration
     }
 
     /**
-     * Sets default repository class.
-     *
-     * @param string $className
-     *
-     *
      * @throws MongoDBException If not is a ObjectRepository.
      */
-    public function setDefaultRepositoryClassName($className)
+    public function setDefaultRepositoryClassName(string $className): void
     {
         $reflectionClass = new \ReflectionClass($className);
 
@@ -489,50 +364,27 @@ class Configuration
         $this->attributes['defaultRepositoryClassName'] = $className;
     }
 
-    /**
-     * Get default repository class.
-     *
-     * @return string
-     */
-    public function getDefaultRepositoryClassName()
+    public function getDefaultRepositoryClassName(): string
     {
         return $this->attributes['defaultRepositoryClassName'] ?? DocumentRepository::class;
     }
 
-    /**
-     * Set the document repository factory.
-     *
-     */
-    public function setRepositoryFactory(RepositoryFactory $repositoryFactory)
+    public function setRepositoryFactory(RepositoryFactory $repositoryFactory): void
     {
         $this->attributes['repositoryFactory'] = $repositoryFactory;
     }
 
-    /**
-     * Get the document repository factory.
-     *
-     * @return RepositoryFactory
-     */
-    public function getRepositoryFactory()
+    public function getRepositoryFactory(): RepositoryFactory
     {
         return $this->attributes['repositoryFactory'] ?? new DefaultRepositoryFactory();
     }
 
-    /**
-     * Set the persistent collection factory.
-     *
-     */
-    public function setPersistentCollectionFactory(PersistentCollectionFactory $persistentCollectionFactory)
+    public function setPersistentCollectionFactory(PersistentCollectionFactory $persistentCollectionFactory): void
     {
         $this->attributes['persistentCollectionFactory'] = $persistentCollectionFactory;
     }
 
-    /**
-     * Get the persistent collection factory.
-     *
-     * @return DefaultPersistentCollectionFactory
-     */
-    public function getPersistentCollectionFactory()
+    public function getPersistentCollectionFactory(): PersistentCollectionFactory
     {
         if (! isset($this->attributes['persistentCollectionFactory'])) {
             $this->attributes['persistentCollectionFactory'] = new DefaultPersistentCollectionFactory();
@@ -540,21 +392,12 @@ class Configuration
         return $this->attributes['persistentCollectionFactory'];
     }
 
-    /**
-     * Set the persistent collection generator.
-     *
-     */
-    public function setPersistentCollectionGenerator(PersistentCollectionGenerator $persistentCollectionGenerator)
+    public function setPersistentCollectionGenerator(PersistentCollectionGenerator $persistentCollectionGenerator): void
     {
         $this->attributes['persistentCollectionGenerator'] = $persistentCollectionGenerator;
     }
 
-    /**
-     * Get the persistent collection generator.
-     *
-     * @return DefaultPersistentCollectionGenerator
-     */
-    public function getPersistentCollectionGenerator()
+    public function getPersistentCollectionGenerator(): PersistentCollectionGenerator
     {
         if (! isset($this->attributes['persistentCollectionGenerator'])) {
             $this->attributes['persistentCollectionGenerator'] = new DefaultPersistentCollectionGenerator(
