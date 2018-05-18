@@ -14,6 +14,7 @@ use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -67,7 +68,7 @@ class ProxyFactory extends AbstractProxyFactory
      */
     public function skipClass(BaseClassMetadata $class)
     {
-        /* @var $class \Doctrine\ODM\Mongodb\Mapping\ClassMetadata */
+        /** @var ClassMetadata $class */
         return $class->isMappedSuperclass || $class->isQueryResultDocument || $class->getReflectionClass()->isAbstract();
     }
 
@@ -76,7 +77,7 @@ class ProxyFactory extends AbstractProxyFactory
      */
     public function createProxyDefinition($className)
     {
-        /* @var $classMetadata \Doctrine\ODM\MongoDB\Mapping\ClassMetadata */
+        /** @var ClassMetadata $classMetadata */
         $classMetadata     = $this->metadataFactory->getMetadataFor($className);
         $documentPersister = $this->uow->getDocumentPersister($className);
         $reflectionId      = $classMetadata->reflFields[$classMetadata->identifier];
