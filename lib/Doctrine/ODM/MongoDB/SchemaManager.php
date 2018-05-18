@@ -320,8 +320,8 @@ class SchemaManager
         }
 
         if ($class->isFile) {
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.files');
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getCollection() . '.chunks');
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getBucketName() . '.files');
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getBucketName() . '.chunks');
 
             return;
         }

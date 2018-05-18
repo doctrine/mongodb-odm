@@ -108,7 +108,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
         // Store bucketName as collection name for GridFS files
         if (isset($documentAnnot->bucketName)) {
-            $class->setCollection($documentAnnot->bucketName);
+            $class->setBucketName($documentAnnot->bucketName);
         }
         if (isset($documentAnnot->repositoryClass)) {
             $class->setCustomRepositoryClass($documentAnnot->repositoryClass);

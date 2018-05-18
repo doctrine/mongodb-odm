@@ -118,7 +118,7 @@ class XmlDriver extends FileDriver
             }
         }
         if (isset($xmlRoot['bucket-name'])) {
-            $class->setCollection((string) $xmlRoot['bucket-name']);
+            $class->setBucketName((string) $xmlRoot['bucket-name']);
         }
         if (isset($xmlRoot['write-concern'])) {
             $class->setWriteConcern((string) $xmlRoot['write-concern']);

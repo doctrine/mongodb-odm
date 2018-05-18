@@ -186,6 +186,12 @@ class ClassMetadata implements BaseClassMetadata
     public $collection;
 
     /**
+     * READ-ONLY: The name of the GridFS bucket the document is mapped to.
+     * @var string|null
+     */
+    public $bucketName;
+
+    /**
      * READ-ONLY: If the collection should be a fixed size.
      * @var bool
      */
@@ -1129,6 +1135,17 @@ class ClassMetadata implements BaseClassMetadata
         } else {
             $this->collection = $name;
         }
+    }
+
+    public function getBucketName(): ?string
+    {
+        return $this->bucketName;
+    }
+
+    public function setBucketName(string $bucketName): void
+    {
+        $this->bucketName = $bucketName;
+        $this->setCollection($bucketName . '.files');
     }
 
     /**
@@ -2146,6 +2163,7 @@ class ClassMetadata implements BaseClassMetadata
 
         if ($this->isFile) {
             $serialized[] = 'isFile';
+            $serialized[] = 'bucketName';
         }
 
         if ($this->isVersioned) {

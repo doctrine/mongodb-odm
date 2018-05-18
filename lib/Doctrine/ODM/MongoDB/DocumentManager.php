@@ -372,16 +372,16 @@ class DocumentManager implements ObjectManager
             throw MongoDBException::documentBucketOnlyAvailableForGridFSFiles($className);
         }
 
-        $collectionName = $metadata->getCollection();
+        $bucketName = $metadata->getBucketName();
 
-        if (! $collectionName) {
+        if (! $bucketName) {
             throw MongoDBException::documentNotMappedToCollection($className);
         }
 
         if (! isset($this->documentBuckets[$className])) {
             $db = $this->getDocumentDatabase($className);
 
-            $options = ['bucketName' => $collectionName];
+            $options = ['bucketName' => $bucketName];
             if ($metadata->readPreference !== null) {
                 $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
             }
