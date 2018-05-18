@@ -73,6 +73,13 @@ class ReferenceUser
     public $referencedUsers = [];
 
     /**
+     * @ODM\EmbedMany(targetDocument="Documents\IndirectlyReferencedUser")
+     *
+     * @var IndirectlyReferencedUser[]
+     */
+    public $indirectlyReferencedUsers = [];
+
+    /**
      * @ODM\Field(type="string")
      *
      * @var string

@@ -1237,7 +1237,15 @@ class DocumentPersister
                 ? $this->dm->getClassMetadata($targetMapping['targetDocument'])
                 : null;
 
-            $fieldNames = $this->prepareQueryElement($nextObjectProperty, $value, $nextTargetClass, $prepareValue);
+            if (empty($targetMapping['reference'])) {
+                $fieldNames = $this->prepareQueryElement($nextObjectProperty, $value, $nextTargetClass, $prepareValue);
+            } else {
+                // No recursive processing for references as most probably somebody is querying DBRef or alike
+                if ($nextObjectProperty[0] !== '$' && in_array($targetMapping['storeAs'], [ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB, ClassMetadata::REFERENCE_STORE_AS_DB_REF])) {
+                    $nextObjectProperty = '$' . $nextObjectProperty;
+                }
+                $fieldNames = [[$nextObjectProperty, $value]];
+            }
 
             return array_map(function ($preparedTuple) use ($fieldName) {
                 list($key, $value) = $preparedTuple;
