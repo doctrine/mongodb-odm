@@ -214,7 +214,7 @@ CODE;
         $parameters = $method->getParameters();
         $parameterDefinitions = [];
 
-        /* @var $param \ReflectionParameter */
+        /** @var \ReflectionParameter $param */
         foreach ($parameters as $param) {
             $parameterDefinition = '';
             $parameterType = $this->getParameterType($param);

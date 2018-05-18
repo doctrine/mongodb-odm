@@ -42,8 +42,8 @@ class XmlDriver extends FileDriver
      */
     public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
     {
-        /* @var $class ClassMetadata */
-        /* @var $xmlRoot \SimpleXMLElement */
+        /** @var ClassMetadata $class */
+        /** @var \SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);
         if (! $xmlRoot) {
             return;

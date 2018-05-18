@@ -127,7 +127,7 @@ class ReferencePrimer
         $primer = $primer ?: $this->defaultPrimer;
         $groupedIds = [];
 
-        /* @var $document PersistentCollectionInterface */
+        /** @var PersistentCollectionInterface $document */
         foreach ($documents as $document) {
             $fieldValue = $class->getFieldValue($document, $fieldName);
 

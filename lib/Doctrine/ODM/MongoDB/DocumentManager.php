@@ -536,7 +536,7 @@ class DocumentManager implements ObjectManager
      */
     public function getReference($documentName, $identifier)
     {
-        /* @var $class \Doctrine\ODM\MongoDB\Mapping\ClassMetadata */
+        /** @var ClassMetadata $class */
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         $document = $this->unitOfWork->tryGetById($identifier, $class);
 
