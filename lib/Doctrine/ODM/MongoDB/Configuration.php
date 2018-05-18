@@ -171,28 +171,21 @@ class Configuration
     }
 
     /**
-     * Gets a boolean flag that indicates whether proxy classes should always be regenerated
+     * Gets an int flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
-     *
-     * @return bool|int
-     *
-     * @todo: Check that it is safe to drop bool values as Doctrine\Common\Proxy\AbstractProxyFactory
-     *        has only int values.
      */
-    public function getAutoGenerateProxyClasses()
+    public function getAutoGenerateProxyClasses(): int
     {
-        return $this->attributes['autoGenerateProxyClasses'] ?? true;
+        return $this->attributes['autoGenerateProxyClasses'] ?? self::AUTOGENERATE_ALWAYS;
     }
 
     /**
-     * Sets a boolean flag that indicates whether proxy classes should always be regenerated
+     * Sets an int flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
-     *
-     * @param bool|int $bool Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
      */
-    public function setAutoGenerateProxyClasses($bool): void
+    public function setAutoGenerateProxyClasses(int $mode): void
     {
-        $this->attributes['autoGenerateProxyClasses'] = $bool;
+        $this->attributes['autoGenerateProxyClasses'] = $mode;
     }
 
     public function getProxyNamespace(): ?string
@@ -216,25 +209,21 @@ class Configuration
     }
 
     /**
-     * Gets a boolean flag that indicates whether hydrator classes should always be regenerated
+     * Gets an int flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
-     *
-     * @return bool|int Possible values are defined constants
      */
-    public function getAutoGenerateHydratorClasses()
+    public function getAutoGenerateHydratorClasses(): int
     {
-        return $this->attributes['autoGenerateHydratorClasses'] ?? true;
+        return $this->attributes['autoGenerateHydratorClasses'] ?? self::AUTOGENERATE_ALWAYS;
     }
 
     /**
-     * Sets a boolean flag that indicates whether hydrator classes should always be regenerated
+     * Sets an int flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
-     *
-     * @param bool|int $bool
      */
-    public function setAutoGenerateHydratorClasses($bool): void
+    public function setAutoGenerateHydratorClasses(int $mode): void
     {
-        $this->attributes['autoGenerateHydratorClasses'] = $bool;
+        $this->attributes['autoGenerateHydratorClasses'] = $mode;
     }
 
     public function getHydratorNamespace(): ?string
