@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use BadMethodCallException;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
 use LogicException;
 use function array_map;
 use function array_merge;
+use function assert;
 use function func_get_args;
 use function is_array;
 use function is_string;
@@ -44,8 +46,9 @@ class Expr
     /**
      * @inheritDoc
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class)
+    public function __construct(DocumentManager $dm, ClassMetadataInterface $class)
     {
+        assert($class instanceof ClassMetadata);
         $this->dm    = $dm;
         $this->class = $class;
     }

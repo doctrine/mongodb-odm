@@ -402,50 +402,6 @@ class Match extends Stage
     }
 
     /**
-     * Add $maxDistance criteria to the query.
-     *
-     * If the query uses GeoJSON points, $maxDistance will be interpreted in
-     * meters. If legacy point coordinates are used, $maxDistance will be
-     * interpreted in radians.
-     *
-     * @see Expr::maxDistance()
-     * @see http://docs.mongodb.org/manual/reference/command/geoNear/
-     * @see http://docs.mongodb.org/manual/reference/operator/maxDistance/
-     * @see http://docs.mongodb.org/manual/reference/operator/near/
-     * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
-     *
-     * @return $this
-     */
-    public function maxDistance(float $maxDistance)
-    {
-        $this->query->maxDistance($maxDistance);
-
-        return $this;
-    }
-
-    /**
-     * Add $minDistance criteria to the query.
-     *
-     * If the query uses GeoJSON points, $minDistance will be interpreted in
-     * meters. If legacy point coordinates are used, $minDistance will be
-     * interpreted in radians.
-     *
-     * @see Expr::minDistance()
-     * @see http://docs.mongodb.org/manual/reference/command/geoNear/
-     * @see http://docs.mongodb.org/manual/reference/operator/minDistance/
-     * @see http://docs.mongodb.org/manual/reference/operator/near/
-     * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
-     *
-     * @return $this
-     */
-    public function minDistance(float $minDistance)
-    {
-        $this->query->minDistance($minDistance);
-
-        return $this;
-    }
-
-    /**
      * Specify $mod criteria for the current field.
      *
      * @see Expr::mod()

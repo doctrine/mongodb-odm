@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use function array_filter;
+use function assert;
 use function sprintf;
 use function ucfirst;
 
@@ -105,6 +107,7 @@ class CreateCommand extends AbstractCommand
     protected function processDocumentProxy(SchemaManager $sm, $document)
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
+        assert($classMetadata instanceof ClassMetadata);
 
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
     }

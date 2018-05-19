@@ -42,6 +42,7 @@ use function array_merge;
 use function array_search;
 use function array_slice;
 use function array_values;
+use function assert;
 use function count;
 use function explode;
 use function get_class;
@@ -732,8 +733,10 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection) : void
     {
-        $query     = $this->createReferenceManyInverseSideQuery($collection);
-        $documents = $query->execute()->toArray();
+        $query    = $this->createReferenceManyInverseSideQuery($collection);
+        $iterator = $query->execute();
+        assert($iterator instanceof Iterator);
+        $documents = $iterator->toArray();
         foreach ($documents as $key => $document) {
             $collection->add($document);
         }

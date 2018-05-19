@@ -1085,7 +1085,9 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     * @param mixed|Expr ...$expression3s Additional sets
+     * @param mixed|Expr ...$expressions Additional sets
+     *
+     * @return $this
      */
     public function setEquals($expression1, $expression2, ...$expressions) : self
     {

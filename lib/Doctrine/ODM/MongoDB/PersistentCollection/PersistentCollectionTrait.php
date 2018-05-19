@@ -604,7 +604,7 @@ trait PersistentCollectionTrait
             return $this->doAdd($value, true);
         }
 
-        return $this->doSet($offset, $value, true);
+        $this->doSet($offset, $value, true);
     }
 
     /**
@@ -612,7 +612,7 @@ trait PersistentCollectionTrait
      */
     public function offsetUnset($offset)
     {
-        return $this->doRemove($offset, true);
+        $this->doRemove($offset, true);
     }
 
     public function key()
@@ -702,12 +702,17 @@ trait PersistentCollectionTrait
      * @param mixed $offset
      * @param bool  $arrayAccess
      *
-     * @return mixed|void
+     * @return bool
      */
     private function doRemove($offset, $arrayAccess)
     {
         $this->initialize();
-        $removed = $arrayAccess ? $this->coll->offsetUnset($offset) : $this->coll->remove($offset);
+        if ($arrayAccess) {
+            $this->coll->offsetUnset($offset);
+            $removed = true;
+        } else {
+            $removed = $this->coll->remove($offset);
+        }
 
         if (! $removed && ! $arrayAccess) {
             return $removed;

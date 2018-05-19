@@ -12,6 +12,7 @@ use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Model\IndexInfo;
 use function array_filter;
 use function array_unique;
+use function assert;
 use function iterator_count;
 use function iterator_to_array;
 use function ksort;
@@ -43,6 +44,7 @@ class SchemaManager
     public function ensureIndexes(?int $timeout = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
@@ -60,6 +62,7 @@ class SchemaManager
     public function updateIndexes(?int $timeout = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
@@ -252,6 +255,7 @@ class SchemaManager
     public function deleteIndexes() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
@@ -281,6 +285,7 @@ class SchemaManager
     public function createCollections() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
@@ -324,6 +329,7 @@ class SchemaManager
     public function dropCollections() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
@@ -359,6 +365,7 @@ class SchemaManager
     public function dropDatabases() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
@@ -531,6 +538,7 @@ class SchemaManager
     public function ensureSharding() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || ! $class->isSharded()) {
                 continue;
             }

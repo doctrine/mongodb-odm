@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -18,6 +19,7 @@ use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use function assert;
 use function is_array;
 
 /**
@@ -151,11 +153,11 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Finds documents by a set of criteria.
      *
      * @param int|null $limit
-     * @param int|null $offset
+     * @param int|null $skip
      */
     public function findBy(array $criteria, ?array $sort = null, $limit = null, $skip = null) : array
     {
-        return $this->getDocumentPersister()->loadAll($criteria, $sort, $limit, $skip)->toArray(false);
+        return $this->getDocumentPersister()->loadAll($criteria, $sort, $limit, $skip)->toArray();
     }
 
     /**
@@ -215,7 +217,9 @@ class DocumentRepository implements ObjectRepository, Selectable
         }
 
         // @TODO: wrap around a specialized Collection for efficient count on large collections
-        return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray());
+        $iterator = $queryBuilder->getQuery()->execute();
+        assert($iterator instanceof Iterator);
+        return new ArrayCollection($iterator->toArray());
     }
 
     protected function getDocumentPersister() : DocumentPersister

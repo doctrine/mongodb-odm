@@ -19,6 +19,7 @@ use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use ReflectionException;
+use function assert;
 use function get_class;
 use function get_class_methods;
 use function in_array;
@@ -107,6 +108,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function isEntity(ClassMetadataInterface $class) : bool
     {
+        assert($class instanceof ClassMetadata);
         return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument;
     }
 
@@ -115,9 +117,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []) : void
     {
-        /** @var $class ClassMetadata */
-        /** @var $parent ClassMetadata */
-        if ($parent) {
+        assert($class instanceof ClassMetadata);
+        if ($parent instanceof ClassMetadata) {
             $class->setInheritanceType($parent->inheritanceType);
             $class->setDiscriminatorField($parent->discriminatorField);
             $class->setDiscriminatorMap($parent->discriminatorMap);
@@ -159,7 +160,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $this->validateIdentifier($class);
 
-        if ($parent && $rootEntityFound && $parent->generatorType === $class->generatorType) {
+        if ($parent instanceof ClassMetadata && $rootEntityFound && $parent->generatorType === $class->generatorType) {
             if ($parent->generatorType) {
                 $class->setIdGeneratorType($parent->generatorType);
             }
@@ -173,7 +174,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->completeIdGeneratorMapping($class);
         }
 
-        if ($parent && $parent->isInheritanceTypeSingleCollection()) {
+        if ($parent instanceof ClassMetadata && $parent->isInheritanceTypeSingleCollection()) {
             $class->setDatabase($parent->getDatabase());
             $class->setCollection($parent->getCollection());
         }

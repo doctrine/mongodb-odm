@@ -14,6 +14,7 @@ use LibXMLError;
 use SimpleXMLElement;
 use function array_keys;
 use function array_map;
+use function assert;
 use function constant;
 use function count;
 use function current;
@@ -75,7 +76,7 @@ class XmlDriver extends FileDriver
      */
     public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
     {
-        /** @var ClassMetadata $class */
+        assert($class instanceof ClassMetadata);
         /** @var SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);
         if (! $xmlRoot) {

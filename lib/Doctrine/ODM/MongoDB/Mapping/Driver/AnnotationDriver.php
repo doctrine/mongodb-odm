@@ -17,6 +17,7 @@ use ReflectionMethod;
 use const E_USER_DEPRECATED;
 use function array_merge;
 use function array_replace;
+use function assert;
 use function constant;
 use function get_class;
 use function is_array;
@@ -44,7 +45,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class) : void
     {
-        /** @var ClassMetadata $class */
+        assert($class instanceof ClassMetadata);
         $reflClass = $class->getReflectionClass();
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
