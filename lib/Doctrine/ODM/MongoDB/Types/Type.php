@@ -129,7 +129,7 @@ abstract class Type
      *
      * @throws InvalidArgumentException
      */
-    public static function getType(string $type)
+    public static function getType(string $type) : Type
     {
         if (! isset(self::$typesMap[$type])) {
             throw new InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));

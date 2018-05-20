@@ -82,6 +82,6 @@ class IncrementGenerator extends AbstractIdGenerator
             return $this->startingId;
         }
 
-        return $result['current_id'];
+        return $result['current_id'] ?? $this->startingId;
     }
 }

@@ -107,20 +107,6 @@ class Match extends Stage
     }
 
     /**
-     * Return an array of information about the Builder state for debugging.
-     *
-     * The $name parameter may be used to return a specific key from the
-     * internal $query array property. If omitted, the entire array will be
-     * returned.
-     *
-     * @return mixed
-     */
-    public function debug(?string $name = null)
-    {
-        return $name !== null ? $this->query[$name] : $this->query;
-    }
-
-    /**
      * Specify $elemMatch criteria for the current field.
      *
      * You can create a new expression using the {@link Builder::matchExpr()}

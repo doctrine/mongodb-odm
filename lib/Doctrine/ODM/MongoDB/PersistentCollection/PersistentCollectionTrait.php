@@ -34,7 +34,7 @@ trait PersistentCollectionTrait
     /**
      * Collection's owning entity
      *
-     * @var object
+     * @var object|null
      */
     private $owner;
 

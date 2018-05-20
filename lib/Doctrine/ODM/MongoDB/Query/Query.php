@@ -105,7 +105,7 @@ class Query implements IteratorAggregate
      */
     private $query;
 
-    /** @var Iterator */
+    /** @var Iterator|null */
     private $iterator;
 
     /**
@@ -174,7 +174,7 @@ class Query implements IteratorAggregate
     /**
      * Execute the query and returns the results.
      *
-     * @return Iterator|int|string|array
+     * @return Iterator|int|string|array|object
      *
      * @throws MongoDBException
      */
@@ -254,7 +254,11 @@ class Query implements IteratorAggregate
         }
 
         if ($this->iterator === null) {
-            $this->iterator = $this->execute();
+            $result = $this->execute();
+            if (! $result instanceof Iterator) {
+                throw new UnexpectedValueException('Iterator was not returned for query type: ' . $this->query['type']);
+            }
+            $this->iterator = $result;
         }
 
         return $this->iterator;
@@ -389,7 +393,7 @@ class Query implements IteratorAggregate
      * on the driver's write concern. Queries and some mapReduce commands will
      * return an Iterator.
      *
-     * @return Iterator|string|int|array
+     * @return Iterator|string|int|array|object|null
      */
     public function runQuery()
     {

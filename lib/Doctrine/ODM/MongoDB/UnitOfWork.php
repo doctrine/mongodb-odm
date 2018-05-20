@@ -2423,7 +2423,7 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the class name for an association (embed or reference) with respect
      * to any discriminator value.
      *
-     * @param array|object|null $data
+     * @param array|null $data
      */
     public function getClassNameForAssociation(array $mapping, $data) : string
     {
@@ -2438,7 +2438,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($discriminatorValue !== null) {
             return $mapping['discriminatorMap'][$discriminatorValue]
-                ?? $discriminatorValue;
+                ?? (string) $discriminatorValue;
         }
 
         $class = $this->dm->getClassMetadata($mapping['targetDocument']);

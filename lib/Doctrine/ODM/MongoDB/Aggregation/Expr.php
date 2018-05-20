@@ -40,7 +40,7 @@ class Expr
      */
     private $currentField;
 
-    /** @var array */
+    /** @var array|null */
     private $switchBranch;
 
     /**

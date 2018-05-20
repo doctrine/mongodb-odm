@@ -256,9 +256,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
      *
-     * @var string|null
+     * @var array<string, array>
      */
-    public $shardKey;
+    public $shardKey = [];
 
     /**
      * READ-ONLY: The name of the document class.
@@ -400,7 +400,7 @@ class ClassMetadata implements BaseClassMetadata
      * READ-ONLY: The definition of the discriminator field used in SINGLE_COLLECTION
      * inheritance mapping.
      *
-     * @var string
+     * @var string|null
      */
     public $discriminatorField;
 
@@ -409,7 +409,7 @@ class ClassMetadata implements BaseClassMetadata
      *
      * @see discriminatorField
      *
-     * @var string
+     * @var string|null
      */
     public $defaultDiscriminatorValue;
 
@@ -893,7 +893,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setShardKey(array $keys, array $options = []) : void
     {
-        if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && $this->shardKey !== null) {
+        if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && $this->shardKey !== []) {
             throw MappingException::shardKeyInSingleCollInheritanceSubclass($this->getName());
         }
 

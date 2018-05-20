@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
+use function assert;
+
+/**
+ * @method Bucket groupBy($expression)
+ */
 class Bucket extends AbstractBucket
 {
     /** @var array */
@@ -53,6 +58,7 @@ class Bucket extends AbstractBucket
             $this->output = new Bucket\BucketOutput($this->builder, $this);
         }
 
+        assert($this->output instanceof Bucket\BucketOutput);
         return $this->output;
     }
 

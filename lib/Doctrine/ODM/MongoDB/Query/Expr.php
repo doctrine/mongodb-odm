@@ -429,8 +429,6 @@ class Expr
      *
      * @see Builder::exists()
      * @see http://docs.mongodb.org/manual/reference/operator/exists/
-     *
-     * @return $this
      */
     public function exists(bool $bool) : self
     {
@@ -556,8 +554,6 @@ class Expr
      * @param array $point2    Second point of the polygon
      * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
-     *
-     * @return $this
      *
      * @throws InvalidArgumentException If less than three points are given.
      */

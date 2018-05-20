@@ -29,10 +29,10 @@ abstract class AbstractBucket extends Stage
     /** @var ClassMetadata */
     private $class;
 
-    /** @var Bucket\BucketOutput|null */
+    /** @var Bucket\AbstractOutput|null */
     protected $output;
 
-    /** @var Expr */
+    /** @var Expr|array */
     protected $groupBy;
 
     public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class)

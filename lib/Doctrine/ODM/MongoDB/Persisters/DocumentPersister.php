@@ -589,7 +589,7 @@ class DocumentPersister
      * @param object $document The document object to fill, if any.
      * @param array  $hints    Hints for document creation.
      *
-     * @return object The filled and managed document object or NULL, if the query result is empty.
+     * @return object|null The filled and managed document object or NULL, if the query result is empty.
      */
     private function createDocument(array $result, ?object $document = null, array $hints = []) : ?object
     {

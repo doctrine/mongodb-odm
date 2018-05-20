@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
+use function assert;
+
+/**
+ * @method BucketAuto groupBy($expression)
+ */
 class BucketAuto extends AbstractBucket
 {
     /** @var int */
@@ -44,6 +49,7 @@ class BucketAuto extends AbstractBucket
             $this->output = new Bucket\BucketAutoOutput($this->builder, $this);
         }
 
+        assert($this->output instanceof Bucket\BucketAutoOutput);
         return $this->output;
     }
 
