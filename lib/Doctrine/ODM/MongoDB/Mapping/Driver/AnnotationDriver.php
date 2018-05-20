@@ -66,7 +66,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $this->addIndex($class, $annot);
             }
             if ($annot instanceof ODM\Indexes) {
-                foreach (is_array($annot->value) ? $annot->value : [$annot->value] as $index) {
+                // Setting the type to mixed is a workaround until https://github.com/doctrine/annotations/pull/209 is released.
+                /** @var mixed $value */
+                $value = $annot->value;
+                foreach (is_array($value) ? $value : [$value] as $index) {
                     $this->addIndex($class, $index);
                 }
             } elseif ($annot instanceof ODM\InheritanceType) {
@@ -151,7 +154,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $indexes[] = $annot;
                 }
                 if ($annot instanceof ODM\Indexes) {
-                    foreach (is_array($annot->value) ? $annot->value : [$annot->value] as $index) {
+                    // Setting the type to mixed is a workaround until https://github.com/doctrine/annotations/pull/209 is released.
+                    /** @var mixed $value */
+                    $value = $annot->value;
+                    foreach (is_array($value) ? $value : [$value] as $index) {
                         $indexes[] = $index;
                     }
                 } elseif ($annot instanceof ODM\AlsoLoad) {

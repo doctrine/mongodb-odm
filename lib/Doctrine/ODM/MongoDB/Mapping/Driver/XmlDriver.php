@@ -35,6 +35,8 @@ use function trim;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
+ *
+ * @method SimpleXMLElement getElement(string $className)
  */
 class XmlDriver extends FileDriver
 {
@@ -77,11 +79,7 @@ class XmlDriver extends FileDriver
     public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
     {
         assert($class instanceof ClassMetadata);
-        /** @var SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);
-        if (! $xmlRoot) {
-            return;
-        }
 
         if ($xmlRoot->getName() === 'document') {
             if (isset($xmlRoot['repository-class'])) {

@@ -138,7 +138,7 @@ interface PersistentCollectionInterface extends Collection
      * INTERNAL:
      * Gets the collection owner.
      *
-     * @return object
+     * @return object|null
      */
     public function getOwner();
 

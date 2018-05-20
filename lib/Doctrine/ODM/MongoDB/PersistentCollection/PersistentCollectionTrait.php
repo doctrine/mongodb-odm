@@ -66,7 +66,7 @@ trait PersistentCollectionTrait
     /**
      * The DocumentManager that manages the persistence of the collection.
      *
-     * @var DocumentManager
+     * @var DocumentManager|null
      */
     private $dm;
 

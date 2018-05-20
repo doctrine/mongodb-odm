@@ -50,7 +50,7 @@ class GraphLookup extends Stage
     /** @var ClassMetadata */
     private $class;
 
-    /** @var ClassMetadata */
+    /** @var ClassMetadata|null */
     private $targetClass;
 
     /**

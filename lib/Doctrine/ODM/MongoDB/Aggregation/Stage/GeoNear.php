@@ -112,20 +112,16 @@ class GeoNear extends Match
 
     /**
      * The maximum number of documents to return.
-     *
-     * @return $this
      */
-    public function limit(int $limit)
+    public function limit(int $limit) : self
     {
         return $this->num($limit);
     }
 
     /**
      * The maximum distance from the center point that the documents can be.
-     *
-     * @return $this
      */
-    public function maxDistance(float $maxDistance)
+    public function maxDistance(float $maxDistance) : self
     {
         $this->maxDistance = $maxDistance;
 
@@ -134,10 +130,8 @@ class GeoNear extends Match
 
     /**
      * The minimum distance from the center point that the documents can be.
-     *
-     * @return $this
      */
-    public function minDistance(float $minDistance)
+    public function minDistance(float $minDistance) : self
     {
         $this->minDistance = $minDistance;
 
@@ -154,8 +148,6 @@ class GeoNear extends Match
      *
      * @param float|array|Point $x
      * @param float             $y
-     *
-     * @return $this
      */
     public function near($x, $y = null) : self
     {
@@ -171,8 +163,6 @@ class GeoNear extends Match
 
     /**
      * The maximum number of documents to return.
-     *
-     * @return $this
      */
     public function num(int $num) : self
     {
@@ -193,8 +183,6 @@ class GeoNear extends Match
 
     /**
      * If this value is true, the query returns a matching document once, even if more than one of the document’s location fields match the query.
-     *
-     * @return $this
      */
     public function uniqueDocs(bool $uniqueDocs = true) : self
     {

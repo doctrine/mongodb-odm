@@ -329,7 +329,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
-     * @var AbstractIdGenerator
+     * @var AbstractIdGenerator|null
      */
     public $idGenerator;
 
@@ -488,7 +488,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var ReflectionClass|null
      */
     public $reflClass;
 
@@ -740,7 +740,7 @@ class ClassMetadata implements BaseClassMetadata
      * are only used to discern the hydration class and are not mapped to class
      * properties.
      *
-     * @param string|array $discriminatorField
+     * @param array|string|null $discriminatorField
      *
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
@@ -757,6 +757,7 @@ class ClassMetadata implements BaseClassMetadata
             return;
         }
 
+        // @todo: deprecate, document and remove this:
         // Handle array argument with name/fieldName keys for BC
         if (is_array($discriminatorField)) {
             if (isset($discriminatorField['name'])) {
@@ -804,7 +805,7 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Sets the default discriminator value to be used for this class
-     * Used for JOINED and SINGLE_TABLE inheritance mapping strategies if the document has no discriminator value
+     * Used for SINGLE_TABLE inheritance mapping strategies if the document has no discriminator value
      *
      * @throws MappingException
      */
@@ -852,7 +853,7 @@ class ClassMetadata implements BaseClassMetadata
         $this->indexes[] = [
             'keys' => array_map(static function ($value) {
                 if ($value === 1 || $value === -1) {
-                    return (int) $value;
+                    return $value;
                 }
                 if (is_string($value)) {
                     $lower = strtolower($value);
@@ -918,7 +919,7 @@ class ClassMetadata implements BaseClassMetadata
         $this->shardKey = [
             'keys' => array_map(static function ($value) {
                 if ($value === 1 || $value === -1) {
-                    return (int) $value;
+                    return $value;
                 }
                 if (is_string($value)) {
                     $lower = strtolower($value);
@@ -1529,10 +1530,7 @@ class ClassMetadata implements BaseClassMetadata
     public function isNullable(string $fieldName) : bool
     {
         $mapping = $this->getFieldMapping($fieldName);
-        if ($mapping !== false) {
-            return isset($mapping['nullable']) && $mapping['nullable'] === true;
-        }
-        return false;
+        return isset($mapping['nullable']) && $mapping['nullable'] === true;
     }
 
     /**

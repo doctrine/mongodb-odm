@@ -319,7 +319,7 @@ class Query implements IteratorAggregate
      */
     public function setRefresh(bool $refresh) : void
     {
-        $this->unitOfWorkHints[self::HINT_REFRESH] = (bool) $refresh;
+        $this->unitOfWorkHints[self::HINT_REFRESH] = $refresh;
     }
 
     /**
@@ -348,7 +348,7 @@ class Query implements IteratorAggregate
 
     private function makeIterator(Cursor $cursor) : Iterator
     {
-        if ($this->hydrate && $this->class) {
+        if ($this->hydrate) {
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->class, $this->unitOfWorkHints);
         }
 

@@ -834,7 +834,7 @@ class DocumentPersister
     }
 
     /**
-     * @param int|string|null $sort
+     * @param int|string $sort
      *
      * @return int|string|null
      */

@@ -231,7 +231,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
                 $uuidGenerator = new UuidGenerator();
-                isset($idGenOptions['salt']) && $uuidGenerator->setSalt((string) $idGenOptions['salt']);
+                if (isset($idGenOptions['salt'])) {
+                    $uuidGenerator->setSalt((string) $idGenOptions['salt']);
+                }
                 $class->setIdGenerator($uuidGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:

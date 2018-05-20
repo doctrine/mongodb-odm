@@ -484,7 +484,7 @@ class Expr
     public function field(string $fieldName) : self
     {
         $fieldName          = $this->getDocumentPersister()->prepareFieldName($fieldName);
-        $this->currentField = (string) $fieldName;
+        $this->currentField = $fieldName;
 
         return $this;
     }

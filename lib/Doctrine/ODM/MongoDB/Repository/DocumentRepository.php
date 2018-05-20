@@ -20,6 +20,7 @@ use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use function assert;
+use function count;
 use function is_array;
 
 /**
@@ -212,7 +213,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             $queryBuilder->skip($criteria->getFirstResult());
         }
 
-        if ($criteria->getOrderings() !== null) {
+        if (count($criteria->getOrderings())) {
             $queryBuilder->sort($criteria->getOrderings());
         }
 

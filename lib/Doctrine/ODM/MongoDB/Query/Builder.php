@@ -1475,7 +1475,7 @@ class Builder
      * Set the skip for the query cursor.
      *
      * This is only relevant for find queries, or mapReduce queries that store
-     * results in an output collecton and return a cursor.
+     * results in an output collection and return a cursor.
      *
      * @see Query::prepareCursor()
      */
@@ -1653,7 +1653,7 @@ class Builder
     }
 
     /**
-     * @param string[]|string $documentName an array of document names or just one.
+     * @param string[]|string|null $documentName an array of document names or just one.
      */
     private function setDocumentName($documentName)
     {

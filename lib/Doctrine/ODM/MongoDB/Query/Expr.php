@@ -432,7 +432,7 @@ class Expr
      */
     public function exists(bool $bool) : self
     {
-        return $this->operator('$exists', (bool) $bool);
+        return $this->operator('$exists', $bool);
     }
 
     /**
@@ -707,7 +707,7 @@ class Expr
             throw new BadMethodCallException('This method requires a $text operator (call text() first)');
         }
 
-        $this->query['$text']['$language'] = (string) $language;
+        $this->query['$text']['$language'] = $language;
 
         return $this;
     }
@@ -1288,13 +1288,13 @@ class Expr
      */
     private function getReferenceMapping() : array
     {
-        $mapping = null;
         try {
-            $mapping = $this->class->getFieldMapping($this->currentField);
+            return $this->class->getFieldMapping($this->currentField);
         } catch (MappingException $e) {
             if (empty($this->class->discriminatorMap)) {
                 throw $e;
             }
+            $mapping = null;
             $foundIn = null;
             foreach ($this->class->discriminatorMap as $child) {
                 $childClass = $this->dm->getClassMetadata($child);
@@ -1311,8 +1311,9 @@ class Expr
             if ($mapping === null) {
                 throw MappingException::mappingNotFoundInClassNorDescendants($this->class->name, $this->currentField);
             }
+
+            return $mapping;
         }
-        return $mapping;
     }
 
     /**
@@ -1324,7 +1325,7 @@ class Expr
             $order = strtolower($order) === 'asc' ? 1 : -1;
         }
 
-        return (int) $order;
+        return $order;
     }
 
     /**

@@ -235,7 +235,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * The persistence builder instance used in DocumentPersisters.
      *
-     * @var PersistenceBuilder
+     * @var PersistenceBuilder|null
      */
     private $persistenceBuilder;
 

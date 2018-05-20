@@ -629,10 +629,8 @@ class DocumentManager implements ObjectManager
      * @param mixed  $identifier
      * @param int    $lockMode
      * @param int    $lockVersion
-     *
-     * @return object $document
      */
-    public function find($documentName, $identifier, $lockMode = LockMode::NONE, $lockVersion = null)
+    public function find($documentName, $identifier, $lockMode = LockMode::NONE, $lockVersion = null) : ?object
     {
         $repository = $this->getRepository($documentName);
         if ($repository instanceof DocumentRepository) {
