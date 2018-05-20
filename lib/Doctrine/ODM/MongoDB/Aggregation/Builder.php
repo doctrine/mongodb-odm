@@ -166,6 +166,7 @@ class Builder
         $options = array_merge($options, ['cursor' => true]);
 
         $cursor = $this->collection->aggregate($this->getPipeline(), $options);
+        assert($cursor instanceof Cursor);
 
         return $this->prepareIterator($cursor);
     }

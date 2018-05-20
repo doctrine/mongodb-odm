@@ -74,7 +74,7 @@ class CreateCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentCollection(SchemaManager $sm, $document)
+    protected function processDocumentCollection(SchemaManager $sm, string $document)
     {
         $sm->createDocumentCollection($document);
     }
@@ -84,7 +84,7 @@ class CreateCommand extends AbstractCommand
         $sm->createCollections();
     }
 
-    protected function processDocumentDb(SchemaManager $sm, $document)
+    protected function processDocumentDb(SchemaManager $sm, string $document)
     {
         throw new BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
     }
@@ -94,7 +94,7 @@ class CreateCommand extends AbstractCommand
         throw new BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, $document)
+    protected function processDocumentIndex(SchemaManager $sm, string $document)
     {
         $sm->ensureDocumentIndexes($document, $this->timeout);
     }
@@ -104,7 +104,7 @@ class CreateCommand extends AbstractCommand
         $sm->ensureIndexes($this->timeout);
     }
 
-    protected function processDocumentProxy(SchemaManager $sm, $document)
+    protected function processDocumentProxy(SchemaManager $sm, string $document)
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
         assert($classMetadata instanceof ClassMetadata);
@@ -114,6 +114,8 @@ class CreateCommand extends AbstractCommand
 
     protected function processProxy(SchemaManager $sm)
     {
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($this->getMetadataFactory()->getAllMetadata());
+        /** @var ClassMetadata[] $metadatas */
+        $metadatas = $this->getMetadataFactory()->getAllMetadata();
+        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($metadatas);
     }
 }

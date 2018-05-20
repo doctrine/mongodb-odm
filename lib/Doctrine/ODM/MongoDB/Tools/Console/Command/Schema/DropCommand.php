@@ -64,7 +64,7 @@ class DropCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentCollection(SchemaManager $sm, $document)
+    protected function processDocumentCollection(SchemaManager $sm, string $document)
     {
         $sm->dropDocumentCollection($document);
     }
@@ -74,7 +74,7 @@ class DropCommand extends AbstractCommand
         $sm->dropCollections();
     }
 
-    protected function processDocumentDb(SchemaManager $sm, $document)
+    protected function processDocumentDb(SchemaManager $sm, string $document)
     {
         $sm->dropDocumentDatabase($document);
     }
@@ -84,7 +84,7 @@ class DropCommand extends AbstractCommand
         $sm->dropDatabases();
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, $document)
+    protected function processDocumentIndex(SchemaManager $sm, string $document)
     {
         $sm->deleteDocumentIndexes($document);
     }

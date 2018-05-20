@@ -9,6 +9,7 @@ use Countable;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use FilterIterator;
 use function count;
+use function iterator_count;
 use function iterator_to_array;
 use function strpos;
 
@@ -62,6 +63,6 @@ class MetadataFilter extends FilterIterator implements Countable
 
     public function count() : int
     {
-        return count($this->getInnerIterator());
+        return iterator_count($this->getInnerIterator());
     }
 }

@@ -77,7 +77,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\DiscriminatorField) {
                 $class->setDiscriminatorField($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
-                $class->setDiscriminatorMap($annot->value);
+                /** @var array $value */
+                $value = $annot->value;
+                $class->setDiscriminatorMap($value);
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
                 $class->setDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {

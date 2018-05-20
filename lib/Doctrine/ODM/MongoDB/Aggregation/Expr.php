@@ -1574,7 +1574,7 @@ class Expr
      * If there is a current field, the operator will be set on it; otherwise,
      * the operator is set at the top level of the query.
      *
-     * @param array|self[]|self $expression
+     * @param array|self $expression
      */
     private function operator(string $operator, $expression) : self
     {

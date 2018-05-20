@@ -14,7 +14,6 @@ use MongoDB\BSON\Binary;
 use MongoDB\BSON\Javascript;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
-use Traversable;
 use function array_filter;
 use function array_key_exists;
 use function count;
@@ -1632,7 +1631,7 @@ class Builder
     /**
      * Get Discriminator Values
      *
-     * @param Traversable $classNames
+     * @param string[] $classNames
      *
      * @throws InvalidArgumentException If the number of found collections > 1.
      */

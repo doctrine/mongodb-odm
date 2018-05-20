@@ -567,7 +567,7 @@ class DocumentManager implements ObjectManager
      * has its identifier populated. Otherwise a proxy is returned that automatically
      * loads itself on first access.
      *
-     * @param string|object $identifier
+     * @param mixed $identifier
      */
     public function getReference(string $documentName, $identifier) : object
     {

@@ -431,7 +431,10 @@ class DocumentPersister
     {
         $query = $this->getQueryForDocument($document);
         $data  = $this->collection->findOne($query);
-        $data  = $this->hydratorFactory->hydrate($document, $data);
+        if ($data === null) {
+            throw MongoDBException::cannotRefreshDocument();
+        }
+        $data = $this->hydratorFactory->hydrate($document, (array) $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
 
@@ -463,6 +466,7 @@ class DocumentPersister
             $options['sort'] = $this->prepareSort($sort);
         }
         $result = $this->collection->findOne($criteria, $options);
+        $result = $result !== null ? (array) $result : null;
 
         if ($this->class->isLockable) {
             $lockMapping = $this->class->fieldMappings[$this->class->lockField];
