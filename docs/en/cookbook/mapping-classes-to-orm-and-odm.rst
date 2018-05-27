@@ -96,7 +96,7 @@ Now you are able to persist the ``Documents\Blog\BlogPost`` with an instance of 
 
     <?php
 
-    $blogPost = new BlogPost()
+    $blogPost = new BlogPost();
     $blogPost->setTitle('test');
 
     $em->persist($blogPost);
@@ -108,7 +108,7 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $em->getRepository('Documents\Blog\BlogPost')->findOneBy(array('title' => 'test'));
+    $blogPost = $em->getRepository(BlogPost::class)->findOneBy(array('title' => 'test'));
 
 MongoDB ODM
 ~~~~~~~~~~~
@@ -171,7 +171,7 @@ Now the same class is able to be persisted in the same way using an instance of 
 
     <?php
 
-    $blogPost = new BlogPost()
+    $blogPost = new BlogPost();
     $blogPost->setTitle('test');
 
     $dm->persist($blogPost);
@@ -183,12 +183,28 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $dm->getRepository('Documents\Blog\BlogPost')->findOneBy(array('title' => 'test'));
+    $blogPost = $dm->getRepository(BlogPost::class)->findOneBy(array('title' => 'test'));
 
 Repository Classes
 ------------------
 
-You can implement the same repository interface for the ORM and MongoDB ODM easily:
+You can implement the same repository interface for the ORM and MongoDB ODM easily, e.g. by creating ``BlogPostRepositoryInterface``:
+
+.. code-block:: php
+
+    <?php
+    // An Interface to ensure ORM and ODM Repository classes have the same methods implemented
+
+    namespace Documents\Blog\Repository;
+
+    use Documents\Blog\BlogPost;
+
+    interface BlogPostRepositoryInterface
+    {
+        public function findPostById(int $id): ?BlogPost;
+    }
+
+Define repository methods required by the interface for the ORM:
 
 .. code-block:: php
 
@@ -196,9 +212,10 @@ You can implement the same repository interface for the ORM and MongoDB ODM easi
 
     namespace Documents\Blog\Repository\ORM;
 
+    use Documents\Blog\Repository\BlogPostRepositoryInterface;
     use Doctrine\ORM\EntityRepository;
 
-    class BlogPostRepository extends EntityRepository
+    class BlogPostRepository extends EntityRepository implements BlogPostRepositoryInterface
     {
         public function findPostById($id)
         {
@@ -214,9 +231,10 @@ Now define the same repository methods for the MongoDB ODM:
 
     namespace Documents\Blog\Repository\ODM;
 
+    use Documents\Blog\Repository\BlogPostRepositoryInterface;
     use Doctrine\ODM\MongoDB\DocumentRepository;
 
-    class BlogPostRepository extends DocumentRepository
+    class BlogPostRepository extends DocumentRepository implements BlogPostRepositoryInterface
     {
         public function findPostById($id)
         {
