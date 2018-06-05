@@ -6,7 +6,7 @@
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="TestDocuments\User" db="documents" collection="users">
-        <field name="id" id="true" />
+        <id />
         <field name="username" type="string" unique="true" sparse="true"/>
         <field name="createdAt" type="date" />
         <field name="tags" type="collection" />

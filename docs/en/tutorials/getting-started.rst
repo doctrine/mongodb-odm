@@ -114,7 +114,7 @@ You can provide your mapping information in Annotations or XML:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\User">
-                <field fieldName="id" id="true" />
+                <id />
                 <field fieldName="name" type="string" />
                 <field fieldName="email" type="string" />
                 <reference-many fieldName="posts" targetDocument="Documents\BlogPost">
@@ -131,7 +131,7 @@ You can provide your mapping information in Annotations or XML:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\BlogPost">
-                <field fieldName="id" id="true" />
+                <id />
                 <field fieldName="title" type="string" />
                 <field fieldName="body" type="string" />
                 <field fieldName="createdAt" type="date" />

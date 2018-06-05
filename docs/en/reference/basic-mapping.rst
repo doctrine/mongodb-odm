@@ -234,7 +234,7 @@ Here is an example:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\User">
-                <field fieldName="id" id="true" />
+            <id />
           </document>
         </doctrine-mongo-mapping>
 
@@ -278,7 +278,7 @@ Here is an example how to manually set a string identifier for your documents:
                                                     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="MyPersistentClass">
-                <field name="id" id="true" strategy="NONE" type="string" />
+                <id strategy="NONE" type="string" />
             </document>
         </doctrine-mongo-mapping>
 
@@ -337,9 +337,9 @@ as an option for the ``CUSTOM`` strategy:
                                                     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
             <document name="MyPersistentClass">
-                <field name="id" id="true" strategy="CUSTOM" type="string">
-                    <id-generator-option name="class" value="Vendor\Specific\Generator" />
-                </field>
+                <id strategy="CUSTOM" type="string">
+                    <generator-option name="class" value="Vendor\Specific\Generator" />
+                </id>
             </document>
         </doctrine-mongo-mapping>
 
@@ -380,7 +380,7 @@ Example:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\User">
-                <field fieldName="id" id="true" />
+                <id />
                 <field fieldName="username" type="string" />
           </document>
         </doctrine-mongo-mapping>

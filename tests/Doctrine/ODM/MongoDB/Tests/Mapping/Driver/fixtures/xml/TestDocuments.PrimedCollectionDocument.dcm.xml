@@ -6,7 +6,7 @@
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="TestDocuments\PrimedCollectionDocument" collection="primed_collection">
-        <field name="id" id="true" />
+        <id />
 
         <reference-many target-document="TestDocuments\PrimedCollectionDocument" field="references" />
         <reference-many target-document="TestDocuments\PrimedCollectionDocument" field="inverseMappedBy" mapped-by="references">

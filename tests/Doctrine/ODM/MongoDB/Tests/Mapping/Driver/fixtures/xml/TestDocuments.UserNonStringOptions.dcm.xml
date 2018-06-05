@@ -6,7 +6,7 @@
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="TestDocuments\UserNonStringOptions">
-        <field name="id" id="true" />
+        <id />
         <reference-one target-document="Documents\Profile" field="profile" store-as="id" orphan-removal="true" />
         <reference-many target-document="Documents\Group" field="groups" orphan-removal="" limit="0" skip="2" />
     </document>

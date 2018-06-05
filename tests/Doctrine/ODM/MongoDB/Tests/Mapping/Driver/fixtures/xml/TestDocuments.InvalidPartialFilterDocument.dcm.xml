@@ -6,7 +6,7 @@
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="TestDocuments\InvalidPartialFilterDocument" db="documents" collection="partialFilterDocument">
-        <field name="id" id="true" />
+        <id />
         <indexes>
             <index>
                 <key name="fieldA" order="asc" />
