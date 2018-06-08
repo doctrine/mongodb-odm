@@ -284,7 +284,8 @@ document classes.
 -----------------
 
 Marks the document as embeddable. This annotation is required for any documents
-to be stored within an `@EmbedOne`_ or `@EmbedMany`_ relationship.
+to be stored within an `@EmbedOne`_, `@EmbedMany`_ or `@File\\Metadata`_
+relationship.
 
 .. code-block:: php
 
@@ -372,6 +373,87 @@ Examples:
      * @Field(type="float")
      */
     protected $height;
+
+.. _file:
+
+@File
+-----
+
+This marks the document as a GridFS file. GridFS allow storing larger amounts of
+data than regular documents.
+
+Optional attributes:
+
+-
+   db - By default, the document manager will use the MongoDB database defined
+   in the configuration, but this option may be used to override the database
+   for a particular file.
+-
+   bucketName - By default, files are stored in a bucket called ``fs``. You can
+   customize that bucket name with this property.
+-
+   repositoryClass - Specifies a custom repository class to use. The class must
+   extend the ``Doctrine\ODM\MongoDB\Repository\GridFSRepository`` interface.
+-
+   indexes - Specifies an array of indexes for this document.
+-
+   readOnly - Prevents the file from being updated: it can only be inserted,
+   upserted or removed.
+-
+   writeConcern - Specifies the write concern for this file that overwrites
+   the default write concern specified in the configuration.
+
+.. _file_chunksize:
+
+@File\ChunkSize
+---------------
+
+This maps the ``chunkSize`` property of a GridFS file to a property. It contains
+the size of a single file chunk in bytes. No other options can be set.
+
+.. _file_filename:
+
+@File\Filename
+--------------
+
+This maps the ``filename`` property of a GridFS file to a property. No other
+options can be set.
+
+.. _file_length:
+
+@File\Length
+------------
+
+This maps the ``length`` property of a GridFS file to a property. It contains
+the size of the entire file in bytes. No other options can be set.
+
+.. _file_metadata:
+
+@File\Metadata
+--------------
+
+This maps the ``metadata`` property of a GridFS file to a property. Metadata can
+be used to store additional properties in a file. The metadata document must be
+an embedded document mapped using `@EmbeddedDocument`_.
+
+Optional attributes:
+
+-
+    targetDocument - A |FQCN| of the target document.
+-
+    discriminatorField - The database field name to store the discriminator
+    value within the embedded document.
+-
+    discriminatorMap - Map of discriminator values to class names.
+-
+    defaultDiscriminatorValue - A default value for discriminatorField if no
+    value has been set in the embedded document.
+
+@File\UploadDate
+----------------
+
+This maps the ``uploadDate`` property of a GridFS file to a property. No other
+options can be set.
 
 .. _haslifecyclecallbacks:
 
