@@ -175,6 +175,25 @@ abstract class Operator extends Stage
     }
 
     /**
+     * Converts an array into a single document; the array must be either.
+     *
+     * The <expression> can be any valid expression that resolves to an array of 
+     * two-element arrays or array of documents that contains “k” and “v” fields.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/arrayToObject/
+     * @see Expr::arrayToObject
+     * @param mixed|Expr $expression
+     * @return $this
+     *
+     */
+    public function arrayToObject($expression)
+    {
+        $this->expr->arrayToObject($expression);
+
+        return $this;
+    }
+    
+    /**
      * Returns the smallest integer greater than or equal to the specified number.
      *
      * The <number> expression can be any valid expression as long as it
