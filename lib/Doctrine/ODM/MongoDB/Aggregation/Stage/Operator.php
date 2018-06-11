@@ -177,7 +177,7 @@ abstract class Operator extends Stage
     /**
      * Converts an array into a single document.
      *
-     * The <expression> can be any valid expression that resolves to an array of 
+     * The <expression> can be any valid expression that resolves to an array of
      * two-element arrays or array of documents that contains “k” and “v” fields.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/arrayToObject/
@@ -192,7 +192,7 @@ abstract class Operator extends Stage
 
         return $this;
     }
-    
+
     /**
      * Returns the smallest integer greater than or equal to the specified number.
      *
