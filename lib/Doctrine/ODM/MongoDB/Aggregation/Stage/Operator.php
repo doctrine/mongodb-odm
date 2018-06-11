@@ -175,7 +175,7 @@ abstract class Operator extends Stage
     }
 
     /**
-     * Converts an array into a single document; the array must be either.
+     * Converts an array into a single document.
      *
      * The <expression> can be any valid expression that resolves to an array of 
      * two-element arrays or array of documents that contains “k” and “v” fields.
