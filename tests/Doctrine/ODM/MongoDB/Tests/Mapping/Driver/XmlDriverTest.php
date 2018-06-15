@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use TestDocuments\CustomIdGenerator;
 use TestDocuments\InvalidPartialFilterDocument;
 use TestDocuments\UserCustomIdGenerator;
@@ -62,22 +63,11 @@ class XmlDriverTest extends AbstractDriverTest
     public function testInvalidPartialFilterExpressions()
     {
         $classMetadata = new ClassMetadata(InvalidPartialFilterDocument::class);
-        $this->driver->loadMetadataForClass(InvalidPartialFilterDocument::class, $classMetadata);
 
-        $this->assertEquals([
-            [
-                'keys' => ['fieldA' => 1],
-                'options' => [
-                    'partialFilterExpression' => [
-                        '$and' => [['discr' => ['$eq' => 'default']]],
-                    ],
-                ],
-            ],
-            [
-                'keys' => ['fieldB' => 1],
-                'options' => [],
-            ],
-        ], $classMetadata->getIndexes());
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageRegExp('#The mapping file .+ is invalid#');
+
+        $this->driver->loadMetadataForClass(InvalidPartialFilterDocument::class, $classMetadata);
     }
 }
 
