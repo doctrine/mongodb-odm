@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Documents\User;
 use const DIRECTORY_SEPARATOR;
 use function get_class;
@@ -46,5 +47,18 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $m->invoke($driver, $class, $element, 'many');
 
         $this->assertEquals(PhonenumberCollection::class, $class->getAssociationCollectionClass('phonenumbers'));
+    }
+
+    public function testInvalidMappingFileTriggersException(): void
+    {
+        $className = InvalidMappingDocument::class;
+        $mappingDriver = $this->_loadDriver();
+
+        $class = new ClassMetadata($className);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageRegExp("#Element '\{http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping\}field', attribute 'id': The attribute 'id' is not allowed.#");
+
+        $mappingDriver->loadMetadataForClass($className, $class);
     }
 }

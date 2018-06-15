@@ -6,18 +6,27 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use DOMDocument;
+use LibXMLError;
 use function array_keys;
+use function array_map;
 use function constant;
 use function count;
 use function current;
 use function explode;
+use function implode;
 use function in_array;
 use function is_numeric;
 use function iterator_to_array;
+use function libxml_clear_errors;
+use function libxml_get_errors;
+use function libxml_use_internal_errors;
 use function next;
 use function preg_match;
 use function simplexml_load_file;
+use function sprintf;
 use function strtoupper;
 use function trim;
 
@@ -533,6 +542,9 @@ class XmlDriver extends FileDriver
     protected function loadMappingFile($file)
     {
         $result = [];
+
+        $this->validateSchema($file);
+
         $xmlElement = simplexml_load_file($file);
 
         foreach (['document', 'embedded-document', 'mapped-superclass', 'query-result-document'] as $type) {
@@ -547,5 +559,33 @@ class XmlDriver extends FileDriver
         }
 
         return $result;
+    }
+
+    private function validateSchema(string $filename): void
+    {
+        $document = new DOMDocument();
+        $document->load($filename);
+
+        $previousUseErrors = libxml_use_internal_errors(true);
+
+        try {
+            libxml_clear_errors();
+
+            if (! $document->schemaValidate(__DIR__ . '/../../../../../../doctrine-mongo-mapping.xsd')) {
+                throw MappingException::xmlMappingFileInvalid($filename, $this->formatErrors(libxml_get_errors()));
+            }
+        } finally {
+            libxml_use_internal_errors($previousUseErrors);
+        }
+    }
+
+    /**
+     * @param LibXMLError[] $xmlErrors
+     */
+    private function formatErrors(array $xmlErrors): string
+    {
+        return implode("\n", array_map(function (LibXMLError $error): string {
+            return sprintf('Line %d:%d: %s', $error->line, $error->column, $error->message);
+        }, $xmlErrors));
     }
 }
