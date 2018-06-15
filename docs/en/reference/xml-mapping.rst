@@ -109,7 +109,7 @@ of several common elements:
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
         <document name="Documents\User" db="documents" collection="users">
-            <field fieldName="id" id="true" />
+            <id />
             <field fieldName="username" name="login" type="string" />
             <field fieldName="email" type="string" unique="true" order="desc" />
             <field fieldName="createdAt" type="date" />
@@ -156,7 +156,7 @@ Lock
 ^^^^
 
 The field with the ``lock`` attribute will be used to store lock information for :ref:`pessimistic locking <transactions_and_concurrency_pessimistic_locking>`.
-This is only compatible with the ``int`` field type, and cannot be combined with ``id="true"``.
+This is only compatible with the ``int`` field type.
 
 .. code-block:: xml
 
@@ -170,7 +170,7 @@ Version
 ^^^^^^^
 
 The field with the ``version`` attribute will be used to store version information for :ref:`optimistic locking <transactions_and_concurrency_optimistic_locking>`.
-This is only compatible with ``int`` and ``date`` field types, and cannot be combined with ``id="true"``.
+This is only compatible with ``int`` and ``date`` field types.
 
 .. code-block:: xml
 

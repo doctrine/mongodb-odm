@@ -4,9 +4,9 @@
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <mapped-superclass name="Doctrine\ODM\MongoDB\Tests\GH774AbstractThread" collection="threads" customId="true">
+    <mapped-superclass name="Doctrine\ODM\MongoDB\Tests\GH774AbstractThread" collection="threads">
 
-        <field name="id" type="string" id="true" strategy="NONE" />
+        <id type="string" strategy="NONE" />
 
         <field name="permalink" type="string" />
 

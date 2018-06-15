@@ -124,6 +124,36 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'read-preference'})) {
             $class->setReadPreference(...$this->transformReadPreference($xmlRoot->{'read-preference'}));
         }
+
+        if (isset($xmlRoot->id)) {
+            $field = $xmlRoot->id;
+            $mapping = [
+                'id' => true,
+                'fieldName' => 'id',
+            ];
+
+            $attributes = $field->attributes();
+            foreach ($attributes as $key => $value) {
+                $mapping[$key] = (string) $value;
+            }
+
+            if (isset($mapping['strategy'])) {
+                $mapping['options'] = [];
+                if (isset($field->{'generator-option'})) {
+                    foreach ($field->{'generator-option'} as $generatorOptions) {
+                        $attributesGenerator = iterator_to_array($generatorOptions->attributes());
+                        if (! isset($attributesGenerator['name']) || ! isset($attributesGenerator['value'])) {
+                            continue;
+                        }
+
+                        $mapping['options'][(string) $attributesGenerator['name']] = (string) $attributesGenerator['value'];
+                    }
+                }
+            }
+
+            $this->addFieldMapping($class, $mapping);
+        }
+
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
                 $mapping = [];
@@ -136,19 +166,6 @@ class XmlDriver extends FileDriver
                     }
 
                     $mapping[$key] = ($mapping[$key] === 'true');
-                }
-                if (isset($mapping['id']) && $mapping['id'] === true && isset($mapping['strategy'])) {
-                    $mapping['options'] = [];
-                    if (isset($field->{'id-generator-option'})) {
-                        foreach ($field->{'id-generator-option'} as $generatorOptions) {
-                            $attributesGenerator = iterator_to_array($generatorOptions->attributes());
-                            if (! isset($attributesGenerator['name']) || ! isset($attributesGenerator['value'])) {
-                                continue;
-                            }
-
-                            $mapping['options'][(string) $attributesGenerator['name']] = (string) $attributesGenerator['value'];
-                        }
-                    }
                 }
 
                 if (isset($attributes['not-saved'])) {
