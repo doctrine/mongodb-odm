@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
 use Documents\CustomUser;
 use Documents\User;
-use function count;
 
 class CustomIdTest extends BaseTest
 {
@@ -104,7 +103,7 @@ class CustomIdTest extends BaseTest
         }
 
         $this->assertTrue($results['userId']);
-        $this->assertEquals(3, count($results['ids']));
+        $this->assertCount(3, $results['ids']);
     }
 
     public function testFindUser()
