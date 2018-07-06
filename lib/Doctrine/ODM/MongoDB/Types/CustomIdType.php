@@ -6,18 +6,17 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Id type.
- *
  */
 class CustomIdType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? $value : null;
+        return $value;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? $value : null;
+        return $value;
     }
 
     public function closureToMongo()

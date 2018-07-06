@@ -14,9 +14,9 @@ use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
 use function array_filter;
 use function array_key_exists;
-use function array_search;
 use function count;
 use function func_get_args;
+use function in_array;
 use function is_array;
 use function is_bool;
 use function is_callable;
@@ -1833,7 +1833,7 @@ class Builder
             $discriminatorValues = $this->getDiscriminatorValues($documentNames);
 
             // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
-            if ($metadata->defaultDiscriminatorValue && array_search($metadata->defaultDiscriminatorValue, $discriminatorValues) !== false) {
+            if ($metadata->defaultDiscriminatorValue && in_array($metadata->defaultDiscriminatorValue, $discriminatorValues)) {
                 $discriminatorValues[] = null;
             }
 

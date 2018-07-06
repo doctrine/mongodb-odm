@@ -1311,7 +1311,7 @@ class Expr
      */
     public function stdDevPop($expression1, ...$expressions)
     {
-        $expression = (empty($expressions)) ? $expression1 : func_get_args();
+        $expression = empty($expressions) ? $expression1 : func_get_args();
 
         return $this->operator('$stdDevPop', $expression);
     }
@@ -1329,7 +1329,7 @@ class Expr
      */
     public function stdDevSamp($expression1, ...$expressions)
     {
-        $expression = (empty($expressions)) ? $expression1 : func_get_args();
+        $expression = empty($expressions) ? $expression1 : func_get_args();
 
         return $this->operator('$stdDevSamp', $expression);
     }

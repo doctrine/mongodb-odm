@@ -53,7 +53,7 @@ class DropCommand extends AbstractCommand
                     'Dropped <comment>%s%s</comment> for <info>%s</info>',
                     $option,
                     (isset($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's')),
-                    ($class ?? 'all classes')
+                    $class ?? 'all classes'
                 ));
             } catch (\Throwable $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');

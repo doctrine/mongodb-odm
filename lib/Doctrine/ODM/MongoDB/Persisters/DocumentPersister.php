@@ -1365,7 +1365,7 @@ class DocumentPersister
         }
 
         // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
-        if ($metadata->defaultDiscriminatorValue && array_search($metadata->defaultDiscriminatorValue, $discriminatorValues) !== false) {
+        if ($metadata->defaultDiscriminatorValue && in_array($metadata->defaultDiscriminatorValue, $discriminatorValues)) {
             $discriminatorValues[] = null;
         }
 

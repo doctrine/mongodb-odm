@@ -2064,7 +2064,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
-            if (($relatedDocuments instanceof Collection || is_array($relatedDocuments))) {
+            if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 if ($relatedDocuments instanceof PersistentCollectionInterface) {
                     // Unwrap so that foreach() does not initialize
                     $relatedDocuments = $relatedDocuments->unwrap();
