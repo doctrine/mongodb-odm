@@ -9,8 +9,8 @@ The Doctrine MongoDB ODM project is a library that provides a PHP object mapping
 
 ## More resources:
 
-* [Website](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm)
-* [Documentation](http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/index.html)
-* [API](http://www.doctrine-project.org/api/mongodb_odm/1.0/index.html)
+* [Website](https://www.doctrine-project.org/projects/mongodb-odm.html)
+* [Documentation](https://www.doctrine-project.org/projects/doctrine-mongodb-odm/en/stable/)
+* [API](https://www.doctrine-project.org/api/mongodb-odm/stable/)
 * [Issue Tracker](https://github.com/doctrine/mongodb-odm/issues)
 * [Releases](https://github.com/doctrine/mongodb-odm/releases)
