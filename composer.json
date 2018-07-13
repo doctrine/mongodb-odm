@@ -30,7 +30,7 @@
         "doctrine/coding-standard": "^4.0"
     },
     "autoload": {
-        "psr-0": { "Doctrine\\ODM\\MongoDB": "lib/" }
+        "psr-4": { "Doctrine\\ODM\\MongoDB\\": "lib/Doctrine/ODM/MongoDB" }
     },
     "extra": {
         "branch-alias": {
