@@ -466,7 +466,7 @@ class SchemaManager
     {
         $documentIndexOptions = $documentIndex['options'];
 
-        if ($mongoIndex['key'] != $documentIndex['keys']) {
+        if (! $this->isEquivalentIndexKeys($mongoIndex, $documentIndex)) {
             return false;
         }
 
@@ -506,7 +506,80 @@ class SchemaManager
             return false;
         }
 
+        if (isset($mongoIndex['weights']) && ! $this->isEquivalentTextIndexWeights($mongoIndex, $documentIndex)) {
+            return false;
+        }
+
+        foreach (['default_language', 'language_override', 'textIndexVersion'] as $option) {
+            /* Text indexes will always report defaults for these options, so
+             * only compare if we have explicit values in the document index. */
+            if (isset($mongoIndex[$option]) && isset($documentIndexOptions[$option]) &&
+                $mongoIndex[$option] !== $documentIndexOptions[$option]) {
+
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    /**
+     * Determine if the keys for a MongoDB index can be considered equivalent to
+     * those for an index in class metadata.
+     *
+     * @param array $mongoIndex Mongo index data.
+     * @param array $documentIndex Document index data.
+     * @return bool True if the indexes have equivalent keys, otherwise false.
+     */
+    private function isEquivalentIndexKeys(array $mongoIndex, array $documentIndex)
+    {
+        $mongoIndexKeys    = $mongoIndex['key'];
+        $documentIndexKeys = $documentIndex['keys'];
+
+        /* If we are dealing with text indexes, we need to unset internal fields
+         * from the MongoDB index and filter out text fields from the document
+         * index. This will leave only non-text fields, which we can compare as
+         * normal. Any text fields in the document index will be compared later
+         * with isEquivalentTextIndexWeights(). */
+        if (isset($mongoIndexKeys['_fts']) && $mongoIndexKeys['_fts'] === 'text') {
+            unset($mongoIndexKeys['_fts'], $mongoIndexKeys['_ftsx']);
+
+            $documentIndexKeys = array_filter($documentIndexKeys, function($type) {
+                return $type !== 'text';
+            });
+        }
+
+        return $mongoIndexKeys == $documentIndexKeys;
+    }
+
+    /**
+     * Determine if the text index weights for a MongoDB index can be considered
+     * equivalent to those for an index in class metadata.
+     *
+     * @param array $mongoIndex Mongo index data.
+     * @param array $documentIndex Document index data.
+     * @return bool True if the indexes have equivalent weights, otherwise false.
+     */
+    private function isEquivalentTextIndexWeights(array $mongoIndex, array $documentIndex)
+    {
+        $mongoIndexWeights    = $mongoIndex['weights'];
+        $documentIndexWeights = isset($documentIndex['options']['weights'])
+            ? $documentIndex['options']['weights']
+            : [];
+
+        // If not specified, assign a default weight for text fields
+        foreach ($documentIndex['keys'] as $key => $type) {
+            if ($type === 'text' && ! isset($documentIndexWeights[$key])) {
+                $documentIndexWeights[$key] = 1;
+            }
+        }
+
+        /* MongoDB returns the weights sorted by field name, but we'll sort both
+         * arrays in case that is internal behavior not be be relied upon. */
+        ksort($mongoIndexWeights);
+        ksort($documentIndexWeights);
+
+        return $mongoIndexWeights == $documentIndexWeights;
     }
 
     /**

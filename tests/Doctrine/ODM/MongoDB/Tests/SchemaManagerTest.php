@@ -454,7 +454,142 @@ class SchemaManagerTest extends TestCase
                 'expected' => true,
                 'mongoIndex' => ['partialFilterExpression' => []],
                 'documentIndex' => [],
-            ]
+            ],
+            // Comparing non-text Mongo index with text document index
+            'textIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['keys' => ['foo' => 'text', 'bar' => 'text']],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataIsMongoTextIndexEquivalentToDocumentIndex
+     */
+    public function testIsMongoIndexEquivalentToDocumentIndexWithTextIndexes($expected, $mongoIndex, $documentIndex)
+    {
+        $defaultMongoIndex = [
+            'key' => ['_fts' => 'text', '_ftsx' => 1],
+            'weights' => ['bar' => 1, 'foo' => 1],
+            'default_language' => 'english',
+            'language_override' => 'language',
+            'textIndexVersion' => 3,
+        ];
+        $defaultDocumentIndex = [
+            'keys' => ['foo' => 'text', 'bar' => 'text'],
+            'options' => [],
+        ];
+
+        $mongoIndex += $defaultMongoIndex;
+        $documentIndex += $defaultDocumentIndex;
+
+        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
+    }
+
+    public function dataIsMongoTextIndexEquivalentToDocumentIndex()
+    {
+        return [
+            'keysSame' => [
+                'expected' => true,
+                'mongoIndex' => [],
+                'documentIndex' => ['keys' => ['foo' => 'text', 'bar' => 'text']],
+            ],
+            'keysSameWithDifferentOrder' => [
+                'expected' => true,
+                'mongoIndex' => [],
+                'documentIndex' => ['keys' => ['bar' => 'text', 'foo' => 'text']],
+            ],
+            'keysDiffer' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['keys' => ['x' => 'text', 'y' => 'text']],
+            ],
+            'compoundIndexKeysSameAndWeightsSame' => [
+                'expected' => true,
+                'mongoIndex' => [
+                    'key' => ['_fts' => 'text', '_ftsx' => 1, 'a' => -1, 'd' => 1],
+                    'weights' => ['b' => 1, 'c' => 2],
+                ],
+                'documentIndex' => [
+                    'keys' => ['a' => -1,  'b' => 'text', 'c' => 'text', 'd' => 1],
+                    'options' => ['weights' => ['b' => 1, 'c' => 2]],
+                ],
+            ],
+            'compoundIndexKeysSameAndWeightsDiffer' => [
+                'expected' => false,
+                'mongoIndex' => [
+                    'key' => ['_fts' => 'text', '_ftsx' => 1, 'a' => -1, 'd' => 1],
+                    'weights' => ['b' => 1, 'c' => 2],
+                ],
+                'documentIndex' => [
+                    'keys' => ['a' => -1,  'b' => 'text', 'c' => 'text', 'd' => 1],
+                    'options' => ['weights' => ['b' => 3, 'c' => 2]],
+                ],
+            ],
+            'compoundIndexKeysDifferAndWeightsSame' => [
+                'expected' => false,
+                'mongoIndex' => [
+                    'key' => ['_fts' => 'text', '_ftsx' => 1, 'a' => 1, 'd' => 1],
+                    'weights' => ['b' => 1, 'c' => 2],
+                ],
+                'documentIndex' => [
+                    'keys' => ['a' => -1,  'b' => 'text', 'c' => 'text', 'd' => 1],
+                    'options' => ['weights' => ['b' => 1, 'c' => 2]],
+                ],
+            ],
+            'weightsSame' => [
+                'expected' => true,
+                'mongoIndex' => [
+                    'weights' => ['a' => 1, 'b' => 2],
+                ],
+                'documentIndex' => [
+                    'keys' => ['a' => 'text', 'b' => 'text'],
+                    'options' => ['weights' => ['a' => 1, 'b' => 2]],
+                ],
+            ],
+            'weightsSameAfterSorting' => [
+                'expected' => true,
+                'mongoIndex' => [
+                    /* MongoDB returns the weights sorted by field name, but
+                     * simulate an unsorted response to test our own ksort(). */
+                    'weights' => ['a' => 1, 'c' => 3, 'b' => 2],
+                ],
+                'documentIndex' => [
+                    'keys' => ['a' => 'text', 'b' => 'text', 'c' => 'text'],
+                    'options' => ['weights' => ['c' => 3, 'a' => 1, 'b' => 2]],
+                ],
+            ],
+            'defaultLanguageSame' => [
+                'expected' => true,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['default_language' => 'english']],
+            ],
+            'defaultLanguageMismatch' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['default_language' => 'german']],
+            ],
+            'languageOverrideSame' => [
+                'expected' => true,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['language_override' => 'language']],
+            ],
+            'languageOverrideMismatch' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['language_override' => 'idioma']],
+            ],
+            'textIndexVersionSame' => [
+                'expected' => true,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['textIndexVersion' => 3]],
+            ],
+            'textIndexVersionMismatch' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['textIndexVersion' => 2]],
+            ],
         ];
     }
 
