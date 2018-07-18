@@ -315,6 +315,11 @@ class SchemaManagerTest extends TestCase
                 'mongoIndex' => ['key' => ['foo' => 1]],
                 'documentIndex' => ['keys' => ['foo' => 1]],
             ],
+            'keysSameButNumericTypesDiffer' => [
+                'expected' => true,
+                'mongoIndex' => ['key' => ['foo' => 1.0]],
+                'documentIndex' => ['keys' => ['foo' => 1]],
+            ],
             'keysDiffer' => [
                 'expected' => false,
                 'mongoIndex' => ['key' => ['foo' => 1]],
@@ -565,6 +570,16 @@ class SchemaManagerTest extends TestCase
                 'documentIndex' => [
                     'keys' => ['a' => 'text', 'b' => 'text', 'c' => 'text'],
                     'options' => ['weights' => ['c' => 3, 'a' => 1, 'b' => 2]],
+                ],
+            ],
+            'weightsSameButNumericTypesDiffer' => [
+                'expected' => true,
+                'mongoIndex' => [
+                    'weights' => ['a' => 1, 'b' => 2],
+                ],
+                'documentIndex' => [
+                    'keys' => ['a' => 'text', 'b' => 'text'],
+                    'options' => ['weights' => ['a' => 1.0, 'b' => 2.0]],
                 ],
             ],
             'defaultLanguageSame' => [

@@ -471,6 +471,10 @@ class SchemaManager
             });
         }
 
+        /* Avoid a strict equality check here. The numeric type returned by
+         * MongoDB may differ from the document index without implying that the
+         * indexes themselves are inequivalent. */
+        // phpcs:disable SlevomatCodingStandard.ControlStructures.DisallowEqualOperators.DisallowedEqualOperator
         return $mongoIndexKeys == $documentIndexKeys;
     }
 
@@ -501,6 +505,10 @@ class SchemaManager
         ksort($mongoIndexWeights);
         ksort($documentIndexWeights);
 
+        /* Avoid a strict equality check here. The numeric type returned by
+         * MongoDB may differ from the document index without implying that the
+         * indexes themselves are inequivalent. */
+        // phpcs:disable SlevomatCodingStandard.ControlStructures.DisallowEqualOperators.DisallowedEqualOperator
         return $mongoIndexWeights == $documentIndexWeights;
     }
 
