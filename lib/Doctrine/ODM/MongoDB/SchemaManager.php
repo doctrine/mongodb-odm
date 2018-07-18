@@ -575,7 +575,7 @@ class SchemaManager
         }
 
         /* MongoDB returns the weights sorted by field name, but we'll sort both
-         * arrays in case that is internal behavior not be be relied upon. */
+         * arrays in case that is internal behavior not to be relied upon. */
         ksort($mongoIndexWeights);
         ksort($documentIndexWeights);
 
