@@ -414,7 +414,7 @@ class SchemaManager
                 return false;
             }
 
-            if (isset($mongoIndex[$option]) && isset($documentIndexOptions[$option]) &&
+            if (isset($mongoIndex[$option], $documentIndexOptions[$option]) &&
                 $mongoIndex[$option] !== $documentIndexOptions[$option]) {
                 return false;
             }
@@ -424,7 +424,7 @@ class SchemaManager
             return false;
         }
 
-        if (isset($mongoIndex['partialFilterExpression']) && isset($documentIndexOptions['partialFilterExpression']) &&
+        if (isset($mongoIndex['partialFilterExpression'], $documentIndexOptions['partialFilterExpression']) &&
             $mongoIndex['partialFilterExpression'] !== $documentIndexOptions['partialFilterExpression']) {
             return false;
         }
@@ -436,7 +436,7 @@ class SchemaManager
         foreach (['default_language', 'language_override', 'textIndexVersion'] as $option) {
             /* Text indexes will always report defaults for these options, so
              * only compare if we have explicit values in the document index. */
-            if (isset($mongoIndex[$option]) && isset($documentIndexOptions[$option]) &&
+            if (isset($mongoIndex[$option], $documentIndexOptions[$option]) &&
                 $mongoIndex[$option] !== $documentIndexOptions[$option]) {
                 return false;
             }
