@@ -441,4 +441,56 @@ class QueryTest extends BaseTest
         $this->assertSame($expected, $qb->getQueryArray());
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
+
+    public function testPopFirst(): void
+    {
+        $article = new Article();
+        $article->setTitle('test');
+        $article->setBody('test');
+        $article->setCreatedAt('1985-09-01 00:00:00');
+        $article->addTag(1);
+        $article->addTag(2);
+        $article->addTag(3);
+
+        $this->dm->persist($article);
+        $this->dm->flush();
+
+        $this->dm->createQueryBuilder(Article::class)
+            ->updateOne()
+            ->field('id')
+            ->equals($article->getId())
+            ->field('tags')
+            ->popFirst()
+            ->getQuery()
+            ->execute();
+
+        $this->dm->refresh($article);
+        $this->assertSame([2, 3], $article->getTags());
+    }
+
+    public function testPopLast(): void
+    {
+        $article = new Article();
+        $article->setTitle('test');
+        $article->setBody('test');
+        $article->setCreatedAt('1985-09-01 00:00:00');
+        $article->addTag(1);
+        $article->addTag(2);
+        $article->addTag(3);
+
+        $this->dm->persist($article);
+        $this->dm->flush();
+
+        $this->dm->createQueryBuilder(Article::class)
+            ->updateOne()
+            ->field('id')
+            ->equals($article->getId())
+            ->field('tags')
+            ->popLast()
+            ->getQuery()
+            ->execute();
+
+        $this->dm->refresh($article);
+        $this->assertSame([1, 2], $article->getTags());
+    }
 }
