@@ -7,8 +7,7 @@ This changelog references the relevant changes done in 1.2 patch versions.
 ------------------
 
 All issues and pull requests in this release may be found under the
-
-[1.2.4 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.2.5).
+[1.2.5 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.2.5).
 
 * [#1828](https://github.com/doctrine/mongodb-odm/pull/1828) improves text index comparison during schema creation.
 
