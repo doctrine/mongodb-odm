@@ -189,7 +189,7 @@ class ExprTest extends BaseTest
             ->field('address.subAddress.subAddress.subAddress.test')->popFirst();
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(['$pop' => ['address.subAddress.subAddress.subAddress.testFieldName' => 1]], $query['newObj']);
+        $this->assertEquals(['$pop' => ['address.subAddress.subAddress.subAddress.testFieldName' => -1]], $query['newObj']);
     }
 
     public function testReferencesUsesMinimalKeys()
