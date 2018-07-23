@@ -278,7 +278,7 @@ Also, for your convenience you can create the indexes for your mapped documents 
 
 ..
 
-    $ php mongodb.php mongodb:schema:create --index
+    $ php mongodb.php odm:schema:create --index
 
 .. note::
 
