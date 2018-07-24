@@ -22,7 +22,7 @@ interface GridFSRepository extends ObjectRepository
      * @param object|null $metadata
      * @return resource
      */
-    public function openUploadStream(string $filename, $metadata = null);
+    public function openUploadStream(string $filename, $metadata = null, ?int $chunkSizeBytes = null);
 
     /**
      * Writes the contents of a readable stream to a GridFS file.
@@ -31,7 +31,7 @@ interface GridFSRepository extends ObjectRepository
      * @param object|null $metadata
      * @return object The newly created GridFS file
      */
-    public function uploadFromStream(string $filename, $source, $metadata = null);
+    public function uploadFromStream(string $filename, $source, $metadata = null, ?int $chunkSizeBytes = null);
 
     /**
      * Writes the contents of a file to a GridFS file.
@@ -41,5 +41,5 @@ interface GridFSRepository extends ObjectRepository
      * @param object|null $metadata
      * @return object The newly created GridFS file
      */
-    public function uploadFromFile(string $source, ?string $filename = null, $metadata = null);
+    public function uploadFromFile(string $source, ?string $filename = null, $metadata = null, ?int $chunkSizeBytes = null);
 }

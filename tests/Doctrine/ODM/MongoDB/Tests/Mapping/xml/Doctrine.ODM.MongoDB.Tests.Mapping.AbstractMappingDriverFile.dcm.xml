@@ -5,7 +5,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <gridfs-file name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverFile">
+    <gridfs-file name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverFile" chunk-size-bytes="12345">
         <id />
         <length fieldName="size" />
         <chunk-size />

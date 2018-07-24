@@ -96,6 +96,10 @@ class XmlDriver extends FileDriver
             $class->isQueryResultDocument = true;
         } elseif ($xmlRoot->getName() === 'gridfs-file') {
             $class->isFile = true;
+
+            if (isset($xmlRoot['chunk-size-bytes'])) {
+                $class->setChunkSizeBytes((int) $xmlRoot['chunk-size-bytes']);
+            }
         }
 
         if (isset($xmlRoot['db'])) {

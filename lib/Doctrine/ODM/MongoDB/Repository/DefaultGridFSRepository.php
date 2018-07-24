@@ -30,9 +30,9 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     /**
      * @see Bucket::openUploadStream
      */
-    public function openUploadStream(string $filename, $metadata = null)
+    public function openUploadStream(string $filename, $metadata = null, ?int $chunkSizeBytes = null)
     {
-        $options = $this->prepareMetadataOptions($metadata);
+        $options = $this->prepareOptions($metadata, $chunkSizeBytes);
 
         return $this->getDocumentBucket()->openUploadStream($filename, $options);
     }
@@ -40,9 +40,9 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     /**
      * @see Bucket::uploadFromStream
      */
-    public function uploadFromStream(string $filename, $source, $metadata = null)
+    public function uploadFromStream(string $filename, $source, $metadata = null, ?int $chunkSizeBytes = null)
     {
-        $options = $this->prepareMetadataOptions($metadata);
+        $options = $this->prepareOptions($metadata, $chunkSizeBytes);
 
         $databaseIdentifier = $this->getDocumentBucket()->uploadFromStream($filename, $source, $options);
         $documentIdentifier = $this->class->getPHPIdentifierValue($databaseIdentifier);
@@ -50,7 +50,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         return $this->dm->getReference($this->getClassName(), $documentIdentifier);
     }
 
-    public function uploadFromFile(string $source, ?string $filename = null, $metadata = null)
+    public function uploadFromFile(string $source, ?string $filename = null, $metadata = null, ?int $chunkSizeBytes = null)
     {
         $resource = fopen($source, 'r');
         if ($resource === false) {
@@ -62,7 +62,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         }
 
         try {
-            return $this->uploadFromStream($filename, $resource, $metadata);
+            return $this->uploadFromStream($filename, $resource, $metadata, $chunkSizeBytes);
         } finally {
             fclose($resource);
         }
@@ -76,12 +76,16 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     /**
      * @param object|null $metadata
      */
-    private function prepareMetadataOptions($metadata = null): array
+    private function prepareOptions($metadata = null, ?int $chunkSizeBytes = null): array
     {
-        if ($metadata === null) {
-            return [];
+        $options = [
+            'chunkSizeBytes' => $chunkSizeBytes ?: $this->class->getChunkSizeBytes(),
+        ];
+
+        if ($metadata) {
+            $options += ['metadata' => (object) $this->uow->getPersistenceBuilder()->prepareInsertData($metadata)];
         }
 
-        return ['metadata' => (object) $this->uow->getPersistenceBuilder()->prepareInsertData($metadata)];
+        return $options;
     }
 }

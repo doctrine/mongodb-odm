@@ -33,7 +33,26 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame(8, $file->getLength());
-        self::assertInternalType('int', $file->getChunkSize());
+        self::assertSame(12345, $file->getChunkSize());
+        self::assertEquals(new \DateTime(), $file->getUploadDate(), '', 1);
+        self::assertNull($file->getMetadata());
+    }
+
+    public function testOpenUploadStreamUsesChunkSizeFromOptions(): void
+    {
+        $uploadStream = $this->getRepository()->openUploadStream('somefile.txt', null, 1234);
+        self::assertInternalType('resource', $uploadStream);
+
+        fwrite($uploadStream, 'contents');
+        fclose($uploadStream);
+
+        /** @var File $file */
+        $file = $this->getRepository()->findOneBy(['filename' => 'somefile.txt']);
+        self::assertInstanceOf(File::class, $file);
+
+        self::assertSame('somefile.txt', $file->getFilename());
+        self::assertSame(8, $file->getLength());
+        self::assertSame(1234, $file->getChunkSize());
         self::assertEquals(new \DateTime(), $file->getUploadDate(), '', 1);
         self::assertNull($file->getMetadata());
     }
@@ -58,7 +77,40 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame($expectedSize, $file->getLength());
-        self::assertInternalType('int', $file->getChunkSize());
+        self::assertSame(12345, $file->getChunkSize());
+        self::assertEquals(new \DateTime(), $file->getUploadDate(), '', 1);
+        self::assertInstanceOf(FileMetadata::class, $file->getMetadata());
+
+        $stream = tmpfile();
+        $this->getRepository()->downloadToStream($file->getId(), $stream);
+
+        fseek($stream, 0);
+        $stat = fstat($stream);
+        self::assertSame($expectedSize, $stat['size']);
+        fclose($stream);
+    }
+
+    public function testUploadFromStreamPassesChunkSize(): void
+    {
+        $fileResource = fopen(__FILE__, 'r');
+
+        try {
+            /** @var File $file */
+            $file = $this->getRepository()->uploadFromStream('somefile.txt', $fileResource, new FileMetadata(), 1234);
+        } finally {
+            fclose($fileResource);
+        }
+
+        self::assertInstanceOf(File::class, $file);
+
+        $expectedSize = filesize(__FILE__);
+
+        // Check if the file is actually there
+        self::assertInstanceOf(File::class, $this->getRepository()->findOneBy(['filename' => 'somefile.txt']));
+
+        self::assertSame('somefile.txt', $file->getFilename());
+        self::assertSame($expectedSize, $file->getLength());
+        self::assertSame(1234, $file->getChunkSize());
         self::assertEquals(new \DateTime(), $file->getUploadDate(), '', 1);
         self::assertInstanceOf(FileMetadata::class, $file->getMetadata());
 
@@ -80,6 +132,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
         self::assertSame('DefaultGridFSRepositoryTest.php', $file->getFilename());
         self::assertSame($expectedSize, $file->getLength());
+        self::assertSame(12345, $file->getChunkSize());
 
         // Check if the file is actually there
         self::assertInstanceOf(File::class, $this->getRepository()->findOneBy(['filename' => $file->getFilename()]));
@@ -88,8 +141,9 @@ class DefaultGridFSRepositoryTest extends BaseTest
     public function testUploadFromFileUsesProvidedFilename(): void
     {
         /** @var File $file */
-        $file = $this->getRepository()->uploadFromFile(__FILE__, 'test.php');
+        $file = $this->getRepository()->uploadFromFile(__FILE__, 'test.php', null, 1234);
         self::assertSame('test.php', $file->getFilename());
+        self::assertSame(1234, $file->getChunkSize());
     }
 
     public function testReadingFileAllowsUpdatingMetadata(): void

@@ -424,6 +424,13 @@ class ClassMetadata implements BaseClassMetadata
     public $isFile = false;
 
     /**
+     * READ-ONLY: The default chunk size in bytes for the file
+     *
+     * @var int|null
+     */
+    public $chunkSizeBytes;
+
+    /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
      *
      * @var int
@@ -1146,6 +1153,16 @@ class ClassMetadata implements BaseClassMetadata
     {
         $this->bucketName = $bucketName;
         $this->setCollection($bucketName . '.files');
+    }
+
+    public function getChunkSizeBytes(): ?int
+    {
+        return $this->chunkSizeBytes;
+    }
+
+    public function setChunkSizeBytes(int $chunkSizeBytes): void
+    {
+        $this->chunkSizeBytes = $chunkSizeBytes;
     }
 
     /**
@@ -2164,6 +2181,7 @@ class ClassMetadata implements BaseClassMetadata
         if ($this->isFile) {
             $serialized[] = 'isFile';
             $serialized[] = 'bucketName';
+            $serialized[] = 'chunkSizeBytes';
         }
 
         if ($this->isVersioned) {

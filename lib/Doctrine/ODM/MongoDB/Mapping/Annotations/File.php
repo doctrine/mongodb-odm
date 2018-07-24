@@ -31,4 +31,7 @@ final class File extends AbstractDocument
 
     /** @var string|int|null */
     public $writeConcern;
+
+    /** @var int|null */
+    public $chunkSizeBytes;
 }

@@ -386,6 +386,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $class = $this->loadMetadata(AbstractMappingDriverFile::class);
 
         $this->assertTrue($class->isFile);
+        $this->assertSame(12345, $class->getChunkSizeBytes());
 
         $this->assertArraySubset([
             'name' => '_id',
@@ -652,7 +653,7 @@ class InvalidMappingDocument
 }
 
 /**
- * @ODM\File
+ * @ODM\File(chunkSizeBytes=12345)
  */
 class AbstractMappingDriverFile
 {

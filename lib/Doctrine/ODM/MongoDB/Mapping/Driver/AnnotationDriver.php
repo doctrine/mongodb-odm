@@ -98,6 +98,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $class->isQueryResultDocument = true;
         } elseif ($documentAnnot instanceof ODM\File) {
             $class->isFile = true;
+
+            if ($documentAnnot->chunkSizeBytes !== null) {
+                $class->setChunkSizeBytes($documentAnnot->chunkSizeBytes);
+            }
         }
 
         if (isset($documentAnnot->db)) {

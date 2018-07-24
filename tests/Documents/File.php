@@ -6,7 +6,7 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\File */
+/** @ODM\File(chunkSizeBytes=12345) */
 class File
 {
     /** @ODM\Id */
