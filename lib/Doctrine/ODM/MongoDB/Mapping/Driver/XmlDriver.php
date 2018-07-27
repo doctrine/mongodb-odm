@@ -90,8 +90,8 @@ class XmlDriver extends FileDriver
                 $class->setCollection((string) $xmlRoot['collection']);
             }
         }
-        if (isset($xmlRoot['writeConcern'])) {
-            $class->setWriteConcern((string) $xmlRoot['writeConcern']);
+        if (isset($xmlRoot['write-concern'])) {
+            $class->setWriteConcern((string) $xmlRoot['write-concern']);
         }
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
@@ -102,12 +102,7 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};
-            /* XSD only allows for "name", which is consistent with association
-             * configurations, but fall back to "fieldName" for BC.
-             */
-            $class->setDiscriminatorField(
-                (string) ($discrField['name'] ?? $discrField['fieldName'])
-            );
+            $class->setDiscriminatorField((string) $discrField['name']);
         }
         if (isset($xmlRoot->{'discriminator-map'})) {
             $map = [];
@@ -179,6 +174,10 @@ class XmlDriver extends FileDriver
 
                 if (isset($attributes['not-saved'])) {
                     $mapping['notSaved'] = ((string) $attributes['not-saved'] === 'true');
+                }
+
+                if (isset($attributes['field-name'])) {
+                    $mapping['fieldName'] = (string) $attributes['field-name'];
                 }
 
                 if (isset($attributes['also-load'])) {
@@ -277,8 +276,8 @@ class XmlDriver extends FileDriver
             'name'            => (string) $attributes['field'],
             'strategy'        => (string) ($attributes['strategy'] ?? $defaultStrategy),
         ];
-        if (isset($attributes['fieldName'])) {
-            $mapping['fieldName'] = (string) $attributes['fieldName'];
+        if (isset($attributes['field-name'])) {
+            $mapping['fieldName'] = (string) $attributes['field-name'];
         }
         if (isset($embed->{'discriminator-field'})) {
             $attr = $embed->{'discriminator-field'};
@@ -328,8 +327,8 @@ class XmlDriver extends FileDriver
             'prime'            => [],
         ];
 
-        if (isset($attributes['fieldName'])) {
-            $mapping['fieldName'] = (string) $attributes['fieldName'];
+        if (isset($attributes['field-name'])) {
+            $mapping['fieldName'] = (string) $attributes['field-name'];
         }
         if (isset($reference->{'discriminator-field'})) {
             $attr = $reference->{'discriminator-field'};

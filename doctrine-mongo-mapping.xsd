@@ -54,7 +54,7 @@
     </xs:choice>
     <xs:attribute name="db" type="xs:NMTOKEN" />
     <xs:attribute name="name" type="xs:string" />
-    <xs:attribute name="writeConcern" type="xs:string" />
+    <xs:attribute name="write-concern" type="xs:string" />
     <xs:attribute name="collection" type="xs:NMTOKEN" />
     <xs:attribute name="capped-collection" type="xs:boolean" />
     <xs:attribute name="capped-collection-size" type="xs:integer" />
@@ -76,7 +76,7 @@
     <xs:attribute name="name" type="xs:NMTOKEN" />
     <xs:attribute name="type" type="xs:NMTOKEN" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="set" />
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="embed" type="xs:boolean" />
     <xs:attribute name="reference" type="xs:boolean" />
     <xs:attribute name="version" type="xs:boolean" />
@@ -100,7 +100,7 @@
     </xs:choice>
     <xs:attribute name="type" type="xs:NMTOKEN" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="auto" />
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" default="id" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" default="id" />
   </xs:complexType>
 
   <xs:complexType name="id-generator-option">
@@ -116,7 +116,7 @@
     </xs:choice>
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="not-saved" type="xs:boolean" />
     <xs:attribute name="nullable" type="xs:boolean" />
     <xs:attribute name="also-load" type="xs:NMTOKEN" />
@@ -131,7 +131,7 @@
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="collection-class" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
     <xs:attribute name="not-saved" type="xs:boolean" />
     <xs:attribute name="nullable" type="xs:boolean" />
@@ -158,7 +158,7 @@
     </xs:choice>
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="simple" type="xs:boolean" /><!-- deprecated -->
     <xs:attribute name="store-as" type="odm:reference-store-as" default="dbRefWithDb" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
@@ -183,7 +183,7 @@
     <xs:attribute name="target-document" type="xs:string" />
     <xs:attribute name="collection-class" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="simple" type="xs:boolean" /><!-- deprecated -->
     <xs:attribute name="store-as" type="odm:reference-store-as" default="dbRefWithDb" />
     <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
