@@ -82,7 +82,7 @@ You can provide your mapping information in Annotations or XML:
             /** @ODM\Field(type="string") */
             private $email;
 
-            /** @ODM\ReferenceMany(targetDocument="BlogPost", cascade="all") */
+            /** @ODM\ReferenceMany(targetDocument=BlogPost::class, cascade="all") */
             private $posts = array();
 
             // ...

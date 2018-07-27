@@ -57,13 +57,13 @@ class ParentObject
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\ReferenceMany(targetDocument="ChildObject", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument=ChildObject::class, cascade="all") */
     private $children;
 
     /** @ODM\Field(type="string") */
     private $name;
 
-    /** @ODM\EmbedOne(targetDocument="ChildEmbeddedObject") */
+    /** @ODM\EmbedOne(targetDocument=ChildEmbeddedObject::class) */
     private $childEmbedded;
 
     private $child;

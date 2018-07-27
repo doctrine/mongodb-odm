@@ -12,7 +12,7 @@ abstract class BaseCategory
     /** @ODM\Field(type="string") */
     protected $name;
 
-     /** @ODM\EmbedMany(targetDocument="SubCategory") */
+     /** @ODM\EmbedMany(targetDocument=SubCategory::class) */
     protected $children = [];
 
     public function __construct($name = null)

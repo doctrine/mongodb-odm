@@ -42,7 +42,7 @@ class GH1152Parent
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="GH1152Child") */
+    /** @ODM\EmbedOne(targetDocument=GH1152Child::class) */
     public $child;
 }
 

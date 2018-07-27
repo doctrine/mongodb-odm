@@ -11,6 +11,6 @@ class EmbedManyInArrayLevel1
 {
     /** @ODM\Field(type="string") */
     public $name;
-    /** @ODM\EmbedMany(targetDocument="MODM160Level2") */
+    /** @ODM\EmbedMany(targetDocument=MODM160Level2::class) */
     public $level2 = [];
 }

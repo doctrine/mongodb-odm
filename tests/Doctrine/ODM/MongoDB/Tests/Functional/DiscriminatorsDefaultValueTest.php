@@ -162,16 +162,16 @@ abstract class ChildDocument
 /** @ODM\Document(collection="discriminator_parent") */
 class ParentDocumentWithoutDiscriminator extends ParentDocument
 {
-    /** @ODM\ReferenceOne(targetDocument="ChildDocumentWithoutDiscriminator") */
+    /** @ODM\ReferenceOne(targetDocument=ChildDocumentWithoutDiscriminator::class) */
     protected $referencedChild;
 
-    /** @ODM\ReferenceMany(targetDocument="ChildDocumentWithoutDiscriminator") */
+    /** @ODM\ReferenceMany(targetDocument=ChildDocumentWithoutDiscriminator::class) */
     protected $referencedChildren;
 
-    /** @ODM\EmbedOne(targetDocument="ChildDocumentWithoutDiscriminator") */
+    /** @ODM\EmbedOne(targetDocument=ChildDocumentWithoutDiscriminator::class) */
     protected $embeddedChild;
 
-    /** @ODM\EmbedMany(targetDocument="ChildDocumentWithoutDiscriminator") */
+    /** @ODM\EmbedMany(targetDocument=ChildDocumentWithoutDiscriminator::class) */
     protected $embeddedChildren;
 }
 
@@ -184,16 +184,16 @@ class ChildDocumentWithoutDiscriminator extends ChildDocument
 /** @ODM\Document(collection="discriminator_parent") */
 class ParentDocumentWithDiscriminator extends ParentDocument
 {
-    /** @ODM\ReferenceOne(targetDocument="ChildDocumentWithDiscriminator") */
+    /** @ODM\ReferenceOne(targetDocument=ChildDocumentWithDiscriminator::class) */
     protected $referencedChild;
 
-    /** @ODM\ReferenceMany(targetDocument="ChildDocumentWithDiscriminator") */
+    /** @ODM\ReferenceMany(targetDocument=ChildDocumentWithDiscriminator::class) */
     protected $referencedChildren;
 
-    /** @ODM\EmbedOne(targetDocument="ChildDocumentWithDiscriminator") */
+    /** @ODM\EmbedOne(targetDocument=ChildDocumentWithDiscriminator::class) */
     protected $embeddedChild;
 
-    /** @ODM\EmbedMany(targetDocument="ChildDocumentWithDiscriminator") */
+    /** @ODM\EmbedMany(targetDocument=ChildDocumentWithDiscriminator::class) */
     protected $embeddedChildren;
 }
 
@@ -201,7 +201,7 @@ class ParentDocumentWithDiscriminator extends ParentDocument
  * @ODM\Document(collection="discriminator_child")
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("discriminator")
- * @ODM\DiscriminatorMap({"simple"="ChildDocumentWithDiscriminatorSimple", "complex"="ChildDocumentWithDiscriminatorComplex"})
+ * @ODM\DiscriminatorMap({"simple"=ChildDocumentWithDiscriminatorSimple::class, "complex"=ChildDocumentWithDiscriminatorComplex::class})
  * @ODM\DefaultDiscriminatorValue("simple")
  */
 class ChildDocumentWithDiscriminator extends ChildDocument

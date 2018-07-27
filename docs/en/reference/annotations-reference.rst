@@ -306,7 +306,7 @@ to be stored within an `@EmbedOne`_ or `@EmbedMany`_ relationship.
     /** @Document(db="finance", collection="wallets") */
     class Wallet
     {
-        /** @EmbedOne(targetDocument="Money") */
+        /** @EmbedOne(targetDocument=Money::class) */
         private $money;
 
         public function setMoney(Money $money)

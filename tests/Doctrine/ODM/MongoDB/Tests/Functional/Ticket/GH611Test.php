@@ -124,7 +124,7 @@ class GH611Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="GH611EmbeddedDocument") */
+    /** @ODM\EmbedOne(targetDocument=GH611EmbeddedDocument::class) */
     public $embedded;
 }
 

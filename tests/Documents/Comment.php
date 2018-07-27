@@ -7,7 +7,7 @@ namespace Documents;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(repositoryClass="Documents\CommentRepository") */
+/** @ODM\Document(repositoryClass=CommentRepository::class) */
 class Comment
 {
     /** @ODM\Id */
@@ -16,10 +16,10 @@ class Comment
     /** @ODM\Field(type="string") */
     public $text;
 
-    /** @ODM\ReferenceOne(targetDocument="User", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=User::class, cascade={"all"}) */
     public $author;
 
-    /** @ODM\ReferenceOne(targetDocument="BlogPost", inversedBy="comments", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=BlogPost::class, inversedBy="comments", cascade={"all"}) */
     public $parent;
 
     /** @ODM\Field(type="date") @ODM\Index(order="1") */

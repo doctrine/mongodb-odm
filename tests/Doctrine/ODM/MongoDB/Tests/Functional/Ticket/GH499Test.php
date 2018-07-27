@@ -41,7 +41,7 @@ class GH499Document
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument="GH499Document", storeAs="id", strategy="set") */
+    /** @ODM\ReferenceMany(targetDocument=GH499Document::class, storeAs="id", strategy="set") */
     protected $refMany;
 
     public function __construct($id = null)

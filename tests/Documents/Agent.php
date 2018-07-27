@@ -14,8 +14,8 @@ class Agent
 
     /**
      * @ODM\ReferenceOne(discriminatorMap={
-     * "server"="Server",
-     * "server_guest"="GuestServer"
+     * "server"=Server::class,
+     * "server_guest"=GuestServer::class
      * })
      */
     public $server;

@@ -629,10 +629,10 @@ class ChangeEmbeddedIdTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId") */
+    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class) */
     public $embed;
 
-    /** @ODM\EmbedMany(targetDocument="EmbeddedDocumentWithId") */
+    /** @ODM\EmbedMany(targetDocument=EmbeddedDocumentWithId::class) */
     public $embedMany;
 
     public function __construct()
@@ -658,10 +658,10 @@ class ChangeEmbeddedWithNameAnnotationTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithAnotherEmbedded") */
+    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithAnotherEmbedded::class) */
     public $embedOne;
 
-    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithAnotherEmbedded") */
+    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithAnotherEmbedded::class) */
     public $embedTwo;
 }
 
@@ -670,6 +670,6 @@ class ChangeEmbeddedWithNameAnnotationTest
  */
 class EmbedDocumentWithAnotherEmbed
 {
-    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId", name="m_id") */
+    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class, name="m_id") */
     public $embed;
 }

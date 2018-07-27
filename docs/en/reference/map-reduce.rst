@@ -29,7 +29,7 @@ named ``Event`` and it was related to a ``User`` document:
         /** @Id */
         private $id;
 
-        /** @ReferenceOne(targetDocument="Documents\User") */
+        /** @ReferenceOne(targetDocument=User::class) */
         private $user;
 
         /** @Field(type="string") */

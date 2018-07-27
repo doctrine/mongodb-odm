@@ -45,6 +45,6 @@ class GH245OrderLog
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="GH245Order") */
+    /** @ODM\ReferenceOne(targetDocument=GH245Order::class) */
     public $order;
 }

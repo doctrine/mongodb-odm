@@ -22,7 +22,7 @@ Embed a single document:
         {
             // ...
 
-            /** @EmbedOne(targetDocument="Address") */
+            /** @EmbedOne(targetDocument=Address::class) */
             private $address;
 
             // ...
@@ -64,7 +64,7 @@ Embed many documents:
         {
             // ...
 
-            /** @EmbedMany(targetDocument="Phonenumber") */
+            /** @EmbedMany(targetDocument=Phonenumber::class) */
             private $phonenumbers = array();
 
             // ...

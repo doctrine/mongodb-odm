@@ -125,10 +125,10 @@ class GH597Post
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument="GH597Comment") */
+    /** @ODM\EmbedMany(targetDocument=GH597Comment::class) */
     public $comments;
 
-    /** @ODM\ReferenceMany(targetDocument="GH597ReferenceMany", storeAs="id") */
+    /** @ODM\ReferenceMany(targetDocument=GH597ReferenceMany::class, storeAs="id") */
     public $referenceMany;
 
     public function __construct()

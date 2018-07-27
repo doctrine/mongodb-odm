@@ -27,7 +27,7 @@ First, setup some documents like the following:
             /** @Field(type="string") */
             public $name;
 
-            /** @EmbedOne(targetDocument="Coordinates") */
+            /** @EmbedOne(targetDocument=Coordinates::class) */
             public $coordinates;
         }
 

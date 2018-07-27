@@ -45,7 +45,7 @@ class GH936Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="GH936Document", cascade={"persist","remove"}) */
+    /** @ODM\ReferenceOne(targetDocument=GH936Document::class, cascade={"persist","remove"}) */
     public $ref;
 
     public function __construct($ref = null)

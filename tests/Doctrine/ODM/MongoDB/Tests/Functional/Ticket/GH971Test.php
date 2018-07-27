@@ -72,7 +72,7 @@ class GH971Test extends BaseTest
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"car"="Car", "bicycle"="Bicycle", "tandem"="Tandem"})
+ * @ODM\DiscriminatorMap({"car"=Car::class, "bicycle"=Bicycle::class, "tandem"=Tandem::class})
  */
 class Vehicle
 {

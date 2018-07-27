@@ -253,7 +253,7 @@ Now if we had a ``BlogPost`` document with the ``Comment`` document embedded man
         /** @Field(type="string") @Index */
         private $slug;
 
-        /** @EmbedMany(targetDocument="Comment") */
+        /** @EmbedMany(targetDocument=Comment::class) */
         private $comments;
     }
 
@@ -308,7 +308,7 @@ options structures manually:
             /** @Id */
             public $id;
 
-            /** @EmbedOne(targetDocument="Coordinates") */
+            /** @EmbedOne(targetDocument=Coordinates::class) */
             public $coordinates;
         }
 

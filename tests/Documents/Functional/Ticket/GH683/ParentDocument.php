@@ -13,8 +13,8 @@ class ParentDocument
     public $id;
     /** @ODM\Field(type="string") */
     public $name;
-    /** @ODM\EmbedOne(targetDocument="AbstractEmbedded") */
+    /** @ODM\EmbedOne(targetDocument=AbstractEmbedded::class) */
     public $embedOne;
-    /** @ODM\EmbedMany(targetDocument="AbstractEmbedded") */
+    /** @ODM\EmbedMany(targetDocument=AbstractEmbedded::class) */
     public $embedMany;
 }

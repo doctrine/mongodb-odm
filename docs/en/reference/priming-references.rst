@@ -18,7 +18,7 @@ Consider the following abbreviated model:
     /** @Document */
     class User
     {
-        /** @ReferenceMany(targetDocument="Account") */
+        /** @ReferenceMany(targetDocument=Account::class) */
         private $accounts;
     }
 
@@ -111,7 +111,7 @@ specifying them in the mapping:
     /** @Document */
     class User
     {
-        /** @ReferenceMany(targetDocument="Account", prime={"user"}) */
+        /** @ReferenceMany(targetDocument=Account::class, prime={"user"}) */
         private $accounts;
     }
 

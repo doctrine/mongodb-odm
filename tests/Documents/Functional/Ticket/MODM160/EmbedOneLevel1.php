@@ -11,6 +11,6 @@ class EmbedOneLevel1
 {
     /** @ODM\Field(type="string") */
     public $name;
-    /** @ODM\EmbedOne(targetDocument="MODM160Level2") */
+    /** @ODM\EmbedOne(targetDocument=MODM160Level2::class) */
     public $level2;
 }

@@ -70,15 +70,15 @@ class GH566Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="GH566EmbeddedDocument") */
+    /** @ODM\EmbedOne(targetDocument=GH566EmbeddedDocument::class) */
     public $version;
 
-    /** @ODM\EmbedMany(targetDocument="GH566EmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument=GH566EmbeddedDocument::class) */
     public $versions;
 
     /**
      * @ODM\ReferenceMany(
-     *      targetDocument="GH566Document",
+     *      targetDocument=GH566Document::class,
      *      cascade={"all"},
      *      mappedBy="version.parent",
      *      sort={"version.sequence"="asc"}
@@ -99,6 +99,6 @@ class GH566EmbeddedDocument
     /** @ODM\Field(type="int") */
     public $sequence = 0;
 
-    /** @ODM\ReferenceOne(targetDocument="GH566Document", cascade={"all"}, inversedBy="children") */
+    /** @ODM\ReferenceOne(targetDocument=GH566Document::class, cascade={"all"}, inversedBy="children") */
     public $parent;
 }

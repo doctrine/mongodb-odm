@@ -429,7 +429,7 @@ in the $addresses collection.
     {
         //...
         /**
-         * @ReferenceMany(targetDocument="Address", cascade={"persist", "remove"})
+         * @ReferenceMany(targetDocument=Address::class, cascade={"persist", "remove"})
          */
         private $addresses;
         //...

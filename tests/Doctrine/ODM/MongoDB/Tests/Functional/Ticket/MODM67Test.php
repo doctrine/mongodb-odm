@@ -112,7 +112,7 @@ class MODM67DerivedClass
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="MODM67EmbeddedObject") */
+    /** @ODM\EmbedOne(targetDocument=MODM67EmbeddedObject::class) */
     public $embedOne;
 }
 

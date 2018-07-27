@@ -59,7 +59,7 @@ class GH897B
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument="GH897A") */
+    /** @ODM\ReferenceOne(targetDocument=GH897A::class) */
     public $refOne;
 
     public $dm;

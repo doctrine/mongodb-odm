@@ -13,7 +13,7 @@ class Phonebook
     /** @ODM\Field(type="string") */
     private $title;
 
-    /** @ODM\EmbedMany(targetDocument="Phonenumber") */
+    /** @ODM\EmbedMany(targetDocument=Phonenumber::class) */
     private $phonenumbers;
 
     public function __construct($title)

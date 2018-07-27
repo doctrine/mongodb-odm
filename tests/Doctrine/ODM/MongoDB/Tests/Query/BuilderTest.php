@@ -925,7 +925,7 @@ class BuilderTest extends BaseTest
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"ca"="ChildA", "cb"="ChildB", "cc"="ChildC"})
+ * @ODM\DiscriminatorMap({"ca"=ChildA::class, "cb"=ChildB::class, "cc"=ChildC::class})
  */
 class ParentClass
 {

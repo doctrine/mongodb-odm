@@ -568,10 +568,10 @@ class AtomicSetUser
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonebook") */
     public $phonebooks;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="AtomicSetInception") */
+    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=AtomicSetInception::class) */
     public $inception;
 
-    /** @ODM\ReferenceMany(strategy="atomicSetArray", targetDocument="AtomicSetUser") */
+    /** @ODM\ReferenceMany(strategy="atomicSetArray", targetDocument=AtomicSetUser::class) */
     public $friends;
 
     public function __construct($name)
@@ -592,10 +592,10 @@ class AtomicSetInception
     /** @ODM\Field(type="string") */
     public $value;
 
-    /** @ODM\EmbedOne(targetDocument="AtomicSetInception") */
+    /** @ODM\EmbedOne(targetDocument=AtomicSetInception::class) */
     public $one;
 
-    /** @ODM\EmbedMany(targetDocument="AtomicSetInception") */
+    /** @ODM\EmbedMany(targetDocument=AtomicSetInception::class) */
     public $many;
 
     public function __construct($value)

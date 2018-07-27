@@ -87,17 +87,17 @@ class GH1775Blog
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceMany(targetDocument="GH1775Post", inversedBy="blogs") */
+    /** @ODM\ReferenceMany(targetDocument=GH1775Post::class, inversedBy="blogs") */
     public $posts = [];
 }
 
 /** @ODM\Document */
 class GH1775Post extends GH1775MetaDocument
 {
-    /** @ODM\ReferenceMany(targetDocument="GH1775Image", storeAs=ClassMetadata::REFERENCE_STORE_AS_ID) */
+    /** @ODM\ReferenceMany(targetDocument=GH1775Image::class, storeAs=ClassMetadata::REFERENCE_STORE_AS_ID) */
     protected $images;
 
-    /** @ODM\ReferenceMany(targetDocument="GH1775Blog", mappedBy="posts") */
+    /** @ODM\ReferenceMany(targetDocument=GH1775Blog::class, mappedBy="posts") */
     protected $blogs;
 
     public function __construct(array $blogs, array $images)

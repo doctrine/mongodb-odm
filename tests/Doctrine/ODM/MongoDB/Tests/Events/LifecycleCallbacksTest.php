@@ -250,13 +250,13 @@ class User extends BaseDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="Profile") */
+    /** @ODM\EmbedOne(targetDocument=Profile::class) */
     public $profile;
 
-    /** @ODM\EmbedMany(targetDocument="Profile") */
+    /** @ODM\EmbedMany(targetDocument=Profile::class) */
     public $profiles = [];
 
-    /** @ODM\ReferenceMany(targetDocument="User") */
+    /** @ODM\ReferenceMany(targetDocument=User::class) */
     public $friends = [];
 }
 
@@ -266,7 +266,7 @@ class Cart extends BaseDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Customer", inversedBy="cart") */
+    /** @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart") */
     public $customer;
 }
 
@@ -276,14 +276,14 @@ class Customer extends BaseDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Cart", mappedBy="customer") */
+    /** @ODM\ReferenceOne(targetDocument=Cart::class, mappedBy="customer") */
     public $cart;
 }
 
 /** @ODM\EmbeddedDocument */
 class Profile extends BaseDocument
 {
-    /** @ODM\EmbedOne(targetDocument="Profile") */
+    /** @ODM\EmbedOne(targetDocument=Profile::class) */
     public $profile;
 }
 

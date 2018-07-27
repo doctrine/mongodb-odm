@@ -44,7 +44,7 @@ class GH1011Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument="GH1011Embedded", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument=GH1011Embedded::class, strategy="set") */
     public $embeds;
 
     public function __construct()

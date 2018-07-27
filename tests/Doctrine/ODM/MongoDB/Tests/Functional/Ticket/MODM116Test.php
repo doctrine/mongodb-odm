@@ -47,7 +47,7 @@ class MODM116Parent
     /** @ODM\Field(type="string") */
     private $name;
 
-    /** @ODM\ReferenceOne(targetDocument="MODM116Child") **/
+    /** @ODM\ReferenceOne(targetDocument=MODM116Child::class) **/
     private $child;
 
     public function getId()

@@ -239,15 +239,15 @@ class ReferenceStoreAsDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="id") */
+    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="id") */
     public $ref1;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRef") */
+    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRef") */
     public $ref2;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRefWithDb") */
+    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRefWithDb") */
     public $ref3;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="ref") */
+    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref") */
     public $ref4;
 }

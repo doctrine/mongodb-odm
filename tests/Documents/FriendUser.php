@@ -16,10 +16,10 @@ class FriendUser
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\ReferenceMany(targetDocument="FriendUser", mappedBy="myFriends", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=FriendUser::class, mappedBy="myFriends", cascade={"all"}) */
     public $friendsWithMe;
 
-    /** @ODM\ReferenceMany(targetDocument="FriendUser", inversedBy="friendsWithMe", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=FriendUser::class, inversedBy="friendsWithMe", cascade={"all"}) */
     public $myFriends;
 
     public function __construct($name)

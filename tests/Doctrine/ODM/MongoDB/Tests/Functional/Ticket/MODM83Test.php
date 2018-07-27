@@ -72,7 +72,7 @@ class MODM83TestDocument
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument="MODM83TestEmbeddedDocument") */
+    /** @ODM\EmbedOne(targetDocument=MODM83TestEmbeddedDocument::class) */
     public $embedded;
 }
 

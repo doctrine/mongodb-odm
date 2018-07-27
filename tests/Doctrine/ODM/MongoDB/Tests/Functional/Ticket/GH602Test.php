@@ -109,7 +109,7 @@ class GH602User
     /** @ODM\Field(name="user_deleted", type="bool") */
     public $deleted = false;
 
-    /** @ODM\ReferenceMany(targetDocument="GH602Thing", inversedBy="likedBy", storeAs="id") */
+    /** @ODM\ReferenceMany(targetDocument=GH602Thing::class, inversedBy="likedBy", storeAs="id") */
     public $likes;
 
     public function __construct()
@@ -133,7 +133,7 @@ class GH602Thing
     /** @ODM\Field(name="thing_deleted", type="bool") */
     public $deleted = false;
 
-    /** @ODM\ReferenceMany(targetDocument="GH602User", mappedBy="likes") */
+    /** @ODM\ReferenceMany(targetDocument=GH602User::class, mappedBy="likes") */
     public $likedBy;
 
     public function __construct()

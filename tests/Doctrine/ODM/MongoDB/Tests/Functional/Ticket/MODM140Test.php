@@ -130,7 +130,7 @@ class Category
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="Post") */
+    /** @ODM\EmbedMany(targetDocument=Post::class) */
     public $posts;
 
     public function __construct()
@@ -142,10 +142,10 @@ class Category
 /** @ODM\EmbeddedDocument */
 class Post
 {
-    /** @ODM\EmbedMany(targetDocument="PostVersion") */
+    /** @ODM\EmbedMany(targetDocument=PostVersion::class) */
     public $versions;
 
-    /** @ODM\ReferenceMany(targetDocument="Comment") */
+    /** @ODM\ReferenceMany(targetDocument=Comment::class) */
     public $comments;
 
     public function __construct()

@@ -37,10 +37,10 @@ class MODM76A
     /** @ODM\Field(type="string") */
     protected $test = 'test';
 
-    /** @ODM\EmbedMany(targetDocument="MODM76B") */
+    /** @ODM\EmbedMany(targetDocument=MODM76B::class) */
     protected $b = [];
 
-    /** @ODM\ReferenceMany(targetDocument="MODM76C") */
+    /** @ODM\ReferenceMany(targetDocument=MODM76C::class) */
     protected $c = [];
 
     public function __construct($b, $c)
@@ -68,7 +68,7 @@ class MODM76A
 /** @ODM\EmbeddedDocument */
 class MODM76B
 {
-    /** @ODM\ReferenceOne(targetDocument="MODM76C") */
+    /** @ODM\ReferenceOne(targetDocument=MODM76C::class) */
     protected $c;
 
     public function __construct($c)

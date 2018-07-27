@@ -30,8 +30,6 @@ use function is_string;
 use function is_subclass_of;
 use function ltrim;
 use function sprintf;
-use function strlen;
-use function strpos;
 use function strtolower;
 use function strtoupper;
 
@@ -245,14 +243,6 @@ class ClassMetadata implements BaseClassMetadata
      * @var string
      */
     public $name;
-
-    /**
-     * READ-ONLY: The namespace the document class is contained in.
-     *
-     * @var string
-     * @todo Not really needed. Usage could be localized.
-     */
-    public $namespace;
 
     /**
      * READ-ONLY: The name of the document class that is at the root of the mapped document inheritance
@@ -483,7 +473,6 @@ class ClassMetadata implements BaseClassMetadata
         $this->name = $documentName;
         $this->rootDocumentName = $documentName;
         $this->reflClass = new \ReflectionClass($documentName);
-        $this->namespace = $this->reflClass->getNamespaceName();
         $this->setCollection($this->reflClass->getShortName());
         $this->instantiator = new Instantiator();
     }
@@ -622,10 +611,6 @@ class ClassMetadata implements BaseClassMetadata
     {
         if ($this->isEmbeddedDocument || $this->isQueryResultDocument) {
             return;
-        }
-
-        if ($repositoryClassName && strpos($repositoryClassName, '\\') === false && strlen($this->namespace)) {
-            $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
         }
 
         $this->customRepositoryClassName = $repositoryClassName;
@@ -787,9 +772,6 @@ class ClassMetadata implements BaseClassMetadata
     public function setDiscriminatorMap(array $map)
     {
         foreach ($map as $value => $className) {
-            if (strpos($className, '\\') === false && strlen($this->namespace)) {
-                $className = $this->namespace . '\\' . $className;
-            }
             $this->discriminatorMap[$value] = $className;
             if ($this->name === $className) {
                 $this->discriminatorValue = $value;
@@ -1068,16 +1050,6 @@ class ClassMetadata implements BaseClassMetadata
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * The namespace this Document class belongs to.
-     *
-     * @return string $namespace The namespace name.
-     */
-    public function getNamespace()
-    {
-        return $this->namespace;
     }
 
     /**
@@ -1690,11 +1662,7 @@ class ClassMetadata implements BaseClassMetadata
     public function setSubclasses(array $subclasses)
     {
         foreach ($subclasses as $subclass) {
-            if (strpos($subclass, '\\') === false && strlen($this->namespace)) {
-                $this->subClasses[] = $this->namespace . '\\' . $subclass;
-            } else {
-                $this->subClasses[] = $subclass;
-            }
+            $this->subClasses[] = $subclass;
         }
     }
 
@@ -1939,29 +1907,13 @@ class ClassMetadata implements BaseClassMetadata
         if ($this->discriminatorField !== null && $this->discriminatorField === $mapping['name']) {
             throw MappingException::discriminatorFieldConflict($this->name, $this->discriminatorField);
         }
-        if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
-            $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
-        }
         if (isset($mapping['collectionClass'])) {
-            if (strpos($mapping['collectionClass'], '\\') === false && strlen($this->namespace)) {
-                $mapping['collectionClass'] = $this->namespace . '\\' . $mapping['collectionClass'];
-            }
             $mapping['collectionClass'] = ltrim($mapping['collectionClass'], '\\');
         }
         if (! empty($mapping['collectionClass'])) {
             $rColl = new \ReflectionClass($mapping['collectionClass']);
             if (! $rColl->implementsInterface('Doctrine\\Common\\Collections\\Collection')) {
                 throw MappingException::collectionClassDoesNotImplementCommonInterface($this->name, $mapping['fieldName'], $mapping['collectionClass']);
-            }
-        }
-
-        if (isset($mapping['discriminatorMap'])) {
-            foreach ($mapping['discriminatorMap'] as $key => $class) {
-                if (strpos($class, '\\') !== false || ! strlen($this->namespace)) {
-                    continue;
-                }
-
-                $mapping['discriminatorMap'][$key] = $this->namespace . '\\' . $class;
             }
         }
 
@@ -2122,7 +2074,6 @@ class ClassMetadata implements BaseClassMetadata
             'associationMappings',
             'identifier',
             'name',
-            'namespace', // TODO: REMOVE
             'db',
             'collection',
             'readPreference',

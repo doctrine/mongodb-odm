@@ -14,7 +14,7 @@ and changes are tracked and persisted separately. Here is an example:
     {
         // ...
 
-        /** @ReferenceOne(targetDocument="User") */
+        /** @ReferenceOne(targetDocument=User::class) */
         private $user;
     }
 
@@ -23,7 +23,7 @@ and changes are tracked and persisted separately. Here is an example:
     {
         // ...
 
-        /** @ReferenceMany(targetDocument="BlogPost") */
+        /** @ReferenceMany(targetDocument=BlogPost::class) */
         private $posts;
     }
 
@@ -56,7 +56,7 @@ One to Many
     {
         // ...
 
-        /** @ReferenceOne(targetDocument="User", inversedBy="posts") */
+        /** @ReferenceOne(targetDocument=User::class, inversedBy="posts") */
         private $user;
     }
 
@@ -65,7 +65,7 @@ One to Many
     {
         // ...
 
-        /** @ReferenceMany(targetDocument="BlogPost", mappedBy="user") */
+        /** @ReferenceMany(targetDocument=BlogPost::class, mappedBy="user") */
         private $posts;
     }
 
@@ -136,7 +136,7 @@ Here is an example where we have a one to one relationship between ``Cart`` and 
         // ...
 
         /**
-         * @ReferenceOne(targetDocument="Customer", inversedBy="cart")
+         * @ReferenceOne(targetDocument=Customer::class, inversedBy="cart")
          */
         public $customer;
     }
@@ -147,7 +147,7 @@ Here is an example where we have a one to one relationship between ``Cart`` and 
         // ...
 
         /**
-         * @ReferenceOne(targetDocument="Cart", mappedBy="customer")
+         * @ReferenceOne(targetDocument=Cart::class, mappedBy="customer")
          */
         public $cart;
     }
@@ -192,12 +192,12 @@ Self-Referencing Many to Many
         // ...
 
         /**
-         * @ReferenceMany(targetDocument="User", mappedBy="myFriends")
+         * @ReferenceMany(targetDocument=User::class, mappedBy="myFriends")
          */
         public $friendsWithMe;
 
         /**
-         * @ReferenceMany(targetDocument="User", inversedBy="friendsWithMe")
+         * @ReferenceMany(targetDocument=User::class, inversedBy="friendsWithMe")
          */
         public $myFriends;
 

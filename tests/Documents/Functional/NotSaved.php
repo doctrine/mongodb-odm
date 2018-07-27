@@ -18,6 +18,6 @@ class NotSaved
     /** @ODM\NotSaved */
     public $notSaved;
 
-    /** @ODM\EmbedOne(targetDocument="NotSavedEmbedded") */
+    /** @ODM\EmbedOne(targetDocument=NotSavedEmbedded::class) */
     public $embedded;
 }

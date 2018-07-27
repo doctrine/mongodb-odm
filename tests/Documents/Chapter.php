@@ -16,7 +16,7 @@ class Chapter
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="Page") */
+    /** @ODM\EmbedMany(targetDocument=Page::class) */
     public $pages;
 
     /** @ODM\Field(type="int") */

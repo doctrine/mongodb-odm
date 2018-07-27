@@ -12,7 +12,7 @@ class Phonenumber
     /** @ODM\Field(type="string") */
     private $phonenumber;
 
-    /** @ODM\ReferenceOne(targetDocument="User", cascade={"persist"}) */
+    /** @ODM\ReferenceOne(targetDocument=User::class, cascade={"persist"}) */
     private $lastCalledBy;
 
     public function __construct($phonenumber = null, ?User $lastCalledBy = null)

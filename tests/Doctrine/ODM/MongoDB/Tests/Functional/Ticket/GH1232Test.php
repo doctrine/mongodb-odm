@@ -40,12 +40,12 @@ class GH1232Post
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceMany(targetDocument="GH1232Comment", mappedBy="post", cascade={"remove"}) */
+    /** @ODM\ReferenceMany(targetDocument=GH1232Comment::class, mappedBy="post", cascade={"remove"}) */
     protected $comments;
 
     /**
      * @ODM\ReferenceMany(
-     *     targetDocument="GH1232Comment",
+     *     targetDocument=GH1232Comment::class,
      *     mappedBy="post",
      *     repositoryMethod="getLongComments",
      * )
@@ -64,7 +64,7 @@ class GH1232Comment
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="GH1232Post") */
+    /** @ODM\ReferenceOne(targetDocument=GH1232Post::class) */
     public $post;
 }
 

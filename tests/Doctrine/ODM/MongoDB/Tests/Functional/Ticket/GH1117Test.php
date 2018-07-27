@@ -39,7 +39,7 @@ class GH1117Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(strategy="set", targetDocument="GH1117EmbeddedDocument") */
+    /** @ODM\EmbedMany(strategy="set", targetDocument=GH1117EmbeddedDocument::class) */
     public $embeds;
 
     public function __construct()

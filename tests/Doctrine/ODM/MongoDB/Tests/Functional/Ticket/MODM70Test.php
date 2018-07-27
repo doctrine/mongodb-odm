@@ -51,7 +51,7 @@ class Avatar
 
     /**
      * @ODM\EmbedMany(
-     *  targetDocument="AvatarPart",
+     *  targetDocument=AvatarPart::class,
      *  name="aP"
      * )
      * @var array AvatarPart

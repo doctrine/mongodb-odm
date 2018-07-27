@@ -62,7 +62,7 @@ class GH878Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="GH878SubDocument") */
+    /** @ODM\EmbedOne(targetDocument=GH878SubDocument::class) */
     public $embeddedField;
 }
 

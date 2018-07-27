@@ -37,10 +37,10 @@ class GH467Document
     /** @ODM\Field(type="collection") */
     public $col;
 
-    /** @ODM\EmbedMany(targetDocument="GH467EmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument=GH467EmbeddedDocument::class) */
     public $embedMany;
 
-    /** @ODM\ReferenceMany(targetDocument="GH467EmbeddedDocument") */
+    /** @ODM\ReferenceMany(targetDocument=GH467EmbeddedDocument::class) */
     public $refMany;
 }
 

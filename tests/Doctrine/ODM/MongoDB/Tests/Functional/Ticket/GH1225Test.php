@@ -40,7 +40,7 @@ class GH1225Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="GH1225EmbeddedDocument") */
+    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=GH1225EmbeddedDocument::class) */
     public $embeds;
 
     public function __construct()

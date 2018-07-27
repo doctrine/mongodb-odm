@@ -18,10 +18,10 @@ class Book
     /** @ODM\Field(type="int") @ODM\Version */
     public $version = 1;
 
-    /** @ODM\EmbedMany(targetDocument="Chapter", strategy="atomicSet") */
+    /** @ODM\EmbedMany(targetDocument=Chapter::class, strategy="atomicSet") */
     public $chapters;
 
-    /** @ODM\EmbedMany(targetDocument="IdentifiedChapter", strategy="atomicSet") */
+    /** @ODM\EmbedMany(targetDocument=IdentifiedChapter::class, strategy="atomicSet") */
     public $identifiedChapters;
 
     public function __construct()

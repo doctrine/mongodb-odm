@@ -14,7 +14,7 @@ class CmsPhonenumber
     /** @ODM\Id(strategy="NONE", type="custom_id") */
     public $phonenumber;
 
-    /** @ODM\ReferenceOne(targetDocument="CmsUser", cascade={"merge"}) */
+    /** @ODM\ReferenceOne(targetDocument=CmsUser::class, cascade={"merge"}) */
     public $user;
 
     public function setUser(CmsUser $user)

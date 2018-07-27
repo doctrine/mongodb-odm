@@ -13,6 +13,6 @@ class EmbedOneLevel0
     public $id;
     /** @ODM\Field(type="string") */
     public $name;
-    /** @ODM\EmbedOne(targetDocument="EmbedOneLevel1") */
+    /** @ODM\EmbedOne(targetDocument=EmbedOneLevel1::class) */
     public $level1;
 }

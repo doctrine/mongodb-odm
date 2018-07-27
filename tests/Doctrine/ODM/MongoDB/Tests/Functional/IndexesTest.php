@@ -370,10 +370,10 @@ class DocumentWithEmbeddedIndexes
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
+    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class) */
     public $embedded;
 
-    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithIndexes") */
+    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class) */
     public $embedded_secondary;
 }
 
@@ -394,7 +394,7 @@ class EmbeddedDocumentWithIndexes
     /** @ODM\Field(type="string") @ODM\Index */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="EmbeddedManyDocumentWithIndexes") */
+    /** @ODM\EmbedMany(targetDocument=EmbeddedManyDocumentWithIndexes::class) */
     public $embeddedMany;
 }
 
@@ -421,8 +421,8 @@ class DocumentWithIndexInDiscriminatedEmbeds
     /**
      * @ODM\EmbedOne(
      *  discriminatorMap={
-     *   "d1"="EmbeddedDocumentWithIndexes",
-     *   "d2"="YetAnotherEmbeddedDocumentWithIndex",
+     *   "d1"=EmbeddedDocumentWithIndexes::class,
+     *   "d2"=YetAnotherEmbeddedDocumentWithIndex::class,
      * })
      */
     public $embedded;

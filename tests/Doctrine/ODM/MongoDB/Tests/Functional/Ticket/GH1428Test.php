@@ -39,14 +39,14 @@ class GH1428Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="GH1428EmbeddedDocument") */
+    /** @ODM\EmbedOne(targetDocument=GH1428EmbeddedDocument::class) */
     public $embedded;
 }
 
 /** @ODM\EmbeddedDocument */
 class GH1428EmbeddedDocument
 {
-    /** @ODM\EmbedOne(targetDocument="GH1428NestedEmbeddedDocument", name="shortNameThatDoesntExist") */
+    /** @ODM\EmbedOne(targetDocument=GH1428NestedEmbeddedDocument::class, name="shortNameThatDoesntExist") */
     public $nestedEmbedded;
 }
 

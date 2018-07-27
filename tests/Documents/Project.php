@@ -22,10 +22,10 @@ class Project
     /** @ODM\Field(type="string") */
     private $name;
 
-    /** @ODM\EmbedOne(targetDocument="Address") */
+    /** @ODM\EmbedOne(targetDocument=Address::class) */
     private $address;
 
-    /** @ODM\ReferenceMany(targetDocument="SubProject", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument=SubProject::class, cascade="all") */
     private $subProjects;
 
     public function __construct($name, ?Collection $subProjects = null)

@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class BlogTagAggregation
 {
-    /** @ODM\ReferenceOne(targetDocument="Tag", name="_id") */
+    /** @ODM\ReferenceOne(targetDocument=Tag::class, name="_id") */
     public $tag;
 
     /** @ODM\Field(type="int") */
