@@ -133,7 +133,7 @@ class Configuration
     {
         $reader = new AnnotationReader();
 
-        return new AnnotationDriver($reader, (array) $paths);
+        return new AnnotationDriver($reader, $paths);
     }
 
     /**

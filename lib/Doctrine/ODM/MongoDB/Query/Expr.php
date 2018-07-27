@@ -189,7 +189,7 @@ class Expr
      */
     public function all(array $values)
     {
-        return $this->operator('$all', (array) $values);
+        return $this->operator('$all', $values);
     }
 
     /**
@@ -698,7 +698,7 @@ class Expr
         $this->requiresCurrentField();
         $mapping = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
-        $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
+        $storeAs = $mapping['storeAs'] ?? null;
         $keys = [];
 
         switch ($storeAs) {
@@ -1096,7 +1096,7 @@ class Expr
         $this->requiresCurrentField();
         $mapping = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
-        $storeAs = array_key_exists('storeAs', $mapping) ? $mapping['storeAs'] : null;
+        $storeAs = $mapping['storeAs'] ?? null;
         $keys = [];
 
         switch ($storeAs) {
