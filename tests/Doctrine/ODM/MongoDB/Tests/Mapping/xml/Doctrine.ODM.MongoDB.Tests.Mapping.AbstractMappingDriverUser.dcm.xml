@@ -5,7 +5,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" collection="cms_users" writeConcern="1" read-only="true">
+    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" collection="cms_users" write-concern="1" read-only="true">
         <discriminator-field name="discr" />
         <discriminator-map>
             <discriminator-mapping value="default" class="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser" />
@@ -20,14 +20,14 @@
             </tag-set>
             <tag-set />
         </read-preference>
-        <id fieldName="id" />
-        <field fieldName="version" version="true" type="int" />
-        <field fieldName="lock" lock="true" type="int" />
-        <field fieldName="name" name="username" type="string" />
-        <field fieldName="email" type="string" unique="true" drop-dups="true" order="desc" />
-        <field fieldName="mysqlProfileId" type="integer" unique="true" drop-dups="true" order="desc" />
-        <field fieldName="createdAt" type="date" />
-        <field fieldName="roles" type="collection" />
+        <id field-name="id" />
+        <field field-name="version" version="true" type="int" />
+        <field field-name="lock" lock="true" type="int" />
+        <field field-name="name" name="username" type="string" />
+        <field field-name="email" type="string" unique="true" drop-dups="true" order="desc" />
+        <field field-name="mysqlProfileId" type="integer" unique="true" drop-dups="true" order="desc" />
+        <field field-name="createdAt" type="date" />
+        <field field-name="roles" type="collection" />
         <indexes>
             <index unique="true">
                 <key name="username" order="desc" />
@@ -66,9 +66,9 @@
                 <all />
             </cascade>
         </reference-many>
-        <reference-many target-document="Phonenumber" fieldName="morePhoneNumbers" field="more_phone_numbers">
+        <reference-many target-document="Phonenumber" field-name="morePhoneNumbers" field="more_phone_numbers">
         </reference-many>
-        <embed-one target-document="Phonenumber" fieldName="embeddedPhonenumber" field="embedded_phone_number">
+        <embed-one target-document="Phonenumber" field-name="embeddedPhonenumber" field="embedded_phone_number">
         </embed-one>
         <embed-many target-document="Phonenumber" collection-class="PhonenumberCollection" field="otherPhonenumbers">
             <discriminator-field name="discr" />
