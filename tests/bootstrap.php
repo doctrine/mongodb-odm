@@ -12,8 +12,4 @@ if (! file_exists($file)) {
 
 $loader = require $file;
 
-$loader->add('Doctrine\ODM\MongoDB\Tests', __DIR__ . '/../tests');
-$loader->add('Documents', __DIR__);
-$loader->add('Stubs', __DIR__);
-
 AnnotationRegistry::registerLoader([$loader, 'loadClass']);
