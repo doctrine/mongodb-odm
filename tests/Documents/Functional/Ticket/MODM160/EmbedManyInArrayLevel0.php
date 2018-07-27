@@ -13,6 +13,6 @@ class EmbedManyInArrayLevel0
     public $id;
     /** @ODM\Field(type="string") */
     public $name;
-    /** @ODM\EmbedMany(targetDocument="EmbedManyInArrayLevel1") */
+    /** @ODM\EmbedMany(targetDocument=EmbedManyInArrayLevel1::class) */
     public $level1 = [];
 }

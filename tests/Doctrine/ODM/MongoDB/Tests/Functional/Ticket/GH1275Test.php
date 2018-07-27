@@ -232,7 +232,7 @@ class Container
     public $id;
 
     /** @ODM\ReferenceMany(
-     *     targetDocument="Item",
+     *     targetDocument=Item::class,
      *     cascade={"refresh","persist"},
      *     orphanRemoval="true",
      *     strategy="atomicSet"
@@ -242,7 +242,7 @@ class Container
 
     /**
      * @ODM\ReferenceOne(
-     *     targetDocument="Item",
+     *     targetDocument=Item::class,
      *     cascade={"refresh"}
      * )
      */
@@ -250,7 +250,7 @@ class Container
 
     /**
      * @ODM\EmbedMany(
-     *     targetDocument="Element",
+     *     targetDocument=Element::class,
      *     strategy="addToSet"
      * )
      */
@@ -258,7 +258,7 @@ class Container
 
     /**
      * @ODM\EmbedMany(
-     *     targetDocument="Element",
+     *     targetDocument=Element::class,
      *     strategy="set"
      * )
      */
@@ -266,7 +266,7 @@ class Container
 
     /**
      * @ODM\EmbedMany(
-     *     targetDocument="Element",
+     *     targetDocument=Element::class,
      *     strategy="setArray"
      * )
      */
@@ -274,7 +274,7 @@ class Container
 
     /**
      * @ODM\EmbedMany(
-     *     targetDocument="Element",
+     *     targetDocument=Element::class,
      *     strategy="pushAll"
      * )
      */
@@ -282,7 +282,7 @@ class Container
 
     /**
      * @ODM\EmbedMany(
-     *     targetDocument="Element",
+     *     targetDocument=Element::class,
      *     strategy="atomicSet"
      * )
      */
@@ -290,7 +290,7 @@ class Container
 
     /**
      * @ODM\EmbedMany(
-     *     targetDocument="Element",
+     *     targetDocument=Element::class,
      *     strategy="atomicSetArray"
      * )
      */

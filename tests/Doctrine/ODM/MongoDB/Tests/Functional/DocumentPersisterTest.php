@@ -613,16 +613,16 @@ class DocumentPersisterTestDocument
      */
     public $association;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="id") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="id") */
     public $simpleRef;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="dbRef") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRef") */
     public $semiComplexRef;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="dbRefWithDb") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRefWithDb") */
     public $complexRef;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestHashIdDocument", storeAs="ref") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="ref") */
     public $embeddedRef;
 }
 
@@ -696,16 +696,16 @@ class DocumentPersisterTestHashIdDocument
     /** @ODM\Id(strategy="none", options={"type"="hash"}) */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="id") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="id") */
     public $simpleRef;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="dbRef") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRef") */
     public $semiComplexRef;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="dbRefWithDb") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRefWithDb") */
     public $complexRef;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentPersisterTestDocument", storeAs="ref") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="ref") */
     public $embeddedRef;
 }
 

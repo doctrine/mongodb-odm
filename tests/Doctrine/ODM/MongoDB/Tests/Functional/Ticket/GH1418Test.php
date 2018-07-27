@@ -104,10 +104,10 @@ class GH1418Document
     /** @ODM\Id(strategy="none") */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="GH1418Embedded") */
+    /** @ODM\EmbedOne(targetDocument=GH1418Embedded::class) */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument="GH1418Embedded") */
+    /** @ODM\EmbedMany(targetDocument=GH1418Embedded::class) */
     public $embedMany;
 }
 

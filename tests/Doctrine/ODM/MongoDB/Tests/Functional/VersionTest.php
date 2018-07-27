@@ -57,7 +57,7 @@ class VersionedDocument
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="VersionedEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class) */
     public $embedMany = [];
 
     public function __construct()
@@ -74,7 +74,7 @@ class VersionedEmbeddedDocument
     /** @ODM\Field(type="string") */
     public $value;
 
-    /** @ODM\EmbedMany(targetDocument="VersionedEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class) */
     public $embedMany;
 
     public function __construct($value)

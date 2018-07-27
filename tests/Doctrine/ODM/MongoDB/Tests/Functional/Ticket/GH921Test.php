@@ -67,7 +67,7 @@ class GH921User
     /** @ODM\Field(type="string") */
     private $name;
 
-    /** @ODM\ReferenceMany(targetDocument="GH921Post") */
+    /** @ODM\ReferenceMany(targetDocument=GH921Post::class) */
     private $posts;
 
     public function __construct()

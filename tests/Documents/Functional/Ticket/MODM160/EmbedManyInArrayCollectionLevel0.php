@@ -14,7 +14,7 @@ class EmbedManyInArrayCollectionLevel0
     public $id;
     /** @ODM\Field(type="string") */
     public $name;
-    /** @ODM\EmbedMany(targetDocument="EmbedManyInArrayCollectionLevel1") */
+    /** @ODM\EmbedMany(targetDocument=EmbedManyInArrayCollectionLevel1::class) */
     public $level1;
 
     public function __construct()

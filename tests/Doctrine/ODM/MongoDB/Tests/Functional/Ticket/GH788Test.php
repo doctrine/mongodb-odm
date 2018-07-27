@@ -320,16 +320,16 @@ class GH788Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument="GH788ExternEmbedListed") */
+    /** @ODM\EmbedMany(targetDocument=GH788ExternEmbedListed::class) */
     public $externEmbedMany;
 
-    /** @ODM\EmbedOne(targetDocument="GH788ExternEmbedListed") */
+    /** @ODM\EmbedOne(targetDocument=GH788ExternEmbedListed::class) */
     public $externEmbedOne;
 
-    /** @ODM\ReferenceMany(targetDocument="GH788ExternRefListed", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument=GH788ExternRefListed::class, cascade="all") */
     public $externRefMany;
 
-    /** @ODM\ReferenceOne(targetDocument="GH788ExternRefListed", cascade="all") */
+    /** @ODM\ReferenceOne(targetDocument=GH788ExternRefListed::class, cascade="all") */
     public $externRefOne;
 
     /**
@@ -401,7 +401,7 @@ class GH788Document
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"a"="GH788DocumentListed"})
+ * @ODM\DiscriminatorMap({"a"=GH788DocumentListed::class})
  */
 class GH788DocumentListed extends GH788Document
 {
@@ -447,7 +447,7 @@ class GH788InlineRefUnlisted extends GH788InlineRefListed
 /**
  * @ODM\EmbeddedDocument
  * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"d"="GH788ExternEmbedListed"})
+ * @ODM\DiscriminatorMap({"d"=GH788ExternEmbedListed::class})
  */
 class GH788ExternEmbedListed
 {
@@ -467,7 +467,7 @@ class GH788ExternEmbedUnlisted extends GH788ExternEmbedListed
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"e"="GH788ExternRefListed"})
+ * @ODM\DiscriminatorMap({"e"=GH788ExternRefListed::class})
  */
 class GH788ExternRefListed
 {

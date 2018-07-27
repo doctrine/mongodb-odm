@@ -172,7 +172,7 @@ Later on, you may want to migrate this data into an embedded Address document:
         /** @NotSaved */
         public $city;
 
-        /** @EmbedOne(targetDocument="Address") */
+        /** @EmbedOne(targetDocument=Address::class) */
         public $address;
 
         /** @PostLoad */

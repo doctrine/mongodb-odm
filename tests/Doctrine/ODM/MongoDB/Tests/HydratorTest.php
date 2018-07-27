@@ -82,16 +82,16 @@ class HydrationClosureUser
     /** @ODM\Field(type="date") */
     public $birthdate;
 
-    /** @ODM\ReferenceOne(targetDocument="HydrationClosureReferenceOne") */
+    /** @ODM\ReferenceOne(targetDocument=HydrationClosureReferenceOne::class) */
     public $referenceOne;
 
-    /** @ODM\ReferenceMany(targetDocument="HydrationClosureReferenceMany") */
+    /** @ODM\ReferenceMany(targetDocument=HydrationClosureReferenceMany::class) */
     public $referenceMany = [];
 
-    /** @ODM\EmbedOne(targetDocument="HydrationClosureEmbedOne") */
+    /** @ODM\EmbedOne(targetDocument=HydrationClosureEmbedOne::class) */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument="HydrationClosureEmbedMany") */
+    /** @ODM\EmbedMany(targetDocument=HydrationClosureEmbedMany::class) */
     public $embedMany = [];
 }
 

@@ -44,7 +44,7 @@ class MODM92TestDocument
     public $id;
 
     // Note: Test case fails with default "pushAll" strategy, but "set" works
-    /** @ODM\EmbedMany(targetDocument="MODM92TestEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument=MODM92TestEmbeddedDocument::class) */
     public $embeddedDocuments;
 
     public function __construct()

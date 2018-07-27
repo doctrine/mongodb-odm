@@ -11,8 +11,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("stype")
  * @ODM\DiscriminatorMap({
- * "server"="Server",
- * "server_guest"="GuestServer"
+ * "server"=Server::class,
+ * "server_guest"=GuestServer::class
  * })
  */
 class Server

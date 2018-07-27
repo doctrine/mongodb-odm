@@ -408,10 +408,10 @@ class CollectionIdUser
     /** @ODM\Field(name="t", type="string") */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument="ReferencedCollectionId", cascade={"persist"}) */
+    /** @ODM\ReferenceOne(targetDocument=ReferencedCollectionId::class, cascade={"persist"}) */
     public $reference;
 
-    /** @ODM\EmbedMany(targetDocument="EmbeddedCollectionId") */
+    /** @ODM\EmbedMany(targetDocument=EmbeddedCollectionId::class) */
     public $embedded = [];
 
     public function __construct($name)
@@ -429,10 +429,10 @@ class CollectionIdUserWithStartingId
     /** @ODM\Field(name="t", type="string") */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument="ReferencedCollectionId", cascade={"persist"}) */
+    /** @ODM\ReferenceOne(targetDocument=ReferencedCollectionId::class, cascade={"persist"}) */
     public $reference;
 
-    /** @ODM\EmbedMany(targetDocument="EmbeddedCollectionId") */
+    /** @ODM\EmbedMany(targetDocument=EmbeddedCollectionId::class) */
     public $embedded = [];
 
     public function __construct($name)

@@ -16,7 +16,7 @@ class IdentifiedChapter
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="Page") */
+    /** @ODM\EmbedMany(targetDocument=Page::class) */
     public $pages;
 
     public function __construct($name = null)

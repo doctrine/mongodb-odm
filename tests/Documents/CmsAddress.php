@@ -26,7 +26,7 @@ class CmsAddress
     /** @ODM\Field(type="string") */
     public $city;
 
-    /** @ODM\ReferenceOne(targetDocument="CmsUser") */
+    /** @ODM\ReferenceOne(targetDocument=CmsUser::class) */
     public $user;
 
     public function getId()

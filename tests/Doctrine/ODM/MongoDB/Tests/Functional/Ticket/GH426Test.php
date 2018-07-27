@@ -35,13 +35,13 @@ class GH426Form
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceMany(targetDocument="GH426Field", mappedBy="form", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=GH426Field::class, mappedBy="form", cascade={"all"}) */
     public $fields = [];
 
-    /** @ODM\ReferenceOne(targetDocument="GH426Field", mappedBy="form", sort={"_id":1}) */
+    /** @ODM\ReferenceOne(targetDocument=GH426Field::class, mappedBy="form", sort={"_id":1}) */
     public $firstField;
 
-    /** @ODM\ReferenceOne(targetDocument="GH426Field", mappedBy="form", sort={"_id":-1}) */
+    /** @ODM\ReferenceOne(targetDocument=GH426Field::class, mappedBy="form", sort={"_id":-1}) */
     public $lastField;
 }
 

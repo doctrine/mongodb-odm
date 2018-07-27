@@ -20,9 +20,9 @@ class CmsArticle
     public $topic;
     /** @ODM\Field(type="string") */
     public $text;
-    /** @ODM\ReferenceOne(targetDocument="CmsUser") */
+    /** @ODM\ReferenceOne(targetDocument=CmsUser::class) */
     public $user;
-    /** @ODM\ReferenceMany(targetDocument="CmsComment") */
+    /** @ODM\ReferenceMany(targetDocument=CmsComment::class) */
     public $comments;
 
     public function setAuthor(CmsUser $author)

@@ -67,7 +67,7 @@ class GH267User
     /** @ODM\Field(type="string") */
     protected $name;
 
-    /** @ODM\ReferenceOne(name="company", targetDocument="GH267Company", discriminatorMap={"seller"="SellerCompany", "buyer"="BuyerCompany"}, inversedBy="users") */
+    /** @ODM\ReferenceOne(name="company", targetDocument=GH267Company::class, discriminatorMap={"seller"="SellerCompany", "buyer"="BuyerCompany"}, inversedBy="users") */
     protected $company;
 
     public function __construct($name)
@@ -110,14 +110,14 @@ class GH267User
  * @ODM\Document(collection="companies")
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"seller"="GH267SellerCompany", "buyer"="GH267BuyerCompany"})
+ * @ODM\DiscriminatorMap({"seller"=GH267SellerCompany::class, "buyer"=GH267BuyerCompany::class})
  */
 class GH267Company
 {
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument="GH267User", mappedBy="company") */
+    /** @ODM\ReferenceMany(targetDocument=GH267User::class, mappedBy="company") */
     protected $users;
 
     public function setId($id)

@@ -45,36 +45,36 @@
                 </partial-filter-expression>
             </index>
         </indexes>
-        <reference-one target-document="Address" field="address">
+        <reference-one target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Address" field="address">
             <cascade>
                 <remove />
             </cascade>
         </reference-one>
-        <reference-many target-document="Phonenumber" collection-class="PhonenumberCollection" field="phonenumbers">
+        <reference-many target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber" collection-class="Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection" field="phonenumbers">
             <cascade>
                 <persist />
             </cascade>
             <discriminator-field name="discr" />
             <discriminator-map>
-                <discriminator-mapping value="home" class="HomePhonenumber" />
-                <discriminator-mapping value="work" class="WorkPhonenumber" />
+                <discriminator-mapping value="home" class="Doctrine\ODM\MongoDB\Tests\Mapping\HomePhonenumber" />
+                <discriminator-mapping value="work" class="Doctrine\ODM\MongoDB\Tests\Mapping\WorkPhonenumber" />
             </discriminator-map>
             <default-discriminator-value value="home" />
         </reference-many>
-        <reference-many target-document="Group" field="groups">
+        <reference-many target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Group" field="groups">
             <cascade>
                 <all />
             </cascade>
         </reference-many>
-        <reference-many target-document="Phonenumber" field-name="morePhoneNumbers" field="more_phone_numbers">
+        <reference-many target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber" field-name="morePhoneNumbers" field="more_phone_numbers">
         </reference-many>
-        <embed-one target-document="Phonenumber" field-name="embeddedPhonenumber" field="embedded_phone_number">
+        <embed-one target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber" field-name="embeddedPhonenumber" field="embedded_phone_number">
         </embed-one>
-        <embed-many target-document="Phonenumber" collection-class="PhonenumberCollection" field="otherPhonenumbers">
+        <embed-many target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber" collection-class="Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection" field="otherPhonenumbers">
             <discriminator-field name="discr" />
             <discriminator-map>
-                <discriminator-mapping value="home" class="HomePhonenumber" />
-                <discriminator-mapping value="work" class="WorkPhonenumber" />
+                <discriminator-mapping value="home" class="Doctrine\ODM\MongoDB\Tests\Mapping\HomePhonenumber" />
+                <discriminator-mapping value="work" class="Doctrine\ODM\MongoDB\Tests\Mapping\WorkPhonenumber" />
             </discriminator-map>
             <default-discriminator-value value="home" />
         </embed-many>

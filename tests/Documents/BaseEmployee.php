@@ -30,7 +30,7 @@ abstract class BaseEmployee
     /** @ODM\Field(type="date") */
     protected $left;
 
-    /** @ODM\EmbedOne(targetDocument="Address") */
+    /** @ODM\EmbedOne(targetDocument=Address::class) */
     protected $address;
 
     public function getId()

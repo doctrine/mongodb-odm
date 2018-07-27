@@ -35,12 +35,12 @@ querying by the BlogPost's ID.
     {
         // ...
 
-        /** @ReferenceMany(targetDocument="Comment", mappedBy="blogPost") */
+        /** @ReferenceMany(targetDocument=Comment::class, mappedBy="blogPost") */
         private $comments;
 
         /**
          * @ReferenceMany(
-         *      targetDocument="Comment",
+         *      targetDocument=Comment::class,
          *      mappedBy="blogPost",
          *      sort={"date"="desc"},
          *      limit=5
@@ -54,7 +54,7 @@ querying by the BlogPost's ID.
     {
         // ...
 
-        /** @ReferenceOne(targetDocument="BlogPost", inversedBy="comments") */
+        /** @ReferenceOne(targetDocument=BlogPost::class, inversedBy="comments") */
         private $blogPost;
     }
 
@@ -67,7 +67,7 @@ following example:
 
     /**
      * @ReferenceOne(
-     *      targetDocument="Comment",
+     *      targetDocument=Comment::class,
      *      mappedBy="blogPost",
      *      sort={"date"="desc"}
      * )
@@ -87,7 +87,7 @@ administrators:
 
     /**
      * @ReferenceMany(
-     *      targetDocument="Comment",
+     *      targetDocument=Comment::class,
      *      mappedBy="blogPost",
      *      criteria={"isByAdmin" : true}
      * )
@@ -106,7 +106,7 @@ call on the Comment repository class to populate the reference.
 
     /**
      * @ReferenceMany(
-     *      targetDocument="Comment",
+     *      targetDocument=Comment::class,
      *      mappedBy="blogPost",
      *      repositoryMethod="findSomeComments"
      * )

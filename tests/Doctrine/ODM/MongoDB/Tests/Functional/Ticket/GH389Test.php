@@ -37,7 +37,7 @@ class RootDocument
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\EmbedOne(targetDocument="EmptyMappedSuperClass") */
+    /** @ODM\EmbedOne(targetDocument=EmptyMappedSuperClass::class) */
     protected $emptyEmbeddedDocument;
 
     public function __construct()
@@ -60,7 +60,7 @@ class RootDocument
  * @ODM\MappedSuperClass
  * @ODM\DiscriminatorField("foobar")
  * @ODM\DiscriminatorMap({
- *     "empty"="EmptyEmbeddedDocument"
+ *     "empty"=EmptyEmbeddedDocument::class
  * })
  */
 class EmptyMappedSuperClass

@@ -261,16 +261,16 @@ class TestDocument
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="TestEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument=TestEmbeddedDocument::class) */
     public $embedded;
 
-    /** @ODM\EmbedOne(targetDocument="Image") */
+    /** @ODM\EmbedOne(targetDocument=Image::class) */
     public $image;
 
-    /** @ODM\ReferenceMany(targetDocument="TestProfile") */
+    /** @ODM\ReferenceMany(targetDocument=TestProfile::class) */
     public $profiles;
 
-    /** @ODM\ReferenceOne(targetDocument="TestProfile") */
+    /** @ODM\ReferenceOne(targetDocument=TestProfile::class) */
     public $profile;
 }
 
@@ -296,7 +296,7 @@ class TestProfile
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument="Image") */
+    /** @ODM\EmbedOne(targetDocument=Image::class) */
     public $image;
 }
 
@@ -308,7 +308,7 @@ class Image
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="Thumbnail") */
+    /** @ODM\EmbedMany(targetDocument=Thumbnail::class) */
     public $thumbnails = [];
 
     public function __construct($name)

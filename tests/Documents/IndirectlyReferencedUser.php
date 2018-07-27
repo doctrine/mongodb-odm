@@ -14,7 +14,7 @@ class IndirectlyReferencedUser
     /**
      * @var User
      *
-     * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="ref")
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref")
      */
     public $user;
 }

@@ -16,7 +16,7 @@ class Product
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\ReferenceMany(targetDocument="Feature", mappedBy="product", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=Feature::class, mappedBy="product", cascade={"all"}) */
     public $features;
 
     public function __construct($name)

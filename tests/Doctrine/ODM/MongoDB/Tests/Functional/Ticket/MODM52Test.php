@@ -42,7 +42,7 @@ class MODM52Container
     /** @ODM\Field(type="string") */
     public $value;
 
-    /** @ODM\EmbedMany(targetDocument="MODM52Embedded", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument=MODM52Embedded::class, strategy="set") */
     public $items = [];
 
     public function __construct($items = null, $value = null)

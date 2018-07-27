@@ -20,7 +20,7 @@ class CmsComment
     public $topic;
     /** @ODM\Field */
     public $text;
-    /** @ODM\ReferenceOne(targetDocument="CmsArticle") */
+    /** @ODM\ReferenceOne(targetDocument=CmsArticle::class) */
     public $article;
 
     /** @ODM\Field(name="ip", type="string") */

@@ -30,7 +30,7 @@ class MODM45A
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\EmbedOne(targetDocument="MODM45B") */
+    /** @ODM\EmbedOne(targetDocument=MODM45B::class) */
     protected $b;
 
     public function getId()

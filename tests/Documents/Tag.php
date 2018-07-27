@@ -15,7 +15,7 @@ class Tag
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="tags") */
+    /** @ODM\ReferenceMany(targetDocument=BlogPost::class, mappedBy="tags") */
     public $blogPosts;
 
     public function __construct($name)

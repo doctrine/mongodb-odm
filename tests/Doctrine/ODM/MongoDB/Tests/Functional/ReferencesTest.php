@@ -483,7 +483,7 @@ class DocumentWithArrayReference
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentWithArrayId") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentWithArrayId::class) */
     public $referenceOne;
 }
 
@@ -501,7 +501,7 @@ class DocumentWithMongoBinDataReference
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="DocumentWithMongoBinDataId") */
+    /** @ODM\ReferenceOne(targetDocument=DocumentWithMongoBinDataId::class) */
     public $referenceOne;
 }
 

@@ -53,7 +53,7 @@ Reference one document:
             // ...
 
             /**
-             * @ReferenceOne(targetDocument="Shipping")
+             * @ReferenceOne(targetDocument=Shipping::class)
              */
             private $shipping;
 
@@ -97,7 +97,7 @@ Reference many documents:
             // ...
 
             /**
-             * @ReferenceMany(targetDocument="Account")
+             * @ReferenceMany(targetDocument=Account::class)
              */
             private $accounts = array();
 
@@ -286,7 +286,7 @@ Example:
         <?php
 
         /**
-         * @ReferenceOne(targetDocument="Profile", storeAs="id")
+         * @ReferenceOne(targetDocument=Profile::class, storeAs="id")
          */
         private $profile;
 
@@ -334,7 +334,7 @@ referenced documents. You must explicitly enable this functionality:
         <?php
 
         /**
-         * @ReferenceOne(targetDocument="Profile", cascade={"persist"})
+         * @ReferenceOne(targetDocument=Profile::class, cascade={"persist"})
          */
         private $profile;
 
@@ -391,10 +391,10 @@ and StandingData:
         /** @Id */
         private $id;
 
-        /** @ReferenceOne(targetDocument="StandingData", orphanRemoval=true) */
+        /** @ReferenceOne(targetDocument=StandingData::class, orphanRemoval=true) */
         private $standingData;
 
-        /** @ReferenceMany(targetDocument="Address", mappedBy="contact", orphanRemoval=true) */
+        /** @ReferenceMany(targetDocument=Address::class, mappedBy="contact", orphanRemoval=true) */
         private $addresses;
 
         public function __construct()

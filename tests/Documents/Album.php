@@ -15,7 +15,7 @@ class Album
     /** @ODM\Field(type="string") */
     private $name;
 
-    /** @ODM\EmbedMany(targetDocument="Song") */
+    /** @ODM\EmbedMany(targetDocument=Song::class) */
     private $songs = [];
 
     public function __construct($name)

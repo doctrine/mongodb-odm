@@ -66,7 +66,7 @@ class Offer
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="Link") */
+    /** @ODM\EmbedMany(targetDocument=Link::class) */
     public $links;
 
     public function __construct($name)
@@ -85,7 +85,7 @@ class Link
     /** @ODM\Field(type="string") */
     public $url;
 
-    /** @ODM\ReferenceMany(targetDocument="ReferencedDocument") */
+    /** @ODM\ReferenceMany(targetDocument=ReferencedDocument::class) */
     public $referencedDocuments;
 
     public function __construct($url)

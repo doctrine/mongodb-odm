@@ -19,7 +19,7 @@ class Developer
     /** @ODM\Field(type="string") */
     private $name;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\Project", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument=Project::class, cascade="all") */
     private $projects;
 
     public function __construct($name, ?Collection $projects = null)

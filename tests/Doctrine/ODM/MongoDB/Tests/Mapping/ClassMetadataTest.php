@@ -44,9 +44,9 @@ class ClassMetadataTest extends BaseTest
         $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION);
         $cm->setSubclasses(['One', 'Two', 'Three']);
         $cm->setParentClasses(['UserParent']);
-        $cm->setCustomRepositoryClass('UserRepository');
+        $cm->setCustomRepositoryClass(UserRepository::class);
         $cm->setDiscriminatorField('disc');
-        $cm->mapOneEmbedded(['fieldName' => 'phonenumbers', 'targetDocument' => 'Bar']);
+        $cm->mapOneEmbedded(['fieldName' => 'phonenumbers', 'targetDocument' => Bar::class]);
         $cm->setShardKey(['_id' => '1']);
         $cm->setCollectionCapped(true);
         $cm->setCollectionMax(1000);
@@ -60,11 +60,10 @@ class ClassMetadataTest extends BaseTest
 
         // Check state
         $this->assertGreaterThan(0, $cm->getReflectionProperties());
-        $this->assertEquals('Documents', $cm->namespace);
         $this->assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
         $this->assertEquals(CmsUser::class, $cm->name);
         $this->assertEquals('UserParent', $cm->rootDocumentName);
-        $this->assertEquals(['Documents\One', 'Documents\Two', 'Documents\Three'], $cm->subClasses);
+        $this->assertEquals(['One', 'Two', 'Three'], $cm->subClasses);
         $this->assertEquals(['UserParent'], $cm->parentClasses);
         $this->assertEquals(UserRepository::class, $cm->customRepositoryClassName);
         $this->assertEquals('disc', $cm->discriminatorField);
@@ -385,7 +384,7 @@ class ClassMetadataTest extends BaseTest
 
         $cm->setCustomRepositoryClass('TestCustomRepositoryClass');
 
-        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass', $cm->customRepositoryClassName);
+        $this->assertEquals('TestCustomRepositoryClass', $cm->customRepositoryClassName);
 
         $cm->setCustomRepositoryClass('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass');
 

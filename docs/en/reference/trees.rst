@@ -23,7 +23,7 @@ Full Tree in Single Document
         /** @Field(type="string") */
         private $body;
 
-        /** @EmbedMany(targetDocument="Comment") */
+        /** @EmbedMany(targetDocument=Comment::class) */
         private $comments = array();
 
         // ...
@@ -38,7 +38,7 @@ Full Tree in Single Document
         /** @Field(type="string") */
         private $text;
 
-        /** @EmbedMany(targetDocument="Comment") */
+        /** @EmbedMany(targetDocument=Comment::class) */
         private $replies = array();
 
         // ...
@@ -77,7 +77,7 @@ Parent Reference
         private $name;
 
         /**
-         * @ReferenceOne(targetDocument="Category")
+         * @ReferenceOne(targetDocument=Category::class)
          * @Index
          */
         private $parent;
@@ -116,7 +116,7 @@ Child Reference
         private $name;
 
         /**
-         * @ReferenceMany(targetDocument="Category")
+         * @ReferenceMany(targetDocument=Category::class)
          * @Index
          */
         private $children = array();
@@ -174,13 +174,13 @@ Array of Ancestors
         private $id;
 
         /**
-         * @ReferenceMany(targetDocument="Category")
+         * @ReferenceMany(targetDocument=Category::class)
          * @Index
          */
         private $ancestors = array();
 
         /**
-         * @ReferenceOne(targetDocument="Category")
+         * @ReferenceOne(targetDocument=Category::class)
          * @Index
          */
         private $parent;

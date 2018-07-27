@@ -11,7 +11,7 @@ class EmbeddedTestLevel1
 {
     /** @ODM\Field(type="string") */
     public $name;
-    /** @ODM\EmbedMany(targetDocument="EmbeddedTestLevel2") */
+    /** @ODM\EmbedMany(targetDocument=EmbeddedTestLevel2::class) */
     public $level2 = [];
 
     public $preRemove = false;

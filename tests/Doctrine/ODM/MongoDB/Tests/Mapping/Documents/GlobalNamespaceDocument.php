@@ -18,7 +18,7 @@ class DoctrineGlobal_Article
     /** @ODM\Field(type="string") */
     protected $text;
 
-    /** @ODM\ReferenceMany(targetDocument="DoctrineGlobal_User") */
+    /** @ODM\ReferenceMany(targetDocument=DoctrineGlobal_User::class) */
     protected $author;
 
     /** @ODM\ReferenceMany(targetDocument="\DoctrineGlobal_User") */

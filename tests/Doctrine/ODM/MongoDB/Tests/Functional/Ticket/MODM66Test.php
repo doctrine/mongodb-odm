@@ -67,7 +67,7 @@ class MODM52A
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument="MODM52B", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument=MODM52B::class, cascade="all") */
     protected $b;
 
     public function __construct($b)

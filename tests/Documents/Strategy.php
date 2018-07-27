@@ -15,9 +15,9 @@ class Strategy
     /** @ODM\Field(type="collection") */
     public $logs = [];
 
-    /** @ODM\EmbedMany(targetDocument="Message", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument=Message::class, strategy="set") */
     public $messages = [];
 
-    /** @ODM\ReferenceMany(targetDocument="Task", strategy="set") */
+    /** @ODM\ReferenceMany(targetDocument=Task::class, strategy="set") */
     public $tasks = [];
 }

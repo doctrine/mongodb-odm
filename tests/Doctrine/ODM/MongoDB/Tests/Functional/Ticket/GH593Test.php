@@ -107,10 +107,10 @@ class GH593User
     /** @ODM\Field(name="d", type="bool") */
     public $deleted = false;
 
-    /** @ODM\ReferenceMany(targetDocument="GH593User", inversedBy="followedBy", storeAs="id") */
+    /** @ODM\ReferenceMany(targetDocument=GH593User::class, inversedBy="followedBy", storeAs="id") */
     public $following;
 
-    /** @ODM\ReferenceMany(targetDocument="GH593User", mappedBy="following") */
+    /** @ODM\ReferenceMany(targetDocument=GH593User::class, mappedBy="following") */
     public $followedBy;
 
     public function __construct()

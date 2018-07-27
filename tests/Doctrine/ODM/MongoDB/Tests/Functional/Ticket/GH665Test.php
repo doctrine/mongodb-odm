@@ -52,10 +52,10 @@ class GH665Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument="GH665Embedded", strategy="pushAll") */
+    /** @ODM\EmbedMany(targetDocument=GH665Embedded::class, strategy="pushAll") */
     public $embeddedPushAll;
 
-    /** @ODM\EmbedMany(targetDocument="GH665Embedded", strategy="addToSet") */
+    /** @ODM\EmbedMany(targetDocument=GH665Embedded::class, strategy="addToSet") */
     public $embeddedAddToSet;
 
     public function __construct()

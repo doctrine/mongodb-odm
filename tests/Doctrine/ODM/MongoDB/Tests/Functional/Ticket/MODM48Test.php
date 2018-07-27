@@ -36,7 +36,7 @@ class MODM48A
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="MODM48B") */
+    /** @ODM\EmbedOne(targetDocument=MODM48B::class) */
     public $b;
 
     public function getId()

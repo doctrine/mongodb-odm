@@ -94,7 +94,7 @@ class ReferenceDiscriminatorsTest extends BaseTest
  * @ODM\Document(collection="rdt_action")
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("discriminator")
- * @ODM\DiscriminatorMap({"action"="Action", "commentable_action"="CommentableAction"})
+ * @ODM\DiscriminatorMap({"action"=Action::class, "commentable_action"=CommentableAction::class})
  */
 class Action
 {
@@ -144,7 +144,7 @@ abstract class ActivityStreamItem
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Action") */
+    /** @ODM\ReferenceOne(targetDocument=Action::class) */
     protected $action;
 
     public function __construct(Action $action)

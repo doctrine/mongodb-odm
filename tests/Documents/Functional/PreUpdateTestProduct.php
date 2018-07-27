@@ -17,7 +17,7 @@ class PreUpdateTestProduct
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument="PreUpdateTestSellable") */
+    /** @ODM\EmbedOne(targetDocument=PreUpdateTestSellable::class) */
     public $sellable;
 
     public function getName()

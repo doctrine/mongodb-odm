@@ -25,40 +25,40 @@ class User extends BaseDocument
     /** @ODM\Field(type="date") */
     protected $createdAt;
 
-    /** @ODM\EmbedOne(targetDocument="Address", nullable=true) */
+    /** @ODM\EmbedOne(targetDocument=Address::class, nullable=true) */
     protected $address;
 
-    /** @ODM\ReferenceOne(targetDocument="Profile", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=Profile::class, cascade={"all"}) */
     protected $profile;
 
-    /** @ODM\ReferenceOne(targetDocument="ProfileNotify", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=ProfileNotify::class, cascade={"all"}) */
     protected $profileNotify;
 
-    /** @ODM\EmbedMany(targetDocument="Phonenumber") */
+    /** @ODM\EmbedMany(targetDocument=Phonenumber::class) */
     protected $phonenumbers;
 
-    /** @ODM\EmbedMany(targetDocument="Phonebook") */
+    /** @ODM\EmbedMany(targetDocument=Phonebook::class) */
     protected $phonebooks;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}) */
     protected $groups;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", storeAs="id", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=Group::class, storeAs="id", cascade={"all"}) */
     protected $groupsSimple;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}, strategy="addToSet") */
+    /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}, strategy="addToSet") */
     protected $uniqueGroups;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="asc"}, strategy="setArray") */
+    /** @ODM\ReferenceMany(targetDocument=Group::class, name="groups", sort={"name"="asc"}, strategy="setArray") */
     protected $sortedAscGroups;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", name="groups", sort={"name"="desc"}, strategy="setArray") */
+    /** @ODM\ReferenceMany(targetDocument=Group::class, name="groups", sort={"name"="desc"}, strategy="setArray") */
     protected $sortedDescGroups;
 
-    /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=Account::class, cascade={"all"}) */
     protected $account;
 
-    /** @ODM\ReferenceOne(targetDocument="Account", storeAs="id", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=Account::class, storeAs="id", cascade={"all"}) */
     protected $accountSimple;
 
     /** @ODM\Field(type="int") */
@@ -73,19 +73,19 @@ class User extends BaseDocument
     /** @ODM\Field(type="float", strategy="increment") */
     protected $floatCount;
 
-    /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="user", nullable=true) */
+    /** @ODM\ReferenceMany(targetDocument=BlogPost::class, mappedBy="user", nullable=true) */
     protected $posts;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\SimpleReferenceUser", mappedBy="user") */
+    /** @ODM\ReferenceOne(targetDocument=SimpleReferenceUser::class, mappedBy="user") */
     protected $simpleReferenceOneInverse;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\SimpleReferenceUser", mappedBy="users") */
+    /** @ODM\ReferenceMany(targetDocument=SimpleReferenceUser::class, mappedBy="users") */
     protected $simpleReferenceManyInverse;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\ReferenceUser", mappedBy="referencedUser") */
+    /** @ODM\ReferenceOne(targetDocument=ReferenceUser::class, mappedBy="referencedUser") */
     protected $embeddedReferenceOneInverse;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\ReferenceUser", mappedBy="referencedUsers") */
+    /** @ODM\ReferenceMany(targetDocument=ReferenceUser::class, mappedBy="referencedUsers") */
     protected $embeddedReferenceManyInverse;
 
     /** @ODM\Field(type="collection") */

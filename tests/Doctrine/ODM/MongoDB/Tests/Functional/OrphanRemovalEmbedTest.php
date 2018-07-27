@@ -163,10 +163,10 @@ class OrphanRemovalCascadeUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="OrphanRemovalCascadeProfile") */
+    /** @ODM\EmbedOne(targetDocument=OrphanRemovalCascadeProfile::class) */
     public $profile;
 
-    /** @ODM\EmbedMany(targetDocument="OrphanRemovalCascadeProfile") */
+    /** @ODM\EmbedMany(targetDocument=OrphanRemovalCascadeProfile::class) */
     public $profileMany = [];
 }
 
@@ -179,10 +179,10 @@ class OrphanRemovalCascadeProfile
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument="OrphanRemovalCascadeAddress", orphanRemoval=true, cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=OrphanRemovalCascadeAddress::class, orphanRemoval=true, cascade={"all"}) */
     public $address;
 
-    /** @ODM\ReferenceMany(targetDocument="OrphanRemovalCascadeAddress", orphanRemoval=true, cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=OrphanRemovalCascadeAddress::class, orphanRemoval=true, cascade={"all"}) */
     public $addressMany;
 }
 

@@ -17,56 +17,56 @@ class ReferenceUser
     public $id;
 
     /**
-     * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="id")
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="id")
      *
      * @var User
      */
     public $user;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Documents\User", storeAs="id")
+     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="id")
      *
      * @var User[]
      */
     public $users = [];
 
     /**
-     * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRef")
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRef")
      *
      * @var User
      */
     public $parentUser;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Documents\User", storeAs="dbRef")
+     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="dbRef")
      *
      * @var User[]
      */
     public $parentUsers = [];
 
     /**
-     * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="dbRefWithDb")
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRefWithDb")
      *
      * @var User
      */
     public $otherUser;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Documents\User", storeAs="dbRefWithDb")
+     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="dbRefWithDb")
      *
      * @var User[]
      */
     public $otherUsers = [];
 
     /**
-     * @ODM\ReferenceOne(targetDocument="Documents\User", storeAs="ref")
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref")
      *
      * @var User
      */
     public $referencedUser;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Documents\User", storeAs="ref")
+     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="ref")
      *
      * @var User[]
      */

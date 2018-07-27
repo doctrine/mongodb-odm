@@ -148,7 +148,7 @@ Now you can embed the ``Keyword`` document many times in the ``Product``:
     {
         // ...
 
-        /** @EmbedMany(targetDocument="Keyword") */
+        /** @EmbedMany(targetDocument=Keyword::class) */
         private $keywords;
 
         // ...

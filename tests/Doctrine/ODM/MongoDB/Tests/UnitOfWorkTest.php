@@ -707,7 +707,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
     /** @ODM\Field(type="string") */
     private $data;
 
-    /** @ODM\ReferenceMany(targetDocument="NotifyChangedRelatedItem") */
+    /** @ODM\ReferenceMany(targetDocument=NotifyChangedRelatedItem::class) */
     private $items;
 
     private $transient; // not persisted
@@ -776,7 +776,7 @@ class NotifyChangedRelatedItem
     /** @ODM\Id(type="int_id", strategy="none") */
     private $id;
 
-    /** @ODM\ReferenceOne(targetDocument="NotifyChangedDocument") */
+    /** @ODM\ReferenceOne(targetDocument=NotifyChangedDocument::class) */
     private $owner;
 
     public function getId()
@@ -862,6 +862,6 @@ class PersistRemovedEmbeddedDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="EmbeddedDocumentWithId") */
+    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class) */
     public $embedded;
 }

@@ -44,7 +44,7 @@ class UpsertTestUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument="UpsertTestUserEmbedded") */
+    /** @ODM\EmbedMany(targetDocument=UpsertTestUserEmbedded::class) */
     public $embedMany;
 }
 

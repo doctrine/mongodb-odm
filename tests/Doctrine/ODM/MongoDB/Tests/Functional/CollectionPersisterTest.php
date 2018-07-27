@@ -266,10 +266,10 @@ class CollectionPersisterUser
     /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\EmbedMany(targetDocument="CollectionPersisterCategory") */
+    /** @ODM\EmbedMany(targetDocument=CollectionPersisterCategory::class) */
     public $categories = [];
 
-    /** @ODM\ReferenceMany(targetDocument="CollectionPersisterPhonenumber", cascade={"persist"}) */
+    /** @ODM\ReferenceMany(targetDocument=CollectionPersisterPhonenumber::class, cascade={"persist"}) */
     public $phonenumbers = [];
 }
 
@@ -279,7 +279,7 @@ class CollectionPersisterCategory
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="CollectionPersisterCategory") */
+    /** @ODM\EmbedMany(targetDocument=CollectionPersisterCategory::class) */
     public $children = [];
 
     public function __construct($name)
@@ -312,7 +312,7 @@ class CollectionPersisterPost
   /** @ODM\Field(type="string") */
     public $post;
 
-  /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */
+  /** @ODM\EmbedMany(targetDocument=CollectionPersisterComment::class, strategy="set") */
     public $comments = [];
 
     public function __construct($post)
@@ -334,7 +334,7 @@ class CollectionPersisterComment
   /** @ODM\Field(type="string") */
     public $by;
 
-  /** @ODM\EmbedMany(targetDocument="CollectionPersisterComment", strategy="set") */
+  /** @ODM\EmbedMany(targetDocument=CollectionPersisterComment::class, strategy="set") */
     public $comments = [];
 
     public function __construct($comment, $by)

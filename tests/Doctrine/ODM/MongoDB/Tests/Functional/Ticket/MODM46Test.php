@@ -32,7 +32,7 @@ class MODM46A
     public $id;
 
     /**
-     * @ODM\EmbedOne(targetDocument="MODM46AB")
+     * @ODM\EmbedOne(targetDocument=MODM46AB::class)
      * @ODM\AlsoLoad("c")
      */
     public $b;

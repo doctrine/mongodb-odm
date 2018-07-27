@@ -13,6 +13,6 @@ class EmbeddedTestLevel0
     public $id;
     /** @ODM\Field(type="string") */
     public $name;
-    /** @ODM\EmbedMany(targetDocument="EmbeddedTestLevel1") */
+    /** @ODM\EmbedMany(targetDocument=EmbeddedTestLevel1::class) */
     public $level1 = [];
 }

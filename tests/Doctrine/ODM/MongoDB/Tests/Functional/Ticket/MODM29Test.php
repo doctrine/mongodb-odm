@@ -55,7 +55,7 @@ class MODM29Doc
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\EmbedMany(targetDocument="MODM29Embedded", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument=MODM29Embedded::class, strategy="set") */
     protected $collection;
 
     public function __construct($c)

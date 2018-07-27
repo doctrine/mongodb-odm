@@ -528,7 +528,7 @@ class Person
     /** @ODM\ReferenceMany */
     public $friendsPartial = [];
 
-    /** @ODM\EmbedOne(targetDocument="Pet") */
+    /** @ODM\EmbedOne(targetDocument=Pet::class) */
     public $pet;
 
     public function __construct($firstName)

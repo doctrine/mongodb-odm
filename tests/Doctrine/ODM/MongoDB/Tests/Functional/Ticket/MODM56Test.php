@@ -45,7 +45,7 @@ class MODM56Parent
     /** @ODM\Field(type="date") */
     public $updatedAt;
 
-    /** @ODM\EmbedMany(targetDocument="MODM56Child") */
+    /** @ODM\EmbedMany(targetDocument=MODM56Child::class) */
     public $children = [];
 
     public function __construct($name)

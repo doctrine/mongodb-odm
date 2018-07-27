@@ -93,8 +93,8 @@ class MODM90TestDocument
      * (
      *   discriminatorField="type",
      *   discriminatorMap={
-     *     "test"="MODM90TestEmbeddedDocument",
-     *     "test2"="MODM90Test2EmbeddedDocument"
+     *     "test"=MODM90TestEmbeddedDocument::class,
+     *     "test2"=MODM90Test2EmbeddedDocument::class
      *   }
      *  )
      */

@@ -29,7 +29,7 @@ class UserUpsert
     /** @ODM\Field(type="int", strategy="increment") */
     public $count;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}) */
     public $groups;
 
     /** @ODM\Field(type="string", nullable=true) */

@@ -24,16 +24,16 @@ class CmsUser
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\ReferenceMany(targetDocument="CmsPhonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}) */
+    /** @ODM\ReferenceMany(targetDocument=CmsPhonenumber::class, mappedBy="user", cascade={"persist", "remove", "merge"}) */
     public $phonenumbers;
 
-    /** @ODM\ReferenceMany(targetDocument="CmsArticle") */
+    /** @ODM\ReferenceMany(targetDocument=CmsArticle::class) */
     public $articles;
 
-    /** @ODM\ReferenceOne(targetDocument="CmsAddress", cascade={"persist"}) */
+    /** @ODM\ReferenceOne(targetDocument=CmsAddress::class, cascade={"persist"}) */
     public $address;
 
-    /** @ODM\ReferenceMany(targetDocument="CmsGroup", cascade={"persist", "merge"}) */
+    /** @ODM\ReferenceMany(targetDocument=CmsGroup::class, cascade={"persist", "merge"}) */
     public $groups;
 
     public function __construct()

@@ -175,24 +175,24 @@ class DocumentWithCustomCollection
 
     /**
      * @ODM\EmbedMany(
-     *   collectionClass="MyEmbedsCollection",
-     *   targetDocument="EmbeddedDocumentInCustomCollection"
+     *   collectionClass=MyEmbedsCollection::class,
+     *   targetDocument=EmbeddedDocumentInCustomCollection::class
      * )
      */
     public $coll;
 
     /**
      * @ODM\EmbedMany(
-     *   targetDocument="EmbeddedDocumentInCustomCollection"
+     *   targetDocument=EmbeddedDocumentInCustomCollection::class
      * )
      */
     public $boring;
 
     /**
      * @ODM\ReferenceMany(
-     *   collectionClass="MyDocumentsCollection",
+     *   collectionClass=MyDocumentsCollection::class,
      *   orphanRemoval=true,
-     *   targetDocument="DocumentWithCustomCollection"
+     *   targetDocument=DocumentWithCustomCollection::class
      * )
      */
     public $refMany;
@@ -201,7 +201,7 @@ class DocumentWithCustomCollection
      * @ODM\ReferenceMany(
      *   collectionClass="\Doctrine\ODM\MongoDB\Tests\Functional\MyDocumentsCollection",
      *   mappedBy="refMany",
-     *   targetDocument="DocumentWithCustomCollection"
+     *   targetDocument=DocumentWithCustomCollection::class
      * )
      */
     public $inverseRefMany;

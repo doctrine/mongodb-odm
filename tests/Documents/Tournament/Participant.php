@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /**
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODm\DiscriminatorMap({"solo"="ParticipantSolo", "team"="ParticipantTeam"})
+ * @ODm\DiscriminatorMap({"solo"=ParticipantSolo::class, "team"=ParticipantTeam::class})
  */
 class Participant
 {
@@ -19,7 +19,7 @@ class Participant
     /** @ODM\Field */
     private $name;
 
-    /** @ODM\ReferenceOne(targetDocument="Tournament", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=Tournament::class, cascade={"all"}) */
     protected $tournament;
 
     public function __construct($name)

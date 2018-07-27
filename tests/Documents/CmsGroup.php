@@ -15,7 +15,7 @@ class CmsGroup
     public $id;
     /** @ODM\Field(type="string") */
     public $name;
-    /** @ODM\ReferenceMany(targetDocument="CmsUser") */
+    /** @ODM\ReferenceMany(targetDocument=CmsUser::class) */
     public $users;
 
     public function setName($name)

@@ -437,22 +437,22 @@ class AbstractMappingDriverUser
      */
     public $mysqlProfileId;
 
-    /** @ODM\ReferenceOne(targetDocument="Address", cascade={"remove"}) */
+    /** @ODM\ReferenceOne(targetDocument=Address::class, cascade={"remove"}) */
     public $address;
 
-    /** @ODM\ReferenceMany(targetDocument="Phonenumber", collectionClass="PhonenumberCollection", cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home") */
+    /** @ODM\ReferenceMany(targetDocument=Phonenumber::class, collectionClass=PhonenumberCollection::class, cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
     public $phonenumbers;
 
-    /** @ODM\ReferenceMany(targetDocument="Group", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}) */
     public $groups;
 
-    /** @ODM\ReferenceMany(targetDocument="Phonenumber", collectionClass="PhonenumberCollection", name="more_phone_numbers") */
+    /** @ODM\ReferenceMany(targetDocument=Phonenumber::class, collectionClass=PhonenumberCollection::class, name="more_phone_numbers") */
     public $morePhoneNumbers;
 
-    /** @ODM\EmbedMany(targetDocument="Phonenumber", name="embedded_phone_number") */
+    /** @ODM\EmbedMany(targetDocument=Phonenumber::class, name="embedded_phone_number") */
     public $embeddedPhonenumber;
 
-    /** @ODM\EmbedMany(targetDocument="Phonenumber", discriminatorField="discr", discriminatorMap={"home"="HomePhonenumber", "work"="WorkPhonenumber"}, defaultDiscriminatorValue="home") */
+    /** @ODM\EmbedMany(targetDocument=Phonenumber::class, discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
     public $otherPhonenumbers;
 
     /** @ODM\Field(type="date") */
@@ -531,8 +531,8 @@ class AbstractMappingDriverUser
             'cascade' => [1 => 'persist'],
             'discriminatorField' => 'discr',
             'discriminatorMap' => [
-                'home' => 'HomePhonenumber',
-                'work' => 'WorkPhonenumber',
+                'home' => HomePhonenumber::class,
+                'work' => WorkPhonenumber::class,
             ],
             'defaultDiscriminatorValue' => 'home',
         ]);
@@ -562,8 +562,8 @@ class AbstractMappingDriverUser
            'targetDocument' => Phonenumber::class,
            'discriminatorField' => 'discr',
            'discriminatorMap' => [
-                'home' => 'HomePhonenumber',
-                'work' => 'WorkPhonenumber',
+                'home' => HomePhonenumber::class,
+                'work' => WorkPhonenumber::class,
            ],
             'defaultDiscriminatorValue' => 'home',
         ]);
@@ -576,6 +576,26 @@ class AbstractMappingDriverUser
 }
 
 class PhonenumberCollection extends ArrayCollection
+{
+}
+
+class HomePhonenumber
+{
+}
+
+class WorkPhonenumber
+{
+}
+
+class Address
+{
+}
+
+class Group
+{
+}
+
+class Phonenumber
 {
 }
 

@@ -16,10 +16,10 @@ class BrowseNode
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument="BrowseNode", inversedBy="children", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=BrowseNode::class, inversedBy="children", cascade={"all"}) */
     public $parent;
 
-    /** @ODM\ReferenceMany(targetDocument="BrowseNode", mappedBy="parent", cascade={"all"}) */
+    /** @ODM\ReferenceMany(targetDocument=BrowseNode::class, mappedBy="parent", cascade={"all"}) */
     public $children;
 
     public function __construct($name = null)

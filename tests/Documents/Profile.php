@@ -18,7 +18,7 @@ class Profile
     /** @ODM\Field */
     private $lastName;
 
-    /** @ODM\ReferenceOne(targetDocument="File", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=File::class, cascade={"all"}) */
     private $image;
 
     public function getProfileId()

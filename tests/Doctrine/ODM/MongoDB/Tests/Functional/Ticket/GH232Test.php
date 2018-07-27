@@ -46,10 +46,10 @@ class Product
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument="Price") */
+    /** @ODM\EmbedMany(targetDocument=Price::class) */
     public $prices = [];
 
-    /** @ODM\EmbedMany(targetDocument="SubProduct") */
+    /** @ODM\EmbedMany(targetDocument=SubProduct::class) */
     public $subproducts = [];
 
     public function __construct($name)
@@ -62,7 +62,7 @@ class Product
 /** @ODM\EmbeddedDocument */
 class SubProduct
 {
-    /** @ODM\EmbedMany(targetDocument="Price") */
+    /** @ODM\EmbedMany(targetDocument=Price::class) */
     public $prices = [];
 
     public function __construct()

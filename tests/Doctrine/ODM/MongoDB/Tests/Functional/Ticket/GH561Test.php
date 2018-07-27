@@ -42,7 +42,7 @@ class GH561Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument="GH561EmbeddedDocument", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument=GH561EmbeddedDocument::class, strategy="set") */
     public $embeddedDocuments;
 
     public function __construct()
@@ -54,7 +54,7 @@ class GH561Document
 /** @ODM\EmbeddedDocument */
 class GH561EmbeddedDocument
 {
-    /** @ODM\EmbedMany(targetDocument="GH561AnotherEmbeddedDocument", strategy="set") */
+    /** @ODM\EmbedMany(targetDocument=GH561AnotherEmbeddedDocument::class, strategy="set") */
     public $embeddedDocuments;
 
     public function __construct()

@@ -15,6 +15,6 @@ class Cart
     /** @ODM\Field(type="int") */
     public $numItems = 0;
 
-    /** @ODM\ReferenceOne(targetDocument="Customer", inversedBy="cart") */
+    /** @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart") */
     public $customer;
 }

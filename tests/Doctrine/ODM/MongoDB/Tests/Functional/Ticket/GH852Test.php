@@ -116,10 +116,10 @@ class GH852Document
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument="GH852Document", cascade="all") */
+    /** @ODM\ReferenceOne(targetDocument=GH852Document::class, cascade="all") */
     public $refOne;
 
-    /** @ODM\ReferenceMany(targetDocument="GH852Document", cascade="all") */
+    /** @ODM\ReferenceMany(targetDocument=GH852Document::class, cascade="all") */
     public $refMany;
 
     public function __construct()

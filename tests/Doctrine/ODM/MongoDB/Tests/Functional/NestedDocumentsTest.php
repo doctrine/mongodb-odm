@@ -147,7 +147,7 @@ class Hierarchy
     /** @ODM\Field(type="string") */
     private $name;
 
-    /** @ODM\ReferenceMany(targetDocument="Hierarchy") */
+    /** @ODM\ReferenceMany(targetDocument=Hierarchy::class) */
     private $children = [];
 
     public function __construct($name)
@@ -204,7 +204,7 @@ class BaseCategory
     /** @ODM\Field(type="string") */
     protected $name;
 
-    /** @ODM\EmbedMany(targetDocument="ChildCategory") */
+    /** @ODM\EmbedMany(targetDocument=ChildCategory::class) */
     protected $children;
 
     public function __construct($name)
@@ -277,7 +277,7 @@ class Order
     /** @ODM\Field(type="string") */
     public $title;
 
-    /** @ODM\EmbedOne(targetDocument="ProductBackup") */
+    /** @ODM\EmbedOne(targetDocument=ProductBackup::class) */
     public $product;
 }
 

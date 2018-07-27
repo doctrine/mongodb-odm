@@ -15,7 +15,7 @@ class ForumUser
     /** @ODM\Field(type="string") */
     public $username;
 
-    /** @ODM\ReferenceOne(targetDocument="ForumAvatar", cascade={"persist"}) */
+    /** @ODM\ReferenceOne(targetDocument=ForumAvatar::class, cascade={"persist"}) */
     public $avatar;
 
     public function getId()

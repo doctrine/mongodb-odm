@@ -302,16 +302,16 @@ class OrphanRemovalUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="OrphanRemovalProfile", orphanRemoval=true) */
+    /** @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true) */
     public $profile;
 
-    /** @ODM\ReferenceOne(targetDocument="OrphanRemovalProfile", orphanRemoval=false) */
+    /** @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false) */
     public $profileNoOrphanRemoval;
 
-    /** @ODM\ReferenceMany(targetDocument="OrphanRemovalProfile", orphanRemoval=true) */
+    /** @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true) */
     public $profileMany = [];
 
-    /** @ODM\ReferenceMany(targetDocument="OrphanRemovalProfile", orphanRemoval=false) */
+    /** @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false) */
     public $profileManyNoOrphanRemoval = [];
 }
 

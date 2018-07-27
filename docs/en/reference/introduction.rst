@@ -52,7 +52,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\Field(type="date") */
         private $left;
 
-        /** @ODM\EmbedOne(targetDocument="Address") */
+        /** @ODM\EmbedOne(targetDocument=Address::class) */
         private $address;
 
         public function getId(): ?string { return $this->id; }
@@ -82,7 +82,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     /** @ODM\Document */
     class Employee extends BaseEmployee
     {
-        /** @ODM\ReferenceOne(targetDocument="Documents\Manager") */
+        /** @ODM\ReferenceOne(targetDocument=Manager::class) */
         private $manager;
 
         public function getManager(): ?Manager { return $this->manager; }
@@ -92,7 +92,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     /** @ODM\Document */
     class Manager extends BaseEmployee
     {
-        /** @ODM\ReferenceMany(targetDocument="Documents\Project") */
+        /** @ODM\ReferenceMany(targetDocument=Project::class) */
         private $projects;
 
         public __construct() { $this->projects = new ArrayCollection(); }

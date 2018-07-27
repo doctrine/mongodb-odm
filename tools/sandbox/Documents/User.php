@@ -20,13 +20,13 @@ class User
     /** @ODM\Field(type="string") */
     protected $password;
 
-    /** @ODM\EmbedOne(targetDocument="Address") */
+    /** @ODM\EmbedOne(targetDocument=Address::class) */
     protected $address;
 
-    /** @ODM\ReferenceOne(targetDocument="Account") */
+    /** @ODM\ReferenceOne(targetDocument=Account::class) */
     protected $account;
 
-    /** @ODM\EmbedMany(targetDocument="Phonenumber") */
+    /** @ODM\EmbedMany(targetDocument=Phonenumber::class) */
     protected $phonenumbers;
 
     public function __construct()

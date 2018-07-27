@@ -160,6 +160,6 @@ class ShardedByReferenceOne
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\User") */
+    /** @ODM\ReferenceOne(targetDocument=User::class) */
     public $reference;
 }

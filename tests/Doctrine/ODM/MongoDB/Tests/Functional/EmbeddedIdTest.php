@@ -61,10 +61,10 @@ class EmbeddedIdTestUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="DefaultIdEmbeddedDocument") */
+    /** @ODM\EmbedOne(targetDocument=DefaultIdEmbeddedDocument::class) */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument="DefaultIdEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument=DefaultIdEmbeddedDocument::class) */
     public $embedMany = [];
 }
 
@@ -74,10 +74,10 @@ class EmbeddedStrategyNoneIdTestUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="DefaultIdStrategyNoneEmbeddedDocument") */
+    /** @ODM\EmbedOne(targetDocument=DefaultIdStrategyNoneEmbeddedDocument::class) */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument="DefaultIdStrategyNoneEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument=DefaultIdStrategyNoneEmbeddedDocument::class) */
     public $embedMany = [];
 }
 

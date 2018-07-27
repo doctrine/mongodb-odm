@@ -170,7 +170,7 @@ to a regular document:
 /** @QueryResultDocument */
 class UserPurchases
 {
-    /** @ReferenceOne(targetDocument="User", name="_id") */
+    /** @ReferenceOne(targetDocument=User::class, name="_id") */
     private $user;
 
     /** @Field(type="int") */

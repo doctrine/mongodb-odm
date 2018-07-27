@@ -70,7 +70,7 @@ class MODM81TestDocument
     /** @ODM\Field(type="string") */
     protected $name;
 
-    /** @ODM\EmbedMany(targetDocument="MODM81TestEmbeddedDocument") */
+    /** @ODM\EmbedMany(targetDocument=MODM81TestEmbeddedDocument::class) */
     protected $embeddedDocuments;
 
     /**
@@ -120,10 +120,10 @@ class MODM81TestEmbeddedDocument
     /** @ODM\Field(type="string") */
     public $message;
 
-    /** @ODM\ReferenceOne(targetDocument="MODM81TestDocument") */
+    /** @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class) */
     public $refTodocument1;
 
-    /** @ODM\ReferenceOne(targetDocument="MODM81TestDocument") */
+    /** @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class) */
     public $refTodocument2;
 
     public function __construct($document1, $document2, $message)

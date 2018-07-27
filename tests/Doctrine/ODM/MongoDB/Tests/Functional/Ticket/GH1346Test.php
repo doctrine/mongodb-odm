@@ -49,7 +49,7 @@ class GH1346Document
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument="GH1346ReferencedDocument") */
+    /** @ODM\ReferenceMany(targetDocument=GH1346ReferencedDocument::class) */
     protected $references;
 
     public function __construct()

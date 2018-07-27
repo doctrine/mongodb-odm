@@ -72,7 +72,7 @@ class GH942Document
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
  * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"p"="GH942DocumentParent"})
+ * @ODM\DiscriminatorMap({"p"=GH942DocumentParent::class})
  */
 class GH942DocumentParent
 {

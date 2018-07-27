@@ -18,7 +18,7 @@ class CustomUser
     /** @ODM\Field(type="string") */
     protected $password;
 
-    /** @ODM\ReferenceOne(targetDocument="Account", cascade={"all"}) */
+    /** @ODM\ReferenceOne(targetDocument=Account::class, cascade={"all"}) */
     protected $account;
 
     public function getId()
