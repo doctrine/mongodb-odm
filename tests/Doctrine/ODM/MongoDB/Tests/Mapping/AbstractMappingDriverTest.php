@@ -578,3 +578,8 @@ class AbstractMappingDriverUser
 class PhonenumberCollection extends ArrayCollection
 {
 }
+
+class InvalidMappingDocument
+{
+    public $id;
+}
