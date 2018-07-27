@@ -1234,7 +1234,7 @@ class ClassMetadata implements BaseClassMetadata
 
             default:
                 $defaultStrategy = self::STORAGE_STRATEGY_SET;
-                $allowedStrategies = [self::STORAGE_STRATEGY_SET];
+                $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
         }
 
         if (! isset($mapping['strategy'])) {
