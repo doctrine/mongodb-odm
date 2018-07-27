@@ -24,7 +24,7 @@ class MODM76Test extends BaseTest
         $this->dm->persist($c2);
         $this->dm->flush();
 
-        $this->assertTrue($a->getId() !== null);
+        $this->assertNotNull($a->getId());
     }
 }
 
