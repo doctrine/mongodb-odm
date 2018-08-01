@@ -90,6 +90,22 @@ class DefaultGridFSRepositoryTest extends BaseTest
         fclose($stream);
     }
 
+    public function testOpenDownloadStreamAllowsReadingFile(): void
+    {
+        /** @var File $file */
+        $file = $this->getRepository()->uploadFromFile(__FILE__);
+        self::assertInstanceOf(File::class, $file);
+
+        $expectedSize = filesize(__FILE__);
+
+        $stream = $this->getRepository()->openDownloadStream($file->getId());
+
+        fseek($stream, 0);
+        $stat = fstat($stream);
+        self::assertSame($expectedSize, $stat['size']);
+        fclose($stream);
+    }
+
     public function testUploadFromStreamPassesChunkSize(): void
     {
         $fileResource = fopen(__FILE__, 'r');

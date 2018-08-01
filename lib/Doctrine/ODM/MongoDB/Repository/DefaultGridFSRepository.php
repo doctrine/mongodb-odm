@@ -16,6 +16,18 @@ use function pathinfo;
 class DefaultGridFSRepository extends DocumentRepository implements GridFSRepository
 {
     /**
+     * @see Bucket::openDownloadStream()
+     */
+    public function openDownloadStream($id)
+    {
+        try {
+            return $this->getDocumentBucket()->openDownloadStream($this->class->getDatabaseIdentifierValue($id));
+        } catch (FileNotFoundException $e) {
+            throw DocumentNotFoundException::documentNotFound($this->getClassName(), $id);
+        }
+    }
+
+    /**
      * @see Bucket::downloadToStream
      */
     public function downloadToStream($id, $destination): void

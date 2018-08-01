@@ -216,3 +216,21 @@ The ``downloadToStream`` method takes the identifier of a file as first argument
 and a writable stream as the second arguments. If you need to manipulate the
 file contents before writing it to disk or sending it to the client, consider
 using a memory stream using the ``php://memory`` stream wrapper.
+
+Alternatively, you can also use the ``openDownloadStream`` method which returns
+a stream from where you can read file contents:
+
+.. code-block:: php
+
+    <?php
+
+    $repository = $documentManager->getRepository(Documents\Image::class);
+    $file = $repository->uploadFromFile('image.jpg', '/tmp/path/to/image', new Documents\ImageMetadata('image/jpeg'));
+
+    $stream = $repository->openDownloadStream($file->getId());
+    try {
+        $contents = stream_get_contents($stream);
+    finally {
+        fclose($stream);
+    }
+

@@ -9,6 +9,14 @@ use Doctrine\Common\Persistence\ObjectRepository;
 interface GridFSRepository extends ObjectRepository
 {
     /**
+     * Opens a readable stream for reading a GridFS file.
+     *
+     * @param mixed    $id          File ID
+     * @return resource
+     */
+    public function openDownloadStream($id);
+
+    /**
      * Writes the contents of a GridFS file to a writable stream.
      *
      * @param mixed    $id          File ID
