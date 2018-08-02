@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Repos;
 
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
+use Doctrine\ODM\MongoDB\Repository\UploadOptions;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\File;
 use Documents\FileMetadata;
@@ -40,7 +41,10 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testOpenUploadStreamUsesChunkSizeFromOptions(): void
     {
-        $uploadStream = $this->getRepository()->openUploadStream('somefile.txt', null, 1234);
+        $uploadOptions = new UploadOptions();
+        $uploadOptions->chunkSizeBytes = 1234;
+
+        $uploadStream = $this->getRepository()->openUploadStream('somefile.txt', $uploadOptions);
         self::assertInternalType('resource', $uploadStream);
 
         fwrite($uploadStream, 'contents');
@@ -59,11 +63,14 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testUploadFromStreamStoresFile(): void
     {
+        $uploadOptions = new UploadOptions();
+        $uploadOptions->metadata = new FileMetadata();
+
         $fileResource = fopen(__FILE__, 'r');
 
         try {
             /** @var File $file */
-            $file = $this->getRepository()->uploadFromStream('somefile.txt', $fileResource, new FileMetadata());
+            $file = $this->getRepository()->uploadFromStream('somefile.txt', $fileResource, $uploadOptions);
         } finally {
             fclose($fileResource);
         }
@@ -108,11 +115,15 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testUploadFromStreamPassesChunkSize(): void
     {
+        $uploadOptions = new UploadOptions();
+        $uploadOptions->metadata = new FileMetadata();
+        $uploadOptions->chunkSizeBytes = 1234;
+
         $fileResource = fopen(__FILE__, 'r');
 
         try {
             /** @var File $file */
-            $file = $this->getRepository()->uploadFromStream('somefile.txt', $fileResource, new FileMetadata(), 1234);
+            $file = $this->getRepository()->uploadFromStream('somefile.txt', $fileResource, $uploadOptions);
         } finally {
             fclose($fileResource);
         }
@@ -156,15 +167,21 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testUploadFromFileUsesProvidedFilename(): void
     {
+        $uploadOptions = new UploadOptions();
+        $uploadOptions->chunkSizeBytes = 1234;
+
         /** @var File $file */
-        $file = $this->getRepository()->uploadFromFile(__FILE__, 'test.php', null, 1234);
+        $file = $this->getRepository()->uploadFromFile(__FILE__, 'test.php', $uploadOptions);
         self::assertSame('test.php', $file->getFilename());
         self::assertSame(1234, $file->getChunkSize());
     }
 
     public function testReadingFileAllowsUpdatingMetadata(): void
     {
-        $file = $this->uploadFile(__FILE__, new FileMetadata());
+        $uploadOptions = new UploadOptions();
+        $uploadOptions->metadata = new FileMetadata();
+
+        $file = $this->uploadFile(__FILE__, $uploadOptions);
         $file->getMetadata()->setOwner(new User());
 
         $this->dm->persist($file);
@@ -196,13 +213,13 @@ class DefaultGridFSRepositoryTest extends BaseTest
         return $this->dm->getRepository(File::class);
     }
 
-    private function uploadFile($filename, $metadata = null): File
+    private function uploadFile($filename, ?UploadOptions $uploadOptions = null): File
     {
         $fileResource = fopen($filename, 'r');
 
         try {
             /** @var File $file */
-            $file = $this->getRepository()->uploadFromStream('somefile.txt', $fileResource, $metadata);
+            $file = $this->getRepository()->uploadFromStream('somefile.txt', $fileResource, $uploadOptions);
         } finally {
             fclose($fileResource);
         }

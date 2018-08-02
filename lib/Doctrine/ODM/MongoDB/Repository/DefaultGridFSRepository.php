@@ -11,6 +11,7 @@ use MongoDB\GridFS\Exception\FileNotFoundException;
 use const PATHINFO_BASENAME;
 use function fclose;
 use function fopen;
+use function is_object;
 use function pathinfo;
 
 class DefaultGridFSRepository extends DocumentRepository implements GridFSRepository
@@ -42,9 +43,9 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     /**
      * @see Bucket::openUploadStream
      */
-    public function openUploadStream(string $filename, $metadata = null, ?int $chunkSizeBytes = null)
+    public function openUploadStream(string $filename, ?UploadOptions $uploadOptions = null)
     {
-        $options = $this->prepareOptions($metadata, $chunkSizeBytes);
+        $options = $this->prepareOptions($uploadOptions);
 
         return $this->getDocumentBucket()->openUploadStream($filename, $options);
     }
@@ -52,9 +53,9 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     /**
      * @see Bucket::uploadFromStream
      */
-    public function uploadFromStream(string $filename, $source, $metadata = null, ?int $chunkSizeBytes = null)
+    public function uploadFromStream(string $filename, $source, ?UploadOptions $uploadOptions = null)
     {
-        $options = $this->prepareOptions($metadata, $chunkSizeBytes);
+        $options = $this->prepareOptions($uploadOptions);
 
         $databaseIdentifier = $this->getDocumentBucket()->uploadFromStream($filename, $source, $options);
         $documentIdentifier = $this->class->getPHPIdentifierValue($databaseIdentifier);
@@ -62,7 +63,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         return $this->dm->getReference($this->getClassName(), $documentIdentifier);
     }
 
-    public function uploadFromFile(string $source, ?string $filename = null, $metadata = null, ?int $chunkSizeBytes = null)
+    public function uploadFromFile(string $source, ?string $filename = null, ?UploadOptions $uploadOptions = null)
     {
         $resource = fopen($source, 'r');
         if ($resource === false) {
@@ -74,7 +75,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         }
 
         try {
-            return $this->uploadFromStream($filename, $resource, $metadata, $chunkSizeBytes);
+            return $this->uploadFromStream($filename, $resource, $uploadOptions);
         } finally {
             fclose($resource);
         }
@@ -85,17 +86,18 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         return $this->dm->getDocumentBucket($this->documentName);
     }
 
-    /**
-     * @param object|null $metadata
-     */
-    private function prepareOptions($metadata = null, ?int $chunkSizeBytes = null): array
+    private function prepareOptions(?UploadOptions $uploadOptions = null): array
     {
+        if ($uploadOptions === null) {
+            $uploadOptions = new UploadOptions();
+        }
+
         $options = [
-            'chunkSizeBytes' => $chunkSizeBytes ?: $this->class->getChunkSizeBytes(),
+            'chunkSizeBytes' => $uploadOptions->chunkSizeBytes ?: $this->class->getChunkSizeBytes(),
         ];
 
-        if ($metadata) {
-            $options += ['metadata' => (object) $this->uow->getPersistenceBuilder()->prepareInsertData($metadata)];
+        if (is_object($uploadOptions->metadata)) {
+            $options += ['metadata' => (object) $this->uow->getPersistenceBuilder()->prepareInsertData($uploadOptions->metadata)];
         }
 
         return $options;

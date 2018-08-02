@@ -169,16 +169,22 @@ When using the default GridFS repository implementation, the ``uploadFromFile``
 and ``uploadFromStream`` methods return a proxy object of the file you just
 uploaded.
 
-If you want to add metadata to the uploaded file, you can pass it as the last
-argument to the ``uploadFromFile``, ``uploadFromStream`` or ``openUploadStream``
-method call:
+If you want to pass options, such as a metadata object to the uploaded file, you
+can pass an ``UploadOptions`` object as the last argument to the
+``uploadFromFile``, ``uploadFromStream``, or ``openUploadStream`` method call:
 
 .. code-block:: php
 
     <?php
 
+    use Doctrine\ODM\MongoDB\Repository\UploadOptions;
+
+    $uploadOptions = new UploadOptions();
+    $uploadOptions->metadata = new Documents\ImageMetadata('image/jpeg');
+    $uploadOptions->chunkSizeBytes = 1024 * 1024;
+
     $repository = $documentManager->getRepository(Documents\Image::class);
-    $file = $repository->uploadFromFile('image.jpg', '/tmp/path/to/image', new Documents\ImageMetadata('image/jpeg'));
+    $file = $repository->uploadFromFile('image.jpg', '/tmp/path/to/image', $uploadOptions);
 
 Reading files from GridFS buckets
 ---------------------------------
@@ -224,8 +230,13 @@ a stream from where you can read file contents:
 
     <?php
 
+    use Doctrine\ODM\MongoDB\Repository\UploadOptions;
+
+    $uploadOptions = new UploadOptions();
+    $uploadOptions->metadata = new Documents\ImageMetadata('image/jpeg');
+
     $repository = $documentManager->getRepository(Documents\Image::class);
-    $file = $repository->uploadFromFile('image.jpg', '/tmp/path/to/image', new Documents\ImageMetadata('image/jpeg'));
+    $file = $repository->uploadFromFile('image.jpg', '/tmp/path/to/image', $uploadOptions);
 
     $stream = $repository->openDownloadStream($file->getId());
     try {
