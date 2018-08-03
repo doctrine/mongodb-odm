@@ -99,7 +99,7 @@ Mapping documents as GridFS files
 If you would rather use XML to map metadata, the corresponding mapping would
 look like this:
 
-..code-block:: xml
+.. code-block:: xml
 
     <?xml version="1.0" encoding="UTF-8"?>
 
@@ -125,7 +125,7 @@ field. You cannot override any other options for GridFS fields.
 
 The ``ImageMetadata`` class must be an embedded document:
 
-..code-block:: php
+.. code-block:: php
 
     <?php
 
