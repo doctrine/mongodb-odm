@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Documents\Account;
@@ -785,6 +785,21 @@ class ClassMetadataTest extends BaseTest
         $cm = new ClassMetadata(get_class($object));
         $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
         $cm->setShardKey(['referenceMany' => 1]);
+    }
+
+    public function testArbitraryFieldInGridFSFileThrowsException(): void
+    {
+        $object = new class {
+            public $contentType;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
+        $cm->isFile = true;
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageRegExp("#^Field 'contentType' in class '.+' is not a valid field for GridFS documents. You should move it to an embedded metadata document.$#");
+
+        $cm->mapField(['type' => 'string', 'fieldName' => 'contentType']);
     }
 }
 

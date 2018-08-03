@@ -48,12 +48,19 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      * @param DocumentManager $documentManager The DocumentManager instance.
      * @param string          $documentName    The name of the document.
      *
-     * @return ObjectRepository
+     * @return ObjectRepository|GridFSRepository
      */
     protected function createRepository(DocumentManager $documentManager, $documentName)
     {
-        $metadata            = $documentManager->getClassMetadata($documentName);
-        $repositoryClassName = $metadata->customRepositoryClassName ?: $documentManager->getConfiguration()->getDefaultRepositoryClassName();
+        $metadata = $documentManager->getClassMetadata($documentName);
+
+        if ($metadata->customRepositoryClassName) {
+            $repositoryClassName = $metadata->customRepositoryClassName;
+        } elseif ($metadata->isFile) {
+            $repositoryClassName = $documentManager->getConfiguration()->getDefaultGridFSRepositoryClassName();
+        } else {
+            $repositoryClassName = $documentManager->getConfiguration()->getDefaultDocumentRepositoryClassName();
+        }
 
         return $this->instantiateRepository($repositoryClassName, $documentManager, $metadata);
     }

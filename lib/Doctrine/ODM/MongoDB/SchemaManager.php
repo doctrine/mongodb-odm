@@ -16,6 +16,10 @@ use function strpos;
 
 class SchemaManager
 {
+    private const GRIDFS_FILE_COLLECTION_INDEX = ['files_id' => 1, 'n' => 1];
+
+    private const GRIDFS_CHUNKS_COLLECTION_INDEX = ['filename' => 1, 'uploadDate' => 1];
+
     /** @var DocumentManager */
     protected $dm;
 
@@ -40,6 +44,7 @@ class SchemaManager
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
+
             $this->ensureDocumentIndexes($class->name, $timeout);
         }
     }
@@ -58,6 +63,7 @@ class SchemaManager
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
+
             $this->updateDocumentIndexes($class->name, $timeout);
         }
     }
@@ -151,6 +157,7 @@ class SchemaManager
                 } else {
                     continue;
                 }
+
                 foreach ($possibleEmbeds as $embed) {
                     if (isset($embeddedDocumentIndexes[$embed])) {
                         $embeddedIndexes = $embeddedDocumentIndexes[$embed];
@@ -158,11 +165,13 @@ class SchemaManager
                         $embeddedIndexes = $this->doGetDocumentIndexes($embed, $visited);
                         $embeddedDocumentIndexes[$embed] = $embeddedIndexes;
                     }
+
                     foreach ($embeddedIndexes as $embeddedIndex) {
                         foreach ($embeddedIndex['keys'] as $key => $value) {
                             $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
                             unset($embeddedIndex['keys'][$key]);
                         }
+
                         $indexes[] = $embeddedIndex;
                     }
                 }
@@ -173,12 +182,15 @@ class SchemaManager
                         if ($key === $fieldMapping['name']) {
                             $key = ClassMetadata::getReferenceFieldName($fieldMapping['storeAs'], $key);
                         }
+
                         $newKeys[$key] = $v;
                     }
+
                     $indexes[$idx]['keys'] = $newKeys;
                 }
             }
         }
+
         return $indexes;
     }
 
@@ -196,6 +208,7 @@ class SchemaManager
                 'keys' => [],
                 'options' => $index['options'],
             ];
+
             foreach ($index['keys'] as $key => $value) {
                 $key = $persister->prepareFieldName($key);
                 if ($class->hasField($key)) {
@@ -226,6 +239,10 @@ class SchemaManager
             throw new \InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
+        if ($class->isFile) {
+            $this->ensureGridFSIndexes($class);
+        }
+
         $indexes = $this->getDocumentIndexes($documentName);
         if (! $indexes) {
             return;
@@ -254,6 +271,7 @@ class SchemaManager
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
+
             $this->deleteDocumentIndexes($class->name);
         }
     }
@@ -270,6 +288,7 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
+
         $this->dm->getDocumentCollection($documentName)->dropIndexes();
     }
 
@@ -300,6 +319,13 @@ class SchemaManager
             throw new \InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
         }
 
+        if ($class->isFile) {
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getBucketName() . '.files');
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getBucketName() . '.chunks');
+
+            return;
+        }
+
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
             [
@@ -319,6 +345,7 @@ class SchemaManager
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
+
             $this->dropDocumentCollection($class->name);
         }
     }
@@ -335,7 +362,14 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
+
         $this->dm->getDocumentCollection($documentName)->drop();
+
+        if (! $class->isFile) {
+            return;
+        }
+
+        $this->dm->getDocumentBucket($documentName)->getChunksCollection()->drop();
     }
 
     /**
@@ -347,6 +381,7 @@ class SchemaManager
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
+
             $this->dropDocumentDatabase($class->name);
         }
     }
@@ -363,6 +398,7 @@ class SchemaManager
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new \InvalidArgumentException('Cannot drop document database for mapped super classes, embedded documents or query result documents.');
         }
+
         $this->dm->getDocumentDatabase($documentName)->drop();
     }
 
@@ -622,5 +658,35 @@ class SchemaManager
         )->toArray()[0];
 
         return $result;
+    }
+
+    private function ensureGridFSIndexes(ClassMetadata $class): void
+    {
+        $this->ensureChunksIndex($class);
+        $this->ensureFilesIndex($class);
+    }
+
+    private function ensureChunksIndex(ClassMetadata $class): void
+    {
+        $chunksCollection = $this->dm->getDocumentBucket($class->getName())->getChunksCollection();
+        foreach ($chunksCollection->listIndexes() as $index) {
+            if ($index->isUnique() && $index->getKey() === self::GRIDFS_FILE_COLLECTION_INDEX) {
+                return;
+            }
+        }
+
+        $chunksCollection->createIndex(self::GRIDFS_FILE_COLLECTION_INDEX, ['unique' => true]);
+    }
+
+    private function ensureFilesIndex(ClassMetadata $class): void
+    {
+        $filesCollection = $this->dm->getDocumentCollection($class->getName());
+        foreach ($filesCollection->listIndexes() as $index) {
+            if ($index->getKey() === self::GRIDFS_CHUNKS_COLLECTION_INDEX) {
+                return;
+            }
+        }
+
+        $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX);
     }
 }

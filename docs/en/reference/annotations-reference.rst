@@ -143,24 +143,24 @@ managed by ODM.
 Optional attributes:
 
 -
-   db - By default, the document manager will use the MongoDB database defined
-   in the configuration, but this option may be used to override the database
-   for a particular document class.
+   ``db`` - By default, the document manager will use the MongoDB database
+   defined in the configuration, but this option may be used to override the
+   database for a particular document class.
 -
-   collection - By default, the collection name is derived from the document's
-   class name, but this option may be used to override that behavior.
+   ``collection`` - By default, the collection name is derived from the
+   document's class name, but this option may be used to override that behavior.
 -
-   repositoryClass - Specifies a custom repository class to use.
+   ``repositoryClass`` - Specifies a custom repository class to use.
 -
-   indexes - Specifies an array of indexes for this document.
+   ``indexes`` - Specifies an array of indexes for this document.
 -
-   readOnly - Prevents document from being updated: it can only be inserted,
+   ``readOnly`` - Prevents document from being updated: it can only be inserted,
    upserted or removed.
 -
-   writeConcern - Specifies the write concern for this document that overwrites
-   the default write concern specified in the configuration. It does not overwrite
-   a write concern given as :ref:`option <flush_options>` to the ``flush``
-   method when committing your documents.
+   ``writeConcern`` - Specifies the write concern for this document that
+   overwrites the default write concern specified in the configuration. It does
+   not overwrite a write concern given as :ref:`option <flush_options>` to the
+  ``flush``  method when committing your documents.
 
 .. code-block:: php
 
@@ -191,22 +191,24 @@ document, it embeds a collection of documents.
 Optional attributes:
 
 -
-    targetDocument - A |FQCN| of the target document.
+    ``targetDocument`` - A |FQCN| of the target document.
 -
-    discriminatorField - The database field name to store the discriminator
+    ``discriminatorField`` - The database field name to store the discriminator
     value within the embedded document.
 -
-    discriminatorMap - Map of discriminator values to class names.
+    ``discriminatorMap`` - Map of discriminator values to class names.
 -
-    defaultDiscriminatorValue - A default value for discriminatorField if no value
-    has been set in the embedded document.
+    ``defaultDiscriminatorValue`` - A default value for discriminatorField if no
+    value has been set in the embedded document.
 -
-    strategy - The strategy used to persist changes to the collection. Possible
-    values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
-    is the default. See :ref:`storage_strategies` for more information.
+    ``strategy`` - The strategy used to persist changes to the collection.
+    Possible values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``.
+    ``pushAll`` is the default. See :ref:`storage_strategies` for more
+    information.
 -
-    collectionClass - A |FQCN| of class that implements ``Collection`` interface
-    and is used to hold documents. Doctrine's ``ArrayCollection`` is used by default.
+    ``collectionClass`` - A |FQCN| of class that implements ``Collection``
+    interface and is used to hold documents. Doctrine's ``ArrayCollection`` is
+    used by default.
 
 .. code-block:: php
 
@@ -249,15 +251,15 @@ following excerpt from the MongoDB documentation:
 Optional attributes:
 
 -
-    targetDocument - A |FQCN| of the target document.
+    ``targetDocument`` - A |FQCN| of the target document.
 -
-    discriminatorField - The database field name to store the discriminator
+    ``discriminatorField`` - The database field name to store the discriminator
     value within the embedded document.
 -
-    discriminatorMap - Map of discriminator values to class names.
+    ``discriminatorMap`` - Map of discriminator values to class names.
 -
-    defaultDiscriminatorValue - A default value for discriminatorField if no value
-    has been set in the embedded document.
+    ``defaultDiscriminatorValue`` - A default value for discriminatorField if no
+    value has been set in the embedded document.
 
 .. code-block:: php
 
@@ -284,7 +286,8 @@ document classes.
 -----------------
 
 Marks the document as embeddable. This annotation is required for any documents
-to be stored within an `@EmbedOne`_ or `@EmbedMany`_ relationship.
+to be stored within an `@EmbedOne`_, `@EmbedMany`_ or `@File\\Metadata`_
+relationship.
 
 .. code-block:: php
 
@@ -328,7 +331,7 @@ multiple document classes, and even other embedded documents!
 Optional attributes:
 
 -
-   indexes - Specifies an array of indexes for this embedded document, to be
+   ``indexes`` - Specifies an array of indexes for this embedded document, to be
    included in the schemas of any embedding documents.
 
 @Field
@@ -341,16 +344,16 @@ lifecycle.
 Optional attributes:
 
 -
-   type - Name of the ODM type, which will determine the value's representation
-   in PHP and BSON (i.e. MongoDB). See :ref:`doctrine_mapping_types` for a list
-   of types. Defaults to "string".
+   ``type`` - Name of the ODM type, which will determine the value's
+   representation in PHP and BSON (i.e. MongoDB). See
+   :ref:`doctrine_mapping_types` for a list of types. Defaults to "string".
 -
-   name - By default, the property name is used for the field name in MongoDB;
-   however, this option may be used to specify a database field name.
+   ``name`` - By default, the property name is used for the field name in
+   MongoDB; however, this option may be used to specify a database field name.
 -
-   nullable - By default, ODM will ``$unset`` fields in MongoDB if the PHP value
-   is null. Specify true for this option to force ODM to store a null value in
-   the database instead of unsetting the field.
+   ``nullable`` - By default, ODM will ``$unset`` fields in MongoDB if the PHP
+   value is null. Specify true for this option to force ODM to store a null
+   value in the database instead of unsetting the field.
 
 Examples:
 
@@ -372,6 +375,88 @@ Examples:
      * @Field(type="float")
      */
     protected $height;
+
+.. _file:
+
+@File
+-----
+
+This marks the document as a GridFS file. GridFS allow storing larger amounts of
+data than regular documents.
+
+Optional attributes:
+
+-
+   ``db`` - By default, the document manager will use the MongoDB database
+   defined in the configuration, but this option may be used to override the
+   database for a particular file.
+-
+   ``bucketName`` - By default, files are stored in a bucket called ``fs``. You
+   can customize that bucket name with this property.
+-
+   ``repositoryClass`` - Specifies a custom repository class to use. The class
+   must extend the ``Doctrine\ODM\MongoDB\Repository\GridFSRepository``
+   interface.
+-
+   ``indexes`` - Specifies an array of indexes for this document.
+-
+   ``readOnly`` - Prevents the file from being updated: it can only be inserted,
+   upserted or removed.
+-
+   ``writeConcern`` - Specifies the write concern for this file that overwrites
+   the default write concern specified in the configuration.
+
+.. _file_chunksize:
+
+@File\ChunkSize
+---------------
+
+This maps the ``chunkSize`` property of a GridFS file to a property. It contains
+the size of a single file chunk in bytes. No other options can be set.
+
+.. _file_filename:
+
+@File\Filename
+--------------
+
+This maps the ``filename`` property of a GridFS file to a property. No other
+options can be set.
+
+.. _file_length:
+
+@File\Length
+------------
+
+This maps the ``length`` property of a GridFS file to a property. It contains
+the size of the entire file in bytes. No other options can be set.
+
+.. _file_metadata:
+
+@File\Metadata
+--------------
+
+This maps the ``metadata`` property of a GridFS file to a property. Metadata can
+be used to store additional properties in a file. The metadata document must be
+an embedded document mapped using `@EmbeddedDocument`_.
+
+Optional attributes:
+
+-
+    ``targetDocument`` - A |FQCN| of the target document.
+-
+    ``discriminatorField`` - The database field name to store the discriminator
+    value within the embedded document.
+-
+    ``discriminatorMap`` - Map of discriminator values to class names.
+-
+    ``defaultDiscriminatorValue`` - A default value for ``discriminatorField``
+    if no value has been set in the embedded document.
+
+@File\UploadDate
+----------------
+
+This maps the ``uploadDate`` property of a GridFS file to a property. No other
+options can be set.
 
 .. _haslifecyclecallbacks:
 
@@ -425,12 +510,12 @@ single-field indexes.
 Optional attributes:
 
 -
-    keys - Mapping of indexed fields to their ordering or index type. ODM will
-    allow "asc" and "desc" to be used in place of ``1`` and ``-1``,
-    respectively. Special index types (e.g. "2dsphere") should be specified as
+    ``keys`` - Mapping of indexed fields to their ordering or index type. ODM
+    will allow ``asc`` and ``desc`` to be used in place of ``1`` and ``-1``,
+    respectively. Special index types (e.g. ``2dsphere``) should be specified as
     strings. This is required when `@Index`_ is used at the class level.
 -
-    options - Options for creating the index
+    ``options`` - Options for creating the index
 
 The ``keys`` and ``options`` attributes correspond to the arguments for
 `MongoCollection::createIndex() <http://php.net/manual/en/mongocollection.createindex.php>`_.
@@ -823,48 +908,53 @@ documents.
 Optional attributes:
 
 -
-    targetDocument - A |FQCN| of the target document. A ``targetDocument`` is
-    required when using ``storeAs: id``.
+    ``targetDocument`` - A |FQCN| of the target document. A ``targetDocument``
+    is required when using ``storeAs: id``.
 -
-    storeAs - Indicates how to store the reference. ``id`` stores the identifier,
-    ``ref`` an embedded object containing the ``id`` field and (optionally) a
-    discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_ object and
-    are deprecated in favor of ``ref``. Note that ``id`` references are not
-    compatible with the discriminators.
+    ``storeAs`` - Indicates how to store the reference. ``id`` stores the
+    identifier, ``ref`` an embedded object containing the ``id`` field and
+    (optionally) a discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_
+    object and are deprecated in favor of ``ref``. Note that ``id`` references
+    are not compatible with the discriminators.
 -
-    cascade - Cascade Option
+    ``cascade`` - Cascade Option
 -
-    discriminatorField - The field name to store the discriminator value within
+    ``discriminatorField`` - The field name to store the discriminator value within
     the reference object.
 -
-    discriminatorMap - Map of discriminator values to class names.
+    ``discriminatorMap`` - Map of discriminator values to class names.
 -
-    defaultDiscriminatorValue - A default value for discriminatorField if no value
-    has been set in the referenced document.
+    ``defaultDiscriminatorValue`` - A default value for ``discriminatorField``
+    if no value has been set in the referenced document.
 -
-    inversedBy - The field name of the inverse side. Only allowed on owning side.
+    ``inversedBy`` - The field name of the inverse side. Only allowed on owning side.
 -
-    mappedBy - The field name of the owning side. Only allowed on the inverse side.
+    ``mappedBy`` - The field name of the owning side. Only allowed on the
+    inverse side.
 -
-    repositoryMethod - The name of the repository method to call to populate this reference.
+    ``repositoryMethod`` - The name of the repository method to call to populate
+    this reference.
 -
-    sort - The default sort for the query that loads the reference.
+    ``sort`` - The default sort for the query that loads the reference.
 -
-    criteria - Array of default criteria for the query that loads the reference.
+    ``criteria`` - Array of default criteria for the query that loads the
+    reference.
 -
-    limit - Limit for the query that loads the reference.
+    ``limit`` - Limit for the query that loads the reference.
 -
-    skip - Skip for the query that loads the reference.
+    ``skip`` - Skip for the query that loads the reference.
 -
-    strategy - The strategy used to persist changes to the collection. Possible
-    values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``. ``pushAll``
-    is the default. See :ref:`storage_strategies` for more information.
+    ``strategy`` - The strategy used to persist changes to the collection.
+    Possible values are ``addToSet``, ``pushAll``, ``set``, and ``setArray``.
+    ``pushAll`` is the default. See :ref:`storage_strategies` for more
+    information.
 -
-    collectionClass - A |FQCN| of class that implements ``Collection`` interface
-    and is used to hold documents. Doctrine's ``ArrayCollection`` is used by default
+    ``collectionClass`` - A |FQCN| of class that implements ``Collection``
+    interface and is used to hold documents. Doctrine's ``ArrayCollection`` is
+    used by default
 -
-    prime - A list of references contained in the target document that will be
-    initialized when the collection is loaded. Only allowed for inverse
+    ``prime`` - A list of references contained in the target document that will
+    be initialized when the collection is loaded. Only allowed for inverse
     references.
 
 .. code-block:: php
@@ -897,38 +987,42 @@ Defines an instance variable holds a related document instance.
 Optional attributes:
 
 -
-    targetDocument - A |FQCN| of the target document. A ``targetDocument`` is
-    required when using ``storeAs: id``.
+    ``targetDocument`` - A |FQCN| of the target document. A ``targetDocument``
+    is required when using ``storeAs: id``.
 -
-    storeAs - Indicates how to store the reference. ``id`` stores the identifier,
-    ``ref`` an embedded object containing the ``id`` field and (optionally) a
-    discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_ object and
-    are deprecated in favor of ``ref``. Note that ``id`` references are not
-    compatible with the discriminators.
+    ``storeAs`` - Indicates how to store the reference. ``id`` stores the
+    identifier, ``ref`` an embedded object containing the ``id`` field and
+    (optionally) a discriminator. ``dbRef`` and ``dbRefWithDb`` store a `DBRef`_
+    object and are deprecated in favor of ``ref``. Note that ``id`` references
+    are not compatible with the discriminators.
 -
-    cascade - Cascade Option
+    ``cascade`` - Cascade Option
 -
-    discriminatorField - The field name to store the discriminator value within
-    the reference object.
+    ``discriminatorField`` - The field name to store the discriminator value
+    within the reference object.
 -
-    discriminatorMap - Map of discriminator values to class names.
+    ``discriminatorMap`` - Map of discriminator values to class names.
 -
-    defaultDiscriminatorValue - A default value for discriminatorField if no value
-    has been set in the referenced document.
+    ``defaultDiscriminatorValue`` - A default value for ``discriminatorField``
+    if no value has been set in the referenced document.
 -
-    inversedBy - The field name of the inverse side. Only allowed on owning side.
+    ``inversedBy`` - The field name of the inverse side. Only allowed on owning
+    side.
 -
-    mappedBy - The field name of the owning side. Only allowed on the inverse side.
+    ``mappedBy`` - The field name of the owning side. Only allowed on the
+    inverse side.
 -
-    repositoryMethod - The name of the repository method to call to populate this reference.
+    ``repositoryMethod`` - The name of the repository method to call to populate
+    this reference.
 -
-    sort - The default sort for the query that loads the reference.
+    ``sort`` - The default sort for the query that loads the reference.
 -
-    criteria - Array of default criteria for the query that loads the reference.
+    ``criteria`` - Array of default criteria for the query that loads the
+    reference.
 -
-    limit - Limit for the query that loads the reference.
+    ``limit`` - Limit for the query that loads the reference.
 -
-    skip - Skip for the query that loads the reference.
+    ``skip`` - Skip for the query that loads the reference.
 
 .. code-block:: php
 

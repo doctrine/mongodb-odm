@@ -28,6 +28,7 @@ use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Exception\WriteException;
+use MongoDB\GridFS\Bucket;
 use function array_combine;
 use function array_fill;
 use function array_intersect_key;
@@ -93,6 +94,9 @@ class DocumentPersister
      */
     private $collection;
 
+    /** @var Bucket|null */
+    private $bucket;
+
     /**
      * Array of queued inserts for the persister to insert.
      *
@@ -148,6 +152,12 @@ class DocumentPersister
         $this->class = $class;
         $this->collection = $dm->getDocumentCollection($class->name);
         $this->cp = $this->uow->getCollectionPersister();
+
+        if (! $class->isFile) {
+            return;
+        }
+
+        $this->bucket = $dm->getDocumentBucket($class->name);
     }
 
     /**
@@ -451,6 +461,15 @@ class DocumentPersister
      */
     public function delete($document, array $options = [])
     {
+        if ($this->bucket instanceof Bucket) {
+            $documentIdentifier = $this->uow->getDocumentIdentifier($document);
+            $databaseIdentifier = $this->class->getDatabaseIdentifierValue($documentIdentifier);
+
+            $this->bucket->delete($databaseIdentifier);
+
+            return;
+        }
+
         $query = $this->getQueryForDocument($document);
 
         if ($this->class->isLockable) {

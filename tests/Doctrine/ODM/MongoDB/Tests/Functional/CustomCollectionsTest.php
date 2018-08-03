@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\File;
 use Documents\ProfileNotify;
@@ -143,12 +144,14 @@ class CustomCollectionsTest extends BaseTest
 
     public function testModifyingCollectionInChangeTrackingNotifyDocument()
     {
+        /** @var GridFSRepository $repository */
+        $repository = $this->dm->getRepository(File::class);
+
+        $f1 = $repository->uploadFromFile(__FILE__);
+        $f2 = $repository->uploadFromFile(__FILE__);
+
         $profile = new ProfileNotify();
-        $f1 = new File();
-        $f1->setName('av.jpeg');
         $profile->getImages()->add($f1);
-        $f2 = new File();
-        $f2->setName('ghost.gif');
         $profile->getImages()->add($f2);
         $this->dm->persist($profile);
         $this->dm->flush();
@@ -160,8 +163,8 @@ class CustomCollectionsTest extends BaseTest
 
         $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
         $this->assertCount(2, $profile->getImages());
-        $this->assertEquals($f2->getName(), $profile->getImages()[0]->getName());
-        $this->assertEquals($f1->getName(), $profile->getImages()[1]->getName());
+        $this->assertEquals($f2->getId(), $profile->getImages()[0]->getId());
+        $this->assertEquals($f1->getId(), $profile->getImages()[1]->getId());
     }
 }
 

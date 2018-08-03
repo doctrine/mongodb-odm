@@ -171,6 +171,8 @@ class ClassMetadata implements BaseClassMetadata
     public const STORAGE_STRATEGY_ATOMIC_SET_ARRAY = 'atomicSetArray';
     public const STORAGE_STRATEGY_SET_ARRAY = 'setArray';
 
+    private const ALLOWED_GRIDFS_FIELDS = ['_id', 'chunkSize', 'filename', 'length', 'metadata', 'uploadDate'];
+
     /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
      * @var string
@@ -182,6 +184,12 @@ class ClassMetadata implements BaseClassMetadata
      * @var string
      */
     public $collection;
+
+    /**
+     * READ-ONLY: The name of the GridFS bucket the document is mapped to.
+     * @var string|null
+     */
+    public $bucketName;
 
     /**
      * READ-ONLY: If the collection should be a fixed size.
@@ -407,6 +415,20 @@ class ClassMetadata implements BaseClassMetadata
      * @var bool
      */
     public $isQueryResultDocument = false;
+
+    /**
+     * READ-ONLY: Whether this class describes the mapping of a gridFS file
+     *
+     * @var bool
+     */
+    public $isFile = false;
+
+    /**
+     * READ-ONLY: The default chunk size in bytes for the file
+     *
+     * @var int|null
+     */
+    public $chunkSizeBytes;
 
     /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
@@ -737,6 +759,10 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setDiscriminatorField($discriminatorField)
     {
+        if ($this->isFile) {
+            throw MappingException::discriminatorNotAllowedForGridFS($this->name);
+        }
+
         if ($discriminatorField === null) {
             $this->discriminatorField = null;
 
@@ -771,6 +797,10 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setDiscriminatorMap(array $map)
     {
+        if ($this->isFile) {
+            throw MappingException::discriminatorNotAllowedForGridFS($this->name);
+        }
+
         foreach ($map as $value => $className) {
             $this->discriminatorMap[$value] = $className;
             if ($this->name === $className) {
@@ -796,6 +826,10 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setDefaultDiscriminatorValue($defaultDiscriminatorValue)
     {
+        if ($this->isFile) {
+            throw MappingException::discriminatorNotAllowedForGridFS($this->name);
+        }
+
         if ($defaultDiscriminatorValue === null) {
             $this->defaultDiscriminatorValue = null;
 
@@ -815,9 +849,15 @@ class ClassMetadata implements BaseClassMetadata
      * collection.
      *
      * @param string $value
+     *
+     * @throws MappingException
      */
     public function setDiscriminatorValue($value)
     {
+        if ($this->isFile) {
+            throw MappingException::discriminatorNotAllowedForGridFS($this->name);
+        }
+
         $this->discriminatorMap[$value] = $this->name;
         $this->discriminatorValue = $value;
     }
@@ -1102,6 +1142,27 @@ class ClassMetadata implements BaseClassMetadata
         } else {
             $this->collection = $name;
         }
+    }
+
+    public function getBucketName(): ?string
+    {
+        return $this->bucketName;
+    }
+
+    public function setBucketName(string $bucketName): void
+    {
+        $this->bucketName = $bucketName;
+        $this->setCollection($bucketName . '.files');
+    }
+
+    public function getChunkSizeBytes(): ?int
+    {
+        return $this->chunkSizeBytes;
+    }
+
+    public function setChunkSizeBytes(int $chunkSizeBytes): void
+    {
+        $this->chunkSizeBytes = $chunkSizeBytes;
     }
 
     /**
@@ -2002,11 +2063,6 @@ class ClassMetadata implements BaseClassMetadata
             $mapping['discriminatorField'] = self::DEFAULT_DISCRIMINATOR_FIELD;
         }
 
-        /*
-        if (isset($mapping['type']) && ($mapping['type'] === 'one' || $mapping['type'] === 'many')) {
-            $mapping['type'] = $mapping['type'] === 'one' ? self::ONE : self::MANY;
-        }
-        */
         if (isset($mapping['version'])) {
             $mapping['notSaved'] = true;
             $this->setVersionMapping($mapping);
@@ -2037,6 +2093,10 @@ class ClassMetadata implements BaseClassMetadata
 
         if (! empty($mapping['prime']) && ($mapping['association'] !== self::REFERENCE_MANY || ! $mapping['isInverseSide'])) {
             throw MappingException::referencePrimersOnlySupportedForInverseReferenceMany($this->name, $mapping['fieldName']);
+        }
+
+        if ($this->isFile && ! $this->isAllowedGridFSField($mapping['name'])) {
+            throw MappingException::fieldNotAllowedForGridFS($this->name, $mapping['fieldName']);
         }
 
         $this->applyStorageStrategy($mapping);
@@ -2118,6 +2178,12 @@ class ClassMetadata implements BaseClassMetadata
             $serialized[] = 'isQueryResultDocument';
         }
 
+        if ($this->isFile) {
+            $serialized[] = 'isFile';
+            $serialized[] = 'bucketName';
+            $serialized[] = 'chunkSizeBytes';
+        }
+
         if ($this->isVersioned) {
             $serialized[] = 'isVersioned';
             $serialized[] = 'versionField';
@@ -2169,5 +2235,10 @@ class ClassMetadata implements BaseClassMetadata
     public function newInstance()
     {
         return $this->instantiator->instantiate($this->name);
+    }
+
+    private function isAllowedGridFSField(string $name): bool
+    {
+        return in_array($name, self::ALLOWED_GRIDFS_FIELDS, true);
     }
 }

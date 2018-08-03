@@ -401,4 +401,14 @@ class MappingException extends BaseMappingException
     {
         return new self(sprintf("The mapping file %s is invalid: \n%s", $filename, $errorDetails));
     }
+
+    public static function fieldNotAllowedForGridFS($className, $fieldName)
+    {
+        return new self(sprintf("Field '%s' in class '%s' is not a valid field for GridFS documents. You should move it to an embedded metadata document.", $fieldName, $className));
+    }
+
+    public static function discriminatorNotAllowedForGridFS($className)
+    {
+        return new self(sprintf("Class '%s' cannot be discriminated because it is marked as a GridFS file", $className));
+    }
 }

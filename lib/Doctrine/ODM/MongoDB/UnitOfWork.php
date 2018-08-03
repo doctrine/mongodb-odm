@@ -11,6 +11,7 @@ use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
@@ -664,9 +665,20 @@ class UnitOfWork implements PropertyChangedListener
                 $changeSet = [];
             }
 
+            $gridFSMetadataProperty = null;
+
+            if ($class->isFile) {
+                try {
+                    $gridFSMetadata = $class->getFieldMappingByDbFieldName('metadata');
+                    $gridFSMetadataProperty = $gridFSMetadata['fieldName'];
+                } catch (MappingException $e) {
+                }
+            }
+
             foreach ($actualData as $propName => $actualValue) {
                 // skip not saved fields
-                if (isset($class->fieldMappings[$propName]['notSaved']) && $class->fieldMappings[$propName]['notSaved'] === true) {
+                if ((isset($class->fieldMappings[$propName]['notSaved']) && $class->fieldMappings[$propName]['notSaved'] === true) ||
+                    ($class->isFile && $propName !== $gridFSMetadataProperty)) {
                     continue;
                 }
 
@@ -1642,6 +1654,10 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 break;
             case self::STATE_NEW:
+                if ($class->isFile) {
+                    throw MongoDBException::cannotPersistGridFSFile($class->name);
+                }
+
                 $this->persistNew($class, $document);
                 break;
 
