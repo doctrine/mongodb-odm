@@ -23,6 +23,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionFactory;
@@ -231,6 +232,12 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function setAutoGenerateProxyClasses($bool)
     {
+        if (is_bool($bool)) {
+            @trigger_error(
+                sprintf('Passing boolean value to %s is deprecated, please use constants of %s instead.', __METHOD__, AbstractProxyFactory::class),
+                E_USER_DEPRECATED
+            );
+        }
         $this->attributes['autoGenerateProxyClasses'] = $bool;
     }
 
@@ -296,6 +303,12 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function setAutoGenerateHydratorClasses($bool)
     {
+        if (is_bool($bool)) {
+            @trigger_error(
+                sprintf('Passing boolean value to %s is deprecated, please use AUTOGENERATE_* constants of %s instead.', __METHOD__, self::class),
+                E_USER_DEPRECATED
+            );
+        }
         $this->attributes['autoGenerateHydratorClasses'] = $bool;
     }
 
