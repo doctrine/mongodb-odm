@@ -15,12 +15,12 @@
     ],
     "require": {
         "php": "^7.1",
-        "symfony/console": "~2.3|~3.0|^4.0",
-        "doctrine/annotations": "~1.2",
-        "doctrine/collections": "~1.1",
-        "doctrine/common": "~2.6",
-        "doctrine/cache": "~1.0",
-        "doctrine/instantiator": "^1.0.1",
+        "symfony/console": "^3.4|^4.1",
+        "doctrine/annotations": "^1.6",
+        "doctrine/collections": "^1.5",
+        "doctrine/common": "^2.9",
+        "doctrine/cache": "^1.7",
+        "doctrine/instantiator": "^1.1",
         "mongodb/mongodb": "^1.2.0"
     },
     "require-dev": {
