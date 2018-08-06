@@ -4,7 +4,6 @@ language: php
 
 # Note: latest PHP version is tested with coverage; lowest is tested with --prefer-lowest
 php:
-  - 7.1
   - 7.2
 
 env:
@@ -24,7 +23,7 @@ jobs:
   include:
     # Test against lowest dependencies, including driver and server versions
     - stage: Test
-      php: 7.1
+      php: 7.2
       env: SERVER_VERSION="3.2" KEY_ID="EA312927" DRIVER_VERSION="1.3.0"
       install:
         - composer update --prefer-lowest
@@ -43,13 +42,13 @@ jobs:
         - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
     - stage: Code Quality
-      php: 7.1
+      php: 7.2
       env: STATIC_ANALYSIS SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
       script:
         - vendor/bin/phpstan analyse -l 1 lib
 
     - stage: Code Quality
-      php: 7.1
+      php: 7.2
       env: CODING_STANDARDS SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
       script:
         - vendor/bin/phpcs
