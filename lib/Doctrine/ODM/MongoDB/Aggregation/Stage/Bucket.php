@@ -22,10 +22,8 @@ class Bucket extends AbstractBucket
      * the same type. The exception is if the values are of mixed numeric types.
      *
      * @param array ...$boundaries
-     *
-     * @return $this
      */
-    public function boundaries(...$boundaries)
+    public function boundaries(...$boundaries): self
     {
         $this->boundaries = $boundaries;
         return $this;
@@ -37,10 +35,8 @@ class Bucket extends AbstractBucket
      * specified by boundaries.
      *
      * @param mixed $default
-     *
-     * @return $this
      */
-    public function defaultBucket($default)
+    public function defaultBucket($default): self
     {
         $this->default = $default;
         return $this;
@@ -50,10 +46,8 @@ class Bucket extends AbstractBucket
      * A document that specifies the fields to include in the output documents
      * in addition to the _id field. To specify the field to include, you must
      * use accumulator expressions.
-     *
-     * @return Bucket\BucketOutput
      */
-    public function output()
+    public function output(): Bucket\BucketOutput
     {
         if (! $this->output) {
             $this->output = new Bucket\BucketOutput($this->builder, $this);
@@ -62,7 +56,7 @@ class Bucket extends AbstractBucket
         return $this->output;
     }
 
-    protected function getExtraPipelineFields()
+    protected function getExtraPipelineFields(): array
     {
         $fields = ['boundaries' => $this->boundaries];
         if ($this->default !== null) {
@@ -72,7 +66,7 @@ class Bucket extends AbstractBucket
         return $fields;
     }
 
-    protected function getStageName()
+    protected function getStageName(): string
     {
         return '$bucket';
     }

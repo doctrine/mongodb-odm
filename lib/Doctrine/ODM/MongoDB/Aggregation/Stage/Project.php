@@ -16,7 +16,7 @@ class Project extends Operator
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$project' => $this->expr->getExpression(),
@@ -32,10 +32,8 @@ class Project extends Operator
      * @see Expr::avg
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
-     * @return $this
-     *
      */
-    public function avg($expression1, ...$expressions)
+    public function avg($expression1, ...$expressions): self
     {
         $this->expr->avg(empty($expressions) ? $expression1 : func_get_args());
 
@@ -44,11 +42,8 @@ class Project extends Operator
 
     /**
      * Shorthand method to define which fields to be included.
-     *
-     * @param array $fields
-     * @return $this
      */
-    public function includeFields(array $fields)
+    public function includeFields(array $fields): self
     {
         foreach ($fields as $fieldName) {
             $this->field($fieldName)->expression(true);
@@ -62,11 +57,8 @@ class Project extends Operator
      *
      * If you specify the exclusion of a field other than _id, you cannot employ
      * any other $project specification forms.
-     *
-     * @param array $fields
-     * @return $this
      */
-    public function excludeFields(array $fields)
+    public function excludeFields(array $fields): self
     {
         foreach ($fields as $fieldName) {
             $this->field($fieldName)->expression(false);
@@ -83,10 +75,8 @@ class Project extends Operator
      * @see Expr::max
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
-     * @return $this
-     *
      */
-    public function max($expression1, ...$expressions)
+    public function max($expression1, ...$expressions): self
     {
         $this->expr->max(empty($expressions) ? $expression1 : func_get_args());
 
@@ -101,10 +91,8 @@ class Project extends Operator
      * @see Expr::min
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
-     * @return $this
-     *
      */
-    public function min($expression1, ...$expressions)
+    public function min($expression1, ...$expressions): self
     {
         $this->expr->min(empty($expressions) ? $expression1 : func_get_args());
 
@@ -120,10 +108,8 @@ class Project extends Operator
      * @see Expr::stdDevPop
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
-     * @return $this
-     *
      */
-    public function stdDevPop($expression1, ...$expressions)
+    public function stdDevPop($expression1, ...$expressions): self
     {
         $this->expr->stdDevPop(empty($expressions) ? $expression1 : func_get_args());
 
@@ -139,10 +125,8 @@ class Project extends Operator
      * @see Expr::stdDevSamp
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
-     * @return $this
-     *
      */
-    public function stdDevSamp($expression1, ...$expressions)
+    public function stdDevSamp($expression1, ...$expressions): self
     {
         $this->expr->stdDevSamp(empty($expressions) ? $expression1 : func_get_args());
 
@@ -158,10 +142,8 @@ class Project extends Operator
      * @see Expr::sum
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
-     * @return $this
-     *
      */
-    public function sum($expression1, ...$expressions)
+    public function sum($expression1, ...$expressions): self
     {
         $this->expr->sum(empty($expressions) ? $expression1 : func_get_args());
 

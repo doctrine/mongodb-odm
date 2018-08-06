@@ -394,7 +394,7 @@ class QueryTest extends BaseTest
         $readOnly = $this->dm->createQueryBuilder()
             ->find(Person::class)
             ->field('id')->equals($p->id)
-            ->readOnly()
+            ->readOnly(true)
             ->getQuery()->getSingleResult();
 
         $this->assertNotSame($p, $readOnly);

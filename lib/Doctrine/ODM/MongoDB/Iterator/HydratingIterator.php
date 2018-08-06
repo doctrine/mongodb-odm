@@ -55,7 +55,7 @@ final class HydratingIterator implements \Iterator
     /**
      * @see http://php.net/iterator.next
      */
-    public function next()
+    public function next(): void
     {
         $this->iterator->next();
     }
@@ -63,16 +63,15 @@ final class HydratingIterator implements \Iterator
     /**
      * @see http://php.net/iterator.rewind
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->iterator->rewind();
     }
 
     /**
      * @see http://php.net/iterator.valid
-     * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->key() !== null;
     }

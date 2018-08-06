@@ -18,44 +18,32 @@ class CollectionHelper
 
     /**
      * Returns whether update query must be included in query updating owning document.
-     *
-     * @param string $strategy
-     * @return bool
      */
-    public static function isAtomic($strategy)
+    public static function isAtomic(string $strategy): bool
     {
         return $strategy === ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET || $strategy === ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY;
     }
 
     /**
      * Returns whether Collection hold associative array.
-     *
-     * @param string $strategy
-     * @return bool
      */
-    public static function isHash($strategy)
+    public static function isHash(string $strategy): bool
     {
         return $strategy === ClassMetadata::STORAGE_STRATEGY_SET || $strategy === ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET;
     }
 
     /**
      * Returns whether Collection hold array indexed by consecutive numbers.
-     *
-     * @param string $strategy
-     * @return bool
      */
-    public static function isList($strategy)
+    public static function isList(?string $strategy): bool
     {
         return $strategy !== ClassMetadata::STORAGE_STRATEGY_SET && $strategy !== ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET;
     }
 
     /**
      * Returns whether strategy uses $set to update its data.
-     *
-     * @param string $strategy
-     * @return bool
      */
-    public static function usesSet($strategy)
+    public static function usesSet(string $strategy): bool
     {
         return in_array(
             $strategy,

@@ -33,7 +33,7 @@ class FilterCollection
     /**
      * Instances of enabled filters.
      *
-     * @var array
+     * @var BsonFilter[]
      */
     private $enabledFilters = [];
 
@@ -55,9 +55,9 @@ class FilterCollection
     /**
      * Get all the enabled filters.
      *
-     * @return array The enabled filters.
+     * @return BsonFilter[]
      */
-    public function getEnabledFilters()
+    public function getEnabledFilters(): array
     {
         return $this->enabledFilters;
     }
@@ -65,13 +65,9 @@ class FilterCollection
     /**
      * Enables a filter from the collection.
      *
-     * @param string $name Name of the filter.
-     *
      * @throws \InvalidArgumentException If the filter does not exist.
-     *
-     * @return BsonFilter The enabled filter.
      */
-    public function enable($name)
+    public function enable(string $name): BsonFilter
     {
         if (! $this->has($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
@@ -95,13 +91,9 @@ class FilterCollection
     /**
      * Disables a filter.
      *
-     * @param string $name Name of the filter.
-     *
-     * @return BsonFilter The disabled filter.
-     *
      * @throws \InvalidArgumentException If the filter does not exist.
      */
-    public function disable($name)
+    public function disable(string $name): BsonFilter
     {
         // Get the filter to return it
         $filter = $this->getFilter($name);
@@ -114,13 +106,9 @@ class FilterCollection
     /**
      * Get an enabled filter from the collection.
      *
-     * @param string $name Name of the filter.
-     *
-     * @return BsonFilter The filter.
-     *
      * @throws \InvalidArgumentException If the filter is not enabled.
      */
-    public function getFilter($name)
+    public function getFilter(string $name): BsonFilter
     {
         if (! $this->isEnabled($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
@@ -134,28 +122,23 @@ class FilterCollection
      * @param string $name Name of the filter.
      * @return bool true if the filter exists, false if not.
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         return $this->config->getFilterClassName($name) !== null;
     }
 
     /**
      * Checks whether filter with given name is enabled.
-     *
-     * @param string $name Name of the filter
-     * @return bool
      */
-    public function isEnabled($name)
+    public function isEnabled(string $name): bool
     {
         return isset($this->enabledFilters[$name]);
     }
 
     /**
      * Gets enabled filter criteria.
-     *
-     * @return array
      */
-    public function getFilterCriteria(ClassMetadata $class)
+    public function getFilterCriteria(ClassMetadata $class): array
     {
         if (empty($this->enabledFilters)) {
             return [];

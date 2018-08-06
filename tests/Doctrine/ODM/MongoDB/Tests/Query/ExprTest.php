@@ -198,6 +198,7 @@ class ExprTest extends BaseTest
         $uow = $this->createMock(UnitOfWork::class);
         $documentPersister = $this->createMock(DocumentPersister::class);
         $class = $this->createMock(ClassMetadata::class);
+        $class->name = '';
 
         $expected = ['foo.$id' => '1234'];
 
@@ -238,6 +239,7 @@ class ExprTest extends BaseTest
         $uow = $this->createMock(UnitOfWork::class);
         $documentPersister = $this->createMock(DocumentPersister::class);
         $class = $this->createMock(ClassMetadata::class);
+        $class->name = '';
 
         $expected = ['foo.$ref' => 'coll', 'foo.$id' => '1234', 'foo.$db' => 'db'];
 
@@ -278,6 +280,7 @@ class ExprTest extends BaseTest
         $uow = $this->createMock(UnitOfWork::class);
         $documentPersister = $this->createMock(DocumentPersister::class);
         $class = $this->createMock(ClassMetadata::class);
+        $class->name = '';
 
         $expected = ['foo.$ref' => 'coll', 'foo.$id' => '1234'];
 
@@ -373,7 +376,7 @@ class ExprTest extends BaseTest
     public function testCaseSensitiveRequiresTextOperator()
     {
         $expr = $this->createExpr();
-        $expr->caseSensitive('en');
+        $expr->caseSensitive(false);
     }
 
     public function testDiacriticSensitiveWithText()
@@ -401,7 +404,7 @@ class ExprTest extends BaseTest
     public function testDiacriticSensitiveRequiresTextOperator()
     {
         $expr = $this->createExpr();
-        $expr->diacriticSensitive('en');
+        $expr->diacriticSensitive(false);
     }
 
     public function testOperatorWithCurrentField()

@@ -13,7 +13,7 @@ final class AddFields extends Operator
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$addFields' => $this->expr->getExpression(),

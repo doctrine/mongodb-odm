@@ -70,14 +70,14 @@ class HydratorFactory
     /**
      * The namespace that contains all hydrator classes.
      *
-     * @var string
+     * @var string|null
      */
     private $hydratorNamespace;
 
     /**
      * The directory that contains all hydrator classes.
      *
-     * @var string
+     * @var string|null
      */
     private $hydratorDir;
 
@@ -89,12 +89,9 @@ class HydratorFactory
     private $hydrators = [];
 
     /**
-     * @param string $hydratorDir
-     * @param string $hydratorNs
-     * @param int    $autoGenerate
      * @throws HydratorException
      */
-    public function __construct(DocumentManager $dm, EventManager $evm, $hydratorDir, $hydratorNs, $autoGenerate)
+    public function __construct(DocumentManager $dm, EventManager $evm, ?string $hydratorDir, ?string $hydratorNs, int $autoGenerate)
     {
         if (! $hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();
@@ -111,20 +108,16 @@ class HydratorFactory
 
     /**
      * Sets the UnitOfWork instance.
-     *
      */
-    public function setUnitOfWork(UnitOfWork $uow)
+    public function setUnitOfWork(UnitOfWork $uow): void
     {
         $this->unitOfWork = $uow;
     }
 
     /**
      * Gets the hydrator object for the given document class.
-     *
-     * @param string $className
-     * @return HydratorInterface $hydrator
      */
-    public function getHydratorFor($className)
+    public function getHydratorFor(string $className): HydratorInterface
     {
         if (isset($this->hydrators[$className])) {
             return $this->hydrators[$className];
@@ -169,7 +162,7 @@ class HydratorFactory
      *                        directory configured on the Configuration of the DocumentManager used
      *                        by this factory is used.
      */
-    public function generateHydratorClasses(array $classes, $toDir = null)
+    public function generateHydratorClasses(array $classes, ?string $toDir = null): void
     {
         $hydratorDir = $toDir ?: $this->hydratorDir;
         $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -181,10 +174,9 @@ class HydratorFactory
     }
 
     /**
-     * @param string $hydratorClassName
-     * @param string $fileName
+     * @param string|false $fileName Filename where class code to be written or false to eval code.
      */
-    private function generateHydratorClass(ClassMetadata $class, $hydratorClassName, $fileName)
+    private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, $fileName): void
     {
         $code = '';
 
@@ -390,7 +382,7 @@ class $hydratorClassName implements HydratorInterface
         \$this->class = \$class;
     }
 
-    public function hydrate(\$document, \$data, array \$hints = array())
+    public function hydrate(object \$document, array \$data, array \$hints = array()): array
     {
         \$hydratedData = array();
 %s        return \$hydratedData;
@@ -426,12 +418,9 @@ EOF
     /**
      * Hydrate array of MongoDB document data into the given document object.
      *
-     * @param object $document The document object to hydrate the data into.
-     * @param array  $data     The array of document data.
-     * @param array  $hints    Any hints to account for during reconstitution/lookup of the document.
-     * @return array $values The array of hydrated values.
+     * @param array $hints Any hints to account for during reconstitution/lookup of the document.
      */
-    public function hydrate($document, $data, array $hints = [])
+    public function hydrate(object $document, array $data, array $hints = []): array
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners

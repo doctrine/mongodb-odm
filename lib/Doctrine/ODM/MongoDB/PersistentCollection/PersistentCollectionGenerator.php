@@ -14,17 +14,12 @@ interface PersistentCollectionGenerator
      * Loads persistent collection class.
      *
      * @param string $collectionClass FQCN of base collection class
-     * @param int    $autoGenerate
      * @return string FQCN of generated class
      */
-    public function loadClass($collectionClass, $autoGenerate);
+    public function loadClass(string $collectionClass, int $autoGenerate): string;
 
     /**
      * Generates persistent collection class.
-     *
-     * @param string $class
-     * @param string $dir
-     * @return void
      */
-    public function generateClass($class, $dir);
+    public function generateClass(string $class, string $dir): void;
 }

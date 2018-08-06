@@ -116,15 +116,8 @@ class Query implements \IteratorAggregate
      *
      *
      * Please note that $requireIndexes was deprecated in 1.2 and will be removed in 2.0
-     *
-     * @param array $query
-     * @param array $options
-     * @param bool  $hydrate
-     * @param bool  $refresh
-     * @param array $primers
-     * @param bool  $readOnly
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], $hydrate = true, $refresh = false, array $primers = [], $readOnly = false)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false)
     {
         $primers = array_filter($primers);
 
@@ -182,11 +175,8 @@ class Query implements \IteratorAggregate
      * The $name parameter may be used to return a specific key from the
      * internal $query array property. If omitted, the entire array will be
      * returned.
-     *
-     * @param string $name
-     * @return mixed
      */
-    public function debug($name = null)
+    public function debug(?string $name = null)
     {
         return $name !== null ? $this->query[$name] : $this->query;
     }
@@ -234,20 +224,13 @@ class Query implements \IteratorAggregate
 
     /**
      * Gets the ClassMetadata instance.
-     *
-     * @return ClassMetadata $class
      */
-    public function getClass()
+    public function getClass(): ClassMetadata
     {
         return $this->class;
     }
 
-    /**
-     * Gets the DocumentManager instance.
-     *
-     * @return DocumentManager $dm
-     */
-    public function getDocumentManager()
+    public function getDocumentManager(): DocumentManager
     {
         return $this->dm;
     }
@@ -261,11 +244,11 @@ class Query implements \IteratorAggregate
      * be thrown if {@link Query::execute()} does not return an Iterator.
      *
      * @see http://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Iterator
      * @throws \BadMethodCallException If the query type would not return an Iterator.
      * @throws \UnexpectedValueException If the query did not return an Iterator.
+     * @throws MongoDBException
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         switch ($this->query['type']) {
             case self::TYPE_FIND:
@@ -287,10 +270,8 @@ class Query implements \IteratorAggregate
 
     /**
      * Return the query structure.
-     *
-     * @return array
      */
-    public function getQuery()
+    public function getQuery(): array
     {
         return $this->query;
     }
@@ -309,22 +290,18 @@ class Query implements \IteratorAggregate
 
     /**
      * Return the query type.
-     *
-     * @return int
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->query['type'];
     }
 
     /**
      * Sets whether or not to hydrate the documents to objects.
-     *
-     * @param bool $hydrate
      */
-    public function setHydrate($hydrate)
+    public function setHydrate(bool $hydrate): void
     {
-        $this->hydrate = (bool) $hydrate;
+        $this->hydrate = $hydrate;
     }
 
     /**
@@ -332,12 +309,10 @@ class Query implements \IteratorAggregate
      * already be managed it will be left intact and new instance returned.
      *
      * This option has no effect if hydration is disabled.
-     *
-     * @param bool $readOnly
      */
-    public function setReadOnly($readOnly)
+    public function setReadOnly(bool $readOnly): void
     {
-        $this->unitOfWorkHints[self::HINT_READ_ONLY] = (bool) $readOnly;
+        $this->unitOfWorkHints[self::HINT_READ_ONLY] = $readOnly;
     }
 
     /**
@@ -345,10 +320,8 @@ class Query implements \IteratorAggregate
      * identity map.
      *
      * This option has no effect if hydration is disabled.
-     *
-     * @param bool $refresh
      */
-    public function setRefresh($refresh)
+    public function setRefresh(bool $refresh): void
     {
         $this->unitOfWorkHints[self::HINT_REFRESH] = (bool) $refresh;
     }
@@ -357,9 +330,8 @@ class Query implements \IteratorAggregate
      * Execute the query and return its results as an array.
      *
      * @see IteratorAggregate::toArray()
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->getIterator()->toArray();
     }
@@ -367,11 +339,8 @@ class Query implements \IteratorAggregate
     /**
      * Returns an array containing the specified keys and their values from the
      * query array, provided they exist and are not null.
-     *
-     * @param string ...$keys One or more option keys to be read
-     * @return array
      */
-    private function getQueryOptions(string ...$keys)
+    private function getQueryOptions(string ...$keys): array
     {
         return array_filter(
             array_intersect_key($this->query, array_flip($keys)),
@@ -400,10 +369,9 @@ class Query implements \IteratorAggregate
     /**
      * Returns an array with its keys renamed based on the translation map.
      *
-     * @param array $options Query options
      * @return array $rename Translation map (from => to) for renaming keys
      */
-    private function renameQueryOptions(array $options, array $rename)
+    private function renameQueryOptions(array $options, array $rename): array
     {
         if (empty($options)) {
             return $options;

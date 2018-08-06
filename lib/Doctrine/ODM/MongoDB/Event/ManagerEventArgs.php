@@ -9,16 +9,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Provides event arguments for the flush events.
- *
  */
 class ManagerEventArgs extends BaseManagerEventArgs
 {
-    /**
-     * Retrieves the associated DocumentManager.
-     *
-     * @return DocumentManager
-     */
-    public function getDocumentManager()
+    public function getDocumentManager(): DocumentManager
     {
         return $this->getObjectManager();
     }

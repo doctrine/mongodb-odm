@@ -29,7 +29,7 @@ class Group extends Operator
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$group' => $this->expr->getExpression(),
@@ -48,7 +48,7 @@ class Group extends Operator
      * @param mixed|Expr $expression
      * @return $this
      */
-    public function addToSet($expression)
+    public function addToSet($expression): self
     {
         $this->expr->addToSet($expression);
 
@@ -63,9 +63,8 @@ class Group extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/avg/
      * @see Expr::avg
      * @param mixed|Expr $expression
-     * @return $this
      */
-    public function avg($expression)
+    public function avg($expression): self
     {
         $this->expr->avg($expression);
 
@@ -78,7 +77,6 @@ class Group extends Operator
      * @see http://docs.mongodb.org/manual/meta/aggregation-quick-reference/#aggregation-expressions
      * @see Expr::expression
      * @param mixed|Expr $value
-     * @return $this
      */
     public function expression($value)
     {
@@ -91,10 +89,8 @@ class Group extends Operator
      * Set the current field for building the expression.
      *
      * @see Expr::field
-     * @param string $fieldName
-     * @return $this
      */
-    public function field($fieldName)
+    public function field(string $fieldName)
     {
         $this->expr->field($fieldName);
 
@@ -109,9 +105,8 @@ class Group extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/first/
      * @see Expr::first
      * @param mixed|Expr $expression
-     * @return $this
      */
-    public function first($expression)
+    public function first($expression): self
     {
         $this->expr->first($expression);
 
@@ -126,9 +121,8 @@ class Group extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/last/
      * @see Expr::last
      * @param mixed|Expr $expression
-     * @return $this
      */
-    public function last($expression)
+    public function last($expression): self
     {
         $this->expr->last($expression);
 
@@ -142,9 +136,8 @@ class Group extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/max/
      * @see Expr::max
      * @param mixed|Expr $expression
-     * @return $this
      */
-    public function max($expression)
+    public function max($expression): self
     {
         $this->expr->max($expression);
 
@@ -158,9 +151,8 @@ class Group extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/min/
      * @see Expr::min
      * @param mixed|Expr $expression
-     * @return $this
      */
-    public function min($expression)
+    public function min($expression): self
     {
         $this->expr->min($expression);
 
@@ -174,9 +166,8 @@ class Group extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/push/
      * @see Expr::push
      * @param mixed|Expr $expression
-     * @return $this
      */
-    public function push($expression)
+    public function push($expression): self
     {
         $this->expr->push($expression);
 
@@ -191,10 +182,9 @@ class Group extends Operator
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevPop/
      * @see Expr::stdDevPop
      * @param mixed|Expr $expression
-     * @return $this
      *
      */
-    public function stdDevPop($expression)
+    public function stdDevPop($expression): self
     {
         $this->expr->stdDevPop($expression);
 
@@ -209,10 +199,9 @@ class Group extends Operator
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevSamp/
      * @see Expr::stdDevSamp
      * @param mixed|Expr $expression
-     * @return $this
      *
      */
-    public function stdDevSamp($expression)
+    public function stdDevSamp($expression): self
     {
         $this->expr->stdDevSamp($expression);
 
@@ -227,9 +216,8 @@ class Group extends Operator
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sum/
      * @see Expr::sum
      * @param mixed|Expr $expression
-     * @return $this
      */
-    public function sum($expression)
+    public function sum($expression): self
     {
         $this->expr->sum($expression);
 

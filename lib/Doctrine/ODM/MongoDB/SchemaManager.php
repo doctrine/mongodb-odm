@@ -35,10 +35,8 @@ class SchemaManager
     /**
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory.
-     *
-     * @param int $timeout Timeout (ms) for acknowledged index creation
      */
-    public function ensureIndexes($timeout = null)
+    public function ensureIndexes(?int $timeout = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -54,10 +52,8 @@ class SchemaManager
      *
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
-     *
-     * @param int $timeout Timeout (ms) for acknowledged index creation
      */
-    public function updateIndexes($timeout = null)
+    public function updateIndexes(?int $timeout = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -74,11 +70,9 @@ class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      *
-     * @param string $documentName
-     * @param int    $timeout      Timeout (ms) for acknowledged index creation
      * @throws \InvalidArgumentException
      */
-    public function updateDocumentIndexes($documentName, $timeout = null)
+    public function updateDocumentIndexes(string $documentName, ?int $timeout = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
 
@@ -120,22 +114,13 @@ class SchemaManager
         $this->ensureDocumentIndexes($documentName, $timeout);
     }
 
-    /**
-     * @param string $documentName
-     * @return array
-     */
-    public function getDocumentIndexes($documentName)
+    public function getDocumentIndexes(string $documentName): array
     {
         $visited = [];
         return $this->doGetDocumentIndexes($documentName, $visited);
     }
 
-    /**
-     * @param string $documentName
-     * @param array  $visited
-     * @return array
-     */
-    private function doGetDocumentIndexes($documentName, array &$visited)
+    private function doGetDocumentIndexes(string $documentName, array &$visited): array
     {
         if (isset($visited[$documentName])) {
             return [];
@@ -194,10 +179,7 @@ class SchemaManager
         return $indexes;
     }
 
-    /**
-     * @return array
-     */
-    private function prepareIndexes(ClassMetadata $class)
+    private function prepareIndexes(ClassMetadata $class): array
     {
         $persister = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
         $indexes = $class->getIndexes();
@@ -228,11 +210,9 @@ class SchemaManager
     /**
      * Ensure the given document's indexes are created.
      *
-     * @param string $documentName
-     * @param int    $timeout      Timeout (ms) for acknowledged index creation
      * @throws \InvalidArgumentException
      */
-    public function ensureDocumentIndexes($documentName, $timeout = null)
+    public function ensureDocumentIndexes(string $documentName, ?int $timeoutMs = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -253,8 +233,8 @@ class SchemaManager
             $keys = $index['keys'];
             $options = $index['options'];
 
-            if (! isset($options['timeout']) && isset($timeout)) {
-                $options['timeout'] = $timeout;
+            if (! isset($options['timeout']) && isset($timeoutMs)) {
+                $options['timeout'] = $timeoutMs;
             }
 
             $collection->createIndex($keys, $options);
@@ -265,7 +245,7 @@ class SchemaManager
      * Delete indexes for all documents that can be loaded with the
      * metadata factory.
      */
-    public function deleteIndexes()
+    public function deleteIndexes(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -279,10 +259,9 @@ class SchemaManager
     /**
      * Delete the given document's indexes.
      *
-     * @param string $documentName
      * @throws \InvalidArgumentException
      */
-    public function deleteDocumentIndexes($documentName)
+    public function deleteDocumentIndexes(string $documentName): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -295,7 +274,7 @@ class SchemaManager
     /**
      * Create all the mapped document collections in the metadata factory.
      */
-    public function createCollections()
+    public function createCollections(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -308,10 +287,9 @@ class SchemaManager
     /**
      * Create the document collection for a mapped class.
      *
-     * @param string $documentName
      * @throws \InvalidArgumentException
      */
-    public function createDocumentCollection($documentName)
+    public function createDocumentCollection(string $documentName): void
     {
         $class = $this->dm->getClassMetadata($documentName);
 
@@ -339,7 +317,7 @@ class SchemaManager
     /**
      * Drop all the mapped document collections in the metadata factory.
      */
-    public function dropCollections()
+    public function dropCollections(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -353,10 +331,9 @@ class SchemaManager
     /**
      * Drop the document collection for a mapped class.
      *
-     * @param string $documentName
      * @throws \InvalidArgumentException
      */
-    public function dropDocumentCollection($documentName)
+    public function dropDocumentCollection(string $documentName): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -375,7 +352,7 @@ class SchemaManager
     /**
      * Drop all the mapped document databases in the metadata factory.
      */
-    public function dropDatabases()
+    public function dropDatabases(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -389,10 +366,9 @@ class SchemaManager
     /**
      * Drop the document database for a mapped class.
      *
-     * @param string $documentName
      * @throws \InvalidArgumentException
      */
-    public function dropDocumentDatabase($documentName)
+    public function dropDocumentDatabase(string $documentName): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -420,11 +396,9 @@ class SchemaManager
      * the unique index. Additionally, the background option is only
      * relevant to index creation and is not considered.
      *
-     * @param array|IndexInfo $mongoIndex    Mongo index data.
-     * @param array           $documentIndex Document index data.
-     * @return bool True if the indexes are equivalent, otherwise false.
+     * @param array|IndexInfo $mongoIndex Mongo index data.
      */
-    public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex)
+    public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, array $documentIndex): bool
     {
         $documentIndexOptions = $documentIndex['options'];
 
@@ -485,11 +459,9 @@ class SchemaManager
      * Determine if the keys for a MongoDB index can be considered equivalent to
      * those for an index in class metadata.
      *
-     * @param array|IndexInfo $mongoIndex    Mongo index data.
-     * @param array           $documentIndex Document index data.
-     * @return bool True if the indexes have equivalent keys, otherwise false.
+     * @param array|IndexInfo $mongoIndex Mongo index data.
      */
-    private function isEquivalentIndexKeys($mongoIndex, array $documentIndex)
+    private function isEquivalentIndexKeys($mongoIndex, array $documentIndex): bool
     {
         $mongoIndexKeys    = $mongoIndex['key'];
         $documentIndexKeys = $documentIndex['keys'];
@@ -518,11 +490,9 @@ class SchemaManager
      * Determine if the text index weights for a MongoDB index can be considered
      * equivalent to those for an index in class metadata.
      *
-     * @param array|IndexInfo $mongoIndex    Mongo index data.
-     * @param array           $documentIndex Document index data.
-     * @return bool True if the indexes have equivalent weights, otherwise false.
+     * @param array|IndexInfo $mongoIndex Mongo index data.
      */
-    private function isEquivalentTextIndexWeights($mongoIndex, array $documentIndex)
+    private function isEquivalentTextIndexWeights($mongoIndex, array $documentIndex): bool
     {
         $mongoIndexWeights    = $mongoIndex['weights'];
         $documentIndexWeights = $documentIndex['options']['weights'] ?? [];
@@ -556,7 +526,7 @@ class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function ensureSharding(array $indexOptions = [])
+    public function ensureSharding(array $indexOptions = []): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || ! $class->isSharded()) {
@@ -570,12 +540,11 @@ class SchemaManager
     /**
      * Ensure sharding for collection by document name.
      *
-     * @param string $documentName
-     * @param array  $indexOptions Options for `ensureIndex` command. It's performed on an existing collections.
+     * @param array $indexOptions Options for `ensureIndex` command. It's performed on an existing collections.
      *
      * @throws MongoDBException
      */
-    public function ensureDocumentSharding($documentName, array $indexOptions = [])
+    public function ensureDocumentSharding(string $documentName, array $indexOptions = []): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if (! $class->isSharded()) {
@@ -620,11 +589,9 @@ class SchemaManager
     /**
      * Enable sharding for database which contains documents with given name.
      *
-     * @param string $documentName
-     *
      * @throws MongoDBException
      */
-    public function enableShardingForDbByDocumentName($documentName)
+    public function enableShardingForDbByDocumentName(string $documentName): void
     {
         $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $adminDb = $this->dm->getClient()->selectDatabase('admin');
@@ -638,12 +605,7 @@ class SchemaManager
         }
     }
 
-    /**
-     * @param string $documentName
-     *
-     * @return array
-     */
-    private function runShardCollectionCommand($documentName)
+    private function runShardCollectionCommand(string $documentName): array
     {
         $class = $this->dm->getClassMetadata($documentName);
         $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();

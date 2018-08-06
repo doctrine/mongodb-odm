@@ -55,7 +55,7 @@ class GeoNear extends Match
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         $geoNear = [
             'near' => $this->near,
@@ -83,39 +83,30 @@ class GeoNear extends Match
 
     /**
      * The output field that contains the calculated distance. To specify a field within an embedded document, use dot notation.
-     *
-     * @param string $distanceField
-     * @return $this
      */
-    public function distanceField($distanceField)
+    public function distanceField(string $distanceField): self
     {
-        $this->distanceField = (string) $distanceField;
+        $this->distanceField = $distanceField;
 
         return $this;
     }
 
     /**
      * The factor to multiply all distances returned by the query.
-     *
-     * @param float $distanceMultiplier
-     * @return $this
      */
-    public function distanceMultiplier($distanceMultiplier)
+    public function distanceMultiplier(float $distanceMultiplier): self
     {
-        $this->distanceMultiplier = (float) $distanceMultiplier;
+        $this->distanceMultiplier = $distanceMultiplier;
 
         return $this;
     }
 
     /**
      * This specifies the output field that identifies the location used to calculate the distance.
-     *
-     * @param string $includeLocs
-     * @return $this
      */
-    public function includeLocs($includeLocs)
+    public function includeLocs(string $includeLocs): self
     {
-        $this->includeLocs = (string) $includeLocs;
+        $this->includeLocs = $includeLocs;
 
         return $this;
     }
@@ -123,10 +114,9 @@ class GeoNear extends Match
     /**
      * The maximum number of documents to return.
      *
-     * @param int $limit
      * @return $this
      */
-    public function limit($limit)
+    public function limit(int $limit)
     {
         return $this->num($limit);
     }
@@ -134,12 +124,11 @@ class GeoNear extends Match
     /**
      * The maximum distance from the center point that the documents can be.
      *
-     * @param float $maxDistance
      * @return $this
      */
-    public function maxDistance($maxDistance)
+    public function maxDistance(float $maxDistance)
     {
-        $this->maxDistance = (float) $maxDistance;
+        $this->maxDistance = $maxDistance;
 
         return $this;
     }
@@ -147,13 +136,12 @@ class GeoNear extends Match
     /**
      * The minimum distance from the center point that the documents can be.
      *
-     * @param float $minDistance
      * @return $this
      *
      */
-    public function minDistance($minDistance)
+    public function minDistance(float $minDistance)
     {
-        $this->minDistance = (float) $minDistance;
+        $this->minDistance = $minDistance;
 
         return $this;
     }
@@ -170,7 +158,7 @@ class GeoNear extends Match
      * @param float             $y
      * @return $this
      */
-    public function near($x, $y = null)
+    public function near($x, $y = null): self
     {
         if ($x instanceof Point) {
             $x = $x->jsonSerialize();
@@ -185,25 +173,21 @@ class GeoNear extends Match
     /**
      * The maximum number of documents to return.
      *
-     * @param int $num
      * @return $this
      */
-    public function num($num)
+    public function num(int $num): self
     {
-        $this->num = (int) $num;
+        $this->num = $num;
 
         return $this;
     }
 
     /**
      * Required if using a 2dsphere index. Determines how MongoDB calculates the distance.
-     *
-     * @param bool $spherical
-     * @return $this
      */
-    public function spherical($spherical = true)
+    public function spherical(bool $spherical = true): self
     {
-        $this->spherical = (bool) $spherical;
+        $this->spherical = $spherical;
 
         return $this;
     }
@@ -211,12 +195,11 @@ class GeoNear extends Match
     /**
      * If this value is true, the query returns a matching document once, even if more than one of the document’s location fields match the query.
      *
-     * @param bool $uniqueDocs
      * @return $this
      */
-    public function uniqueDocs($uniqueDocs = true)
+    public function uniqueDocs(bool $uniqueDocs = true): self
     {
-        $this->uniqueDocs = (bool) $uniqueDocs;
+        $this->uniqueDocs = $uniqueDocs;
 
         return $this;
     }

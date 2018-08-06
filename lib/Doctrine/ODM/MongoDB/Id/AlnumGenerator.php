@@ -9,7 +9,6 @@ use const STR_PAD_LEFT;
 use function bccomp;
 use function bcdiv;
 use function bcmod;
-use function intval;
 use function is_numeric;
 use function str_pad;
 use function strlen;
@@ -43,36 +42,30 @@ class AlnumGenerator extends IncrementGenerator
 
     /**
      * Set padding on generated id
-     *
-     * @param int $pad
      */
-    public function setPad($pad)
+    public function setPad(int $pad): void
     {
-        $this->pad = intval($pad);
+        $this->pad = $pad;
     }
 
     /**
      * Enable awkwardSafeMode character set
-     *
-     * @param bool $awkwardSafeMode
      */
-    public function setAwkwardSafeMode($awkwardSafeMode = false)
+    public function setAwkwardSafeMode(bool $awkwardSafeMode = false): void
     {
         $this->awkwardSafeMode = $awkwardSafeMode;
     }
 
     /**
      * Set the character set used for ID generation
-     *
-     * @param string $chars ID character set
      */
-    public function setChars($chars)
+    public function setChars(string $chars): void
     {
         $this->chars = $chars;
     }
 
     /** @inheritDoc */
-    public function generate(DocumentManager $dm, $document)
+    public function generate(DocumentManager $dm, object $document)
     {
         $id = (string) parent::generate($dm, $document);
         $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;

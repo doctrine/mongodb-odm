@@ -76,7 +76,7 @@ final class CachingIterator implements Iterator
     /**
      * @see http://php.net/iterator.next
      */
-    public function next()
+    public function next(): void
     {
         if (! $this->iteratorExhausted) {
             $this->iterator->next();
@@ -89,7 +89,7 @@ final class CachingIterator implements Iterator
     /**
      * @see http://php.net/iterator.rewind
      */
-    public function rewind()
+    public function rewind(): void
     {
         /* If the iterator has advanced, exhaust it now so that future iteration
          * can rely on the cache.
@@ -104,9 +104,8 @@ final class CachingIterator implements Iterator
     /**
      *
      * @see http://php.net/iterator.valid
-     * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->key() !== null;
     }
@@ -114,7 +113,7 @@ final class CachingIterator implements Iterator
     /**
      * Ensures that the inner iterator is fully consumed and cached.
      */
-    private function exhaustIterator()
+    private function exhaustIterator(): void
     {
         while (! $this->iteratorExhausted) {
             $this->next();
@@ -124,7 +123,7 @@ final class CachingIterator implements Iterator
     /**
      * Stores the current item in the cache.
      */
-    private function storeCurrentItem()
+    private function storeCurrentItem(): void
     {
         $key = $this->iterator->key();
 

@@ -20,83 +20,52 @@ use function sprintf;
  */
 class MongoDBException extends \Exception
 {
-    /**
-     * @return MongoDBException
-     */
-    public static function detachedDocumentCannotBeRemoved()
+    public static function detachedDocumentCannotBeRemoved(): self
     {
         return new self('Detached document cannot be removed');
     }
 
-    /**
-     * @param string $state
-     * @return MongoDBException
-     */
-    public static function invalidDocumentState($state)
+    public static function invalidDocumentState(int $state): self
     {
         return new self(sprintf('Invalid document state "%s"', $state));
     }
 
-    /**
-     * @param string $className
-     * @return MongoDBException
-     */
-    public static function documentNotMappedToCollection($className)
+    public static function documentNotMappedToCollection(string $className): self
     {
         return new self(sprintf('The "%s" document is not mapped to a MongoDB database collection.', $className));
     }
 
-    /**
-     * @return MongoDBException
-     */
-    public static function documentManagerClosed()
+    public static function documentManagerClosed(): self
     {
         return new self('The DocumentManager is closed.');
     }
 
-    /**
-     * @param string $documentNamespaceAlias
-     * @return MongoDBException
-     */
-    public static function unknownDocumentNamespace($documentNamespaceAlias)
+    public static function unknownDocumentNamespace(string $documentNamespaceAlias): self
     {
         return new self(sprintf("Unknown Document namespace alias '%s'.", $documentNamespaceAlias));
     }
 
-    /**
-     * @param string $className
-     * @return MongoDBException
-     */
-    public static function cannotPersistMappedSuperclass($className)
+    public static function cannotPersistMappedSuperclass(string $className): self
     {
         return new self('Cannot persist an embedded document, aggregation result document or mapped superclass ' . $className);
     }
 
-    /**
-     * @param string $className
-     * @return MongoDBException
-     */
-    public static function invalidDocumentRepository($className)
+    public static function invalidDocumentRepository(string $className): self
     {
         return new self(sprintf("Invalid repository class '%s'. It must be a %s.", $className, ObjectRepository::class));
     }
 
-    /**
-     * @param string $className
-     * @return MongoDBException
-     */
-    public static function invalidGridFSRepository($className)
+    public static function invalidGridFSRepository(string $className): self
     {
         return new self(sprintf("Invalid repository class '%s'. It must be a %s.", $className, GridFSRepository::class));
     }
 
     /**
-     * @param string       $type
      * @param string|array $expected
      * @param mixed        $got
      * @return MongoDBException
      */
-    public static function invalidValueForType($type, $expected, $got)
+    public static function invalidValueForType(string $type, $expected, $got): self
     {
         if (is_array($expected)) {
             $expected = sprintf(
@@ -115,32 +84,17 @@ class MongoDBException extends \Exception
         return new self(sprintf('%s type requires value of type %s, %s given', $type, $expected, $gotType));
     }
 
-    /**
-     * @param string $field
-     * @param string $className
-     * @return MongoDBException
-     */
-    public static function shardKeyFieldCannotBeChanged($field, $className)
+    public static function shardKeyFieldCannotBeChanged(string $field, string $className): self
     {
         return new self(sprintf('Shard key field "%s" in class "%s" cannot be changed.', $field, $className));
     }
 
-    /**
-     * @param string $field
-     * @param string $className
-     * @return MongoDBException
-     */
-    public static function shardKeyFieldMissing($field, $className)
+    public static function shardKeyFieldMissing(string $field, string $className): self
     {
         return new self(sprintf('Shard key field "%s" in class "%s" is missing.', $field, $className));
     }
 
-    /**
-     * @param string $dbName
-     * @param string $errorMessage
-     * @return MongoDBException
-     */
-    public static function failedToEnableSharding($dbName, $errorMessage)
+    public static function failedToEnableSharding(string $dbName, string $errorMessage): self
     {
         return new self(sprintf(
             'Failed to enable sharding for database "%s". Error from MongoDB: %s',
@@ -149,12 +103,7 @@ class MongoDBException extends \Exception
         ));
     }
 
-    /**
-     * @param string $className
-     * @param string $errorMessage
-     * @return MongoDBException
-     */
-    public static function failedToEnsureDocumentSharding($className, $errorMessage)
+    public static function failedToEnsureDocumentSharding(string $className, string $errorMessage): self
     {
         return new self(sprintf(
             'Failed to ensure sharding for document "%s". Error from MongoDB: %s',
@@ -163,10 +112,7 @@ class MongoDBException extends \Exception
         ));
     }
 
-    /**
-     * @return MongoDBException
-     */
-    public static function commitInProgress()
+    public static function commitInProgress(): self
     {
         return new self('There is already a commit operation in progress. Did you call flush from an event listener?');
     }

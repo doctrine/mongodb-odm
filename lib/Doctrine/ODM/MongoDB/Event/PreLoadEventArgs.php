@@ -15,13 +15,7 @@ class PreLoadEventArgs extends LifecycleEventArgs
     /** @var array */
     private $data;
 
-    /**
-     *
-     *
-     * @param object $document
-     * @param array  $data     Array of data to be loaded and hydrated
-     */
-    public function __construct($document, DocumentManager $dm, array &$data)
+    public function __construct(object $document, DocumentManager $dm, array &$data)
     {
         parent::__construct($document, $dm);
         $this->data =& $data;
@@ -29,10 +23,8 @@ class PreLoadEventArgs extends LifecycleEventArgs
 
     /**
      * Get the array of data to be loaded and hydrated.
-     *
-     * @return array
      */
-    public function &getData()
+    public function &getData(): array
     {
         return $this->data;
     }

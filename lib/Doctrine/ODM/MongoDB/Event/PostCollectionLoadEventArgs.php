@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 
 /**
  * Class that holds arguments for postCollectionLoad event.
- *
  */
 class PostCollectionLoadEventArgs extends ManagerEventArgs
 {
@@ -24,10 +23,8 @@ class PostCollectionLoadEventArgs extends ManagerEventArgs
 
     /**
      * Gets collection that was just initialized (loaded).
-     *
-     * @return PersistentCollectionInterface
      */
-    public function getCollection()
+    public function getCollection(): PersistentCollectionInterface
     {
         return $this->collection;
     }
