@@ -43,10 +43,6 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
 
     public function testWithNullableReturnType()
     {
-        if (PHP_VERSION_ID < 70100) {
-            $this->markTestSkipped(sprintf('%s requires at least PHP 7.1', __METHOD__));
-        }
-
         $class = $this->generator->loadClass(CollWithNullableReturnType::class, Configuration::AUTOGENERATE_EVAL);
         $coll = new $class(new CollWithNullableReturnType(), $this->dm, $this->uow);
         $this->assertInstanceOf(CollWithNullableReturnType::class, $coll);
