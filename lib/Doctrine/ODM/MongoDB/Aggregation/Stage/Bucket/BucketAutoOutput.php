@@ -21,22 +21,16 @@ class BucketAutoOutput extends AbstractOutput
     /**
      * An expression to group documents by. To specify a field path, prefix the
      * field name with a dollar sign $ and enclose it in quotes.
-     *
-     * @return Stage\BucketAuto
      */
-    public function groupBy($expression)
+    public function groupBy($expression): Stage\BucketAuto
     {
         return $this->bucket->groupBy($expression);
     }
 
     /**
      * A positive 32-bit integer that specifies the number of buckets into which input documents are grouped.
-     *
-     * @param int $buckets
-     *
-     * @return Stage\BucketAuto
      */
-    public function buckets($buckets)
+    public function buckets(int $buckets): Stage\BucketAuto
     {
         return $this->bucket->buckets($buckets);
     }
@@ -45,12 +39,8 @@ class BucketAutoOutput extends AbstractOutput
      * A string that specifies the preferred number series to use to ensure that
      * the calculated boundary edges end on preferred round numbers or their
      * powers of 10.
-     *
-     * @param string $granularity
-     *
-     * @return Stage\BucketAuto
      */
-    public function granularity($granularity)
+    public function granularity(string $granularity): Stage\BucketAuto
     {
         return $this->bucket->granularity($granularity);
     }

@@ -31,10 +31,8 @@ class UuidGenerator extends AbstractIdGenerator
 
     /**
      * Used to set the salt that will be applied to each id
-     *
-     * @param string $salt The sale to use
      */
-    public function setSalt($salt)
+    public function setSalt(string $salt): void
     {
         $this->salt = $salt;
     }
@@ -44,18 +42,15 @@ class UuidGenerator extends AbstractIdGenerator
      *
      * @return string $salt The current salt
      */
-    public function getSalt()
+    public function getSalt(): string
     {
         return $this->salt;
     }
 
     /**
      * Checks that a given string is a valid uuid.
-     *
-     * @param string $uuid The string to check.
-     * @return bool
      */
-    public function isValid($uuid)
+    public function isValid(string $uuid): bool
     {
         return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid)
             === 1;
@@ -66,9 +61,11 @@ class UuidGenerator extends AbstractIdGenerator
      *
      * @param DocumentManager $dm       Not used.
      * @param object          $document Not used.
+     *
      * @return string UUID
+     * @throws \Exception
      */
-    public function generate(DocumentManager $dm, $document)
+    public function generate(DocumentManager $dm, object $document)
     {
         $uuid = $this->generateV4();
         return $this->generateV5($uuid, $this->salt ?: php_uname('n'));
@@ -76,10 +73,8 @@ class UuidGenerator extends AbstractIdGenerator
 
     /**
      * Generates a v4 UUID
-     *
-     * @return string
      */
-    public function generateV4()
+    public function generateV4(): string
     {
         return sprintf(
             '%04x%04x%04x%04x%04x%04x%04x%04x',
@@ -105,12 +100,9 @@ class UuidGenerator extends AbstractIdGenerator
     /**
      * Generates a v5 UUID
      *
-     * @param string $namespace The UUID to seed with
-     * @param string $salt      The string to salt this new UUID with
      * @throws \Exception When the provided namespace is invalid.
-     * @return string
      */
-    public function generateV5($namespace, $salt)
+    public function generateV5(string $namespace, string $salt): string
     {
         if (! $this->isValid($namespace)) {
             throw new \Exception('Provided $namespace is invalid: ' . $namespace);

@@ -26,7 +26,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * {@inheritdoc}
      */
-    public function getRepository(DocumentManager $documentManager, $documentName)
+    public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
         $hashKey = $metadata->getName() . spl_object_hash($documentManager);
@@ -45,12 +45,9 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for a document class.
      *
-     * @param DocumentManager $documentManager The DocumentManager instance.
-     * @param string          $documentName    The name of the document.
-     *
      * @return ObjectRepository|GridFSRepository
      */
-    protected function createRepository(DocumentManager $documentManager, $documentName)
+    protected function createRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
 
@@ -67,9 +64,6 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
 
     /**
      * Instantiates requested repository.
-     *
-     * @param string $repositoryClassName
-     * @return ObjectRepository
      */
-    abstract protected function instantiateRepository($repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata);
+    abstract protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata): ObjectRepository;
 }

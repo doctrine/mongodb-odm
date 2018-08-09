@@ -21,10 +21,8 @@ class CriteriaMerger
      * Combines any number of criteria arrays as clauses of an "$and" query.
      *
      * @param array ...$criterias Any number of query criteria arrays
-     *
-     * @return array
      */
-    public function merge(...$criterias)
+    public function merge(...$criterias): array
     {
         $nonEmptyCriterias = array_values(array_filter($criterias, function (array $criteria) {
             return ! empty($criteria);

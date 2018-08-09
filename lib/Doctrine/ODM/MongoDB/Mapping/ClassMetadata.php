@@ -13,7 +13,6 @@ use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
-use MongoDB\BSON\ObjectId;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -175,7 +174,7 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
-     * @var string
+     * @var string|null
      */
     public $db;
 
@@ -195,7 +194,7 @@ class ClassMetadata implements BaseClassMetadata
      * READ-ONLY: If the collection should be a fixed size.
      * @var bool
      */
-    public $collectionCapped;
+    public $collectionCapped = false;
 
     /**
      * READ-ONLY: If the collection is fixed size, its size in bytes.
@@ -265,7 +264,7 @@ class ClassMetadata implements BaseClassMetadata
      * The name of the custom repository class used for the document class.
      * (Optional).
      *
-     * @var string
+     * @var string|null
      */
     public $customRepositoryClassName;
 
@@ -300,7 +299,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY: The Id generator type used by the class.
      *
-     * @var string
+     * @var int
      */
     public $generatorType = self::GENERATOR_TYPE_AUTO;
 
@@ -443,12 +442,12 @@ class ClassMetadata implements BaseClassMetadata
      *
      * @var bool $isVersioned
      */
-    public $isVersioned;
+    public $isVersioned = false;
 
     /**
      * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
      *
-     * @var mixed $versionField
+     * @var string|null $versionField
      */
     public $versionField;
 
@@ -458,7 +457,7 @@ class ClassMetadata implements BaseClassMetadata
      *
      * @var bool $isLockable
      */
-    public $isLockable;
+    public $isLockable = false;
 
     /**
      * READ-ONLY: The name of the field which is used for locking a document.
@@ -487,10 +486,8 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
-     *
-     * @param string $documentName The name of the document class the new instance is used for.
      */
-    public function __construct($documentName)
+    public function __construct(string $documentName)
     {
         $this->name = $documentName;
         $this->rootDocumentName = $documentName;
@@ -501,22 +498,19 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Helper method to get reference id of ref* type references
-     * @param mixed  $reference
-     * @param string $storeAs
+     * @param mixed $reference
      * @return mixed
      * @internal
      */
-    public static function getReferenceId($reference, $storeAs)
+    public static function getReferenceId($reference, string $storeAs)
     {
         return $storeAs === self::REFERENCE_STORE_AS_ID ? $reference : $reference[self::getReferencePrefix($storeAs) . 'id'];
     }
 
     /**
      * Returns the reference prefix used for a reference
-     * @param string $storeAs
-     * @return string
      */
-    private static function getReferencePrefix($storeAs)
+    private static function getReferencePrefix(string $storeAs): string
     {
         if (! in_array($storeAs, [self::REFERENCE_STORE_AS_REF, self::REFERENCE_STORE_AS_DB_REF, self::REFERENCE_STORE_AS_DB_REF_WITH_DB])) {
             throw new \LogicException('Can only get a reference prefix for DBRef and reference arrays');
@@ -527,12 +521,10 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Returns a fully qualified field name for a given reference
-     * @param string $storeAs
      * @param string $pathPrefix The field path prefix
-     * @return string
      * @internal
      */
-    public static function getReferenceFieldName($storeAs, $pathPrefix = '')
+    public static function getReferenceFieldName(string $storeAs, string $pathPrefix = ''): string
     {
         if ($storeAs === self::REFERENCE_STORE_AS_ID) {
             return $pathPrefix;
@@ -544,7 +536,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getReflectionClass()
+    public function getReflectionClass(): \ReflectionClass
     {
         if (! $this->reflClass) {
             $this->reflClass = new \ReflectionClass($this->name);
@@ -556,7 +548,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function isIdentifier($fieldName)
+    public function isIdentifier($fieldName): bool
     {
         return $this->identifier === $fieldName;
     }
@@ -564,10 +556,8 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * INTERNAL:
      * Sets the mapped identifier field of this class.
-     *
-     * @param string $identifier
      */
-    public function setIdentifier($identifier)
+    public function setIdentifier(?string $identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -578,7 +568,7 @@ class ClassMetadata implements BaseClassMetadata
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
      */
-    public function getIdentifier()
+    public function getIdentifier(): array
     {
         return [$this->identifier];
     }
@@ -589,7 +579,7 @@ class ClassMetadata implements BaseClassMetadata
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
      */
-    public function getIdentifierFieldNames()
+    public function getIdentifierFieldNames(): array
     {
         return [$this->identifier];
     }
@@ -597,39 +587,31 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function hasField($fieldName)
+    public function hasField($fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
     }
 
     /**
      * Sets the inheritance type used by the class and it's subclasses.
-     *
-     * @param int $type
      */
-    public function setInheritanceType($type)
+    public function setInheritanceType(int $type): void
     {
         $this->inheritanceType = $type;
     }
 
     /**
      * Checks whether a mapped field is inherited from an entity superclass.
-     *
-     * @param  string $fieldName
-     *
-     * @return bool TRUE if the field is inherited, FALSE otherwise.
      */
-    public function isInheritedField($fieldName)
+    public function isInheritedField(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['inherited']);
     }
 
     /**
      * Registers a custom repository class for the document class.
-     *
-     * @param string $repositoryClassName The class name of the custom repository.
      */
-    public function setCustomRepositoryClass($repositoryClassName)
+    public function setCustomRepositoryClass(?string $repositoryClassName): void
     {
         if ($this->isEmbeddedDocument || $this->isQueryResultDocument) {
             return;
@@ -642,13 +624,10 @@ class ClassMetadata implements BaseClassMetadata
      * Dispatches the lifecycle event of the given document by invoking all
      * registered callbacks.
      *
-     * @param string $event     Lifecycle event
-     * @param object $document  Document on which the event occurred
-     * @param array  $arguments Arguments to pass to all callbacks
      * @throws \InvalidArgumentException If document class is not this class or
      *                                   a Proxy of this class.
      */
-    public function invokeLifecycleCallbacks($event, $document, ?array $arguments = null)
+    public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null): void
     {
         if (! $document instanceof $this->name) {
             throw new \InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
@@ -669,23 +648,16 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Checks whether the class has callbacks registered for a lifecycle event.
-     *
-     * @param string $event Lifecycle event
-     *
-     * @return bool
      */
-    public function hasLifecycleCallbacks($event)
+    public function hasLifecycleCallbacks(string $event): bool
     {
         return ! empty($this->lifecycleCallbacks[$event]);
     }
 
     /**
      * Gets the registered lifecycle callbacks for an event.
-     *
-     * @param string $event
-     * @return array
      */
-    public function getLifecycleCallbacks($event)
+    public function getLifecycleCallbacks(string $event): array
     {
         return $this->lifecycleCallbacks[$event] ?? [];
     }
@@ -694,11 +666,8 @@ class ClassMetadata implements BaseClassMetadata
      * Adds a lifecycle callback for documents of this class.
      *
      * If the callback is already registered, this is a NOOP.
-     *
-     * @param string $callback
-     * @param string $event
      */
-    public function addLifecycleCallback($callback, $event)
+    public function addLifecycleCallback(string $callback, string $event): void
     {
         if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event])) {
             return;
@@ -711,10 +680,8 @@ class ClassMetadata implements BaseClassMetadata
      * Sets the lifecycle callbacks for documents of this class.
      *
      * Any previously registered callbacks are overwritten.
-     *
-     * @param array $callbacks
      */
-    public function setLifecycleCallbacks(array $callbacks)
+    public function setLifecycleCallbacks(array $callbacks): void
     {
         $this->lifecycleCallbacks = $callbacks;
     }
@@ -725,10 +692,9 @@ class ClassMetadata implements BaseClassMetadata
      * Note: A method may be registered multiple times for different fields.
      * it will be invoked only once for the first field found.
      *
-     * @param string       $method Method name
      * @param array|string $fields Database field name(s)
      */
-    public function registerAlsoLoadMethod($method, $fields)
+    public function registerAlsoLoadMethod(string $method, $fields): void
     {
         $this->alsoLoadMethods[$method] = is_array($fields) ? $fields : [$fields];
     }
@@ -737,10 +703,8 @@ class ClassMetadata implements BaseClassMetadata
      * Sets the AlsoLoad methods for documents of this class.
      *
      * Any previously registered methods are overwritten.
-     *
-     * @param array $methods
      */
-    public function setAlsoLoadMethods(array $methods)
+    public function setAlsoLoadMethods(array $methods): void
     {
         $this->alsoLoadMethods = $methods;
     }
@@ -752,12 +716,12 @@ class ClassMetadata implements BaseClassMetadata
      * are only used to discern the hydration class and are not mapped to class
      * properties.
      *
-     * @param string $discriminatorField
+     * @param string|array $discriminatorField
      *
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
      */
-    public function setDiscriminatorField($discriminatorField)
+    public function setDiscriminatorField($discriminatorField): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -791,11 +755,9 @@ class ClassMetadata implements BaseClassMetadata
      * Sets the discriminator values used by this class.
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
-     * @param array $map
-     *
      * @throws MappingException
      */
-    public function setDiscriminatorMap(array $map)
+    public function setDiscriminatorMap(array $map): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -820,11 +782,9 @@ class ClassMetadata implements BaseClassMetadata
      * Sets the default discriminator value to be used for this class
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies if the document has no discriminator value
      *
-     * @param string $defaultDiscriminatorValue
-     *
      * @throws MappingException
      */
-    public function setDefaultDiscriminatorValue($defaultDiscriminatorValue)
+    public function setDefaultDiscriminatorValue(?string $defaultDiscriminatorValue): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -848,11 +808,9 @@ class ClassMetadata implements BaseClassMetadata
      * Used for JOINED/SINGLE_TABLE inheritance and multiple document types in a single
      * collection.
      *
-     * @param string $value
-     *
      * @throws MappingException
      */
-    public function setDiscriminatorValue($value)
+    public function setDiscriminatorValue(string $value): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -864,11 +822,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Add a index for this Document.
-     *
-     * @param array $keys    Array of keys for the index.
-     * @param array $options Array of options for the index.
      */
-    public function addIndex($keys, array $options = [])
+    public function addIndex(array $keys, array $options = []): void
     {
         $this->indexes[] = [
             'keys' => array_map(function ($value) {
@@ -893,20 +848,16 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Returns the array of indexes for this Document.
-     *
-     * @return array $indexes The array of indexes.
      */
-    public function getIndexes()
+    public function getIndexes(): array
     {
         return $this->indexes;
     }
 
     /**
      * Checks whether this document has indexes or not.
-     *
-     * @return bool
      */
-    public function hasIndexes()
+    public function hasIndexes(): bool
     {
         return $this->indexes ? true : false;
     }
@@ -914,12 +865,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Set shard key for this Document.
      *
-     * @param array $keys    Array of document keys.
-     * @param array $options Array of sharding options.
-     *
      * @throws MappingException
      */
-    public function setShardKey(array $keys, array $options = [])
+    public function setShardKey(array $keys, array $options = []): void
     {
         if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && $this->shardKey !== null) {
             throw MappingException::shardKeyInSingleCollInheritanceSubclass($this->getName());
@@ -964,20 +912,15 @@ class ClassMetadata implements BaseClassMetadata
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function getShardKey()
+    public function getShardKey(): array
     {
         return $this->shardKey;
     }
 
     /**
      * Checks whether this document has shard key or not.
-     *
-     * @return bool
      */
-    public function isSharded()
+    public function isSharded(): bool
     {
         return $this->shardKey ? true : false;
     }
@@ -985,10 +928,10 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Sets the read preference used by this class.
      *
-     * @param string     $readPreference
-     * @param array|null $tags
+     * @param null|string|int $readPreference
+     * @param array|null      $tags
      */
-    public function setReadPreference($readPreference, $tags)
+    public function setReadPreference($readPreference, $tags): void
     {
         $this->readPreference = $readPreference;
         $this->readPreferenceTags = $tags;
@@ -997,15 +940,15 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Sets the write concern used by this class.
      *
-     * @param string $writeConcern
+     * @param string|int|null $writeConcern
      */
-    public function setWriteConcern($writeConcern)
+    public function setWriteConcern($writeConcern): void
     {
         $this->writeConcern = $writeConcern;
     }
 
     /**
-     * @return string
+     * @return int|null|string
      */
     public function getWriteConcern()
     {
@@ -1014,72 +957,56 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Whether there is a write concern configured for this class.
-     *
-     * @return bool
      */
-    public function hasWriteConcern()
+    public function hasWriteConcern(): bool
     {
         return $this->writeConcern !== null;
     }
 
     /**
      * Sets the change tracking policy used by this class.
-     *
-     * @param int $policy
      */
-    public function setChangeTrackingPolicy($policy)
+    public function setChangeTrackingPolicy(int $policy): void
     {
         $this->changeTrackingPolicy = $policy;
     }
 
     /**
      * Whether the change tracking policy of this class is "deferred explicit".
-     *
-     * @return bool
      */
-    public function isChangeTrackingDeferredExplicit()
+    public function isChangeTrackingDeferredExplicit(): bool
     {
         return $this->changeTrackingPolicy === self::CHANGETRACKING_DEFERRED_EXPLICIT;
     }
 
     /**
      * Whether the change tracking policy of this class is "deferred implicit".
-     *
-     * @return bool
      */
-    public function isChangeTrackingDeferredImplicit()
+    public function isChangeTrackingDeferredImplicit(): bool
     {
         return $this->changeTrackingPolicy === self::CHANGETRACKING_DEFERRED_IMPLICIT;
     }
 
     /**
      * Whether the change tracking policy of this class is "notify".
-     *
-     * @return bool
      */
-    public function isChangeTrackingNotify()
+    public function isChangeTrackingNotify(): bool
     {
         return $this->changeTrackingPolicy === self::CHANGETRACKING_NOTIFY;
     }
 
     /**
      * Gets the ReflectionProperties of the mapped class.
-     *
-     * @return array An array of ReflectionProperty instances.
      */
-    public function getReflectionProperties()
+    public function getReflectionProperties(): array
     {
         return $this->reflFields;
     }
 
     /**
      * Gets a ReflectionProperty for a specific field of the mapped class.
-     *
-     * @param string $name
-     *
-     * @return \ReflectionProperty
      */
-    public function getReflectionProperty($name)
+    public function getReflectionProperty(string $name): \ReflectionProperty
     {
         return $this->reflFields[$name];
     }
@@ -1087,37 +1014,31 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
      * Returns the database this Document is mapped to.
-     *
-     * @return string $db The database name.
      */
-    public function getDatabase()
+    public function getDatabase(): ?string
     {
         return $this->db;
     }
 
     /**
      * Set the database this Document is mapped to.
-     *
-     * @param string $db The database name
      */
-    public function setDatabase($db)
+    public function setDatabase(?string $db): void
     {
         $this->db = $db;
     }
 
     /**
      * Get the collection this Document is mapped to.
-     *
-     * @return string $collection The collection name.
      */
-    public function getCollection()
+    public function getCollection(): string
     {
         return $this->collection;
     }
@@ -1129,7 +1050,7 @@ class ClassMetadata implements BaseClassMetadata
      *
      * @throws \InvalidArgumentException
      */
-    public function setCollection($name)
+    public function setCollection($name): void
     {
         if (is_array($name)) {
             if (! isset($name['name'])) {
@@ -1167,80 +1088,65 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Get whether or not the documents collection is capped.
-     *
-     * @return bool
      */
-    public function getCollectionCapped()
+    public function getCollectionCapped(): bool
     {
         return $this->collectionCapped;
     }
 
     /**
      * Set whether or not the documents collection is capped.
-     *
-     * @param bool $bool
      */
-    public function setCollectionCapped($bool)
+    public function setCollectionCapped(bool $bool): void
     {
         $this->collectionCapped = $bool;
     }
 
     /**
      * Get the collection size
-     *
-     * @return int
      */
-    public function getCollectionSize()
+    public function getCollectionSize(): ?int
     {
         return $this->collectionSize;
     }
 
     /**
      * Set the collection size.
-     *
-     * @param int $size
      */
-    public function setCollectionSize($size)
+    public function setCollectionSize(int $size): void
     {
         $this->collectionSize = $size;
     }
 
     /**
      * Get the collection max.
-     *
-     * @return int
      */
-    public function getCollectionMax()
+    public function getCollectionMax(): ?int
     {
         return $this->collectionMax;
     }
 
     /**
      * Set the collection max.
-     *
-     * @param int $max
      */
-    public function setCollectionMax($max)
+    public function setCollectionMax(int $max): void
     {
         $this->collectionMax = $max;
     }
 
     /**
      * Returns TRUE if this Document is mapped to a collection FALSE otherwise.
-     *
-     * @return bool
      */
-    public function isMappedToCollection()
+    public function isMappedToCollection(): bool
     {
         return $this->collection ? true : false;
     }
 
     /**
      * Validates the storage strategy of a mapping for consistency
-     * @param array $mapping
      * @throws MappingException
      */
-    private function applyStorageStrategy(array &$mapping)
+    private function applyStorageStrategy(array &$mapping): void
     {
         if (! isset($mapping['type']) || isset($mapping['id'])) {
             return;
@@ -1286,10 +1192,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Map a single embedded document.
-     *
-     * @param array $mapping The mapping information.
      */
-    public function mapOneEmbedded(array $mapping)
+    public function mapOneEmbedded(array $mapping): void
     {
         $mapping['embedded'] = true;
         $mapping['type'] = 'one';
@@ -1298,10 +1202,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Map a collection of embedded documents.
-     *
-     * @param array $mapping The mapping information.
      */
-    public function mapManyEmbedded(array $mapping)
+    public function mapManyEmbedded(array $mapping): void
     {
         $mapping['embedded'] = true;
         $mapping['type'] = 'many';
@@ -1310,10 +1212,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Map a single document reference.
-     *
-     * @param array $mapping The mapping information.
      */
-    public function mapOneReference(array $mapping)
+    public function mapOneReference(array $mapping): void
     {
         $mapping['reference'] = true;
         $mapping['type'] = 'one';
@@ -1322,10 +1222,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Map a collection of document references.
-     *
-     * @param array $mapping The mapping information.
      */
-    public function mapManyReference(array $mapping)
+    public function mapManyReference(array $mapping): void
     {
         $mapping['reference'] = true;
         $mapping['type'] = 'many';
@@ -1336,10 +1234,8 @@ class ClassMetadata implements BaseClassMetadata
      * INTERNAL:
      * Adds a field mapping without completing/validating it.
      * This is mainly used to add inherited field mappings to derived classes.
-     *
-     * @param array $fieldMapping
      */
-    public function addInheritedFieldMapping(array $fieldMapping)
+    public function addInheritedFieldMapping(array $fieldMapping): void
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
 
@@ -1355,34 +1251,25 @@ class ClassMetadata implements BaseClassMetadata
      * Adds an association mapping without completing/validating it.
      * This is mainly used to add inherited association mappings to derived classes.
      *
-     * @param array $mapping
-     *
-     *
      * @throws MappingException
      */
-    public function addInheritedAssociationMapping(array $mapping/*, $owningClassName = null*/)
+    public function addInheritedAssociationMapping(array $mapping): void
     {
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
 
     /**
      * Checks whether the class has a mapped association with the given field name.
-     *
-     * @param string $fieldName
-     * @return bool
      */
-    public function hasReference($fieldName)
+    public function hasReference(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['reference']);
     }
 
     /**
      * Checks whether the class has a mapped embed with the given field name.
-     *
-     * @param string $fieldName
-     * @return bool
      */
-    public function hasEmbed($fieldName)
+    public function hasEmbed(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['embedded']);
     }
@@ -1392,7 +1279,7 @@ class ClassMetadata implements BaseClassMetadata
      *
      * Checks whether the class has a mapped association (embed or reference) with the given field name.
      */
-    public function hasAssociation($fieldName)
+    public function hasAssociation($fieldName): bool
     {
         return $this->hasReference($fieldName) || $this->hasEmbed($fieldName);
     }
@@ -1403,7 +1290,7 @@ class ClassMetadata implements BaseClassMetadata
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a single valued association.
      */
-    public function isSingleValuedAssociation($fieldName)
+    public function isSingleValuedAssociation($fieldName): bool
     {
         return $this->isSingleValuedReference($fieldName) || $this->isSingleValuedEmbed($fieldName);
     }
@@ -1414,7 +1301,7 @@ class ClassMetadata implements BaseClassMetadata
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a collection valued association.
      */
-    public function isCollectionValuedAssociation($fieldName)
+    public function isCollectionValuedAssociation($fieldName): bool
     {
         return $this->isCollectionValuedReference($fieldName) || $this->isCollectionValuedEmbed($fieldName);
     }
@@ -1423,10 +1310,8 @@ class ClassMetadata implements BaseClassMetadata
      * Checks whether the class has a mapped association for the specified field
      * and if yes, checks whether it is a single-valued association (to-one).
      *
-     * @param string $fieldName
-     * @return bool TRUE if the association exists and is single-valued, FALSE otherwise.
      */
-    public function isSingleValuedReference($fieldName)
+    public function isSingleValuedReference(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
             $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_ONE;
@@ -1435,11 +1320,8 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Checks whether the class has a mapped association for the specified field
      * and if yes, checks whether it is a collection-valued association (to-many).
-     *
-     * @param string $fieldName
-     * @return bool TRUE if the association exists and is collection-valued, FALSE otherwise.
      */
-    public function isCollectionValuedReference($fieldName)
+    public function isCollectionValuedReference(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
             $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_MANY;
@@ -1448,11 +1330,8 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Checks whether the class has a mapped embedded document for the specified field
      * and if yes, checks whether it is a single-valued association (to-one).
-     *
-     * @param string $fieldName
-     * @return bool TRUE if the association exists and is single-valued, FALSE otherwise.
      */
-    public function isSingleValuedEmbed($fieldName)
+    public function isSingleValuedEmbed(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
             $this->fieldMappings[$fieldName]['association'] === self::EMBED_ONE;
@@ -1461,11 +1340,8 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Checks whether the class has a mapped embedded document for the specified field
      * and if yes, checks whether it is a collection-valued association (to-many).
-     *
-     * @param string $fieldName
-     * @return bool TRUE if the association exists and is collection-valued, FALSE otherwise.
      */
-    public function isCollectionValuedEmbed($fieldName)
+    public function isCollectionValuedEmbed(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
             $this->fieldMappings[$fieldName]['association'] === self::EMBED_MANY;
@@ -1473,10 +1349,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Sets the ID generator used to generate IDs for instances of this class.
-     *
-     * @param AbstractIdGenerator $generator
      */
-    public function setIdGenerator($generator)
+    public function setIdGenerator(AbstractIdGenerator $generator): void
     {
         $this->idGenerator = $generator;
     }
@@ -1510,10 +1384,9 @@ class ClassMetadata implements BaseClassMetadata
      *
      * The value will be converted to a PHP type before being set.
      *
-     * @param object $document
-     * @param mixed  $id
+     * @param mixed $id
      */
-    public function setIdentifierValue($document, $id)
+    public function setIdentifierValue(object $document, $id): void
     {
         $id = $this->getPHPIdentifierValue($id);
         $this->reflFields[$this->identifier]->setValue($document, $id);
@@ -1522,10 +1395,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Gets the document identifier as a PHP type.
      *
-     * @param object $document
      * @return mixed $id
      */
-    public function getIdentifierValue($document)
+    public function getIdentifierValue(object $document)
     {
         return $this->reflFields[$this->identifier]->getValue($document);
     }
@@ -1537,7 +1409,7 @@ class ClassMetadata implements BaseClassMetadata
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
      */
-    public function getIdentifierValues($object)
+    public function getIdentifierValues($object): array
     {
         return [$this->identifier => $this->getIdentifierValue($object)];
     }
@@ -1545,11 +1417,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Get the document identifier object as a database type.
      *
-     * @param object $document
-     *
-     * @return ObjectId $id The ObjectId
+     * @return mixed $id
      */
-    public function getIdentifierObject($document)
+    public function getIdentifierObject(object $document)
     {
         return $this->getDatabaseIdentifierValue($this->getIdentifierValue($document));
     }
@@ -1557,11 +1427,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Sets the specified field to the specified value on the given document.
      *
-     * @param object $document
-     * @param string $field
-     * @param mixed  $value
+     * @param mixed $value
      */
-    public function setFieldValue($document, $field, $value)
+    public function setFieldValue(object $document, string $field, $value): void
     {
         if ($document instanceof Proxy && ! $document->__isInitialized()) {
             //property changes to an uninitialized proxy will not be tracked or persisted,
@@ -1575,12 +1443,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Gets the specified field's value off the given document.
      *
-     * @param object $document
-     * @param string $field
-     *
      * @return mixed
      */
-    public function getFieldValue($document, $field)
+    public function getFieldValue(object $document, string $field)
     {
         if ($document instanceof Proxy && $field !== $this->identifier && ! $document->__isInitialized()) {
             $document->__load();
@@ -1592,13 +1457,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Gets the mapping of a field.
      *
-     * @param string $fieldName The field name.
-     *
-     * @return array  The field mapping.
-     *
      * @throws MappingException If the $fieldName is not found in the fieldMappings array.
      */
-    public function getFieldMapping($fieldName)
+    public function getFieldMapping(string $fieldName): array
     {
         if (! isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
@@ -1608,10 +1469,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Gets mappings of fields holding embedded document(s).
-     *
-     * @return array of field mappings
      */
-    public function getEmbeddedFieldsMappings()
+    public function getEmbeddedFieldsMappings(): array
     {
         return array_filter(
             $this->associationMappings,
@@ -1625,12 +1484,9 @@ class ClassMetadata implements BaseClassMetadata
      * Gets the field mapping by its DB name.
      * E.g. it returns identifier's mapping when called with _id.
      *
-     * @param string $dbFieldName
-     *
-     * @return array
      * @throws MappingException
      */
-    public function getFieldMappingByDbFieldName($dbFieldName)
+    public function getFieldMappingByDbFieldName(string $dbFieldName): array
     {
         foreach ($this->fieldMappings as $mapping) {
             if ($mapping['name'] === $dbFieldName) {
@@ -1643,12 +1499,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Check if the field is not null.
-     *
-     * @param string $fieldName The field name
-     *
-     * @return bool  TRUE if the field is not null, FALSE otherwise.
      */
-    public function isNullable($fieldName)
+    public function isNullable(string $fieldName): bool
     {
         $mapping = $this->getFieldMapping($fieldName);
         if ($mapping !== false) {
@@ -1659,58 +1511,45 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Checks whether the document has a discriminator field and value configured.
-     *
-     * @return bool
      */
-    public function hasDiscriminator()
+    public function hasDiscriminator(): bool
     {
         return isset($this->discriminatorField, $this->discriminatorValue);
     }
 
     /**
      * Sets the type of Id generator to use for the mapped class.
-     *
-     * @param string $generatorType Generator type.
      */
-    public function setIdGeneratorType($generatorType)
+    public function setIdGeneratorType(int $generatorType): void
     {
         $this->generatorType = $generatorType;
     }
 
     /**
      * Sets the Id generator options.
-     *
-     * @param array $generatorOptions Generator options.
      */
-    public function setIdGeneratorOptions($generatorOptions)
+    public function setIdGeneratorOptions(array $generatorOptions): void
     {
         $this->generatorOptions = $generatorOptions;
     }
 
-    /**
-     * @return bool
-     */
-    public function isInheritanceTypeNone()
+    public function isInheritanceTypeNone(): bool
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_NONE;
     }
 
     /**
      * Checks whether the mapped class uses the SINGLE_COLLECTION inheritance mapping strategy.
-     *
-     * @return bool
      */
-    public function isInheritanceTypeSingleCollection()
+    public function isInheritanceTypeSingleCollection(): bool
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION;
     }
 
     /**
      * Checks whether the mapped class uses the COLLECTION_PER_CLASS inheritance mapping strategy.
-     *
-     * @return bool
      */
-    public function isInheritanceTypeCollectionPerClass()
+    public function isInheritanceTypeCollectionPerClass(): bool
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
     }
@@ -1720,7 +1559,7 @@ class ClassMetadata implements BaseClassMetadata
      *
      * @param string[] $subclasses The names of all mapped subclasses.
      */
-    public function setSubclasses(array $subclasses)
+    public function setSubclasses(array $subclasses): void
     {
         foreach ($subclasses as $subclass) {
             $this->subClasses[] = $subclass;
@@ -1734,7 +1573,7 @@ class ClassMetadata implements BaseClassMetadata
      *
      * @param string[] $classNames
      */
-    public function setParentClasses(array $classNames)
+    public function setParentClasses(array $classNames): void
     {
         $this->parentClasses = $classNames;
 
@@ -1747,40 +1586,32 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Checks whether the class will generate a new \MongoDB\BSON\ObjectId instance for us.
-     *
-     * @return bool TRUE if the class uses the AUTO generator, FALSE otherwise.
      */
-    public function isIdGeneratorAuto()
+    public function isIdGeneratorAuto(): bool
     {
         return $this->generatorType === self::GENERATOR_TYPE_AUTO;
     }
 
     /**
      * Checks whether the class will use a collection to generate incremented identifiers.
-     *
-     * @return bool TRUE if the class uses the INCREMENT generator, FALSE otherwise.
      */
-    public function isIdGeneratorIncrement()
+    public function isIdGeneratorIncrement(): bool
     {
         return $this->generatorType === self::GENERATOR_TYPE_INCREMENT;
     }
 
     /**
      * Checks whether the class will generate a uuid id.
-     *
-     * @return bool TRUE if the class uses the UUID generator, FALSE otherwise.
      */
-    public function isIdGeneratorUuid()
+    public function isIdGeneratorUuid(): bool
     {
         return $this->generatorType === self::GENERATOR_TYPE_UUID;
     }
 
     /**
      * Checks whether the class uses no id generator.
-     *
-     * @return bool TRUE if the class does not use any id generator, FALSE otherwise.
      */
-    public function isIdGeneratorNone()
+    public function isIdGeneratorNone(): bool
     {
         return $this->generatorType === self::GENERATOR_TYPE_NONE;
     }
@@ -1789,11 +1620,9 @@ class ClassMetadata implements BaseClassMetadata
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
      *
-     * @param array $mapping The version field mapping array
-     *
      * @throws LockException
      */
-    public function setVersionMapping(array &$mapping)
+    public function setVersionMapping(array &$mapping): void
     {
         if ($mapping['type'] !== 'int' && $mapping['type'] !== 'date') {
             throw LockException::invalidVersionFieldType($mapping['type']);
@@ -1805,10 +1634,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Sets whether this class is to be versioned for optimistic locking.
-     *
-     * @param bool $bool
      */
-    public function setVersioned($bool)
+    public function setVersioned(bool $bool): void
     {
         $this->isVersioned = $bool;
     }
@@ -1816,10 +1643,8 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Sets the name of the field that is to be used for versioning if this class is
      * versioned for optimistic locking.
-     *
-     * @param string $versionField
      */
-    public function setVersionField($versionField)
+    public function setVersionField(?string $versionField): void
     {
         $this->versionField = $versionField;
     }
@@ -1828,11 +1653,9 @@ class ClassMetadata implements BaseClassMetadata
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
      *
-     * @param array $mapping The version field mapping array
-     *
      * @throws LockException
      */
-    public function setLockMapping(array &$mapping)
+    public function setLockMapping(array &$mapping): void
     {
         if ($mapping['type'] !== 'int') {
             throw LockException::invalidLockFieldType($mapping['type']);
@@ -1844,10 +1667,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Sets whether this class is to allow pessimistic locking.
-     *
-     * @param bool $bool
      */
-    public function setLockable($bool)
+    public function setLockable(bool $bool): void
     {
         $this->isLockable = $bool;
     }
@@ -1855,10 +1676,8 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Sets the name of the field that is to be used for storing whether a document
      * is currently locked or not.
-     *
-     * @param string $lockField
      */
-    public function setLockField($lockField)
+    public function setLockField(string $lockField): void
     {
         $this->lockField = $lockField;
     }
@@ -1866,7 +1685,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Marks this class as read only, no change tracking is applied to it.
      */
-    public function markReadOnly()
+    public function markReadOnly(): void
     {
         $this->isReadOnly = true;
     }
@@ -1874,7 +1693,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getFieldNames()
+    public function getFieldNames(): array
     {
         return array_keys($this->fieldMappings);
     }
@@ -1882,7 +1701,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getAssociationNames()
+    public function getAssociationNames(): array
     {
         return array_keys($this->associationMappings);
     }
@@ -1890,7 +1709,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getTypeOfField($fieldName)
+    public function getTypeOfField($fieldName): ?string
     {
         return isset($this->fieldMappings[$fieldName]) ?
             $this->fieldMappings[$fieldName]['type'] : null;
@@ -1899,7 +1718,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getAssociationTargetClass($assocName)
+    public function getAssociationTargetClass($assocName): string
     {
         if (! isset($this->associationMappings[$assocName])) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
@@ -1910,10 +1729,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Retrieve the collectionClass associated with an association
-     *
-     * @param string $assocName
      */
-    public function getAssociationCollectionClass($assocName)
+    public function getAssociationCollectionClass(string $assocName): string
     {
         if (! isset($this->associationMappings[$assocName])) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
@@ -1929,7 +1746,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function isAssociationInverseSide($fieldName)
+    public function isAssociationInverseSide($fieldName): bool
     {
         throw new \BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
@@ -1945,13 +1762,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Map a field.
      *
-     * @param array $mapping The mapping information.
-     *
-     * @return array
-     *
      * @throws MappingException
      */
-    public function mapField(array $mapping)
+    public function mapField(array $mapping): array
     {
         if (! isset($mapping['fieldName']) && isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
@@ -2229,10 +2042,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Creates a new instance of the mapped class, without invoking the constructor.
-     *
-     * @return object
      */
-    public function newInstance()
+    public function newInstance(): object
     {
         return $this->instantiator->instantiate($this->name);
     }

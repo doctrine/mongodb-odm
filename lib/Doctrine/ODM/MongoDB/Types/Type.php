@@ -17,7 +17,6 @@ use function str_replace;
 
 /**
  * The Type interface.
- *
  */
 abstract class Type
 {
@@ -45,7 +44,7 @@ abstract class Type
     public const OBJECTID = 'object_id';
     public const RAW = 'raw';
 
-    /** @var string[] Map of already instantiated type objects. One instance per type (flyweight). */
+    /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static $typeObjects = [];
 
     /** @var string[] The map of supported doctrine mapping types. */
@@ -104,23 +103,20 @@ abstract class Type
         return $value;
     }
 
-    public function closureToMongo()
+    public function closureToMongo(): string
     {
         return '$return = $value;';
     }
 
-    public function closureToPHP()
+    public function closureToPHP(): string
     {
         return '$return = $value;';
     }
 
     /**
      * Register a new type in the type map.
-     *
-     * @param string $name  The name of the type.
-     * @param string $class The class name.
      */
-    public static function registerType($name, $class)
+    public static function registerType(string $name, string $class): void
     {
         self::$typesMap[$name] = $class;
     }
@@ -128,11 +124,9 @@ abstract class Type
     /**
      * Get a Type instance.
      *
-     * @param string $type The type name.
-     * @return \Doctrine\ODM\MongoDB\Types\Type $type
      * @throws \InvalidArgumentException
      */
-    public static function getType($type)
+    public static function getType(string $type)
     {
         if (! isset(self::$typesMap[$type])) {
             throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
@@ -148,10 +142,9 @@ abstract class Type
      * Get a Type instance based on the type of the passed php variable.
      *
      * @param mixed $variable
-     * @return \Doctrine\ODM\MongoDB\Types\Type $type
      * @throws \InvalidArgumentException
      */
-    public static function getTypeFromPHPVariable($variable)
+    public static function getTypeFromPHPVariable($variable): ?Type
     {
         if (is_object($variable)) {
             if ($variable instanceof \DateTimeInterface) {
@@ -184,11 +177,9 @@ abstract class Type
      * Adds a custom type to the type map.
      *
      * @static
-     * @param string $name      Name of the type. This should correspond to what getName() returns.
-     * @param string $className The class name of the custom type.
      * @throws MappingException
      */
-    public static function addType($name, $className)
+    public static function addType(string $name, string $className): void
     {
         if (isset(self::$typesMap[$name])) {
             throw MappingException::typeExists($name);
@@ -201,10 +192,8 @@ abstract class Type
      * Checks if exists support for a type.
      *
      * @static
-     * @param string $name Name of the type
-     * @return bool TRUE if type is supported; FALSE otherwise
      */
-    public static function hasType($name)
+    public static function hasType(string $name): bool
     {
         return isset(self::$typesMap[$name]);
     }
@@ -213,11 +202,9 @@ abstract class Type
      * Overrides an already defined type to use a different implementation.
      *
      * @static
-     * @param string $name
-     * @param string $className
      * @throws MappingException
      */
-    public static function overrideType($name, $className)
+    public static function overrideType(string $name, string $className): void
     {
         if (! isset(self::$typesMap[$name])) {
             throw MappingException::typeNotFound($name);
@@ -229,10 +216,8 @@ abstract class Type
     /**
      * Get the types array map which holds all registered types and the corresponding
      * type class
-     *
-     * @return array $typesMap
      */
-    public static function getTypesMap()
+    public static function getTypesMap(): array
     {
         return self::$typesMap;
     }

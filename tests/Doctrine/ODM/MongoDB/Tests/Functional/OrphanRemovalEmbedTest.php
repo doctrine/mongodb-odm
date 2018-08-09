@@ -61,7 +61,6 @@ class OrphanRemovalEmbedTest extends BaseTest
         $user->profileMany->removeElement($profile1);
 
         $this->dm->flush();
-        $this->dm->clear($user);
 
         $user = $this->getUserRepository()->find($user->id);
         $this->assertNotNull($user, 'Should retrieve user');
@@ -94,7 +93,7 @@ class OrphanRemovalEmbedTest extends BaseTest
         $user->profileMany->clear();
 
         $this->dm->flush();
-        $this->dm->clear($user);
+        $this->dm->clear(OrphanRemovalCascadeUser::class);
 
         $this->assertNull($this->getAddressRepository()->find($address1->id), 'Should have removed address 1');
         $this->assertNull($this->getAddressRepository()->find($address2->id), 'Should have removed address 2');
@@ -128,7 +127,6 @@ class OrphanRemovalEmbedTest extends BaseTest
         $user->profileMany->add($profile3);
 
         $this->dm->flush();
-        $this->dm->clear($user);
 
         $user = $this->getUserRepository()->find($user->id);
         $this->assertNotNull($user, 'Should retrieve user');

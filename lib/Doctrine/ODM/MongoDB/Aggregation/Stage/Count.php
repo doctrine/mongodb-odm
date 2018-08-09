@@ -16,10 +16,7 @@ class Count extends Stage
     /** @var string */
     private $fieldName;
 
-    /**
-     * @param string $fieldName
-     */
-    public function __construct(Builder $builder, $fieldName)
+    public function __construct(Builder $builder, string $fieldName)
     {
         parent::__construct($builder);
 
@@ -29,7 +26,7 @@ class Count extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$count' => $this->fieldName,

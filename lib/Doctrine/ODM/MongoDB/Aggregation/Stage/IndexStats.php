@@ -15,7 +15,7 @@ class IndexStats extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$indexStats' => new \stdClass(),

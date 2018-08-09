@@ -54,10 +54,8 @@ class Builder
 
     /**
      * Create a new aggregation builder.
-     *
-     * @param string $documentName
      */
-    public function __construct(DocumentManager $dm, $documentName)
+    public function __construct(DocumentManager $dm, string $documentName)
     {
         $this->dm = $dm;
         $this->class = $this->dm->getClassMetadata($documentName);
@@ -76,10 +74,8 @@ class Builder
      * specified expression.
      *
      * @see http://docs.mongodb.com/manual/reference/operator/aggregation/addFields/
-     *
-     * @return Stage\AddFields
      */
-    public function addFields()
+    public function addFields(): Stage\AddFields
     {
         return $this->addStage(new Stage\AddFields($this));
     }
@@ -95,10 +91,8 @@ class Builder
      * output is not specified.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bucket/
-     *
-     * @return Stage\Bucket
      */
-    public function bucket()
+    public function bucket(): Stage\Bucket
     {
         return $this->addStage(new Stage\Bucket($this, $this->dm, $this->class));
     }
@@ -116,10 +110,8 @@ class Builder
      * included by default when the output is not specified.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/
-     *
-     * @return Stage\BucketAuto
      */
-    public function bucketAuto()
+    public function bucketAuto(): Stage\BucketAuto
     {
         return $this->addStage(new Stage\BucketAuto($this, $this->dm, $this->class));
     }
@@ -131,9 +123,8 @@ class Builder
      * the pipeline returns an error.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/collStats/
-     * @return Stage\CollStats
      */
-    public function collStats()
+    public function collStats(): Stage\CollStats
     {
         return $this->addStage(new Stage\CollStats($this));
     }
@@ -143,21 +134,16 @@ class Builder
      * to the stage.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/count/
-     *
-     * @return Stage\Count
      */
-    public function count($fieldName)
+    public function count(string $fieldName): Stage\Count
     {
         return $this->addStage(new Stage\Count($this, $fieldName));
     }
 
     /**
      * Executes the aggregation pipeline
-     *
-     * @param array $options
-     * @return Iterator
      */
-    public function execute($options = [])
+    public function execute(array $options = []): Iterator
     {
         // Force cursor to be used
         $options = array_merge($options, ['cursor' => true]);
@@ -167,10 +153,7 @@ class Builder
         return $this->prepareIterator($cursor);
     }
 
-    /**
-     * @return Expr
-     */
-    public function expr()
+    public function expr(): Expr
     {
         return new Expr($this->dm, $this->class);
     }
@@ -181,10 +164,8 @@ class Builder
      *
      * Each sub-pipeline has its own field in the output document where its
      * results are stored as an array of documents.
-     *
-     * @return Stage\Facet
      */
-    public function facet()
+    public function facet(): Stage\Facet
     {
         return $this->addStage(new Stage\Facet($this));
     }
@@ -203,9 +184,8 @@ class Builder
      *
      * @param float|array|Point $x
      * @param float             $y
-     * @return Stage\GeoNear
      */
-    public function geoNear($x, $y = null)
+    public function geoNear($x, $y = null): Stage\GeoNear
     {
         return $this->addStage(new Stage\GeoNear($this, $x, $y));
     }
@@ -217,10 +197,8 @@ class Builder
      * the document filters and discriminator queries to the query portion of
      * the geoNear operation. For all other pipelines, it prepends a $match stage
      * containing the required query.
-     *
-     * @return array
      */
-    public function getPipeline()
+    public function getPipeline(): array
     {
         $pipeline = array_map(
             function (Stage $stage) {
@@ -243,11 +221,8 @@ class Builder
 
     /**
      * Returns a certain stage from the pipeline
-     *
-     * @param int $index
-     * @return Stage
      */
-    public function getStage($index)
+    public function getStage(int $index): Stage
     {
         if (! isset($this->stages[$index])) {
             throw new \OutOfRangeException(sprintf('Could not find stage with index %d.', $index));
@@ -264,9 +239,8 @@ class Builder
      *
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
-     * @return Stage\GraphLookup
      */
-    public function graphLookup($from)
+    public function graphLookup(string $from): Stage\GraphLookup
     {
         return $this->addStage(new Stage\GraphLookup($this, $from, $this->dm, $this->class));
     }
@@ -276,22 +250,16 @@ class Builder
      * stage a document for each distinct grouping.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/group/
-     *
-     * @return Stage\Group
      */
-    public function group()
+    public function group(): Stage\Group
     {
         return $this->addStage(new Stage\Group($this));
     }
 
     /**
      * Set which class to use when hydrating results as document class instances.
-     *
-     * @param string $className
-     *
-     * @return self
      */
-    public function hydrate($className)
+    public function hydrate(string $className): self
     {
         $this->hydrationClass = $className;
 
@@ -302,10 +270,8 @@ class Builder
      * Returns statistics regarding the use of each index for the collection.
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/indexStats/
-     *
-     * @return Stage\IndexStats
      */
-    public function indexStats()
+    public function indexStats(): Stage\IndexStats
     {
         return $this->addStage(new Stage\IndexStats($this));
     }
@@ -314,11 +280,8 @@ class Builder
      * Limits the number of documents passed to the next stage in the pipeline.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/limit/
-     *
-     * @param int $limit
-     * @return Stage\Limit
      */
-    public function limit($limit)
+    public function limit(int $limit): Stage\Limit
     {
         return $this->addStage(new Stage\Limit($this, $limit));
     }
@@ -329,11 +292,8 @@ class Builder
      * processing.
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/lookup/
-     *
-     * @param string $from
-     * @return Stage\Lookup
      */
-    public function lookup($from)
+    public function lookup(string $from): Stage\Lookup
     {
         return $this->addStage(new Stage\Lookup($this, $from, $this->dm, $this->class));
     }
@@ -343,20 +303,16 @@ class Builder
      * condition(s) to the next pipeline stage.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/match/
-     *
-     * @return Stage\Match
      */
-    public function match()
+    public function match(): Stage\Match
     {
         return $this->addStage(new Stage\Match($this));
     }
 
     /**
      * Returns a query expression to be used in match stages
-     *
-     * @return QueryExpr
      */
-    public function matchExpr()
+    public function matchExpr(): QueryExpr
     {
         $expr = new QueryExpr($this->dm);
         $expr->setClassMetadata($this->class);
@@ -369,11 +325,8 @@ class Builder
      * to a specified collection. This must be the last stage in the pipeline.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/out/
-     *
-     * @param string $from
-     * @return Stage\Out
      */
-    public function out($from)
+    public function out(string $from): Stage\Out
     {
         return $this->addStage(new Stage\Out($this, $from, $this->dm));
     }
@@ -384,10 +337,8 @@ class Builder
      * the input documents or newly computed fields.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/project/
-     *
-     * @return Stage\Project
      */
-    public function project()
+    public function project(): Stage\Project
     {
         return $this->addStage(new Stage\Project($this));
     }
@@ -397,10 +348,8 @@ class Builder
      * the documents themselves.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/redact/
-     *
-     * @return Stage\Redact
      */
-    public function redact()
+    public function redact(): Stage\Redact
     {
         return $this->addStage(new Stage\Redact($this));
     }
@@ -413,12 +362,10 @@ class Builder
      * including the _id field. You can promote an existing embedded document to
      * the top level, or create a new document for promotion.
      *
-     * @param string|null $expression Optional. A replacement expression that
+     * @param string|array|null $expression Optional. A replacement expression that
      * resolves to a document.
-     *
-     * @return Stage\ReplaceRoot
      */
-    public function replaceRoot($expression = null)
+    public function replaceRoot($expression = null): Stage\ReplaceRoot
     {
         return $this->addStage(new Stage\ReplaceRoot($this, $this->dm, $this->class, $expression));
     }
@@ -427,11 +374,8 @@ class Builder
      * Randomly selects the specified number of documents from its input.
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/sample/
-     *
-     * @param int $size
-     * @return Stage\Sample
      */
-    public function sample($size)
+    public function sample(int $size): Stage\Sample
     {
         return $this->addStage(new Stage\Sample($this, $size));
     }
@@ -441,11 +385,8 @@ class Builder
      * passes the remaining documents to the next stage in the pipeline.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/skip/
-     *
-     * @param int $skip
-     * @return Stage\Skip
      */
-    public function skip($skip)
+    public function skip(int $skip): Stage\Skip
     {
         return $this->addStage(new Stage\Skip($this, $skip));
     }
@@ -461,9 +402,8 @@ class Builder
      *
      * @param array|string $fieldName Field name or array of field/order pairs
      * @param int|string   $order     Field order (if one field is specified)
-     * @return Stage\Sort
      */
-    public function sort($fieldName, $order = null)
+    public function sort($fieldName, $order = null): Stage\Sort
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
         // fixme: move to sort stage
@@ -475,11 +415,8 @@ class Builder
      * then computes the count of documents in each distinct group.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sortByCount/
-     *
-     * @param string $expression The expression to group by
-     * @return Stage\SortByCount
      */
-    public function sortByCount($expression)
+    public function sortByCount(string $expression): Stage\SortByCount
     {
         return $this->addStage(new Stage\SortByCount($this, $expression, $this->dm, $this->class));
     }
@@ -490,20 +427,14 @@ class Builder
      * value of the array field replaced by the element.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/unwind/
-     *
-     * @param string $fieldName The field to unwind. It is automatically prefixed with the $ sign
-     * @return Stage\Unwind
      */
-    public function unwind($fieldName)
+    public function unwind(string $fieldName): Stage\Unwind
     {
         // Fixme: move field name translation to stage
         return $this->addStage(new Stage\Unwind($this, $this->getDocumentPersister()->prepareFieldName($fieldName)));
     }
 
-    /**
-     * @return Stage
-     */
-    protected function addStage(Stage $stage)
+    protected function addStage(Stage $stage): Stage
     {
         $this->stages[] = $stage;
 
@@ -512,11 +443,8 @@ class Builder
 
     /**
      * Applies filters and discriminator queries to the pipeline
-     *
-     * @param array $query
-     * @return array
      */
-    private function applyFilters(array $query)
+    private function applyFilters(array $query): array
     {
         $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
 
@@ -526,10 +454,7 @@ class Builder
         return $query;
     }
 
-    /**
-     * @return DocumentPersister
-     */
-    private function getDocumentPersister()
+    private function getDocumentPersister(): DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }

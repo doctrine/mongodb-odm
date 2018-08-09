@@ -13,34 +13,27 @@ use function sprintf;
  */
 class PersistentCollectionException extends MongoDBException
 {
-    public static function directoryNotWritable()
+    public static function directoryNotWritable(): self
     {
         return new self('Your PersistentCollection directory must be writable.');
     }
 
-    public static function directoryRequired()
+    public static function directoryRequired(): self
     {
         return new self('You must configure a PersistentCollection directory. See docs for details.');
     }
 
-    public static function namespaceRequired()
+    public static function namespaceRequired(): self
     {
         return new self('You must configure a PersistentCollection namespace. See docs for details');
     }
 
-    /**
-     * @param string $className
-     * @param string $methodName
-     * @param string $parameterName
-     *
-     * @return self
-     */
     public static function invalidParameterTypeHint(
-        $className,
-        $methodName,
-        $parameterName,
+        string $className,
+        string $methodName,
+        string $parameterName,
         ?\Throwable $previous = null
-    ) {
+    ): self {
         return new self(
             sprintf(
                 'The type hint of parameter "%s" in method "%s" in class "%s" is invalid.',
@@ -53,13 +46,7 @@ class PersistentCollectionException extends MongoDBException
         );
     }
 
-    /**
-     * @param string $className
-     * @param string $methodName
-     *
-     * @return self
-     */
-    public static function invalidReturnTypeHint($className, $methodName, ?\Throwable $previous = null)
+    public static function invalidReturnTypeHint(string $className, string $methodName, ?\Throwable $previous = null): self
     {
         return new self(
             sprintf(

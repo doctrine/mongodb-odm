@@ -17,36 +17,18 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /** @var array */
     private $documentChangeSet;
 
-    /**
-     *
-     *
-     * @param object $document
-     * @param array  $changeSet
-     */
-    public function __construct($document, DocumentManager $dm, array $changeSet)
+    public function __construct(object $document, DocumentManager $dm, array $changeSet)
     {
         parent::__construct($document, $dm);
         $this->documentChangeSet = $changeSet;
     }
 
-    /**
-     * Retrieves the document changeset.
-     *
-     * @return array
-     */
-    public function getDocumentChangeSet()
+    public function getDocumentChangeSet(): array
     {
         return $this->documentChangeSet;
     }
 
-    /**
-     * Checks if field has a changeset.
-     *
-     * @param string $field
-     *
-     * @return bool
-     */
-    public function hasChangedField($field)
+    public function hasChangedField(string $field): bool
     {
         return isset($this->documentChangeSet[$field]);
     }
@@ -54,10 +36,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Gets the old value of the changeset of the changed field.
      *
-     * @param string $field
      * @return mixed
      */
-    public function getOldValue($field)
+    public function getOldValue(string $field)
     {
         $this->assertValidField($field);
 
@@ -67,10 +48,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Gets the new value of the changeset of the changed field.
      *
-     * @param string $field
      * @return mixed
      */
-    public function getNewValue($field)
+    public function getNewValue(string $field)
     {
         $this->assertValidField($field);
 
@@ -80,10 +60,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Sets the new value of this field.
      *
-     * @param string $field
-     * @param mixed  $value
+     * @param mixed $value
      */
-    public function setNewValue($field, $value)
+    public function setNewValue(string $field, $value): void
     {
         $this->assertValidField($field);
 
@@ -94,10 +73,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Asserts the field exists in changeset.
      *
-     * @param string $field
      * @throws \InvalidArgumentException If the field has no changeset.
      */
-    private function assertValidField($field)
+    private function assertValidField(string $field): void
     {
         if (! isset($this->documentChangeSet[$field])) {
             throw new \InvalidArgumentException(sprintf(

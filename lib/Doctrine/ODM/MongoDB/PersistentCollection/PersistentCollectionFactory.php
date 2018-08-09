@@ -15,11 +15,6 @@ interface PersistentCollectionFactory
 {
     /**
      * Creates specified persistent collection to work with given collection class.
-     *
-     * @param DocumentManager $dm      DocumentManager with which collection is associated
-     * @param array           $mapping Mapping of field holding collection
-     * @param BaseCollection  $coll    Collection to be decorated
-     * @return PersistentCollectionInterface
      */
-    public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null);
+    public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null): PersistentCollectionInterface;
 }

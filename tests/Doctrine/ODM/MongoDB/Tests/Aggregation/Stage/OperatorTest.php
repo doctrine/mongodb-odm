@@ -121,7 +121,7 @@ class OperatorTest extends BaseTest
     private function getStubStage(): Operator
     {
         return new class($this->getTestAggregationBuilder()) extends Operator {
-            public function getExpression()
+            public function getExpression(): array
             {
                 return $this->expr->getExpression();
             }

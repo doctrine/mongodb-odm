@@ -28,9 +28,8 @@ class DateType extends Type
      *
      * @throws InvalidArgumentException If $value is invalid.
      * @param  mixed $value \DateTimeInterface|\MongoDB\BSON\UTCDateTime|int|float
-     * @return \DateTime
      */
-    public static function getDateTime($value)
+    public static function getDateTime($value): \DateTimeInterface
     {
         $datetime = false;
         $exception = null;
@@ -66,7 +65,7 @@ class DateType extends Type
         return $datetime;
     }
 
-    private static function craftDateTime(int $seconds, $microseconds = 0)
+    private static function craftDateTime(int $seconds, $microseconds = 0): \DateTime
     {
         // @todo fix typing for $microseconds
         $datetime = new \DateTime();
@@ -98,12 +97,12 @@ class DateType extends Type
         return static::getDateTime($value);
     }
 
-    public function closureToMongo()
+    public function closureToMongo(): string
     {
         return 'if ($value === null || $value instanceof \MongoDB\BSON\UTCDateTime) { $return = $value; } else { $datetime = \\' . get_class($this) . '::getDateTime($value); $return = new \MongoDB\BSON\UTCDateTime((int) $datetime->format(\'Uv\')); }';
     }
 
-    public function closureToPHP()
+    public function closureToPHP(): string
     {
         return 'if ($value === null) { $return = null; } else { $return = \\' . get_class($this) . '::getDateTime($value); }';
     }

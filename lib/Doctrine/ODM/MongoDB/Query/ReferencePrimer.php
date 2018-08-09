@@ -56,18 +56,12 @@ class ReferencePrimer
      */
     private $uow;
 
-    /**
-     * Initializes this instance with the specified document manager and unit of work.
-     *
-     * @param DocumentManager $dm  Document manager.
-     * @param UnitOfWork      $uow Unit of work.
-     */
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
         $this->dm = $dm;
         $this->uow = $uow;
 
-        $this->defaultPrimer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
+        $this->defaultPrimer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints): void {
             $qb = $dm->createQueryBuilder($class->name)
                 ->field($class->identifier)->in($ids);
 
@@ -98,7 +92,7 @@ class ReferencePrimer
      * @throws \LogicException If the mapped field is a simple reference and is
      *                         missing a target document class.
      */
-    public function primeReferences(ClassMetadata $class, $documents, $fieldName, array $hints = [], $primer = null)
+    public function primeReferences(ClassMetadata $class, $documents, string $fieldName, array $hints = [], ?callable $primer = null): void
     {
         $data = $this->parseDotSyntaxForPrimer($fieldName, $class, $documents);
         $mapping = $data['mapping'];
@@ -161,13 +155,9 @@ class ReferencePrimer
      * ... but you cannot prime this: myDocument.embeddedDocument.referencedDocuments.referencedDocument(s)
      * This addresses Issue #624.
      *
-     * @param string             $fieldName
-     * @param ClassMetadata      $class
      * @param array|\Traversable $documents
-     * @param array              $mapping
-     * @return array
      */
-    private function parseDotSyntaxForPrimer($fieldName, $class, $documents, $mapping = null)
+    private function parseDotSyntaxForPrimer(string $fieldName, ClassMetadata $class, $documents, ?array $mapping = null): array
     {
         // Recursion passthrough:
         if ($mapping !== null) {
@@ -237,10 +227,8 @@ class ReferencePrimer
      * If the relation contains simple references, the mapping is assumed to
      * have a target document class defined. Without that, there is no way to
      * infer the class of the referenced documents.
-     *
-     * @param array $groupedIds
      */
-    private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds)
+    private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds): void
     {
         $mapping = $persistentCollection->getMapping();
         $class = null;

@@ -10,26 +10,15 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 /**
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
  * of documents.
- *
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
-    /**
-     * Retrieves the associated document.
-     *
-     * @return object
-     */
-    public function getDocument()
+    public function getDocument(): object
     {
         return $this->getObject();
     }
 
-    /**
-     * Retrieves the associated DocumentManager.
-     *
-     * @return DocumentManager
-     */
-    public function getDocumentManager()
+    public function getDocumentManager(): DocumentManager
     {
         return $this->getObjectManager();
     }

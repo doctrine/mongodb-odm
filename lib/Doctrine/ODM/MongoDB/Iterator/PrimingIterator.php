@@ -50,7 +50,7 @@ final class PrimingIterator implements Iterator
         return $this->iterator->current();
     }
 
-    public function next()
+    public function next(): void
     {
         $this->iterator->next();
     }
@@ -60,17 +60,17 @@ final class PrimingIterator implements Iterator
         return $this->iterator->key();
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return $this->iterator->valid();
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->iterator->rewind();
     }
 
-    private function primeReferences()
+    private function primeReferences(): void
     {
         if ($this->referencesPrimed || empty($this->primers)) {
             return;

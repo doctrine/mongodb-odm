@@ -16,20 +16,17 @@ class Limit extends Stage
     /** @var int */
     private $limit;
 
-    /**
-     * @param int $limit
-     */
-    public function __construct(Builder $builder, $limit)
+    public function __construct(Builder $builder, int $limit)
     {
         parent::__construct($builder);
 
-        $this->limit = (int) $limit;
+        $this->limit = $limit;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$limit' => $this->limit,

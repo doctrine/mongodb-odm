@@ -15,8 +15,7 @@ abstract class AbstractIdGenerator
     /**
      * Generates an identifier for a document.
      *
-     * @param object $document
      * @return mixed
      */
-    abstract public function generate(DocumentManager $dm, $document);
+    abstract public function generate(DocumentManager $dm, object $document);
 }

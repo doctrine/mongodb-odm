@@ -21,12 +21,8 @@ class ResolveTargetDocumentListener
 
     /**
      * Add a target-document class name to resolve to a new class name.
-     *
-     * @param string $originalDocument
-     * @param string $newDocument
-     * @param array  $mapping
      */
-    public function addResolveTargetDocument($originalDocument, $newDocument, array $mapping)
+    public function addResolveTargetDocument(string $originalDocument, string $newDocument, array $mapping): void
     {
         $mapping['targetDocument'] = ltrim($newDocument, '\\');
         $this->resolveTargetDocuments[ltrim($originalDocument, '\\')] = $mapping;
@@ -34,9 +30,8 @@ class ResolveTargetDocumentListener
 
     /**
      * Process event and resolve new target document names.
-     *
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $args)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
     {
         /** @var ClassMetadata $cm */
         $cm = $args->getClassMetadata();
@@ -49,10 +44,7 @@ class ResolveTargetDocumentListener
         }
     }
 
-    /**
-     * @param array $mapping
-     */
-    private function remapAssociation(ClassMetadata $classMetadata, array $mapping)
+    private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
     {
         $newMapping = $this->resolveTargetDocuments[$mapping['targetDocument']];
         $newMapping = array_replace_recursive($mapping, $newMapping);

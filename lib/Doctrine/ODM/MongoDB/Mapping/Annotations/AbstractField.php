@@ -28,11 +28,10 @@ abstract class AbstractField extends Annotation
     /**
      * Gets deprecation message. The method *WILL* be removed in 2.0.
      *
-     * @return string
      *
      * @internal
      */
-    public function getDeprecationMessage()
+    public function getDeprecationMessage(): string
     {
         return sprintf('%s will be removed in ODM 2.0. Use `@ODM\Field(type="%s")` instead.', get_class($this), $this->type);
     }
@@ -40,11 +39,9 @@ abstract class AbstractField extends Annotation
     /**
      * Gets whether the annotation is deprecated. The method *WILL* be removed in 2.0.
      *
-     * @return bool
-     *
      * @internal
      */
-    public function isDeprecated()
+    public function isDeprecated(): bool
     {
         return false;
     }

@@ -47,7 +47,7 @@ class CustomTypeTest extends BaseTest
     }
 }
 
-class DateCollectionType
+class DateCollectionType extends Type
 {
     use ClosureToPHP;
 
@@ -95,7 +95,7 @@ class DateCollectionType
     /**
      * Method never called
      */
-    public function closureToMongo()
+    public function closureToMongo(): string
     {
         // todo: microseconds o.O
         return '$return = array_map(function($v) { if ($v instanceof \MongoDB\BSON\UTCDateTime) { $v = $v->getTimestamp(); } else if (is_string($v)) { $v = strtotime($v); } return new \MongoDB\BSON\UTCDateTime($v); }, $value);';

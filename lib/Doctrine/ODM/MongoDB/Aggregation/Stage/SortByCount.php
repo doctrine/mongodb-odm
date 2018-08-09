@@ -20,7 +20,7 @@ class SortByCount extends Stage
      * prefix the field name with a dollar sign $ and enclose it in quotes.
      * The expression can not evaluate to an object.
      */
-    public function __construct(Builder $builder, $fieldName, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $fieldName, DocumentManager $documentManager, ClassMetadata $class)
     {
         parent::__construct($builder);
 
@@ -31,7 +31,7 @@ class SortByCount extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$sortByCount' => $this->fieldName,

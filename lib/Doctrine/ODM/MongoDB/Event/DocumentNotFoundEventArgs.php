@@ -32,19 +32,16 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class DocumentNotFoundEventArgs extends LifecycleEventArgs
 {
-    /** @var string */
+    /** @var mixed */
     private $identifier;
 
     /** @var bool */
     private $disableException = false;
 
     /**
-     *
-     *
-     * @param object $document
-     * @param string $identifier
+     * @param mixed $identifier
      */
-    public function __construct($document, DocumentManager $dm, $identifier)
+    public function __construct(object $document, DocumentManager $dm, $identifier)
     {
         parent::__construct($document, $dm);
         $this->identifier = $identifier;
@@ -53,7 +50,7 @@ class DocumentNotFoundEventArgs extends LifecycleEventArgs
     /**
      * Retrieve associated identifier.
      *
-     * @return string
+     * @return mixed
      */
     public function getIdentifier()
     {
@@ -62,10 +59,8 @@ class DocumentNotFoundEventArgs extends LifecycleEventArgs
 
     /**
      * Indicates whether the proxy initialization exception is disabled.
-     *
-     * @return bool
      */
-    public function isExceptionDisabled()
+    public function isExceptionDisabled(): bool
     {
         return $this->disableException;
     }
@@ -75,10 +70,8 @@ class DocumentNotFoundEventArgs extends LifecycleEventArgs
      *
      * This method indicates to the proxy initializer that the missing document
      * has been handled and no exception should be thrown. This can't be reset.
-     *
-     * @param bool $disableException
      */
-    public function disableException($disableException = true)
+    public function disableException(bool $disableException = true): void
     {
         $this->disableException = $disableException;
     }

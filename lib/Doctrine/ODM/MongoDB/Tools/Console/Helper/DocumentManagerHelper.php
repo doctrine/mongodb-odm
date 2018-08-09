@@ -9,7 +9,6 @@ use Symfony\Component\Console\Helper\Helper;
 
 /**
  * Symfony console component helper for accessing a DocumentManager instance.
- *
  */
 class DocumentManagerHelper extends Helper
 {
@@ -21,12 +20,7 @@ class DocumentManagerHelper extends Helper
         $this->dm = $dm;
     }
 
-    /**
-     * Get the DocumentManager instance.
-     *
-     * @return DocumentManager
-     */
-    public function getDocumentManager()
+    public function getDocumentManager(): DocumentManager
     {
         return $this->dm;
     }
@@ -35,9 +29,8 @@ class DocumentManagerHelper extends Helper
      * Get the canonical name of this helper.
      *
      * @see \Symfony\Component\Console\Helper\HelperInterface::getName()
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'documentManager';
     }

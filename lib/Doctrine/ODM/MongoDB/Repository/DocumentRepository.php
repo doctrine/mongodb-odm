@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Repository;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -15,6 +14,7 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -60,20 +60,16 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Creates a new Query\Builder instance that is preconfigured for this document name.
-     *
-     * @return QueryBuilder $qb
      */
-    public function createQueryBuilder()
+    public function createQueryBuilder(): QueryBuilder
     {
         return $this->dm->createQueryBuilder($this->documentName);
     }
 
     /**
      * Creates a new Aggregation\Builder instance that is prepopulated for this document name.
-     *
-     * @return AggregationBuilder
      */
-    public function createAggregationBuilder()
+    public function createAggregationBuilder(): AggregationBuilder
     {
         return $this->dm->createAggregationBuilder($this->documentName);
     }
@@ -81,7 +77,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Clears the repository, causing all managed documents to become detached.
      */
-    public function clear()
+    public function clear(): void
     {
         $this->dm->clear($this->class->rootDocumentName);
     }
@@ -90,14 +86,11 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Finds a document matching the specified identifier. Optionally a lock mode and
      * expected version may be specified.
      *
-     * @param mixed $id          Identifier.
-     * @param int   $lockMode    Optional. Lock mode; one of the LockMode constants.
-     * @param int   $lockVersion Optional. Expected version.
+     * @param mixed $id Identifier.
      * @throws MappingException
      * @throws LockException
-     * @return object|null The document, if found, otherwise null.
      */
-    public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
+    public function find($id, int $lockMode = LockMode::NONE, ?int $lockVersion = null): ?object
     {
         if ($id === null) {
             return null;
@@ -148,10 +141,8 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds all documents in the repository.
-     *
-     * @return array
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([]);
     }
@@ -159,57 +150,38 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Finds documents by a set of criteria.
      *
-     * @param array    $criteria Query criteria
-     * @param array    $sort     Sort array for Cursor::sort()
-     * @param int|null $limit    Limit for Cursor::limit()
-     * @param int|null $skip     Skip for Cursor::skip()
-     *
-     * @return array
+     * @param int|null $limit
+     * @param int|null $offset
      */
-    public function findBy(array $criteria, ?array $sort = null, $limit = null, $skip = null)
+    public function findBy(array $criteria, ?array $sort = null, $limit = null, $skip = null): array
     {
         return $this->getDocumentPersister()->loadAll($criteria, $sort, $limit, $skip)->toArray(false);
     }
 
     /**
      * Finds a single document by a set of criteria.
-     *
-     * @param array $criteria
-     * @return object
      */
-    public function findOneBy(array $criteria)
+    public function findOneBy(array $criteria): ?object
     {
         return $this->getDocumentPersister()->load($criteria);
     }
 
-    /**
-     * @return string
-     */
-    public function getDocumentName()
+    public function getDocumentName(): string
     {
         return $this->documentName;
     }
 
-    /**
-     * @return DocumentManager
-     */
-    public function getDocumentManager()
+    public function getDocumentManager(): DocumentManager
     {
         return $this->dm;
     }
 
-    /**
-     * @return ClassMetadata
-     */
-    public function getClassMetadata()
+    public function getClassMetadata(): ClassMetadata
     {
         return $this->class;
     }
 
-    /**
-     * @return string
-     */
-    public function getClassName()
+    public function getClassName(): string
     {
         return $this->getDocumentName();
     }
@@ -219,9 +191,8 @@ class DocumentRepository implements ObjectRepository, Selectable
      * returns a new collection containing these elements.
      *
      * @see Selectable::matching()
-     * @return Collection
      */
-    public function matching(Criteria $criteria)
+    public function matching(Criteria $criteria): ArrayCollection
     {
         $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
         $queryBuilder = $this->createQueryBuilder();
@@ -247,7 +218,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         return new ArrayCollection($queryBuilder->getQuery()->execute()->toArray());
     }
 
-    protected function getDocumentPersister()
+    protected function getDocumentPersister(): DocumentPersister
     {
         return $this->uow->getDocumentPersister($this->documentName);
     }

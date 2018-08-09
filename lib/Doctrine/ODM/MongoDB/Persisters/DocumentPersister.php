@@ -59,39 +59,19 @@ use function strtolower;
  */
 class DocumentPersister
 {
-    /**
-     * The PersistenceBuilder instance.
-     *
-     * @var PersistenceBuilder
-     */
+    /** @var PersistenceBuilder */
     private $pb;
 
-    /**
-     * The DocumentManager instance.
-     *
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
-    /**
-     * The UnitOfWork instance.
-     *
-     * @var UnitOfWork
-     */
+    /** @var UnitOfWork */
     private $uow;
 
-    /**
-     * The ClassMetadata instance for the document type being persisted.
-     *
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $class;
 
-    /**
-     * The MongoCollection instance for this document.
-     *
-     * @var Collection
-     */
+    /** @var Collection */
     private $collection;
 
     /** @var Bucket|null */
@@ -111,31 +91,15 @@ class DocumentPersister
      */
     private $queuedUpserts = [];
 
-    /**
-     * The CriteriaMerger instance.
-     *
-     * @var CriteriaMerger
-     */
+    /** @var CriteriaMerger */
     private $cm;
 
-    /**
-     * The CollectionPersister instance.
-     *
-     * @var CollectionPersister
-     */
+    /** @var CollectionPersister */
     private $cp;
 
-    /**
-     * The HydratorFactory instance.
-     *
-     * @var HydratorFactory
-     */
+    /** @var HydratorFactory */
     private $hydratorFactory;
 
-    /**
-     * Initializes this instance.
-     *
-     */
     public function __construct(
         PersistenceBuilder $pb,
         DocumentManager $dm,
@@ -160,19 +124,12 @@ class DocumentPersister
         $this->bucket = $dm->getDocumentBucket($class->name);
     }
 
-    /**
-     * @return array
-     */
-    public function getInserts()
+    public function getInserts(): array
     {
         return $this->queuedInserts;
     }
 
-    /**
-     * @param object $document
-     * @return bool
-     */
-    public function isQueuedForInsert($document)
+    public function isQueuedForInsert(object $document): bool
     {
         return isset($this->queuedInserts[spl_object_hash($document)]);
     }
@@ -180,27 +137,18 @@ class DocumentPersister
     /**
      * Adds a document to the queued insertions.
      * The document remains queued until {@link executeInserts} is invoked.
-     *
-     * @param object $document The document to queue for insertion.
      */
-    public function addInsert($document)
+    public function addInsert(object $document): void
     {
         $this->queuedInserts[spl_object_hash($document)] = $document;
     }
 
-    /**
-     * @return array
-     */
-    public function getUpserts()
+    public function getUpserts(): array
     {
         return $this->queuedUpserts;
     }
 
-    /**
-     * @param object $document
-     * @return bool
-     */
-    public function isQueuedForUpsert($document)
+    public function isQueuedForUpsert(object $document): bool
     {
         return isset($this->queuedUpserts[spl_object_hash($document)]);
     }
@@ -208,20 +156,16 @@ class DocumentPersister
     /**
      * Adds a document to the queued upserts.
      * The document remains queued until {@link executeUpserts} is invoked.
-     *
-     * @param object $document The document to queue for insertion.
      */
-    public function addUpsert($document)
+    public function addUpsert(object $document): void
     {
         $this->queuedUpserts[spl_object_hash($document)] = $document;
     }
 
     /**
      * Gets the ClassMetadata instance of the document class this persister is used for.
-     *
-     * @return ClassMetadata
      */
-    public function getClassMetadata()
+    public function getClassMetadata(): ClassMetadata
     {
         return $this->class;
     }
@@ -234,9 +178,9 @@ class DocumentPersister
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
-     * @param array $options Options for batchInsert() and update() driver methods
+     * @throws DriverException
      */
-    public function executeInserts(array $options = [])
+    public function executeInserts(array $options = []): void
     {
         if (! $this->queuedInserts) {
             return;
@@ -291,10 +235,8 @@ class DocumentPersister
      * Queued documents with an ID are upserted individually.
      *
      * If no upserts are queued, invoking this method is a NOOP.
-     *
-     * @param array $options Options for batchInsert() and update() driver methods
      */
-    public function executeUpserts(array $options = [])
+    public function executeUpserts(array $options = []): void
     {
         if (! $this->queuedUpserts) {
             return;
@@ -315,11 +257,8 @@ class DocumentPersister
 
     /**
      * Executes a single upsert in {@link executeUpserts}
-     *
-     * @param object $document
-     * @param array  $options
      */
-    private function executeUpsert($document, array $options)
+    private function executeUpsert(object $document, array $options): void
     {
         $options['upsert'] = true;
         $criteria = $this->getQueryForDocument($document);
@@ -389,11 +328,9 @@ class DocumentPersister
     /**
      * Updates the already persisted document if it has any new changesets.
      *
-     * @param object $document
-     * @param array  $options  Array of options to be used with update()
      * @throws LockException
      */
-    public function update($document, array $options = [])
+    public function update(object $document, array $options = []): void
     {
         $update = $this->pb->prepareUpdateData($document);
 
@@ -455,11 +392,9 @@ class DocumentPersister
     /**
      * Removes document from mongo
      *
-     * @param mixed $document
-     * @param array $options  Array of options to be used with remove()
      * @throws LockException
      */
-    public function delete($document, array $options = [])
+    public function delete(object $document, array $options = []): void
     {
         if ($this->bucket instanceof Bucket) {
             $documentIdentifier = $this->uow->getDocumentIdentifier($document);
@@ -487,10 +422,8 @@ class DocumentPersister
 
     /**
      * Refreshes a managed document.
-     *
-     * @param object $document The document to refresh.
      */
-    public function refresh($document)
+    public function refresh(object $document): void
     {
         $query = $this->getQueryForDocument($document);
         $data = $this->collection->findOne($query);
@@ -504,16 +437,11 @@ class DocumentPersister
      * If a scalar or MongoDB\BSON\ObjectId is provided for $criteria, it will
      * be used to match an _id value.
      *
-     * @param mixed  $criteria Query criteria
-     * @param object $document Document to load the data into. If not specified, a new document is created.
-     * @param array  $hints    Hints for document creation
-     * @param int    $lockMode
-     * @param array  $sort     Sort array for Cursor::sort()
+     * @param mixed $criteria Query criteria
      * @throws LockException
-     * @return object|null The loaded and managed document instance or null if no document was found
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load($criteria, $document = null, array $hints = [], $lockMode = 0, ?array $sort = null)
+    public function load($criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null): ?object
     {
         // TODO: remove this
         if ($criteria === null || is_scalar($criteria) || $criteria instanceof ObjectId) {
@@ -533,7 +461,7 @@ class DocumentPersister
         if ($this->class->isLockable) {
             $lockMapping = $this->class->fieldMappings[$this->class->lockField];
             if (isset($result[$lockMapping['name']]) && $result[$lockMapping['name']] === LockMode::PESSIMISTIC_WRITE) {
-                throw LockException::lockFailed($result);
+                throw LockException::lockFailed($document);
             }
         }
 
@@ -542,14 +470,8 @@ class DocumentPersister
 
     /**
      * Finds documents by a set of criteria.
-     *
-     * @param array    $criteria Query criteria
-     * @param array    $sort     Sort array for Cursor::sort()
-     * @param int|null $limit    Limit for Cursor::limit()
-     * @param int|null $skip     Skip for Cursor::skip()
-     * @return Iterator
      */
-    public function loadAll(array $criteria = [], ?array $sort = null, $limit = null, $skip = null)
+    public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null): Iterator
     {
         $criteria = $this->prepareQueryOrNewObj($criteria);
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
@@ -575,12 +497,9 @@ class DocumentPersister
     }
 
     /**
-     * @param object $document
-     *
-     * @return array
      * @throws MongoDBException
      */
-    private function getShardKeyQuery($document)
+    private function getShardKeyQuery(object $document): array
     {
         if (! $this->class->isSharded()) {
             return [];
@@ -616,7 +535,6 @@ class DocumentPersister
 
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
-     *
      */
     private function wrapCursor(Cursor $baseCursor): Iterator
     {
@@ -625,11 +543,8 @@ class DocumentPersister
 
     /**
      * Checks whether the given managed document exists in the database.
-     *
-     * @param object $document
-     * @return bool TRUE if the document exists in the database, FALSE otherwise.
      */
-    public function exists($document)
+    public function exists(object $document): bool
     {
         $id = $this->class->getIdentifierObject($document);
         return (bool) $this->collection->findOne(['_id' => $id], ['_id']);
@@ -637,11 +552,8 @@ class DocumentPersister
 
     /**
      * Locks document by storing the lock mode on the mapped lock field.
-     *
-     * @param object $document
-     * @param int    $lockMode
      */
-    public function lock($document, $lockMode)
+    public function lock(object $document, int $lockMode): void
     {
         $id = $this->uow->getDocumentIdentifier($document);
         $criteria = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
@@ -653,9 +565,8 @@ class DocumentPersister
     /**
      * Releases any lock that exists on this document.
      *
-     * @param object $document
      */
-    public function unlock($document)
+    public function unlock(object $document): void
     {
         $id = $this->uow->getDocumentIdentifier($document);
         $criteria = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
@@ -672,7 +583,7 @@ class DocumentPersister
      * @param array  $hints    Hints for document creation.
      * @return object The filled and managed document object or NULL, if the query result is empty.
      */
-    private function createDocument($result, $document = null, array $hints = [])
+    private function createDocument($result, ?object $document = null, array $hints = []): ?object
     {
         if ($result === null) {
             return null;
@@ -689,9 +600,8 @@ class DocumentPersister
 
     /**
      * Loads a PersistentCollection data. Used in the initialize() method.
-     *
      */
-    public function loadCollection(PersistentCollectionInterface $collection)
+    public function loadCollection(PersistentCollectionInterface $collection): void
     {
         $mapping = $collection->getMapping();
         switch ($mapping['association']) {
@@ -713,7 +623,7 @@ class DocumentPersister
         }
     }
 
-    private function loadEmbedManyCollection(PersistentCollectionInterface $collection)
+    private function loadEmbedManyCollection(PersistentCollectionInterface $collection): void
     {
         $embeddedDocuments = $collection->getMongoData();
         $mapping = $collection->getMapping();
@@ -743,7 +653,7 @@ class DocumentPersister
         }
     }
 
-    private function loadReferenceManyCollectionOwningSide(PersistentCollectionInterface $collection)
+    private function loadReferenceManyCollectionOwningSide(PersistentCollectionInterface $collection): void
     {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
@@ -817,7 +727,7 @@ class DocumentPersister
         }
     }
 
-    private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection)
+    private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection): void
     {
         $query = $this->createReferenceManyInverseSideQuery($collection);
         $documents = $query->execute()->toArray();
@@ -826,11 +736,7 @@ class DocumentPersister
         }
     }
 
-    /**
-     *
-     * @return Query
-     */
-    public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection)
+    public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection): Query
     {
         $hints = $collection->getHints();
         $mapping = $collection->getMapping();
@@ -870,7 +776,7 @@ class DocumentPersister
         return $qb->getQuery();
     }
 
-    private function loadReferenceManyWithRepositoryMethod(PersistentCollectionInterface $collection)
+    private function loadReferenceManyWithRepositoryMethod(PersistentCollectionInterface $collection): void
     {
         $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
         $mapping = $collection->getMapping();
@@ -884,11 +790,7 @@ class DocumentPersister
         }
     }
 
-    /**
-     *
-     * @return \Iterator
-     */
-    public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection)
+    public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection): Iterator
     {
         $mapping = $collection->getMapping();
         $repositoryMethod = $mapping['repositoryMethod'];
@@ -913,11 +815,8 @@ class DocumentPersister
     /**
      * Prepare a projection array by converting keys, which are PHP property
      * names, to MongoDB field names.
-     *
-     * @param array $fields
-     * @return array
      */
-    public function prepareProjection(array $fields)
+    public function prepareProjection(array $fields): array
     {
         $preparedFields = [];
 
@@ -929,8 +828,9 @@ class DocumentPersister
     }
 
     /**
-     * @param string $sort
-     * @return int
+     * @param int|string|null $sort
+     *
+     * @return int|string|null
      */
     private function getSortDirection($sort)
     {
@@ -948,11 +848,8 @@ class DocumentPersister
     /**
      * Prepare a sort specification array by converting keys to MongoDB field
      * names and changing direction strings to int.
-     *
-     * @param array $fields
-     * @return array
      */
-    public function prepareSort(array $fields)
+    public function prepareSort(array $fields): array
     {
         $sortFields = [];
 
@@ -965,11 +862,8 @@ class DocumentPersister
 
     /**
      * Prepare a mongodb field name and convert the PHP property names to MongoDB field names.
-     *
-     * @param string $fieldName
-     * @return string
      */
-    public function prepareFieldName($fieldName)
+    public function prepareFieldName(string $fieldName): string
     {
         $fieldNames = $this->prepareQueryElement($fieldName, null, null, false);
 
@@ -982,11 +876,8 @@ class DocumentPersister
      * This method should be used once for query criteria and not be used for
      * nested expressions. It should be called before
      * {@link DocumentPerister::addFilterToPreparedQuery()}.
-     *
-     * @param array $preparedQuery
-     * @return array
      */
-    public function addDiscriminatorToPreparedQuery(array $preparedQuery)
+    public function addDiscriminatorToPreparedQuery(array $preparedQuery): array
     {
         /* If the class has a discriminator field, which is not already in the
          * criteria, inject it now. The field/values need no preparation.
@@ -1009,11 +900,8 @@ class DocumentPersister
      * This method should be used once for query criteria and not be used for
      * nested expressions. It should be called after
      * {@link DocumentPerister::addDiscriminatorToPreparedQuery()}.
-     *
-     * @param array $preparedQuery
-     * @return array
      */
-    public function addFilterToPreparedQuery(array $preparedQuery)
+    public function addFilterToPreparedQuery(array $preparedQuery): array
     {
         /* If filter criteria exists for this class, prepare it and merge
          * over the existing query.
@@ -1033,12 +921,8 @@ class DocumentPersister
      * Prepares the query criteria or new document object.
      *
      * PHP field names and types will be converted to those used by MongoDB.
-     *
-     * @param array $query
-     * @param bool  $isNewObj
-     * @return array
      */
-    public function prepareQueryOrNewObj(array $query, $isNewObj = false)
+    public function prepareQueryOrNewObj(array $query, bool $isNewObj = false): array
     {
         $preparedQuery = [];
 
@@ -1073,14 +957,9 @@ class DocumentPersister
      *
      * It also handles converting $fieldName to the database name if they are different.
      *
-     * @param string        $fieldName
-     * @param mixed         $value
-     * @param ClassMetadata $class        Defaults to $this->class
-     * @param bool          $prepareValue Whether or not to prepare the value
-     * @param bool          $inNewObj     Whether or not newObj is being prepared
-     * @return array An array of tuples containing prepared field names and values
+     * @param mixed $value
      */
-    private function prepareQueryElement($fieldName, $value = null, $class = null, $prepareValue = true, $inNewObj = false)
+    private function prepareQueryElement(string $fieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false): array
     {
         $class = $class ?? $this->class;
 
@@ -1279,11 +1158,9 @@ class DocumentPersister
     /**
      * Prepares a query expression.
      *
-     * @param array|object  $expression
-     * @param ClassMetadata $class
-     * @return array
+     * @param array|object $expression
      */
-    private function prepareQueryExpression($expression, $class)
+    private function prepareQueryExpression($expression, ClassMetadata $class): array
     {
         foreach ($expression as $k => $v) {
             // Ignore query operators whose arguments need no type conversion
@@ -1320,9 +1197,8 @@ class DocumentPersister
      * $elemMatch criteria for matching a DBRef.
      *
      * @param mixed $value
-     * @return bool
      */
-    private function hasDBRefFields($value)
+    private function hasDBRefFields($value): bool
     {
         if (! is_array($value) && ! is_object($value)) {
             return false;
@@ -1345,9 +1221,8 @@ class DocumentPersister
      * Checks whether the value has query operators.
      *
      * @param mixed $value
-     * @return bool
      */
-    private function hasQueryOperators($value)
+    private function hasQueryOperators($value): bool
     {
         if (! is_array($value) && ! is_object($value)) {
             return false;
@@ -1368,10 +1243,8 @@ class DocumentPersister
 
     /**
      * Gets the array of discriminator values for the given ClassMetadata
-     *
-     * @return array
      */
-    private function getClassDiscriminatorValues(ClassMetadata $metadata)
+    private function getClassDiscriminatorValues(ClassMetadata $metadata): array
     {
         $discriminatorValues = [$metadata->discriminatorValue];
         foreach ($metadata->subClasses as $className) {
@@ -1391,7 +1264,7 @@ class DocumentPersister
         return $discriminatorValues;
     }
 
-    private function handleCollections($document, $options)
+    private function handleCollections(object $document, array $options): void
     {
         // Collection deletions (deletions of complete collections)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
@@ -1419,13 +1292,9 @@ class DocumentPersister
      * If the document is new, ignore shard key field value, otherwise throw an exception.
      * Also, shard key field should be present in actual document data.
      *
-     * @param object $document
-     * @param string $shardKeyField
-     * @param array  $actualDocumentData
-     *
      * @throws MongoDBException
      */
-    private function guardMissingShardKey($document, $shardKeyField, $actualDocumentData)
+    private function guardMissingShardKey(object $document, string $shardKeyField, array $actualDocumentData): void
     {
         $dcs = $this->uow->getDocumentChangeSet($document);
         $isUpdate = $this->uow->isScheduledForUpdate($document);
@@ -1444,12 +1313,8 @@ class DocumentPersister
 
     /**
      * Get shard key aware query for single document.
-     *
-     * @param object $document
-     *
-     * @return array
      */
-    private function getQueryForDocument($document)
+    private function getQueryForDocument(object $document): array
     {
         $id = $this->uow->getDocumentIdentifier($document);
         $id = $this->class->getDatabaseIdentifierValue($id);
@@ -1460,12 +1325,7 @@ class DocumentPersister
         return $query;
     }
 
-    /**
-     * @param array $options
-     *
-     * @return array
-     */
-    private function getWriteOptions(array $options = [])
+    private function getWriteOptions(array $options = []): array
     {
         $defaultOptions = $this->dm->getConfiguration()->getDefaultCommitOptions();
         $documentOptions = [];
@@ -1476,14 +1336,7 @@ class DocumentPersister
         return array_merge($defaultOptions, $documentOptions, $options);
     }
 
-    /**
-     * @param string $fieldName
-     * @param mixed  $value
-     * @param array  $mapping
-     * @param bool   $inNewObj
-     * @return array
-     */
-    private function prepareReference($fieldName, $value, array $mapping, $inNewObj)
+    private function prepareReference(string $fieldName, $value, array $mapping, bool $inNewObj): array
     {
         $reference = $this->dm->createReference($value, $mapping);
         if ($inNewObj || $mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID) {

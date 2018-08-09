@@ -57,7 +57,7 @@ class GraphLookup extends Stage
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
      */
-    public function __construct(Builder $builder, $from, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
     {
         parent::__construct($builder);
 
@@ -72,12 +72,8 @@ class GraphLookup extends Stage
      *
      * Contains the documents traversed in the $graphLookup stage to reach the
      * document.
-     *
-     * @param string $alias
-     *
-     * @return $this
      */
-    public function alias($alias)
+    public function alias(string $alias): self
     {
         $this->as = $alias;
 
@@ -90,12 +86,8 @@ class GraphLookup extends Stage
      *
      * Optionally, connectFromField may be an array of field names, each of
      * which is individually followed through the traversal process.
-     *
-     * @param string $connectFromField
-     *
-     * @return $this
      */
-    public function connectFromField($connectFromField)
+    public function connectFromField(string $connectFromField): self
     {
         // No targetClass mapping - simply use field name as is
         if (! $this->targetClass) {
@@ -122,12 +114,8 @@ class GraphLookup extends Stage
     /**
      * Field name in other documents against which to match the value of the
      * field specified by the connectFromField parameter.
-     *
-     * @param string $connectToField
-     *
-     * @return $this
      */
-    public function connectToField($connectToField)
+    public function connectToField(string $connectToField): self
     {
         $this->connectToField = $this->convertTargetFieldName($connectToField);
         return $this;
@@ -139,12 +127,8 @@ class GraphLookup extends Stage
      * The value of this field is the recursion depth for the document,
      * represented as a NumberLong. Recursion depth value starts at zero, so the
      * first lookup corresponds to zero depth.
-     *
-     * @param string $depthField
-     *
-     * @return $this
      */
-    public function depthField($depthField)
+    public function depthField(string $depthField): self
     {
         $this->depthField = $depthField;
 
@@ -157,12 +141,8 @@ class GraphLookup extends Stage
      *
      * The from collection cannot be sharded and must be in the same database as
      * any other collections used in the operation.
-     *
-     * @param string $from
-     *
-     * @return $this
      */
-    public function from($from)
+    public function from(string $from): self
     {
         // $from can either be
         // a) a field name indicating a reference to a different document. Currently, only REFERENCE_STORE_AS_ID is supported
@@ -192,15 +172,17 @@ class GraphLookup extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
+        $restrictSearchWithMatch = $this->restrictSearchWithMatch->getExpression() ?: (object) [];
+
         $graphLookup = [
             'from' => $this->from,
             'startWith' => $this->convertExpression($this->startWith),
             'connectFromField' => $this->connectFromField,
             'connectToField' => $this->connectToField,
             'as' => $this->as,
-            'restrictSearchWithMatch' => $this->restrictSearchWithMatch->getExpression(),
+            'restrictSearchWithMatch' => $restrictSearchWithMatch,
             'maxDepth' => $this->maxDepth,
             'depthField' => $this->depthField,
         ];
@@ -218,12 +200,8 @@ class GraphLookup extends Stage
 
     /**
      * Non-negative integral number specifying the maximum recursion depth.
-     *
-     * @param int $maxDepth
-     *
-     * @return $this
      */
-    public function maxDepth($maxDepth)
+    public function maxDepth(int $maxDepth): self
     {
         $this->maxDepth = $maxDepth;
 
@@ -232,10 +210,8 @@ class GraphLookup extends Stage
 
     /**
      * A document specifying additional conditions for the recursive search.
-     *
-     * @return GraphLookup\Match
      */
-    public function restrictSearchWithMatch()
+    public function restrictSearchWithMatch(): GraphLookup\Match
     {
         return $this->restrictSearchWithMatch;
     }
@@ -248,10 +224,8 @@ class GraphLookup extends Stage
      * individually followed through the traversal process.
      *
      * @param string|array|Expr $expression
-     *
-     * @return $this
      */
-    public function startWith($expression)
+    public function startWith($expression): self
     {
         $this->startWith = $expression;
 
@@ -259,11 +233,9 @@ class GraphLookup extends Stage
     }
 
     /**
-     * @param string $fieldName
-     * @return $this
      * @throws MappingException
      */
-    private function fromReference($fieldName)
+    private function fromReference(string $fieldName): self
     {
         if (! $this->class->hasReference($fieldName)) {
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);
@@ -321,15 +293,12 @@ class GraphLookup extends Stage
         return $this->getDocumentPersister($this->targetClass)->prepareFieldName($fieldName);
     }
 
-    /**
-     * @return DocumentPersister
-     */
-    private function getDocumentPersister(ClassMetadata $class)
+    private function getDocumentPersister(ClassMetadata $class): DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
     }
 
-    private function getReferencedFieldName($fieldName, array $mapping)
+    private function getReferencedFieldName(string $fieldName, array $mapping): string
     {
         if (! $mapping['isOwningSide']) {
             if (isset($mapping['repositoryMethod']) || ! isset($mapping['mappedBy'])) {

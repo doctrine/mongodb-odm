@@ -33,12 +33,12 @@ class IdType extends Type
         return $value instanceof ObjectId ? (string) $value : $value;
     }
 
-    public function closureToMongo()
+    public function closureToMongo(): string
     {
         return '$return = new MongoDB\BSON\ObjectId($value);';
     }
 
-    public function closureToPHP()
+    public function closureToPHP(): string
     {
         return '$return = $value instanceof \MongoDB\BSON\ObjectId ? (string) $value : $value;';
     }

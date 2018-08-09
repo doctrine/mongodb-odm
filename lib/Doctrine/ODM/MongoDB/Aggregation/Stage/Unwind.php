@@ -22,20 +22,17 @@ class Unwind extends Stage
     /** @var bool */
     private $preserveNullAndEmptyArrays = false;
 
-    /**
-     * @param string $fieldName
-     */
-    public function __construct(Builder $builder, $fieldName)
+    public function __construct(Builder $builder, string $fieldName)
     {
         parent::__construct($builder);
 
-        $this->fieldName = (string) $fieldName;
+        $this->fieldName = $fieldName;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         // Fallback behavior for MongoDB < 3.2
         if ($this->includeArrayIndex === null && ! $this->preserveNullAndEmptyArrays) {
@@ -60,12 +57,8 @@ class Unwind extends Stage
     /**
      * The name of a new field to hold the array index of the element. The name
      * cannot start with a dollar sign $.
-     *
-     * @param string $includeArrayIndex
-     * @return $this
-     *
      */
-    public function includeArrayIndex($includeArrayIndex)
+    public function includeArrayIndex(string $includeArrayIndex): self
     {
         $this->includeArrayIndex = $includeArrayIndex;
 
@@ -76,11 +69,8 @@ class Unwind extends Stage
      * If true, if the path is null, missing, or an empty array, $unwind outputs
      * the document.
      *
-     * @param bool $preserveNullAndEmptyArrays
-     * @return $this
-     *
      */
-    public function preserveNullAndEmptyArrays($preserveNullAndEmptyArrays = true)
+    public function preserveNullAndEmptyArrays(bool $preserveNullAndEmptyArrays = true): self
     {
         $this->preserveNullAndEmptyArrays = $preserveNullAndEmptyArrays;
 

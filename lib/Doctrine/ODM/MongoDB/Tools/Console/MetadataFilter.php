@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use function count;
 use function iterator_to_array;
 use function strpos;
@@ -17,21 +18,21 @@ class MetadataFilter extends \FilterIterator implements \Countable
     /**
      * Filter Metadatas by one or more filter options.
      *
-     * @param array        $metadatas
-     * @param array|string $filter
-     * @return array
+     * @param  ClassMetadata[] $metadatas
+     * @param  array|string    $filter
+     * @return ClassMetadata[]
      */
-    public static function filter(array $metadatas, $filter)
+    public static function filter(array $metadatas, $filter): array
     {
         $metadatas = new MetadataFilter(new \ArrayIterator($metadatas), $filter);
         return iterator_to_array($metadatas);
     }
 
-    /** @var array */
+    /** @var string[] */
     private $_filter = [];
 
     /**
-     * @param array|string $filter
+     * @param string[]|string $filter
      */
     public function __construct(\ArrayIterator $metadata, $filter)
     {
@@ -39,10 +40,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
         parent::__construct($metadata);
     }
 
-    /**
-     * @return bool
-     */
-    public function accept()
+    public function accept(): bool
     {
         if (count($this->_filter) === 0) {
             return true;
@@ -59,10 +57,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
         return false;
     }
 
-    /**
-     * @return int
-     */
-    public function count()
+    public function count(): int
     {
         return count($this->getInnerIterator());
     }

@@ -9,6 +9,7 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use const E_USER_DEPRECATED;
@@ -39,7 +40,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
+    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class): void
     {
         /** @var ClassMetadata $class */
         $reflClass = $class->getReflectionClass();
@@ -225,7 +226,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
     }
 
-    private function addIndex(ClassMetadata $class, $index, array $keys = [])
+    private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []): void
     {
         $keys = array_merge($keys, $index->keys);
         $options = [];
@@ -248,7 +249,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @throws MappingException
      */
-    private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey)
+    private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey): void
     {
         $options = [];
         $allowed = ['unique', 'numInitialChunks'];
@@ -267,9 +268,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * Factory method for the Annotation Driver
      *
      * @param array|string $paths
-     * @return AnnotationDriver
      */
-    public static function create($paths = [], ?Reader $reader = null)
+    public static function create($paths = [], ?Reader $reader = null): AnnotationDriver
     {
         if ($reader === null) {
             $reader = new AnnotationReader();

@@ -16,20 +16,17 @@ class Skip extends Stage
     /** @var int */
     private $skip;
 
-    /**
-     * @param int $skip
-     */
-    public function __construct(Builder $builder, $skip)
+    public function __construct(Builder $builder, int $skip)
     {
         parent::__construct($builder);
 
-        $this->skip = (int) $skip;
+        $this->skip = $skip;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$skip' => $this->skip,

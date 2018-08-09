@@ -15,10 +15,7 @@ use function array_key_exists;
  */
 abstract class BsonFilter
 {
-    /**
-     * The document manager.
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     protected $dm;
 
     /**
@@ -27,11 +24,6 @@ abstract class BsonFilter
      */
     protected $parameters = [];
 
-    /**
-     * Constructs the BsonFilter object.
-     *
-     * @param DocumentManager $dm The Document Manager
-     */
     final public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
@@ -40,12 +32,9 @@ abstract class BsonFilter
     /**
      * Sets a parameter that can be used by the filter.
      *
-     * @param string $name  Name of the parameter.
-     * @param mixed  $value Value of the parameter.
-     *
-     * @return BsonFilter The current Bson filter.
+     * @param mixed $value Value of the parameter.
      */
-    final public function setParameter($name, $value)
+    final public function setParameter(string $name, $value): self
     {
         $this->parameters[$name] = $value;
         return $this;
@@ -58,11 +47,9 @@ abstract class BsonFilter
      * even objects. They are not automatically injected into a query, they
      * are to be used in the addFilterCriteria method.
      *
-     * @param string $name Name of the parameter.
-     *
      * @return mixed The parameter.
      */
-    final public function getParameter($name)
+    final public function getParameter(string $name)
     {
         if (! array_key_exists($name, $this->parameters)) {
             throw new \InvalidArgumentException("Filter parameter '" . $name . "' is not set.");
@@ -74,8 +61,6 @@ abstract class BsonFilter
      * Gets the criteria array to add to a query.
      *
      * If there is no criteria for the class, an empty array should be returned.
-     *
-     * @return array
      */
-    abstract public function addFilterCriteria(ClassMetadata $class);
+    abstract public function addFilterCriteria(ClassMetadata $class): array;
 }

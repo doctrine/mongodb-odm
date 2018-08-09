@@ -48,9 +48,8 @@ abstract class AbstractBucket extends Stage
      * field name with a dollar sign $ and enclose it in quotes.
      *
      * @param array|Expr $expression
-     * @return $this
      */
-    public function groupBy($expression)
+    public function groupBy($expression): self
     {
         $this->groupBy = $expression;
 
@@ -60,7 +59,7 @@ abstract class AbstractBucket extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         $stage = [
             $this->getStageName() => [
@@ -75,17 +74,12 @@ abstract class AbstractBucket extends Stage
         return $stage;
     }
 
-    /**
-     * @return array
-     */
-    abstract protected function getExtraPipelineFields();
+    abstract protected function getExtraPipelineFields(): array;
 
     /**
      * Returns the stage name with the dollar prefix
-     *
-     * @return string
      */
-    abstract protected function getStageName();
+    abstract protected function getStageName(): string;
 
     private function convertExpression($expression)
     {
@@ -98,10 +92,7 @@ abstract class AbstractBucket extends Stage
         return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
     }
 
-    /**
-     * @return DocumentPersister
-     */
-    private function getDocumentPersister()
+    private function getDocumentPersister(): DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }

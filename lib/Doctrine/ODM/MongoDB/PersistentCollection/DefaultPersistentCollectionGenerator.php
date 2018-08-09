@@ -46,11 +46,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
      */
     private $collectionDir;
 
-    /**
-     * @param string $collectionDir
-     * @param string $collectionNs
-     */
-    public function __construct($collectionDir, $collectionNs)
+    public function __construct(string $collectionDir, string $collectionNs)
     {
         $this->collectionDir = $collectionDir;
         $this->collectionNamespace = $collectionNs;
@@ -59,7 +55,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
     /**
      * {@inheritdoc}
      */
-    public function generateClass($class, $dir)
+    public function generateClass(string $class, string $dir): void
     {
         $collClassName = str_replace('\\', '', $class) . 'Persistent';
         $className = $this->collectionNamespace . '\\' . $collClassName;
@@ -70,7 +66,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
     /**
      * {@inheritdoc}
      */
-    public function loadClass($collectionClass, $autoGenerate)
+    public function loadClass(string $collectionClass, int $autoGenerate): string
     {
         // These checks are not in __construct() because of BC and should be moved for 2.0
         if (! $this->collectionDir) {
@@ -110,7 +106,10 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
         return $className;
     }
 
-    private function generateCollectionClass($for, $targetFqcn, $fileName)
+    /**
+     * @param string|false $fileName Filename to write collection class code or false to eval it.
+     */
+    private function generateCollectionClass(string $for, string $targetFqcn, $fileName)
     {
         $exploded = explode('\\', $targetFqcn);
         $class = array_pop($exploded);
@@ -182,7 +181,7 @@ CODE;
         }
     }
 
-    private function generateMethod(\ReflectionMethod $method)
+    private function generateMethod(\ReflectionMethod $method): string
     {
         $parametersString = $this->buildParametersString($method);
         $callParamsString = implode(', ', $this->getParameterNamesForDecoratedCall($method->getParameters()));
@@ -205,11 +204,7 @@ CODE;
         return $method;
     }
 
-    /**
-     *
-     * @return string
-     */
-    private function buildParametersString(\ReflectionMethod $method)
+    private function buildParametersString(\ReflectionMethod $method): string
     {
         $parameters = $method->getParameters();
         $parameterDefinitions = [];
@@ -246,11 +241,7 @@ CODE;
         return implode(', ', $parameterDefinitions);
     }
 
-    /**
-     *
-     * @return string|null
-     */
-    private function getParameterType(\ReflectionParameter $parameter)
+    private function getParameterType(\ReflectionParameter $parameter): ?string
     {
         // We need to pick the type hint class too
         if ($parameter->isArray()) {
@@ -280,7 +271,7 @@ CODE;
      *
      * @return string[]
      */
-    private function getParameterNamesForDecoratedCall(array $parameters)
+    private function getParameterNamesForDecoratedCall(array $parameters): array
     {
         return array_map(
             function (\ReflectionParameter $parameter) {
@@ -301,12 +292,9 @@ CODE;
     }
 
     /**
-     *
-     * @return string
-     *
      * @see \Doctrine\Common\Proxy\ProxyGenerator::getMethodReturnType()
      */
-    private function getMethodReturnType(\ReflectionMethod $method)
+    private function getMethodReturnType(\ReflectionMethod $method): string
     {
         if (! method_exists($method, 'hasReturnType') || ! $method->hasReturnType()) {
             return '';
@@ -315,16 +303,13 @@ CODE;
     }
 
     /**
-     *
-     * @return string
-     *
      * @see \Doctrine\Common\Proxy\ProxyGenerator::formatType()
      */
     private function formatType(
         \ReflectionType $type,
         \ReflectionMethod $method,
         ?\ReflectionParameter $parameter = null
-    ) {
+    ): string {
         $name = method_exists($type, 'getName') ? $type->getName() : (string) $type;
         $nameLower = strtolower($name);
         if ($nameLower === 'self') {

@@ -38,10 +38,7 @@ class Lookup extends Stage
     /** @var string */
     private $as;
 
-    /**
-     * @param string $from
-     */
-    public function __construct(Builder $builder, $from, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
     {
         parent::__construct($builder);
 
@@ -57,12 +54,8 @@ class Lookup extends Stage
      * The new array field contains the matching documents from the from
      * collection. If the specified name already exists in the input document,
      * the existing field is overwritten.
-     *
-     * @param string $alias
-     *
-     * @return $this
      */
-    public function alias($alias)
+    public function alias(string $alias): self
     {
         $this->as = $alias;
 
@@ -73,12 +66,8 @@ class Lookup extends Stage
      * Specifies the collection or field name in the same database to perform the join with.
      *
      * The from collection cannot be sharded.
-     *
-     * @param string $from
-     *
-     * @return $this
      */
-    public function from($from)
+    public function from(string $from): self
     {
         // $from can either be
         // a) a field name indicating a reference to a different document. Currently, only REFERENCE_STORE_AS_ID is supported
@@ -108,7 +97,7 @@ class Lookup extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$lookup' => [
@@ -127,12 +116,8 @@ class Lookup extends Stage
      * from the documents of the from collection. If an input document does not
      * contain the localField, the $lookup treats the field as having a value of
      * null for matching purposes.
-     *
-     * @param string $localField
-     *
-     * @return $this
      */
-    public function localField($localField)
+    public function localField(string $localField): self
     {
         $this->localField = $this->prepareFieldName($localField, $this->class);
         return $this;
@@ -145,18 +130,14 @@ class Lookup extends Stage
      * from the input documents. If a document in the from collection does not
      * contain the foreignField, the $lookup treats the value as null for
      * matching purposes.
-     *
-     * @param string $foreignField
-     *
-     * @return $this
      */
-    public function foreignField($foreignField)
+    public function foreignField(string $foreignField): self
     {
         $this->foreignField = $this->prepareFieldName($foreignField, $this->targetClass);
         return $this;
     }
 
-    protected function prepareFieldName($fieldName, ?ClassMetadata $class = null)
+    protected function prepareFieldName(string $fieldName, ?ClassMetadata $class = null): string
     {
         if (! $class) {
             return $fieldName;
@@ -166,11 +147,9 @@ class Lookup extends Stage
     }
 
     /**
-     * @param string $fieldName
-     * @return $this
      * @throws MappingException
      */
-    private function fromReference($fieldName)
+    private function fromReference(string $fieldName): self
     {
         if (! $this->class->hasReference($fieldName)) {
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);
@@ -222,10 +201,7 @@ class Lookup extends Stage
         return $this;
     }
 
-    /**
-     * @return DocumentPersister
-     */
-    private function getDocumentPersister(ClassMetadata $class)
+    private function getDocumentPersister(ClassMetadata $class): DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
     }

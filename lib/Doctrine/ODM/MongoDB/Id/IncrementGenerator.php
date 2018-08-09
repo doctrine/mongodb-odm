@@ -39,24 +39,18 @@ class IncrementGenerator extends AbstractIdGenerator
         $this->collection = $collection;
     }
 
-    /**
-     * @param string $key
-     */
-    public function setKey($key)
+    public function setKey(string $key): void
     {
         $this->key = $key;
     }
 
-    /**
-     * @param int $startingId
-     */
-    public function setStartingId($startingId)
+    public function setStartingId(int $startingId): void
     {
         $this->startingId = $startingId;
     }
 
     /** @inheritDoc */
-    public function generate(DocumentManager $dm, $document)
+    public function generate(DocumentManager $dm, object $document)
     {
         $className = get_class($document);
         $db = $dm->getDocumentDatabase($className);

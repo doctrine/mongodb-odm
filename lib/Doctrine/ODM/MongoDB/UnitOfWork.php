@@ -274,10 +274,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Factory for returning new PersistenceBuilder instances used for preparing data into
      * queries for insert persistence.
-     *
-     * @return PersistenceBuilder $pb
      */
-    public function getPersistenceBuilder()
+    public function getPersistenceBuilder(): PersistenceBuilder
     {
         if (! $this->persistenceBuilder) {
             $this->persistenceBuilder = new PersistenceBuilder($this->dm, $this);
@@ -287,13 +285,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Sets the parent association for a given embedded document.
-     *
-     * @param object $document
-     * @param array  $mapping
-     * @param object $parent
-     * @param string $propertyPath
      */
-    public function setParentAssociation($document, $mapping, $parent, $propertyPath)
+    public function setParentAssociation(object $document, array $mapping, object $parent, string $propertyPath): void
     {
         $oid = spl_object_hash($document);
         $this->embeddedDocumentsRegistry[$oid] = $document;
@@ -306,11 +299,8 @@ class UnitOfWork implements PropertyChangedListener
      *     <code>
      *     list($mapping, $parent, $propertyPath) = $this->getParentAssociation($embeddedDocument);
      *     </code>
-     *
-     * @param object $document
-     * @return array $association
      */
-    public function getParentAssociation($document)
+    public function getParentAssociation(object $document): ?array
     {
         $oid = spl_object_hash($document);
 
@@ -319,11 +309,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Get the document persister instance for the given document name
-     *
-     * @param string $documentName
-     * @return Persisters\DocumentPersister
      */
-    public function getDocumentPersister($documentName)
+    public function getDocumentPersister(string $documentName): Persisters\DocumentPersister
     {
         if (! isset($this->persisters[$documentName])) {
             $class = $this->dm->getClassMetadata($documentName);
@@ -335,10 +322,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Get the collection persister instance.
-     *
-     * @return CollectionPersister
      */
-    public function getCollectionPersister()
+    public function getCollectionPersister(): CollectionPersister
     {
         if (! isset($this->collectionPersister)) {
             $pb = $this->getPersistenceBuilder();
@@ -349,10 +334,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Set the document persister instance to use for the given document name
-     *
-     * @param string $documentName
      */
-    public function setDocumentPersister($documentName, Persisters\DocumentPersister $persister)
+    public function setDocumentPersister(string $documentName, Persisters\DocumentPersister $persister): void
     {
         $this->persisters[$documentName] = $persister;
     }
@@ -370,7 +353,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
      */
-    public function commit(array $options = [])
+    public function commit(array $options = []): void
     {
         // Raise preFlush
         if ($this->evm->hasListeners(Events::preFlush)) {
@@ -451,12 +434,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Groups a list of scheduled documents by their class.
-     *
-     * @param array $documents       Scheduled documents (e.g. $this->documentInsertions)
-     * @param bool  $includeEmbedded
-     * @return array Tuples of ClassMetadata and a corresponding array of objects
      */
-    private function getClassesForCommitAction($documents, $includeEmbedded = false)
+    private function getClassesForCommitAction(array $documents, bool $includeEmbedded = false): array
     {
         if (empty($documents)) {
             return [];
@@ -491,7 +470,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * Embedded documents will not be processed.
      */
-    private function computeScheduleInsertsChangeSets()
+    private function computeScheduleInsertsChangeSets(): void
     {
         foreach ($this->documentInsertions as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
@@ -508,7 +487,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * Embedded documents will not be processed.
      */
-    private function computeScheduleUpsertsChangeSets()
+    private function computeScheduleUpsertsChangeSets(): void
     {
         foreach ($this->documentUpserts as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
@@ -523,10 +502,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the changeset for a document.
      *
-     * @param object $document
      * @return array array('property' => array(0 => mixed|null, 1 => mixed|null))
      */
-    public function getDocumentChangeSet($document)
+    public function getDocumentChangeSet(object $document): array
     {
         $oid = spl_object_hash($document);
 
@@ -536,11 +514,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Sets the changeset for a document.
-     *
-     * @param object $document
-     * @param array  $changeset
      */
-    public function setDocumentChangeSet($document, $changeset)
+    public function setDocumentChangeSet(object $document, array $changeset): void
     {
         $this->documentChangeSets[spl_object_hash($document)] = $changeset;
     }
@@ -548,10 +523,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Get a documents actual data, flattening all the objects to arrays.
      *
-     * @param object $document
      * @return array
      */
-    public function getDocumentActualData($document)
+    public function getDocumentActualData(object $document): array
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         $actualData = [];
@@ -602,11 +576,8 @@ class UnitOfWork implements PropertyChangedListener
      * If the document is already fully MANAGED (has been fetched from the database before)
      * and any changes to its properties are detected, then a reference to the document is stored
      * there to mark it for an update.
-     *
-     * @param ClassMetadata $class    The class descriptor of the document.
-     * @param object        $document The document for which to compute the changes.
      */
-    public function computeChangeSet(ClassMetadata $class, $document)
+    public function computeChangeSet(ClassMetadata $class, object $document): void
     {
         if (! $class->isInheritanceTypeNone()) {
             $class = $this->dm->getClassMetadata(get_class($document));
@@ -622,11 +593,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Used to do the common work of computeChangeSet and recomputeSingleDocumentChangeSet
-     *
-     * @param object $document
-     * @param bool   $recompute
      */
-    private function computeOrRecomputeChangeSet(ClassMetadata $class, $document, $recompute = false)
+    private function computeOrRecomputeChangeSet(ClassMetadata $class, object $document, bool $recompute = false): void
     {
         $oid = spl_object_hash($document);
         $actualData = $this->getDocumentActualData($document);
@@ -822,7 +790,7 @@ class UnitOfWork implements PropertyChangedListener
      * since the last commit and stores these changes in the _documentChangeSet map
      * temporarily for access by the persisters, until the UoW commit is finished.
      */
-    public function computeChangeSets()
+    public function computeChangeSets(): void
     {
         $this->computeScheduleInsertsChangeSets();
         $this->computeScheduleUpsertsChangeSets();
@@ -877,12 +845,10 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Computes the changes of an association.
      *
-     * @param object $parentDocument
-     * @param array  $assoc
-     * @param mixed  $value          The value of the association.
+     * @param mixed $value The value of the association.
      * @throws \InvalidArgumentException
      */
-    private function computeAssociationChanges($parentDocument, array $assoc, $value)
+    private function computeAssociationChanges(object $parentDocument, array $assoc, $value): void
     {
         $isNewParentDocument = isset($this->documentInsertions[spl_object_hash($parentDocument)]);
         $class = $this->dm->getClassMetadata(get_class($parentDocument));
@@ -997,11 +963,9 @@ class UnitOfWork implements PropertyChangedListener
      * whereby changes detected in this method prevail.
      *
      * @ignore
-     * @param ClassMetadata $class    The class descriptor of the document.
-     * @param object        $document The document for which to (re)calculate the change set.
      * @throws \InvalidArgumentException If the passed document is not MANAGED.
      */
-    public function recomputeSingleDocumentChangeSet(ClassMetadata $class, $document)
+    public function recomputeSingleDocumentChangeSet(ClassMetadata $class, object $document): void
     {
         // Ignore uninitialized proxy objects
         if ($document instanceof Proxy && ! $document->__isInitialized__) {
@@ -1022,10 +986,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * @param object $document
      * @throws \InvalidArgumentException If there is something wrong with document's identifier.
      */
-    private function persistNew(ClassMetadata $class, $document)
+    private function persistNew(ClassMetadata $class, object $document): void
     {
         $this->lifecycleEventManager->prePersist($class, $document);
         $oid = spl_object_hash($document);
@@ -1071,11 +1034,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes all document insertions for documents of the specified type.
-     *
-     * @param array $documents Array of documents to insert
-     * @param array $options   Array of options to be used with batchInsert()
      */
-    private function executeInserts(ClassMetadata $class, array $documents, array $options = [])
+    private function executeInserts(ClassMetadata $class, array $documents, array $options = []): void
     {
         $persister = $this->getDocumentPersister($class->name);
 
@@ -1093,11 +1053,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes all document upserts for documents of the specified type.
-     *
-     * @param array $documents Array of documents to upsert
-     * @param array $options   Array of options to be used with batchInsert()
      */
-    private function executeUpserts(ClassMetadata $class, array $documents, array $options = [])
+    private function executeUpserts(ClassMetadata $class, array $documents, array $options = []): void
     {
         $persister = $this->getDocumentPersister($class->name);
 
@@ -1115,11 +1072,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes all document updates for documents of the specified type.
-     *
-     * @param array $documents Array of documents to update
-     * @param array $options   Array of options to be used with update()
      */
-    private function executeUpdates(ClassMetadata $class, array $documents, array $options = [])
+    private function executeUpdates(ClassMetadata $class, array $documents, array $options = []): void
     {
         if ($class->isReadOnly) {
             return;
@@ -1143,11 +1097,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes all document deletions for documents of the specified type.
-     *
-     * @param array $documents Array of documents to delete
-     * @param array $options   Array of options to be used with remove()
      */
-    private function executeDeletions(ClassMetadata $class, array $documents, array $options = [])
+    private function executeDeletions(ClassMetadata $class, array $documents, array $options = []): void
     {
         $persister = $this->getDocumentPersister($class->name);
 
@@ -1189,10 +1140,9 @@ class UnitOfWork implements PropertyChangedListener
      * If the document already has an identifier, it will be added to the
      * identity map.
      *
-     * @param object $document The document to schedule for insertion.
      * @throws \InvalidArgumentException
      */
-    public function scheduleForInsert(ClassMetadata $class, $document)
+    public function scheduleForInsert(ClassMetadata $class, object $document): void
     {
         $oid = spl_object_hash($document);
 
@@ -1219,10 +1169,9 @@ class UnitOfWork implements PropertyChangedListener
      * Schedules a document for upsert into the database and adds it to the
      * identity map
      *
-     * @param object $document The document to schedule for upsert.
      * @throws \InvalidArgumentException
      */
-    public function scheduleForUpsert(ClassMetadata $class, $document)
+    public function scheduleForUpsert(ClassMetadata $class, object $document): void
     {
         $oid = spl_object_hash($document);
 
@@ -1246,22 +1195,16 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether a document is scheduled for insertion.
-     *
-     * @param object $document
-     * @return bool
      */
-    public function isScheduledForInsert($document)
+    public function isScheduledForInsert(object $document): bool
     {
         return isset($this->documentInsertions[spl_object_hash($document)]);
     }
 
     /**
      * Checks whether a document is scheduled for upsert.
-     *
-     * @param object $document
-     * @return bool
      */
-    public function isScheduledForUpsert($document)
+    public function isScheduledForUpsert(object $document): bool
     {
         return isset($this->documentUpserts[spl_object_hash($document)]);
     }
@@ -1269,10 +1212,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Schedules a document for being updated.
      *
-     * @param object $document The document to schedule for being updated.
      * @throws \InvalidArgumentException
      */
-    public function scheduleForUpdate($document)
+    public function scheduleForUpdate(object $document): void
     {
         $oid = spl_object_hash($document);
         if (! isset($this->documentIdentifiers[$oid])) {
@@ -1296,16 +1238,13 @@ class UnitOfWork implements PropertyChangedListener
      * Checks whether a document is registered as dirty in the unit of work.
      * Note: Is not very useful currently as dirty documents are only registered
      * at commit time.
-     *
-     * @param object $document
-     * @return bool
      */
-    public function isScheduledForUpdate($document)
+    public function isScheduledForUpdate(object $document): bool
     {
         return isset($this->documentUpdates[spl_object_hash($document)]);
     }
 
-    public function isScheduledForDirtyCheck($document)
+    public function isScheduledForDirtyCheck(object $document): bool
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         return isset($this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)]);
@@ -1314,10 +1253,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Schedules a document for deletion.
-     *
-     * @param object $document
      */
-    public function scheduleForDelete($document)
+    public function scheduleForDelete(object $document): void
     {
         $oid = spl_object_hash($document);
 
@@ -1349,22 +1286,16 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Checks whether a document is registered as removed/deleted with the unit
      * of work.
-     *
-     * @param object $document
-     * @return bool
      */
-    public function isScheduledForDelete($document)
+    public function isScheduledForDelete(object $document): bool
     {
         return isset($this->documentDeletions[spl_object_hash($document)]);
     }
 
     /**
      * Checks whether a document is scheduled for insertion, update or deletion.
-     *
-     * @param object $document
-     * @return bool
      */
-    public function isDocumentScheduled($document)
+    public function isDocumentScheduled(object $document): bool
     {
         $oid = spl_object_hash($document);
         return isset($this->documentInsertions[$oid]) ||
@@ -1382,11 +1313,8 @@ class UnitOfWork implements PropertyChangedListener
      * keys to allow differentiation of equal, but not identical, values.
      *
      * @ignore
-     * @param object $document The document to register.
-     * @return bool  TRUE if the registration was successful, FALSE if the identity of
-     *                  the document in question is already managed.
      */
-    public function addToIdentityMap($document)
+    public function addToIdentityMap(object $document): bool
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         $id = $this->getIdForIdentityMap($document);
@@ -1408,14 +1336,12 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the state of a document with regard to the current unit of work.
      *
-     * @param object   $document
-     * @param int|null $assume   The state to assume if the state is not yet known (not MANAGED or REMOVED).
-     *                           This parameter can be set to improve performance of document state detection
-     *                           by potentially avoiding a database lookup if the distinction between NEW and DETACHED
-     *                           is either known or does not matter for the caller of the method.
-     * @return int The document state.
+     * @param int|null $assume The state to assume if the state is not yet known (not MANAGED or REMOVED).
+     *                         This parameter can be set to improve performance of document state detection
+     *                         by potentially avoiding a database lookup if the distinction between NEW and DETACHED
+     *                         is either known or does not matter for the caller of the method.
      */
-    public function getDocumentState($document, $assume = null)
+    public function getDocumentState(object $document, ?int $assume = null): int
     {
         $oid = spl_object_hash($document);
 
@@ -1472,11 +1398,9 @@ class UnitOfWork implements PropertyChangedListener
      * document from the persistence management of Doctrine.
      *
      * @ignore
-     * @param object $document
      * @throws \InvalidArgumentException
-     * @return bool
      */
-    public function removeFromIdentityMap($document)
+    public function removeFromIdentityMap(object $document): bool
     {
         $oid = spl_object_hash($document);
 
@@ -1502,12 +1426,10 @@ class UnitOfWork implements PropertyChangedListener
      * Gets a document in the identity map by its identifier hash.
      *
      * @ignore
-     * @param mixed         $id    Document identifier
-     * @param ClassMetadata $class Document class
-     * @return object
+     * @param mixed $id Document identifier
      * @throws InvalidArgumentException If the class does not have an identifier.
      */
-    public function getById($id, ClassMetadata $class)
+    public function getById($id, ClassMetadata $class): object
     {
         if (! $class->identifier) {
             throw new \InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
@@ -1524,8 +1446,7 @@ class UnitOfWork implements PropertyChangedListener
      * for the given hash, FALSE is returned.
      *
      * @ignore
-     * @param mixed         $id    Document identifier
-     * @param ClassMetadata $class Document class
+     * @param mixed $id Document identifier
      * @return mixed The found document or FALSE.
      * @throws InvalidArgumentException If the class does not have an identifier.
      */
@@ -1543,10 +1464,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Schedules a document for dirty-checking at commit-time.
      *
-     * @param object $document The document to schedule for dirty-checking.
      * @todo Rename: scheduleForSynchronization
      */
-    public function scheduleForDirtyCheck($document)
+    public function scheduleForDirtyCheck(object $document): void
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         $this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)] = $document;
@@ -1554,11 +1474,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether a document is registered in the identity map.
-     *
-     * @param object $document
-     * @return bool
      */
-    public function isInIdentityMap($document)
+    public function isInIdentityMap(object $document): bool
     {
         $oid = spl_object_hash($document);
 
@@ -1572,11 +1489,7 @@ class UnitOfWork implements PropertyChangedListener
         return isset($this->identityMap[$class->name][$id]);
     }
 
-    /**
-     * @param object $document
-     * @return string
-     */
-    private function getIdForIdentityMap($document)
+    private function getIdForIdentityMap(object $document): string
     {
         $class = $this->dm->getClassMetadata(get_class($document));
 
@@ -1595,11 +1508,8 @@ class UnitOfWork implements PropertyChangedListener
      * Checks whether an identifier exists in the identity map.
      *
      * @ignore
-     * @param string $id
-     * @param string $rootClassName
-     * @return bool
      */
-    public function containsId($id, $rootClassName)
+    public function containsId($id, string $rootClassName): bool
     {
         return isset($this->identityMap[$rootClassName][serialize($id)]);
     }
@@ -1607,11 +1517,10 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Persists a document as part of the current unit of work.
      *
-     * @param object $document The document to persist.
      * @throws MongoDBException If trying to persist MappedSuperclass.
      * @throws \InvalidArgumentException If there is something wrong with document's identifier.
      */
-    public function persist($document)
+    public function persist(object $document): void
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         if ($class->isMappedSuperclass || $class->isQueryResultDocument) {
@@ -1629,12 +1538,10 @@ class UnitOfWork implements PropertyChangedListener
      * NOTE: This method always considers documents that are not yet known to
      * this UnitOfWork as NEW.
      *
-     * @param object $document The document to persist.
-     * @param array  $visited  The already visited documents.
      * @throws \InvalidArgumentException
      * @throws MongoDBException
      */
-    private function doPersist($document, array &$visited)
+    private function doPersist(object $document, array &$visited): void
     {
         $oid = spl_object_hash($document);
         if (isset($visited[$oid])) {
@@ -1682,10 +1589,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Deletes a document as part of the current unit of work.
-     *
-     * @param object $document The document to remove.
      */
-    public function remove($document)
+    public function remove(object $document)
     {
         $visited = [];
         $this->doRemove($document, $visited);
@@ -1697,11 +1602,9 @@ class UnitOfWork implements PropertyChangedListener
      * This method is internally called during delete() cascades as it tracks
      * the already visited documents to prevent infinite recursions.
      *
-     * @param object $document The document to delete.
-     * @param array  $visited  The map of the already visited documents.
      * @throws MongoDBException
      */
-    private function doRemove($document, array &$visited)
+    private function doRemove(object $document, array &$visited): void
     {
         $oid = spl_object_hash($document);
         if (isset($visited[$oid])) {
@@ -1736,11 +1639,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Merges the state of the given detached document into this UnitOfWork.
-     *
-     * @param object $document
-     * @return object The managed copy of the document.
      */
-    public function merge($document)
+    public function merge(object $document): object
     {
         $visited = [];
 
@@ -1750,19 +1650,12 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes a merge operation on a document.
      *
-     * @param object      $document
-     * @param array       $visited
-     * @param object|null $prevManagedCopy
-     * @param array|null  $assoc
-     *
-     * @return object The managed copy of the document.
-     *
      * @throws InvalidArgumentException If the entity instance is NEW.
      * @throws LockException If the document uses optimistic locking through a
      *                       version attribute and the version check against the
      *                       managed copy fails.
      */
-    private function doMerge($document, array &$visited, $prevManagedCopy = null, $assoc = null)
+    private function doMerge(object $document, array &$visited, ?object $prevManagedCopy = null, ?array $assoc = null): object
     {
         $oid = spl_object_hash($document);
 
@@ -1932,7 +1825,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Mark the managed copy visited as well
-        $visited[spl_object_hash($managedCopy)] = true;
+        $visited[spl_object_hash($managedCopy)] = $managedCopy;
 
         $this->cascadeMerge($document, $managedCopy, $visited);
 
@@ -1942,10 +1835,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Detaches a document from the persistence management. It's persistence will
      * no longer be managed by Doctrine.
-     *
-     * @param object $document The document to detach.
      */
-    public function detach($document)
+    public function detach(object $document): void
     {
         $visited = [];
         $this->doDetach($document, $visited);
@@ -1954,11 +1845,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes a detach operation on the given document.
      *
-     * @param object $document
-     * @param array  $visited
      * @internal This method always considers documents with an assigned identifier as DETACHED.
      */
-    private function doDetach($document, array &$visited)
+    private function doDetach(object $document, array &$visited): void
     {
         $oid = spl_object_hash($document);
         if (isset($visited[$oid])) {
@@ -1995,10 +1884,9 @@ class UnitOfWork implements PropertyChangedListener
      * Refreshes the state of the given document from the database, overwriting
      * any local, unpersisted changes.
      *
-     * @param object $document The document to refresh.
      * @throws \InvalidArgumentException If the document is not MANAGED.
      */
-    public function refresh($document)
+    public function refresh(object $document): void
     {
         $visited = [];
         $this->doRefresh($document, $visited);
@@ -2007,11 +1895,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes a refresh operation on a document.
      *
-     * @param object $document The document to refresh.
-     * @param array  $visited  The already visited documents during cascades.
      * @throws \InvalidArgumentException If the document is not MANAGED.
      */
-    private function doRefresh($document, array &$visited)
+    private function doRefresh(object $document, array &$visited): void
     {
         $oid = spl_object_hash($document);
         if (isset($visited[$oid])) {
@@ -2035,11 +1921,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades a refresh operation to associated documents.
-     *
-     * @param object $document
-     * @param array  $visited
      */
-    private function cascadeRefresh($document, array &$visited)
+    private function cascadeRefresh(object $document, array &$visited): void
     {
         $class = $this->dm->getClassMetadata(get_class($document));
 
@@ -2068,11 +1951,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades a detach operation to associated documents.
-     *
-     * @param object $document
-     * @param array  $visited
      */
-    private function cascadeDetach($document, array &$visited)
+    private function cascadeDetach(object $document, array &$visited): void
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
@@ -2095,12 +1975,8 @@ class UnitOfWork implements PropertyChangedListener
     }
     /**
      * Cascades a merge operation to associated documents.
-     *
-     * @param object $document
-     * @param object $managedCopy
-     * @param array  $visited
      */
-    private function cascadeMerge($document, $managedCopy, array &$visited)
+    private function cascadeMerge(object $document, object $managedCopy, array &$visited): void
     {
         $class = $this->dm->getClassMetadata(get_class($document));
 
@@ -2131,11 +2007,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades the save operation to associated documents.
-     *
-     * @param object $document
-     * @param array  $visited
      */
-    private function cascadePersist($document, array &$visited)
+    private function cascadePersist(object $document, array &$visited): void
     {
         $class = $this->dm->getClassMetadata(get_class($document));
 
@@ -2187,11 +2060,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades the delete operation to associated documents.
-     *
-     * @param object $document
-     * @param array  $visited
      */
-    private function cascadeRemove($document, array &$visited)
+    private function cascadeRemove(object $document, array &$visited): void
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         foreach ($class->fieldMappings as $mapping) {
@@ -2217,13 +2087,10 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Acquire a lock on the given document.
      *
-     * @param object $document
-     * @param int    $lockMode
-     * @param int    $lockVersion
      * @throws LockException
      * @throws \InvalidArgumentException
      */
-    public function lock($document, $lockMode, $lockVersion = null)
+    public function lock(object $document, int $lockMode, ?int $lockVersion = null): void
     {
         if ($this->getDocumentState($document) !== self::STATE_MANAGED) {
             throw new \InvalidArgumentException('Document is not MANAGED.');
@@ -2251,10 +2118,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Releases a lock on the given document.
      *
-     * @param object $document
      * @throws \InvalidArgumentException
      */
-    public function unlock($document)
+    public function unlock(object $document): void
     {
         if ($this->getDocumentState($document) !== self::STATE_MANAGED) {
             throw new \InvalidArgumentException('Document is not MANAGED.');
@@ -2265,10 +2131,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Clears the UnitOfWork.
-     *
-     * @param string|null $documentName if given, only documents of this type will get detached.
      */
-    public function clear($documentName = null)
+    public function clear(?string $documentName = null): void
     {
         if ($documentName === null) {
             $this->identityMap =
@@ -2314,9 +2178,8 @@ class UnitOfWork implements PropertyChangedListener
      * UnitOfWork.
      *
      * @ignore
-     * @param object $document
      */
-    public function scheduleOrphanRemoval($document)
+    public function scheduleOrphanRemoval(object $document): void
     {
         $this->orphanRemovals[spl_object_hash($document)] = $document;
     }
@@ -2326,9 +2189,8 @@ class UnitOfWork implements PropertyChangedListener
      * Unschedules an embedded or referenced object for removal.
      *
      * @ignore
-     * @param object $document
      */
-    public function unscheduleOrphanRemoval($document)
+    public function unscheduleOrphanRemoval(object $document): void
     {
         $oid = spl_object_hash($document);
         unset($this->orphanRemovals[$oid]);
@@ -2340,12 +2202,8 @@ class UnitOfWork implements PropertyChangedListener
      *  2) clones collection, sets owner, updates document's property and, if necessary, updates originalData
      *  3) NOP if state is OK
      * Returned collection should be used from now on (only important with 2nd point)
-     *
-     * @param object $document
-     * @param string $propName
-     * @return PersistentCollectionInterface
      */
-    private function fixPersistentCollectionOwnership(PersistentCollectionInterface $coll, $document, ClassMetadata $class, $propName)
+    private function fixPersistentCollectionOwnership(PersistentCollectionInterface $coll, object $document, ClassMetadata $class, string $propName): PersistentCollectionInterface
     {
         $owner = $coll->getOwner();
         if ($owner === null) { // cloned
@@ -2369,9 +2227,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Schedules a complete collection for removal when this UnitOfWork commits.
-     *
      */
-    public function scheduleCollectionDeletion(PersistentCollectionInterface $coll)
+    public function scheduleCollectionDeletion(PersistentCollectionInterface $coll): void
     {
         $oid = spl_object_hash($coll);
         unset($this->collectionUpdates[$oid]);
@@ -2385,10 +2242,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether a PersistentCollection is scheduled for deletion.
-     *
-     * @return bool
      */
-    public function isCollectionScheduledForDeletion(PersistentCollectionInterface $coll)
+    public function isCollectionScheduledForDeletion(PersistentCollectionInterface $coll): bool
     {
         return isset($this->collectionDeletions[spl_object_hash($coll)]);
     }
@@ -2398,7 +2253,7 @@ class UnitOfWork implements PropertyChangedListener
      * Unschedules a collection from being deleted when this UnitOfWork commits.
      *
      */
-    public function unscheduleCollectionDeletion(PersistentCollectionInterface $coll)
+    public function unscheduleCollectionDeletion(PersistentCollectionInterface $coll): void
     {
         $oid = spl_object_hash($coll);
         if (! isset($this->collectionDeletions[$oid])) {
@@ -2415,7 +2270,7 @@ class UnitOfWork implements PropertyChangedListener
      * Schedules a collection for update when this UnitOfWork commits.
      *
      */
-    public function scheduleCollectionUpdate(PersistentCollectionInterface $coll)
+    public function scheduleCollectionUpdate(PersistentCollectionInterface $coll): void
     {
         $mapping = $coll->getMapping();
         if (CollectionHelper::usesSet($mapping['strategy'])) {
@@ -2438,7 +2293,7 @@ class UnitOfWork implements PropertyChangedListener
      * Unschedules a collection from being updated when this UnitOfWork commits.
      *
      */
-    public function unscheduleCollectionUpdate(PersistentCollectionInterface $coll)
+    public function unscheduleCollectionUpdate(PersistentCollectionInterface $coll): void
     {
         $oid = spl_object_hash($coll);
         if (! isset($this->collectionUpdates[$oid])) {
@@ -2452,10 +2307,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether a PersistentCollection is scheduled for update.
-     *
-     * @return bool
      */
-    public function isCollectionScheduledForUpdate(PersistentCollectionInterface $coll)
+    public function isCollectionScheduledForUpdate(PersistentCollectionInterface $coll): bool
     {
         return isset($this->collectionUpdates[spl_object_hash($coll)]);
     }
@@ -2465,10 +2318,9 @@ class UnitOfWork implements PropertyChangedListener
      * Gets PersistentCollections that have been visited during computing change
      * set of $document
      *
-     * @param object $document
      * @return PersistentCollectionInterface[]
      */
-    public function getVisitedCollections($document)
+    public function getVisitedCollections(object $document): array
     {
         $oid = spl_object_hash($document);
 
@@ -2479,10 +2331,9 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Gets PersistentCollections that are scheduled to update and related to $document
      *
-     * @param object $document
-     * @return array
+     * @return PersistentCollectionInterface[]
      */
-    public function getScheduledCollections($document)
+    public function getScheduledCollections(object $document): array
     {
         $oid = spl_object_hash($document);
 
@@ -2492,11 +2343,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Checks whether the document is related to a PersistentCollection
      * scheduled for update or deletion.
-     *
-     * @param object $document
-     * @return bool
      */
-    public function hasScheduledCollections($document)
+    public function hasScheduledCollections(object $document): bool
     {
         return isset($this->hasScheduledCollections[spl_object_hash($document)]);
     }
@@ -2513,7 +2361,7 @@ class UnitOfWork implements PropertyChangedListener
      * calculating update data way easier.
      *
      */
-    private function scheduleCollectionOwner(PersistentCollectionInterface $coll)
+    private function scheduleCollectionOwner(PersistentCollectionInterface $coll): void
     {
         $document = $this->getOwningDocument($coll->getOwner());
         $this->hasScheduledCollections[spl_object_hash($document)][spl_object_hash($coll)] = $coll;
@@ -2547,11 +2395,9 @@ class UnitOfWork implements PropertyChangedListener
      * For an embedded document, we will walk through parent associations until
      * we find a top-level document.
      *
-     * @param object $document
      * @throws \UnexpectedValueException When a top-level document could not be found.
-     * @return object
      */
-    public function getOwningDocument($document)
+    public function getOwningDocument(object $document): object
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         while ($class->isEmbeddedDocument) {
@@ -2572,11 +2418,9 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the class name for an association (embed or reference) with respect
      * to any discriminator value.
      *
-     * @param array      $mapping Field mapping for the association
-     * @param array|null $data    Data for the embedded document or reference
-     * @return string Class name.
+     * @param array|object|null $data
      */
-    public function getClassNameForAssociation(array $mapping, $data)
+    public function getClassNameForAssociation(array $mapping, $data): string
     {
         $discriminatorField = $mapping['discriminatorField'] ?? null;
 
@@ -2612,14 +2456,9 @@ class UnitOfWork implements PropertyChangedListener
      * Creates a document. Used for reconstitution of documents during hydration.
      *
      * @ignore
-     * @param string $className The name of the document class.
-     * @param array  $data      The data for the document.
-     * @param array  $hints     Any hints to account for during reconstitution/lookup of the document.
-     * @param object $document  The document to be hydrated into in case of creation
-     * @return object The document instance.
      * @internal Highly performance-sensitive method.
      */
-    public function getOrCreateDocument($className, $data, &$hints = [], $document = null)
+    public function getOrCreateDocument(string $className, array $data, array &$hints = [], ?object $document = null): object
     {
         $class = $this->dm->getClassMetadata($className);
 
@@ -2695,10 +2534,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Initializes (loads) an uninitialized persistent collection of a document.
-     *
-     * @param PersistentCollectionInterface $collection The collection to initialize.
      */
-    public function loadCollection(PersistentCollectionInterface $collection)
+    public function loadCollection(PersistentCollectionInterface $collection): void
     {
         $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);
         $this->lifecycleEventManager->postCollectionLoad($collection);
@@ -2706,10 +2543,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the identity map of the UnitOfWork.
-     *
-     * @return array
      */
-    public function getIdentityMap()
+    public function getIdentityMap(): array
     {
         return $this->identityMap;
     }
@@ -2718,17 +2553,16 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the original data of a document. The original data is the data that was
      * present at the time the document was reconstituted from the database.
      *
-     * @param object $document
      * @return array
      */
-    public function getOriginalDocumentData($document)
+    public function getOriginalDocumentData(object $document): array
     {
         $oid = spl_object_hash($document);
 
         return $this->originalDocumentData[$oid] ?? [];
     }
 
-    public function setOriginalDocumentData($document, array $data)
+    public function setOriginalDocumentData(object $document, array $data): void
     {
         $oid = spl_object_hash($document);
         $this->originalDocumentData[$oid] = $data;
@@ -2740,11 +2574,9 @@ class UnitOfWork implements PropertyChangedListener
      * Sets a property value of the original data array of a document.
      *
      * @ignore
-     * @param string $oid
-     * @param string $property
-     * @param mixed  $value
+     * @param mixed $value
      */
-    public function setOriginalDocumentProperty($oid, $property, $value)
+    public function setOriginalDocumentProperty(string $oid, string $property, $value): void
     {
         $this->originalDocumentData[$oid][$property] = $value;
     }
@@ -2752,10 +2584,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the identifier of a document.
      *
-     * @param object $document
      * @return mixed The identifier value
      */
-    public function getDocumentIdentifier($document)
+    public function getDocumentIdentifier(object $document)
     {
         return $this->documentIdentifiers[spl_object_hash($document)] ?? null;
     }
@@ -2765,7 +2596,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return bool TRUE if this UnitOfWork has pending insertions, FALSE otherwise.
      */
-    public function hasPendingInsertions()
+    public function hasPendingInsertions(): bool
     {
         return ! empty($this->documentInsertions);
     }
@@ -2773,10 +2604,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Calculates the size of the UnitOfWork. The size of the UnitOfWork is the
      * number of documents in the identity map.
-     *
-     * @return int
      */
-    public function size()
+    public function size(): int
     {
         $count = 0;
         foreach ($this->identityMap as $documentSet) {
@@ -2796,11 +2625,9 @@ class UnitOfWork implements PropertyChangedListener
      * In the future, we may want to round-trip $id through a PHP and database
      * conversion and throw an exception if it's inconsistent.
      *
-     * @param object $document The document.
-     * @param array  $id       The identifier values.
-     * @param array  $data     The original document data.
+     * @param mixed $id The identifier values.
      */
-    public function registerManaged($document, $id, $data)
+    public function registerManaged(object $document, $id, array $data): void
     {
         $oid = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));
@@ -2819,10 +2646,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * INTERNAL:
      * Clears the property changeset of the document with the given OID.
-     *
-     * @param string $oid The document's OID.
      */
-    public function clearDocumentChangeSet($oid)
+    public function clearDocumentChangeSet(string $oid)
     {
         $this->documentChangeSets[$oid] = [];
     }
@@ -2857,70 +2682,56 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the currently scheduled document insertions in this UnitOfWork.
-     *
-     * @return array
      */
-    public function getScheduledDocumentInsertions()
+    public function getScheduledDocumentInsertions(): array
     {
         return $this->documentInsertions;
     }
 
     /**
      * Gets the currently scheduled document upserts in this UnitOfWork.
-     *
-     * @return array
      */
-    public function getScheduledDocumentUpserts()
+    public function getScheduledDocumentUpserts(): array
     {
         return $this->documentUpserts;
     }
 
     /**
      * Gets the currently scheduled document updates in this UnitOfWork.
-     *
-     * @return array
      */
-    public function getScheduledDocumentUpdates()
+    public function getScheduledDocumentUpdates(): array
     {
         return $this->documentUpdates;
     }
 
     /**
      * Gets the currently scheduled document deletions in this UnitOfWork.
-     *
-     * @return array
      */
-    public function getScheduledDocumentDeletions()
+    public function getScheduledDocumentDeletions(): array
     {
         return $this->documentDeletions;
     }
 
     /**
      * Get the currently scheduled complete collection deletions
-     *
-     * @return array
      */
-    public function getScheduledCollectionDeletions()
+    public function getScheduledCollectionDeletions(): array
     {
         return $this->collectionDeletions;
     }
 
     /**
      * Gets the currently scheduled collection inserts, updates and deletes.
-     *
-     * @return array
      */
-    public function getScheduledCollectionUpdates()
+    public function getScheduledCollectionUpdates(): array
     {
         return $this->collectionUpdates;
     }
 
     /**
      * Helper method to initialize a lazy loading proxy or persistent collection.
-     *
-     * @param object $obj
      */
-    public function initializeObject($obj)
+    public function initializeObject(object $obj): void
     {
         if ($obj instanceof Proxy) {
             $obj->__load();
@@ -2929,7 +2740,7 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
-    private function objToStr($obj)
+    private function objToStr(object $obj): string
     {
         return method_exists($obj, '__toString') ? (string) $obj : get_class($obj) . '@' . spl_object_hash($obj);
     }

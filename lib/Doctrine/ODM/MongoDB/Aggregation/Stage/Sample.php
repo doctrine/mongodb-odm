@@ -16,20 +16,17 @@ class Sample extends Stage
     /** @var int */
     private $size;
 
-    /**
-     * @param int $size
-     */
-    public function __construct(Builder $builder, $size)
+    public function __construct(Builder $builder, int $size)
     {
         parent::__construct($builder);
 
-        $this->size = (int) $size;
+        $this->size = $size;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return [
             '$sample' => ['size' => $this->size],

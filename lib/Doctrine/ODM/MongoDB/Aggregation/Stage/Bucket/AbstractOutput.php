@@ -32,7 +32,7 @@ abstract class AbstractOutput extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression()
+    public function getExpression(): array
     {
         return $this->expr->getExpression();
     }

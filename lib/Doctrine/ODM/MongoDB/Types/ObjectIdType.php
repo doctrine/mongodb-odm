@@ -28,12 +28,12 @@ class ObjectIdType extends Type
         return $value !== null ? (string) $value : null;
     }
 
-    public function closureToMongo()
+    public function closureToMongo(): string
     {
         return '$return = new MongoDB\BSON\ObjectId($value);';
     }
 
-    public function closureToPHP()
+    public function closureToPHP(): string
     {
         return '$return = (string) $value;';
     }

@@ -9,16 +9,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Class that holds event arguments for a loadMetadata event.
- *
  */
 class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
-    /**
-     * Retrieves the associated DocumentManager.
-     *
-     * @return DocumentManager
-     */
-    public function getDocumentManager()
+    public function getDocumentManager(): DocumentManager
     {
         return $this->getObjectManager();
     }

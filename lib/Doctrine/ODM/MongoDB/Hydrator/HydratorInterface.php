@@ -12,11 +12,6 @@ interface HydratorInterface
 {
     /**
      * Hydrate array of MongoDB document data into the given document object.
-     *
-     * @param object $document The document object to hydrate the data into.
-     * @param array  $data     The array of document data.
-     * @param array  $hints    Any hints to account for during reconstitution/lookup of the document.
-     * @return array $values The array of hydrated values.
      */
-    public function hydrate($document, $data, array $hints = []);
+    public function hydrate(object $document, array $data, array $hints = []): array;
 }
