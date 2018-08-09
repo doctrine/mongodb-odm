@@ -7,8 +7,6 @@ namespace Doctrine\ODM\MongoDB\Tests\PersistentCollection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use const PHP_VERSION_ID;
-use function sprintf;
 
 /**
  * Tests aims to check if classes generated for various PHP versions are correct (i.e. parses).
