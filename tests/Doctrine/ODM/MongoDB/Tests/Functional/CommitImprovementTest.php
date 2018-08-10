@@ -8,7 +8,6 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 use Documents\User;
@@ -17,22 +16,6 @@ use function get_class;
 
 class CommitImprovementTest extends BaseTest
 {
-    /** @var Doctrine\ODM\MongoDB\Tests\QueryLogger */
-    private $ql;
-
-    protected function getConfiguration()
-    {
-        $this->markTestSkipped('mongodb-driver: query logging does not exist');
-        if (! isset($this->ql)) {
-            $this->ql = new QueryLogger();
-        }
-
-        $config = parent::getConfiguration();
-        $config->setLoggerCallable($this->ql);
-
-        return $config;
-    }
-
     public function testInsertIncludesAllNestedCollections()
     {
         $user = new User();
@@ -42,7 +25,6 @@ class CommitImprovementTest extends BaseTest
         $user->addPhonebook($privateBook);
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->ql, 'Inserting a document includes all nested collections and requires one query');
         $this->dm->clear();
 
         $user = $this->dm->find(get_class($user), $user->getId());
@@ -128,7 +110,6 @@ class CommitImprovementTest extends BaseTest
         $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($user)), $user);
         $this->assertFalse($this->uow->isCollectionScheduledForUpdate($user->getPhonenumbers()));
         $this->assertTrue($this->uow->isCollectionScheduledForDeletion($user->getPhonenumbers()));
-        $this->ql->clear();
         $this->dm->flush();
         $this->dm->clear();
 

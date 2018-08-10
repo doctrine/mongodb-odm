@@ -8,26 +8,9 @@ use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 
 class GH1138Test extends BaseTest
 {
-    /** @var Doctrine\ODM\MongoDB\Tests\QueryLogger */
-    private $ql;
-
-    protected function getConfiguration()
-    {
-        $this->markTestSkipped('mongodb-driver: query logging does not exist');
-        if (! isset($this->ql)) {
-            $this->ql = new QueryLogger();
-        }
-
-        $config = parent::getConfiguration();
-        $config->setLoggerCallable($this->ql);
-
-        return $config;
-    }
-
     public function testUpdatingDocumentBeforeItsInsertionShouldNotEntailMultipleQueries()
     {
         $listener = new GH1138Listener();
@@ -39,7 +22,6 @@ class GH1138Test extends BaseTest
         $this->dm->persist($doc);
         $this->dm->flush();
 
-        $this->assertCount(1, $this->ql, 'Changing a document before its insertion requires one query');
         $this->assertEquals('foo-changed', $doc->name);
         $this->assertEquals(1, $listener->inserts);
         $this->assertEquals(0, $listener->updates);
