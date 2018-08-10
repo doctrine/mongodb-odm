@@ -9,7 +9,7 @@ about sharding, please refer to the `MongoDB docs <https://docs.mongodb.com/manu
 
 Once you have a `sharded cluster <https://docs.mongodb.com/manual/core/sharded-cluster-architectures-production/>`_,
 you can enable sharding for a document. You can do this by defining a shard key in
-the document:
+the document as well as an appropriate index:
 
 .. configuration-block::
 
@@ -19,6 +19,7 @@ the document:
 
         /**
          * @Document
+         * @Indexes(@Index(keys={"username"="asc"}))
          * @ShardKey(keys={"username"="asc"})
          */
         class User
@@ -44,6 +45,11 @@ the document:
                 <shard-key>
                     <key name="username" order="asc"/>
                 </shard-key>
+                <indexes>
+                    <index>
+                        <key name="username" order="asc" />
+                    </index>
+                </indexes>
             </document>
         </doctrine-mongo-mapping>
 

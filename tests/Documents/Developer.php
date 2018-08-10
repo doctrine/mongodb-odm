@@ -25,7 +25,7 @@ class Developer
     public function __construct($name, ?Collection $projects = null)
     {
         $this->name = $name;
-        $this->projects = $projects === null ? new ArrayCollection() : $projects;
+        $this->projects = $projects ?? new ArrayCollection();
     }
 
     public function getId()

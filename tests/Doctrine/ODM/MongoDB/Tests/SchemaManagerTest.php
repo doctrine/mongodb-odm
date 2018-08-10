@@ -22,7 +22,8 @@ use Documents\CmsProduct;
 use Documents\CmsUser;
 use Documents\Comment;
 use Documents\File;
-use Documents\Sharded\ShardedUser;
+use Documents\Sharded\ShardedOne;
+use Documents\Sharded\ShardedOneWithDifferentKey;
 use Documents\SimpleReferenceUser;
 use MongoDB\Client;
 use MongoDB\Collection;
@@ -31,7 +32,6 @@ use MongoDB\GridFS\Bucket;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use const DOCTRINE_MONGODB_DATABASE;
 use function in_array;
 
 class SchemaManagerTest extends TestCase
@@ -43,6 +43,8 @@ class SchemaManagerTest extends TestCase
         CmsProduct::class,
         Comment::class,
         SimpleReferenceUser::class,
+        ShardedOne::class,
+        ShardedOneWithDifferentKey::class,
     ];
 
     private $someNonIndexedClasses = [
@@ -73,6 +75,9 @@ class SchemaManagerTest extends TestCase
 
     /** @var Database[]|MockObject[] */
     private $documentDatabases = [];
+
+    /** @var DocumentManagerMock */
+    private $dm;
 
     /** @var SchemaManager */
     private $schemaManager;
@@ -735,161 +740,6 @@ class SchemaManagerTest extends TestCase
         ];
     }
 
-    public function testEnsureDocumentSharding()
-    {
-        $this->markTestSkipped('Sharding support is still WIP');
-
-        $dbName = DOCTRINE_MONGODB_DATABASE;
-        $classMetadata = $this->dm->getClassMetadata(ShardedUser::class);
-        $collectionName = $classMetadata->getCollection();
-        $dbMock = $this->getMockDatabase();
-        $dbMock->method('getName')->willReturn($dbName);
-        $adminDBMock = $this->getMockDatabase();
-        $connMock = $this->getMockClient();
-        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
-        $this->dm->connection = $connMock;
-        $this->dm->documentDatabases = [$classMetadata->getName() => $dbMock];
-
-        $adminDBMock
-            ->expects($this->at(0))
-            ->method('command')
-            ->with(['enableSharding' => $dbName])
-            ->willReturn(['ok' => 1]);
-        $adminDBMock
-            ->expects($this->at(1))
-            ->method('command')
-            ->with(['shardCollection' => $dbName . '.' . $collectionName, 'key' => ['_id' => 'hashed']])
-            ->willReturn(['ok' => 1]);
-
-        $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
-    }
-
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
-     * @expectedExceptionMessage Failed to ensure sharding for document
-     */
-    public function testEnsureDocumentShardingThrowsExceptionIfThereWasAnError()
-    {
-        $this->markTestSkipped('Sharding support is still WIP');
-
-        $dbName = DOCTRINE_MONGODB_DATABASE;
-        $classMetadata = $this->dm->getClassMetadata(ShardedUser::class);
-        $collectionName = $classMetadata->getCollection();
-        $dbMock = $this->getMockDatabase();
-        $dbMock->method('getName')->willReturn($dbName);
-        $adminDBMock = $this->getMockDatabase();
-        $connMock = $this->getMockClient();
-        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
-        $this->dm->connection = $connMock;
-        $this->dm->documentDatabases = [$classMetadata->getName() => $dbMock];
-
-        $adminDBMock
-            ->expects($this->at(0))
-            ->method('command')
-            ->with(['enableSharding' => $dbName])
-            ->willReturn(['ok' => 1]);
-        $adminDBMock
-            ->expects($this->at(1))
-            ->method('command')
-            ->with(['shardCollection' => $dbName . '.' . $collectionName, 'key' => ['_id' => 'hashed']])
-            ->willReturn(['ok' => 0, 'code' => 666, 'errmsg' => 'Scary error']);
-
-        $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
-    }
-
-    public function testEnsureDocumentShardingIgnoresAlreadyShardedError()
-    {
-        $this->markTestSkipped('Sharding support is still WIP');
-
-        $dbName = DOCTRINE_MONGODB_DATABASE;
-        $classMetadata = $this->dm->getClassMetadata(ShardedUser::class);
-        $collectionName = $classMetadata->getCollection();
-        $dbMock = $this->getMockDatabase();
-        $dbMock->method('getName')->willReturn($dbName);
-        $adminDBMock = $this->getMockDatabase();
-        $connMock = $this->getMockClient();
-        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
-        $this->dm->connection = $connMock;
-        $this->dm->documentDatabases = [$classMetadata->getName() => $dbMock];
-
-        $adminDBMock
-            ->expects($this->at(0))
-            ->method('command')
-            ->with(['enableSharding' => $dbName])
-            ->willReturn(['ok' => 1]);
-        $adminDBMock
-            ->expects($this->at(1))
-            ->method('command')
-            ->with(['shardCollection' => $dbName . '.' . $collectionName, 'key' => ['_id' => 'hashed']])
-            ->willReturn(['ok' => 0, 'code' => 20, 'errmsg' => 'already sharded']);
-
-        $this->schemaManager->ensureDocumentSharding($classMetadata->getName());
-    }
-
-    public function testEnableShardingForDb()
-    {
-        $this->markTestSkipped('Sharding support is still WIP');
-
-        $adminDBMock = $this->getMockDatabase();
-        $adminDBMock
-            ->expects($this->once())
-            ->method('command')
-            ->with(['enableSharding' => 'db'])
-            ->willReturn(['ok' => 1]);
-        $connMock = $this->getMockClient();
-        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
-        $this->dm->connection = $connMock;
-        $dbMock = $this->getMockDatabase();
-        $dbMock->method('getName')->willReturn('db');
-        $this->dm->documentDatabases = [ShardedUser::class => $dbMock];
-
-        $this->schemaManager->enableShardingForDbByDocumentName(ShardedUser::class);
-    }
-
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
-     * @expectedExceptionMessage Failed to enable sharding for database
-     */
-    public function testEnableShardingForDbThrowsExceptionInCaseOfError()
-    {
-        $this->markTestSkipped('Sharding support is still WIP');
-
-        $adminDBMock = $this->getMockDatabase();
-        $adminDBMock
-            ->expects($this->once())
-            ->method('command')
-            ->with(['enableSharding' => 'db'])
-            ->willReturn(['ok' => 0, 'code' => 666, 'errmsg' => 'Scary error']);
-        $connMock = $this->getMockClient();
-        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
-        $this->dm->connection = $connMock;
-        $dbMock = $this->getMockDatabase();
-        $dbMock->method('getName')->willReturn('db');
-        $this->dm->documentDatabases = [ShardedUser::class => $dbMock];
-
-        $this->schemaManager->enableShardingForDbByDocumentName(ShardedUser::class);
-    }
-
-    public function testEnableShardingForDbIgnoresAlreadyShardedError()
-    {
-        $this->markTestSkipped('Sharding support is still WIP');
-
-        $adminDBMock = $this->getMockDatabase();
-        $adminDBMock
-            ->expects($this->once())
-            ->method('command')
-            ->with(['enableSharding' => 'db'])
-            ->willReturn(['ok' => 0, 'code' => 23, 'errmsg' => 'already enabled']);
-        $connMock = $this->getMockClient();
-        $connMock->method('selectDatabase')->with('admin')->willReturn($adminDBMock);
-        $this->dm->connection = $connMock;
-        $dbMock = $this->getMockDatabase();
-        $dbMock->method('getName')->willReturn('db');
-        $this->dm->documentDatabases = [ShardedUser::class => $dbMock];
-
-        $this->schemaManager->enableShardingForDbByDocumentName(ShardedUser::class);
-    }
-
     /** @return Bucket|MockObject */
     private function getMockBucket()
     {
@@ -900,7 +750,6 @@ class SchemaManagerTest extends TestCase
         return $mock;
     }
 
-    /** @return Collection|MockObject */
     private function getMockCollection()
     {
         return $this->createMock(Collection::class);
@@ -912,7 +761,7 @@ class SchemaManagerTest extends TestCase
         return $this->createMock(Database::class);
     }
 
-    private function getMockDocumentManager()
+    private function getMockDocumentManager(): DocumentManagerMock
     {
         $config = new Configuration();
         $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/../../../../Documents'));
@@ -922,6 +771,7 @@ class SchemaManagerTest extends TestCase
         $dm = new DocumentManagerMock();
         $dm->eventManager = $em;
         $dm->config = $config;
+        $dm->client = $this->createMock(Client::class);
 
         return $dm;
     }
@@ -941,10 +791,5 @@ class SchemaManagerTest extends TestCase
             ->will($this->returnValue($documentPersister));
 
         return $uow;
-    }
-
-    private function getMockClient()
-    {
-        return $this->createMock(Client::class);
     }
 }
