@@ -179,7 +179,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('address.subAddress.subAddress.subAddress.test')->popFirst();
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(array('$pop' => array('address.subAddress.subAddress.subAddress.testFieldName' => 1)), $query['newObj']);
+        $this->assertEquals(array('$pop' => array('address.subAddress.subAddress.subAddress.testFieldName' => -1)), $query['newObj']);
     }
 
     public function testReferencesUsesMinimalKeys()
