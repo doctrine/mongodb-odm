@@ -1,8 +1,16 @@
 {
     "name": "doctrine/mongodb-odm",
     "type": "library",
-    "description": "Doctrine MongoDB Object Document Mapper",
-    "keywords": ["odm", "database", "persistence", "mongodb"],
+    "description": "PHP Doctrine MongoDB Object Document Mapper (ODM) provides transparent persistence for PHP objects to MongoDB.",
+    "keywords": [
+        "php",
+        "mongodb",
+        "odm",
+        "data",
+        "mapper",
+        "mapping",
+        "object"
+    ],
     "homepage": "http://www.doctrine-project.org",
     "license": "MIT",
     "authors": [
