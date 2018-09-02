@@ -10,7 +10,6 @@ use function is_array;
 
 /**
  * The Collection type.
- *
  */
 class CollectionType extends Type
 {

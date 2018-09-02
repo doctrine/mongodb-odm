@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
+use ReflectionProperty;
 
 class DocumentPersisterTest extends BaseTest
 {
@@ -441,10 +442,10 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @dataProvider dataProviderTestWriteConcern
-     *
      * @param string $class
      * @param string $writeConcern
+     *
+     * @dataProvider dataProviderTestWriteConcern
      */
     public function testExecuteInsertsRespectsWriteConcern($class, $writeConcern)
     {
@@ -455,7 +456,7 @@ class DocumentPersisterTest extends BaseTest
             ->method('insertMany')
             ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
 
-        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
@@ -465,10 +466,10 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @dataProvider dataProviderTestWriteConcern
-     *
      * @param string $class
      * @param string $writeConcern
+     *
+     * @dataProvider dataProviderTestWriteConcern
      */
     public function testExecuteUpsertsRespectsWriteConcern($class, $writeConcern)
     {
@@ -479,7 +480,7 @@ class DocumentPersisterTest extends BaseTest
             ->method('updateOne')
             ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
 
-        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
@@ -490,10 +491,10 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @dataProvider dataProviderTestWriteConcern
-     *
      * @param string $class
      * @param string $writeConcern
+     *
+     * @dataProvider dataProviderTestWriteConcern
      */
     public function testRemoveRespectsWriteConcern($class, $writeConcern)
     {
@@ -504,7 +505,7 @@ class DocumentPersisterTest extends BaseTest
             ->method('deleteOne')
             ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
 
-        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
@@ -526,7 +527,7 @@ class DocumentPersisterTest extends BaseTest
             ->method('insertMany')
             ->with($this->isType('array'), $this->equalTo(['w' => 0]));
 
-        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
@@ -549,7 +550,7 @@ class DocumentPersisterTest extends BaseTest
             ->method('updateOne')
             ->will($this->returnValue(['n' => 1]));
 
-        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
@@ -575,7 +576,7 @@ class DocumentPersisterTest extends BaseTest
             ->method('updateOne')
             ->will($this->returnValue(['n' => 0]));
 
-        $reflectionProperty = new \ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 

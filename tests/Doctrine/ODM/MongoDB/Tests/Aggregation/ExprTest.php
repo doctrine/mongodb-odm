@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -89,11 +90,11 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
 
         $expr->switch()
-            ->case(($this->createExpr())->eq('$numElements', 0))
+            ->case($this->createExpr()->eq('$numElements', 0))
             ->then('Zero elements given')
-            ->case(($this->createExpr())->eq('$numElements', 1))
+            ->case($this->createExpr()->eq('$numElements', 1))
             ->then('One element given')
-            ->default(($this->createExpr())->concat('$numElements', ' elements given'));
+            ->default($this->createExpr()->concat('$numElements', ' elements given'));
 
         $this->assertSame(
             [
@@ -113,7 +114,7 @@ class ExprTest extends BaseTest
     {
         $expr = $this->createExpr();
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage(Expr::class . '::case requires a valid switch statement (call switch() first).');
 
         $expr->case('$field');
@@ -123,7 +124,7 @@ class ExprTest extends BaseTest
     {
         $expr = $this->createExpr();
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage(Expr::class . '::then requires a valid case statement (call case() first).');
 
         $expr->then('$field');
@@ -137,7 +138,7 @@ class ExprTest extends BaseTest
             ->case('$field')
             ->then('$field');
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage(Expr::class . '::then requires a valid case statement (call case() first).');
 
         $expr->then('$field');
@@ -147,7 +148,7 @@ class ExprTest extends BaseTest
     {
         $expr = $this->createExpr();
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage(Expr::class . '::default requires a valid switch statement (call switch() first).');
 
         $expr->default('$field');

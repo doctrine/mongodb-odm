@@ -33,15 +33,15 @@ class GH596Test extends BaseTest
         $query = $query->getQuery();
 
         $expected = [
-        '$and' => [
-            [
-        '$or' => [
-                ['name' => 'foo'],
-                ['name' => 'bar'],
+            '$and' => [
+                [
+                    '$or' => [
+                        ['name' => 'foo'],
+                        ['name' => 'bar'],
+                    ],
+                ],
+                ['deleted' => false],
             ],
-            ],
-            ['deleted' => false],
-        ],
         ];
 
         $this->assertEquals($expected, $query['query']);

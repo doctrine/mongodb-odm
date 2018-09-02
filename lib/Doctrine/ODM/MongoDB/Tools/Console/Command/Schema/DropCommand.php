@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 use function array_filter;
 use function sprintf;
 use function ucfirst;
@@ -25,13 +26,12 @@ class DropCommand extends AbstractCommand
             ->addOption(self::DB, null, InputOption::VALUE_NONE, 'Drop databases')
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Drop collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Drop indexes')
-            ->setDescription('Drop databases, collections and indexes for your documents')
-        ;
+            ->setDescription('Drop databases, collections and indexes for your documents');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $drop = array_filter($this->dropOrder, function ($option) use ($input) {
+        $drop = array_filter($this->dropOrder, static function ($option) use ($input) {
             return $input->getOption($option);
         });
 
@@ -55,7 +55,7 @@ class DropCommand extends AbstractCommand
                     (isset($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's')),
                     $class ?? 'all classes'
                 ));
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');
                 $isErrored = true;
             }

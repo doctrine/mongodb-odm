@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Query;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
@@ -11,9 +12,12 @@ use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use InvalidArgumentException;
+use IteratorAggregate;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Operation\FindOneAndUpdate;
+use UnexpectedValueException;
 use function array_combine;
 use function array_filter;
 use function array_flip;
@@ -28,9 +32,8 @@ use function is_callable;
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
  * and to hydrate the raw arrays of data to Doctrine document objects.
- *
  */
-class Query implements \IteratorAggregate
+class Query implements IteratorAggregate
 {
     public const TYPE_FIND            = 1;
     public const TYPE_FIND_AND_UPDATE = 2;
@@ -113,8 +116,6 @@ class Query implements \IteratorAggregate
     private $options;
 
     /**
-     *
-     *
      * Please note that $requireIndexes was deprecated in 1.2 and will be removed in 2.0
      */
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false)
@@ -143,7 +144,7 @@ class Query implements \IteratorAggregate
                 break;
 
             default:
-                throw new \InvalidArgumentException('Invalid query type: ' . $query['type']);
+                throw new InvalidArgumentException('Invalid query type: ' . $query['type']);
         }
 
         $this->collection = $collection;
@@ -184,8 +185,9 @@ class Query implements \IteratorAggregate
     /**
      * Execute the query and returns the results.
      *
-     * @throws MongoDBException
      * @return Iterator|int|string|array
+     *
+     * @throws MongoDBException
      */
     public function execute()
     {
@@ -244,8 +246,9 @@ class Query implements \IteratorAggregate
      * be thrown if {@link Query::execute()} does not return an Iterator.
      *
      * @see http://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @throws \BadMethodCallException If the query type would not return an Iterator.
-     * @throws \UnexpectedValueException If the query did not return an Iterator.
+     *
+     * @throws BadMethodCallException If the query type would not return an Iterator.
+     * @throws UnexpectedValueException If the query did not return an Iterator.
      * @throws MongoDBException
      */
     public function getIterator() : Iterator
@@ -258,7 +261,7 @@ class Query implements \IteratorAggregate
                 break;
 
             default:
-                throw new \BadMethodCallException('Iterator would not be returned for query type: ' . $this->query['type']);
+                throw new BadMethodCallException('Iterator would not be returned for query type: ' . $this->query['type']);
         }
 
         if ($this->iterator === null) {
@@ -344,7 +347,7 @@ class Query implements \IteratorAggregate
     {
         return array_filter(
             array_intersect_key($this->query, array_flip($keys)),
-            function ($value) {
+            static function ($value) {
                 return $value !== null;
             }
         );
@@ -379,7 +382,7 @@ class Query implements \IteratorAggregate
 
         return array_combine(
             array_map(
-                function ($key) use ($rename) {
+                static function ($key) use ($rename) {
                     return $rename[$key] ?? $key;
                 },
                 array_keys($options)
@@ -418,7 +421,7 @@ class Query implements \IteratorAggregate
             case self::TYPE_FIND_AND_UPDATE:
                 $queryOptions = $this->getQueryOptions('select', 'sort', 'upsert');
                 $queryOptions = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
-                $queryOptions['returnDocument'] = ($this->query['new'] ?? false) ? FindOneAndUpdate::RETURN_DOCUMENT_AFTER : FindOneAndUpdate::RETURN_DOCUMENT_BEFORE;
+                $queryOptions['returnDocument'] = $this->query['new'] ?? false ? FindOneAndUpdate::RETURN_DOCUMENT_AFTER : FindOneAndUpdate::RETURN_DOCUMENT_BEFORE;
 
                 return $this->collection->findOneAndUpdate(
                     $this->query['query'],

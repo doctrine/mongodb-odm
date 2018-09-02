@@ -20,6 +20,8 @@ use Documents\CmsUser;
 use Documents\SpecialUser;
 use Documents\User;
 use Documents\UserRepository;
+use ReflectionClass;
+use stdClass;
 use function array_merge;
 use function get_class;
 use function serialize;
@@ -33,7 +35,7 @@ class ClassMetadataTest extends BaseTest
 
         // Test initial state
         $this->assertCount(0, $cm->getReflectionProperties());
-        $this->assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
+        $this->assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         $this->assertEquals(CmsUser::class, $cm->name);
         $this->assertEquals(CmsUser::class, $cm->rootDocumentName);
         $this->assertEquals([], $cm->subClasses);
@@ -60,7 +62,7 @@ class ClassMetadataTest extends BaseTest
 
         // Check state
         $this->assertGreaterThan(0, $cm->getReflectionProperties());
-        $this->assertInstanceOf(\ReflectionClass::class, $cm->reflClass);
+        $this->assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         $this->assertEquals(CmsUser::class, $cm->name);
         $this->assertEquals('UserParent', $cm->rootDocumentName);
         $this->assertEquals(['One', 'Two', 'Three'], $cm->subClasses);
@@ -127,8 +129,8 @@ class ClassMetadataTest extends BaseTest
         $cm = new ClassMetadata(CmsUser::class);
         $cm->mapManyEmbedded(
             [
-            'fieldName' => 'groups',
-            'targetDocument' => 'CmsGroup',
+                'fieldName' => 'groups',
+                'targetDocument' => 'CmsGroup',
             ]
         );
 
@@ -429,7 +431,7 @@ class ClassMetadataTest extends BaseTest
     public function testInvokeLifecycleCallbacksShouldRequireInstanceOfClass()
     {
         $class = $this->dm->getClassMetadata(User::class);
-        $document = new \stdClass();
+        $document = new stdClass();
 
         $this->assertInstanceOf('\stdClass', $document);
 
@@ -495,7 +497,6 @@ class ClassMetadataTest extends BaseTest
 
     /**
      * @dataProvider provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort
-     *
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
      * @expectedExceptionMessage 'repositoryMethod' used on 'assoc' in class 'stdClass' can not be combined with skip, limit or sort.
      */

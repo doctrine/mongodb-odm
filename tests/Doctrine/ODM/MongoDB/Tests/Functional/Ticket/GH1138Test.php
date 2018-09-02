@@ -51,8 +51,6 @@ class GH1138Test extends BaseTest
 /** @ODM\Document */
 class GH1138Document
 {
-    public const CLASSNAME = __CLASS__;
-
     /** @ODM\Id */
     public $id;
 
@@ -77,7 +75,7 @@ class GH1138Listener
             }
 
             $document->name .= '-changed';
-            $cm = $dm->getClassMetadata(GH1138Document::CLASSNAME);
+            $cm = $dm->getClassMetadata(GH1138Document::class);
             $uow->recomputeSingleDocumentChangeSet($cm, $document);
         }
 

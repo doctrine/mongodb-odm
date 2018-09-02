@@ -18,7 +18,6 @@ use function get_class;
  * The 'key' property determines the document ID used to store the id values in the
  * collection. If not specified it defaults to the name of the collection for the
  * document.
- *
  */
 class IncrementGenerator extends AbstractIdGenerator
 {

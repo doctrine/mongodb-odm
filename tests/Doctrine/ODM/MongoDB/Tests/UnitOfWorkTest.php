@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Closure;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
@@ -28,6 +30,7 @@ use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use Throwable;
 use function get_class;
 use function spl_object_hash;
 use function sprintf;
@@ -342,14 +345,14 @@ class UnitOfWorkTest extends BaseTest
     {
         $file = new File();
 
-        $access = \Closure::bind(function (string $property, $value) : void {
+        $access = Closure::bind(function (string $property, $value) : void {
             $this->$property = $value;
         }, $file, $file);
 
         $access('id', 1234);
         $access('filename', 'foo');
         $access('length', 123);
-        $access('uploadDate', new \DateTime());
+        $access('uploadDate', new DateTime());
         $access('chunkSize', 1234);
 
         $owner = new User();
@@ -362,7 +365,7 @@ class UnitOfWorkTest extends BaseTest
             'filename' => 'file.txt',
             'chunkSize' => 256,
             'length' => 0,
-            'uploadDate' => new \DateTime(),
+            'uploadDate' => new DateTime(),
         ];
 
         $this->uow->registerManaged($file, spl_object_hash($file), $data);
@@ -380,7 +383,7 @@ class UnitOfWorkTest extends BaseTest
     {
         $file = new FileWithoutMetadata();
 
-        $access = \Closure::bind(function (string $property, $value) : void {
+        $access = Closure::bind(function (string $property, $value) : void {
             $this->$property = $value;
         }, $file, $file);
 
@@ -697,7 +700,7 @@ class UnitOfWorkTest extends BaseTest
 
         $this->dm->persist($user);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(Throwable::class);
         $this->expectExceptionMessage('This should not happen');
 
         $this->dm->flush();

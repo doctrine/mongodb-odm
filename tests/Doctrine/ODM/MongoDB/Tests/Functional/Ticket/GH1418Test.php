@@ -14,12 +14,12 @@ class GH1418Test extends BaseTest
     {
         $document = new GH1418Document();
         $this->dm->getHydratorFactory()->hydrate($document, [
-          '_id' => 1,
-          'name' => 'maciej',
-          'embedOne' => ['name' => 'maciej', 'sourceId' => 1],
-          'embedMany' => [
-              ['name' => 'maciej', 'sourceId' => 2],
-          ],
+            '_id' => 1,
+            'name' => 'maciej',
+            'embedOne' => ['name' => 'maciej', 'sourceId' => 1],
+            'embedMany' => [
+                ['name' => 'maciej', 'sourceId' => 2],
+            ],
         ], [ Query::HINT_READ_ONLY => true ]);
 
         $this->assertEquals(1, $document->embedOne->id);

@@ -63,9 +63,9 @@ class GH1775MetaDocument
     public $id;
 
     /**
-     * @var int
-     *
      * @ODM\Field(type="int")
+     *
+     * @var int
      */
     public $version = 5;
 }

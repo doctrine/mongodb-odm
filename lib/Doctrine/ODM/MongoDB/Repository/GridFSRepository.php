@@ -12,6 +12,7 @@ interface GridFSRepository extends ObjectRepository
      * Opens a readable stream for reading a GridFS file.
      *
      * @param mixed $id File ID
+     *
      * @return resource
      */
     public function openDownloadStream($id);
@@ -36,6 +37,7 @@ interface GridFSRepository extends ObjectRepository
      *
      * @param resource    $source   Readable stream
      * @param object|null $metadata
+     *
      * @return object The newly created GridFS file
      */
     public function uploadFromStream(string $filename, $source, ?UploadOptions $uploadOptions = null);
@@ -46,6 +48,7 @@ interface GridFSRepository extends ObjectRepository
      * @param string      $path
      * @param string|null $filename The filename to upload the file with. If no filename is provided, the name of the source file will be used.
      * @param object|null $metadata
+     *
      * @return object The newly created GridFS file
      */
     public function uploadFromFile(string $source, ?string $filename = null, ?UploadOptions $uploadOptions = null);

@@ -39,6 +39,7 @@ class LifecycleEventManager
 
     /**
      * @param mixed $id
+     *
      * @return bool Returns whether the exceptionDisabled flag was set
      */
     public function documentNotFound(object $proxy, $id) : bool

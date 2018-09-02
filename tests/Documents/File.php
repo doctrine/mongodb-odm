@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\File(chunkSizeBytes=12345) */
@@ -47,7 +48,7 @@ class File
         return $this->length;
     }
 
-    public function getUploadDate() : \DateTimeInterface
+    public function getUploadDate() : DateTimeInterface
     {
         return $this->uploadDate;
     }

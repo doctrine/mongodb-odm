@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Closure;
 use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
@@ -369,9 +370,9 @@ class ReferencesTest extends BaseTest
         $collection->updateOne(
             ['_id' => new ObjectId($test->id)],
             [
-            '$set' => [
-                'referenceOne.$id' => ['identifier' => 2],
-            ],
+                '$set' => [
+                    'referenceOne.$id' => ['identifier' => 2],
+                ],
             ]
         );
 
@@ -401,7 +402,7 @@ class ReferencesTest extends BaseTest
         $collection->updateOne(
             ['_id' => new ObjectId($user->getId())],
             [
-            '$set' => ['profile.$id' => $invalidId],
+                '$set' => ['profile.$id' => $invalidId],
             ]
         );
 
@@ -432,7 +433,7 @@ class ReferencesTest extends BaseTest
         $collection->updateOne(
             ['_id' => new ObjectId($test->id)],
             [
-            '$set' => ['referenceOne.$id' => $invalidBinData],
+                '$set' => ['referenceOne.$id' => $invalidBinData],
             ]
         );
 
@@ -458,7 +459,7 @@ class ReferencesTest extends BaseTest
         $collection->updateOne(
             ['_id' => new ObjectId($user->getId())],
             [
-            '$set' => ['profile.$id' => $invalidId],
+                '$set' => ['profile.$id' => $invalidId],
             ]
         );
 
@@ -516,7 +517,7 @@ class DocumentNotFoundListener
 {
     private $closure;
 
-    public function __construct(\Closure $closure)
+    public function __construct(Closure $closure)
     {
         $this->closure = $closure;
     }

@@ -270,7 +270,7 @@ class AlsoLoadDocument
     /** @ODM\AlsoLoad({"name", "fullName"}) */
     public function populateFirstAndLastName($name)
     {
-        list($this->firstName, $this->lastName) = explode(' ', $name);
+        [$this->firstName, $this->lastName] = explode(' ', $name);
     }
 
     /** @ODM\AlsoLoad({"testOld", "testOlder"}) */

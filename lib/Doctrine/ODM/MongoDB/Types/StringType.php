@@ -8,13 +8,12 @@ use MongoDB\BSON\Regex;
 
 /**
  * The String type.
- *
  */
 class StringType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return ($value === null || $value instanceof Regex) ? $value : (string) $value;
+        return $value === null || $value instanceof Regex ? $value : (string) $value;
     }
 
     public function convertToPHPValue($value)

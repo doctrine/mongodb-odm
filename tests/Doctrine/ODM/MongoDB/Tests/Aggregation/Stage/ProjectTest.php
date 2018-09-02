@@ -57,7 +57,7 @@ class ProjectTest extends BaseTest
     {
         $operators = ['avg', 'max', 'min', 'stdDevPop', 'stdDevSamp', 'sum'];
 
-        return array_combine($operators, array_map(function ($operator) {
+        return array_combine($operators, array_map(static function ($operator) {
             return [$operator];
         }, $operators));
     }

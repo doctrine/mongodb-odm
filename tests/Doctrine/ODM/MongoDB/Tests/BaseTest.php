@@ -45,7 +45,7 @@ abstract class BaseTest extends TestCase
         // returned
         $client = $this->dm->getClient();
         $databases = iterator_to_array($client->listDatabases());
-        $databaseNames = array_map(function (DatabaseInfo $database) {
+        $databaseNames = array_map(static function (DatabaseInfo $database) {
             return $database->getName();
         }, $databases);
         if (! in_array(DOCTRINE_MONGODB_DATABASE, $databaseNames)) {

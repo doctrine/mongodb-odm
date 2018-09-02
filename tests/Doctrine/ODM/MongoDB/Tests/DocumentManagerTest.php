@@ -28,6 +28,7 @@ use Documents\Tournament\ParticipantSolo;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
+use stdClass;
 use function get_class;
 
 class DocumentManagerTest extends BaseTest
@@ -125,9 +126,10 @@ class DocumentManagerTest extends BaseTest
     }
 
     /**
+     * @param string $methodName
+     *
      * @dataProvider dataMethodsAffectedByNoObjectArguments
      * @expectedException \InvalidArgumentException
-     * @param string $methodName
      */
     public function testThrowsExceptionOnNonObjectValues($methodName)
     {
@@ -146,8 +148,9 @@ class DocumentManagerTest extends BaseTest
     }
 
     /**
-     * @dataProvider dataAffectedByErrorIfClosedException
      * @param string $methodName
+     *
+     * @dataProvider dataAffectedByErrorIfClosedException
      */
     public function testAffectedByErrorIfClosedException($methodName)
     {
@@ -158,7 +161,7 @@ class DocumentManagerTest extends BaseTest
         if ($methodName === 'flush') {
             $this->dm->$methodName();
         } else {
-            $this->dm->$methodName(new \stdClass());
+            $this->dm->$methodName(new stdClass());
         }
     }
 

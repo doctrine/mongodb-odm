@@ -9,15 +9,15 @@ use function sprintf;
 
 /**
  * The BinData type for generic data.
- *
  */
 class BinDataType extends Type
 {
     /**
      * Data type for binary data
      *
-     * @var int
      * @see http://bsonspec.org/#/specification
+     *
+     * @var int
      */
     protected $binDataType = Binary::TYPE_GENERIC;
 

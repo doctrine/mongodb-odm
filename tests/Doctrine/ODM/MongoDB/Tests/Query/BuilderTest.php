@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
@@ -14,8 +15,10 @@ use Documents\Feature;
 use Documents\User;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
+use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\ReadPreference;
+use ReflectionProperty;
 
 class BuilderTest extends BaseTest
 {
@@ -298,10 +301,10 @@ class BuilderTest extends BaseTest
         $qb->addOr($qb->expr()->field('firstName')->equals('Chris'));
 
         $this->assertEquals([
-        '$or' => [
-            ['firstName' => 'Kris'],
-            ['firstName' => 'Chris'],
-        ],
+            '$or' => [
+                ['firstName' => 'Kris'],
+                ['firstName' => 'Chris'],
+            ],
         ], $qb->getQueryArray());
     }
 
@@ -326,10 +329,10 @@ class BuilderTest extends BaseTest
         $qb->addNor($qb->expr()->field('firstName')->equals('Chris'));
 
         $this->assertEquals([
-        '$nor' => [
-            ['firstName' => 'Kris'],
-            ['firstName' => 'Chris'],
-        ],
+            '$nor' => [
+                ['firstName' => 'Kris'],
+                ['firstName' => 'Chris'],
+            ],
         ], $qb->getQueryArray());
     }
 
@@ -338,9 +341,9 @@ class BuilderTest extends BaseTest
         $qb = $this->getTestQueryBuilder();
         $qb->field('phonenumbers')->elemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
         $expected = [
-        'phonenumbers' => [
-            '$elemMatch' => ['phonenumber' => '6155139185'],
-        ],
+            'phonenumbers' => [
+                '$elemMatch' => ['phonenumber' => '6155139185'],
+            ],
         ];
         $this->assertEquals($expected, $qb->getQueryArray());
     }
@@ -406,7 +409,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
 
         $expected = [
-        '$set' => ['username' => 'jwage'],
+            '$set' => ['username' => 'jwage'],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
@@ -422,7 +425,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
 
         $expected = [
-        '$inc' => ['hits' => 5],
+            '$inc' => ['hits' => 5],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
@@ -438,14 +441,14 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
 
         $expected = [
-        '$unset' => ['hits' => 1],
+            '$unset' => ['hits' => 1],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
     public function testSetOnInsert()
     {
-        $createDate = new \DateTime();
+        $createDate = new DateTime();
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
             ->upsert()
@@ -456,17 +459,17 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
 
         $expected = [
-        '$setOnInsert' => [
-            'createDate' => (Type::getType('date'))->convertToDatabaseValue($createDate),
-        ],
+            '$setOnInsert' => [
+                'createDate' => Type::getType('date')->convertToDatabaseValue($createDate),
+            ],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
     public function testDateRange()
     {
-        $start = new \DateTime('1985-09-01 01:00:00');
-        $end = new \DateTime('1985-09-04');
+        $start = new DateTime('1985-09-01 01:00:00');
+        $end = new DateTime('1985-09-04');
         $qb = $this->getTestQueryBuilder();
         $qb->field('createdAt')->range($start, $end);
 
@@ -483,7 +486,7 @@ class BuilderTest extends BaseTest
     {
         $qb = $this->getTestQueryBuilder();
         $query = $qb->getQuery();
-        $this->assertInstanceOf(\IteratorAggregate::class, $query);
+        $this->assertInstanceOf(IteratorAggregate::class, $query);
     }
 
     public function testDeepClone()
@@ -512,7 +515,7 @@ class BuilderTest extends BaseTest
             ->with(...$args);
 
         $qb = $this->getTestQueryBuilder();
-        $reflectionProperty = new \ReflectionProperty($qb, 'expr');
+        $reflectionProperty = new ReflectionProperty($qb, 'expr');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($qb, $expr);
 
@@ -647,6 +650,7 @@ class BuilderTest extends BaseTest
      * Provide arguments for select() and exclude() tests.
      *
      * @param bool $include Whether the field should be included or excluded
+     *
      * @return array
      */
     private function provideProjections($include)
@@ -809,9 +813,9 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
 
         $expected = [
-        '$currentDate' => [
-            'lastUpdated' => ['$type' => $type],
-        ],
+            '$currentDate' => [
+                'lastUpdated' => ['$type' => $type],
+            ],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
@@ -845,9 +849,9 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
 
         $expected = [
-        '$bit' => [
-            'flags' => ['and' => 15],
-        ],
+            '$bit' => [
+                'flags' => ['and' => 15],
+            ],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
@@ -863,9 +867,9 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
 
         $expected = [
-        '$bit' => [
-            'flags' => ['or' => 15],
-        ],
+            '$bit' => [
+                'flags' => ['or' => 15],
+            ],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
     }
@@ -881,9 +885,9 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
 
         $expected = [
-        '$bit' => [
-            'flags' => ['xor' => 15],
-        ],
+            '$bit' => [
+                'flags' => ['xor' => 15],
+            ],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
     }

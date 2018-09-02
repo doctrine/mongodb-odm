@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -100,7 +101,7 @@ class User extends BaseDocument
         $this->sortedGroups = new ArrayCollection();
         $this->sortedGroupsAsc = new ArrayCollection();
         $this->posts = new ArrayCollection();
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
     public function setId($id)

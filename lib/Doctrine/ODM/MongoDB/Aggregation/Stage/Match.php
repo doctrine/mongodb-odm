@@ -44,6 +44,7 @@ class Match extends Stage
      *
      * @see Expr::addAnd()
      * @see http://docs.mongodb.org/manual/reference/operator/and/
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
@@ -62,6 +63,7 @@ class Match extends Stage
      *
      * @see Expr::addNor()
      * @see http://docs.mongodb.org/manual/reference/operator/nor/
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
@@ -80,6 +82,7 @@ class Match extends Stage
      *
      * @see Expr::addOr()
      * @see http://docs.mongodb.org/manual/reference/operator/or/
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
@@ -125,6 +128,7 @@ class Match extends Stage
      *
      * @see Expr::elemMatch()
      * @see http://docs.mongodb.org/manual/reference/operator/elemMatch/
+     *
      * @param array|Expr $expression
      */
     public function elemMatch($expression) : self
@@ -138,6 +142,7 @@ class Match extends Stage
      * Specify an equality match for the current field.
      *
      * @see Expr::equals()
+     *
      * @param mixed $value
      */
     public function equals($value) : self
@@ -189,6 +194,7 @@ class Match extends Stage
      *
      * @see Expr::geoIntersects()
      * @see http://docs.mongodb.org/manual/reference/operator/geoIntersects/
+     *
      * @param array|Geometry $geometry
      */
     public function geoIntersects($geometry) : self
@@ -277,6 +283,7 @@ class Match extends Stage
      *
      * @see Expr::geoWithinPolygon()
      * @see http://docs.mongodb.org/manual/reference/operator/polygon/
+     *
      * @param array $point1    First point of the polygon
      * @param array $point2    Second point of the polygon
      * @param array $point3    Third point of the polygon
@@ -304,6 +311,7 @@ class Match extends Stage
      *
      * @see Expr::gt()
      * @see http://docs.mongodb.org/manual/reference/operator/gt/
+     *
      * @param mixed $value
      */
     public function gt($value) : self
@@ -318,6 +326,7 @@ class Match extends Stage
      *
      * @see Expr::gte()
      * @see http://docs.mongodb.org/manual/reference/operator/gte/
+     *
      * @param mixed $value
      */
     public function gte($value) : self
@@ -367,6 +376,7 @@ class Match extends Stage
      *
      * @see Expr::lte()
      * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     *
      * @param mixed $value
      */
     public function lt($value) : self
@@ -381,6 +391,7 @@ class Match extends Stage
      *
      * @see Expr::lte()
      * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     *
      * @param mixed $value
      */
     public function lte($value) : self
@@ -402,6 +413,7 @@ class Match extends Stage
      * @see http://docs.mongodb.org/manual/reference/operator/maxDistance/
      * @see http://docs.mongodb.org/manual/reference/operator/near/
      * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
+     *
      * @return $this
      */
     public function maxDistance(float $maxDistance)
@@ -423,6 +435,7 @@ class Match extends Stage
      * @see http://docs.mongodb.org/manual/reference/operator/minDistance/
      * @see http://docs.mongodb.org/manual/reference/operator/near/
      * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
+     *
      * @return $this
      */
     public function minDistance(float $minDistance)
@@ -437,6 +450,7 @@ class Match extends Stage
      *
      * @see Expr::mod()
      * @see http://docs.mongodb.org/manual/reference/operator/mod/
+     *
      * @param float|int $divisor
      * @param float|int $remainder
      */
@@ -455,6 +469,7 @@ class Match extends Stage
      *
      * @see Expr::not()
      * @see http://docs.mongodb.org/manual/reference/operator/not/
+     *
      * @param array|Expr $expression
      */
     public function not($expression) : self
@@ -469,6 +484,7 @@ class Match extends Stage
      *
      * @see Expr::notEqual()
      * @see http://docs.mongodb.org/manual/reference/operator/ne/
+     *
      * @param mixed $value
      */
     public function notEqual($value) : self
@@ -498,6 +514,7 @@ class Match extends Stage
      * and $lt criteria on the upper bound. The upper bound is not inclusive.
      *
      * @see Expr::range()
+     *
      * @param mixed $start
      * @param mixed $end
      */
@@ -550,6 +567,7 @@ class Match extends Stage
      *
      * @see Expr::type()
      * @see http://docs.mongodb.org/manual/reference/operator/type/
+     *
      * @param int|string $type
      */
     public function type($type) : self

@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $skip stage to an aggregation pipeline.
- *
  */
 class Skip extends Stage
 {

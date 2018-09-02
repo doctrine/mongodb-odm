@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
+use ReflectionException;
 use function sprintf;
 
 /**
@@ -78,7 +79,7 @@ class MappingException extends BaseMappingException
         return new self(sprintf('Class %s is not a valid document or mapped super class.', $className));
     }
 
-    public static function reflectionFailure(string $document, \ReflectionException $previousException) : self
+    public static function reflectionFailure(string $document, ReflectionException $previousException) : self
     {
         return new self('An error occurred in ' . $document, 0, $previousException);
     }

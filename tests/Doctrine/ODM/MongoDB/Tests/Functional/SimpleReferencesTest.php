@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use stdClass;
 use function current;
 use function end;
 
@@ -129,7 +130,7 @@ class SimpleReferencesTest extends BaseTest
         $this->assertEquals(['users' => []], $qb->getQueryArray());
 
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
-        $qb->field('users')->equals(new \stdClass());
-        $this->assertEquals(['users' => new \stdClass()], $qb->getQueryArray());
+        $qb->field('users')->equals(new stdClass());
+        $this->assertEquals(['users' => new stdClass()], $qb->getQueryArray());
     }
 }

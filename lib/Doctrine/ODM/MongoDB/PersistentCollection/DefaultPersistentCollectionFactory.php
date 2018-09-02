@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection as BaseCollection;
 
 /**
  * Default factory class for persistent collection classes.
- *
  */
 final class DefaultPersistentCollectionFactory extends AbstractPersistentCollectionFactory
 {

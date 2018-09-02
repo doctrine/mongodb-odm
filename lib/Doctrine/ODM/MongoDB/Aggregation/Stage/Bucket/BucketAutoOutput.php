@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding an output specification to a bucket stage.
- *
  */
 class BucketAutoOutput extends AbstractOutput
 {

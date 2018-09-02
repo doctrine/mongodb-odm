@@ -24,7 +24,6 @@ use function strlen;
  * (with only 6 chars you will have more than 56 billion unique id's, 15 billion in 'awkward safe mode')
  *
  * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
- *
  */
 class AlnumGenerator extends IncrementGenerator
 {

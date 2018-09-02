@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use BadMethodCallException;
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
@@ -223,8 +225,7 @@ class ReferencePrimerTest extends BaseTest
             ->field('embeddedDoc.referencedDoc')->prime(true)
             ->field('embeddedDoc.referencedDocs')->prime(true)
             ->field('embeddedDocs.referencedDoc')->prime(true)
-            ->field('embeddedDocs.referencedDocs')->prime(true)
-        ;
+            ->field('embeddedDocs.referencedDocs')->prime(true);
 
         foreach ($qb->getQuery() as $root) {
             $this->assertNotInstanceOf(Proxy::class, $root->embeddedDoc);
@@ -385,7 +386,7 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->createQueryBuilder(Group::class)->getQuery()->toArray();
 
         $invoked = 0;
-        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
+        $primer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
             $invoked++;
         };
 
@@ -423,7 +424,7 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->clear();
 
         $invokedArgs = [];
-        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
+        $primer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
             $invokedArgs[] = func_get_args();
         };
 
@@ -565,7 +566,7 @@ class ReferencePrimerTest extends BaseTest
         $postAuthor = new User();
         $this->dm->persist($postAuthor);
 
-        $comment = new Comment('foo', new \DateTime());
+        $comment = new Comment('foo', new DateTime());
         $comment->author = $commentAuthor;
         $this->dm->persist($comment);
 
@@ -594,7 +595,7 @@ class ReferencePrimerTest extends BaseTest
         $postAuthor = new User();
         $this->dm->persist($postAuthor);
 
-        $comment = new Comment('foo', new \DateTime());
+        $comment = new Comment('foo', new DateTime());
         $comment->author = $commentAuthor;
         $this->dm->persist($comment);
 
@@ -609,7 +610,7 @@ class ReferencePrimerTest extends BaseTest
         $post = $this->dm->find(BlogPost::class, $post->id);
         $this->assertInstanceOf(BlogPost::class, $post);
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
 
         $post->repoCommentsWithPrimer->first();
     }
@@ -622,7 +623,7 @@ class ReferencePrimerTest extends BaseTest
         $postAuthor = new User();
         $this->dm->persist($postAuthor);
 
-        $comment = new Comment('foo', new \DateTime());
+        $comment = new Comment('foo', new DateTime());
         $comment->author = $commentAuthor;
         $this->dm->persist($comment);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -247,7 +248,7 @@ class PostCollectionLoadEventListener
                 $this->phpunit->assertEquals(new TestEmbeddedDocument('For mock at 1'), $e->getCollection()[0]);
                 break;
             default:
-                throw new \BadMethodCallException('This was not expected');
+                throw new BadMethodCallException('This was not expected');
         }
     }
 }

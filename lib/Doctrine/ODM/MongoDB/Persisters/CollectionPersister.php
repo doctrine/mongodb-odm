@@ -10,6 +10,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use LogicException;
+use UnexpectedValueException;
 use function array_map;
 use function array_reverse;
 use function array_values;
@@ -26,7 +28,6 @@ use function sprintf;
  * removed, CollectionPersister::update() will be called, which may set the
  * entire collection or delete/insert individual elements, depending on the
  * mapping strategy.
- *
  */
 class CollectionPersister
 {
@@ -56,9 +57,9 @@ class CollectionPersister
             return; // ignore inverse side
         }
         if (CollectionHelper::isAtomic($mapping['strategy'])) {
-            throw new \UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
+            throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
         }
-        list($propertyPath, $parent) = $this->getPathAndParent($coll);
+        [$propertyPath, $parent] = $this->getPathAndParent($coll);
         $query = ['$unset' => [$propertyPath => true]];
         $this->executeQuery($parent, $query, $options);
     }
@@ -78,7 +79,7 @@ class CollectionPersister
         switch ($mapping['strategy']) {
             case ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET:
             case ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY:
-                throw new \UnexpectedValueException($mapping['strategy'] . ' update collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
+                throw new UnexpectedValueException($mapping['strategy'] . ' update collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
 
             case ClassMetadata::STORAGE_STRATEGY_SET:
             case ClassMetadata::STORAGE_STRATEGY_SET_ARRAY:
@@ -93,7 +94,7 @@ class CollectionPersister
                 break;
 
             default:
-                throw new \UnexpectedValueException('Unsupported collection strategy: ' . $mapping['strategy']);
+                throw new UnexpectedValueException('Unsupported collection strategy: ' . $mapping['strategy']);
         }
     }
 
@@ -107,7 +108,7 @@ class CollectionPersister
      */
     private function setCollection(PersistentCollectionInterface $coll, array $options) : void
     {
-        list($propertyPath, $parent) = $this->getPathAndParent($coll);
+        [$propertyPath, $parent] = $this->getPathAndParent($coll);
         $coll->initialize();
         $mapping = $coll->getMapping();
         $setData = $this->pb->prepareAssociatedCollectionValue($coll, CollectionHelper::usesSet($mapping['strategy']));
@@ -129,7 +130,7 @@ class CollectionPersister
             return;
         }
 
-        list($propertyPath, $parent) = $this->getPathAndParent($coll);
+        [$propertyPath, $parent] = $this->getPathAndParent($coll);
 
         $query = ['$unset' => []];
 
@@ -174,10 +175,10 @@ class CollectionPersister
                 break;
 
             default:
-                throw new \LogicException(sprintf('Invalid strategy %s given for insertElements', $mapping['strategy']));
+                throw new LogicException(sprintf('Invalid strategy %s given for insertElements', $mapping['strategy']));
         }
 
-        list($propertyPath, $parent) = $this->getPathAndParent($coll);
+        [$propertyPath, $parent] = $this->getPathAndParent($coll);
 
         $callback = isset($mapping['embedded'])
             ? function ($v) use ($mapping) {
@@ -211,7 +212,7 @@ class CollectionPersister
         $fields = [];
         $parent = $coll->getOwner();
         while (($association = $this->uow->getParentAssociation($parent)) !== null) {
-            list($m, $owner, $field) = $association;
+            [$m, $owner, $field] = $association;
             if (isset($m['reference'])) {
                 break;
             }

@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
+use DateTime;
+use DateTimeImmutable;
+use DateTimeZone;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use const PHP_INT_SIZE;
 use function call_user_func;
 use function date;
@@ -37,7 +41,7 @@ class DateTypeTest extends TestCase
         $this->assertSame($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are not converted');
 
         $timestamp = 100000000.123;
-        $dateTime = \DateTime::createFromFormat('U.u', (string) $timestamp);
+        $dateTime = DateTime::createFromFormat('U.u', (string) $timestamp);
         $mongoDate = new UTCDateTime(100000000123);
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTime), 'DateTime objects are converted to MongoDate objects');
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($timestamp), 'Numeric timestamps are converted to MongoDate objects');
@@ -53,7 +57,7 @@ class DateTypeTest extends TestCase
         $timestamp = 100000000.123;
         $mongoDate = new UTCDateTime(100000000123);
 
-        $dateTimeImmutable = \DateTimeImmutable::createFromFormat('U.u', (string) $timestamp);
+        $dateTimeImmutable = DateTimeImmutable::createFromFormat('U.u', (string) $timestamp);
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTimeImmutable), 'DateTimeImmutable objects are converted to MongoDate objects');
     }
 
@@ -61,7 +65,7 @@ class DateTypeTest extends TestCase
     {
         $type = Type::getType(Type::DATE);
 
-        $date = new \DateTime('1900-01-01 00:00:00.123', new \DateTimeZone('UTC'));
+        $date = new DateTime('1900-01-01 00:00:00.123', new DateTimeZone('UTC'));
         $timestamp = '-2208988800.123';
         $this->assertEquals($type->convertToDatabaseValue($timestamp), $type->convertToDatabaseValue($date));
     }
@@ -82,7 +86,7 @@ class DateTypeTest extends TestCase
             'array'  => [[]],
             'string' => ['whatever'],
             'bool'   => [false],
-            'object' => [new \stdClass()],
+            'object' => [new stdClass()],
             'invalid string' => ['foo'],
         ];
     }
@@ -112,11 +116,13 @@ class DateTypeTest extends TestCase
     public function testClosureToPHP($input, $output)
     {
         $type = Type::getType(Type::DATE);
-        $return = null;
 
-        call_user_func(function ($value) use ($type, &$return) {
+        $return = (static function ($value) use ($type) {
+            $return = null;
             eval($type->closureToPHP());
-        }, $input);
+
+            return $return;
+        })($input);
 
         $this->assertInstanceOf('DateTime', $return);
         $this->assertTimestampEquals($output, $return);
@@ -126,14 +132,14 @@ class DateTypeTest extends TestCase
     {
         $yesterday = strtotime('yesterday');
         $mongoDate = new UTCDateTime($yesterday * 1000);
-        $dateTime = new \DateTime('@' . $yesterday);
+        $dateTime = new DateTime('@' . $yesterday);
 
         return [
             [$dateTime, $dateTime],
             [$mongoDate, $dateTime],
             [$yesterday, $dateTime],
             [date('c', $yesterday), $dateTime],
-            [new UTCDateTime(100000000123), \DateTime::createFromFormat('U.u', '100000000.123')],
+            [new UTCDateTime(100000000123), DateTime::createFromFormat('U.u', '100000000.123')],
         ];
     }
 
@@ -163,7 +169,7 @@ class DateTypeTest extends TestCase
         $this->assertEquals(new UTCDateTime(strtotime('1900-01-01') * 1000), $return);
     }
 
-    private function assertTimestampEquals(\DateTime $expected, \DateTime $actual)
+    private function assertTimestampEquals(DateTime $expected, DateTime $actual)
     {
         $this->assertEquals($expected->format('U.u'), $actual->format('U.u'));
     }

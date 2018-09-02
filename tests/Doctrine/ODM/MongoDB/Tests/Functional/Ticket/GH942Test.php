@@ -59,7 +59,7 @@ class GH942Test extends BaseTest
  */
 class GH942Document
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Id */
     public $id;
@@ -76,7 +76,7 @@ class GH942Document
  */
 class GH942DocumentParent
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Id */
     public $id;
@@ -88,5 +88,5 @@ class GH942DocumentParent
 /** @ODM\Document */
 class GH942DocumentChild extends GH942DocumentParent
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 }

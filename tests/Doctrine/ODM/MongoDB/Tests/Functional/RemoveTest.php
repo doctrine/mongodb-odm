@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
 use Documents\BlogPost;
@@ -191,8 +192,8 @@ class RemoveTest extends BaseTest
          * mappedBy. Both sides cascade operations.
          */
         $blogPost = new BlogPost();
-        $comment1 = new Comment('comment1', new \DateTime());
-        $comment2 = new Comment('comment2', new \DateTime());
+        $comment1 = new Comment('comment1', new DateTime());
+        $comment2 = new Comment('comment2', new DateTime());
 
         $blogPost->addComment($comment1);
         $blogPost->addComment($comment2);

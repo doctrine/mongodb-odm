@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
+use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Documents\User;
+use InvalidArgumentException;
 use function is_array;
 
 trait AggregationOperatorsProviderTrait
@@ -148,7 +150,7 @@ trait AggregationOperatorsProviderTrait
             'cond' => [
                 'expected' => ['$cond' => ['if' => ['$gte' => ['$field', 5]], 'then' => '$field', 'else' => '$otherField']],
                 'operator' => 'cond',
-                'args' => function (Expr $expr) {
+                'args' => static function (Expr $expr) {
                     return [
                         $expr->gte('$field', 5),
                         '$field',
@@ -317,7 +319,7 @@ trait AggregationOperatorsProviderTrait
                     ],
                 ],
                 'operator' => 'let',
-                'args' => function (Expr $expr) {
+                'args' => static function (Expr $expr) {
                     return [
                         $expr->expr()
                             ->field('total')
@@ -362,7 +364,7 @@ trait AggregationOperatorsProviderTrait
             'map' => [
                 'expected' => ['$map' => ['input' => '$quizzes', 'as' => 'grade', 'in' => ['$add' => ['$$grade', 2]]]],
                 'operator' => 'map',
-                'args' => function (Expr $expr) {
+                'args' => static function (Expr $expr) {
                     return [
                         '$quizzes',
                         'grade',
@@ -437,7 +439,7 @@ trait AggregationOperatorsProviderTrait
                     ],
                 ],
                 'operator' => 'reduce',
-                'args' => function (Expr $expr) {
+                'args' => static function (Expr $expr) {
                     return [
                         '$array',
                         ['sum' => 0, 'product' => 1],
@@ -614,10 +616,10 @@ trait AggregationOperatorsProviderTrait
     {
         if (is_array($args)) {
             return $args;
-        } elseif ($args instanceof \Closure) {
+        } elseif ($args instanceof Closure) {
             return $args($this->createExpr());
         }
 
-        throw new \InvalidArgumentException('Arguments for aggregation tests must be array or closure');
+        throw new InvalidArgumentException('Arguments for aggregation tests must be array or closure');
     }
 }

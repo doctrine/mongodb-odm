@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Float type.
- *
  */
 class FloatType extends Type
 {

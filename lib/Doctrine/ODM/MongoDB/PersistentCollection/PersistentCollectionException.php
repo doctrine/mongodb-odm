@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Throwable;
 use function sprintf;
 
 /**
  * MongoDB ODM PersistentCollection Exception.
- *
  */
 class PersistentCollectionException extends MongoDBException
 {
@@ -32,7 +32,7 @@ class PersistentCollectionException extends MongoDBException
         string $className,
         string $methodName,
         string $parameterName,
-        ?\Throwable $previous = null
+        ?Throwable $previous = null
     ) : self {
         return new self(
             sprintf(
@@ -46,7 +46,7 @@ class PersistentCollectionException extends MongoDBException
         );
     }
 
-    public static function invalidReturnTypeHint(string $className, string $methodName, ?\Throwable $previous = null) : self
+    public static function invalidReturnTypeHint(string $className, string $methodName, ?Throwable $previous = null) : self
     {
         return new self(
             sprintf(

@@ -12,7 +12,8 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GroupTest extends BaseTest
 {
-    use AggregationTestTrait, AggregationOperatorsProviderTrait;
+    use AggregationTestTrait;
+    use AggregationOperatorsProviderTrait;
 
     /**
      * @dataProvider provideProxiedExprMethods
@@ -44,16 +45,16 @@ class GroupTest extends BaseTest
             'addToSet()' => ['addToSet', ['$field']],
             'avg()' => ['avg', ['$field']],
             'expression()' => [
-        'expression',
-        function (Expr $expr) {
-                $expr
+                'expression',
+                static function (Expr $expr) {
+                    $expr
                     ->field('dayOfMonth')
                     ->dayOfMonth('$dateField')
                     ->field('dayOfWeek')
                     ->dayOfWeek('$dateField');
 
-                return [$expr];
-        },
+                    return [$expr];
+                },
             ],
             'first()' => ['first', ['$field']],
             'last()' => ['last', ['$field']],

@@ -12,6 +12,7 @@ use Documents\IndirectlyReferencedUser;
 use Documents\Phonenumber;
 use Documents\ReferenceUser;
 use Documents\User;
+use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use function array_values;
@@ -345,7 +346,7 @@ class QueryTest extends BaseTest
 
         $qb = $this->dm->createQueryBuilder(Article::class);
         $query = $qb->getQuery();
-        $this->assertInstanceOf(\IteratorAggregate::class, $query);
+        $this->assertInstanceOf(IteratorAggregate::class, $query);
         foreach ($query as $article) {
             $this->assertEquals(Article::class, get_class($article));
         }

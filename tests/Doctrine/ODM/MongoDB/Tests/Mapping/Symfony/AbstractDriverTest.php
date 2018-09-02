@@ -6,6 +6,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Symfony;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use function mkdir;
 use function rmdir;
 use function sys_get_temp_dir;
@@ -70,7 +72,7 @@ abstract class AbstractDriverTest extends TestCase
 
     protected function tearDown()
     {
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->dir), \RecursiveIteratorIterator::CHILD_FIRST);
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->dir), RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $path) {
             if ($path->isDir()) {

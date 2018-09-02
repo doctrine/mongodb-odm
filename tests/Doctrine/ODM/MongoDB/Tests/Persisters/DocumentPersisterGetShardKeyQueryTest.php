@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -11,6 +12,7 @@ use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use ReflectionMethod;
 use function get_class;
 
 class DocumentPersisterGetShardKeyQueryTest extends BaseTest
@@ -26,7 +28,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
-        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
 
         $this->assertSame(
@@ -40,12 +42,12 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $o = new ShardedByObjects();
         $o->oid = '54ca2c4c81fec698130041a7';
         $o->bin = 'hi';
-        $o->date = new \DateTime();
+        $o->date = new DateTime();
 
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
-        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 
@@ -72,7 +74,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
-        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 
@@ -92,7 +94,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
-        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 

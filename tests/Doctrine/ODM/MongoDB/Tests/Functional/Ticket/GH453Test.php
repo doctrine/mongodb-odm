@@ -118,13 +118,13 @@ class GH453Test extends BaseTest
             new GH453EmbeddedDocument(),
             new GH453EmbeddedDocument(),
         ]);
-        $colSet = $colPush->map(function ($v) {
+        $colSet = $colPush->map(static function ($v) {
             return clone $v;
         });
-        $colSetArray = $colPush->map(function ($v) {
+        $colSetArray = $colPush->map(static function ($v) {
             return clone $v;
         });
-        $colAddToSet = $colPush->map(function ($v) {
+        $colAddToSet = $colPush->map(static function ($v) {
             return clone $v;
         });
 
@@ -168,31 +168,31 @@ class GH453Test extends BaseTest
             new GH453ReferencedDocument(),
             new GH453ReferencedDocument(),
         ]);
-        $colSet = $colPush->map(function ($v) {
+        $colSet = $colPush->map(static function ($v) {
             return clone $v;
         });
-        $colSetArray = $colPush->map(function ($v) {
+        $colSetArray = $colPush->map(static function ($v) {
             return clone $v;
         });
-        $colAddToSet = $colPush->map(function ($v) {
+        $colAddToSet = $colPush->map(static function ($v) {
             return clone $v;
         });
 
         $dm = $this->dm;
 
-        $colPush->forAll(function ($k, $v) use ($dm) {
+        $colPush->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
             return true;
         });
-        $colSet->forAll(function ($k, $v) use ($dm) {
+        $colSet->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
             return true;
         });
-        $colSetArray->forAll(function ($k, $v) use ($dm) {
+        $colSetArray->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
             return true;
         });
-        $colAddToSet->forAll(function ($k, $v) use ($dm) {
+        $colAddToSet->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
             return true;
         });

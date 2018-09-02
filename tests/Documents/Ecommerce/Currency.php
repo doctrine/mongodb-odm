@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Documents\Ecommerce;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use InvalidArgumentException;
 use function implode;
 use function in_array;
 
@@ -31,7 +32,7 @@ class Currency
     {
         $name = (string) $name;
         if (! in_array($name, self::getAll())) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Currency must be one of ' . implode(', ', self::getAll()) .
                 $name . 'given'
             );
@@ -59,7 +60,7 @@ class Currency
     {
         $multiplier = (float) $multiplier;
         if (empty($multiplier) || $multiplier <= 0) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'currency multiplier must be a positive float number'
             );
         }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -40,14 +41,14 @@ class GraphLookupTest extends BaseTest
 
         $this->assertEquals(
             [
-            '$graphLookup' => [
-                'from' => 'employees',
-                'startWith' => '$reportsTo',
-                'connectFromField' => 'reportsTo',
-                'connectToField' => 'name',
-                'as' => 'reportingHierarchy',
-                'restrictSearchWithMatch' => (object) [],
-            ],
+                '$graphLookup' => [
+                    'from' => 'employees',
+                    'startWith' => '$reportsTo',
+                    'connectFromField' => 'reportsTo',
+                    'connectToField' => 'name',
+                    'as' => 'reportingHierarchy',
+                    'restrictSearchWithMatch' => (object) [],
+                ],
             ],
             $graphLookupStage->getExpression()
         );
@@ -64,14 +65,14 @@ class GraphLookupTest extends BaseTest
 
         $this->assertEquals(
             [[
-            '$graphLookup' => [
-                'from' => 'employees',
-                'startWith' => '$reportsTo',
-                'connectFromField' => 'reportsTo',
-                'connectToField' => 'name',
-                'as' => 'reportingHierarchy',
-                'restrictSearchWithMatch' => (object) [],
-            ],
+                '$graphLookup' => [
+                    'from' => 'employees',
+                    'startWith' => '$reportsTo',
+                    'connectFromField' => 'reportsTo',
+                    'connectToField' => 'name',
+                    'as' => 'reportingHierarchy',
+                    'restrictSearchWithMatch' => (object) [],
+                ],
             ],
             ],
             $builder->getPipeline()
@@ -94,16 +95,16 @@ class GraphLookupTest extends BaseTest
 
         $this->assertSame(
             [[
-            '$graphLookup' => [
-                'from' => 'employees',
-                'startWith' => '$reportsTo',
-                'connectFromField' => 'reportsTo',
-                'connectToField' => 'name',
-                'as' => 'reportingHierarchy',
-                'restrictSearchWithMatch' => ['hobbies' => 'golf'],
-                'maxDepth' => 1,
-                'depthField' => 'depth',
-            ],
+                '$graphLookup' => [
+                    'from' => 'employees',
+                    'startWith' => '$reportsTo',
+                    'connectFromField' => 'reportsTo',
+                    'connectToField' => 'name',
+                    'as' => 'reportingHierarchy',
+                    'restrictSearchWithMatch' => ['hobbies' => 'golf'],
+                    'maxDepth' => 1,
+                    'depthField' => 'depth',
+                ],
             ],
             ],
             $builder->getPipeline()
@@ -114,7 +115,7 @@ class GraphLookupTest extends BaseTest
     {
         return [
             'owningSide' => [
-                'addGraphLookupStage' => function (Builder $builder) {
+                'addGraphLookupStage' => static function (Builder $builder) {
                     $builder->graphLookup('reportsTo')
                         ->alias('reportingHierarchy');
                 },
@@ -125,7 +126,7 @@ class GraphLookupTest extends BaseTest
                 ],
             ],
             'owningSideId' => [
-                'addGraphLookupStage' => function (Builder $builder) {
+                'addGraphLookupStage' => static function (Builder $builder) {
                     $builder->graphLookup('reportsToId')
                         ->alias('reportingHierarchy');
                 },
@@ -136,7 +137,7 @@ class GraphLookupTest extends BaseTest
                 ],
             ],
             'inverseSide' => [
-                'addGraphLookupStage' => function (Builder $builder) {
+                'addGraphLookupStage' => static function (Builder $builder) {
                     $builder->graphLookup('reportingEmployees')
                         ->alias('reportingHierarchy');
                 },
@@ -152,7 +153,7 @@ class GraphLookupTest extends BaseTest
     /**
      * @dataProvider provideEmployeeAggregations
      */
-    public function testGraphLookupWithEmployees(\Closure $addGraphLookupStage, array $expectedFields)
+    public function testGraphLookupWithEmployees(Closure $addGraphLookupStage, array $expectedFields)
     {
         $this->insertEmployeeTestData();
 
@@ -189,7 +190,7 @@ class GraphLookupTest extends BaseTest
     {
         return [
             'owningSide' => [
-                'addGraphLookupStage' => function (Builder $builder) {
+                'addGraphLookupStage' => static function (Builder $builder) {
                     $builder->graphLookup('nearestAirport')
                         ->connectFromField('connections')
                         ->maxDepth(2)
@@ -203,7 +204,7 @@ class GraphLookupTest extends BaseTest
                 ],
             ],
             'owningSideId' => [
-                'addGraphLookupStage' => function (Builder $builder) {
+                'addGraphLookupStage' => static function (Builder $builder) {
                     $builder->graphLookup('nearestAirportId')
                         ->connectFromField('connectionIds')
                         ->maxDepth(2)
@@ -222,7 +223,7 @@ class GraphLookupTest extends BaseTest
     /**
      * @dataProvider provideTravellerAggregations
      */
-    public function testGraphLookupWithTraveller(\Closure $addGraphLookupStage, array $expectedFields)
+    public function testGraphLookupWithTraveller(Closure $addGraphLookupStage, array $expectedFields)
     {
         $this->insertTravellerTestData();
 
@@ -266,8 +267,7 @@ class GraphLookupTest extends BaseTest
                 ->startWith('$someExpression')
                 ->connectFromField('selfReference')
                 ->connectToField('target')
-                ->alias('targets')
-        ;
+                ->alias('targets');
 
         $expectedPipeline = [
             [
@@ -294,8 +294,7 @@ class GraphLookupTest extends BaseTest
         $builder
             ->graphLookup('accountSimple')
                 ->connectFromField('user')
-                ->alias('targets')
-        ;
+                ->alias('targets');
     }
 
     private function insertEmployeeTestData()

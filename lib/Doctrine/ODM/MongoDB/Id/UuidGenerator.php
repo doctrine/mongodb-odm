@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use function chr;
 use function hexdec;
 use function mt_rand;
@@ -18,7 +19,6 @@ use function substr;
 
 /**
  * Generates UUIDs.
- *
  */
 class UuidGenerator extends AbstractIdGenerator
 {
@@ -63,7 +63,8 @@ class UuidGenerator extends AbstractIdGenerator
      * @param object          $document Not used.
      *
      * @return string UUID
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function generate(DocumentManager $dm, object $document)
     {
@@ -100,12 +101,12 @@ class UuidGenerator extends AbstractIdGenerator
     /**
      * Generates a v5 UUID
      *
-     * @throws \Exception When the provided namespace is invalid.
+     * @throws Exception When the provided namespace is invalid.
      */
     public function generateV5(string $namespace, string $salt) : string
     {
         if (! $this->isValid($namespace)) {
-            throw new \Exception('Provided $namespace is invalid: ' . $namespace);
+            throw new Exception('Provided $namespace is invalid: ' . $namespace);
         }
 
         // Get hexadecimal components of namespace

@@ -33,7 +33,7 @@ class UnitOfWorkPerformanceTest extends BaseTest
 
         foreach ($users as $user) {
             $user->status = 'other';
-            $user->username = $user->username . '++';
+            $user->username .= '++';
             $user->name = str_replace('Mr.', 'Mrs.', $user->name);
         }
 

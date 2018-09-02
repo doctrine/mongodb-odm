@@ -12,7 +12,6 @@ use function spl_object_hash;
 
 /**
  * Abstract factory for creating document repositories.
- *
  */
 abstract class AbstractRepositoryFactory implements RepositoryFactory
 {

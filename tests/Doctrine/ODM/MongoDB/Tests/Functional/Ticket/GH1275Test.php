@@ -8,13 +8,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use InvalidArgumentException;
 use function array_map;
 
 class GH1275Test extends BaseTest
 {
     public function testResortAtomicCollectionsFlipItems()
     {
-        $getNameCallback = function (Item $item) {
+        $getNameCallback = static function (Item $item) {
             return $item->name;
         };
 
@@ -55,7 +56,7 @@ class GH1275Test extends BaseTest
 
     public function testResortAtomicCollections()
     {
-        $getNameCallback = function (Item $item) {
+        $getNameCallback = static function (Item $item) {
             return $item->name;
         };
 
@@ -151,7 +152,7 @@ class GH1275Test extends BaseTest
      */
     public function testResortEmbedManyCollection($strategy)
     {
-        $getNameCallback = function (Element $element) {
+        $getNameCallback = static function (Element $element) {
             return $element->name;
         };
 
@@ -334,7 +335,7 @@ class Container
 
         $currentPosition = $this->items->indexOf($item);
         if ($currentPosition === false) {
-            throw new \InvalidArgumentException('Cannot move an item which was not previously added');
+            throw new InvalidArgumentException('Cannot move an item which was not previously added');
         }
 
         $newPosition = $currentPosition + $move;

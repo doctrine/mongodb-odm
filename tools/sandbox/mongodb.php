@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/cli-config.php';
+
 use Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache\MetadataCommand;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateHydratorsCommand;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand;

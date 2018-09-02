@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * Raw data type.
- *
  */
 class RawType extends Type
 {

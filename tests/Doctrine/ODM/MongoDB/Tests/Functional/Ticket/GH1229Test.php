@@ -67,7 +67,7 @@ class GH1229Test extends BaseTest
 
             $this->assertNotSame($actualChildren, $child);
 
-            list(, $parent, ) = $this->uow->getParentAssociation(end($actualChildren));
+            [, $parent ] = $this->uow->getParentAssociation(end($actualChildren));
             $this->assertSame($this->secondParentId, $parent->id);
         }
 
@@ -135,7 +135,7 @@ class GH1229Test extends BaseTest
 /** @ODM\Document */
 class GH1229Parent
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Id */
     public $id;
@@ -187,7 +187,7 @@ class GH1229Parent
 /** @ODM\EmbeddedDocument */
 class GH1229Child
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Field(type="string") */
     public $name;
@@ -227,5 +227,5 @@ class GH1229Child
 /** @ODM\EmbeddedDocument */
 class GH1229ChildTypeB extends GH1229Child
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 }

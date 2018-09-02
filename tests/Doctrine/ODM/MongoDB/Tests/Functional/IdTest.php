@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -283,7 +284,7 @@ class IdTest extends BaseTest
             ['object_id', 'none', (string) $identifier, (string) $identifier, ObjectId::class],
 
             // date
-            ['date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), UTCDateTime::class],
+            ['date', 'none', new DateTime(date('Y-m-d')), new DateTime(date('Y-m-d')), UTCDateTime::class],
 
             // bin
             ['bin', 'none', 'test-data', 'test-data', Binary::class],

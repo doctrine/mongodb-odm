@@ -8,7 +8,6 @@ use Doctrine\Common\Proxy\Proxy as BaseProxy;
 
 /**
  * Document Proxy interface.
- *
  */
 interface Proxy extends BaseProxy
 {

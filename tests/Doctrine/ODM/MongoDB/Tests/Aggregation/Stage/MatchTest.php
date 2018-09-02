@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Match;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
@@ -99,7 +100,7 @@ class MatchTest extends BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
-        $date = new \DateTime();
+        $date = new DateTime();
         $mongoDate = new UTCDateTime((int) $date->format('Uv'));
         $stage = $builder
             ->match()
@@ -108,9 +109,9 @@ class MatchTest extends BaseTest
 
         $this->assertEquals(
             [
-            '$match' => [
-                'createdAt' => ['$lte' => $mongoDate],
-            ],
+                '$match' => [
+                    'createdAt' => ['$lte' => $mongoDate],
+                ],
             ],
             $stage->getExpression()
         );

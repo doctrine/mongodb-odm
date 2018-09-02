@@ -8,7 +8,6 @@ use MongoDB\BSON\ObjectId;
 
 /**
  * The ObjectId type.
- *
  */
 class ObjectIdType extends Type
 {

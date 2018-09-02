@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * AbstractIdGenerator
- *
  */
 abstract class AbstractIdGenerator
 {

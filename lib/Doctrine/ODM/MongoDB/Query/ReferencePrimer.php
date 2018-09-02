@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Query;
 
+use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use InvalidArgumentException;
+use LogicException;
+use Traversable;
 use function array_push;
 use function array_shift;
 use function array_values;
@@ -31,14 +35,13 @@ use function sprintf;
  *
  * Priming can only be used for the owning side side of a relationship, since
  * the referenced identifiers are not immediately available on an inverse side.
- *
  */
 class ReferencePrimer
 {
     /**
      * The default primer Closure.
      *
-     * @var \Closure
+     * @var Closure
      */
     private $defaultPrimer;
 
@@ -61,7 +64,7 @@ class ReferencePrimer
         $this->dm = $dm;
         $this->uow = $uow;
 
-        $this->defaultPrimer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) : void {
+        $this->defaultPrimer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) : void {
             $qb = $dm->createQueryBuilder($class->name)
                 ->field($class->identifier)->in($ids);
 
@@ -81,15 +84,16 @@ class ReferencePrimer
      * the default primer defined in the constructor. If $primer is not
      * callable, the default primer will be used.
      *
-     * @param ClassMetadata      $class     Class metadata for the document
-     * @param array|\Traversable $documents Documents containing references to prime
-     * @param string             $fieldName Field name containing references to prime
-     * @param array              $hints     UnitOfWork hints for priming queries
-     * @param callable           $primer    Optional primer callable
-     * @throws \InvalidArgumentException If the mapped field is not the owning
+     * @param ClassMetadata     $class     Class metadata for the document
+     * @param array|Traversable $documents Documents containing references to prime
+     * @param string            $fieldName Field name containing references to prime
+     * @param array             $hints     UnitOfWork hints for priming queries
+     * @param callable          $primer    Optional primer callable
+     *
+     * @throws InvalidArgumentException If the mapped field is not the owning
      *                                   side of a reference relationship.
-     * @throws \InvalidArgumentException If $primer is not callable.
-     * @throws \LogicException If the mapped field is a simple reference and is
+     * @throws InvalidArgumentException If $primer is not callable.
+     * @throws LogicException If the mapped field is a simple reference and is
      *                         missing a target document class.
      */
     public function primeReferences(ClassMetadata $class, $documents, string $fieldName, array $hints = [], ?callable $primer = null) : void
@@ -104,18 +108,18 @@ class ReferencePrimer
          * collect references to be primed. This is not supported.
          */
         if (! isset($mapping['reference']) || ! $mapping['isOwningSide']) {
-            throw new \InvalidArgumentException(sprintf('Field "%s" is not the owning side of a reference relationship in class "%s"', $fieldName, $class->name));
+            throw new InvalidArgumentException(sprintf('Field "%s" is not the owning side of a reference relationship in class "%s"', $fieldName, $class->name));
         }
 
         /* Simple reference require a target document class so we can construct
          * the priming query.
          */
         if ($mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID && empty($mapping['targetDocument'])) {
-            throw new \LogicException(sprintf('Field "%s" is a simple reference without a target document class in class "%s"', $fieldName, $class->name));
+            throw new LogicException(sprintf('Field "%s" is a simple reference without a target document class in class "%s"', $fieldName, $class->name));
         }
 
         if ($primer !== null && ! is_callable($primer)) {
-            throw new \InvalidArgumentException('$primer is not callable');
+            throw new InvalidArgumentException('$primer is not callable');
         }
 
         $primer = $primer ?: $this->defaultPrimer;
@@ -155,7 +159,7 @@ class ReferencePrimer
      * ... but you cannot prime this: myDocument.embeddedDocument.referencedDocuments.referencedDocument(s)
      * This addresses Issue #624.
      *
-     * @param array|\Traversable $documents
+     * @param array|Traversable $documents
      */
     private function parseDotSyntaxForPrimer(string $fieldName, ClassMetadata $class, $documents, ?array $mapping = null) : array
     {
@@ -168,7 +172,7 @@ class ReferencePrimer
         $e = explode('.', $fieldName);
 
         if (! isset($class->fieldMappings[$e[0]])) {
-            throw new \InvalidArgumentException(sprintf('Field %s cannot be further parsed for priming because it is unmapped.', $fieldName));
+            throw new InvalidArgumentException(sprintf('Field %s cannot be further parsed for priming because it is unmapped.', $fieldName));
         }
 
         $mapping = $class->fieldMappings[$e[0]];
@@ -177,11 +181,11 @@ class ReferencePrimer
         // Case of embedded document(s) to recurse through:
         if (! isset($mapping['reference'])) {
             if (empty($mapping['embedded'])) {
-                throw new \InvalidArgumentException(sprintf('Field "%s" of fieldName "%s" is not an embedded document, therefore no children can be primed. Aborting. This feature does not support traversing nested referenced documents at this time.', $e[0], $fieldName));
+                throw new InvalidArgumentException(sprintf('Field "%s" of fieldName "%s" is not an embedded document, therefore no children can be primed. Aborting. This feature does not support traversing nested referenced documents at this time.', $e[0], $fieldName));
             }
 
             if (! isset($mapping['targetDocument'])) {
-                throw new \InvalidArgumentException(sprintf('No target document class has been specified for this embedded document. However, targetDocument mapping must be specified in order for prime to work on fieldName "%s" for mapping of field "%s".', $fieldName, $mapping['fieldName']));
+                throw new InvalidArgumentException(sprintf('No target document class has been specified for this embedded document. However, targetDocument mapping must be specified in order for prime to work on fieldName "%s" for mapping of field "%s".', $fieldName, $mapping['fieldName']));
             }
 
             $childDocuments = [];
@@ -203,7 +207,7 @@ class ReferencePrimer
             $childClass = $this->dm->getClassMetadata($mapping['targetDocument']);
 
             if (! $childClass->hasField($e[0])) {
-                throw new \InvalidArgumentException(sprintf('Field to prime must exist in embedded target document. Reference fieldName "%s" for mapping of target document class "%s".', $fieldName, $mapping['targetDocument']));
+                throw new InvalidArgumentException(sprintf('Field to prime must exist in embedded target document. Reference fieldName "%s" for mapping of target document class "%s".', $fieldName, $mapping['targetDocument']));
             }
 
             $childFieldName = implode('.', $e);
@@ -214,7 +218,7 @@ class ReferencePrimer
         // Case of reference(s) to prime:
         if ($mapping['reference']) {
             if (count($e) > 1) {
-                throw new \InvalidArgumentException(sprintf('Cannot prime more than one layer deep but field "%s" is a reference and has children in fieldName "%s".', $e[0], $fieldName));
+                throw new InvalidArgumentException(sprintf('Cannot prime more than one layer deep but field "%s" is a reference and has children in fieldName "%s".', $e[0], $fieldName));
             }
 
             return ['fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping];

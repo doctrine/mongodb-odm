@@ -10,6 +10,8 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use InvalidArgumentException;
+use UnexpectedValueException;
 use function array_search;
 use function array_values;
 use function get_class;
@@ -18,7 +20,6 @@ use function get_class;
  * PersistenceBuilder builds the queries used by the persisters to update and insert
  * documents when a DocumentManager is flushed. It uses the changeset information in the
  * UnitOfWork to build queries using atomic operators like $set, $unset, etc.
- *
  */
 class PersistenceBuilder
 {
@@ -38,7 +39,6 @@ class PersistenceBuilder
 
     /**
      * Initializes a new PersistenceBuilder instance.
-     *
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
@@ -50,6 +50,7 @@ class PersistenceBuilder
      * Prepares the array that is ready to be inserted to mongodb for a given object document.
      *
      * @param object $document
+     *
      * @return array $insertData
      */
     public function prepareInsertData($document)
@@ -105,6 +106,7 @@ class PersistenceBuilder
      * Prepares the update query to update a given document object in mongodb.
      *
      * @param object $document
+     *
      * @return array $updateData
      */
     public function prepareUpdateData($document)
@@ -121,7 +123,7 @@ class PersistenceBuilder
                 continue;
             }
 
-            list($old, $new) = $change;
+            [$old, $new] = $change;
 
             // Scalar fields
             if (! isset($mapping['association'])) {
@@ -212,6 +214,7 @@ class PersistenceBuilder
      * Prepares the update query to upsert a given document object in mongodb.
      *
      * @param object $document
+     *
      * @return array $updateData
      */
     public function prepareUpsertData($document)
@@ -223,7 +226,7 @@ class PersistenceBuilder
         foreach ($changeset as $fieldName => $change) {
             $mapping = $class->fieldMappings[$fieldName];
 
-            list($old, $new) = $change;
+            [$old, $new] = $change;
 
             // Scalar fields
             if (! isset($mapping['association'])) {
@@ -288,6 +291,7 @@ class PersistenceBuilder
      *
      * @param array  $referenceMapping
      * @param object $document
+     *
      * @return array|null
      */
     public function prepareReferencedDocumentValue(array $referenceMapping, $document)
@@ -312,8 +316,10 @@ class PersistenceBuilder
      * @param array  $embeddedMapping
      * @param object $embeddedDocument
      * @param bool   $includeNestedCollections
+     *
      * @return array|object
-     * @throws \UnexpectedValueException If an unsupported associating mapping is found.
+     *
+     * @throws UnexpectedValueException If an unsupported associating mapping is found.
      */
     public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
     {
@@ -356,7 +362,7 @@ class PersistenceBuilder
                         break;
 
                     default:
-                        throw new \UnexpectedValueException('Unsupported mapping association: ' . $mapping['association']);
+                        throw new UnexpectedValueException('Unsupported mapping association: ' . $mapping['association']);
                 }
             }
 
@@ -417,8 +423,10 @@ class PersistenceBuilder
      * @param array  $mapping
      * @param object $document
      * @param bool   $includeNestedCollections
+     *
      * @return array|object|null
-     * @throws \InvalidArgumentException If the mapping is neither embedded nor reference.
+     *
+     * @throws InvalidArgumentException If the mapping is neither embedded nor reference.
      */
     public function prepareAssociatedDocumentValue(array $mapping, $document, $includeNestedCollections = false)
     {
@@ -430,13 +438,14 @@ class PersistenceBuilder
             return $this->prepareReferencedDocumentValue($mapping, $document);
         }
 
-        throw new \InvalidArgumentException('Mapping is neither embedded nor reference.');
+        throw new InvalidArgumentException('Mapping is neither embedded nor reference.');
     }
 
     /**
      * Returns the collection representation to be stored and unschedules it afterwards.
      *
      * @param bool $includeNestedCollections
+     *
      * @return array
      */
     public function prepareAssociatedCollectionValue(PersistentCollectionInterface $coll, $includeNestedCollections = false)
@@ -444,10 +453,10 @@ class PersistenceBuilder
         $mapping = $coll->getMapping();
         $pb = $this;
         $callback = isset($mapping['embedded'])
-            ? function ($v) use ($pb, $mapping, $includeNestedCollections) {
+            ? static function ($v) use ($pb, $mapping, $includeNestedCollections) {
                 return $pb->prepareEmbeddedDocumentValue($mapping, $v, $includeNestedCollections);
             }
-            : function ($v) use ($pb, $mapping) {
+            : static function ($v) use ($pb, $mapping) {
                 return $pb->prepareReferencedDocumentValue($mapping, $v);
             };
 

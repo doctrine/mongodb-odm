@@ -9,7 +9,6 @@ use function func_get_args;
 
 /**
  * Fluent interface for adding a $project stage to an aggregation pipeline.
- *
  */
 class Project extends Operator
 {
@@ -30,6 +29,7 @@ class Project extends Operator
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/avg/
      * @see Expr::avg
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
      */
@@ -73,6 +73,7 @@ class Project extends Operator
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/max/
      * @see Expr::max
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
      */
@@ -89,6 +90,7 @@ class Project extends Operator
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/min/
      * @see Expr::min
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
      */
@@ -106,6 +108,7 @@ class Project extends Operator
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevPop/
      * @see Expr::stdDevPop
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
      */
@@ -123,6 +126,7 @@ class Project extends Operator
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevSamp/
      * @see Expr::stdDevSamp
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
      */
@@ -140,6 +144,7 @@ class Project extends Operator
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sum/
      * @see Expr::sum
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr ...$expressions Additional expressions
      */

@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Issue;
 use Documents\User;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use function get_class;
@@ -193,7 +194,7 @@ class LockTest extends BaseTest
     {
         $article = new LockInt();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Document is not MANAGED.');
 
         $this->dm->lock($article, LockMode::OPTIMISTIC, $article->version + 1);

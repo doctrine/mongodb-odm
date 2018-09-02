@@ -28,7 +28,7 @@ class GH1152Test extends BaseTest
         $this->assertNotNull($parent);
 
         $this->assertNotNull($parent->child->parentAssociation);
-        list($mapping, $parentAssociation, $fieldName) = $parent->child->parentAssociation;
+        [$mapping, $parentAssociation, $fieldName] = $parent->child->parentAssociation;
 
         $this->assertSame($parent, $parentAssociation);
     }
@@ -37,7 +37,7 @@ class GH1152Test extends BaseTest
 /** @ODM\Document */
 class GH1152Parent
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Id */
     public $id;

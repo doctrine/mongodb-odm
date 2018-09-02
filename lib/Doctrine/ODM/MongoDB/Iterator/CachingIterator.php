@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Iterator;
 
+use Generator;
+use Traversable;
 use function current;
 use function key;
 use function next;
@@ -23,7 +25,7 @@ final class CachingIterator implements Iterator
     /** @var array */
     private $items = [];
 
-    /** @var \Generator */
+    /** @var Generator */
     private $iterator;
 
     /** @var bool */
@@ -33,16 +35,13 @@ final class CachingIterator implements Iterator
     private $iteratorExhausted = false;
 
     /**
-     *
-     *
      * Initialize the iterator and stores the first item in the cache. This
      * effectively rewinds the Traversable and the wrapping Generator, which
      * will execute up to its first yield statement. Additionally, this mimics
      * behavior of the SPL iterators and allows users to omit an explicit call
      * to rewind() before using the other methods.
-     *
      */
-    public function __construct(\Traversable $iterator)
+    public function __construct(Traversable $iterator)
     {
         $this->iterator = $this->wrapTraversable($iterator);
         $this->storeCurrentItem();
@@ -57,6 +56,7 @@ final class CachingIterator implements Iterator
 
     /**
      * @see http://php.net/iterator.current
+     *
      * @return mixed
      */
     public function current()
@@ -66,6 +66,7 @@ final class CachingIterator implements Iterator
 
     /**
      * @see http://php.net/iterator.mixed
+     *
      * @return mixed
      */
     public function key()
@@ -102,7 +103,6 @@ final class CachingIterator implements Iterator
     }
 
     /**
-     *
      * @see http://php.net/iterator.valid
      */
     public function valid() : bool
@@ -134,7 +134,7 @@ final class CachingIterator implements Iterator
         $this->items[$key] = $this->iterator->current();
     }
 
-    private function wrapTraversable(\Traversable $traversable) : \Generator
+    private function wrapTraversable(Traversable $traversable) : Generator
     {
         foreach ($traversable as $key => $value) {
             yield $key => $value;

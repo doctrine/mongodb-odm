@@ -75,11 +75,11 @@ class QueryExpressionVisitorTest extends BaseTest
         );
 
         $expectedQuery = [
-        '$and' => [
-            ['a' => 1],
-            ['a' => ['$ne' => 2]],
-            ['b' => 3],
-        ],
+            '$and' => [
+                ['a' => 1],
+                ['a' => ['$ne' => 2]],
+                ['b' => 3],
+            ],
         ];
 
         $expr = $this->visitor->dispatch($compositeExpr);

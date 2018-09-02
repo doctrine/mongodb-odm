@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Query\Filter;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use InvalidArgumentException;
 use function array_key_exists;
 
 /**
@@ -20,6 +21,7 @@ abstract class BsonFilter
 
     /**
      * Parameters for the filter.
+     *
      * @var array
      */
     protected $parameters = [];
@@ -52,7 +54,7 @@ abstract class BsonFilter
     final public function getParameter(string $name)
     {
         if (! array_key_exists($name, $this->parameters)) {
-            throw new \InvalidArgumentException("Filter parameter '" . $name . "' is not set.");
+            throw new InvalidArgumentException("Filter parameter '" . $name . "' is not set.");
         }
         return $this->parameters[$name];
     }

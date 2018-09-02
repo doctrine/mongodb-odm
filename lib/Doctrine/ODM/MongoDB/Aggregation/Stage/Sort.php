@@ -13,7 +13,6 @@ use function strtolower;
 
 /**
  * Fluent interface for adding a $sort stage to an aggregation pipeline.
- *
  */
 class Sort extends Stage
 {

@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $sample stage to an aggregation pipeline.
- *
  */
 class Sample extends Stage
 {

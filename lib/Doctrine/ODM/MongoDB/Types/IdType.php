@@ -9,7 +9,6 @@ use MongoDB\Driver\Exception\InvalidArgumentException;
 
 /**
  * The Id type.
- *
  */
 class IdType extends Type
 {

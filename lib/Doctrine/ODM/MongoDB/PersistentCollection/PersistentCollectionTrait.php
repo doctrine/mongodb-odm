@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
+use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -19,7 +20,6 @@ use function spl_object_hash;
 
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
- *
  */
 trait PersistentCollectionTrait
 {
@@ -241,7 +241,7 @@ trait PersistentCollectionTrait
         return array_udiff_assoc(
             $this->snapshot,
             $this->coll->toArray(),
-            function ($a, $b) {
+            static function ($a, $b) {
                 return $a === $b ? 0 : 1;
             }
         );
@@ -250,7 +250,7 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getDeletedDocuments()
     {
-        $compare = function ($a, $b) {
+        $compare = static function ($a, $b) {
             $compareA = is_object($a) ? spl_object_hash($a) : $a;
             $compareb = is_object($b) ? spl_object_hash($b) : $b;
             return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
@@ -268,7 +268,7 @@ trait PersistentCollectionTrait
         return array_udiff_assoc(
             $this->coll->toArray(),
             $this->snapshot,
-            function ($a, $b) {
+            static function ($a, $b) {
                 return $a === $b ? 0 : 1;
             }
         );
@@ -277,7 +277,7 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getInsertedDocuments()
     {
-        $compare = function ($a, $b) {
+        $compare = static function ($a, $b) {
             $compareA = is_object($a) ? spl_object_hash($a) : $a;
             $compareb = is_object($b) ? spl_object_hash($b) : $b;
             return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
@@ -305,11 +305,11 @@ trait PersistentCollectionTrait
     public function getTypeClass()
     {
         switch (true) {
-            case ($this->dm === null):
+            case $this->dm === null:
                 throw new MongoDBException('No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager method.');
-            case (empty($this->mapping)):
+            case empty($this->mapping):
                 throw new MongoDBException('No mapping is associated with this PersistentCollection, please set one using setOwner method.');
-            case (empty($this->mapping['targetDocument'])):
+            case empty($this->mapping['targetDocument']):
                 throw new MongoDBException('Specifying targetDocument is required for the ClassMetadata to be obtained.');
             default:
                 return $this->dm->getClassMetadata($this->mapping['targetDocument']);
@@ -388,7 +388,7 @@ trait PersistentCollectionTrait
     /**
      * {@inheritdoc}
      */
-    public function exists(\Closure $p)
+    public function exists(Closure $p)
     {
         $this->initialize();
         return $this->coll->exists($p);
@@ -477,7 +477,7 @@ trait PersistentCollectionTrait
     /**
      * {@inheritdoc}
      */
-    public function map(\Closure $func)
+    public function map(Closure $func)
     {
         $this->initialize();
         return $this->coll->map($func);
@@ -486,7 +486,7 @@ trait PersistentCollectionTrait
     /**
      * {@inheritdoc}
      */
-    public function filter(\Closure $p)
+    public function filter(Closure $p)
     {
         $this->initialize();
         return $this->coll->filter($p);
@@ -495,7 +495,7 @@ trait PersistentCollectionTrait
     /**
      * {@inheritdoc}
      */
-    public function forAll(\Closure $p)
+    public function forAll(Closure $p)
     {
         $this->initialize();
         return $this->coll->forAll($p);
@@ -504,7 +504,7 @@ trait PersistentCollectionTrait
     /**
      * {@inheritdoc}
      */
-    public function partition(\Closure $p)
+    public function partition(Closure $p)
     {
         $this->initialize();
         return $this->coll->partition($p);
@@ -674,6 +674,7 @@ trait PersistentCollectionTrait
      *
      * @param mixed $value
      * @param bool  $arrayAccess
+     *
      * @return bool
      */
     private function doAdd($value, $arrayAccess)
@@ -700,6 +701,7 @@ trait PersistentCollectionTrait
      *
      * @param mixed $offset
      * @param bool  $arrayAccess
+     *
      * @return mixed|void
      */
     private function doRemove($offset, $arrayAccess)

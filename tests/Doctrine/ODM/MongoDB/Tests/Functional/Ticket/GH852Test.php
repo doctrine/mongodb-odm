@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -16,7 +17,7 @@ class GH852Test extends BaseTest
     /**
      * @dataProvider provideIdGenerators
      */
-    public function testA(\Closure $idGenerator)
+    public function testA(Closure $idGenerator)
     {
         $parent = new GH852Document();
         $parent->id = $idGenerator('parent');
@@ -95,11 +96,11 @@ class GH852Test extends BaseTest
         $binDataType = Binary::TYPE_GENERIC;
 
         return [
-            [function ($id) {
+            [static function ($id) {
                 return ['foo' => $id];
             },
             ],
-            [function ($id) use ($binDataType) {
+            [static function ($id) use ($binDataType) {
                 return new Binary($id, $binDataType);
             },
             ],

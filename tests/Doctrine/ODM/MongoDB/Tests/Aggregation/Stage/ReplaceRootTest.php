@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsComment;
 use Documents\User;
@@ -15,7 +16,7 @@ class ReplaceRootTest extends BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
-        $dateTime = new \DateTimeImmutable('2000-01-01T00:00Z');
+        $dateTime = new DateTimeImmutable('2000-01-01T00:00Z');
         $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
         $stage = $builder
             ->replaceRoot()
@@ -24,9 +25,9 @@ class ReplaceRootTest extends BaseTest
 
         $this->assertEquals(
             [
-            '$replaceRoot' => [
-                'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
-            ],
+                '$replaceRoot' => [
+                    'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
+                ],
             ],
             $stage->getExpression()
         );
@@ -36,7 +37,7 @@ class ReplaceRootTest extends BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
-        $dateTime = new \DateTimeImmutable('2000-01-01T00:00Z');
+        $dateTime = new DateTimeImmutable('2000-01-01T00:00Z');
         $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
         $stage = $builder
             ->replaceRoot(
@@ -47,9 +48,9 @@ class ReplaceRootTest extends BaseTest
 
         $this->assertEquals(
             [
-            '$replaceRoot' => [
-                'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
-            ],
+                '$replaceRoot' => [
+                    'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
+                ],
             ],
             $stage->getExpression()
         );
@@ -66,9 +67,9 @@ class ReplaceRootTest extends BaseTest
 
         $this->assertEquals(
             [
-            '$replaceRoot' => [
-                'someField' => ['$concat' => ['$ip', 'foo']],
-            ],
+                '$replaceRoot' => [
+                    'someField' => ['$concat' => ['$ip', 'foo']],
+                ],
             ],
             $stage->getExpression()
         );

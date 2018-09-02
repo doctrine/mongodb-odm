@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
+use InvalidArgumentException;
 use function array_map;
 use function call_user_func_array;
 
@@ -65,12 +66,12 @@ class FilterCollection
     /**
      * Enables a filter from the collection.
      *
-     * @throws \InvalidArgumentException If the filter does not exist.
+     * @throws InvalidArgumentException If the filter does not exist.
      */
     public function enable(string $name) : BsonFilter
     {
         if (! $this->has($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
+            throw new InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
         if (! $this->isEnabled($name)) {
@@ -91,7 +92,7 @@ class FilterCollection
     /**
      * Disables a filter.
      *
-     * @throws \InvalidArgumentException If the filter does not exist.
+     * @throws InvalidArgumentException If the filter does not exist.
      */
     public function disable(string $name) : BsonFilter
     {
@@ -106,12 +107,12 @@ class FilterCollection
     /**
      * Get an enabled filter from the collection.
      *
-     * @throws \InvalidArgumentException If the filter is not enabled.
+     * @throws InvalidArgumentException If the filter is not enabled.
      */
     public function getFilter(string $name) : BsonFilter
     {
         if (! $this->isEnabled($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
+            throw new InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
         return $this->enabledFilters[$name];
     }
@@ -120,6 +121,7 @@ class FilterCollection
      * Checks whether filter with given name is defined.
      *
      * @param string $name Name of the filter.
+     *
      * @return bool true if the filter exists, false if not.
      */
     public function has(string $name) : bool
@@ -147,7 +149,7 @@ class FilterCollection
         return call_user_func_array(
             [$this->cm, 'merge'],
             array_map(
-                function ($filter) use ($class) {
+                static function ($filter) use ($class) {
                     return $filter->addFilterCriteria($class);
                 },
                 $this->enabledFilters

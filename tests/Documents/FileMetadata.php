@@ -11,6 +11,7 @@ final class FileMetadata
 {
     /**
      * @ODM\ReferenceOne(targetDocument=User::class, cascade={"persist"})
+     *
      * @var User
      */
     private $owner;

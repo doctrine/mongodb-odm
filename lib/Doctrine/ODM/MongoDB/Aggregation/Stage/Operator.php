@@ -47,6 +47,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/abs/
      * @see Expr::abs
+     *
      * @param mixed|Expr $number
      */
     public function abs($number) : self
@@ -65,6 +66,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/add/
      * @see Expr::add
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
@@ -81,6 +83,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/and/
      * @see Expr::addAnd
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
@@ -96,6 +99,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/or/
      * @see Expr::addOr
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
@@ -114,6 +118,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/allElementsTrue/
      * @see Expr::allElementsTrue
+     *
      * @param mixed|Expr $expression
      */
     public function allElementsTrue($expression) : self
@@ -131,6 +136,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/anyElementTrue/
      * @see Expr::anyElementTrue
+     *
      * @param array|Expr $expression
      */
     public function anyElementTrue($expression) : self
@@ -150,6 +156,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/arrayElemAt/
      * @see Expr::arrayElemAt
+     *
      * @param mixed|Expr $array
      * @param mixed|Expr $index
      */
@@ -168,6 +175,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/ceil/
      * @see Expr::ceil
+     *
      * @param mixed|Expr $number
      */
     public function ceil($number) : self
@@ -185,6 +193,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/cmp/
      * @see Expr::cmp
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -204,6 +213,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/concat/
      * @see Expr::concat
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
@@ -223,6 +233,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/concatArrays/
      * @see Expr::concatArrays
+     *
      * @param mixed|Expr $array1
      * @param mixed|Expr $array2
      * @param mixed|Expr ...$arrays Additional expressions
@@ -242,6 +253,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/cond/
      * @see Expr::cond
+     *
      * @param mixed|Expr $if
      * @param mixed|Expr $then
      * @param mixed|Expr $else
@@ -262,6 +274,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/dateToString/
      * @see Expr::dateToString
+     *
      * @param string     $format
      * @param mixed|Expr $expression
      */
@@ -279,6 +292,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/dayOfMonth/
      * @see Expr::dayOfMonth
+     *
      * @param mixed|Expr $expression
      */
     public function dayOfMonth($expression) : self
@@ -296,6 +310,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/dayOfWeek/
      * @see Expr::dayOfWeek
+     *
      * @param mixed|Expr $expression
      */
     public function dayOfWeek($expression) : self
@@ -312,6 +327,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/dayOfYear/
      * @see Expr::dayOfYear
+     *
      * @param mixed|Expr $expression
      */
     public function dayOfYear($expression) : self
@@ -329,6 +345,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/divide/
      * @see Expr::divide
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -344,6 +361,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/eq/
      * @see Expr::eq
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -362,6 +380,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/exp/
      * @see Expr::exp
+     *
      * @param mixed|Expr $exponent
      */
     public function exp($exponent) : self
@@ -376,6 +395,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/meta/aggregation-quick-reference/#aggregation-expressions
      * @see Expr::expression
+     *
      * @param mixed|Expr $value
      */
     public function expression($value)
@@ -405,10 +425,10 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/filter/
      * @see Expr::filter
+     *
      * @param mixed|Expr $input
      * @param mixed|Expr $as
      * @param mixed|Expr $cond
-     *
      */
     public function filter($input, $as, $cond) : self
     {
@@ -425,6 +445,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/floor/
      * @see Expr::floor
+     *
      * @param mixed|Expr $number
      */
     public function floor($number) : self
@@ -441,6 +462,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/gt/
      * @see Expr::gt
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -458,6 +480,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/gte/
      * @see Expr::gte
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -475,6 +498,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/hour/
      * @see Expr::hour
+     *
      * @param mixed|Expr $expression
      */
     public function hour($expression) : self
@@ -492,6 +516,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/in/
      * @see Expr::in
+     *
      * @param mixed|Expr $expression
      * @param mixed|Expr $arrayExpression
      */
@@ -509,6 +534,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfArray/
      * @see Expr::indexOfArray
+     *
      * @param mixed|Expr $arrayExpression  Can be any valid expression as long as it resolves to an array.
      * @param mixed|Expr $searchExpression Can be any valid expression.
      * @param mixed|Expr $start            Optional. An integer, or a number that can be represented as integers (such as 2.0), that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
@@ -527,6 +553,7 @@ abstract class Operator extends Stage
      * found, returns -1.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfBytes/
+     *
      * @param mixed|Expr      $stringExpression    Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr      $substringExpression Can be any valid expression as long as it resolves to a string.
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
@@ -545,6 +572,7 @@ abstract class Operator extends Stage
      * not found, returns -1.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfCP/
+     *
      * @param mixed|Expr      $stringExpression    Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr      $substringExpression Can be any valid expression as long as it resolves to a string.
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
@@ -567,6 +595,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/ifNull/
      * @see Expr::ifNull
+     *
      * @param mixed|Expr $expression
      * @param mixed|Expr $replacementExpression
      */
@@ -584,6 +613,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/isArray/
      * @see Expr::isArray
+     *
      * @param mixed|Expr $expression
      */
     public function isArray($expression) : self
@@ -600,6 +630,7 @@ abstract class Operator extends Stage
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/isoDayOfWeek/
+     *
      * @param mixed|Expr $expression
      */
     public function isoDayOfWeek($expression) : self
@@ -618,6 +649,7 @@ abstract class Operator extends Stage
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/isoWeek/
+     *
      * @param mixed|Expr $expression
      */
     public function isoWeek($expression) : self
@@ -636,6 +668,7 @@ abstract class Operator extends Stage
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/isoWeek/
+     *
      * @param mixed|Expr $expression
      */
     public function isoWeekYear($expression) : self
@@ -651,6 +684,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/let/
      * @see Expr::let
+     *
      * @param mixed|Expr $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
      * @param mixed|Expr $in   The expression to evaluate.
      */
@@ -667,6 +701,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/literal/
      * @see Expr::literal
+     *
      * @param mixed|Expr $value
      */
     public function literal($value) : self
@@ -685,6 +720,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/log/
      * @see Expr::ln
+     *
      * @param mixed|Expr $number
      */
     public function ln($number) : self
@@ -705,6 +741,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/log/
      * @see Expr::log
+     *
      * @param mixed|Expr $number
      * @param mixed|Expr $base
      */
@@ -725,6 +762,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/log/
      * @see Expr::log10
+     *
      * @param mixed|Expr $number
      */
     public function log10($number) : self
@@ -741,6 +779,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/lt/
      * @see Expr::lt
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -758,6 +797,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/lte/
      * @see Expr::lte
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -774,6 +814,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/map/
      * @see Expr::map
+     *
      * @param mixed|Expr $input An expression that resolves to an array.
      * @param string     $as    The variable name for the items in the input array. The in expression accesses each item in the input array by this variable.
      * @param mixed|Expr $in    The expression to apply to each item in the input array. The expression accesses the item by its variable name.
@@ -790,6 +831,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/meta/
      * @see Expr::meta
+     *
      * @param mixed|Expr $metaDataKeyword
      */
     public function meta($metaDataKeyword) : self
@@ -806,6 +848,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/millisecond/
      * @see Expr::millisecond
+     *
      * @param mixed|Expr $expression
      */
     public function millisecond($expression) : self
@@ -822,6 +865,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/minute/
      * @see Expr::minute
+     *
      * @param mixed|Expr $expression
      */
     public function minute($expression) : self
@@ -839,6 +883,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/mod/
      * @see Expr::mod
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -856,6 +901,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/month/
      * @see Expr::month
+     *
      * @param mixed|Expr $expression
      */
     public function month($expression) : self
@@ -872,6 +918,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/multiply/
      * @see Expr::multiply
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
@@ -890,6 +937,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/ne/
      * @see Expr::ne
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -905,6 +953,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/not/
      * @see Expr::not
+     *
      * @param mixed|Expr $expression
      */
     public function not($expression) : self
@@ -924,9 +973,9 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/pow/
      * @see Expr::pow
+     *
      * @param mixed|Expr $number
      * @param mixed|Expr $exponent
-     *
      */
     public function pow($number, $exponent) : self
     {
@@ -942,6 +991,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/range/
      * @see Expr::range
+     *
      * @param mixed|Expr $start An integer that specifies the start of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $end   An integer that specifies the exclusive upper limit of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $step  Optional. An integer that specifies the increment value. Can be any valid expression that resolves to a non-zero integer. Defaults to 1.
@@ -959,6 +1009,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/reduce/
      * @see Expr::reduce
+     *
      * @param mixed|Expr $input        Can be any valid expression that resolves to an array.
      * @param mixed|Expr $initialValue The initial cumulative value set before in is applied to the first element of the input array.
      * @param mixed|Expr $in           A valid expression that $reduce applies to each element in the input array in left-to-right order. Wrap the input value with $reverseArray to yield the equivalent of applying the combining expression from right-to-left.
@@ -976,6 +1027,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/reverseArray/
      * @see Expr::reverseArray
+     *
      * @param mixed|Expr $expression
      */
     public function reverseArray($expression) : self
@@ -993,6 +1045,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/second/
      * @see Expr::second
+     *
      * @param mixed|Expr $expression
      */
     public function second($expression) : self
@@ -1010,6 +1063,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/setDifference/
      * @see Expr::setDifference
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -1028,6 +1082,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/setEquals/
      * @see Expr::setEquals
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expression3s Additional sets
@@ -1047,6 +1102,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/setIntersection/
      * @see Expr::setIntersection
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
@@ -1067,6 +1123,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/setIsSubset/
      * @see Expr::setIsSubset
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -1085,6 +1142,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/setUnion/
      * @see Expr::setUnion
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
@@ -1103,6 +1161,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/size/
      * @see Expr::size
+     *
      * @param mixed|Expr $expression
      */
     public function size($expression) : self
@@ -1117,10 +1176,10 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/slice/
      * @see Expr::slice
+     *
      * @param mixed|Expr      $array
      * @param mixed|Expr      $n
      * @param mixed|Expr|null $position
-     *
      */
     public function slice($array, $n, $position = null) : self
     {
@@ -1137,9 +1196,9 @@ abstract class Operator extends Stage
      * returns the original string as the only element of an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/split/
+     *
      * @param mixed|Expr $string    The string to be split. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $delimiter The delimiter to use when splitting the string expression. Can be any valid expression as long as it resolves to a string.
-     *
      */
     public function split($string, $delimiter) : self
     {
@@ -1157,6 +1216,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/sqrt/
      * @see Expr::sqrt
+     *
      * @param mixed|Expr $expression
      */
     public function sqrt($expression) : self
@@ -1176,6 +1236,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/strcasecmp/
      * @see Expr::strcasecmp
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -1190,8 +1251,8 @@ abstract class Operator extends Stage
      * Returns the number of UTF-8 encoded bytes in the specified string.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenBytes/
-     * @param mixed|Expr $string
      *
+     * @param mixed|Expr $string
      */
     public function strLenBytes($string) : self
     {
@@ -1204,8 +1265,8 @@ abstract class Operator extends Stage
      * Returns the number of UTF-8 code points in the specified string.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenCP/
-     * @param mixed|Expr $string
      *
+     * @param mixed|Expr $string
      */
     public function strLenCP($string) : self
     {
@@ -1222,6 +1283,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/substr/
      * @see Expr::substr
+     *
      * @param mixed|Expr $string
      * @param mixed|Expr $start
      * @param mixed|Expr $length
@@ -1241,10 +1303,10 @@ abstract class Operator extends Stage
      * specified.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/substrBytes/
+     *
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      * @param mixed|Expr $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     *
      */
     public function substrBytes($string, $start, $count) : self
     {
@@ -1261,10 +1323,10 @@ abstract class Operator extends Stage
      * specified.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/substrBytes/
+     *
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      * @param mixed|Expr $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     *
      */
     public function substrCP($string, $start, $count) : self
     {
@@ -1281,6 +1343,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/subtract/
      * @see Expr::subtract
+     *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
@@ -1298,6 +1361,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/toLower/
      * @see Expr::toLower
+     *
      * @param mixed|Expr $expression
      */
     public function toLower($expression) : self
@@ -1314,6 +1378,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/toUpper/
      * @see Expr::toUpper
+     *
      * @param mixed|Expr $expression
      */
     public function toUpper($expression) : self
@@ -1331,6 +1396,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/trunc/
      * @see Expr::trunc
+     *
      * @param mixed|Expr $number
      */
     public function trunc($number) : self
@@ -1346,6 +1412,7 @@ abstract class Operator extends Stage
      * The argument can be any valid expression.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/type/
+     *
      * @param mixed|Expr $expression
      */
     public function type($expression) : self
@@ -1362,6 +1429,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/week/
      * @see Expr::week
+     *
      * @param mixed|Expr $expression
      */
     public function week($expression) : self
@@ -1378,6 +1446,7 @@ abstract class Operator extends Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/year/
      * @see Expr::year
+     *
      * @param mixed|Expr $expression
      */
     public function year($expression) : self
@@ -1394,6 +1463,7 @@ abstract class Operator extends Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/zip/
      * @see Expr::zip
+     *
      * @param mixed|Expr      $inputs           An array of expressions that resolve to arrays. The elements of these input arrays combine to form the arrays of the output array.
      * @param bool|null       $useLongestLength A boolean which specifies whether the length of the longest array determines the number of arrays in the output array.
      * @param mixed|Expr|null $defaults         An array of default element values to use if the input arrays have different lengths. You must specify useLongestLength: true along with this field, or else $zip will return an error.

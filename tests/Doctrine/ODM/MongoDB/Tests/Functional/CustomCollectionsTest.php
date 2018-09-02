@@ -240,14 +240,14 @@ class MyEmbedsCollection extends ArrayCollection
 {
     public function getByName($name)
     {
-        return $this->filter(function ($item) use ($name) {
+        return $this->filter(static function ($item) use ($name) {
             return $item->name === $name;
         });
     }
 
     public function getEnabled()
     {
-        return $this->filter(function ($item) {
+        return $this->filter(static function ($item) {
             return $item->enabled;
         });
     }
@@ -264,7 +264,7 @@ class MyDocumentsCollection extends ArrayCollection
 {
     public function havingEmbeds()
     {
-        return $this->filter(function ($item) {
+        return $this->filter(static function ($item) {
             return $item->coll->count();
         });
     }

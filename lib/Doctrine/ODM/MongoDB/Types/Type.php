@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use function end;
 use function explode;
-use function get_class;
 use function gettype;
 use function is_object;
 use function sprintf;
@@ -84,6 +85,7 @@ abstract class Type
      * of this type.
      *
      * @param mixed $value The value to convert.
+     *
      * @return mixed The database representation of the value.
      */
     public function convertToDatabaseValue($value)
@@ -96,6 +98,7 @@ abstract class Type
      * of this type.
      *
      * @param mixed $value The value to convert.
+     *
      * @return mixed The PHP representation of the value.
      */
     public function convertToPHPValue($value)
@@ -124,12 +127,12 @@ abstract class Type
     /**
      * Get a Type instance.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function getType(string $type)
     {
         if (! isset(self::$typesMap[$type])) {
-            throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
+            throw new InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
         }
         if (! isset(self::$typeObjects[$type])) {
             $className = self::$typesMap[$type];
@@ -142,12 +145,13 @@ abstract class Type
      * Get a Type instance based on the type of the passed php variable.
      *
      * @param mixed $variable
-     * @throws \InvalidArgumentException
+     *
+     * @throws InvalidArgumentException
      */
     public static function getTypeFromPHPVariable($variable) : ?Type
     {
         if (is_object($variable)) {
-            if ($variable instanceof \DateTimeInterface) {
+            if ($variable instanceof DateTimeInterface) {
                 return self::getType('date');
             }
 
@@ -176,8 +180,9 @@ abstract class Type
     /**
      * Adds a custom type to the type map.
      *
-     * @static
      * @throws MappingException
+     *
+     * @static
      */
     public static function addType(string $name, string $className) : void
     {
@@ -201,8 +206,9 @@ abstract class Type
     /**
      * Overrides an already defined type to use a different implementation.
      *
-     * @static
      * @throws MappingException
+     *
+     * @static
      */
     public static function overrideType(string $name, string $className) : void
     {
@@ -224,7 +230,7 @@ abstract class Type
 
     public function __toString()
     {
-        $e = explode('\\', get_class($this));
+        $e = explode('\\', static::class);
         return str_replace('Type', '', end($e));
     }
 }

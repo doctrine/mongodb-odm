@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Query;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
+use InvalidArgumentException;
+use LogicException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Javascript;
 use function array_key_exists;
@@ -27,7 +30,6 @@ use function strtolower;
 
 /**
  * Query expression builder for ODM.
- *
  */
 class Expr
 {
@@ -43,6 +45,7 @@ class Expr
      * atomic update operators.
      *
      * @see docs.mongodb.org/manual/reference/method/db.collection.update/#update-parameter
+     *
      * @var array
      */
     private $newObj = [];
@@ -78,6 +81,7 @@ class Expr
      *
      * @see Builder::addAnd()
      * @see http://docs.mongodb.org/manual/reference/operator/and/
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
@@ -90,7 +94,7 @@ class Expr
         $this->query['$and'] = array_merge(
             $this->query['$and'],
             array_map(
-                function ($expression) {
+                static function ($expression) {
                     return $expression instanceof Expr ? $expression->getQuery() : $expression;
                 },
                 func_get_args()
@@ -105,6 +109,7 @@ class Expr
      *
      * @see Builder::addNor()
      * @see http://docs.mongodb.org/manual/reference/operator/nor/
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
@@ -116,7 +121,7 @@ class Expr
 
         $this->query['$nor'] = array_merge(
             $this->query['$nor'],
-            array_map(function ($expression) {
+            array_map(static function ($expression) {
                 return $expression instanceof Expr ? $expression->getQuery() : $expression;
             }, func_get_args())
         );
@@ -129,6 +134,7 @@ class Expr
      *
      * @see Builder::addOr()
      * @see http://docs.mongodb.org/manual/reference/operator/or/
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
@@ -140,7 +146,7 @@ class Expr
 
         $this->query['$or'] = array_merge(
             $this->query['$or'],
-            array_map(function ($expression) {
+            array_map(static function ($expression) {
                 return $expression instanceof Expr ? $expression->getQuery() : $expression;
             }, func_get_args())
         );
@@ -162,6 +168,7 @@ class Expr
      * @see Builder::addToSet()
      * @see http://docs.mongodb.org/manual/reference/operator/addToSet/
      * @see http://docs.mongodb.org/manual/reference/operator/each/
+     *
      * @param mixed|Expr $valueOrExpression
      */
     public function addToSet($valueOrExpression) : self
@@ -226,6 +233,7 @@ class Expr
      *
      * @see Builder::bitsAllClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllClear/
+     *
      * @param int|array|Binary $value
      */
     public function bitsAllClear($value) : self
@@ -240,6 +248,7 @@ class Expr
      *
      * @see Builder::bitsAllSet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllSet/
+     *
      * @param int|array|Binary $value
      */
     public function bitsAllSet($value) : self
@@ -254,6 +263,7 @@ class Expr
      *
      * @see Builder::bitsAnyClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnyClear/
+     *
      * @param int|array|Binary $value
      */
     public function bitsAnyClear($value) : self
@@ -268,6 +278,7 @@ class Expr
      *
      * @see Builder::bitsAnySet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnySet/
+     *
      * @param int|array|Binary $value
      */
     public function bitsAnySet($value) : self
@@ -295,13 +306,13 @@ class Expr
      *
      * @see Builder::caseSensitive()
      * @see http://docs.mongodb.org/manual/reference/operator/text/
-     * @throws \BadMethodCallException If the query does not already have $text criteria.
      *
+     * @throws BadMethodCallException If the query does not already have $text criteria.
      */
     public function caseSensitive(bool $caseSensitive) : self
     {
         if (! isset($this->query['$text'])) {
-            throw new \BadMethodCallException('This method requires a $text operator (call text() first)');
+            throw new BadMethodCallException('This method requires a $text operator (call text() first)');
         }
 
         // Remove caseSensitive option to keep support for older database versions
@@ -331,12 +342,13 @@ class Expr
      *
      * @see Builder::currentDate()
      * @see http://docs.mongodb.org/manual/reference/operator/update/currentDate/
-     * @throws \InvalidArgumentException If an invalid type is given.
+     *
+     * @throws InvalidArgumentException If an invalid type is given.
      */
     public function currentDate(string $type = 'date') : self
     {
         if (! in_array($type, ['date', 'timestamp'])) {
-            throw new \InvalidArgumentException('Type for currentDate operator must be date or timestamp.');
+            throw new InvalidArgumentException('Type for currentDate operator must be date or timestamp.');
         }
 
         $this->requiresCurrentField();
@@ -352,13 +364,13 @@ class Expr
      *
      * @see Builder::diacriticSensitive()
      * @see http://docs.mongodb.org/manual/reference/operator/text/
-     * @throws \BadMethodCallException If the query does not already have $text criteria.
      *
+     * @throws BadMethodCallException If the query does not already have $text criteria.
      */
     public function diacriticSensitive(bool $diacriticSensitive) : self
     {
         if (! isset($this->query['$text'])) {
-            throw new \BadMethodCallException('This method requires a $text operator (call text() first)');
+            throw new BadMethodCallException('This method requires a $text operator (call text() first)');
         }
 
         // Remove diacriticSensitive option to keep support for older database versions
@@ -387,6 +399,7 @@ class Expr
      *
      * @see Builder::elemMatch()
      * @see http://docs.mongodb.org/manual/reference/operator/elemMatch/
+     *
      * @param array|Expr $expression
      */
     public function elemMatch($expression) : self
@@ -398,6 +411,7 @@ class Expr
      * Specify an equality match for the current field.
      *
      * @see Builder::equals()
+     *
      * @param mixed $value
      */
     public function equals($value) : self
@@ -415,6 +429,7 @@ class Expr
      *
      * @see Builder::exists()
      * @see http://docs.mongodb.org/manual/reference/operator/exists/
+     *
      * @return $this
      */
     public function exists(bool $bool) : self
@@ -441,6 +456,7 @@ class Expr
      *
      * @see Builder::geoIntersects()
      * @see http://docs.mongodb.org/manual/reference/operator/geoIntersects/
+     *
      * @param array|Geometry $geometry
      */
     public function geoIntersects($geometry) : self
@@ -460,6 +476,7 @@ class Expr
      *
      * @see Builder::geoWithin()
      * @see http://docs.mongodb.org/manual/reference/operator/geoIntersects/
+     *
      * @param array|Geometry $geometry
      */
     public function geoWithin($geometry) : self
@@ -534,12 +551,15 @@ class Expr
      *
      * @see Builder::geoWithinPolygon()
      * @see http://docs.mongodb.org/manual/reference/operator/polygon/
+     *
      * @param array $point1    First point of the polygon
      * @param array $point2    Second point of the polygon
      * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
+     *
      * @return $this
-     * @throws \InvalidArgumentException If less than three points are given.
+     *
+     * @throws InvalidArgumentException If less than three points are given.
      */
     public function geoWithinPolygon($point1, $point2, $point3, ...$points) : self
     {
@@ -581,6 +601,7 @@ class Expr
      *
      * @see Builder::gt()
      * @see http://docs.mongodb.org/manual/reference/operator/gt/
+     *
      * @param mixed $value
      */
     public function gt($value) : self
@@ -593,6 +614,7 @@ class Expr
      *
      * @see Builder::gte()
      * @see http://docs.mongodb.org/manual/reference/operator/gte/
+     *
      * @param mixed $value
      */
     public function gte($value) : self
@@ -618,6 +640,7 @@ class Expr
      *
      * @see Builder::inc()
      * @see http://docs.mongodb.org/manual/reference/operator/inc/
+     *
      * @param float|int $value
      */
     public function inc($value) : self
@@ -662,7 +685,7 @@ class Expr
                 break;
 
             default:
-                throw new \InvalidArgumentException(sprintf('Reference type %s is invalid.', $storeAs));
+                throw new InvalidArgumentException(sprintf('Reference type %s is invalid.', $storeAs));
         }
 
         foreach ($keys as $key => $value) {
@@ -679,12 +702,13 @@ class Expr
      *
      * @see Builder::language()
      * @see http://docs.mongodb.org/manual/reference/operator/text/
-     * @throws \BadMethodCallException If the query does not already have $text criteria.
+     *
+     * @throws BadMethodCallException If the query does not already have $text criteria.
      */
     public function language(string $language) : self
     {
         if (! isset($this->query['$text'])) {
-            throw new \BadMethodCallException('This method requires a $text operator (call text() first)');
+            throw new BadMethodCallException('This method requires a $text operator (call text() first)');
         }
 
         $this->query['$text']['$language'] = (string) $language;
@@ -697,6 +721,7 @@ class Expr
      *
      * @see Builder::lte()
      * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     *
      * @param mixed $value
      */
     public function lt($value) : self
@@ -709,6 +734,7 @@ class Expr
      *
      * @see Builder::lte()
      * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     *
      * @param mixed $value
      */
     public function lte($value) : self
@@ -721,6 +747,7 @@ class Expr
      *
      * @see Builder::max()
      * @see http://docs.mongodb.org/manual/reference/operator/update/max/
+     *
      * @param mixed $value
      */
     public function max($value) : self
@@ -735,6 +762,7 @@ class Expr
      *
      * @see Builder::min()
      * @see http://docs.mongodb.org/manual/reference/operator/update/min/
+     *
      * @param mixed $value
      */
     public function min($value) : self
@@ -749,6 +777,7 @@ class Expr
      *
      * @see Builder::mod()
      * @see http://docs.mongodb.org/manual/reference/operator/mod/
+     *
      * @param float|int $divisor
      * @param float|int $remainder
      */
@@ -764,6 +793,7 @@ class Expr
      *
      * @see Builder::mul()
      * @see http://docs.mongodb.org/manual/reference/operator/mul/
+     *
      * @param float|int $value
      */
     public function mul($value) : self
@@ -782,6 +812,7 @@ class Expr
      *
      * @see Builder::near()
      * @see http://docs.mongodb.org/manual/reference/operator/near/
+     *
      * @param float|array|Point $x
      * @param float             $y
      */
@@ -807,6 +838,7 @@ class Expr
      *
      * @see Builder::nearSphere()
      * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
+     *
      * @param float|array|Point $x
      * @param float             $y
      */
@@ -828,6 +860,7 @@ class Expr
      *
      * @see Builder::not()
      * @see http://docs.mongodb.org/manual/reference/operator/not/
+     *
      * @param array|Expr $expression
      */
     public function not($expression) : self
@@ -840,6 +873,7 @@ class Expr
      *
      * @see Builder::notEqual()
      * @see http://docs.mongodb.org/manual/reference/operator/ne/
+     *
      * @param mixed $value
      */
     public function notEqual($value) : self
@@ -923,6 +957,7 @@ class Expr
      *
      * @see Builder::pull()
      * @see http://docs.mongodb.org/manual/reference/operator/pull/
+     *
      * @param mixed|Expr $valueOrExpression
      */
     public function pull($valueOrExpression) : self
@@ -966,6 +1001,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/each/
      * @see http://docs.mongodb.org/manual/reference/operator/slice/
      * @see http://docs.mongodb.org/manual/reference/operator/sort/
+     *
      * @param mixed|Expr $valueOrExpression
      */
     public function push($valueOrExpression) : self
@@ -989,6 +1025,7 @@ class Expr
      * and $lt criteria on the upper bound. The upper bound is not inclusive.
      *
      * @see Builder::range()
+     *
      * @param mixed $start
      * @param mixed $end
      */
@@ -1032,7 +1069,7 @@ class Expr
                 break;
 
             default:
-                throw new \InvalidArgumentException(sprintf('Reference type %s is invalid.', $storeAs));
+                throw new InvalidArgumentException(sprintf('Reference type %s is invalid.', $storeAs));
         }
 
         foreach ($keys as $key => $value) {
@@ -1064,6 +1101,7 @@ class Expr
      *
      * @see Builder::set()
      * @see http://docs.mongodb.org/manual/reference/operator/set/
+     *
      * @param mixed $value
      */
     public function set($value, bool $atomic = true) : self
@@ -1120,6 +1158,7 @@ class Expr
      *
      * @see Builder::setOnInsert()
      * @see https://docs.mongodb.org/manual/reference/operator/update/setOnInsert/
+     *
      * @param mixed $value
      */
     public function setOnInsert($value) : self
@@ -1177,6 +1216,7 @@ class Expr
      * sort the results of a query.
      *
      * @see http://docs.mongodb.org/manual/reference/operator/sort/
+     *
      * @param array|string $fieldName Field name or array of field/order pairs
      * @param int|string   $order     Field order (if one field is specified)
      */
@@ -1236,6 +1276,7 @@ class Expr
      *
      * @see Builder::where()
      * @see http://docs.mongodb.org/manual/reference/operator/where/
+     *
      * @param string|Javascript $javascript
      */
     public function where($javascript) : self
@@ -1293,12 +1334,12 @@ class Expr
     /**
      * Ensure that a current field has been set.
      *
-     * @throws \LogicException If a current field has not been set.
+     * @throws LogicException If a current field has not been set.
      */
     private function requiresCurrentField() : void
     {
         if (! $this->currentField) {
-            throw new \LogicException('This method requires you set a current field using field().');
+            throw new LogicException('This method requires you set a current field using field().');
         }
     }
 

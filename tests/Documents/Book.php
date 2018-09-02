@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class Book
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Id */
     public $id;

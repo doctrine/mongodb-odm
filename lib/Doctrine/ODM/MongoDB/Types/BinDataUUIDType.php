@@ -11,7 +11,6 @@ use MongoDB\BSON\Binary;
  *
  * Per the BSON specification, this sub-type is deprecated in favor of the
  * RFC 4122 UUID sub-type (BinDataUUIDRFC4122Type class).
- *
  */
 class BinDataUUIDType extends BinDataType
 {

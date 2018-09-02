@@ -27,11 +27,11 @@ class MODM66Test extends BaseTest
 
         $this->assertEquals([
             $b1->getId(),
-        $b2->getId(),
-            ], [
+            $b2->getId(),
+        ], [
             $b[0]->getId(),
-        $b[1]->getId(),
-            ]);
+            $b[1]->getId(),
+        ]);
     }
 
     public function testRefresh()
@@ -53,11 +53,11 @@ class MODM66Test extends BaseTest
 
         $this->assertEquals([
             $b1->getId(),
-        $b2->getId(),
-            ], [
+            $b2->getId(),
+        ], [
             $b[0]->getId(),
-        $b[1]->getId(),
-            ]);
+            $b[1]->getId(),
+        ]);
     }
 }
 

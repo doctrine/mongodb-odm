@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
+use BadMethodCallException;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
@@ -13,6 +14,9 @@ use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
+use LogicException;
+use ReflectionClass;
+use ReflectionProperty;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -45,7 +49,6 @@ use function strtoupper;
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
- *
  */
 class ClassMetadata implements BaseClassMetadata
 {
@@ -174,42 +177,49 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
+     *
      * @var string|null
      */
     public $db;
 
     /**
      * READ-ONLY: The name of the mongo collection the document is mapped to.
+     *
      * @var string
      */
     public $collection;
 
     /**
      * READ-ONLY: The name of the GridFS bucket the document is mapped to.
+     *
      * @var string|null
      */
     public $bucketName;
 
     /**
      * READ-ONLY: If the collection should be a fixed size.
+     *
      * @var bool
      */
     public $collectionCapped = false;
 
     /**
      * READ-ONLY: If the collection is fixed size, its size in bytes.
+     *
      * @var int|null
      */
     public $collectionSize;
 
     /**
      * READ-ONLY: If the collection is fixed size, the maximum number of elements to store in the collection.
+     *
      * @var int|null
      */
     public $collectionMax;
 
     /**
      * READ-ONLY Describes how MongoDB clients route read operations to the members of a replica set.
+     *
      * @var string|int|null
      */
     public $readPreference;
@@ -217,36 +227,42 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY Associated with readPreference Allows to specify criteria so that your application can target read
      * operations to specific members, based on custom parameters.
+     *
      * @var string[][]|null
      */
     public $readPreferenceTags;
 
     /**
      * READ-ONLY: Describes the level of acknowledgement requested from MongoDB for write operations.
+     *
      * @var string|int|null
      */
     public $writeConcern;
 
     /**
      * READ-ONLY: The field name of the document identifier.
+     *
      * @var string|null
      */
     public $identifier;
 
     /**
      * READ-ONLY: The array of indexes for the document collection.
+     *
      * @var array
      */
     public $indexes = [];
 
     /**
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
+     *
      * @var string|null
      */
     public $shardKey;
 
     /**
      * READ-ONLY: The name of the document class.
+     *
      * @var string
      */
     public $name;
@@ -285,7 +301,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var \ReflectionProperty[]
+     * @var ReflectionProperty[]
      */
     public $reflFields = [];
 
@@ -362,8 +378,9 @@ class ClassMetadata implements BaseClassMetadata
      * <b>This does only apply to the JOINED and SINGLE_COLLECTION inheritance mapping strategies
      * where a discriminator field is used.</b>
      *
-     * @var mixed
      * @see discriminatorField
+     *
+     * @var mixed
      */
     public $discriminatorValue;
 
@@ -373,8 +390,9 @@ class ClassMetadata implements BaseClassMetadata
      * <b>This does only apply to the SINGLE_COLLECTION inheritance mapping strategy
      * where a discriminator field is used.</b>
      *
-     * @var mixed
      * @see discriminatorField
+     *
+     * @var mixed
      */
     public $discriminatorMap = [];
 
@@ -389,8 +407,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY: The default value for discriminatorField in case it's not set in the document
      *
-     * @var string
      * @see discriminatorField
+     *
+     * @var string
      */
     public $defaultDiscriminatorValue;
 
@@ -469,7 +488,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var \ReflectionClass
+     * @var ReflectionClass
      */
     public $reflClass;
 
@@ -491,16 +510,19 @@ class ClassMetadata implements BaseClassMetadata
     {
         $this->name = $documentName;
         $this->rootDocumentName = $documentName;
-        $this->reflClass = new \ReflectionClass($documentName);
+        $this->reflClass = new ReflectionClass($documentName);
         $this->setCollection($this->reflClass->getShortName());
         $this->instantiator = new Instantiator();
     }
 
     /**
      * Helper method to get reference id of ref* type references
-     * @param mixed $reference
-     * @return mixed
+     *
      * @internal
+     *
+     * @param mixed $reference
+     *
+     * @return mixed
      */
     public static function getReferenceId($reference, string $storeAs)
     {
@@ -513,7 +535,7 @@ class ClassMetadata implements BaseClassMetadata
     private static function getReferencePrefix(string $storeAs) : string
     {
         if (! in_array($storeAs, [self::REFERENCE_STORE_AS_REF, self::REFERENCE_STORE_AS_DB_REF, self::REFERENCE_STORE_AS_DB_REF_WITH_DB])) {
-            throw new \LogicException('Can only get a reference prefix for DBRef and reference arrays');
+            throw new LogicException('Can only get a reference prefix for DBRef and reference arrays');
         }
 
         return $storeAs === self::REFERENCE_STORE_AS_REF ? '' : '$';
@@ -521,8 +543,10 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Returns a fully qualified field name for a given reference
-     * @param string $pathPrefix The field path prefix
+     *
      * @internal
+     *
+     * @param string $pathPrefix The field path prefix
      */
     public static function getReferenceFieldName(string $storeAs, string $pathPrefix = '') : string
     {
@@ -536,10 +560,10 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getReflectionClass() : \ReflectionClass
+    public function getReflectionClass() : ReflectionClass
     {
         if (! $this->reflClass) {
-            $this->reflClass = new \ReflectionClass($this->name);
+            $this->reflClass = new ReflectionClass($this->name);
         }
 
         return $this->reflClass;
@@ -624,13 +648,13 @@ class ClassMetadata implements BaseClassMetadata
      * Dispatches the lifecycle event of the given document by invoking all
      * registered callbacks.
      *
-     * @throws \InvalidArgumentException If document class is not this class or
+     * @throws InvalidArgumentException If document class is not this class or
      *                                   a Proxy of this class.
      */
     public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null) : void
     {
         if (! $document instanceof $this->name) {
-            throw new \InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
+            throw new InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
         }
 
         if (empty($this->lifecycleCallbacks[$event])) {
@@ -826,7 +850,7 @@ class ClassMetadata implements BaseClassMetadata
     public function addIndex(array $keys, array $options = []) : void
     {
         $this->indexes[] = [
-            'keys' => array_map(function ($value) {
+            'keys' => array_map(static function ($value) {
                 if ($value === 1 || $value === -1) {
                     return (int) $value;
                 }
@@ -892,7 +916,7 @@ class ClassMetadata implements BaseClassMetadata
         }
 
         $this->shardKey = [
-            'keys' => array_map(function ($value) {
+            'keys' => array_map(static function ($value) {
                 if ($value === 1 || $value === -1) {
                     return (int) $value;
                 }
@@ -928,7 +952,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Sets the read preference used by this class.
      *
-     * @param null|string|int $readPreference
+     * @param string|int|null $readPreference
      * @param array|null      $tags
      */
     public function setReadPreference($readPreference, $tags) : void
@@ -948,7 +972,7 @@ class ClassMetadata implements BaseClassMetadata
     }
 
     /**
-     * @return int|null|string
+     * @return int|string|null
      */
     public function getWriteConcern()
     {
@@ -1006,7 +1030,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Gets a ReflectionProperty for a specific field of the mapped class.
      */
-    public function getReflectionProperty(string $name) : \ReflectionProperty
+    public function getReflectionProperty(string $name) : ReflectionProperty
     {
         return $this->reflFields[$name];
     }
@@ -1048,13 +1072,13 @@ class ClassMetadata implements BaseClassMetadata
      *
      * @param array|string $name
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setCollection($name) : void
     {
         if (is_array($name)) {
             if (! isset($name['name'])) {
-                throw new \InvalidArgumentException('A name key is required when passing an array to setCollection()');
+                throw new InvalidArgumentException('A name key is required when passing an array to setCollection()');
             }
             $this->collectionCapped = $name['capped'] ?? false;
             $this->collectionSize = $name['size'] ?? 0;
@@ -1144,6 +1168,7 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Validates the storage strategy of a mapping for consistency
+     *
      * @throws MappingException
      */
     private function applyStorageStrategy(array &$mapping) : void
@@ -1309,7 +1334,6 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Checks whether the class has a mapped association for the specified field
      * and if yes, checks whether it is a single-valued association (to-one).
-     *
      */
     public function isSingleValuedReference(string $fieldName) : bool
     {
@@ -1359,6 +1383,7 @@ class ClassMetadata implements BaseClassMetadata
      * Casts the identifier to its portable PHP type.
      *
      * @param mixed $id
+     *
      * @return mixed $id
      */
     public function getPHPIdentifierValue($id)
@@ -1371,6 +1396,7 @@ class ClassMetadata implements BaseClassMetadata
      * Casts the identifier to its database type.
      *
      * @param mixed $id
+     *
      * @return mixed $id
      */
     public function getDatabaseIdentifierValue($id)
@@ -1474,7 +1500,7 @@ class ClassMetadata implements BaseClassMetadata
     {
         return array_filter(
             $this->associationMappings,
-            function ($assoc) {
+            static function ($assoc) {
                 return ! empty($assoc['embedded']);
             }
         );
@@ -1748,7 +1774,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function isAssociationInverseSide($fieldName) : bool
     {
-        throw new \BadMethodCallException(__METHOD__ . '() is not implemented yet.');
+        throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
     /**
@@ -1756,7 +1782,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function getAssociationMappedByTargetField($fieldName)
     {
-        throw new \BadMethodCallException(__METHOD__ . '() is not implemented yet.');
+        throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
     /**
@@ -1785,7 +1811,7 @@ class ClassMetadata implements BaseClassMetadata
             $mapping['collectionClass'] = ltrim($mapping['collectionClass'], '\\');
         }
         if (! empty($mapping['collectionClass'])) {
-            $rColl = new \ReflectionClass($mapping['collectionClass']);
+            $rColl = new ReflectionClass($mapping['collectionClass']);
             if (! $rColl->implementsInterface('Doctrine\\Common\\Collections\\Collection')) {
                 throw MappingException::collectionClassDoesNotImplementCommonInterface($this->name, $mapping['fieldName'], $mapping['collectionClass']);
             }
@@ -2021,17 +2047,16 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Restores some state that can not be serialized/unserialized.
-     *
      */
     public function __wakeup()
     {
         // Restore ReflectionClass and properties
-        $this->reflClass = new \ReflectionClass($this->name);
+        $this->reflClass = new ReflectionClass($this->name);
         $this->instantiator = $this->instantiator ?: new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declared'])) {
-                $reflField = new \ReflectionProperty($mapping['declared'], $field);
+                $reflField = new ReflectionProperty($mapping['declared'], $field);
             } else {
                 $reflField = $this->reflClass->getProperty($field);
             }

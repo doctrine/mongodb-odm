@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
+use InvalidArgumentException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,7 +20,6 @@ use function sprintf;
 
 /**
  * Command to (re)generate the hydrator classes used by doctrine.
- *
  */
 class GenerateHydratorsCommand extends Console\Command\Command
 {
@@ -73,11 +73,11 @@ EOT
         $destPath = realpath($destPath);
 
         if (! file_exists($destPath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf("Hydrators destination directory '<info>%s</info>' does not exist.", $destPath)
             );
         } elseif (! is_writable($destPath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf("Hydrators destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
         }

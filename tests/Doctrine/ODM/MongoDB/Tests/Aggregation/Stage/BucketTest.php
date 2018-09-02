@@ -27,12 +27,12 @@ class BucketAutoTest extends BaseTest
             ->avg('$value');
 
         $this->assertSame([
-        '$bucket' => [
-            'groupBy' => '$someField',
-            'boundaries' => [1, 2, 3],
-            'default' => 0,
-            'output' => ['averageValue' => ['$avg' => '$value']],
-        ],
+            '$bucket' => [
+                'groupBy' => '$someField',
+                'boundaries' => [1, 2, 3],
+                'default' => 0,
+                'output' => ['averageValue' => ['$avg' => '$value']],
+            ],
         ], $bucketStage->getExpression());
     }
 
@@ -48,12 +48,12 @@ class BucketAutoTest extends BaseTest
             ->avg('$value');
 
         $this->assertSame([[
-        '$bucket' => [
-            'groupBy' => '$someField',
-            'boundaries' => [1, 2, 3],
-            'default' => 0,
-            'output' => ['averageValue' => ['$avg' => '$value']],
-        ],
+            '$bucket' => [
+                'groupBy' => '$someField',
+                'boundaries' => [1, 2, 3],
+                'default' => 0,
+                'output' => ['averageValue' => ['$avg' => '$value']],
+            ],
         ],
         ], $builder->getPipeline());
     }
@@ -66,10 +66,10 @@ class BucketAutoTest extends BaseTest
             ->boundaries(1, 2, 3);
 
         $this->assertSame([
-        '$bucket' => [
-            'groupBy' => '$someField',
-            'boundaries' => [1, 2, 3],
-        ],
+            '$bucket' => [
+                'groupBy' => '$someField',
+                'boundaries' => [1, 2, 3],
+            ],
         ], $bucketStage->getExpression());
     }
 
@@ -87,12 +87,12 @@ class BucketAutoTest extends BaseTest
 
         $this->assertEquals(
             [[
-            '$bucket' => [
-                'groupBy' => '$ip',
-                'boundaries' => [1, 2, 3],
-                'default' => 0,
-                'output' => ['averageValue' => ['$avg' => '$value']],
-            ],
+                '$bucket' => [
+                    'groupBy' => '$ip',
+                    'boundaries' => [1, 2, 3],
+                    'default' => 0,
+                    'output' => ['averageValue' => ['$avg' => '$value']],
+                ],
             ],
             ],
             $builder->getPipeline()

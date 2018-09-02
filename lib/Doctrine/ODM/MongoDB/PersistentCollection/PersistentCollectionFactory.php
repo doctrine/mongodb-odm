@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Interface for persistent collection classes factory.
- *
  */
 interface PersistentCollectionFactory
 {

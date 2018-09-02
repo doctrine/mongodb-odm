@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\Binary;
@@ -82,7 +84,7 @@ class TypeTest extends BaseTest
 
     public function testConvertDatePreservesMilliseconds()
     {
-        $date = new \DateTime();
+        $date = new DateTime();
         $expectedDate = clone $date;
 
         $cleanMicroseconds = (int) $date->format('v') * 1000;
@@ -94,7 +96,7 @@ class TypeTest extends BaseTest
 
     public function testConvertImmutableDate()
     {
-        $date = new \DateTimeImmutable('now');
+        $date = new DateTimeImmutable('now');
 
         $this->assertInstanceOf(UTCDateTime::class, Type::convertPHPToDatabaseValue($date));
     }

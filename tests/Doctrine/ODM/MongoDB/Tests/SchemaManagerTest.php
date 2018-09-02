@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use ArrayIterator;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -127,24 +128,20 @@ class SchemaManagerTest extends TestCase
             $bucket->getFilesCollection()
                 ->expects($this->any())
                 ->method('listIndexes')
-                ->willReturn([])
-            ;
+                ->willReturn([]);
             $bucket->getFilesCollection()
                 ->expects($this->once())
                 ->method('createIndex')
-                ->with(['filename' => 1, 'uploadDate' => 1])
-            ;
+                ->with(['filename' => 1, 'uploadDate' => 1]);
 
             $bucket->getChunksCollection()
                 ->expects($this->any())
                 ->method('listIndexes')
-                ->willReturn([])
-            ;
+                ->willReturn([]);
             $bucket->getChunksCollection()
                 ->expects($this->once())
                 ->method('createIndex')
-                ->with(['files_id' => 1, 'n' => 1], ['unique' => true])
-            ;
+                ->with(['files_id' => 1, 'n' => 1], ['unique' => true]);
         }
 
         $this->schemaManager->ensureIndexes();
@@ -174,24 +171,20 @@ class SchemaManagerTest extends TestCase
                 $bucket->getFilesCollection()
                     ->expects($this->any())
                     ->method('listIndexes')
-                    ->willReturn([])
-                ;
+                    ->willReturn([]);
                 $bucket->getFilesCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['filename' => 1, 'uploadDate' => 1])
-                ;
+                    ->with(['filename' => 1, 'uploadDate' => 1]);
 
                 $bucket->getChunksCollection()
                     ->expects($this->any())
                     ->method('listIndexes')
-                    ->willReturn([])
-                ;
+                    ->willReturn([]);
                 $bucket->getChunksCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['files_id' => 1, 'n' => 1], ['unique' => true])
-                ;
+                    ->with(['files_id' => 1, 'n' => 1], ['unique' => true]);
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('createIndex');
                 $bucket->getChunksCollection()->expects($this->never())->method('createIndex');
@@ -214,7 +207,7 @@ class SchemaManagerTest extends TestCase
         $collection = $this->documentCollections[CmsArticle::class];
         $collection->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), $this->callback(function ($o) {
+            ->with($this->anything(), $this->callback(static function ($o) {
                 return isset($o['timeout']) && $o['timeout'] === 10000;
             }));
 
@@ -226,7 +219,7 @@ class SchemaManagerTest extends TestCase
         $collection = $this->documentCollections[CmsArticle::class];
         $collection->expects($this->once())
             ->method('listIndexes')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new \ArrayIterator([]))));
+            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator([]))));
         $collection->expects($this->once())
             ->method('createIndex');
         $collection->expects($this->never())
@@ -246,7 +239,7 @@ class SchemaManagerTest extends TestCase
         ];
         $collection->expects($this->once())
             ->method('listIndexes')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new \ArrayIterator($indexes))));
+            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator($indexes))));
         $collection->expects($this->once())
             ->method('createIndex');
         $collection->expects($this->once())
@@ -298,8 +291,7 @@ class SchemaManagerTest extends TestCase
                     'size' => 1048576,
                     'max' => 32,
                 ]
-            )
-        ;
+            );
 
         $this->schemaManager->createDocumentCollection(CmsArticle::class);
     }
@@ -309,12 +301,10 @@ class SchemaManagerTest extends TestCase
         $database = $this->documentDatabases[File::class];
         $database->expects($this->at(0))
             ->method('createCollection')
-            ->with('fs.files')
-        ;
+            ->with('fs.files');
         $database->expects($this->at(1))
             ->method('createCollection')
-            ->with('fs.chunks')
-        ;
+            ->with('fs.chunks');
 
         $this->schemaManager->createDocumentCollection(File::class);
     }
@@ -372,12 +362,10 @@ class SchemaManagerTest extends TestCase
             if ($class === File::class) {
                 $bucket->getFilesCollection()
                     ->expects($this->once())
-                    ->method('drop')
-                ;
+                    ->method('drop');
                 $bucket->getChunksCollection()
                     ->expects($this->once())
-                    ->method('drop')
-                ;
+                    ->method('drop');
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('drop');
                 $bucket->getChunksCollection()->expects($this->never())->method('drop');

@@ -14,6 +14,7 @@ use Documents\User;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
+use stdClass;
 
 class ExprTest extends BaseTest
 {
@@ -228,7 +229,7 @@ class ExprTest extends BaseTest
             ->will($this->returnValue(['targetDocument' => 'Foo', 'name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB]));
 
         $expr = $this->createExpr($dm, $class);
-        $expr->field('bar')->references(new \stdClass());
+        $expr->field('bar')->references(new stdClass());
 
         $this->assertEquals($expected, $expr->getQuery(), '->references() uses just $id if a targetDocument is set');
     }
@@ -269,7 +270,7 @@ class ExprTest extends BaseTest
             ->will($this->returnValue(['name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB]));
 
         $expr = $this->createExpr($dm, $class);
-        $expr->field('bar')->references(new \stdClass());
+        $expr->field('bar')->references(new stdClass());
 
         $this->assertEquals($expected, $expr->getQuery(), '->references() uses all keys if no targetDocument is set');
     }
@@ -310,7 +311,7 @@ class ExprTest extends BaseTest
             ->will($this->returnValue(['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'name' => 'foo']));
 
         $expr = $this->createExpr($dm, $class);
-        $expr->field('bar')->references(new \stdClass());
+        $expr->field('bar')->references(new stdClass());
 
         $this->assertEquals($expected, $expr->getQuery(), '->references() uses some keys if storeAs=dbRef is set');
     }
@@ -558,11 +559,11 @@ class ExprTest extends BaseTest
 
         $expectedNewObj = [
             '$push' => [
-        'a' => [
-                '$each' => [['x' => 1], ['x' => 2]],
-                '$slice' => -2,
-                '$sort' => ['x' => 1],
-            ],
+                'a' => [
+                    '$each' => [['x' => 1], ['x' => 2]],
+                    '$slice' => -2,
+                    '$sort' => ['x' => 1],
+                ],
             ],
         ];
 
@@ -581,11 +582,11 @@ class ExprTest extends BaseTest
 
         $expectedNewObj = [
             '$push' => [
-        'a' => [
-                '$each' => [['x' => 1], ['x' => 2]],
-                '$sort' => ['x' => 1],
-                '$slice' => -2,
-            ],
+                'a' => [
+                    '$each' => [['x' => 1], ['x' => 2]],
+                    '$sort' => ['x' => 1],
+                    '$slice' => -2,
+                ],
             ],
         ];
 
@@ -603,10 +604,10 @@ class ExprTest extends BaseTest
 
         $expectedNewObj = [
             '$push' => [
-        'a' => [
-                '$each' => [20, 30],
-                '$position' => 0,
-            ],
+                'a' => [
+                    '$each' => [20, 30],
+                    '$position' => 0,
+                ],
             ],
         ];
 

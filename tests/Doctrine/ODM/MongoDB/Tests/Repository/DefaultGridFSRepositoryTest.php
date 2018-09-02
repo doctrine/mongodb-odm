@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Repos;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\UploadOptions;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -35,7 +36,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame(8, $file->getLength());
         self::assertSame(12345, $file->getChunkSize());
-        self::assertEquals(new \DateTime(), $file->getUploadDate(), '', 1);
+        self::assertEquals(new DateTime(), $file->getUploadDate(), '', 1);
         self::assertNull($file->getMetadata());
     }
 
@@ -57,7 +58,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame(8, $file->getLength());
         self::assertSame(1234, $file->getChunkSize());
-        self::assertEquals(new \DateTime(), $file->getUploadDate(), '', 1);
+        self::assertEquals(new DateTime(), $file->getUploadDate(), '', 1);
         self::assertNull($file->getMetadata());
     }
 
@@ -85,7 +86,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame($expectedSize, $file->getLength());
         self::assertSame(12345, $file->getChunkSize());
-        self::assertEquals(new \DateTime(), $file->getUploadDate(), '', 1);
+        self::assertEquals(new DateTime(), $file->getUploadDate(), '', 1);
         self::assertInstanceOf(FileMetadata::class, $file->getMetadata());
 
         $stream = tmpfile();
@@ -138,7 +139,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame($expectedSize, $file->getLength());
         self::assertSame(1234, $file->getChunkSize());
-        self::assertEquals(new \DateTime(), $file->getUploadDate(), '', 1);
+        self::assertEquals(new DateTime(), $file->getUploadDate(), '', 1);
         self::assertInstanceOf(FileMetadata::class, $file->getMetadata());
 
         $stream = tmpfile();

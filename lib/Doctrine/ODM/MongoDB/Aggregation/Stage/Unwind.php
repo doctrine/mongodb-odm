@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $unwind stage to an aggregation pipeline.
- *
  */
 class Unwind extends Stage
 {
@@ -68,7 +67,6 @@ class Unwind extends Stage
     /**
      * If true, if the path is null, missing, or an empty array, $unwind outputs
      * the document.
-     *
      */
     public function preserveNullAndEmptyArrays(bool $preserveNullAndEmptyArrays = true) : self
     {

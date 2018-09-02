@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Boolean type.
- *
  */
 class BooleanType extends Type
 {

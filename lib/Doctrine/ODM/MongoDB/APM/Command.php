@@ -9,6 +9,7 @@ use MongoDB\Driver\Monitoring\CommandFailedEvent;
 use MongoDB\Driver\Monitoring\CommandStartedEvent;
 use MongoDB\Driver\Monitoring\CommandSucceededEvent;
 use MongoDB\Driver\Server;
+use Throwable;
 
 final class Command
 {
@@ -84,7 +85,7 @@ final class Command
         return $this->finishedEvent->getReply();
     }
 
-    public function getError() : ?\Throwable
+    public function getError() : ?Throwable
     {
         return $this->finishedEvent instanceof CommandFailedEvent ? $this->finishedEvent->getError() : null;
     }

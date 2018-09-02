@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use ReflectionMethod;
 use const E_USER_DEPRECATED;
 use function array_merge;
 use function array_replace;
@@ -24,7 +25,6 @@ use function trigger_error;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
- *
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {
@@ -185,8 +185,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $this->setShardKey($class, $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey']);
         }
 
-        /** @var \ReflectionMethod $method */
-        foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+        /** @var ReflectionMethod $method */
+        foreach ($reflClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             /* Filter for the declaring class only. Callbacks from parent
              * classes will already be registered.
              */
@@ -246,7 +246,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     *
      * @throws MappingException
      */
     private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey) : void

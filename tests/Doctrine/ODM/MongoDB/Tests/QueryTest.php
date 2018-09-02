@@ -52,10 +52,10 @@ class QueryTest extends BaseTest
         $qb->addOr($qb->expr()->field('firstName')->equals('Chris'));
 
         $this->assertEquals([
-        '$or' => [
-            ['firstName' => 'Kris'],
-            ['firstName' => 'Chris'],
-        ],
+            '$or' => [
+                ['firstName' => 'Kris'],
+                ['firstName' => 'Chris'],
+            ],
         ], $qb->getQueryArray());
 
         $query = $qb->getQuery();

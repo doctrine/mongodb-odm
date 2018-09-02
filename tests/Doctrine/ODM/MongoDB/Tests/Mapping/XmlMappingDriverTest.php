@@ -8,6 +8,9 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Documents\User;
+use ReflectionMethod;
+use SimpleXmlElement;
+use stdClass;
 use const DIRECTORY_SEPARATOR;
 use function get_class;
 
@@ -20,12 +23,12 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testSetShardKeyOptionsByAttributes()
     {
-        $class = new ClassMetadata(\stdClass::class);
+        $class = new ClassMetadata(stdClass::class);
         $driver = $this->_loadDriver();
-        $element = new \SimpleXmlElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
+        $element = new SimpleXmlElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
 
         /** @uses XmlDriver::setShardKey */
-        $m = new \ReflectionMethod(get_class($driver), 'setShardKey');
+        $m = new ReflectionMethod(get_class($driver), 'setShardKey');
         $m->setAccessible(true);
         $m->invoke($driver, $class, $element);
 
@@ -39,10 +42,10 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $class = new ClassMetadata(User::class);
         $driver = $this->_loadDriver();
-        $element = new \SimpleXmlElement('<reference-many target-document="Phonenumber" collection-class="Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection" field="phonenumbers"></reference-many>');
+        $element = new SimpleXmlElement('<reference-many target-document="Phonenumber" collection-class="Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection" field="phonenumbers"></reference-many>');
 
         /** @uses XmlDriver::setShardKey */
-        $m = new \ReflectionMethod(get_class($driver), 'addReferenceMapping');
+        $m = new ReflectionMethod(get_class($driver), 'addReferenceMapping');
         $m->setAccessible(true);
         $m->invoke($driver, $class, $element, 'many');
 

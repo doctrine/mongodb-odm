@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionTrait;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
- *
  */
 class PersistentCollection implements PersistentCollectionInterface
 {

@@ -25,8 +25,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testLoadMapping
      * @param ClassMetadata $class
+     *
+     * @depends testLoadMapping
      */
     public function testDocumentCollectionNameAndInheritance($class)
     {
@@ -37,8 +38,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testLoadMapping
      * @param ClassMetadata $class
+     *
+     * @depends testLoadMapping
      */
     public function testDocumentMarkedAsReadOnly($class)
     {
@@ -48,8 +50,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testDocumentCollectionNameAndInheritance
      * @param ClassMetadata $class
+     *
+     * @depends testDocumentCollectionNameAndInheritance
      */
     public function testDocumentLevelReadPreference($class)
     {
@@ -64,8 +67,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testDocumentCollectionNameAndInheritance
      * @param ClassMetadata $class
+     *
+     * @depends testDocumentCollectionNameAndInheritance
      */
     public function testDocumentLevelWriteConcern($class)
     {
@@ -75,8 +79,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testDocumentLevelWriteConcern
      * @param ClassMetadata $class
+     *
+     * @depends testDocumentLevelWriteConcern
      */
     public function testFieldMappings($class)
     {
@@ -92,8 +97,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testDocumentCollectionNameAndInheritance
      * @param ClassMetadata $class
+     *
+     * @depends testDocumentCollectionNameAndInheritance
      */
     public function testAssociationMappings($class)
     {
@@ -107,8 +113,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testDocumentCollectionNameAndInheritance
      * @param ClassMetadata $class
+     *
+     * @depends testDocumentCollectionNameAndInheritance
      */
     public function testGetAssociationTargetClass($class)
     {
@@ -121,9 +128,10 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
+     * @param ClassMetadata $class
+     *
      * @depends testDocumentCollectionNameAndInheritance
      * @expectedException \InvalidArgumentException
-     * @param ClassMetadata $class
      */
     public function testGetAssociationTargetClassThrowsExceptionWhenEmpty($class)
     {
@@ -131,8 +139,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testDocumentCollectionNameAndInheritance
      * @param ClassMetadata $class
+     *
+     * @depends testDocumentCollectionNameAndInheritance
      */
     public function testStringFieldMappings($class)
     {
@@ -142,8 +151,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testFieldMappings
      * @param ClassMetadata $class
+     *
+     * @depends testFieldMappings
      */
     public function testIdentifier($class)
     {
@@ -153,8 +163,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testFieldMappings
      * @param ClassMetadata $class
+     *
+     * @depends testFieldMappings
      */
     public function testVersionFieldMappings($class)
     {
@@ -165,8 +176,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testFieldMappings
      * @param ClassMetadata $class
+     *
+     * @depends testFieldMappings
      */
     public function testLockFieldMappings($class)
     {
@@ -177,8 +189,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testIdentifier
      * @param ClassMetadata $class
+     *
+     * @depends testIdentifier
      */
     public function testAssocations($class)
     {
@@ -188,8 +201,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testAssocations
      * @param ClassMetadata $class
+     *
+     * @depends testAssocations
      */
     public function testOwningOneToOneAssocation($class)
     {
@@ -206,8 +220,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testOwningOneToOneAssocation
      * @param ClassMetadata $class
+     *
+     * @depends testOwningOneToOneAssocation
      */
     public function testLifecycleCallbacks($class)
     {
@@ -222,8 +237,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testLifecycleCallbacks
      * @param ClassMetadata $class
+     *
+     * @depends testLifecycleCallbacks
      */
     public function testCustomFieldName($class)
     {
@@ -234,8 +250,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testCustomFieldName
      * @param ClassMetadata $class
+     *
+     * @depends testCustomFieldName
      */
     public function testCustomReferenceFieldName($class)
     {
@@ -246,8 +263,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testCustomReferenceFieldName
      * @param ClassMetadata $class
+     *
+     * @depends testCustomReferenceFieldName
      */
     public function testCustomEmbedFieldName($class)
     {
@@ -258,8 +276,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testCustomEmbedFieldName
      * @param ClassMetadata $class
+     *
+     * @depends testCustomEmbedFieldName
      */
     public function testDiscriminator($class)
     {
@@ -274,8 +293,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testDiscriminator
      * @param ClassMetadata $class
+     *
+     * @depends testDiscriminator
      */
     public function testEmbedDiscriminator($class)
     {
@@ -293,8 +313,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testEmbedDiscriminator
      * @param ClassMetadata $class
+     *
+     * @depends testEmbedDiscriminator
      */
     public function testReferenceDiscriminator($class)
     {
@@ -312,8 +333,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testCustomFieldName
      * @param ClassMetadata $class
+     *
+     * @depends testCustomFieldName
      */
     public function testIndexes($class)
     {
@@ -322,7 +344,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         /* Sort indexes by their first fieldname. This is necessary since the
          * index registration order may differ among drivers.
          */
-        $this->assertTrue(usort($indexes, function (array $a, array $b) {
+        $this->assertTrue(usort($indexes, static function (array $a, array $b) {
             return strcmp(key($a['keys']), key($b['keys']));
         }));
 
@@ -365,8 +387,9 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @depends testIndexes
      * @param ClassMetadata $class
+     *
+     * @depends testIndexes
      */
     public function testShardKey($class)
     {
@@ -538,7 +561,7 @@ class AbstractMappingDriverUser
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
         $metadata->setDiscriminatorField(['fieldName' => 'discr']);
-        $metadata->setDiscriminatorMap(['default' => __CLASS__]);
+        $metadata->setDiscriminatorMap(['default' => self::class]);
         $metadata->setDefaultDiscriminatorValue('default');
         $metadata->mapField([
             'id' => true,
@@ -602,17 +625,17 @@ class AbstractMappingDriverUser
             ],
         ]);
         $metadata->mapOneEmbedded([
-           'fieldName' => 'embeddedPhonenumber',
-           'name' => 'embedded_phone_number',
+            'fieldName' => 'embeddedPhonenumber',
+            'name' => 'embedded_phone_number',
         ]);
         $metadata->mapManyEmbedded([
-           'fieldName' => 'otherPhonenumbers',
-           'targetDocument' => Phonenumber::class,
-           'discriminatorField' => 'discr',
-           'discriminatorMap' => [
+            'fieldName' => 'otherPhonenumbers',
+            'targetDocument' => Phonenumber::class,
+            'discriminatorField' => 'discr',
+            'discriminatorMap' => [
                 'home' => HomePhonenumber::class,
                 'work' => WorkPhonenumber::class,
-           ],
+            ],
             'defaultDiscriminatorValue' => 'home',
         ]);
         $metadata->addIndex(['username' => 'desc'], ['unique' => true, 'dropDups' => false]);

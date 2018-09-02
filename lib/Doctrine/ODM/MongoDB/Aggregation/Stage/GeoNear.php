@@ -10,7 +10,6 @@ use function is_array;
 
 /**
  * Fluent interface for adding a $geoNear stage to an aggregation pipeline.
- *
  */
 class GeoNear extends Match
 {
@@ -137,7 +136,6 @@ class GeoNear extends Match
      * The minimum distance from the center point that the documents can be.
      *
      * @return $this
-     *
      */
     public function minDistance(float $minDistance)
     {
@@ -156,6 +154,7 @@ class GeoNear extends Match
      *
      * @param float|array|Point $x
      * @param float             $y
+     *
      * @return $this
      */
     public function near($x, $y = null) : self

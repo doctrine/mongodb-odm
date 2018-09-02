@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
@@ -385,7 +386,7 @@ class FunctionalTest extends BaseTest
         $employee = new Employee();
         $employee->setName('Employee');
         $employee->setSalary(50000.00);
-        $employee->setStarted(new \DateTime());
+        $employee->setStarted(new DateTime());
 
         $address = new Address();
         $address->setAddress('555 Doctrine Rd.');
@@ -398,7 +399,7 @@ class FunctionalTest extends BaseTest
         $manager = new Manager();
         $manager->setName('Manager');
         $manager->setSalary(100000.00);
-        $manager->setStarted(new \DateTime());
+        $manager->setStarted(new DateTime());
         $manager->addProject($project);
 
         $this->dm->persist($employee);
@@ -715,8 +716,8 @@ class FunctionalTest extends BaseTest
     public function testNotSameCollectionThrowsException()
     {
         $test = $this->dm->createQueryBuilder([
-             User::class,
-             Profile::class,
+            User::class,
+            Profile::class,
         ])->getQuery()->execute();
     }
 
@@ -882,13 +883,13 @@ class FunctionalTest extends BaseTest
 
         $unitOfWork = $this->dm->getUnitOfWork();
 
-        list($mapping, $document) = $unitOfWork->getParentAssociation($a->child->children[0]);
+        [$mapping, $document] = $unitOfWork->getParentAssociation($a->child->children[0]);
         $this->assertSame($a->child, $document);
 
-        list($mapping, $document) = $unitOfWork->getParentAssociation($a->child->children[1]);
+        [$mapping, $document] = $unitOfWork->getParentAssociation($a->child->children[1]);
         $this->assertSame($a->child, $document);
 
-        list($mapping, $document) = $unitOfWork->getParentAssociation($a->child);
+        [$mapping, $document] = $unitOfWork->getParentAssociation($a->child);
         $this->assertSame($a, $document);
     }
 }

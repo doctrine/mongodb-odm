@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Integer Id type.
- *
  */
 class IntIdType extends IntType
 {

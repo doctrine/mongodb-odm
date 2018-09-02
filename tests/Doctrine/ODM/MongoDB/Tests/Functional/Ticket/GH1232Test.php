@@ -35,7 +35,7 @@ class GH1232Test extends BaseTest
 /** @ODM\Document */
 class GH1232Post
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Id */
     public $id;

@@ -9,10 +9,10 @@ use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Value;
 use MongoDB\BSON\Regex;
+use RuntimeException;
 
 /**
  * Converts Collection expressions to query expressions.
- *
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {
@@ -82,7 +82,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
                     ->equals(new Regex($value, ''));
 
             default:
-                throw new \RuntimeException('Unknown comparison operator: ' . $comparison->getOperator());
+                throw new RuntimeException('Unknown comparison operator: ' . $comparison->getOperator());
         }
     }
 
@@ -94,7 +94,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
     public function walkCompositeExpression(CompositeExpression $compositeExpr) : Expr
     {
         if (! isset(self::$compositeMethods[$compositeExpr->getType()])) {
-            throw new \RuntimeException('Unknown composite ' . $compositeExpr->getType());
+            throw new RuntimeException('Unknown composite ' . $compositeExpr->getType());
         }
 
         $method = self::$compositeMethods[$compositeExpr->getType()];
@@ -111,6 +111,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      * Converts a value expression into the target query language part.
      *
      * @see ExpressionVisitor::walkValue()
+     *
      * @return mixed
      */
     public function walkValue(Value $value)

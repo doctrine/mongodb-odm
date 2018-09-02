@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
+use BadMethodCallException;
+use DateTime;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
@@ -23,12 +25,14 @@ use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Exception\WriteException;
 use MongoDB\GridFS\Bucket;
+use stdClass;
 use function array_combine;
 use function array_fill;
 use function array_intersect_key;
@@ -55,7 +59,6 @@ use function strtolower;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
- *
  */
 class DocumentPersister
 {
@@ -199,7 +202,7 @@ class DocumentPersister
                     $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 } elseif ($versionMapping['type'] === 'date') {
-                    $nextVersionDateTime = new \DateTime();
+                    $nextVersionDateTime = new DateTime();
                     $nextVersion = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
@@ -273,7 +276,7 @@ class DocumentPersister
                 $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             } elseif ($versionMapping['type'] === 'date') {
-                $nextVersionDateTime = new \DateTime();
+                $nextVersionDateTime = new DateTime();
                 $nextVersion = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
             }
@@ -322,7 +325,7 @@ class DocumentPersister
             }
         }
 
-        $this->collection->updateOne($criteria, ['$set' => new \stdClass()], $options);
+        $this->collection->updateOne($criteria, ['$set' => new stdClass()], $options);
     }
 
     /**
@@ -356,7 +359,7 @@ class DocumentPersister
                 $update['$inc'][$versionMapping['name']] = 1;
                 $query[$versionMapping['name']] = $currentVersion;
             } elseif ($versionMapping['type'] === 'date') {
-                $nextVersion = new \DateTime();
+                $nextVersion = new DateTime();
                 $update['$set'][$versionMapping['name']] = Type::convertPHPToDatabaseValue($nextVersion);
                 $query[$versionMapping['name']] = Type::convertPHPToDatabaseValue($currentVersion);
             }
@@ -438,7 +441,9 @@ class DocumentPersister
      * be used to match an _id value.
      *
      * @param mixed $criteria Query criteria
+     *
      * @throws LockException
+     *
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
     public function load($criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null) : ?object
@@ -491,9 +496,7 @@ class DocumentPersister
         }
 
         $baseCursor = $this->collection->find($criteria, $options);
-        $cursor = $this->wrapCursor($baseCursor);
-
-        return $cursor;
+        return $this->wrapCursor($baseCursor);
     }
 
     /**
@@ -564,7 +567,6 @@ class DocumentPersister
 
     /**
      * Releases any lock that exists on this document.
-     *
      */
     public function unlock(object $document) : void
     {
@@ -581,6 +583,7 @@ class DocumentPersister
      * @param object $result   The query result.
      * @param object $document The document object to fill, if any.
      * @param array  $hints    Hints for document creation.
+     *
      * @return object The filled and managed document object or NULL, if the query result is empty.
      */
     private function createDocument($result, ?object $document = null, array $hints = []) : ?object
@@ -798,7 +801,7 @@ class DocumentPersister
             ->$repositoryMethod($collection->getOwner());
 
         if (! $cursor instanceof Iterator) {
-            throw new \BadMethodCallException(sprintf('Expected repository method %s to return an iterable object', $repositoryMethod));
+            throw new BadMethodCallException(sprintf('Expected repository method %s to return an iterable object', $repositoryMethod));
         }
 
         if (! empty($mapping['prime'])) {
@@ -941,7 +944,7 @@ class DocumentPersister
             }
 
             $preparedQueryElements = $this->prepareQueryElement((string) $key, $value, null, true, $isNewObj);
-            foreach ($preparedQueryElements as list($preparedKey, $preparedValue)) {
+            foreach ($preparedQueryElements as [$preparedKey, $preparedValue]) {
                 $preparedQuery[$preparedKey] = is_array($preparedValue)
                     ? array_map('\Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $preparedValue)
                     : Type::convertPHPToDatabaseValue($preparedValue);
@@ -1103,7 +1106,7 @@ class DocumentPersister
         $objectPropertyIsId = $targetClass->isIdentifier($objectProperty);
 
         // Prepare DBRef identifiers or the mapped field's property path
-        $fieldName = ($objectPropertyIsId && ! empty($mapping['reference']) && $mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID)
+        $fieldName = $objectPropertyIsId && ! empty($mapping['reference']) && $mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID
             ? ClassMetadata::getReferenceFieldName($mapping['storeAs'], $e[0])
             : $e[0] . '.' . $objectPropertyPrefix . $targetMapping['name'];
 
@@ -1145,8 +1148,8 @@ class DocumentPersister
                 $fieldNames = [[$nextObjectProperty, $value]];
             }
 
-            return array_map(function ($preparedTuple) use ($fieldName) {
-                list($key, $value) = $preparedTuple;
+            return array_map(static function ($preparedTuple) use ($fieldName) {
+                [$key, $value] = $preparedTuple;
 
                 return [$fieldName . '.' . $key, $value];
             }, $fieldNames);
@@ -1320,9 +1323,7 @@ class DocumentPersister
         $id = $this->class->getDatabaseIdentifierValue($id);
 
         $shardKeyQueryPart = $this->getShardKeyQuery($document);
-        $query = array_merge(['_id' => $id], $shardKeyQueryPart);
-
-        return $query;
+        return array_merge(['_id' => $id], $shardKeyQueryPart);
     }
 
     private function getWriteOptions(array $options = []) : array
@@ -1362,7 +1363,7 @@ class DocumentPersister
                 break;
 
             default:
-                throw new \InvalidArgumentException(sprintf('Reference type %s is invalid.', $mapping['storeAs']));
+                throw new InvalidArgumentException(sprintf('Reference type %s is invalid.', $mapping['storeAs']));
         }
 
         if ($mapping['type'] === 'many') {
@@ -1370,7 +1371,7 @@ class DocumentPersister
         }
 
         return array_map(
-            function ($key) use ($reference, $fieldName) {
+            static function ($key) use ($reference, $fieldName) {
                 return [$fieldName . '.' . $key, $reference[$key]];
             },
             array_keys($keys)

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
+use Exception;
 use function array_slice;
 use function end;
 use function get_class;
@@ -16,9 +17,8 @@ use function sprintf;
 
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM
- *
  */
-class MongoDBException extends \Exception
+class MongoDBException extends Exception
 {
     public static function detachedDocumentCannotBeRemoved() : self
     {
@@ -63,6 +63,7 @@ class MongoDBException extends \Exception
     /**
      * @param string|array $expected
      * @param mixed        $got
+     *
      * @return MongoDBException
      */
     public static function invalidValueForType(string $type, $expected, $got) : self

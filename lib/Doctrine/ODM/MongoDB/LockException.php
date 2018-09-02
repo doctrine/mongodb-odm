@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB;
 
 /**
  * LockException
- *
  */
 class LockException extends MongoDBException
 {
@@ -21,7 +20,6 @@ class LockException extends MongoDBException
 
     /**
      * Gets the document that caused the exception.
-     *
      */
     public function getDocument() : ?object
     {

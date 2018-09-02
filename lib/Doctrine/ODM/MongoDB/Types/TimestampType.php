@@ -10,7 +10,6 @@ use function substr;
 
 /**
  * The Timestamp type.
- *
  */
 class TimestampType extends Type
 {

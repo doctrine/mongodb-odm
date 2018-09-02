@@ -18,6 +18,7 @@ use Doctrine\ODM\MongoDB\Id\AlnumGenerator;
 use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
+use ReflectionException;
 use function get_class;
 use function get_class_methods;
 use function in_array;
@@ -27,7 +28,6 @@ use function ucfirst;
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a document database.
- *
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -138,7 +138,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         // Invoke driver
         try {
             $this->driver->loadMetadataForClass($class->getName(), $class);
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             throw MappingException::reflectionFailure($class->getName(), $e);
         }
 

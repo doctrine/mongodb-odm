@@ -89,8 +89,8 @@ class VirtualHostDirective
     }
 
     /**
-     *
      * @param string $name
+     *
      * @return VirtualHostDirective
      */
     public function hasDirective($name)
@@ -106,8 +106,7 @@ class VirtualHostDirective
 
     public function getDirective($name)
     {
-        $d = $this->hasDirective($name);
-        return $d;
+        return $this->hasDirective($name);
     }
 
     public function removeDirective(VirtualHostDirective $d)

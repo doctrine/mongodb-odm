@@ -26,7 +26,6 @@ use function is_array;
  *
  * This class is designed for inheritance and users can subclass this class to
  * write their own repositories with business-specific methods to locate documents.
- *
  */
 class DocumentRepository implements ObjectRepository, Selectable
 {
@@ -87,6 +86,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * expected version may be specified.
      *
      * @param mixed $id Identifier.
+     *
      * @throws MappingException
      * @throws LockException
      */
@@ -100,7 +100,7 @@ class DocumentRepository implements ObjectRepository, Selectable
          * class' mapped identifier field name?
          */
         if (is_array($id)) {
-            list($identifierFieldName) = $this->class->getIdentifierFieldNames();
+            [$identifierFieldName] = $this->class->getIdentifierFieldNames();
 
             if (isset($id[$identifierFieldName])) {
                 $id = $id[$identifierFieldName];

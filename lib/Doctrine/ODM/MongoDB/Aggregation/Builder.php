@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
 use GeoJson\Geometry\Point;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
+use OutOfRangeException;
 use function array_map;
 use function array_merge;
 use function array_unshift;
@@ -201,7 +202,7 @@ class Builder
     public function getPipeline() : array
     {
         $pipeline = array_map(
-            function (Stage $stage) {
+            static function (Stage $stage) {
                 return $stage->getExpression();
             },
             $this->stages
@@ -225,7 +226,7 @@ class Builder
     public function getStage(int $index) : Stage
     {
         if (! isset($this->stages[$index])) {
-            throw new \OutOfRangeException(sprintf('Could not find stage with index %d.', $index));
+            throw new OutOfRangeException(sprintf('Could not find stage with index %d.', $index));
         }
 
         return $this->stages[$index];

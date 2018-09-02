@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\IndexStats;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use stdClass;
 
 class IndexStatsTest extends BaseTest
 {
@@ -16,7 +17,7 @@ class IndexStatsTest extends BaseTest
     {
         $indexStatsStage = new IndexStats($this->getTestAggregationBuilder());
 
-        $this->assertEquals(['$indexStats' => new \stdClass()], $indexStatsStage->getExpression());
+        $this->assertEquals(['$indexStats' => new stdClass()], $indexStatsStage->getExpression());
     }
 
     public function testIndexStatsFromBuilder()
@@ -24,6 +25,6 @@ class IndexStatsTest extends BaseTest
         $builder = $this->getTestAggregationBuilder();
         $builder->indexStats();
 
-        $this->assertEquals([['$indexStats' => new \stdClass()]], $builder->getPipeline());
+        $this->assertEquals([['$indexStats' => new stdClass()]], $builder->getPipeline());
     }
 }

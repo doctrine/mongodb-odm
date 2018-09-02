@@ -98,10 +98,10 @@ class FilterCollectionTest extends BaseTest
         $testFilter->setParameter('value', 'John');
 
         $expectedCriteria = [
-        '$and' => [
-            ['username' => 'Tim'],
-            ['username' => 'John'],
-        ],
+            '$and' => [
+                ['username' => 'Tim'],
+                ['username' => 'John'],
+            ],
         ];
 
         $this->assertSame($expectedCriteria, $filterCollection->getFilterCriteria($class));

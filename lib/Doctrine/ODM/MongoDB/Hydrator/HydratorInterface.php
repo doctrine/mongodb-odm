@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Hydrator;
 
 /**
  * The HydratorInterface defines methods all hydrator need to implement
- *
  */
 interface HydratorInterface
 {

@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Provides event arguments for the onClear event.
- *
  */
 class OnClearEventArgs extends BaseOnClearEventArgs
 {
