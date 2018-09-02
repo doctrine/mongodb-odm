@@ -9,7 +9,7 @@ use function rand;
 
 class CollWithNullableReturnType extends ArrayCollection
 {
-    public function maybeGetDate(): ?\DateTime
+    public function maybeGetDate() : ?\DateTime
     {
         return rand(0, 1) ? new \DateTime() : null;
     }

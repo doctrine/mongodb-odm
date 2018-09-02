@@ -15,7 +15,7 @@ final class DefaultPersistentCollectionFactory extends AbstractPersistentCollect
     /**
      * {@inheritdoc}
      */
-    protected function createCollectionClass(string $collectionClass): BaseCollection
+    protected function createCollectionClass(string $collectionClass) : BaseCollection
     {
         return new $collectionClass();
     }

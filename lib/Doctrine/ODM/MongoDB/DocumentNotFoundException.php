@@ -14,7 +14,7 @@ use function sprintf;
  */
 class DocumentNotFoundException extends MongoDBException
 {
-    public static function documentNotFound(string $className, $identifier): self
+    public static function documentNotFound(string $className, $identifier) : self
     {
         return new self(sprintf(
             'The "%s" document with identifier %s could not be found.',

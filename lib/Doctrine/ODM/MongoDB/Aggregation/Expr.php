@@ -58,7 +58,7 @@ class Expr
      * @param mixed|self $number
      *
      */
-    public function abs($number): self
+    public function abs($number) : self
     {
         return $this->operator('$abs', $number);
     }
@@ -76,7 +76,7 @@ class Expr
      * @param mixed|self $expression2
      * @param mixed|self ...$expressions Additional expressions
      */
-    public function add($expression1, $expression2, ...$expressions): self
+    public function add($expression1, $expression2, ...$expressions) : self
     {
         return $this->operator('$add', func_get_args());
     }
@@ -88,7 +88,7 @@ class Expr
      * @param array|self $expression
      * @param array|self ...$expressions
      */
-    public function addAnd($expression, ...$expressions): self
+    public function addAnd($expression, ...$expressions) : self
     {
         if (! isset($this->expr['$and'])) {
             $this->expr['$and'] = [];
@@ -106,7 +106,7 @@ class Expr
      * @param array|self $expression
      * @param array|self ...$expressions
      */
-    public function addOr($expression, ...$expressions): self
+    public function addOr($expression, ...$expressions) : self
     {
         if (! isset($this->expr['$or'])) {
             $this->expr['$or'] = [];
@@ -127,7 +127,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/addToSet/
      * @param mixed|self $expression
      */
-    public function addToSet($expression): self
+    public function addToSet($expression) : self
     {
         return $this->operator('$addToSet', $expression);
     }
@@ -141,7 +141,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/allElementsTrue/
      * @param mixed|self $expression
      */
-    public function allElementsTrue($expression): self
+    public function allElementsTrue($expression) : self
     {
         return $this->operator('$allElementsTrue', $expression);
     }
@@ -155,7 +155,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/anyElementTrue/
      * @param array|self $expression
      */
-    public function anyElementTrue($expression): self
+    public function anyElementTrue($expression) : self
     {
         return $this->operator('$anyElementTrue', $expression);
     }
@@ -173,7 +173,7 @@ class Expr
      * @param mixed|self $index
      *
      */
-    public function arrayElemAt($array, $index): self
+    public function arrayElemAt($array, $index) : self
     {
         return $this->operator('$arrayElemAt', [$array, $index]);
     }
@@ -186,7 +186,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/avg/
      * @param mixed|self $expression
      */
-    public function avg($expression): self
+    public function avg($expression) : self
     {
         return $this->operator('$avg', $expression);
     }
@@ -201,7 +201,7 @@ class Expr
      * @param mixed|self $expression
      *
      */
-    public function case($expression): self
+    public function case($expression) : self
     {
         $this->requiresSwitchStatement(static::class . '::case');
 
@@ -220,7 +220,7 @@ class Expr
      * @param mixed|self $number
      *
      */
-    public function ceil($number): self
+    public function ceil($number) : self
     {
         return $this->operator('$ceil', $number);
     }
@@ -235,7 +235,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function cmp($expression1, $expression2): self
+    public function cmp($expression1, $expression2) : self
     {
         return $this->operator('$cmp', [$expression1, $expression2]);
     }
@@ -252,7 +252,7 @@ class Expr
      * @param mixed|self $expression2
      * @param mixed|self ...$expressions Additional expressions
      */
-    public function concat($expression1, $expression2, ...$expressions): self
+    public function concat($expression1, $expression2, ...$expressions) : self
     {
         return $this->operator('$concat', func_get_args());
     }
@@ -269,7 +269,7 @@ class Expr
      * @param mixed|self ...$arrays Additional expressions
      *
      */
-    public function concatArrays($array1, $array2, ...$arrays): self
+    public function concatArrays($array1, $array2, ...$arrays) : self
     {
         return $this->operator('$concatArrays', func_get_args());
     }
@@ -285,7 +285,7 @@ class Expr
      * @param mixed|self $then
      * @param mixed|self $else
      */
-    public function cond($if, $then, $else): self
+    public function cond($if, $then, $else) : self
     {
         return $this->operator('$cond', ['if' => $if, 'then' => $then, 'else' => $else]);
     }
@@ -322,7 +322,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/dateToString/
      * @param mixed|self $expression
      */
-    public function dateToString(string $format, $expression): self
+    public function dateToString(string $format, $expression) : self
     {
         return $this->operator('$dateToString', ['format' => $format, 'date' => $expression]);
     }
@@ -335,7 +335,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/dayOfMonth/
      * @param mixed|self $expression
      */
-    public function dayOfMonth($expression): self
+    public function dayOfMonth($expression) : self
     {
         return $this->operator('$dayOfMonth', $expression);
     }
@@ -349,7 +349,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/dayOfWeek/
      * @param mixed|self $expression
      */
-    public function dayOfWeek($expression): self
+    public function dayOfWeek($expression) : self
     {
         return $this->operator('$dayOfWeek', $expression);
     }
@@ -362,7 +362,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/dayOfYear/
      * @param mixed|self $expression
      */
-    public function dayOfYear($expression): self
+    public function dayOfYear($expression) : self
     {
         return $this->operator('$dayOfYear', $expression);
     }
@@ -379,7 +379,7 @@ class Expr
      * @param mixed|self $expression
      *
      */
-    public function default($expression): self
+    public function default($expression) : self
     {
         $this->requiresSwitchStatement(static::class . '::default');
 
@@ -402,7 +402,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function divide($expression1, $expression2): self
+    public function divide($expression1, $expression2) : self
     {
         return $this->operator('$divide', [$expression1, $expression2]);
     }
@@ -414,7 +414,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function eq($expression1, $expression2): self
+    public function eq($expression1, $expression2) : self
     {
         return $this->operator('$eq', [$expression1, $expression2]);
     }
@@ -429,7 +429,7 @@ class Expr
      * @param mixed|self $exponent
      *
      */
-    public function exp($exponent): self
+    public function exp($exponent) : self
     {
         return $this->operator('$exp', $exponent);
     }
@@ -437,7 +437,7 @@ class Expr
     /**
      * Returns a new expression object
      */
-    public function expr(): self
+    public function expr() : self
     {
         return new static($this->dm, $this->class);
     }
@@ -448,7 +448,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/meta/aggregation-quick-reference/#aggregation-expressions
      * @param mixed|self $value
      */
-    public function expression($value): self
+    public function expression($value) : self
     {
         $this->requiresCurrentField(__METHOD__);
         $this->expr[$this->currentField] = $this->ensureArray($value);
@@ -459,7 +459,7 @@ class Expr
     /**
      * Set the current field for building the expression.
      */
-    public function field(string $fieldName): self
+    public function field(string $fieldName) : self
     {
         $fieldName = $this->getDocumentPersister()->prepareFieldName($fieldName);
         $this->currentField = (string) $fieldName;
@@ -479,7 +479,7 @@ class Expr
      * @param mixed|self $cond
      *
      */
-    public function filter($input, $as, $cond): self
+    public function filter($input, $as, $cond) : self
     {
         return $this->operator('$filter', ['input' => $input, 'as' => $as, 'cond' => $cond]);
     }
@@ -492,7 +492,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/first/
      * @param mixed|self $expression
      */
-    public function first($expression): self
+    public function first($expression) : self
     {
         return $this->operator('$first', $expression);
     }
@@ -507,12 +507,12 @@ class Expr
      * @param mixed|self $number
      *
      */
-    public function floor($number): self
+    public function floor($number) : self
     {
         return $this->operator('$floor', $number);
     }
 
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return $this->expr;
     }
@@ -527,7 +527,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function gt($expression1, $expression2): self
+    public function gt($expression1, $expression2) : self
     {
         return $this->operator('$gt', [$expression1, $expression2]);
     }
@@ -542,7 +542,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function gte($expression1, $expression2): self
+    public function gte($expression1, $expression2) : self
     {
         return $this->operator('$gte', [$expression1, $expression2]);
     }
@@ -555,7 +555,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/hour/
      * @param mixed|self $expression
      */
-    public function hour($expression): self
+    public function hour($expression) : self
     {
         return $this->operator('$hour', $expression);
     }
@@ -572,7 +572,7 @@ class Expr
      * @param mixed|self $expression
      * @param mixed|self $replacementExpression
      */
-    public function ifNull($expression, $replacementExpression): self
+    public function ifNull($expression, $replacementExpression) : self
     {
         return $this->operator('$ifNull', [$expression, $replacementExpression]);
     }
@@ -587,7 +587,7 @@ class Expr
      * @param mixed|self $expression
      * @param mixed|self $arrayExpression
      */
-    public function in($expression, $arrayExpression): self
+    public function in($expression, $arrayExpression) : self
     {
         return $this->operator('$in', [$expression, $arrayExpression]);
     }
@@ -603,7 +603,7 @@ class Expr
      * @param mixed|self $start            Optional. An integer, or a number that can be represented as integers (such as 2.0), that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param mixed|self $end              An integer, or a number that can be represented as integers (such as 2.0), that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      */
-    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): self
+    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null) : self
     {
         $args = [$arrayExpression, $searchExpression];
         if ($start !== null) {
@@ -629,7 +629,7 @@ class Expr
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      *
      */
-    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self
+    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null) : self
     {
         $args = [$stringExpression, $substringExpression];
         if ($start !== null) {
@@ -655,7 +655,7 @@ class Expr
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      *
      */
-    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self
+    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null) : self
     {
         $args = [$stringExpression, $substringExpression];
         if ($start !== null) {
@@ -678,7 +678,7 @@ class Expr
      * @param mixed|self $expression
      *
      */
-    public function isArray($expression): self
+    public function isArray($expression) : self
     {
         return $this->operator('$isArray', $expression);
     }
@@ -692,7 +692,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/isoDayOfWeek/
      * @param mixed|self $expression
      */
-    public function isoDayOfWeek($expression): self
+    public function isoDayOfWeek($expression) : self
     {
         return $this->operator('$isoDayOfWeek', $expression);
     }
@@ -708,7 +708,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/isoWeek/
      * @param mixed|self $expression
      */
-    public function isoWeek($expression): self
+    public function isoWeek($expression) : self
     {
         return $this->operator('$isoWeek', $expression);
     }
@@ -724,7 +724,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/isoWeek/
      * @param mixed|self $expression
      */
-    public function isoWeekYear($expression): self
+    public function isoWeekYear($expression) : self
     {
         return $this->operator('$isoWeekYear', $expression);
     }
@@ -737,7 +737,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/last/
      * @param mixed|self $expression
      */
-    public function last($expression): self
+    public function last($expression) : self
     {
         return $this->operator('$last', $expression);
     }
@@ -750,7 +750,7 @@ class Expr
      * @param mixed|self $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
      * @param mixed|self $in   The expression to evaluate.
      */
-    public function let($vars, $in): self
+    public function let($vars, $in) : self
     {
         return $this->operator('$let', ['vars' => $vars, 'in' => $in]);
     }
@@ -762,7 +762,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/literal/
      * @param mixed|self $value
      */
-    public function literal($value): self
+    public function literal($value) : self
     {
         return $this->operator('$literal', $value);
     }
@@ -778,7 +778,7 @@ class Expr
      * @param mixed|self $number
      *
      */
-    public function ln($number): self
+    public function ln($number) : self
     {
         return $this->operator('$ln', $number);
     }
@@ -797,7 +797,7 @@ class Expr
      * @param mixed|self $base
      *
      */
-    public function log($number, $base): self
+    public function log($number, $base) : self
     {
         return $this->operator('$log', [$number, $base]);
     }
@@ -812,7 +812,7 @@ class Expr
      * @param mixed|self $number
      *
      */
-    public function log10($number): self
+    public function log10($number) : self
     {
         return $this->operator('$log10', $number);
     }
@@ -827,7 +827,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function lt($expression1, $expression2): self
+    public function lt($expression1, $expression2) : self
     {
         return $this->operator('$lt', [$expression1, $expression2]);
     }
@@ -841,7 +841,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function lte($expression1, $expression2): self
+    public function lte($expression1, $expression2) : self
     {
         return $this->operator('$lte', [$expression1, $expression2]);
     }
@@ -855,7 +855,7 @@ class Expr
      * @param string     $as    The variable name for the items in the input array. The in expression accesses each item in the input array by this variable.
      * @param mixed|self $in    The expression to apply to each item in the input array. The expression accesses the item by its variable name.
      */
-    public function map($input, $as, $in): self
+    public function map($input, $as, $in) : self
     {
         return $this->operator('$map', ['input' => $input, 'as' => $as, 'in' => $in]);
     }
@@ -867,7 +867,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/max/
      * @param mixed|self $expression
      */
-    public function max($expression): self
+    public function max($expression) : self
     {
         return $this->operator('$max', $expression);
     }
@@ -878,7 +878,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/meta/
      * @param mixed|self $metaDataKeyword
      */
-    public function meta($metaDataKeyword): self
+    public function meta($metaDataKeyword) : self
     {
         return $this->operator('$meta', $metaDataKeyword);
     }
@@ -891,7 +891,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/millisecond/
      * @param mixed|self $expression
      */
-    public function millisecond($expression): self
+    public function millisecond($expression) : self
     {
         return $this->operator('$millisecond', $expression);
     }
@@ -903,7 +903,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/min/
      * @param mixed|self $expression
      */
-    public function min($expression): self
+    public function min($expression) : self
     {
         return $this->operator('$min', $expression);
     }
@@ -916,7 +916,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/minute/
      * @param mixed|self $expression
      */
-    public function minute($expression): self
+    public function minute($expression) : self
     {
         return $this->operator('$minute', $expression);
     }
@@ -931,7 +931,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function mod($expression1, $expression2): self
+    public function mod($expression1, $expression2) : self
     {
         return $this->operator('$mod', [$expression1, $expression2]);
     }
@@ -944,7 +944,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/month/
      * @param mixed|self $expression
      */
-    public function month($expression): self
+    public function month($expression) : self
     {
         return $this->operator('$month', $expression);
     }
@@ -959,7 +959,7 @@ class Expr
      * @param mixed|self $expression2
      * @param mixed|self ...$expressions Additional expressions
      */
-    public function multiply($expression1, $expression2, ...$expressions): self
+    public function multiply($expression1, $expression2, ...$expressions) : self
     {
         return $this->operator('$multiply', func_get_args());
     }
@@ -973,7 +973,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function ne($expression1, $expression2): self
+    public function ne($expression1, $expression2) : self
     {
         return $this->operator('$ne', [$expression1, $expression2]);
     }
@@ -984,7 +984,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/not/
      * @param mixed|self $expression
      */
-    public function not($expression): self
+    public function not($expression) : self
     {
         return $this->operator('$not', $expression);
     }
@@ -1002,7 +1002,7 @@ class Expr
      * @param mixed|self $exponent
      *
      */
-    public function pow($number, $exponent): self
+    public function pow($number, $exponent) : self
     {
         return $this->operator('$pow', [$number, $exponent]);
     }
@@ -1014,7 +1014,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/push/
      * @param mixed|self $expression
      */
-    public function push($expression): self
+    public function push($expression) : self
     {
         return $this->operator('$push', $expression);
     }
@@ -1029,7 +1029,7 @@ class Expr
      * @param mixed|self $end   An integer that specifies the exclusive upper limit of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|self $step  Optional. An integer that specifies the increment value. Can be any valid expression that resolves to a non-zero integer. Defaults to 1.
      */
-    public function range($start, $end, $step = 1): self
+    public function range($start, $end, $step = 1) : self
     {
         return $this->operator('$range', [$start, $end, $step]);
     }
@@ -1043,7 +1043,7 @@ class Expr
      * @param mixed|self $initialValue The initial cumulative value set before in is applied to the first element of the input array.
      * @param mixed|self $in           A valid expression that $reduce applies to each element in the input array in left-to-right order. Wrap the input value with $reverseArray to yield the equivalent of applying the combining expression from right-to-left.
      */
-    public function reduce($input, $initialValue, $in): self
+    public function reduce($input, $initialValue, $in) : self
     {
         return $this->operator('$reduce', ['input' => $input, 'initialValue' => $initialValue, 'in' => $in]);
     }
@@ -1055,7 +1055,7 @@ class Expr
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/reverseArray/
      * @param mixed|self $expression
      */
-    public function reverseArray($expression): self
+    public function reverseArray($expression) : self
     {
         return $this->operator('$reverseArray', $expression);
     }
@@ -1069,7 +1069,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/second/
      * @param mixed|self $expression
      */
-    public function second($expression): self
+    public function second($expression) : self
     {
         return $this->operator('$second', $expression);
     }
@@ -1084,7 +1084,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function setDifference($expression1, $expression2): self
+    public function setDifference($expression1, $expression2) : self
     {
         return $this->operator('$setDifference', [$expression1, $expression2]);
     }
@@ -1100,7 +1100,7 @@ class Expr
      * @param mixed|self $expression2
      * @param mixed|self ...$expressions Additional sets
      */
-    public function setEquals($expression1, $expression2, ...$expressions): self
+    public function setEquals($expression1, $expression2, ...$expressions) : self
     {
         return $this->operator('$setEquals', func_get_args());
     }
@@ -1116,7 +1116,7 @@ class Expr
      * @param mixed|self $expression2
      * @param mixed|self ...$expressions Additional sets
      */
-    public function setIntersection($expression1, $expression2, ...$expressions): self
+    public function setIntersection($expression1, $expression2, ...$expressions) : self
     {
         return $this->operator('$setIntersection', func_get_args());
     }
@@ -1131,7 +1131,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function setIsSubset($expression1, $expression2): self
+    public function setIsSubset($expression1, $expression2) : self
     {
         return $this->operator('$setIsSubset', [$expression1, $expression2]);
     }
@@ -1147,7 +1147,7 @@ class Expr
      * @param mixed|self $expression2
      * @param mixed|self ...$expressions Additional sets
      */
-    public function setUnion($expression1, $expression2, ...$expressions): self
+    public function setUnion($expression1, $expression2, ...$expressions) : self
     {
         return $this->operator('$setUnion', func_get_args());
     }
@@ -1160,7 +1160,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/size/
      * @param mixed|self $expression
      */
-    public function size($expression): self
+    public function size($expression) : self
     {
         return $this->operator('$size', $expression);
     }
@@ -1174,7 +1174,7 @@ class Expr
      * @param mixed|self|null $position
      *
      */
-    public function slice($array, $n, $position = null): self
+    public function slice($array, $n, $position = null) : self
     {
         if ($position === null) {
             return $this->operator('$slice', [$array, $n]);
@@ -1195,7 +1195,7 @@ class Expr
      * @param mixed|self $delimiter The delimiter to use when splitting the string expression. Can be any valid expression as long as it resolves to a string.
      *
      */
-    public function split($string, $delimiter): self
+    public function split($string, $delimiter) : self
     {
         return $this->operator('$split', [$string, $delimiter]);
     }
@@ -1210,7 +1210,7 @@ class Expr
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/sqrt/
      * @param mixed|self $expression
      */
-    public function sqrt($expression): self
+    public function sqrt($expression) : self
     {
         return $this->operator('$sqrt', $expression);
     }
@@ -1225,7 +1225,7 @@ class Expr
      * @param mixed|self ...$expressions Additional samples
      *
      */
-    public function stdDevPop($expression1, ...$expressions): self
+    public function stdDevPop($expression1, ...$expressions) : self
     {
         $expression = empty($expressions) ? $expression1 : func_get_args();
 
@@ -1242,7 +1242,7 @@ class Expr
      * @param mixed|self ...$expressions Additional samples
      *
      */
-    public function stdDevSamp($expression1, ...$expressions): self
+    public function stdDevSamp($expression1, ...$expressions) : self
     {
         $expression = empty($expressions) ? $expression1 : func_get_args();
 
@@ -1261,7 +1261,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function strcasecmp($expression1, $expression2): self
+    public function strcasecmp($expression1, $expression2) : self
     {
         return $this->operator('$strcasecmp', [$expression1, $expression2]);
     }
@@ -1273,7 +1273,7 @@ class Expr
      * @param mixed|self $string
      *
      */
-    public function strLenBytes($string): self
+    public function strLenBytes($string) : self
     {
         return $this->operator('$strLenBytes', $string);
     }
@@ -1285,7 +1285,7 @@ class Expr
      * @param mixed|self $string
      *
      */
-    public function strLenCP($string): self
+    public function strLenCP($string) : self
     {
         return $this->operator('$strLenCP', $string);
     }
@@ -1301,7 +1301,7 @@ class Expr
      * @param mixed|self $start
      * @param mixed|self $length
      */
-    public function substr($string, $start, $length): self
+    public function substr($string, $start, $length) : self
     {
         return $this->operator('$substr', [$string, $start, $length]);
     }
@@ -1319,7 +1319,7 @@ class Expr
      * @param mixed|self $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      *
      */
-    public function substrBytes($string, $start, $count): self
+    public function substrBytes($string, $start, $count) : self
     {
         return $this->operator('$substrBytes', [$string, $start, $count]);
     }
@@ -1337,7 +1337,7 @@ class Expr
      * @param mixed|self $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      *
      */
-    public function substrCP($string, $start, $count): self
+    public function substrCP($string, $start, $count) : self
     {
         return $this->operator('$substrCP', [$string, $start, $count]);
     }
@@ -1352,7 +1352,7 @@ class Expr
      * @param mixed|self $expression1
      * @param mixed|self $expression2
      */
-    public function subtract($expression1, $expression2): self
+    public function subtract($expression1, $expression2) : self
     {
         return $this->operator('$subtract', [$expression1, $expression2]);
     }
@@ -1365,7 +1365,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sum/
      * @param mixed|self $expression
      */
-    public function sum($expression): self
+    public function sum($expression) : self
     {
         return $this->operator('$sum', $expression);
     }
@@ -1378,7 +1378,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/toLower/
      * @param mixed|self $expression
      */
-    public function toLower($expression): self
+    public function toLower($expression) : self
     {
         return $this->operator('$toLower', $expression);
     }
@@ -1391,7 +1391,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/toUpper/
      * @param mixed|self $expression
      */
-    public function toUpper($expression): self
+    public function toUpper($expression) : self
     {
         return $this->operator('$toUpper', $expression);
     }
@@ -1406,7 +1406,7 @@ class Expr
      * @param mixed|self $number
      *
      */
-    public function trunc($number): self
+    public function trunc($number) : self
     {
         return $this->operator('$trunc', $number);
     }
@@ -1420,7 +1420,7 @@ class Expr
      * @param mixed|self $expression
      *
      */
-    public function type($expression): self
+    public function type($expression) : self
     {
         return $this->operator('$type', $expression);
     }
@@ -1433,7 +1433,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/week/
      * @param mixed|self $expression
      */
-    public function week($expression): self
+    public function week($expression) : self
     {
         return $this->operator('$week', $expression);
     }
@@ -1446,7 +1446,7 @@ class Expr
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/year/
      * @param mixed|self $expression
      */
-    public function year($expression): self
+    public function year($expression) : self
     {
         return $this->operator('$year', $expression);
     }
@@ -1461,7 +1461,7 @@ class Expr
      * @param bool|null       $useLongestLength A boolean which specifies whether the length of the longest array determines the number of arrays in the output array.
      * @param mixed|self|null $defaults         An array of default element values to use if the input arrays have different lengths. You must specify useLongestLength: true along with this field, or else $zip will return an error.
      */
-    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self
+    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null) : self
     {
         $args = ['inputs' => $inputs];
         if ($useLongestLength !== null) {
@@ -1493,7 +1493,7 @@ class Expr
         return Type::convertPHPToDatabaseValue($expression);
     }
 
-    private function getDocumentPersister(): DocumentPersister
+    private function getDocumentPersister() : DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }
@@ -1506,7 +1506,7 @@ class Expr
      *
      * @param array|self[]|self $expression
      */
-    private function operator(string $operator, $expression): self
+    private function operator(string $operator, $expression) : self
     {
         if ($this->currentField) {
             $this->expr[$this->currentField][$operator] = $this->ensureArray($expression);
@@ -1522,7 +1522,7 @@ class Expr
      *
      * @throws \LogicException If a current field has not been set.
      */
-    private function requiresCurrentField(?string $method = null): void
+    private function requiresCurrentField(?string $method = null) : void
     {
         if (! $this->currentField) {
             throw new \LogicException(($method ?: 'This method') . ' requires you set a current field using field().');
@@ -1532,7 +1532,7 @@ class Expr
     /**
      * @throws \BadMethodCallException If there is no current switch operator.
      */
-    private function requiresSwitchStatement(?string $method = null): void
+    private function requiresSwitchStatement(?string $method = null) : void
     {
         $message = ($method ?: 'This method') . ' requires a valid switch statement (call switch() first).';
 
@@ -1554,7 +1554,7 @@ class Expr
      * {@link default()} methods.
      *
      */
-    public function switch(): self
+    public function switch() : self
     {
         $this->operator('$switch', []);
 
@@ -1570,7 +1570,7 @@ class Expr
      * @param mixed|self $expression
      *
      */
-    public function then($expression): self
+    public function then($expression) : self
     {
         if (! is_array($this->switchBranch)) {
             throw new \BadMethodCallException(static::class . '::then requires a valid case statement (call case() first).');

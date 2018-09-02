@@ -40,7 +40,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class): void
+    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class) : void
     {
         /** @var ClassMetadata $class */
         $reflClass = $class->getReflectionClass();
@@ -226,7 +226,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
     }
 
-    private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []): void
+    private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []) : void
     {
         $keys = array_merge($keys, $index->keys);
         $options = [];
@@ -249,7 +249,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @throws MappingException
      */
-    private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey): void
+    private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey) : void
     {
         $options = [];
         $allowed = ['unique', 'numInitialChunks'];
@@ -269,7 +269,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @param array|string $paths
      */
-    public static function create($paths = [], ?Reader $reader = null): AnnotationDriver
+    public static function create($paths = [], ?Reader $reader = null) : AnnotationDriver
     {
         if ($reader === null) {
             $reader = new AnnotationReader();

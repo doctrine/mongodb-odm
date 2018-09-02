@@ -55,7 +55,7 @@ final class HydratingIterator implements \Iterator
     /**
      * @see http://php.net/iterator.next
      */
-    public function next(): void
+    public function next() : void
     {
         $this->iterator->next();
     }
@@ -63,7 +63,7 @@ final class HydratingIterator implements \Iterator
     /**
      * @see http://php.net/iterator.rewind
      */
-    public function rewind(): void
+    public function rewind() : void
     {
         $this->iterator->rewind();
     }
@@ -71,7 +71,7 @@ final class HydratingIterator implements \Iterator
     /**
      * @see http://php.net/iterator.valid
      */
-    public function valid(): bool
+    public function valid() : bool
     {
         return $this->key() !== null;
     }
@@ -81,7 +81,7 @@ final class HydratingIterator implements \Iterator
         return $document !== null ? $this->unitOfWork->getOrCreateDocument($this->class->name, $document, $this->unitOfWorkHints) : null;
     }
 
-    private function wrapTraversable(\Traversable $traversable): \Generator
+    private function wrapTraversable(\Traversable $traversable) : \Generator
     {
         foreach ($traversable as $key => $value) {
             yield $key => $value;

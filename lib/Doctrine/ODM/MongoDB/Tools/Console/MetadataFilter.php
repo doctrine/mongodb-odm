@@ -22,7 +22,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
      * @param  array|string    $filter
      * @return ClassMetadata[]
      */
-    public static function filter(array $metadatas, $filter): array
+    public static function filter(array $metadatas, $filter) : array
     {
         $metadatas = new MetadataFilter(new \ArrayIterator($metadatas), $filter);
         return iterator_to_array($metadatas);
@@ -40,7 +40,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
         parent::__construct($metadata);
     }
 
-    public function accept(): bool
+    public function accept() : bool
     {
         if (count($this->_filter) === 0) {
             return true;
@@ -57,7 +57,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
         return false;
     }
 
-    public function count(): int
+    public function count() : int
     {
         return count($this->getInnerIterator());
     }

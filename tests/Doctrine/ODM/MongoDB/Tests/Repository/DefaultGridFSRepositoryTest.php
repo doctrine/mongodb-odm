@@ -20,7 +20,7 @@ use function tmpfile;
 
 class DefaultGridFSRepositoryTest extends BaseTest
 {
-    public function testOpenUploadStreamReturnsWritableResource(): void
+    public function testOpenUploadStreamReturnsWritableResource() : void
     {
         $uploadStream = $this->getRepository()->openUploadStream('somefile.txt');
         self::assertInternalType('resource', $uploadStream);
@@ -39,7 +39,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertNull($file->getMetadata());
     }
 
-    public function testOpenUploadStreamUsesChunkSizeFromOptions(): void
+    public function testOpenUploadStreamUsesChunkSizeFromOptions() : void
     {
         $uploadOptions = new UploadOptions();
         $uploadOptions->chunkSizeBytes = 1234;
@@ -61,7 +61,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertNull($file->getMetadata());
     }
 
-    public function testUploadFromStreamStoresFile(): void
+    public function testUploadFromStreamStoresFile() : void
     {
         $uploadOptions = new UploadOptions();
         $uploadOptions->metadata = new FileMetadata();
@@ -97,7 +97,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         fclose($stream);
     }
 
-    public function testOpenDownloadStreamAllowsReadingFile(): void
+    public function testOpenDownloadStreamAllowsReadingFile() : void
     {
         /** @var File $file */
         $file = $this->getRepository()->uploadFromFile(__FILE__);
@@ -113,7 +113,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         fclose($stream);
     }
 
-    public function testUploadFromStreamPassesChunkSize(): void
+    public function testUploadFromStreamPassesChunkSize() : void
     {
         $uploadOptions = new UploadOptions();
         $uploadOptions->metadata = new FileMetadata();
@@ -150,7 +150,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         fclose($stream);
     }
 
-    public function testUploadFromFileWithoutFilenamePicksAFilename(): void
+    public function testUploadFromFileWithoutFilenamePicksAFilename() : void
     {
         /** @var File $file */
         $file = $this->getRepository()->uploadFromFile(__FILE__);
@@ -165,7 +165,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertInstanceOf(File::class, $this->getRepository()->findOneBy(['filename' => $file->getFilename()]));
     }
 
-    public function testUploadFromFileUsesProvidedFilename(): void
+    public function testUploadFromFileUsesProvidedFilename() : void
     {
         $uploadOptions = new UploadOptions();
         $uploadOptions->chunkSizeBytes = 1234;
@@ -176,7 +176,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame(1234, $file->getChunkSize());
     }
 
-    public function testReadingFileAllowsUpdatingMetadata(): void
+    public function testReadingFileAllowsUpdatingMetadata() : void
     {
         $uploadOptions = new UploadOptions();
         $uploadOptions->metadata = new FileMetadata();
@@ -195,7 +195,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertInstanceOf(User::class, $file->getMetadata()->getOwner());
     }
 
-    public function testDeletingFileAlsoDropsChunks(): void
+    public function testDeletingFileAlsoDropsChunks() : void
     {
         $file = $this->uploadFile(__FILE__);
 
@@ -208,12 +208,12 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame(0, $bucket->getChunksCollection()->count());
     }
 
-    private function getRepository(): GridFSRepository
+    private function getRepository() : GridFSRepository
     {
         return $this->dm->getRepository(File::class);
     }
 
-    private function uploadFile($filename, ?UploadOptions $uploadOptions = null): File
+    private function uploadFile($filename, ?UploadOptions $uploadOptions = null) : File
     {
         $fileResource = fopen($filename, 'r');
 

@@ -28,7 +28,7 @@ class TimestampType extends Type
         return $value instanceof Timestamp ? $this->extractSeconds($value) : ($value !== null ? (string) $value : null);
     }
 
-    private function extractSeconds(Timestamp $timestamp): int
+    private function extractSeconds(Timestamp $timestamp) : int
     {
             $parts = explode(':', substr((string) $timestamp, 1, -1));
             return (int) $parts[1];

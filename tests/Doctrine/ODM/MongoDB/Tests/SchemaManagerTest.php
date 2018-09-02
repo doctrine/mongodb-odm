@@ -761,7 +761,7 @@ class SchemaManagerTest extends TestCase
         return $this->createMock(Database::class);
     }
 
-    private function getMockDocumentManager(): DocumentManagerMock
+    private function getMockDocumentManager() : DocumentManagerMock
     {
         $config = new Configuration();
         $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/../../../../Documents'));

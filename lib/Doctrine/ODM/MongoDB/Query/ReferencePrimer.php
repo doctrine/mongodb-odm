@@ -61,7 +61,7 @@ class ReferencePrimer
         $this->dm = $dm;
         $this->uow = $uow;
 
-        $this->defaultPrimer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints): void {
+        $this->defaultPrimer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) : void {
             $qb = $dm->createQueryBuilder($class->name)
                 ->field($class->identifier)->in($ids);
 
@@ -92,7 +92,7 @@ class ReferencePrimer
      * @throws \LogicException If the mapped field is a simple reference and is
      *                         missing a target document class.
      */
-    public function primeReferences(ClassMetadata $class, $documents, string $fieldName, array $hints = [], ?callable $primer = null): void
+    public function primeReferences(ClassMetadata $class, $documents, string $fieldName, array $hints = [], ?callable $primer = null) : void
     {
         $data = $this->parseDotSyntaxForPrimer($fieldName, $class, $documents);
         $mapping = $data['mapping'];
@@ -157,7 +157,7 @@ class ReferencePrimer
      *
      * @param array|\Traversable $documents
      */
-    private function parseDotSyntaxForPrimer(string $fieldName, ClassMetadata $class, $documents, ?array $mapping = null): array
+    private function parseDotSyntaxForPrimer(string $fieldName, ClassMetadata $class, $documents, ?array $mapping = null) : array
     {
         // Recursion passthrough:
         if ($mapping !== null) {
@@ -228,7 +228,7 @@ class ReferencePrimer
      * have a target document class defined. Without that, there is no way to
      * infer the class of the referenced documents.
      */
-    private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds): void
+    private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds) : void
     {
         $mapping = $persistentCollection->getMapping();
         $class = null;

@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class CollWithReturnType extends ArrayCollection
 {
-    public function getDate(): \DateTime
+    public function getDate() : \DateTime
     {
         return new \DateTime();
     }

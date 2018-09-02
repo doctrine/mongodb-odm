@@ -32,7 +32,7 @@ final class PrimingIteratorTest extends BaseTest
         $this->assertCount(3, $iterator->toArray());
     }
 
-    private function getIterator($items = null): \Iterator
+    private function getIterator($items = null) : \Iterator
     {
         if (! is_array($items)) {
             $items = [

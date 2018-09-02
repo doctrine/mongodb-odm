@@ -787,7 +787,7 @@ class ClassMetadataTest extends BaseTest
         $cm->setShardKey(['referenceMany' => 1]);
     }
 
-    public function testArbitraryFieldInGridFSFileThrowsException(): void
+    public function testArbitraryFieldInGridFSFileThrowsException() : void
     {
         $object = new class {
             public $contentType;

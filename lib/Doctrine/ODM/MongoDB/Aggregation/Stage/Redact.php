@@ -13,7 +13,7 @@ class Redact extends Operator
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
             '$redact' => $this->expr->getExpression(),

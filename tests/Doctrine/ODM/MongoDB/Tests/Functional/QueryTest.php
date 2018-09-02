@@ -442,7 +442,7 @@ class QueryTest extends BaseTest
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
-    public function testPopFirst(): void
+    public function testPopFirst() : void
     {
         $article = new Article();
         $article->setTitle('test');
@@ -468,7 +468,7 @@ class QueryTest extends BaseTest
         $this->assertSame([2, 3], $article->getTags());
     }
 
-    public function testPopLast(): void
+    public function testPopLast() : void
     {
         $article = new Article();
         $article->setTitle('test');

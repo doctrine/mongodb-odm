@@ -19,7 +19,7 @@ class DocumentManager extends BaseDocumentManager
         $this->_eventManager = new EventManager();
     }
 
-    public function getEventManager(): EventManager
+    public function getEventManager() : EventManager
     {
         return $this->_eventManager;
     }

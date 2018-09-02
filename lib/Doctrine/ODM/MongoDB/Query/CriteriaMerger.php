@@ -22,7 +22,7 @@ class CriteriaMerger
      *
      * @param array ...$criterias Any number of query criteria arrays
      */
-    public function merge(...$criterias): array
+    public function merge(...$criterias) : array
     {
         $nonEmptyCriterias = array_values(array_filter($criterias, function (array $criteria) {
             return ! empty($criteria);

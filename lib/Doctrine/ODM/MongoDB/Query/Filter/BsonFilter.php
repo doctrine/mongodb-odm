@@ -34,7 +34,7 @@ abstract class BsonFilter
      *
      * @param mixed $value Value of the parameter.
      */
-    final public function setParameter(string $name, $value): self
+    final public function setParameter(string $name, $value) : self
     {
         $this->parameters[$name] = $value;
         return $this;
@@ -62,5 +62,5 @@ abstract class BsonFilter
      *
      * If there is no criteria for the class, an empty array should be returned.
      */
-    abstract public function addFilterCriteria(ClassMetadata $class): array;
+    abstract public function addFilterCriteria(ClassMetadata $class) : array;
 }

@@ -109,7 +109,7 @@ class HydratorFactory
     /**
      * Sets the UnitOfWork instance.
      */
-    public function setUnitOfWork(UnitOfWork $uow): void
+    public function setUnitOfWork(UnitOfWork $uow) : void
     {
         $this->unitOfWork = $uow;
     }
@@ -117,7 +117,7 @@ class HydratorFactory
     /**
      * Gets the hydrator object for the given document class.
      */
-    public function getHydratorFor(string $className): HydratorInterface
+    public function getHydratorFor(string $className) : HydratorInterface
     {
         if (isset($this->hydrators[$className])) {
             return $this->hydrators[$className];
@@ -162,7 +162,7 @@ class HydratorFactory
      *                        directory configured on the Configuration of the DocumentManager used
      *                        by this factory is used.
      */
-    public function generateHydratorClasses(array $classes, ?string $toDir = null): void
+    public function generateHydratorClasses(array $classes, ?string $toDir = null) : void
     {
         $hydratorDir = $toDir ?: $this->hydratorDir;
         $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -176,7 +176,7 @@ class HydratorFactory
     /**
      * @param string|false $fileName Filename where class code to be written or false to eval code.
      */
-    private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, $fileName): void
+    private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, $fileName) : void
     {
         $code = '';
 
@@ -420,7 +420,7 @@ EOF
      *
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
      */
-    public function hydrate(object $document, array $data, array $hints = []): array
+    public function hydrate(object $document, array $data, array $hints = []) : array
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners

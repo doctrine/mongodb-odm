@@ -43,7 +43,7 @@ class AlnumGenerator extends IncrementGenerator
     /**
      * Set padding on generated id
      */
-    public function setPad(int $pad): void
+    public function setPad(int $pad) : void
     {
         $this->pad = $pad;
     }
@@ -51,7 +51,7 @@ class AlnumGenerator extends IncrementGenerator
     /**
      * Enable awkwardSafeMode character set
      */
-    public function setAwkwardSafeMode(bool $awkwardSafeMode = false): void
+    public function setAwkwardSafeMode(bool $awkwardSafeMode = false) : void
     {
         $this->awkwardSafeMode = $awkwardSafeMode;
     }
@@ -59,7 +59,7 @@ class AlnumGenerator extends IncrementGenerator
     /**
      * Set the character set used for ID generation
      */
-    public function setChars(string $chars): void
+    public function setChars(string $chars) : void
     {
         $this->chars = $chars;
     }

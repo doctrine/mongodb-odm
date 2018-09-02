@@ -16,7 +16,7 @@ final class DefaultRepositoryFactory extends AbstractRepositoryFactory
     /**
      * {@inheritdoc}
      */
-    protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata): ObjectRepository
+    protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata) : ObjectRepository
     {
         return new $repositoryClassName($documentManager, $documentManager->getUnitOfWork(), $metadata);
     }

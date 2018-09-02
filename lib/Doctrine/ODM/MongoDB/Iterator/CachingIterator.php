@@ -48,7 +48,7 @@ final class CachingIterator implements Iterator
         $this->storeCurrentItem();
     }
 
-    public function toArray(): array
+    public function toArray() : array
     {
         $this->exhaustIterator();
 
@@ -76,7 +76,7 @@ final class CachingIterator implements Iterator
     /**
      * @see http://php.net/iterator.next
      */
-    public function next(): void
+    public function next() : void
     {
         if (! $this->iteratorExhausted) {
             $this->iterator->next();
@@ -89,7 +89,7 @@ final class CachingIterator implements Iterator
     /**
      * @see http://php.net/iterator.rewind
      */
-    public function rewind(): void
+    public function rewind() : void
     {
         /* If the iterator has advanced, exhaust it now so that future iteration
          * can rely on the cache.
@@ -105,7 +105,7 @@ final class CachingIterator implements Iterator
      *
      * @see http://php.net/iterator.valid
      */
-    public function valid(): bool
+    public function valid() : bool
     {
         return $this->key() !== null;
     }
@@ -113,7 +113,7 @@ final class CachingIterator implements Iterator
     /**
      * Ensures that the inner iterator is fully consumed and cached.
      */
-    private function exhaustIterator(): void
+    private function exhaustIterator() : void
     {
         while (! $this->iteratorExhausted) {
             $this->next();
@@ -123,7 +123,7 @@ final class CachingIterator implements Iterator
     /**
      * Stores the current item in the cache.
      */
-    private function storeCurrentItem(): void
+    private function storeCurrentItem() : void
     {
         $key = $this->iterator->key();
 
@@ -134,7 +134,7 @@ final class CachingIterator implements Iterator
         $this->items[$key] = $this->iterator->current();
     }
 
-    private function wrapTraversable(\Traversable $traversable): \Generator
+    private function wrapTraversable(\Traversable $traversable) : \Generator
     {
         foreach ($traversable as $key => $value) {
             yield $key => $value;

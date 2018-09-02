@@ -262,7 +262,7 @@ class XmlDriver extends FileDriver
         }
     }
 
-    private function addFieldMapping(ClassMetadata $class, array $mapping): void
+    private function addFieldMapping(ClassMetadata $class, array $mapping) : void
     {
         if (isset($mapping['name'])) {
             $name = $mapping['name'];
@@ -301,7 +301,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function addEmbedMapping(ClassMetadata $class, \SimpleXmlElement $embed, string $type): void
+    private function addEmbedMapping(ClassMetadata $class, \SimpleXmlElement $embed, string $type) : void
     {
         $attributes = $embed->attributes();
         $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
@@ -338,7 +338,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addReferenceMapping(ClassMetadata $class, $reference, string $type): void
+    private function addReferenceMapping(ClassMetadata $class, $reference, string $type) : void
     {
         $cascade = array_keys((array) $reference->cascade);
         if (count($cascade) === 1) {
@@ -408,7 +408,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addIndex(ClassMetadata $class, \SimpleXmlElement $xmlIndex): void
+    private function addIndex(ClassMetadata $class, \SimpleXmlElement $xmlIndex) : void
     {
         $attributes = $xmlIndex->attributes();
 
@@ -478,7 +478,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function getPartialFilterExpression(\SimpleXMLElement $fields): array
+    private function getPartialFilterExpression(\SimpleXMLElement $fields) : array
     {
         $partialFilterExpression = [];
         foreach ($fields as $field) {
@@ -513,7 +513,7 @@ class XmlDriver extends FileDriver
         return $partialFilterExpression;
     }
 
-    private function setShardKey(ClassMetadata $class, \SimpleXmlElement $xmlShardkey): void
+    private function setShardKey(ClassMetadata $class, \SimpleXmlElement $xmlShardkey) : void
     {
         $attributes = $xmlShardkey->attributes();
 
@@ -553,7 +553,7 @@ class XmlDriver extends FileDriver
      *
      * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
      */
-    private function transformReadPreference(\SimpleXMLElement $xmlReadPreference): array
+    private function transformReadPreference(\SimpleXMLElement $xmlReadPreference) : array
     {
         $tags = null;
         if (isset($xmlReadPreference->{'tag-set'})) {
@@ -572,7 +572,7 @@ class XmlDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
-    protected function loadMappingFile($file): array
+    protected function loadMappingFile($file) : array
     {
         $result = [];
 
@@ -594,7 +594,7 @@ class XmlDriver extends FileDriver
         return $result;
     }
 
-    private function validateSchema(string $filename): void
+    private function validateSchema(string $filename) : void
     {
         $document = new DOMDocument();
         $document->load($filename);
@@ -615,14 +615,14 @@ class XmlDriver extends FileDriver
     /**
      * @param LibXMLError[] $xmlErrors
      */
-    private function formatErrors(array $xmlErrors): string
+    private function formatErrors(array $xmlErrors) : string
     {
-        return implode("\n", array_map(function (LibXMLError $error): string {
+        return implode("\n", array_map(function (LibXMLError $error) : string {
             return sprintf('Line %d:%d: %s', $error->line, $error->column, $error->message);
         }, $xmlErrors));
     }
 
-    private function addGridFSMappings(ClassMetadata $class, \SimpleXMLElement $xmlRoot): void
+    private function addGridFSMappings(ClassMetadata $class, \SimpleXMLElement $xmlRoot) : void
     {
         if (! $class->isFile) {
             return;

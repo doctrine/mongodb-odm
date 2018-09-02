@@ -32,7 +32,7 @@ class UuidGenerator extends AbstractIdGenerator
     /**
      * Used to set the salt that will be applied to each id
      */
-    public function setSalt(string $salt): void
+    public function setSalt(string $salt) : void
     {
         $this->salt = $salt;
     }
@@ -42,7 +42,7 @@ class UuidGenerator extends AbstractIdGenerator
      *
      * @return string $salt The current salt
      */
-    public function getSalt(): string
+    public function getSalt() : string
     {
         return $this->salt;
     }
@@ -50,7 +50,7 @@ class UuidGenerator extends AbstractIdGenerator
     /**
      * Checks that a given string is a valid uuid.
      */
-    public function isValid(string $uuid): bool
+    public function isValid(string $uuid) : bool
     {
         return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid)
             === 1;
@@ -74,7 +74,7 @@ class UuidGenerator extends AbstractIdGenerator
     /**
      * Generates a v4 UUID
      */
-    public function generateV4(): string
+    public function generateV4() : string
     {
         return sprintf(
             '%04x%04x%04x%04x%04x%04x%04x%04x',
@@ -102,7 +102,7 @@ class UuidGenerator extends AbstractIdGenerator
      *
      * @throws \Exception When the provided namespace is invalid.
      */
-    public function generateV5(string $namespace, string $salt): string
+    public function generateV5(string $namespace, string $salt) : string
     {
         if (! $this->isValid($namespace)) {
             throw new \Exception('Provided $namespace is invalid: ' . $namespace);

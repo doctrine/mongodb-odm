@@ -31,7 +31,7 @@ class SortByCount extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
             '$sortByCount' => $this->fieldName,

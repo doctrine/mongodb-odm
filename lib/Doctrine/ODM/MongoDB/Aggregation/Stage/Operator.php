@@ -32,7 +32,7 @@ abstract class Operator extends Stage
         $this->expr = $builder->expr();
     }
 
-    public function __call(string $method, array $args): self
+    public function __call(string $method, array $args) : self
     {
         $this->expr->$method(...$args);
 
@@ -49,7 +49,7 @@ abstract class Operator extends Stage
      * @see Expr::abs
      * @param mixed|Expr $number
      */
-    public function abs($number): self
+    public function abs($number) : self
     {
         $this->expr->abs($number);
 
@@ -69,7 +69,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
      */
-    public function add($expression1, $expression2, ...$expressions): self
+    public function add($expression1, $expression2, ...$expressions) : self
     {
         $this->expr->add(...func_get_args());
 
@@ -84,7 +84,7 @@ abstract class Operator extends Stage
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions): self
+    public function addAnd($expression, ...$expressions) : self
     {
         $this->expr->addAnd(...func_get_args());
 
@@ -99,7 +99,7 @@ abstract class Operator extends Stage
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions): self
+    public function addOr($expression, ...$expressions) : self
     {
         $this->expr->addOr(...func_get_args());
 
@@ -116,7 +116,7 @@ abstract class Operator extends Stage
      * @see Expr::allElementsTrue
      * @param mixed|Expr $expression
      */
-    public function allElementsTrue($expression): self
+    public function allElementsTrue($expression) : self
     {
         $this->expr->allElementsTrue($expression);
 
@@ -133,7 +133,7 @@ abstract class Operator extends Stage
      * @see Expr::anyElementTrue
      * @param array|Expr $expression
      */
-    public function anyElementTrue($expression): self
+    public function anyElementTrue($expression) : self
     {
         $this->expr->anyElementTrue($expression);
 
@@ -153,7 +153,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $array
      * @param mixed|Expr $index
      */
-    public function arrayElemAt($array, $index): self
+    public function arrayElemAt($array, $index) : self
     {
         $this->expr->arrayElemAt($array, $index);
 
@@ -170,7 +170,7 @@ abstract class Operator extends Stage
      * @see Expr::ceil
      * @param mixed|Expr $number
      */
-    public function ceil($number): self
+    public function ceil($number) : self
     {
         $this->expr->ceil($number);
 
@@ -188,7 +188,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function cmp($expression1, $expression2): self
+    public function cmp($expression1, $expression2) : self
     {
         $this->expr->cmp($expression1, $expression2);
 
@@ -208,7 +208,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
      */
-    public function concat($expression1, $expression2, ...$expressions): self
+    public function concat($expression1, $expression2, ...$expressions) : self
     {
         $this->expr->concat(...func_get_args());
 
@@ -227,7 +227,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $array2
      * @param mixed|Expr ...$arrays Additional expressions
      */
-    public function concatArrays($array1, $array2, ...$arrays): self
+    public function concatArrays($array1, $array2, ...$arrays) : self
     {
         $this->expr->concatArrays(...func_get_args());
 
@@ -246,7 +246,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $then
      * @param mixed|Expr $else
      */
-    public function cond($if, $then, $else): self
+    public function cond($if, $then, $else) : self
     {
         $this->expr->cond($if, $then, $else);
 
@@ -265,7 +265,7 @@ abstract class Operator extends Stage
      * @param string     $format
      * @param mixed|Expr $expression
      */
-    public function dateToString($format, $expression): self
+    public function dateToString($format, $expression) : self
     {
         $this->expr->dateToString($format, $expression);
 
@@ -281,7 +281,7 @@ abstract class Operator extends Stage
      * @see Expr::dayOfMonth
      * @param mixed|Expr $expression
      */
-    public function dayOfMonth($expression): self
+    public function dayOfMonth($expression) : self
     {
         $this->expr->dayOfMonth($expression);
 
@@ -298,7 +298,7 @@ abstract class Operator extends Stage
      * @see Expr::dayOfWeek
      * @param mixed|Expr $expression
      */
-    public function dayOfWeek($expression): self
+    public function dayOfWeek($expression) : self
     {
         $this->expr->dayOfWeek($expression);
 
@@ -314,7 +314,7 @@ abstract class Operator extends Stage
      * @see Expr::dayOfYear
      * @param mixed|Expr $expression
      */
-    public function dayOfYear($expression): self
+    public function dayOfYear($expression) : self
     {
         $this->expr->dayOfYear($expression);
 
@@ -332,7 +332,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function divide($expression1, $expression2): self
+    public function divide($expression1, $expression2) : self
     {
         $this->expr->divide($expression1, $expression2);
 
@@ -347,7 +347,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function eq($expression1, $expression2): self
+    public function eq($expression1, $expression2) : self
     {
         $this->expr->eq($expression1, $expression2);
 
@@ -364,7 +364,7 @@ abstract class Operator extends Stage
      * @see Expr::exp
      * @param mixed|Expr $exponent
      */
-    public function exp($exponent): self
+    public function exp($exponent) : self
     {
         $this->expr->exp($exponent);
 
@@ -410,7 +410,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $cond
      *
      */
-    public function filter($input, $as, $cond): self
+    public function filter($input, $as, $cond) : self
     {
         $this->expr->filter($input, $as, $cond);
 
@@ -427,7 +427,7 @@ abstract class Operator extends Stage
      * @see Expr::floor
      * @param mixed|Expr $number
      */
-    public function floor($number): self
+    public function floor($number) : self
     {
         $this->expr->floor($number);
 
@@ -444,7 +444,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function gt($expression1, $expression2): self
+    public function gt($expression1, $expression2) : self
     {
         $this->expr->gt($expression1, $expression2);
 
@@ -461,7 +461,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function gte($expression1, $expression2): self
+    public function gte($expression1, $expression2) : self
     {
         $this->expr->gte($expression1, $expression2);
 
@@ -477,7 +477,7 @@ abstract class Operator extends Stage
      * @see Expr::hour
      * @param mixed|Expr $expression
      */
-    public function hour($expression): self
+    public function hour($expression) : self
     {
         $this->expr->hour($expression);
 
@@ -495,7 +495,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression
      * @param mixed|Expr $arrayExpression
      */
-    public function in($expression, $arrayExpression): self
+    public function in($expression, $arrayExpression) : self
     {
         $this->expr->in($expression, $arrayExpression);
 
@@ -514,7 +514,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $start            Optional. An integer, or a number that can be represented as integers (such as 2.0), that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param mixed|Expr $end              An integer, or a number that can be represented as integers (such as 2.0), that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      */
-    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): self
+    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null) : self
     {
         $this->expr->indexOfArray($arrayExpression, $searchExpression, $start, $end);
 
@@ -532,7 +532,7 @@ abstract class Operator extends Stage
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      */
-    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self
+    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null) : self
     {
         $this->expr->indexOfBytes($stringExpression, $substringExpression, $start, $end);
 
@@ -550,7 +550,7 @@ abstract class Operator extends Stage
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      */
-    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self
+    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null) : self
     {
         $this->expr->indexOfCP($stringExpression, $substringExpression, $start, $end);
 
@@ -570,7 +570,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression
      * @param mixed|Expr $replacementExpression
      */
-    public function ifNull($expression, $replacementExpression): self
+    public function ifNull($expression, $replacementExpression) : self
     {
         $this->expr->ifNull($expression, $replacementExpression);
 
@@ -586,7 +586,7 @@ abstract class Operator extends Stage
      * @see Expr::isArray
      * @param mixed|Expr $expression
      */
-    public function isArray($expression): self
+    public function isArray($expression) : self
     {
         $this->expr->isArray($expression);
 
@@ -602,7 +602,7 @@ abstract class Operator extends Stage
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/isoDayOfWeek/
      * @param mixed|Expr $expression
      */
-    public function isoDayOfWeek($expression): self
+    public function isoDayOfWeek($expression) : self
     {
         $this->expr->isoDayOfWeek($expression);
 
@@ -620,7 +620,7 @@ abstract class Operator extends Stage
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/isoWeek/
      * @param mixed|Expr $expression
      */
-    public function isoWeek($expression): self
+    public function isoWeek($expression) : self
     {
         $this->expr->isoWeek($expression);
 
@@ -638,7 +638,7 @@ abstract class Operator extends Stage
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/isoWeek/
      * @param mixed|Expr $expression
      */
-    public function isoWeekYear($expression): self
+    public function isoWeekYear($expression) : self
     {
         $this->expr->isoWeekYear($expression);
 
@@ -654,7 +654,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
      * @param mixed|Expr $in   The expression to evaluate.
      */
-    public function let($vars, $in): self
+    public function let($vars, $in) : self
     {
         $this->expr->let($vars, $in);
 
@@ -669,7 +669,7 @@ abstract class Operator extends Stage
      * @see Expr::literal
      * @param mixed|Expr $value
      */
-    public function literal($value): self
+    public function literal($value) : self
     {
         $this->expr->literal($value);
 
@@ -687,7 +687,7 @@ abstract class Operator extends Stage
      * @see Expr::ln
      * @param mixed|Expr $number
      */
-    public function ln($number): self
+    public function ln($number) : self
     {
         $this->expr->ln($number);
 
@@ -708,7 +708,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $number
      * @param mixed|Expr $base
      */
-    public function log($number, $base): self
+    public function log($number, $base) : self
     {
         $this->expr->log($number, $base);
 
@@ -727,7 +727,7 @@ abstract class Operator extends Stage
      * @see Expr::log10
      * @param mixed|Expr $number
      */
-    public function log10($number): self
+    public function log10($number) : self
     {
         $this->expr->log10($number);
 
@@ -744,7 +744,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function lt($expression1, $expression2): self
+    public function lt($expression1, $expression2) : self
     {
         $this->expr->lt($expression1, $expression2);
 
@@ -761,7 +761,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function lte($expression1, $expression2): self
+    public function lte($expression1, $expression2) : self
     {
         $this->expr->lte($expression1, $expression2);
 
@@ -778,7 +778,7 @@ abstract class Operator extends Stage
      * @param string     $as    The variable name for the items in the input array. The in expression accesses each item in the input array by this variable.
      * @param mixed|Expr $in    The expression to apply to each item in the input array. The expression accesses the item by its variable name.
      */
-    public function map($input, $as, $in): self
+    public function map($input, $as, $in) : self
     {
         $this->expr->map($input, $as, $in);
 
@@ -792,7 +792,7 @@ abstract class Operator extends Stage
      * @see Expr::meta
      * @param mixed|Expr $metaDataKeyword
      */
-    public function meta($metaDataKeyword): self
+    public function meta($metaDataKeyword) : self
     {
         $this->expr->meta($metaDataKeyword);
 
@@ -808,7 +808,7 @@ abstract class Operator extends Stage
      * @see Expr::millisecond
      * @param mixed|Expr $expression
      */
-    public function millisecond($expression): self
+    public function millisecond($expression) : self
     {
         $this->expr->millisecond($expression);
 
@@ -824,7 +824,7 @@ abstract class Operator extends Stage
      * @see Expr::minute
      * @param mixed|Expr $expression
      */
-    public function minute($expression): self
+    public function minute($expression) : self
     {
         $this->expr->minute($expression);
 
@@ -842,7 +842,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function mod($expression1, $expression2): self
+    public function mod($expression1, $expression2) : self
     {
         $this->expr->mod($expression1, $expression2);
 
@@ -858,7 +858,7 @@ abstract class Operator extends Stage
      * @see Expr::month
      * @param mixed|Expr $expression
      */
-    public function month($expression): self
+    public function month($expression) : self
     {
         $this->expr->month($expression);
 
@@ -876,7 +876,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
      */
-    public function multiply($expression1, $expression2, ...$expressions): self
+    public function multiply($expression1, $expression2, ...$expressions) : self
     {
         $this->expr->multiply(...func_get_args());
 
@@ -893,7 +893,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function ne($expression1, $expression2): self
+    public function ne($expression1, $expression2) : self
     {
         $this->expr->ne($expression1, $expression2);
 
@@ -907,7 +907,7 @@ abstract class Operator extends Stage
      * @see Expr::not
      * @param mixed|Expr $expression
      */
-    public function not($expression): self
+    public function not($expression) : self
     {
         $this->expr->not($expression);
 
@@ -928,7 +928,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $exponent
      *
      */
-    public function pow($number, $exponent): self
+    public function pow($number, $exponent) : self
     {
         $this->expr->pow($number, $exponent);
 
@@ -946,7 +946,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $end   An integer that specifies the exclusive upper limit of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $step  Optional. An integer that specifies the increment value. Can be any valid expression that resolves to a non-zero integer. Defaults to 1.
      */
-    public function range($start, $end, $step = 1): self
+    public function range($start, $end, $step = 1) : self
     {
         $this->expr->range($start, $end, $step);
 
@@ -963,7 +963,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $initialValue The initial cumulative value set before in is applied to the first element of the input array.
      * @param mixed|Expr $in           A valid expression that $reduce applies to each element in the input array in left-to-right order. Wrap the input value with $reverseArray to yield the equivalent of applying the combining expression from right-to-left.
      */
-    public function reduce($input, $initialValue, $in): self
+    public function reduce($input, $initialValue, $in) : self
     {
         $this->expr->reduce($input, $initialValue, $in);
 
@@ -978,7 +978,7 @@ abstract class Operator extends Stage
      * @see Expr::reverseArray
      * @param mixed|Expr $expression
      */
-    public function reverseArray($expression): self
+    public function reverseArray($expression) : self
     {
         $this->expr->reverseArray($expression);
 
@@ -995,7 +995,7 @@ abstract class Operator extends Stage
      * @see Expr::second
      * @param mixed|Expr $expression
      */
-    public function second($expression): self
+    public function second($expression) : self
     {
         $this->expr->second($expression);
 
@@ -1013,7 +1013,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function setDifference($expression1, $expression2): self
+    public function setDifference($expression1, $expression2) : self
     {
         $this->expr->setDifference($expression1, $expression2);
 
@@ -1032,7 +1032,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expression3s Additional sets
      */
-    public function setEquals($expression1, $expression2, ...$expressions): self
+    public function setEquals($expression1, $expression2, ...$expressions) : self
     {
         $this->expr->setEquals(...func_get_args());
 
@@ -1051,7 +1051,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
      */
-    public function setIntersection($expression1, $expression2, ...$expressions): self
+    public function setIntersection($expression1, $expression2, ...$expressions) : self
     {
         $this->expr->setIntersection(...func_get_args());
 
@@ -1070,7 +1070,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function setIsSubset($expression1, $expression2): self
+    public function setIsSubset($expression1, $expression2) : self
     {
         $this->expr->setIsSubset($expression1, $expression2);
 
@@ -1089,7 +1089,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
      */
-    public function setUnion($expression1, $expression2, ...$expressions): self
+    public function setUnion($expression1, $expression2, ...$expressions) : self
     {
         $this->expr->setUnion(...func_get_args());
 
@@ -1105,7 +1105,7 @@ abstract class Operator extends Stage
      * @see Expr::size
      * @param mixed|Expr $expression
      */
-    public function size($expression): self
+    public function size($expression) : self
     {
         $this->expr->size($expression);
 
@@ -1122,7 +1122,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr|null $position
      *
      */
-    public function slice($array, $n, $position = null): self
+    public function slice($array, $n, $position = null) : self
     {
         $this->expr->slice($array, $n, $position);
 
@@ -1141,7 +1141,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $delimiter The delimiter to use when splitting the string expression. Can be any valid expression as long as it resolves to a string.
      *
      */
-    public function split($string, $delimiter): self
+    public function split($string, $delimiter) : self
     {
         $this->expr->split($string, $delimiter);
 
@@ -1159,7 +1159,7 @@ abstract class Operator extends Stage
      * @see Expr::sqrt
      * @param mixed|Expr $expression
      */
-    public function sqrt($expression): self
+    public function sqrt($expression) : self
     {
         $this->expr->sqrt($expression);
 
@@ -1179,7 +1179,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function strcasecmp($expression1, $expression2): self
+    public function strcasecmp($expression1, $expression2) : self
     {
         $this->expr->strcasecmp($expression1, $expression2);
 
@@ -1193,7 +1193,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $string
      *
      */
-    public function strLenBytes($string): self
+    public function strLenBytes($string) : self
     {
         $this->expr->strLenBytes($string);
 
@@ -1207,7 +1207,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $string
      *
      */
-    public function strLenCP($string): self
+    public function strLenCP($string) : self
     {
         $this->expr->strLenCP($string);
 
@@ -1226,7 +1226,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $start
      * @param mixed|Expr $length
      */
-    public function substr($string, $start, $length): self
+    public function substr($string, $start, $length) : self
     {
         $this->expr->substr($string, $start, $length);
 
@@ -1246,7 +1246,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      *
      */
-    public function substrBytes($string, $start, $count): self
+    public function substrBytes($string, $start, $count) : self
     {
         $this->expr->substrBytes($string, $start, $count);
 
@@ -1266,7 +1266,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      *
      */
-    public function substrCP($string, $start, $count): self
+    public function substrCP($string, $start, $count) : self
     {
         $this->expr->substrCP($string, $start, $count);
 
@@ -1284,7 +1284,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function subtract($expression1, $expression2): self
+    public function subtract($expression1, $expression2) : self
     {
         $this->expr->subtract($expression1, $expression2);
 
@@ -1300,7 +1300,7 @@ abstract class Operator extends Stage
      * @see Expr::toLower
      * @param mixed|Expr $expression
      */
-    public function toLower($expression): self
+    public function toLower($expression) : self
     {
         $this->expr->toLower($expression);
 
@@ -1316,7 +1316,7 @@ abstract class Operator extends Stage
      * @see Expr::toUpper
      * @param mixed|Expr $expression
      */
-    public function toUpper($expression): self
+    public function toUpper($expression) : self
     {
         $this->expr->toUpper($expression);
 
@@ -1333,7 +1333,7 @@ abstract class Operator extends Stage
      * @see Expr::trunc
      * @param mixed|Expr $number
      */
-    public function trunc($number): self
+    public function trunc($number) : self
     {
         $this->expr->trunc($number);
 
@@ -1348,7 +1348,7 @@ abstract class Operator extends Stage
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/type/
      * @param mixed|Expr $expression
      */
-    public function type($expression): self
+    public function type($expression) : self
     {
         $this->expr->type($expression);
 
@@ -1364,7 +1364,7 @@ abstract class Operator extends Stage
      * @see Expr::week
      * @param mixed|Expr $expression
      */
-    public function week($expression): self
+    public function week($expression) : self
     {
         $this->expr->week($expression);
 
@@ -1380,7 +1380,7 @@ abstract class Operator extends Stage
      * @see Expr::year
      * @param mixed|Expr $expression
      */
-    public function year($expression): self
+    public function year($expression) : self
     {
         $this->expr->year($expression);
 
@@ -1398,7 +1398,7 @@ abstract class Operator extends Stage
      * @param bool|null       $useLongestLength A boolean which specifies whether the length of the longest array determines the number of arrays in the output array.
      * @param mixed|Expr|null $defaults         An array of default element values to use if the input arrays have different lengths. You must specify useLongestLength: true along with this field, or else $zip will return an error.
      */
-    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self
+    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null) : self
     {
         $this->expr->zip($inputs, $useLongestLength, $defaults);
 

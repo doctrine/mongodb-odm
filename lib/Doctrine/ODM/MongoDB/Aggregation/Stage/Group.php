@@ -29,7 +29,7 @@ class Group extends Operator
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
             '$group' => $this->expr->getExpression(),
@@ -48,7 +48,7 @@ class Group extends Operator
      * @param mixed|Expr $expression
      * @return $this
      */
-    public function addToSet($expression): self
+    public function addToSet($expression) : self
     {
         $this->expr->addToSet($expression);
 
@@ -64,7 +64,7 @@ class Group extends Operator
      * @see Expr::avg
      * @param mixed|Expr $expression
      */
-    public function avg($expression): self
+    public function avg($expression) : self
     {
         $this->expr->avg($expression);
 
@@ -106,7 +106,7 @@ class Group extends Operator
      * @see Expr::first
      * @param mixed|Expr $expression
      */
-    public function first($expression): self
+    public function first($expression) : self
     {
         $this->expr->first($expression);
 
@@ -122,7 +122,7 @@ class Group extends Operator
      * @see Expr::last
      * @param mixed|Expr $expression
      */
-    public function last($expression): self
+    public function last($expression) : self
     {
         $this->expr->last($expression);
 
@@ -137,7 +137,7 @@ class Group extends Operator
      * @see Expr::max
      * @param mixed|Expr $expression
      */
-    public function max($expression): self
+    public function max($expression) : self
     {
         $this->expr->max($expression);
 
@@ -152,7 +152,7 @@ class Group extends Operator
      * @see Expr::min
      * @param mixed|Expr $expression
      */
-    public function min($expression): self
+    public function min($expression) : self
     {
         $this->expr->min($expression);
 
@@ -167,7 +167,7 @@ class Group extends Operator
      * @see Expr::push
      * @param mixed|Expr $expression
      */
-    public function push($expression): self
+    public function push($expression) : self
     {
         $this->expr->push($expression);
 
@@ -184,7 +184,7 @@ class Group extends Operator
      * @param mixed|Expr $expression
      *
      */
-    public function stdDevPop($expression): self
+    public function stdDevPop($expression) : self
     {
         $this->expr->stdDevPop($expression);
 
@@ -201,7 +201,7 @@ class Group extends Operator
      * @param mixed|Expr $expression
      *
      */
-    public function stdDevSamp($expression): self
+    public function stdDevSamp($expression) : self
     {
         $this->expr->stdDevSamp($expression);
 
@@ -217,7 +217,7 @@ class Group extends Operator
      * @see Expr::sum
      * @param mixed|Expr $expression
      */
-    public function sum($expression): self
+    public function sum($expression) : self
     {
         $this->expr->sum($expression);
 

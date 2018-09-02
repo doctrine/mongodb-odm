@@ -55,7 +55,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
     /**
      * {@inheritdoc}
      */
-    public function generateClass(string $class, string $dir): void
+    public function generateClass(string $class, string $dir) : void
     {
         $collClassName = str_replace('\\', '', $class) . 'Persistent';
         $className = $this->collectionNamespace . '\\' . $collClassName;
@@ -66,7 +66,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
     /**
      * {@inheritdoc}
      */
-    public function loadClass(string $collectionClass, int $autoGenerate): string
+    public function loadClass(string $collectionClass, int $autoGenerate) : string
     {
         // These checks are not in __construct() because of BC and should be moved for 2.0
         if (! $this->collectionDir) {
@@ -181,7 +181,7 @@ CODE;
         }
     }
 
-    private function generateMethod(\ReflectionMethod $method): string
+    private function generateMethod(\ReflectionMethod $method) : string
     {
         $parametersString = $this->buildParametersString($method);
         $callParamsString = implode(', ', $this->getParameterNamesForDecoratedCall($method->getParameters()));
@@ -204,7 +204,7 @@ CODE;
         return $method;
     }
 
-    private function buildParametersString(\ReflectionMethod $method): string
+    private function buildParametersString(\ReflectionMethod $method) : string
     {
         $parameters = $method->getParameters();
         $parameterDefinitions = [];
@@ -241,7 +241,7 @@ CODE;
         return implode(', ', $parameterDefinitions);
     }
 
-    private function getParameterType(\ReflectionParameter $parameter): ?string
+    private function getParameterType(\ReflectionParameter $parameter) : ?string
     {
         // We need to pick the type hint class too
         if ($parameter->isArray()) {
@@ -271,7 +271,7 @@ CODE;
      *
      * @return string[]
      */
-    private function getParameterNamesForDecoratedCall(array $parameters): array
+    private function getParameterNamesForDecoratedCall(array $parameters) : array
     {
         return array_map(
             function (\ReflectionParameter $parameter) {
@@ -294,7 +294,7 @@ CODE;
     /**
      * @see \Doctrine\Common\Proxy\ProxyGenerator::getMethodReturnType()
      */
-    private function getMethodReturnType(\ReflectionMethod $method): string
+    private function getMethodReturnType(\ReflectionMethod $method) : string
     {
         if (! method_exists($method, 'hasReturnType') || ! $method->hasReturnType()) {
             return '';
@@ -309,7 +309,7 @@ CODE;
         \ReflectionType $type,
         \ReflectionMethod $method,
         ?\ReflectionParameter $parameter = null
-    ): string {
+    ) : string {
         $name = method_exists($type, 'getName') ? $type->getName() : (string) $type;
         $nameLower = strtolower($name);
         if ($nameLower === 'self') {

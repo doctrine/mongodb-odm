@@ -24,7 +24,7 @@ class PreLoadEventArgs extends LifecycleEventArgs
     /**
      * Get the array of data to be loaded and hydrated.
      */
-    public function &getData(): array
+    public function &getData() : array
     {
         return $this->data;
     }

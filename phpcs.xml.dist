@@ -38,13 +38,6 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
     </rule>
 
-    <!-- Require no space around colon in return types -->
-    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing">
-        <properties>
-            <property name="spacesCountBeforeColon" value="0"/>
-        </properties>
-    </rule>
-
     <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
         <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
     </rule>
@@ -52,7 +45,7 @@
     <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
         <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
     </rule>
-    
+
     <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
         <exclude-pattern>lib/Doctrine/ODM/MongoDB/Events.php</exclude-pattern>
     </rule>

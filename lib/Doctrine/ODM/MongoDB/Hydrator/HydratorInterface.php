@@ -13,5 +13,5 @@ interface HydratorInterface
     /**
      * Hydrate array of MongoDB document data into the given document object.
      */
-    public function hydrate(object $document, array $data, array $hints = []): array;
+    public function hydrate(object $document, array $data, array $hints = []) : array;
 }

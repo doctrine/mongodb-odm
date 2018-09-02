@@ -49,7 +49,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertEquals(PhonenumberCollection::class, $class->getAssociationCollectionClass('phonenumbers'));
     }
 
-    public function testInvalidMappingFileTriggersException(): void
+    public function testInvalidMappingFileTriggersException() : void
     {
         $className = InvalidMappingDocument::class;
         $mappingDriver = $this->_loadDriver();

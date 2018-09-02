@@ -31,7 +31,7 @@ abstract class AbstractField extends Annotation
      *
      * @internal
      */
-    public function getDeprecationMessage(): string
+    public function getDeprecationMessage() : string
     {
         return sprintf('%s will be removed in ODM 2.0. Use `@ODM\Field(type="%s")` instead.', get_class($this), $this->type);
     }
@@ -41,7 +41,7 @@ abstract class AbstractField extends Annotation
      *
      * @internal
      */
-    public function isDeprecated(): bool
+    public function isDeprecated() : bool
     {
         return false;
     }

@@ -103,12 +103,12 @@ abstract class Type
         return $value;
     }
 
-    public function closureToMongo(): string
+    public function closureToMongo() : string
     {
         return '$return = $value;';
     }
 
-    public function closureToPHP(): string
+    public function closureToPHP() : string
     {
         return '$return = $value;';
     }
@@ -116,7 +116,7 @@ abstract class Type
     /**
      * Register a new type in the type map.
      */
-    public static function registerType(string $name, string $class): void
+    public static function registerType(string $name, string $class) : void
     {
         self::$typesMap[$name] = $class;
     }
@@ -144,7 +144,7 @@ abstract class Type
      * @param mixed $variable
      * @throws \InvalidArgumentException
      */
-    public static function getTypeFromPHPVariable($variable): ?Type
+    public static function getTypeFromPHPVariable($variable) : ?Type
     {
         if (is_object($variable)) {
             if ($variable instanceof \DateTimeInterface) {
@@ -179,7 +179,7 @@ abstract class Type
      * @static
      * @throws MappingException
      */
-    public static function addType(string $name, string $className): void
+    public static function addType(string $name, string $className) : void
     {
         if (isset(self::$typesMap[$name])) {
             throw MappingException::typeExists($name);
@@ -193,7 +193,7 @@ abstract class Type
      *
      * @static
      */
-    public static function hasType(string $name): bool
+    public static function hasType(string $name) : bool
     {
         return isset(self::$typesMap[$name]);
     }
@@ -204,7 +204,7 @@ abstract class Type
      * @static
      * @throws MappingException
      */
-    public static function overrideType(string $name, string $className): void
+    public static function overrideType(string $name, string $className) : void
     {
         if (! isset(self::$typesMap[$name])) {
             throw MappingException::typeNotFound($name);
@@ -217,7 +217,7 @@ abstract class Type
      * Get the types array map which holds all registered types and the corresponding
      * type class
      */
-    public static function getTypesMap(): array
+    public static function getTypesMap() : array
     {
         return self::$typesMap;
     }

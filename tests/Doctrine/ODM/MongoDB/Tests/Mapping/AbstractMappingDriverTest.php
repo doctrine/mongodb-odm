@@ -425,7 +425,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         ], $class->getFieldMapping('metadata'), true);
     }
 
-    protected function loadMetadata($className): ClassMetadata
+    protected function loadMetadata($className) : ClassMetadata
     {
         $mappingDriver = $this->_loadDriver();
 

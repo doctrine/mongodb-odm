@@ -22,7 +22,7 @@ final class Command
     {
     }
 
-    public static function createForSucceededCommand(CommandStartedEvent $startedEvent, CommandSucceededEvent $succeededEvent): self
+    public static function createForSucceededCommand(CommandStartedEvent $startedEvent, CommandSucceededEvent $succeededEvent) : self
     {
         self::checkRequestIds($startedEvent, $succeededEvent);
 
@@ -33,7 +33,7 @@ final class Command
         return $instance;
     }
 
-    public static function createForFailedCommand(CommandStartedEvent $startedEvent, CommandFailedEvent $failedEvent): self
+    public static function createForFailedCommand(CommandStartedEvent $startedEvent, CommandFailedEvent $failedEvent) : self
     {
         self::checkRequestIds($startedEvent, $failedEvent);
 
@@ -47,44 +47,44 @@ final class Command
     /**
      * @param CommandSucceededEvent|CommandFailedEvent $finishedEvent
      */
-    private static function checkRequestIds(CommandStartedEvent $startedEvent, $finishedEvent): void
+    private static function checkRequestIds(CommandStartedEvent $startedEvent, $finishedEvent) : void
     {
         if ($startedEvent->getRequestId() !== $finishedEvent->getRequestId()) {
             throw new LogicException('Cannot create APM command for events with different request IDs');
         }
     }
 
-    public function getCommandName(): string
+    public function getCommandName() : string
     {
         return $this->startedEvent->getCommandName();
     }
 
-    public function getCommand(): object
+    public function getCommand() : object
     {
         return $this->startedEvent->getCommand();
     }
 
-    public function getDurationMicros(): int
+    public function getDurationMicros() : int
     {
         return $this->finishedEvent->getDurationMicros();
     }
 
-    public function getRequestId(): string
+    public function getRequestId() : string
     {
         return $this->startedEvent->getRequestId();
     }
 
-    public function getServer(): Server
+    public function getServer() : Server
     {
         return $this->finishedEvent->getServer();
     }
 
-    public function getReply(): object
+    public function getReply() : object
     {
         return $this->finishedEvent->getReply();
     }
 
-    public function getError(): ?\Throwable
+    public function getError() : ?\Throwable
     {
         return $this->finishedEvent instanceof CommandFailedEvent ? $this->finishedEvent->getError() : null;
     }

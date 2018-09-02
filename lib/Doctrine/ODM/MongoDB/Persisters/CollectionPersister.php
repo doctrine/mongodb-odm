@@ -49,7 +49,7 @@ class CollectionPersister
     /**
      * Deletes a PersistentCollection instance completely from a document using $unset.
      */
-    public function delete(PersistentCollectionInterface $coll, array $options): void
+    public function delete(PersistentCollectionInterface $coll, array $options) : void
     {
         $mapping = $coll->getMapping();
         if ($mapping['isInverseSide']) {
@@ -67,7 +67,7 @@ class CollectionPersister
      * Updates a PersistentCollection instance deleting removed rows and
      * inserting new rows.
      */
-    public function update(PersistentCollectionInterface $coll, array $options): void
+    public function update(PersistentCollectionInterface $coll, array $options) : void
     {
         $mapping = $coll->getMapping();
 
@@ -105,7 +105,7 @@ class CollectionPersister
      * set as a BSON array, which means the collection elements will be
      * reindexed numerically before storage.
      */
-    private function setCollection(PersistentCollectionInterface $coll, array $options): void
+    private function setCollection(PersistentCollectionInterface $coll, array $options) : void
     {
         list($propertyPath, $parent) = $this->getPathAndParent($coll);
         $coll->initialize();
@@ -121,7 +121,7 @@ class CollectionPersister
      * This method is intended to be used with the "pushAll" and "addToSet"
      * strategies.
      */
-    private function deleteElements(PersistentCollectionInterface $coll, array $options): void
+    private function deleteElements(PersistentCollectionInterface $coll, array $options) : void
     {
         $deleteDiff = $coll->getDeleteDiff();
 
@@ -154,7 +154,7 @@ class CollectionPersister
      * This method is intended to be used with the "pushAll" and "addToSet"
      * strategies.
      */
-    private function insertElements(PersistentCollectionInterface $coll, array $options): void
+    private function insertElements(PersistentCollectionInterface $coll, array $options) : void
     {
         $insertDiff = $coll->getInsertDiff();
 
@@ -205,7 +205,7 @@ class CollectionPersister
      *     list($path, $parent) = $this->getPathAndParent($coll)
      *     </code>
      */
-    private function getPathAndParent(PersistentCollectionInterface $coll): array
+    private function getPathAndParent(PersistentCollectionInterface $coll) : array
     {
         $mapping = $coll->getMapping();
         $fields = [];
@@ -229,7 +229,7 @@ class CollectionPersister
     /**
      * Executes a query updating the given document.
      */
-    private function executeQuery(object $document, array $newObj, array $options): void
+    private function executeQuery(object $document, array $newObj, array $options) : void
     {
         $className = get_class($document);
         $class = $this->dm->getClassMetadata($className);

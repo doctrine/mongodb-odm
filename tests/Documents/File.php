@@ -27,37 +27,37 @@ class File
     /** @ODM\File\Metadata(targetDocument=FileMetadata::class) */
     private $metadata;
 
-    public function getId(): ?string
+    public function getId() : ?string
     {
         return $this->id;
     }
 
-    public function getFilename(): ?string
+    public function getFilename() : ?string
     {
         return $this->filename;
     }
 
-    public function getChunkSize(): ?int
+    public function getChunkSize() : ?int
     {
         return $this->chunkSize;
     }
 
-    public function getLength(): ?int
+    public function getLength() : ?int
     {
         return $this->length;
     }
 
-    public function getUploadDate(): \DateTimeInterface
+    public function getUploadDate() : \DateTimeInterface
     {
         return $this->uploadDate;
     }
 
-    public function getMetadata(): ?FileMetadata
+    public function getMetadata() : ?FileMetadata
     {
         return $this->metadata;
     }
 
-    public function getOrCreateMetadata(): FileMetadata
+    public function getOrCreateMetadata() : FileMetadata
     {
         if (! $this->metadata) {
             $this->metadata = new FileMetadata();

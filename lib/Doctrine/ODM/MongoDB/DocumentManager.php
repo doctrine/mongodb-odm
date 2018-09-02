@@ -182,7 +182,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the proxy factory used by the DocumentManager to create document proxies.
      */
-    public function getProxyFactory(): ProxyFactory
+    public function getProxyFactory() : ProxyFactory
     {
         return $this->proxyFactory;
     }
@@ -191,7 +191,7 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null): DocumentManager
+    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null) : DocumentManager
     {
         return new static($client, $config, $eventManager);
     }
@@ -199,7 +199,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the EventManager used by the DocumentManager.
      */
-    public function getEventManager(): EventManager
+    public function getEventManager() : EventManager
     {
         return $this->eventManager;
     }
@@ -207,7 +207,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the MongoDB client instance that this DocumentManager wraps.
      */
-    public function getClient(): Client
+    public function getClient() : Client
     {
         return $this->client;
     }
@@ -237,7 +237,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the UnitOfWork used by the DocumentManager to coordinate operations.
      */
-    public function getUnitOfWork(): UnitOfWork
+    public function getUnitOfWork() : UnitOfWork
     {
         return $this->unitOfWork;
     }
@@ -246,7 +246,7 @@ class DocumentManager implements ObjectManager
      * Gets the Hydrator factory used by the DocumentManager to generate and get hydrators
      * for each type of document.
      */
-    public function getHydratorFactory(): HydratorFactory
+    public function getHydratorFactory() : HydratorFactory
     {
         return $this->hydratorFactory;
     }
@@ -254,7 +254,7 @@ class DocumentManager implements ObjectManager
     /**
      * Returns SchemaManager, used to create/drop indexes/collections/databases.
      */
-    public function getSchemaManager(): SchemaManager
+    public function getSchemaManager() : SchemaManager
     {
         return $this->schemaManager;
     }
@@ -274,7 +274,7 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the MongoDB instance for a class.
      */
-    public function getDocumentDatabase(string $className): Database
+    public function getDocumentDatabase(string $className) : Database
     {
         $className = ltrim($className, '\\');
 
@@ -296,7 +296,7 @@ class DocumentManager implements ObjectManager
      *
      * @return Database[]
      */
-    public function getDocumentDatabases(): array
+    public function getDocumentDatabases() : array
     {
         return $this->documentDatabases;
     }
@@ -306,7 +306,7 @@ class DocumentManager implements ObjectManager
      *
      * @throws MongoDBException When the $className param is not mapped to a collection.
      */
-    public function getDocumentCollection(string $className): Collection
+    public function getDocumentCollection(string $className) : Collection
     {
         $className = ltrim($className, '\\');
 
@@ -341,7 +341,7 @@ class DocumentManager implements ObjectManager
      *
      * @throws MongoDBException When the $className param is not mapped to a collection.
      */
-    public function getDocumentBucket(string $className): Bucket
+    public function getDocumentBucket(string $className) : Bucket
     {
         $className = ltrim($className, '\\');
 
@@ -376,7 +376,7 @@ class DocumentManager implements ObjectManager
      *
      * @return Collection[]
      */
-    public function getDocumentCollections(): array
+    public function getDocumentCollections() : array
     {
         return $this->documentCollections;
     }
@@ -386,7 +386,7 @@ class DocumentManager implements ObjectManager
      *
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
      */
-    public function createQueryBuilder($documentName = null): Query\Builder
+    public function createQueryBuilder($documentName = null) : Query\Builder
     {
         return new Query\Builder($this, $documentName);
     }
@@ -394,7 +394,7 @@ class DocumentManager implements ObjectManager
     /**
      * Creates a new aggregation builder instance for a class.
      */
-    public function createAggregationBuilder(string $documentName): Aggregation\Builder
+    public function createAggregationBuilder(string $documentName) : Aggregation\Builder
     {
         return new Aggregation\Builder($this, $documentName);
     }
@@ -497,7 +497,7 @@ class DocumentManager implements ObjectManager
      * @throws \InvalidArgumentException
      * @throws LockException
      */
-    public function lock(object $document, int $lockMode, ?int $lockVersion = null): void
+    public function lock(object $document, int $lockMode, ?int $lockVersion = null) : void
     {
         $this->unitOfWork->lock($document, $lockMode, $lockVersion);
     }
@@ -505,7 +505,7 @@ class DocumentManager implements ObjectManager
     /**
      * Releases a lock on the given document.
      */
-    public function unlock(object $document): void
+    public function unlock(object $document) : void
     {
         $this->unitOfWork->unlock($document);
     }
@@ -545,7 +545,7 @@ class DocumentManager implements ObjectManager
      *
      * @param string|object $identifier
      */
-    public function getReference(string $documentName, $identifier): object
+    public function getReference(string $documentName, $identifier) : object
     {
         /** @var ClassMetadata $class */
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
@@ -579,7 +579,7 @@ class DocumentManager implements ObjectManager
      *
      * @param mixed $identifier The document identifier.
      */
-    public function getPartialReference(string $documentName, $identifier): object
+    public function getPartialReference(string $documentName, $identifier) : object
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         $document = $this->unitOfWork->tryGetById($identifier, $class);
@@ -655,7 +655,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the Configuration used by the DocumentManager.
      */
-    public function getConfiguration(): Configuration
+    public function getConfiguration() : Configuration
     {
         return $this->config;
     }
@@ -750,7 +750,7 @@ class DocumentManager implements ObjectManager
      *
      * @throws MongoDBException If the DocumentManager is closed.
      */
-    private function errorIfClosed(): void
+    private function errorIfClosed() : void
     {
         if ($this->closed) {
             throw MongoDBException::documentManagerClosed();
@@ -761,7 +761,7 @@ class DocumentManager implements ObjectManager
      * Check if the Document manager is open or closed.
      *
      */
-    public function isOpen(): bool
+    public function isOpen() : bool
     {
         return ! $this->closed;
     }
@@ -769,7 +769,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the filter collection.
      */
-    public function getFilterCollection(): FilterCollection
+    public function getFilterCollection() : FilterCollection
     {
         if ($this->filterCollection === null) {
             $this->filterCollection = new FilterCollection($this);

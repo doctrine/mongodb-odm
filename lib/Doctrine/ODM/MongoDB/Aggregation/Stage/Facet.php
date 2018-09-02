@@ -23,7 +23,7 @@ class Facet extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
             '$facet' => array_map(function (Builder $builder) {
@@ -35,7 +35,7 @@ class Facet extends Stage
     /**
      * Set the current field for building the pipeline stage.
      */
-    public function field(string $field): self
+    public function field(string $field) : self
     {
         $this->field = $field;
         return $this;
@@ -46,7 +46,7 @@ class Facet extends Stage
      *
      * @param Builder|Stage $builder
      */
-    public function pipeline($builder): self
+    public function pipeline($builder) : self
     {
         if (! $this->field) {
             throw new \LogicException(__METHOD__ . ' requires you set a current field using field().');

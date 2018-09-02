@@ -15,7 +15,7 @@ trait AggregationTestTrait
     /**
      * @param string $className
      */
-    abstract protected function getMockBuilder($className): MockBuilder;
+    abstract protected function getMockBuilder($className) : MockBuilder;
 
     /**
      * @return Builder

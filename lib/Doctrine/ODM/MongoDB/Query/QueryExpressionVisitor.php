@@ -56,7 +56,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      *
      * @see ExpressionVisitor::walkComparison()
      */
-    public function walkComparison(Comparison $comparison): Expr
+    public function walkComparison(Comparison $comparison) : Expr
     {
         switch ($comparison->getOperator()) {
             case Comparison::EQ:
@@ -91,7 +91,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      *
      * @see ExpressionVisitor::walkCompositeExpression()
      */
-    public function walkCompositeExpression(CompositeExpression $compositeExpr): Expr
+    public function walkCompositeExpression(CompositeExpression $compositeExpr) : Expr
     {
         if (! isset(self::$compositeMethods[$compositeExpr->getType()])) {
             throw new \RuntimeException('Unknown composite ' . $compositeExpr->getType());

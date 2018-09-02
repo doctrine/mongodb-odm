@@ -39,12 +39,12 @@ class IncrementGenerator extends AbstractIdGenerator
         $this->collection = $collection;
     }
 
-    public function setKey(string $key): void
+    public function setKey(string $key) : void
     {
         $this->key = $key;
     }
 
-    public function setStartingId(int $startingId): void
+    public function setStartingId(int $startingId) : void
     {
         $this->startingId = $startingId;
     }

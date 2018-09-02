@@ -27,51 +27,51 @@ class DocumentPersisterMock extends DocumentPersister
         return $id;
     }
 
-    public function addInsert(object $document): void
+    public function addInsert(object $document) : void
     {
         $this->inserts[] = $document;
         $id = $this->identityColumnValueCounter++;
         $this->postInsertIds[$id] = [$id, $document];
     }
 
-    public function addUpsert(object $document): void
+    public function addUpsert(object $document) : void
     {
         $this->upserts[] = $document;
         $id = $this->identityColumnValueCounter++;
         $this->postInsertIds[$id] = [$id, $document];
     }
 
-    public function executeInserts(array $options = []): void
+    public function executeInserts(array $options = []) : void
     {
     }
 
-    public function executeUpserts(array $options = []): void
+    public function executeUpserts(array $options = []) : void
     {
     }
 
-    public function update(object $document, array $options = []): void
+    public function update(object $document, array $options = []) : void
     {
         $this->updates[] = $document;
     }
 
-    public function exists($document): bool
+    public function exists($document) : bool
     {
         $this->existsCalled = true;
 
         return false;
     }
 
-    public function delete(object $document, array $options = []): void
+    public function delete(object $document, array $options = []) : void
     {
         $this->deletes[] = $document;
     }
 
-    public function getInserts(): array
+    public function getInserts() : array
     {
         return $this->inserts;
     }
 
-    public function getUpserts(): array
+    public function getUpserts() : array
     {
         return $this->upserts;
     }

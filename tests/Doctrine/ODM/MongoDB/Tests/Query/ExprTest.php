@@ -758,7 +758,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$nin' => ['value1', 'value2']], $expr->getQuery());
     }
 
-    private function createExpr(?DocumentManager $dm = null, ?ClassMetadata $class = null): Expr
+    private function createExpr(?DocumentManager $dm = null, ?ClassMetadata $class = null) : Expr
     {
         if (! $dm) {
             $dm = $this->createMock(DocumentManager::class);
