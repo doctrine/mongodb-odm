@@ -1434,6 +1434,17 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
         }
 
+        if (isset($mapping['repositoryMethod']) && ! (empty($mapping['skip']) && empty($mapping['limit']) && empty($mapping['sort']))) {
+            @trigger_error(
+                sprintf(
+                    "Combining 'repositoryMethod' with skip, limit or sort (used on '%s' in class '%s') was deprecated in 1.3 and will be removed in 2.0. Please include those in the repository method itself.",
+                    $mapping['fieldName'],
+                    $this->name
+                ),
+                E_USER_DEPRECATED
+            );
+        }
+
         if (isset($mapping['reference']) && $mapping['type'] === 'one') {
             $mapping['association'] = self::REFERENCE_ONE;
         }
