@@ -67,7 +67,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     protected function createRepository(DocumentManager $documentManager, $documentName)
     {
         $metadata            = $documentManager->getClassMetadata($documentName);
-        $repositoryClassName = $metadata->customRepositoryClassName ?: $documentManager->getConfiguration()->getDefaultRepositoryClassName();
+        $repositoryClassName = $metadata->customRepositoryClassName ?: $documentManager->getConfiguration()->getDefaultDocumentRepositoryClassName();
 
         return $this->instantiateRepository($repositoryClassName, $documentManager, $metadata);
     }

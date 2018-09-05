@@ -505,16 +505,44 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * @return void
      *
      * @throws MongoDBException If not is a ObjectRepository
+     *
+     * @deprecated in version 1.2 and will be removed in 2.0. Please use setDefaultDocumentRepositoryClassName instead.
      */
     public function setDefaultRepositoryClassName($className)
     {
-        $reflectionClass = new \ReflectionClass($className);
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 and will be removed in 2.0. Please use setDefaultDocumentRepositoryClassName instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+        $this->setDefaultDocumentRepositoryClassName($className);
+    }
 
-        if ( ! $reflectionClass->implementsInterface(ObjectRepository::class)) {
+    /**
+     * Get default repository class.
+     *
+     * @return string
+     *
+     * @deprecated in version 1.2 and will be removed in 2.0. Please use getDefaultDocumentRepositoryClassName instead.
+     */
+    public function getDefaultRepositoryClassName()
+    {
+        @trigger_error(
+            sprintf('%s was deprecated in version 1.2 and will be removed in 2.0. Please use getDefaultDocumentRepositoryClassName instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+        return $this->getDefaultDocumentRepositoryClassName();
+    }
+
+    /**
+     * @throws MongoDBException If not is a ObjectRepository.
+     */
+    public function setDefaultDocumentRepositoryClassName($className)
+    {
+        $reflectionClass = new \ReflectionClass($className);
+        if (! $reflectionClass->implementsInterface(ObjectRepository::class)) {
             throw MongoDBException::invalidDocumentRepository($className);
         }
-
-        $this->attributes['defaultRepositoryClassName'] = $className;
+        $this->attributes['defaultDocumentRepositoryClassName'] = $className;
     }
 
     /**
@@ -522,10 +550,10 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      *
      * @return string
      */
-    public function getDefaultRepositoryClassName()
+    public function getDefaultDocumentRepositoryClassName()
     {
-        return isset($this->attributes['defaultRepositoryClassName'])
-            ? $this->attributes['defaultRepositoryClassName']
+        return isset($this->attributes['defaultDocumentRepositoryClassName'])
+            ? $this->attributes['defaultDocumentRepositoryClassName']
             : DocumentRepository::class;
     }
 
