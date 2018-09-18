@@ -269,14 +269,14 @@ It will create the indexes from the ``BlogPost`` document but will also create t
 defined on the ``Comment`` embedded document. The following would be executed on the underlying MongoDB
 database:
 
-..
+.. code-block:: javascript
 
     db.BlogPost.ensureIndexes({ 'slug' : 1, 'comments.date': 1 })
 
 Also, for your convenience you can create the indexes for your mapped documents from the
 :doc:`console <console-commands>`:
 
-..
+.. code-block:: console
 
     $ php mongodb.php mongodb:schema:create --index
 
