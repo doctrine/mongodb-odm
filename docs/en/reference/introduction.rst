@@ -331,7 +331,7 @@ Setup
 Before we can begin, we'll need to install the Doctrine MongoDB ODM library and
 its dependencies. The easiest way to do this is with `Composer`_:
 
-::
+.. code-block:: console
 
     $ composer require "doctrine/mongodb-odm"
 
@@ -477,7 +477,7 @@ use a polyfill to provide the API of the legacy driver.
 To do this, you have to require ``alcaeus/mongo-php-adapter`` before adding a composer
 dependency to ODM. To do this, run the following command:
 
-::
+.. code-block:: console
 
     $ composer config "platform.ext-mongo" "1.6.16" && composer require "alcaeus/mongo-php-adapter"
 
