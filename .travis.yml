@@ -24,7 +24,7 @@ jobs:
     # Test against lowest dependencies, including driver and server versions
     - stage: Test
       php: 7.2
-      env: SERVER_VERSION="3.2" KEY_ID="EA312927" DRIVER_VERSION="1.3.0"
+      env: SERVER_VERSION="3.2" KEY_ID="EA312927" DRIVER_VERSION="1.5.0"
       install:
         - composer update --prefer-lowest
         

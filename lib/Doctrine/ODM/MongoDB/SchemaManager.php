@@ -7,18 +7,21 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use MongoDB\Driver\Exception\RuntimeException;
+use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Model\IndexInfo;
 use function array_filter;
 use function array_unique;
+use function iterator_count;
 use function iterator_to_array;
 use function ksort;
-use function strpos;
 
 class SchemaManager
 {
     private const GRIDFS_FILE_COLLECTION_INDEX = ['files_id' => 1, 'n' => 1];
 
     private const GRIDFS_CHUNKS_COLLECTION_INDEX = ['filename' => 1, 'uploadDate' => 1];
+
+    private const CODE_SHARDING_ALREADY_INITIALIZED = 23;
 
     /** @var DocumentManager */
     protected $dm;
@@ -522,68 +525,42 @@ class SchemaManager
      * Ensure collections are sharded for all documents that can be loaded with the
      * metadata factory.
      *
-     * @param array $indexOptions Options for `ensureIndex` command. It's performed on an existing collections
-     *
      * @throws MongoDBException
      */
-    public function ensureSharding(array $indexOptions = []): void
+    public function ensureSharding(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || ! $class->isSharded()) {
                 continue;
             }
 
-            $this->ensureDocumentSharding($class->name, $indexOptions);
+            $this->ensureDocumentSharding($class->name);
         }
     }
 
     /**
      * Ensure sharding for collection by document name.
      *
-     * @param array $indexOptions Options for `ensureIndex` command. It's performed on an existing collections.
-     *
      * @throws MongoDBException
      */
-    public function ensureDocumentSharding(string $documentName, array $indexOptions = []): void
+    public function ensureDocumentSharding(string $documentName): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if (! $class->isSharded()) {
             return;
         }
 
-        $this->enableShardingForDbByDocumentName($documentName);
-
-        $try = 0;
-        do {
-            try {
-                $result = $this->runShardCollectionCommand($documentName);
-                $done = true;
-
-                // Need to check error message because MongoDB 3.0 does not return a code for this error
-                if (! (bool) $result['ok'] && strpos($result['errmsg'], 'please create an index that starts') !== false) {
-                    // The proposed key is not returned when using mongo-php-adapter with ext-mongodb.
-                    // See https://github.com/mongodb/mongo-php-driver/issues/296 for details
-                    $key = $result['proposedKey'] ?? $this->dm->getClassMetadata($documentName)->getShardKey()['keys'];
-
-                    $this->dm->getDocumentCollection($documentName)->ensureIndex($key, $indexOptions);
-                    $done = false;
-                }
-            } catch (RuntimeException $e) {
-                if ($e->getCode() === 20 || $e->getCode() === 23 || $e->getMessage() === 'already sharded') {
-                    return;
-                }
-
-                throw $e;
-            }
-        } while (! $done && $try < 2);
-
-        // Starting with MongoDB 3.2, this command returns code 20 when a collection is already sharded.
-        // For older MongoDB versions, check the error message
-        if ((bool) $result['ok'] || (isset($result['code']) && $result['code'] === 20) || $result['errmsg'] === 'already sharded') {
+        if ($this->collectionIsSharded($documentName)) {
             return;
         }
 
-        throw MongoDBException::failedToEnsureDocumentSharding($documentName, $result['errmsg']);
+        $this->enableShardingForDbByDocumentName($documentName);
+
+        try {
+            $this->runShardCollectionCommand($documentName);
+        } catch (RuntimeException $e) {
+            throw MongoDBException::failedToEnsureDocumentSharding($documentName, $e->getMessage());
+        }
     }
 
     /**
@@ -598,10 +575,13 @@ class SchemaManager
 
         try {
             $adminDb->command(['enableSharding' => $dbName]);
-        } catch (RuntimeException $e) {
-            if ($e->getCode() !== 23 || $e->getMessage() === 'already enabled') {
+        } catch (ServerException $e) {
+            // Don't throw an exception if sharding is already enabled; there's just no other way to check this
+            if ($e->getCode() !== self::CODE_SHARDING_ALREADY_INITIALIZED) {
                 throw MongoDBException::failedToEnableSharding($dbName, $e->getMessage());
             }
+        } catch (RuntimeException $e) {
+            throw MongoDBException::failedToEnableSharding($dbName, $e->getMessage());
         }
     }
 
@@ -650,5 +630,19 @@ class SchemaManager
         }
 
         $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX);
+    }
+
+    private function collectionIsSharded(string $documentName): bool
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+
+        $database = $this->dm->getDocumentDatabase($documentName);
+        $collections = $database->listCollections(['filter' => ['name' => $class->getCollection()]]);
+        if (! iterator_count($collections)) {
+            return false;
+        }
+
+        $stats = $database->command(['collstats' => $class->getCollection()])->toArray()[0];
+        return (bool) ($stats['sharded'] ?? false);
     }
 }
