@@ -34,6 +34,9 @@
 * The `setAutoGenerateProxyClasses` and `setAutoGenerateHydratorClasses` methods
   no longer accept `bool` arguments. Use one of the `AUTOGENERATE_*` constants
   from the `Configuration` class instead.
+* The `setRetryConnect` and `setRetryQuery` methods have been dropped without
+  replacement. You should implement proper error handling instead of simply
+  re-running queries or connection attempts.
 
 ## Cursor changes
 
