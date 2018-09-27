@@ -45,7 +45,7 @@ jobs:
       php: 7.2
       env: STATIC_ANALYSIS SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
       script:
-        - vendor/bin/phpstan analyse -l 1 lib
+        - vendor/bin/phpstan analyse
 
     - stage: Code Quality
       php: 7.2
