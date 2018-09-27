@@ -4,28 +4,30 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 
 class GH1138Test extends BaseTest
 {
-    /** @var Doctrine\ODM\MongoDB\Tests\QueryLogger */
-    private $ql;
+    /** @var CommandLogger */
+    private $logger;
 
-    protected function getConfiguration()
+    public function setUp()
     {
-        $this->markTestSkipped('mongodb-driver: query logging does not exist');
-        if (! isset($this->ql)) {
-            $this->ql = new QueryLogger();
-        }
+        parent::setUp();
 
-        $config = parent::getConfiguration();
-        $config->setLoggerCallable($this->ql);
+        $this->logger = new CommandLogger();
+        $this->logger->register();
+    }
 
-        return $config;
+    public function tearDown()
+    {
+        $this->logger->unregister();
+
+        return parent::tearDown();
     }
 
     public function testUpdatingDocumentBeforeItsInsertionShouldNotEntailMultipleQueries()
@@ -39,7 +41,7 @@ class GH1138Test extends BaseTest
         $this->dm->persist($doc);
         $this->dm->flush();
 
-        $this->assertCount(1, $this->ql, 'Changing a document before its insertion requires one query');
+        $this->assertCount(1, $this->logger, 'Changing a document before its insertion requires one query');
         $this->assertEquals('foo-changed', $doc->name);
         $this->assertEquals(1, $listener->inserts);
         $this->assertEquals(0, $listener->updates);

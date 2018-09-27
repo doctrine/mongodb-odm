@@ -4,31 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 use Documents\Sharded\ShardedOne;
 use MongoDB\BSON\ObjectId;
-use function array_keys;
 use function end;
 use function get_class;
 
 class ShardKeyTest extends BaseTest
 {
-    /** @var QueryLogger */
-    private $ql;
-
-    protected function getConfiguration()
-    {
-        $this->markTestSkipped('mongodb-driver: query logging does not exist');
-        if (! isset($this->ql)) {
-            $this->ql = new QueryLogger();
-        }
-
-        $config = parent::getConfiguration();
-        $config->setLoggerCallable($this->ql);
-
-        return $config;
-    }
+    /** @var CommandLogger */
+    private $logger;
 
     public function setUp()
     {
@@ -38,6 +24,16 @@ class ShardKeyTest extends BaseTest
         $this->skipTestIfNotSharded($class);
         $schemaManager = $this->dm->getSchemaManager();
         $schemaManager->ensureDocumentSharding($class);
+
+        $this->logger = new CommandLogger();
+        $this->logger->register();
+    }
+
+    public function tearDown()
+    {
+        $this->logger->unregister();
+
+        return parent::tearDown();
     }
 
     public function testUpdateAfterSave()
@@ -51,11 +47,13 @@ class ShardKeyTest extends BaseTest
         $o->title = 'test2';
         $this->dm->flush();
 
-        $queries = $this->ql->getAll();
+        $queries = $this->logger->getAll();
         $lastQuery = end($queries);
-        $this->assertTrue($lastQuery['update']);
-        $this->assertContains('k', array_keys($lastQuery['query']));
-        $this->assertEquals($o->key, $lastQuery['query']['k']);
+        $this->assertSame('update', $lastQuery->getCommandName());
+
+        $command = $lastQuery->getCommand();
+        $this->assertCount(1, $command->updates);
+        $this->assertEquals($o->key, $command->updates[0]->q->k);
     }
 
     public function testUpsert()
@@ -65,11 +63,14 @@ class ShardKeyTest extends BaseTest
         $this->dm->persist($o);
         $this->dm->flush();
 
-        $queries = $this->ql->getAll();
+        $queries = $this->logger->getAll();
         $lastQuery = end($queries);
-        $this->assertTrue($lastQuery['update']);
-        $this->assertContains('k', array_keys($lastQuery['query']));
-        $this->assertEquals($o->key, $lastQuery['query']['k']);
+        $this->assertSame('update', $lastQuery->getCommandName());
+
+        $command = $lastQuery->getCommand();
+        $this->assertCount(1, $command->updates);
+        $this->assertEquals($o->key, $command->updates[0]->q->k);
+        $this->assertTrue($command->updates[0]->upsert);
     }
 
     public function testRemove()
@@ -80,11 +81,13 @@ class ShardKeyTest extends BaseTest
         $this->dm->remove($o);
         $this->dm->flush();
 
-        $queries = $this->ql->getAll();
+        $queries = $this->logger->getAll();
         $lastQuery = end($queries);
-        $this->assertTrue($lastQuery['remove']);
-        $this->assertContains('k', array_keys($lastQuery['query']));
-        $this->assertEquals($o->key, $lastQuery['query']['k']);
+        $this->assertSame('delete', $lastQuery->getCommandName());
+
+        $command = $lastQuery->getCommand();
+        $this->assertCount(1, $command->deletes);
+        $this->assertEquals($o->key, $command->deletes[0]->q->k);
     }
 
     public function testRefresh()
@@ -94,11 +97,13 @@ class ShardKeyTest extends BaseTest
         $this->dm->flush();
         $this->dm->refresh($o);
 
-        $queries = $this->ql->getAll();
+        $queries = $this->logger->getAll();
         $lastQuery = end($queries);
-        $this->assertTrue($lastQuery['findOne']);
-        $this->assertContains('k', array_keys($lastQuery['query']));
-        $this->assertEquals($o->key, $lastQuery['query']['k']);
+        $this->assertSame('find', $lastQuery->getCommandName());
+
+        $command = $lastQuery->getCommand();
+        $this->assertSame(1, $command->limit);
+        $this->assertEquals($o->key, $command->filter->k);
     }
 
     /**
@@ -124,6 +129,6 @@ class ShardKeyTest extends BaseTest
         $this->dm->flush();
 
         $o->key = 'testing2';
-        $this->dm->flush(null, ['upsert' => true]);
+        $this->dm->flush(['upsert' => true]);
     }
 }
