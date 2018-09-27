@@ -27,7 +27,6 @@ class QueryExpressionVisitor extends ExpressionVisitor
         Comparison::GT => 'gt',
         Comparison::GTE => 'gte',
         Comparison::IN => 'in',
-        Comparison::IS => 'equals',
         Comparison::LT => 'lt',
         Comparison::LTE => 'lte',
         Comparison::NEQ => 'notEqual',
