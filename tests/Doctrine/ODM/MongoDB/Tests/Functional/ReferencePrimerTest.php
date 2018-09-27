@@ -182,9 +182,6 @@ class ReferencePrimerTest extends BaseTest
         }
     }
 
-    /**
-     * @group current
-     */
     public function testPrimeReferencesNestedInNamedEmbeddedReference()
     {
         $root = new EmbedNamed();
@@ -405,9 +402,6 @@ class ReferencePrimerTest extends BaseTest
         $this->assertEquals(0, $invoked, 'Primer was not invoked when all references were already managed.');
     }
 
-    /**
-     * @group replication_lag
-     */
     public function testPrimeReferencesInvokesPrimer()
     {
         $group1 = new Group();

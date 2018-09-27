@@ -29,9 +29,6 @@
 
         <exclude name="Generic.Formatting.MultipleStatementAlignment" />
 
-        <!-- Disabled due to the large number of false positives in 4.4.4 -->
-        <exclude name="SlevomatCodingStandard.Namespaces.UnusedUses.MismatchingCaseSensitivity" />
-
         <!-- Disabled to avoid class renaming - to be handled in a separate PR -->
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming" />

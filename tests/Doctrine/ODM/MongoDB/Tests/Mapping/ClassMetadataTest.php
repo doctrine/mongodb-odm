@@ -441,7 +441,7 @@ class ClassMetadataTest extends BaseTest
     public function testInvokeLifecycleCallbacksAllowsInstanceOfClass()
     {
         $class = $this->dm->getClassMetadata(User::class);
-        $document = new Specialuser();
+        $document = new SpecialUser();
 
         $this->assertInstanceOf(SpecialUser::class, $document);
 
