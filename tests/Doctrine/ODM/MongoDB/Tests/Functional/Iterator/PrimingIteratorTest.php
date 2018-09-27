@@ -17,8 +17,8 @@ final class PrimingIteratorTest extends BaseTest
 {
     public function testPrimerIsCalledOnceForEveryField()
     {
-        $primer = $this->createMock(ReferencePrimer::class);
-        $class = $this->dm->getClassMetadata(User::class);
+        $primer   = $this->createMock(ReferencePrimer::class);
+        $class    = $this->dm->getClassMetadata(User::class);
         $iterator = new PrimingIterator($this->getIterator(), $class, $primer, ['user' => true, 'hits' => true]);
 
         $primer

@@ -24,14 +24,14 @@ class FriendUser
 
     public function __construct($name)
     {
-        $this->name = $name;
+        $this->name          = $name;
         $this->friendsWithMe = new ArrayCollection();
-        $this->myFriends = new ArrayCollection();
+        $this->myFriends     = new ArrayCollection();
     }
 
     public function addFriend(FriendUser $user)
     {
         $user->friendsWithMe[] = $this;
-        $this->myFriends[] = $user;
+        $this->myFriends[]     = $user;
     }
 }

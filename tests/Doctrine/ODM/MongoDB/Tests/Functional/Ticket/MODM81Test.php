@@ -130,7 +130,7 @@ class MODM81TestEmbeddedDocument
     {
         $this->refTodocument1 = $document1;
         $this->refTodocument2 = $document2;
-        $this->message = $message;
+        $this->message        = $message;
     }
 
     /**

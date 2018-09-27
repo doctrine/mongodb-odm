@@ -26,7 +26,7 @@ abstract class AbstractOutput extends Stage
         parent::__construct($builder);
 
         $this->bucket = $bucket;
-        $this->expr = $builder->expr();
+        $this->expr   = $builder->expr();
     }
 
     /**

@@ -30,12 +30,12 @@ class GH1775Test extends BaseTest
 
         $post1Id = $post1->id;
         $imageId = $image->id;
-        $blogId = $blog->id;
+        $blogId  = $blog->id;
 
         // Clear out DM and read from DB afresh
         $this->dm->clear();
 
-        $blog = $this->dm->find(GH1775Blog::class, $blogId);
+        $blog  = $this->dm->find(GH1775Blog::class, $blogId);
         $image = $this->dm->find(GH1775Image::class, $imageId);
 
         $post2 = new GH1775Post([$blog], [$image]);
@@ -49,7 +49,7 @@ class GH1775Test extends BaseTest
         $this->dm->clear();
 
         $post1 = $this->dm->find(GH1775Post::class, $post1Id);
-        $blog = $this->dm->find(GH1775Blog::class, $blogId);
+        $blog  = $this->dm->find(GH1775Blog::class, $blogId);
 
         $this->assertCount(1, $post1->getImages());
         $this->assertCount(2, $blog->posts);
@@ -102,7 +102,7 @@ class GH1775Post extends GH1775MetaDocument
 
     public function __construct(array $blogs, array $images)
     {
-        $this->blogs = new ArrayCollection($blogs);
+        $this->blogs  = new ArrayCollection($blogs);
         $this->images = new ArrayCollection($images);
     }
 

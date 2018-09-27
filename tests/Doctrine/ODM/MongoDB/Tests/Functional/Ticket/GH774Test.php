@@ -14,8 +14,8 @@ class GH774Test extends BaseTest
     {
         $id = (string) new ObjectId();
 
-        $thread = new GH774Thread();
-        $thread->id = $id;
+        $thread            = new GH774Thread();
+        $thread->id        = $id;
         $thread->permalink = 'test';
 
         $this->dm->persist($thread);

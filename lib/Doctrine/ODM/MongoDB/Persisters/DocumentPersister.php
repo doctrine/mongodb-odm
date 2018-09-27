@@ -111,14 +111,14 @@ class DocumentPersister
         ClassMetadata $class,
         ?CriteriaMerger $cm = null
     ) {
-        $this->pb = $pb;
-        $this->dm = $dm;
-        $this->cm = $cm ?: new CriteriaMerger();
-        $this->uow = $uow;
+        $this->pb              = $pb;
+        $this->dm              = $dm;
+        $this->cm              = $cm ?: new CriteriaMerger();
+        $this->uow             = $uow;
         $this->hydratorFactory = $hydratorFactory;
-        $this->class = $class;
-        $this->collection = $dm->getDocumentCollection($class->name);
-        $this->cp = $this->uow->getCollectionPersister();
+        $this->class           = $class;
+        $this->collection      = $dm->getDocumentCollection($class->name);
+        $this->cp              = $this->uow->getCollectionPersister();
 
         if (! $class->isFile) {
             return;
@@ -197,13 +197,13 @@ class DocumentPersister
             // Set the initial version for each insert
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-                $nextVersion = null;
+                $nextVersion    = null;
                 if ($versionMapping['type'] === 'int') {
                     $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 } elseif ($versionMapping['type'] === 'date') {
                     $nextVersionDateTime = new DateTime();
-                    $nextVersion = Type::convertPHPToDatabaseValue($nextVersionDateTime);
+                    $nextVersion         = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
                 $data[$versionMapping['name']] = $nextVersion;
@@ -264,20 +264,20 @@ class DocumentPersister
     private function executeUpsert(object $document, array $options) : void
     {
         $options['upsert'] = true;
-        $criteria = $this->getQueryForDocument($document);
+        $criteria          = $this->getQueryForDocument($document);
 
         $data = $this->pb->prepareUpsertData($document);
 
         // Set the initial version for each upsert
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-            $nextVersion = null;
+            $nextVersion    = null;
             if ($versionMapping['type'] === 'int') {
                 $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             } elseif ($versionMapping['type'] === 'date') {
                 $nextVersionDateTime = new DateTime();
-                $nextVersion = Type::convertPHPToDatabaseValue($nextVersionDateTime);
+                $nextVersion         = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
             }
             $data['$set'][$versionMapping['name']] = $nextVersion;
@@ -313,7 +313,7 @@ class DocumentPersister
          */
         if (empty($data)) {
             $retry = true;
-            $data = ['$set' => ['_id' => $criteria['_id']]];
+            $data  = ['$set' => ['_id' => $criteria['_id']]];
         }
 
         try {
@@ -355,13 +355,13 @@ class DocumentPersister
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
             $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
             if ($versionMapping['type'] === 'int') {
-                $nextVersion = $currentVersion + 1;
+                $nextVersion                             = $currentVersion + 1;
                 $update['$inc'][$versionMapping['name']] = 1;
-                $query[$versionMapping['name']] = $currentVersion;
+                $query[$versionMapping['name']]          = $currentVersion;
             } elseif ($versionMapping['type'] === 'date') {
-                $nextVersion = new DateTime();
+                $nextVersion                             = new DateTime();
                 $update['$set'][$versionMapping['name']] = Type::convertPHPToDatabaseValue($nextVersion);
-                $query[$versionMapping['name']] = Type::convertPHPToDatabaseValue($currentVersion);
+                $query[$versionMapping['name']]          = Type::convertPHPToDatabaseValue($currentVersion);
             }
         }
 
@@ -369,7 +369,7 @@ class DocumentPersister
             // Include locking logic so that if the document object in memory is currently
             // locked then it will remove it, otherwise it ensures the document is not locked.
             if ($this->class->isLockable) {
-                $isLocked = $this->class->reflFields[$this->class->lockField]->getValue($document);
+                $isLocked    = $this->class->reflFields[$this->class->lockField]->getValue($document);
                 $lockMapping = $this->class->fieldMappings[$this->class->lockField];
                 if ($isLocked) {
                     $update['$unset'] = [$lockMapping['name'] => true];
@@ -429,8 +429,8 @@ class DocumentPersister
     public function refresh(object $document) : void
     {
         $query = $this->getQueryForDocument($document);
-        $data = $this->collection->findOne($query);
-        $data = $this->hydratorFactory->hydrate($document, $data);
+        $data  = $this->collection->findOne($query);
+        $data  = $this->hydratorFactory->hydrate($document, $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
 
@@ -509,8 +509,8 @@ class DocumentPersister
         }
 
         $shardKey = $this->class->getShardKey();
-        $keys = array_keys($shardKey['keys']);
-        $data = $this->uow->getDocumentActualData($document);
+        $keys     = array_keys($shardKey['keys']);
+        $data     = $this->uow->getDocumentActualData($document);
 
         $shardKeyQueryPart = [];
         foreach ($keys as $key) {
@@ -528,7 +528,7 @@ class DocumentPersister
                     $shardKeyQueryPart[$keyValue[0]] = $keyValue[1];
                 }
             } else {
-                $value = Type::getType($mapping['type'])->convertToDatabaseValue($data[$mapping['fieldName']]);
+                $value                   = Type::getType($mapping['type'])->convertToDatabaseValue($data[$mapping['fieldName']]);
                 $shardKeyQueryPart[$key] = $value;
             }
         }
@@ -558,8 +558,8 @@ class DocumentPersister
      */
     public function lock(object $document, int $lockMode) : void
     {
-        $id = $this->uow->getDocumentIdentifier($document);
-        $criteria = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
+        $id          = $this->uow->getDocumentIdentifier($document);
+        $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         $this->collection->updateOne($criteria, ['$set' => [$lockMapping['name'] => $lockMode]]);
         $this->class->reflFields[$this->class->lockField]->setValue($document, $lockMode);
@@ -570,8 +570,8 @@ class DocumentPersister
      */
     public function unlock(object $document) : void
     {
-        $id = $this->uow->getDocumentIdentifier($document);
-        $criteria = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
+        $id          = $this->uow->getDocumentIdentifier($document);
+        $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         $this->collection->updateOne($criteria, ['$unset' => [$lockMapping['name'] => true]]);
         $this->class->reflFields[$this->class->lockField]->setValue($document, null);
@@ -594,7 +594,7 @@ class DocumentPersister
 
         if ($document !== null) {
             $hints[Query::HINT_REFRESH] = true;
-            $id = $this->class->getPHPIdentifierValue($result['_id']);
+            $id                         = $this->class->getPHPIdentifierValue($result['_id']);
             $this->uow->registerManaged($document, $id, $result);
         }
 
@@ -629,21 +629,21 @@ class DocumentPersister
     private function loadEmbedManyCollection(PersistentCollectionInterface $collection) : void
     {
         $embeddedDocuments = $collection->getMongoData();
-        $mapping = $collection->getMapping();
-        $owner = $collection->getOwner();
+        $mapping           = $collection->getMapping();
+        $owner             = $collection->getOwner();
         if (! $embeddedDocuments) {
             return;
         }
 
         foreach ($embeddedDocuments as $key => $embeddedDocument) {
-            $className = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
-            $embeddedMetadata = $this->dm->getClassMetadata($className);
+            $className              = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
+            $embeddedMetadata       = $this->dm->getClassMetadata($className);
             $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
             $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
             $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
-            $id = $data[$embeddedMetadata->identifier] ?? null;
+            $id   = $data[$embeddedMetadata->identifier] ?? null;
 
             if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
                 $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
@@ -658,16 +658,16 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionOwningSide(PersistentCollectionInterface $collection) : void
     {
-        $hints = $collection->getHints();
-        $mapping = $collection->getMapping();
+        $hints      = $collection->getHints();
+        $mapping    = $collection->getMapping();
         $groupedIds = [];
 
         $sorted = isset($mapping['sort']) && $mapping['sort'];
 
         foreach ($collection->getMongoData() as $key => $reference) {
-            $className = $this->uow->getClassNameForAssociation($mapping, $reference);
+            $className  = $this->uow->getClassNameForAssociation($mapping, $reference);
             $identifier = ClassMetadata::getReferenceId($reference, $mapping['storeAs']);
-            $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($identifier);
+            $id         = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($identifier);
 
             // create a reference to the class and id
             $reference = $this->dm->getReference($className, $id);
@@ -689,14 +689,14 @@ class DocumentPersister
             $groupedIds[$className][] = $identifier;
         }
         foreach ($groupedIds as $className => $ids) {
-            $class = $this->dm->getClassMetadata($className);
+            $class           = $this->dm->getClassMetadata($className);
             $mongoCollection = $this->dm->getDocumentCollection($className);
-            $criteria = $this->cm->merge(
+            $criteria        = $this->cm->merge(
                 ['_id' => ['$in' => array_values($ids)]],
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 $mapping['criteria'] ?? []
             );
-            $criteria = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
+            $criteria        = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
 
             $options = [];
             if (isset($mapping['sort'])) {
@@ -712,7 +712,7 @@ class DocumentPersister
                 $options['readPreference'] = $hints[Query::HINT_READ_PREFERENCE];
             }
 
-            $cursor = $mongoCollection->find($criteria, $options);
+            $cursor    = $mongoCollection->find($criteria, $options);
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById($documentData['_id'], $class);
@@ -732,7 +732,7 @@ class DocumentPersister
 
     private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection) : void
     {
-        $query = $this->createReferenceManyInverseSideQuery($collection);
+        $query     = $this->createReferenceManyInverseSideQuery($collection);
         $documents = $query->execute()->toArray();
         foreach ($documents as $key => $document) {
             $collection->add($document);
@@ -741,12 +741,12 @@ class DocumentPersister
 
     public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection) : Query
     {
-        $hints = $collection->getHints();
-        $mapping = $collection->getMapping();
-        $owner = $collection->getOwner();
-        $ownerClass = $this->dm->getClassMetadata(get_class($owner));
-        $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
-        $mappedByMapping = $targetClass->fieldMappings[$mapping['mappedBy']] ?? [];
+        $hints             = $collection->getHints();
+        $mapping           = $collection->getMapping();
+        $owner             = $collection->getOwner();
+        $ownerClass        = $this->dm->getClassMetadata(get_class($owner));
+        $targetClass       = $this->dm->getClassMetadata($mapping['targetDocument']);
+        $mappedByMapping   = $targetClass->fieldMappings[$mapping['mappedBy']] ?? [];
         $mappedByFieldName = ClassMetadata::getReferenceFieldName($mappedByMapping['storeAs'] ?? ClassMetadata::REFERENCE_STORE_AS_DB_REF, $mapping['mappedBy']);
 
         $criteria = $this->cm->merge(
@@ -755,7 +755,7 @@ class DocumentPersister
             $mapping['criteria'] ?? []
         );
         $criteria = $this->uow->getDocumentPersister($mapping['targetDocument'])->prepareQueryOrNewObj($criteria);
-        $qb = $this->dm->createQueryBuilder($mapping['targetDocument'])
+        $qb       = $this->dm->createQueryBuilder($mapping['targetDocument'])
             ->setQueryArray($criteria);
 
         if (isset($mapping['sort'])) {
@@ -781,8 +781,8 @@ class DocumentPersister
 
     private function loadReferenceManyWithRepositoryMethod(PersistentCollectionInterface $collection) : void
     {
-        $cursor = $this->createReferenceManyWithRepositoryMethodCursor($collection);
-        $mapping = $collection->getMapping();
+        $cursor    = $this->createReferenceManyWithRepositoryMethodCursor($collection);
+        $mapping   = $collection->getMapping();
         $documents = $cursor->toArray();
         foreach ($documents as $key => $obj) {
             if (CollectionHelper::isHash($mapping['strategy'])) {
@@ -795,9 +795,9 @@ class DocumentPersister
 
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection) : Iterator
     {
-        $mapping = $collection->getMapping();
+        $mapping          = $collection->getMapping();
         $repositoryMethod = $mapping['repositoryMethod'];
-        $cursor = $this->dm->getRepository($mapping['targetDocument'])
+        $cursor           = $this->dm->getRepository($mapping['targetDocument'])
             ->$repositoryMethod($collection->getOwner());
 
         if (! $cursor instanceof Iterator) {
@@ -806,8 +806,8 @@ class DocumentPersister
 
         if (! empty($mapping['prime'])) {
             $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
-            $primers = array_combine($mapping['prime'], array_fill(0, count($mapping['prime']), true));
-            $class = $this->dm->getClassMetadata($mapping['targetDocument']);
+            $primers         = array_combine($mapping['prime'], array_fill(0, count($mapping['prime']), true));
+            $class           = $this->dm->getClassMetadata($mapping['targetDocument']);
 
             $cursor = new PrimingIterator($cursor, $class, $referencePrimer, $primers, $collection->getHints());
         }
@@ -970,7 +970,7 @@ class DocumentPersister
 
         // Process all non-identifier fields by translating field names
         if ($class->hasField($fieldName) && ! $class->isIdentifier($fieldName)) {
-            $mapping = $class->fieldMappings[$fieldName];
+            $mapping   = $class->fieldMappings[$fieldName];
             $fieldName = $mapping['name'];
 
             if (! $prepareValue) {
@@ -1052,7 +1052,7 @@ class DocumentPersister
         }
 
         $mapping = $class->fieldMappings[$e[0]];
-        $e[0] = $mapping['name'];
+        $e[0]    = $mapping['name'];
 
         // Hash and raw fields will not be prepared beyond the field name
         if ($mapping['type'] === Type::HASH || $mapping['type'] === Type::RAW) {
@@ -1063,19 +1063,19 @@ class DocumentPersister
 
         if ($mapping['type'] === 'many' && CollectionHelper::isHash($mapping['strategy'])
                 && isset($e[2])) {
-            $objectProperty = $e[2];
+            $objectProperty       = $e[2];
             $objectPropertyPrefix = $e[1] . '.';
-            $nextObjectProperty = implode('.', array_slice($e, 3));
+            $nextObjectProperty   = implode('.', array_slice($e, 3));
         } elseif ($e[1] !== '$') {
-            $fieldName = $e[0] . '.' . $e[1];
-            $objectProperty = $e[1];
+            $fieldName            = $e[0] . '.' . $e[1];
+            $objectProperty       = $e[1];
             $objectPropertyPrefix = '';
-            $nextObjectProperty = implode('.', array_slice($e, 2));
+            $nextObjectProperty   = implode('.', array_slice($e, 2));
         } elseif (isset($e[2])) {
-            $fieldName = $e[0] . '.' . $e[1] . '.' . $e[2];
-            $objectProperty = $e[2];
+            $fieldName            = $e[0] . '.' . $e[1] . '.' . $e[2];
+            $objectProperty       = $e[2];
             $objectPropertyPrefix = $e[1] . '.';
-            $nextObjectProperty = implode('.', array_slice($e, 3));
+            $nextObjectProperty   = implode('.', array_slice($e, 3));
         } else {
             $fieldName = $e[0] . '.' . $e[1];
 
@@ -1102,7 +1102,7 @@ class DocumentPersister
             return [[$fieldName, $value]];
         }
 
-        $targetMapping = $targetClass->getFieldMapping($objectProperty);
+        $targetMapping      = $targetClass->getFieldMapping($objectProperty);
         $objectPropertyIsId = $targetClass->isIdentifier($objectProperty);
 
         // Prepare DBRef identifiers or the mapped field's property path
@@ -1299,11 +1299,11 @@ class DocumentPersister
      */
     private function guardMissingShardKey(object $document, string $shardKeyField, array $actualDocumentData) : void
     {
-        $dcs = $this->uow->getDocumentChangeSet($document);
+        $dcs      = $this->uow->getDocumentChangeSet($document);
         $isUpdate = $this->uow->isScheduledForUpdate($document);
 
         $fieldMapping = $this->class->getFieldMappingByDbFieldName($shardKeyField);
-        $fieldName = $fieldMapping['fieldName'];
+        $fieldName    = $fieldMapping['fieldName'];
 
         if ($isUpdate && isset($dcs[$fieldName]) && $dcs[$fieldName][0] !== $dcs[$fieldName][1]) {
             throw MongoDBException::shardKeyFieldCannotBeChanged($shardKeyField, $this->class->getName());
@@ -1328,7 +1328,7 @@ class DocumentPersister
 
     private function getWriteOptions(array $options = []) : array
     {
-        $defaultOptions = $this->dm->getConfiguration()->getDefaultCommitOptions();
+        $defaultOptions  = $this->dm->getConfiguration()->getDefaultCommitOptions();
         $documentOptions = [];
         if ($this->class->hasWriteConcern()) {
             $documentOptions['w'] = $this->class->getWriteConcern();

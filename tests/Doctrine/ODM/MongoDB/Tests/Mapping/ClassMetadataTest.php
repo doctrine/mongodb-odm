@@ -58,7 +58,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertCount(1, $cm->associationMappings);
 
         $serialized = serialize($cm);
-        $cm = unserialize($serialized);
+        $cm         = unserialize($serialized);
 
         // Check state
         $this->assertGreaterThan(0, $cm->getReflectionProperties());
@@ -231,7 +231,7 @@ class ClassMetadataTest extends BaseTest
         $cm->setDiscriminatorValue('discriminatorValue');
 
         $serialized = serialize($cm);
-        $cm = unserialize($serialized);
+        $cm         = unserialize($serialized);
 
         $this->assertSame('discriminator', $cm->discriminatorField);
         $this->assertSame('discriminatorValue', $cm->discriminatorValue);
@@ -241,10 +241,10 @@ class ClassMetadataTest extends BaseTest
     {
         $document = new ClassMetadata(CmsUser::class);
 
-        $embeddedDocument = new ClassMetadata(CmsUser::class);
+        $embeddedDocument                     = new ClassMetadata(CmsUser::class);
         $embeddedDocument->isEmbeddedDocument = true;
 
-        $mappedSuperclass = new ClassMetadata(CmsUser::class);
+        $mappedSuperclass                     = new ClassMetadata(CmsUser::class);
         $mappedSuperclass->isMappedSuperclass = true;
 
         return [
@@ -324,7 +324,7 @@ class ClassMetadataTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $proxy = $this->dm->getReference(Album::class, $document->getId());
+        $proxy    = $this->dm->getReference(Album::class, $document->getId());
         $metadata = $this->dm->getClassMetadata(Album::class);
 
         $this->assertEquals($document->getName(), $metadata->getFieldValue($proxy, 'name'));
@@ -339,7 +339,7 @@ class ClassMetadataTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $proxy = $this->dm->getReference(Album::class, $document->getId());
+        $proxy    = $this->dm->getReference(Album::class, $document->getId());
         $metadata = $this->dm->getClassMetadata(Album::class);
 
         $this->assertEquals($document->getId(), $metadata->getFieldValue($proxy, 'id'));
@@ -381,7 +381,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testSetCustomRepositoryClass()
     {
-        $cm = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ClassMetadataTest');
+        $cm            = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ClassMetadataTest');
         $cm->namespace = 'Doctrine\ODM\MongoDB\Tests\Mapping';
 
         $cm->setCustomRepositoryClass('TestCustomRepositoryClass');
@@ -430,7 +430,7 @@ class ClassMetadataTest extends BaseTest
      */
     public function testInvokeLifecycleCallbacksShouldRequireInstanceOfClass()
     {
-        $class = $this->dm->getClassMetadata(User::class);
+        $class    = $this->dm->getClassMetadata(User::class);
         $document = new stdClass();
 
         $this->assertInstanceOf('\stdClass', $document);
@@ -440,7 +440,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testInvokeLifecycleCallbacksAllowsInstanceOfClass()
     {
-        $class = $this->dm->getClassMetadata(User::class);
+        $class    = $this->dm->getClassMetadata(User::class);
         $document = new SpecialUser();
 
         $this->assertInstanceOf(SpecialUser::class, $document);
@@ -547,7 +547,7 @@ class ClassMetadataTest extends BaseTest
             public $many;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm                     = new ClassMetadata(get_class($object));
         $cm->isEmbeddedDocument = true;
 
         $cm->mapField([
@@ -564,7 +564,7 @@ class ClassMetadataTest extends BaseTest
             public $many;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm                     = new ClassMetadata(get_class($object));
         $cm->isEmbeddedDocument = true;
 
         $mapping = $cm->mapField([
@@ -587,7 +587,7 @@ class ClassMetadataTest extends BaseTest
             'strategy' => ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET,
         ]);
 
-        $cm = new ClassMetadata('stdClass');
+        $cm                     = new ClassMetadata('stdClass');
         $cm->isEmbeddedDocument = true;
         $cm->mapField($config);
     }
@@ -662,7 +662,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testSetShardKeyForClassWithSingleCollectionInheritance()
     {
-        $cm = new ClassMetadata('stdClass');
+        $cm                  = new ClassMetadata('stdClass');
         $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION;
         $cm->setShardKey(['id' => 'asc']);
 
@@ -686,7 +686,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testSetShardKeyForClassWithCollPerClassInheritance()
     {
-        $cm = new ClassMetadata('stdClass');
+        $cm                  = new ClassMetadata('stdClass');
         $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
         $cm->setShardKey(['id' => 'asc']);
 
@@ -716,7 +716,7 @@ class ClassMetadataTest extends BaseTest
      */
     public function testEmbeddedDocumentCantHaveShardKey()
     {
-        $cm = new ClassMetadata('stdClass');
+        $cm                     = new ClassMetadata('stdClass');
         $cm->isEmbeddedDocument = true;
         $cm->setShardKey(['id' => 'asc']);
     }
@@ -794,7 +794,7 @@ class ClassMetadataTest extends BaseTest
             public $contentType;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm         = new ClassMetadata(get_class($object));
         $cm->isFile = true;
 
         $this->expectException(MappingException::class);

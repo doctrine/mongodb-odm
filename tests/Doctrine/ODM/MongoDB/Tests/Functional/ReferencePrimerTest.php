@@ -324,7 +324,7 @@ class ReferencePrimerTest extends BaseTest
 
     public function testPrimeReferencesWithDiscriminatedReferenceMany()
     {
-        $group = new Group();
+        $group   = new Group();
         $project = new Project('foo');
 
         $user = new FavoritesUser();
@@ -353,7 +353,7 @@ class ReferencePrimerTest extends BaseTest
 
     public function testPrimeReferencesWithDiscriminatedReferenceOne()
     {
-        $agent = new Agent();
+        $agent         = new Agent();
         $agent->server = new GuestServer();
 
         $this->dm->persist($agent->server);
@@ -383,7 +383,7 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->createQueryBuilder(Group::class)->getQuery()->toArray();
 
         $invoked = 0;
-        $primer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
+        $primer  = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
             $invoked++;
         };
 
@@ -404,8 +404,8 @@ class ReferencePrimerTest extends BaseTest
 
     public function testPrimeReferencesInvokesPrimer()
     {
-        $group1 = new Group();
-        $group2 = new Group();
+        $group1  = new Group();
+        $group2  = new Group();
         $account = new Account();
 
         $user = new User();
@@ -418,7 +418,7 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->clear();
 
         $invokedArgs = [];
-        $primer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
+        $primer      = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
             $invokedArgs[] = func_get_args();
         };
 
@@ -435,7 +435,7 @@ class ReferencePrimerTest extends BaseTest
         $this->assertSame($readPreference, $invokedArgs[0][3][Query::HINT_READ_PREFERENCE], 'Primer was invoked with UnitOfWork hints from original query.');
 
         $accountIds = [$account->getId()];
-        $groupIds = [$group1->getId(), $group2->getId()];
+        $groupIds   = [$group1->getId(), $group2->getId()];
 
         $this->assertEquals($accountIds, $invokedArgs[0][2]);
         $this->assertEquals($groupIds, $invokedArgs[1][2]);
@@ -444,7 +444,7 @@ class ReferencePrimerTest extends BaseTest
     public function testPrimeReferencesInFindAndModifyResult()
     {
         $group = new Group();
-        $user = new User();
+        $user  = new User();
 
         $this->dm->persist($user);
         $this->dm->persist($group);
@@ -488,7 +488,7 @@ class ReferencePrimerTest extends BaseTest
             ->field('username')->equals('SomeName')
             ->field('phonenumbers.lastCalledBy')->prime(true);
 
-        $user = $qb->getQuery()->getSingleResult();
+        $user         = $qb->getQuery()->getSingleResult();
         $phonenumbers = $user->getPhonenumbers();
 
         $this->assertCount(1, $phonenumbers);
@@ -560,7 +560,7 @@ class ReferencePrimerTest extends BaseTest
         $postAuthor = new User();
         $this->dm->persist($postAuthor);
 
-        $comment = new Comment('foo', new DateTime());
+        $comment         = new Comment('foo', new DateTime());
         $comment->author = $commentAuthor;
         $this->dm->persist($comment);
 
@@ -589,7 +589,7 @@ class ReferencePrimerTest extends BaseTest
         $postAuthor = new User();
         $this->dm->persist($postAuthor);
 
-        $comment = new Comment('foo', new DateTime());
+        $comment         = new Comment('foo', new DateTime());
         $comment->author = $commentAuthor;
         $this->dm->persist($comment);
 
@@ -617,7 +617,7 @@ class ReferencePrimerTest extends BaseTest
         $postAuthor = new User();
         $this->dm->persist($postAuthor);
 
-        $comment = new Comment('foo', new DateTime());
+        $comment         = new Comment('foo', new DateTime());
         $comment->author = $commentAuthor;
         $this->dm->persist($comment);
 

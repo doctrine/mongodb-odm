@@ -44,7 +44,7 @@ class GH878Test extends BaseTest
      */
     private function getPersistedButDetachedDocument()
     {
-        $document = new GH878Document();
+        $document                = new GH878Document();
         $document->embeddedField = new GH878SubDocument();
 
         $this->dm->persist($document);

@@ -58,8 +58,8 @@ class Builder
      */
     public function __construct(DocumentManager $dm, string $documentName)
     {
-        $this->dm = $dm;
-        $this->class = $this->dm->getClassMetadata($documentName);
+        $this->dm         = $dm;
+        $this->class      = $this->dm->getClassMetadata($documentName);
         $this->collection = $this->dm->getDocumentCollection($documentName);
     }
 

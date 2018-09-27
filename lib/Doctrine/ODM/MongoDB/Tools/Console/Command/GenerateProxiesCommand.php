@@ -63,7 +63,7 @@ EOT
             return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
         });
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
-        $destPath = $input->getArgument('dest-path');
+        $destPath  = $input->getArgument('dest-path');
 
         // Process destination directory
         if ($destPath === null) {

@@ -99,20 +99,20 @@ class ClassMetadata implements BaseClassMetadata
      */
     public const DEFAULT_DISCRIMINATOR_FIELD = '_doctrine_class_name';
 
-    public const REFERENCE_ONE = 1;
+    public const REFERENCE_ONE  = 1;
     public const REFERENCE_MANY = 2;
-    public const EMBED_ONE = 3;
-    public const EMBED_MANY = 4;
-    public const MANY = 'many';
-    public const ONE = 'one';
+    public const EMBED_ONE      = 3;
+    public const EMBED_MANY     = 4;
+    public const MANY           = 'many';
+    public const ONE            = 'one';
 
     /**
      * The types of storeAs references
      */
-    public const REFERENCE_STORE_AS_ID = 'id';
-    public const REFERENCE_STORE_AS_DB_REF = 'dbRef';
+    public const REFERENCE_STORE_AS_ID             = 'id';
+    public const REFERENCE_STORE_AS_DB_REF         = 'dbRef';
     public const REFERENCE_STORE_AS_DB_REF_WITH_DB = 'dbRefWithDb';
-    public const REFERENCE_STORE_AS_REF = 'ref';
+    public const REFERENCE_STORE_AS_REF            = 'ref';
 
     /* The inheritance mapping types */
     /**
@@ -167,11 +167,11 @@ class ClassMetadata implements BaseClassMetadata
      */
     public const STORAGE_STRATEGY_INCREMENT = 'increment';
 
-    public const STORAGE_STRATEGY_PUSH_ALL = 'pushAll';
-    public const STORAGE_STRATEGY_ADD_TO_SET = 'addToSet';
-    public const STORAGE_STRATEGY_ATOMIC_SET = 'atomicSet';
+    public const STORAGE_STRATEGY_PUSH_ALL         = 'pushAll';
+    public const STORAGE_STRATEGY_ADD_TO_SET       = 'addToSet';
+    public const STORAGE_STRATEGY_ATOMIC_SET       = 'atomicSet';
     public const STORAGE_STRATEGY_ATOMIC_SET_ARRAY = 'atomicSetArray';
-    public const STORAGE_STRATEGY_SET_ARRAY = 'setArray';
+    public const STORAGE_STRATEGY_SET_ARRAY        = 'setArray';
 
     private const ALLOWED_GRIDFS_FIELDS = ['_id', 'chunkSize', 'filename', 'length', 'metadata', 'uploadDate'];
 
@@ -508,9 +508,9 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function __construct(string $documentName)
     {
-        $this->name = $documentName;
+        $this->name             = $documentName;
         $this->rootDocumentName = $documentName;
-        $this->reflClass = new ReflectionClass($documentName);
+        $this->reflClass        = new ReflectionClass($documentName);
         $this->setCollection($this->reflClass->getShortName());
         $this->instantiator = new Instantiator();
     }
@@ -841,7 +841,7 @@ class ClassMetadata implements BaseClassMetadata
         }
 
         $this->discriminatorMap[$value] = $this->name;
-        $this->discriminatorValue = $value;
+        $this->discriminatorValue       = $value;
     }
 
     /**
@@ -957,7 +957,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setReadPreference($readPreference, $tags) : void
     {
-        $this->readPreference = $readPreference;
+        $this->readPreference     = $readPreference;
         $this->readPreferenceTags = $tags;
     }
 
@@ -1081,9 +1081,9 @@ class ClassMetadata implements BaseClassMetadata
                 throw new InvalidArgumentException('A name key is required when passing an array to setCollection()');
             }
             $this->collectionCapped = $name['capped'] ?? false;
-            $this->collectionSize = $name['size'] ?? 0;
-            $this->collectionMax = $name['max'] ?? 0;
-            $this->collection = $name['name'];
+            $this->collectionSize   = $name['size'] ?? 0;
+            $this->collectionMax    = $name['max'] ?? 0;
+            $this->collection       = $name['name'];
         } else {
             $this->collection = $name;
         }
@@ -1180,12 +1180,12 @@ class ClassMetadata implements BaseClassMetadata
         switch (true) {
             case $mapping['type'] === 'int':
             case $mapping['type'] === 'float':
-                $defaultStrategy = self::STORAGE_STRATEGY_SET;
+                $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
                 break;
 
             case $mapping['type'] === 'many':
-                $defaultStrategy = CollectionHelper::DEFAULT_STRATEGY;
+                $defaultStrategy   = CollectionHelper::DEFAULT_STRATEGY;
                 $allowedStrategies = [
                     self::STORAGE_STRATEGY_PUSH_ALL,
                     self::STORAGE_STRATEGY_ADD_TO_SET,
@@ -1197,7 +1197,7 @@ class ClassMetadata implements BaseClassMetadata
                 break;
 
             default:
-                $defaultStrategy = self::STORAGE_STRATEGY_SET;
+                $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET];
         }
 
@@ -1221,7 +1221,7 @@ class ClassMetadata implements BaseClassMetadata
     public function mapOneEmbedded(array $mapping) : void
     {
         $mapping['embedded'] = true;
-        $mapping['type'] = 'one';
+        $mapping['type']     = 'one';
         $this->mapField($mapping);
     }
 
@@ -1231,7 +1231,7 @@ class ClassMetadata implements BaseClassMetadata
     public function mapManyEmbedded(array $mapping) : void
     {
         $mapping['embedded'] = true;
-        $mapping['type'] = 'many';
+        $mapping['type']     = 'many';
         $this->mapField($mapping);
     }
 
@@ -1241,7 +1241,7 @@ class ClassMetadata implements BaseClassMetadata
     public function mapOneReference(array $mapping) : void
     {
         $mapping['reference'] = true;
-        $mapping['type'] = 'one';
+        $mapping['type']      = 'one';
         $this->mapField($mapping);
     }
 
@@ -1251,7 +1251,7 @@ class ClassMetadata implements BaseClassMetadata
     public function mapManyReference(array $mapping) : void
     {
         $mapping['reference'] = true;
-        $mapping['type'] = 'many';
+        $mapping['type']      = 'many';
         $this->mapField($mapping);
     }
 
@@ -1688,7 +1688,7 @@ class ClassMetadata implements BaseClassMetadata
         }
 
         $this->isLockable = true;
-        $this->lockField = $mapping['fieldName'];
+        $this->lockField  = $mapping['fieldName'];
     }
 
     /**
@@ -1833,14 +1833,14 @@ class ClassMetadata implements BaseClassMetadata
             $mapping['cascade'] = $cascades;
         }
 
-        $mapping['isCascadeRemove'] = in_array('remove', $cascades);
+        $mapping['isCascadeRemove']  = in_array('remove', $cascades);
         $mapping['isCascadePersist'] = in_array('persist', $cascades);
         $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
-        $mapping['isCascadeMerge'] = in_array('merge', $cascades);
-        $mapping['isCascadeDetach'] = in_array('detach', $cascades);
+        $mapping['isCascadeMerge']   = in_array('merge', $cascades);
+        $mapping['isCascadeDetach']  = in_array('detach', $cascades);
 
         if (isset($mapping['id']) && $mapping['id'] === true) {
-            $mapping['name'] = '_id';
+            $mapping['name']  = '_id';
             $this->identifier = $mapping['fieldName'];
             if (isset($mapping['strategy'])) {
                 $this->generatorType = constant(self::class . '::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
@@ -1910,20 +1910,20 @@ class ClassMetadata implements BaseClassMetadata
             $mapping['notSaved'] = true;
             $this->setLockMapping($mapping);
         }
-        $mapping['isOwningSide'] = true;
+        $mapping['isOwningSide']  = true;
         $mapping['isInverseSide'] = false;
         if (isset($mapping['reference'])) {
             if (isset($mapping['inversedBy']) && $mapping['inversedBy']) {
-                $mapping['isOwningSide'] = true;
+                $mapping['isOwningSide']  = true;
                 $mapping['isInverseSide'] = false;
             }
             if (isset($mapping['mappedBy']) && $mapping['mappedBy']) {
                 $mapping['isInverseSide'] = true;
-                $mapping['isOwningSide'] = false;
+                $mapping['isOwningSide']  = false;
             }
             if (isset($mapping['repositoryMethod'])) {
                 $mapping['isInverseSide'] = true;
-                $mapping['isOwningSide'] = false;
+                $mapping['isOwningSide']  = false;
             }
             if (! isset($mapping['orphanRemoval'])) {
                 $mapping['orphanRemoval'] = false;
@@ -2051,7 +2051,7 @@ class ClassMetadata implements BaseClassMetadata
     public function __wakeup()
     {
         // Restore ReflectionClass and properties
-        $this->reflClass = new ReflectionClass($this->name);
+        $this->reflClass    = new ReflectionClass($this->name);
         $this->instantiator = $this->instantiator ?: new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {

@@ -45,8 +45,8 @@ class Person
             return;
         }
 
-        $e = explode(' ', $data['name']);
+        $e                 = explode(' ', $data['name']);
         $data['firstName'] = $e[0];
-        $data['lastName'] = $e[1];
+        $data['lastName']  = $e[1];
     }
 }

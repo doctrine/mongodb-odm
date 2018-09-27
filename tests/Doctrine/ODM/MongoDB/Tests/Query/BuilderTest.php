@@ -266,7 +266,7 @@ class BuilderTest extends BaseTest
             ->field('username')->equals('jwage');
 
         $expectedQueryArray = ['username' => 'jwage'];
-        $expectedMapReduce = [
+        $expectedMapReduce  = [
             'map' => $map,
             'reduce' => $reduce,
             'options' => ['finalize' => $finalize],
@@ -364,7 +364,7 @@ class BuilderTest extends BaseTest
 
     public function testFindQuery()
     {
-        $qb = $this->getTestQueryBuilder()
+        $qb       = $this->getTestQueryBuilder()
             ->where("function() { return this.username == 'boo' }");
         $expected = ['$where' => "function() { return this.username == 'boo' }"];
         $this->assertEquals($expected, $qb->getQueryArray());
@@ -449,7 +449,7 @@ class BuilderTest extends BaseTest
     public function testSetOnInsert()
     {
         $createDate = new DateTime();
-        $qb = $this->getTestQueryBuilder()
+        $qb         = $this->getTestQueryBuilder()
             ->updateOne()
             ->upsert()
             ->field('username')->equals('boo')
@@ -469,8 +469,8 @@ class BuilderTest extends BaseTest
     public function testDateRange()
     {
         $start = new DateTime('1985-09-01 01:00:00');
-        $end = new DateTime('1985-09-04');
-        $qb = $this->getTestQueryBuilder();
+        $end   = new DateTime('1985-09-04');
+        $qb    = $this->getTestQueryBuilder();
         $qb->field('createdAt')->range($start, $end);
 
         $expected = [
@@ -484,7 +484,7 @@ class BuilderTest extends BaseTest
 
     public function testQueryIsIterable()
     {
-        $qb = $this->getTestQueryBuilder();
+        $qb    = $this->getTestQueryBuilder();
         $query = $qb->getQuery();
         $this->assertInstanceOf(IteratorAggregate::class, $query);
     }
@@ -514,7 +514,7 @@ class BuilderTest extends BaseTest
             ->method($method)
             ->with(...$args);
 
-        $qb = $this->getTestQueryBuilder();
+        $qb                 = $this->getTestQueryBuilder();
         $reflectionProperty = new ReflectionProperty($qb, 'expr');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($qb, $expr);
@@ -587,7 +587,7 @@ class BuilderTest extends BaseTest
     public function providePoint()
     {
         $coordinates = [0, 0];
-        $json = ['type' => 'Point', 'coordinates' => $coordinates];
+        $json        = ['type' => 'Point', 'coordinates' => $coordinates];
 
         return [
             'legacy array' => [$coordinates, $coordinates, false],

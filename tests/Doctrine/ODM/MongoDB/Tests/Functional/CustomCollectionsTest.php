@@ -19,14 +19,14 @@ class CustomCollectionsTest extends BaseTest
 {
     public function testMappingNamespaceIsAdded()
     {
-        $d = new DocumentWithCustomCollection();
+        $d  = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
         $this->assertSame(MyEmbedsCollection::class, $cm->fieldMappings['coll']['collectionClass']);
     }
 
     public function testLeadingBackslashIsRemoved()
     {
-        $d = new DocumentWithCustomCollection();
+        $d  = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
         $this->assertSame(MyDocumentsCollection::class, $cm->fieldMappings['inverseRefMany']['collectionClass']);
     }
@@ -49,7 +49,7 @@ class CustomCollectionsTest extends BaseTest
 
     public function testGeneratedClassExtendsBaseCollection()
     {
-        $coll = new MyEmbedsCollection();
+        $coll  = new MyEmbedsCollection();
         $pcoll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create(
             $this->dm,
             ['collectionClass' => MyEmbedsCollection::class],
@@ -125,7 +125,7 @@ class CustomCollectionsTest extends BaseTest
 
     public function testModifyingCollectionByCustomMethod()
     {
-        $d = new DocumentWithCustomCollection();
+        $d                = new DocumentWithCustomCollection();
         $d->coll->add($e1 = new EmbeddedDocumentInCustomCollection('#1', true));
         $d->coll->add($e2 = new EmbeddedDocumentInCustomCollection('#2', false));
         $this->dm->persist($d);
@@ -211,9 +211,9 @@ class DocumentWithCustomCollection
 
     public function __construct()
     {
-        $this->boring = new ArrayCollection();
-        $this->coll = new MyEmbedsCollection();
-        $this->refMany = new MyDocumentsCollection();
+        $this->boring         = new ArrayCollection();
+        $this->coll           = new MyEmbedsCollection();
+        $this->refMany        = new MyDocumentsCollection();
         $this->inverseRefMany = new MyDocumentsCollection();
     }
 }
@@ -231,7 +231,7 @@ class EmbeddedDocumentInCustomCollection
 
     public function __construct($name, $enabled)
     {
-        $this->name = $name;
+        $this->name    = $name;
         $this->enabled = $enabled;
     }
 }

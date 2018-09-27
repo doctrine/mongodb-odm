@@ -59,7 +59,7 @@ EOT
 
         $metadatas = $dm->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
-        $destPath = $input->getArgument('dest-path');
+        $destPath  = $input->getArgument('dest-path');
 
         // Process destination directory
         if ($destPath === null) {

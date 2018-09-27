@@ -63,8 +63,8 @@ class Avatar
 
     public function __construct($name, $sex, $avatarParts = null)
     {
-        $this->name = $name;
-        $this->sex = $sex;
+        $this->name        = $name;
+        $this->sex         = $sex;
         $this->avatarParts = $avatarParts;
     }
 

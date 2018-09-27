@@ -11,7 +11,7 @@ class MODM48Test extends BaseTest
 {
     public function testTest()
     {
-        $a = new MODM48A();
+        $a    = new MODM48A();
         $a->b = new MODM48B();
         $this->dm->persist($a);
         $this->dm->flush();

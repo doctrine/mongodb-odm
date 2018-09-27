@@ -656,10 +656,10 @@ class Expr
     public function includesReferenceTo(object $document) : self
     {
         $this->requiresCurrentField();
-        $mapping = $this->getReferenceMapping();
+        $mapping   = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
-        $storeAs = $mapping['storeAs'] ?? null;
-        $keys = [];
+        $storeAs   = $mapping['storeAs'] ?? null;
+        $keys      = [];
 
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
@@ -1040,10 +1040,10 @@ class Expr
     public function references(object $document) : self
     {
         $this->requiresCurrentField();
-        $mapping = $this->getReferenceMapping();
+        $mapping   = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
-        $storeAs = $mapping['storeAs'] ?? null;
-        $keys = [];
+        $storeAs   = $mapping['storeAs'] ?? null;
+        $keys      = [];
 
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
@@ -1118,7 +1118,7 @@ class Expr
             return $this;
         }
 
-        $keys = explode('.', $this->currentField);
+        $keys    = explode('.', $this->currentField);
         $current = &$this->newObj;
         foreach ($keys as $key) {
             $current = &$current[$key];

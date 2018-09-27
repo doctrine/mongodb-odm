@@ -12,8 +12,8 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class CollStats extends Stage
 {
-    public const LATENCY_STATS_NONE = 0;
-    public const LATENCY_STATS_SIMPLE = 1;
+    public const LATENCY_STATS_NONE       = 0;
+    public const LATENCY_STATS_SIMPLE     = 1;
     public const LATENCY_STATS_HISTOGRAMS = 2;
 
     /** @var int */

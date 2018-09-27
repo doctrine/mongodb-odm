@@ -27,10 +27,10 @@ class InsertPerformanceTest extends BaseTest
 
         $batchSize = 20;
         for ($i = 1; $i <= 10000; ++$i) {
-            $user = new CmsUser();
-            $user->status = 'user';
+            $user           = new CmsUser();
+            $user->status   = 'user';
             $user->username = 'user' . $i;
-            $user->name = 'Mr.Smith-' . $i;
+            $user->name     = 'Mr.Smith-' . $i;
             $this->dm->persist($user);
             if (($i % $batchSize) !== 0) {
                 continue;

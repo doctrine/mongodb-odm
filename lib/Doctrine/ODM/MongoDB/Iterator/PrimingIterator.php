@@ -31,10 +31,10 @@ final class PrimingIterator implements Iterator
 
     public function __construct(\Iterator $iterator, ClassMetadata $class, ReferencePrimer $referencePrimer, array $primers, array $unitOfWorkHints = [])
     {
-        $this->iterator = $iterator;
-        $this->class = $class;
+        $this->iterator        = $iterator;
+        $this->class           = $class;
         $this->referencePrimer = $referencePrimer;
-        $this->primers = $primers;
+        $this->primers         = $primers;
         $this->unitOfWorkHints = $unitOfWorkHints;
     }
 

@@ -22,7 +22,7 @@ class GH580Test extends BaseTest
         $this->assertCount(0, $repository->findAll());
 
         // Create, persist and flush initial object
-        $doc1 = new GH580Document();
+        $doc1       = new GH580Document();
         $doc1->name = 'foo';
 
         $this->dm->persist($doc1);
@@ -30,7 +30,7 @@ class GH580Test extends BaseTest
         $this->dm->clear($class);
 
         // Create, persist and flush a second, duplicate object
-        $doc2 = new GH580Document();
+        $doc2       = new GH580Document();
         $doc2->name = 'foo';
         $this->dm->persist($doc2);
 
@@ -49,7 +49,7 @@ class GH580Test extends BaseTest
         $this->dm->clear($class);
 
         // Create a third object
-        $doc3 = new GH580Document();
+        $doc3       = new GH580Document();
         $doc3->name = 'bar';
         $this->dm->persist($doc3);
         $this->dm->flush();

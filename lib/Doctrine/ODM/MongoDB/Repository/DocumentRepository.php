@@ -52,9 +52,9 @@ class DocumentRepository implements ObjectRepository, Selectable
     public function __construct(DocumentManager $dm, UnitOfWork $uow, ClassMetadata $classMetadata)
     {
         $this->documentName = $classMetadata->name;
-        $this->dm = $dm;
-        $this->uow = $uow;
-        $this->class = $classMetadata;
+        $this->dm           = $dm;
+        $this->uow          = $uow;
+        $this->class        = $classMetadata;
     }
 
     /**
@@ -194,7 +194,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      */
     public function matching(Criteria $criteria) : ArrayCollection
     {
-        $visitor = new QueryExpressionVisitor($this->createQueryBuilder());
+        $visitor      = new QueryExpressionVisitor($this->createQueryBuilder());
         $queryBuilder = $this->createQueryBuilder();
 
         if ($criteria->getWhereExpression() !== null) {

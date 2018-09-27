@@ -12,9 +12,9 @@ class MODM117Test extends BaseTest
 {
     public function testIssue()
     {
-        $user = new MODM117User();
+        $user             = new MODM117User();
         $user->first_name = 'jon';
-        $user->last_name = 'wage';
+        $user->last_name  = 'wage';
         $this->dm->persist($user);
         $this->dm->flush();
 

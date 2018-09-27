@@ -16,7 +16,7 @@ class BinDataTest extends BaseTest
      */
     public function testBinData($field, $data, $type)
     {
-        $test = new BinDataTestUser();
+        $test         = new BinDataTestUser();
         $test->$field = $data;
         $this->dm->persist($test);
         $this->dm->flush();

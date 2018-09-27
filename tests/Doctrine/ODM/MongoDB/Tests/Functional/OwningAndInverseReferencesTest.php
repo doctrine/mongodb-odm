@@ -30,12 +30,12 @@ class OwningAndInverseReferencesTest extends BaseTest
         // if inversedBy then isOwningSide
         // if mappedBy then isInverseSide
 
-        $customer = new Customer();
-        $customer->name = 'Jon Wage';
-        $customer->cart = new Cart();
+        $customer                 = new Customer();
+        $customer->name           = 'Jon Wage';
+        $customer->cart           = new Cart();
         $customer->cart->numItems = 5;
         $customer->cart->customer = $customer;
-        $customer->cartTest = 'test';
+        $customer->cartTest       = 'test';
         $this->dm->persist($customer);
         $this->dm->persist($customer->cart);
         $this->dm->flush();
@@ -49,7 +49,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertArrayHasKey('cart', $check);
         $this->assertEquals('test', $check['cart']);
 
-        $customer->cart = null;
+        $customer->cart     = null;
         $customer->cartTest = 'ok';
         $this->dm->flush();
         $this->dm->clear();
@@ -78,7 +78,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $check = $this->dm->getDocumentCollection(Feature::class)->findOne();
         $this->assertArrayHasKey('product', $check);
 
-        $product = $this->dm->createQueryBuilder(get_class($product))
+        $product  = $this->dm->createQueryBuilder(get_class($product))
             ->getQuery()
             ->getSingleResult();
         $features = $product->features;
@@ -119,8 +119,8 @@ class OwningAndInverseReferencesTest extends BaseTest
 
     public function testManyToMany()
     {
-        $baseballTag = new Tag('baseball');
-        $blogPost = new BlogPost();
+        $baseballTag    = new Tag('baseball');
+        $blogPost       = new BlogPost();
         $blogPost->name = 'Test';
         $blogPost->addTag($baseballTag);
 
@@ -151,7 +151,7 @@ class OwningAndInverseReferencesTest extends BaseTest
 
     public function testManyToManySelfReferencing()
     {
-        $jwage = new FriendUser('jwage');
+        $jwage  = new FriendUser('jwage');
         $fabpot = new FriendUser('fabpot');
         $fabpot->addFriend($jwage);
         $romanb = new FriendUser('romanb');

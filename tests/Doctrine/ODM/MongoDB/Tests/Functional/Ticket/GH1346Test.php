@@ -15,8 +15,8 @@ class GH1346Test extends BaseTest
      */
     public function testPublicProperty()
     {
-        $referenced1 = new GH1346ReferencedDocument();
-        $referenced2 = new GH1346ReferencedDocument();
+        $referenced1    = new GH1346ReferencedDocument();
+        $referenced2    = new GH1346ReferencedDocument();
         $gH1346Document = new GH1346Document();
         $gH1346Document->addReference($referenced1);
 
@@ -27,7 +27,7 @@ class GH1346Test extends BaseTest
         $this->dm->clear();
 
         $gH1346Document = $this->dm->getRepository(GH1346Document::class)->find($gH1346Document->getId());
-        $referenced2 = $this->dm->getRepository(GH1346ReferencedDocument::class)->find($referenced2->getId());
+        $referenced2    = $this->dm->getRepository(GH1346ReferencedDocument::class)->find($referenced2->getId());
 
         $gH1346Document->addReference($referenced2);
 

@@ -30,8 +30,8 @@ class ReplaceRoot extends Operator
     {
         parent::__construct($builder);
 
-        $this->dm = $documentManager;
-        $this->class = $class;
+        $this->dm         = $documentManager;
+        $this->class      = $class;
         $this->expression = $expression;
     }
 

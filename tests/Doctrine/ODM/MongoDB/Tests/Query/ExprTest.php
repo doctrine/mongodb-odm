@@ -20,7 +20,7 @@ class ExprTest extends BaseTest
 {
     public function testSelectIsPrepared()
     {
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->select('id');
         $query = $qb->getQuery();
 
@@ -31,7 +31,7 @@ class ExprTest extends BaseTest
     {
         $ids = ['4f28aa84acee41388900000a'];
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->in($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
@@ -45,7 +45,7 @@ class ExprTest extends BaseTest
     {
         $ids = ['4f28aa84acee41388900000a'];
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->all($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
@@ -59,7 +59,7 @@ class ExprTest extends BaseTest
     {
         $id = '4f28aa84acee41388900000a';
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->notEqual($id)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
@@ -73,7 +73,7 @@ class ExprTest extends BaseTest
     {
         $ids = ['4f28aa84acee41388900000a'];
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->notIn($ids)
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
@@ -116,11 +116,11 @@ class ExprTest extends BaseTest
     public function testMultipleQueryOperatorsArePrepared()
     {
         $all = ['4f28aa84acee41388900000a'];
-        $in = ['4f28aa84acee41388900000b'];
-        $ne = '4f28aa84acee41388900000c';
+        $in  = ['4f28aa84acee41388900000b'];
+        $ne  = '4f28aa84acee41388900000c';
         $nin = ['4f28aa84acee41388900000d'];
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('groups.id')->all($all)
             ->field('groups.id')->in($in)
             ->field('groups.id')->notEqual($ne)
@@ -141,7 +141,7 @@ class ExprTest extends BaseTest
 
     public function testPrepareNestedDocuments()
     {
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('address.subAddress.subAddress.subAddress.test')->equals('test');
         $query = $qb->getQuery();
         $debug = $query->debug('query');
@@ -161,13 +161,13 @@ class ExprTest extends BaseTest
 
     public function testSortIsPrepared()
     {
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->sort('id', 'desc');
         $query = $qb->getQuery();
         $query = $query->getQuery();
         $this->assertEquals(['_id' => -1], $query['sort']);
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->sort('address.subAddress.subAddress.subAddress.test', 'asc');
         $query = $qb->getQuery();
         $query = $query->getQuery();
@@ -176,7 +176,7 @@ class ExprTest extends BaseTest
 
     public function testNestedWithOperator()
     {
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('address.subAddress.subAddress.subAddress.test')->notIn(['test']);
         $query = $qb->getQuery();
         $query = $query->getQuery();
@@ -185,7 +185,7 @@ class ExprTest extends BaseTest
 
     public function testNewObjectIsPrepared()
     {
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
             ->field('address.subAddress.subAddress.subAddress.test')->popFirst();
         $query = $qb->getQuery();
@@ -195,11 +195,11 @@ class ExprTest extends BaseTest
 
     public function testReferencesUsesMinimalKeys()
     {
-        $dm = $this->createMock(DocumentManager::class);
-        $uow = $this->createMock(UnitOfWork::class);
+        $dm                = $this->createMock(DocumentManager::class);
+        $uow               = $this->createMock(UnitOfWork::class);
         $documentPersister = $this->createMock(DocumentPersister::class);
-        $class = $this->createMock(ClassMetadata::class);
-        $class->name = '';
+        $class             = $this->createMock(ClassMetadata::class);
+        $class->name       = '';
 
         $expected = ['foo.$id' => '1234'];
 
@@ -236,11 +236,11 @@ class ExprTest extends BaseTest
 
     public function testReferencesUsesAllKeys()
     {
-        $dm = $this->createMock(DocumentManager::class);
-        $uow = $this->createMock(UnitOfWork::class);
+        $dm                = $this->createMock(DocumentManager::class);
+        $uow               = $this->createMock(UnitOfWork::class);
         $documentPersister = $this->createMock(DocumentPersister::class);
-        $class = $this->createMock(ClassMetadata::class);
-        $class->name = '';
+        $class             = $this->createMock(ClassMetadata::class);
+        $class->name       = '';
 
         $expected = ['foo.$ref' => 'coll', 'foo.$id' => '1234', 'foo.$db' => 'db'];
 
@@ -277,11 +277,11 @@ class ExprTest extends BaseTest
 
     public function testReferencesUsesSomeKeys()
     {
-        $dm = $this->createMock(DocumentManager::class);
-        $uow = $this->createMock(UnitOfWork::class);
+        $dm                = $this->createMock(DocumentManager::class);
+        $uow               = $this->createMock(UnitOfWork::class);
         $documentPersister = $this->createMock(DocumentPersister::class);
-        $class = $this->createMock(ClassMetadata::class);
-        $class->name = '';
+        $class             = $this->createMock(ClassMetadata::class);
+        $class->name       = '';
 
         $expected = ['foo.$ref' => 'coll', 'foo.$id' => '1234'];
 
@@ -326,7 +326,7 @@ class ExprTest extends BaseTest
 
     public function testAddToSetWithExpression()
     {
-        $expr = $this->createExpr();
+        $expr     = $this->createExpr();
         $eachExpr = $this->createExpr();
         $eachExpr->each([1, 2]);
 
@@ -475,7 +475,7 @@ class ExprTest extends BaseTest
 
     public function provideGeoJsonPoint()
     {
-        $json = ['type' => 'Point', 'coordinates' => [1, 2]];
+        $json     = ['type' => 'Point', 'coordinates' => [1, 2]];
         $expected = ['$geometry' => $json];
 
         return [
@@ -532,7 +532,7 @@ class ExprTest extends BaseTest
 
     public function testPullWithExpression()
     {
-        $expr = $this->createExpr();
+        $expr       = $this->createExpr();
         $nestedExpr = $this->createExpr();
         $nestedExpr->gt(3);
 
@@ -550,7 +550,7 @@ class ExprTest extends BaseTest
 
     public function testPushWithExpression()
     {
-        $expr = $this->createExpr();
+        $expr      = $this->createExpr();
         $innerExpr = $this->createExpr();
         $innerExpr
             ->each([['x' => 1], ['x' => 2]])
@@ -573,7 +573,7 @@ class ExprTest extends BaseTest
 
     public function testPushWithExpressionShouldEnsureEachOperatorAppearsFirst()
     {
-        $expr = $this->createExpr();
+        $expr      = $this->createExpr();
         $innerExpr = $this->createExpr();
         $innerExpr
             ->sort('x', 1)
@@ -596,7 +596,7 @@ class ExprTest extends BaseTest
 
     public function testPushWithPosition()
     {
-        $expr = $this->createExpr();
+        $expr      = $this->createExpr();
         $innerExpr = $this->createExpr();
         $innerExpr
             ->each([20, 30])
@@ -678,7 +678,7 @@ class ExprTest extends BaseTest
 
     public function testGeoWithinPolygon()
     {
-        $expr = $this->createExpr();
+        $expr          = $this->createExpr();
         $expectedQuery = ['$geoWithin' => ['$polygon' => [[0, 0], [1, 1], [1, 0]]]];
 
         $this->assertSame($expr, $expr->geoWithinPolygon([0, 0], [1, 1], [1, 0]));
@@ -762,8 +762,8 @@ class ExprTest extends BaseTest
     private function createExpr(?DocumentManager $dm = null, ?ClassMetadata $class = null) : Expr
     {
         if (! $dm) {
-            $dm = $this->createMock(DocumentManager::class);
-            $uow = $this->createMock(UnitOfWork::class);
+            $dm                = $this->createMock(DocumentManager::class);
+            $uow               = $this->createMock(UnitOfWork::class);
             $documentPersister = $this->createMock(DocumentPersister::class);
 
             $dm

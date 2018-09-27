@@ -31,9 +31,9 @@ final class HydratingIterator implements Iterator
 
     public function __construct(Traversable $traversable, UnitOfWork $unitOfWork, ClassMetadata $class, array $unitOfWorkHints = [])
     {
-        $this->iterator = $this->wrapTraversable($traversable);
-        $this->unitOfWork = $unitOfWork;
-        $this->class = $class;
+        $this->iterator        = $this->wrapTraversable($traversable);
+        $this->unitOfWork      = $unitOfWork;
+        $this->class           = $class;
         $this->unitOfWorkHints = $unitOfWorkHints;
     }
 

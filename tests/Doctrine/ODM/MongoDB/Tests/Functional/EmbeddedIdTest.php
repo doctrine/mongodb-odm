@@ -21,8 +21,8 @@ class EmbeddedIdTest extends BaseTest
 
     public function testEmbeddedIdsAreNotOverwritten()
     {
-        $id = (string) new ObjectId();
-        $test = new DefaultIdEmbeddedDocument();
+        $id       = (string) new ObjectId();
+        $test     = new DefaultIdEmbeddedDocument();
         $test->id = $id;
 
         $this->dm->persist($test);
@@ -36,7 +36,7 @@ class EmbeddedIdTest extends BaseTest
      */
     public function testEmbedOneDocumentWithMissingIdentifier()
     {
-        $user = new EmbeddedStrategyNoneIdTestUser();
+        $user           = new EmbeddedStrategyNoneIdTestUser();
         $user->embedOne = new DefaultIdStrategyNoneEmbeddedDocument();
 
         $this->dm->persist($user);
@@ -48,7 +48,7 @@ class EmbeddedIdTest extends BaseTest
      */
     public function testEmbedManyDocumentWithMissingIdentifier()
     {
-        $user = new EmbeddedStrategyNoneIdTestUser();
+        $user              = new EmbeddedStrategyNoneIdTestUser();
         $user->embedMany[] = new DefaultIdStrategyNoneEmbeddedDocument();
 
         $this->dm->persist($user);

@@ -36,7 +36,7 @@ class ReferencesTest extends BaseTest
 
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')
             ->equals($user->getId());
         $query = $qb->getQuery();
@@ -45,8 +45,8 @@ class ReferencesTest extends BaseTest
         $this->dm->remove($user2);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder(Group::class);
-        $query = $qb->getQuery();
+        $qb     = $this->dm->createQueryBuilder(Group::class);
+        $query  = $qb->getQuery();
         $groups = $query->execute();
 
         $this->assertCount(0, $groups->toArray());
@@ -54,7 +54,7 @@ class ReferencesTest extends BaseTest
 
     public function testLazyLoadReference()
     {
-        $user = new User();
+        $user    = new User();
         $profile = new Profile();
         $profile->setFirstName('Jonathan');
         $profile->setLastName('Wage');
@@ -65,7 +65,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
 
@@ -83,7 +83,7 @@ class ReferencesTest extends BaseTest
 
     public function testLazyLoadedWithNotifyPropertyChanged()
     {
-        $user = new User();
+        $user    = new User();
         $profile = new ProfileNotify();
         $profile->setFirstName('Maciej');
         $user->setProfileNotify($profile);
@@ -125,7 +125,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
@@ -142,7 +142,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
@@ -165,7 +165,7 @@ class ReferencesTest extends BaseTest
 
         $this->assertNotNull($user->getAccount()->getId());
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
@@ -188,11 +188,11 @@ class ReferencesTest extends BaseTest
         $this->assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb     = $this->dm->createQueryBuilder(User::class)
             ->field('id')
             ->equals($user->getId());
-        $query = $qb->getQuery();
-        $user2 = $query->getSingleResult();
+        $query  = $qb->getQuery();
+        $user2  = $query->getSingleResult();
         $groups = $user2->getGroups();
         $this->assertFalse($groups->isInitialized());
 
@@ -216,10 +216,10 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb     = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
-        $query = $qb->getQuery();
-        $user3 = $query->getSingleResult();
+        $query  = $qb->getQuery();
+        $user3  = $query->getSingleResult();
         $groups = $user3->getGroups();
 
         $this->assertEquals('test', $groups[0]->getName());
@@ -271,7 +271,7 @@ class ReferencesTest extends BaseTest
 
     public function testManyReferenceWithAddToSetStrategy()
     {
-        $user = new User();
+        $user                         = new User();
         $user->addUniqueGroup($group1 = new Group('Group 1'));
         $user->addUniqueGroup($group1);
         $user->addUniqueGroup(new Group('Group 2'));
@@ -287,11 +287,11 @@ class ReferencesTest extends BaseTest
         $this->assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb     = $this->dm->createQueryBuilder(User::class)
             ->field('id')
             ->equals($user->getId());
-        $query = $qb->getQuery();
-        $user2 = $query->getSingleResult();
+        $query  = $qb->getQuery();
+        $user2  = $query->getSingleResult();
         $groups = $user2->getUniqueGroups();
         $this->assertFalse($groups->isInitialized());
 
@@ -315,10 +315,10 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb     = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
-        $query = $qb->getQuery();
-        $user3 = $query->getSingleResult();
+        $query  = $qb->getQuery();
+        $user3  = $query->getSingleResult();
         $groups = $user3->getUniqueGroups();
 
         $this->assertEquals('test', $groups[0]->getName());
@@ -356,8 +356,8 @@ class ReferencesTest extends BaseTest
      */
     public function testDocumentNotFoundExceptionWithArrayId()
     {
-        $test = new DocumentWithArrayReference();
-        $test->referenceOne = new DocumentWithArrayId();
+        $test                   = new DocumentWithArrayReference();
+        $test->referenceOne     = new DocumentWithArrayId();
         $test->referenceOne->id = ['identifier' => 1];
 
         $this->dm->persist($test);
@@ -387,7 +387,7 @@ class ReferencesTest extends BaseTest
     public function testDocumentNotFoundExceptionWithObjectId()
     {
         $profile = new Profile();
-        $user = new User();
+        $user    = new User();
         $user->setProfile($profile);
 
         $this->dm->persist($profile);
@@ -406,7 +406,7 @@ class ReferencesTest extends BaseTest
             ]
         );
 
-        $user = $this->dm->find(get_class($user), $user->getId());
+        $user    = $this->dm->find(get_class($user), $user->getId());
         $profile = $user->getProfile();
         $profile->__load();
     }
@@ -417,8 +417,8 @@ class ReferencesTest extends BaseTest
      */
     public function testDocumentNotFoundExceptionWithMongoBinDataId()
     {
-        $test = new DocumentWithMongoBinDataReference();
-        $test->referenceOne = new DocumentWithMongoBinDataId();
+        $test                   = new DocumentWithMongoBinDataReference();
+        $test->referenceOne     = new DocumentWithMongoBinDataId();
         $test->referenceOne->id = 'test';
 
         $this->dm->persist($test);
@@ -444,7 +444,7 @@ class ReferencesTest extends BaseTest
     public function testDocumentNotFoundEvent()
     {
         $profile = new Profile();
-        $user = new User();
+        $user    = new User();
         $user->setProfile($profile);
 
         $this->dm->persist($profile);
@@ -463,7 +463,7 @@ class ReferencesTest extends BaseTest
             ]
         );
 
-        $user = $this->dm->find(get_class($user), $user->getId());
+        $user    = $this->dm->find(get_class($user), $user->getId());
         $profile = $user->getProfile();
 
         $closure = function (DocumentNotFoundEventArgs $eventArgs) use ($profile) {

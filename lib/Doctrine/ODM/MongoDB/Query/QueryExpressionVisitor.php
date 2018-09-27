@@ -98,7 +98,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
         }
 
         $method = self::$compositeMethods[$compositeExpr->getType()];
-        $expr = $this->builder->expr();
+        $expr   = $this->builder->expr();
 
         foreach ($compositeExpr->getExpressionList() as $child) {
             $expr->{$method}($this->dispatch($child));

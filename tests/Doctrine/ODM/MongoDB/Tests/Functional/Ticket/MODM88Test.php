@@ -18,9 +18,9 @@ class MODM88Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(Article::class)
+        $qb       = $this->dm->createQueryBuilder(Article::class)
             ->select('_id', 'title');
-        $q = $qb->getQuery();
+        $q        = $qb->getQuery();
         $document = $q->getSingleResult();
 
         $this->assertEquals('Test Title', $document->getTitle());

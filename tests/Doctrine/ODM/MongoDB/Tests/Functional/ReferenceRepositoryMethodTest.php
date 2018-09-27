@@ -49,15 +49,15 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $post1 = new BlogPost();
+        $post1       = new BlogPost();
         $post1->name = 'post1';
         $post1->setUser($user);
 
-        $post2 = new BlogPost();
+        $post2       = new BlogPost();
         $post2->name = 'post2';
         $post2->setUser($user);
 
-        $post3 = new BlogPost();
+        $post3       = new BlogPost();
         $post3->name = 'post3';
         $post3->setUser($user);
 

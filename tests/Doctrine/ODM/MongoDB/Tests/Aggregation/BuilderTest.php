@@ -194,7 +194,7 @@ class BuilderTest extends BaseTest
 
     public function testPipelineConvertsTypes()
     {
-        $builder = $this->dm->createAggregationBuilder(Article::class);
+        $builder  = $this->dm->createAggregationBuilder(Article::class);
         $dateTime = new DateTimeImmutable('2000-01-01T00:00Z');
         $builder
             ->group()
@@ -345,22 +345,22 @@ class BuilderTest extends BaseTest
         $baseballTag = new Tag('baseball');
         $footballTag = new Tag('football');
 
-        $blogPost = new BlogPost();
+        $blogPost       = new BlogPost();
         $blogPost->name = 'Test 1';
         $blogPost->addTag($baseballTag);
         $this->dm->persist($blogPost);
 
-        $blogPost = new BlogPost();
+        $blogPost       = new BlogPost();
         $blogPost->name = 'Test 2';
         $blogPost->addTag($baseballTag);
         $this->dm->persist($blogPost);
 
-        $blogPost = new BlogPost();
+        $blogPost       = new BlogPost();
         $blogPost->name = 'Test 3';
         $blogPost->addTag($footballTag);
         $this->dm->persist($blogPost);
 
-        $blogPost = new BlogPost();
+        $blogPost       = new BlogPost();
         $blogPost->name = 'Test 4';
         $blogPost->addTag($baseballTag);
         $blogPost->addTag($footballTag);

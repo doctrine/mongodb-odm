@@ -37,7 +37,7 @@ class GH1229Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->firstParentId = $firstParent->id;
+        $this->firstParentId  = $firstParent->id;
         $this->secondParentId = $secondParent->id;
     }
 

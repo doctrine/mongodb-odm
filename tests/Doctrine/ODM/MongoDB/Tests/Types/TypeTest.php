@@ -84,7 +84,7 @@ class TypeTest extends BaseTest
 
     public function testConvertDatePreservesMilliseconds()
     {
-        $date = new DateTime();
+        $date         = new DateTime();
         $expectedDate = clone $date;
 
         $cleanMicroseconds = (int) $date->format('v') * 1000;

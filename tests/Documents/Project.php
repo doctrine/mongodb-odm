@@ -30,7 +30,7 @@ class Project
 
     public function __construct($name, ?Collection $subProjects = null)
     {
-        $this->name = $name;
+        $this->name        = $name;
         $this->subProjects = $subProjects ? $subProjects : new ArrayCollection();
     }
 

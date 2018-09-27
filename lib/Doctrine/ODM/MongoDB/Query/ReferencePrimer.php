@@ -61,7 +61,7 @@ class ReferencePrimer
 
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
-        $this->dm = $dm;
+        $this->dm  = $dm;
         $this->uow = $uow;
 
         $this->defaultPrimer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) : void {
@@ -98,10 +98,10 @@ class ReferencePrimer
      */
     public function primeReferences(ClassMetadata $class, $documents, string $fieldName, array $hints = [], ?callable $primer = null) : void
     {
-        $data = $this->parseDotSyntaxForPrimer($fieldName, $class, $documents);
-        $mapping = $data['mapping'];
+        $data      = $this->parseDotSyntaxForPrimer($fieldName, $class, $documents);
+        $mapping   = $data['mapping'];
         $fieldName = $data['fieldName'];
-        $class = $data['class'];
+        $class     = $data['class'];
         $documents = $data['documents'];
 
         /* Inverse-side references would need to be populated before we can
@@ -122,7 +122,7 @@ class ReferencePrimer
             throw new InvalidArgumentException('$primer is not callable');
         }
 
-        $primer = $primer ?: $this->defaultPrimer;
+        $primer     = $primer ?: $this->defaultPrimer;
         $groupedIds = [];
 
         /** @var PersistentCollectionInterface $document */
@@ -137,8 +137,8 @@ class ReferencePrimer
             }
 
             if ($mapping['type'] === 'one' && $fieldValue instanceof Proxy && ! $fieldValue->__isInitialized()) {
-                $refClass = $this->dm->getClassMetadata(get_class($fieldValue));
-                $id = $this->uow->getDocumentIdentifier($fieldValue);
+                $refClass                                    = $this->dm->getClassMetadata(get_class($fieldValue));
+                $id                                          = $this->uow->getDocumentIdentifier($fieldValue);
                 $groupedIds[$refClass->name][serialize($id)] = $id;
             } elseif ($mapping['type'] === 'many' && $fieldValue instanceof PersistentCollectionInterface) {
                 $this->addManyReferences($fieldValue, $groupedIds);
@@ -176,7 +176,7 @@ class ReferencePrimer
         }
 
         $mapping = $class->fieldMappings[$e[0]];
-        $e[0] = $mapping['fieldName'];
+        $e[0]    = $mapping['fieldName'];
 
         // Case of embedded document(s) to recurse through:
         if (! isset($mapping['reference'])) {
@@ -234,13 +234,13 @@ class ReferencePrimer
      */
     private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds) : void
     {
-        $mapping = $persistentCollection->getMapping();
-        $class = null;
+        $mapping   = $persistentCollection->getMapping();
+        $class     = null;
         $className = null;
 
         if ($mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID) {
             $className = $mapping['targetDocument'];
-            $class = $this->dm->getClassMetadata($className);
+            $class     = $this->dm->getClassMetadata($className);
         }
 
         foreach ($persistentCollection->getMongoData() as $reference) {
@@ -248,7 +248,7 @@ class ReferencePrimer
 
             if ($mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID) {
                 $className = $this->uow->getClassNameForAssociation($mapping, $reference);
-                $class = $this->dm->getClassMetadata($className);
+                $class     = $this->dm->getClassMetadata($className);
             }
 
             $document = $this->uow->tryGetById($id, $class);
@@ -257,7 +257,7 @@ class ReferencePrimer
                 continue;
             }
 
-            $id = $class->getPHPIdentifierValue($id);
+            $id                                     = $class->getPHPIdentifierValue($id);
             $groupedIds[$className][serialize($id)] = $id;
         }
     }

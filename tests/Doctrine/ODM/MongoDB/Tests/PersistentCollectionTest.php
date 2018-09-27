@@ -21,13 +21,13 @@ class PersistentCollectionTest extends BaseTest
     public function testSlice()
     {
          [$start, $limit] = [0, 25];
-        $collection = $this->getMockCollection();
+        $collection       = $this->getMockCollection();
         $collection->expects($this->once())
             ->method('slice')
             ->with($start, $limit)
             ->will($this->returnValue(true));
-        $dm = $this->getMockDocumentManager();
-        $uow = $this->getMockUnitOfWork();
+        $dm          = $this->getMockDocumentManager();
+        $uow         = $this->getMockUnitOfWork();
         $pCollection = new PersistentCollection($collection, $dm, $uow);
         $pCollection->slice($start, $limit);
     }
@@ -39,7 +39,7 @@ class PersistentCollectionTest extends BaseTest
     public function testExceptionForGetTypeClassWithoutDocumentManager()
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
-        $owner = new stdClass();
+        $owner      = new stdClass();
 
         $serialized = serialize($collection);
         /** @var PersistentCollection $unserialized */
@@ -248,8 +248,8 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->exactly(2))->method('offsetSet');
-        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
-        $pcoll[] = 1;
+        $pcoll    = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll[]  = 1;
         $pcoll[1] = 2;
         $collection->expects($this->once())->method('add');
         $pcoll->add(3);

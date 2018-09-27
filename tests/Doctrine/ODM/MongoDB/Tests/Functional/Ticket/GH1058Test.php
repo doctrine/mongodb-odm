@@ -45,7 +45,7 @@ class GH1058Listener
 {
     public function onFlush(OnFlushEventArgs $args)
     {
-        $dm = $args->getDocumentManager();
+        $dm  = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
 
         foreach (array_merge($uow->getScheduledDocumentInsertions(), $uow->getScheduledDocumentUpserts()) as $document) {

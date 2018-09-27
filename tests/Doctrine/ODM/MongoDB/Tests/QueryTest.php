@@ -37,13 +37,13 @@ class QueryTest extends BaseTest
 
     public function testThatOrAcceptsAnotherQuery()
     {
-        $kris = new Person('Kris');
+        $kris  = new Person('Kris');
         $chris = new Person('Chris');
         $this->dm->persist($kris);
         $this->dm->persist($chris);
         $this->dm->flush();
 
-        $class = Person::class;
+        $class       = Person::class;
         $expression1 = ['firstName' => 'Kris'];
         $expression2 = ['firstName' => 'Chris'];
 
@@ -68,7 +68,7 @@ class QueryTest extends BaseTest
     public function testReferences()
     {
         $kris = new Person('Kris');
-        $jon = new Person('Jon');
+        $jon  = new Person('Jon');
 
         $this->dm->persist($kris);
         $this->dm->persist($jon);
@@ -96,7 +96,7 @@ class QueryTest extends BaseTest
     public function testReferencesStoreAsId()
     {
         $kris = new Person('Kris');
-        $jon = new Person('Jon');
+        $jon  = new Person('Jon');
 
         $this->dm->persist($kris);
         $this->dm->persist($jon);
@@ -122,7 +122,7 @@ class QueryTest extends BaseTest
     public function testReferencesStoreAsDbRef()
     {
         $kris = new Person('Kris');
-        $jon = new Person('Jon');
+        $jon  = new Person('Jon');
 
         $this->dm->persist($kris);
         $this->dm->persist($jon);
@@ -149,7 +149,7 @@ class QueryTest extends BaseTest
     public function testIncludesReferenceToWithStoreAsDbRefWithDb()
     {
         $kris = new Person('Kris');
-        $jon = new Person('Jon');
+        $jon  = new Person('Jon');
 
         $this->dm->persist($kris);
         $this->dm->persist($jon);
@@ -180,8 +180,8 @@ class QueryTest extends BaseTest
 
     public function testIncludesReferenceToWithStoreAsId()
     {
-        $kris = new Person('Kris');
-        $jon = new Person('Jon');
+        $kris   = new Person('Kris');
+        $jon    = new Person('Jon');
         $jachim = new Person('Jachim');
 
         $this->dm->persist($kris);
@@ -210,7 +210,7 @@ class QueryTest extends BaseTest
     public function testIncludesReferenceToWithStoreAsDbRef()
     {
         $kris = new Person('Kris');
-        $jon = new Person('Jon');
+        $jon  = new Person('Jon');
 
         $this->dm->persist($kris);
         $this->dm->persist($jon);
@@ -246,11 +246,11 @@ class QueryTest extends BaseTest
         $this->dm->flush();
 
         $identifier = new ObjectId($user->getId());
-        $ids = [$identifier];
+        $ids        = [$identifier];
 
-        $qb = $this->dm->createQueryBuilder(User::class)
+        $qb      = $this->dm->createQueryBuilder(User::class)
             ->field('_id')->in($ids);
-        $query = $qb->getQuery();
+        $query   = $qb->getQuery();
         $results = $query->toArray();
         $this->assertCount(1, $results);
     }
@@ -269,7 +269,7 @@ class QueryTest extends BaseTest
     {
         $refId = '000000000000000000000001';
 
-        $qb = $this->dm->createQueryBuilder(User::class);
+        $qb         = $this->dm->createQueryBuilder(User::class);
         $embeddedQb = $this->dm->createQueryBuilder(Phonenumber::class);
 
         $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()
@@ -282,7 +282,7 @@ class QueryTest extends BaseTest
 
     public function testQueryWithMultipleEmbeddedDocuments()
     {
-        $qb = $this->dm->createQueryBuilder(EmbedTest::class)
+        $qb    = $this->dm->createQueryBuilder(EmbedTest::class)
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.name')->equals('Foo');
         $query = $qb->getQuery();
@@ -293,7 +293,7 @@ class QueryTest extends BaseTest
     {
         $identifier = new ObjectId();
 
-        $qb = $this->dm->createQueryBuilder(EmbedTest::class)
+        $qb    = $this->dm->createQueryBuilder(EmbedTest::class)
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.id')->equals((string) $identifier);
         $query = $qb->getQuery();
@@ -307,7 +307,7 @@ class QueryTest extends BaseTest
     {
         $identifier = new ObjectId();
 
-        $qb = $this->dm->createQueryBuilder(__NAMESPACE__ . '\EmbedTest')
+        $qb    = $this->dm->createQueryBuilder(__NAMESPACE__ . '\EmbedTest')
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.$id')->equals((string) $identifier);
         $query = $qb->getQuery();
@@ -386,7 +386,7 @@ class QueryTest extends BaseTest
 
     public function testReadOnly()
     {
-        $p = new Person('Maciej');
+        $p      = new Person('Maciej');
         $p->pet = new Pet('Blackie', $p);
         $this->dm->persist($p);
         $this->dm->flush();
@@ -489,7 +489,7 @@ class QueryTest extends BaseTest
             'type' => Query::TYPE_COUNT,
             'query' => ['foo' => 'bar'],
         ];
-        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryQrray, ['readPreference' => $readPreference]);
+        $query      = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryQrray, ['readPreference' => $readPreference]);
         $query->execute();
     }
 
@@ -548,7 +548,7 @@ class Pet
 
     public function __construct($name, Person $owner)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->owner = $owner;
     }
 }

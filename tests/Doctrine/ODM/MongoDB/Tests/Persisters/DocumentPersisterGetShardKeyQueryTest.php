@@ -19,11 +19,11 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 {
     public function testGetShardKeyQueryScalars()
     {
-        $o = new ShardedByScalars();
-        $o->int = 1;
+        $o         = new ShardedByScalars();
+        $o->int    = 1;
         $o->string = 'hi';
-        $o->bool = true;
-        $o->float = 1.2;
+        $o->bool   = true;
+        $o->float  = 1.2;
 
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
@@ -39,9 +39,9 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 
     public function testGetShardKeyQueryObjects()
     {
-        $o = new ShardedByObjects();
-        $o->oid = '54ca2c4c81fec698130041a7';
-        $o->bin = 'hi';
+        $o       = new ShardedByObjects();
+        $o->oid  = '54ca2c4c81fec698130041a7';
+        $o->bin  = 'hi';
         $o->date = new DateTime();
 
         /** @var DocumentPersister $persister */
@@ -68,7 +68,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 
     public function testShardById()
     {
-        $o = new ShardedById();
+        $o             = new ShardedById();
         $o->identifier = new ObjectId();
 
         /** @var DocumentPersister $persister */
@@ -85,7 +85,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
     {
         $o = new ShardedByReferenceOne();
 
-        $userId = new ObjectId();
+        $userId       = new ObjectId();
         $o->reference = new User();
         $o->reference->setId($userId);
 

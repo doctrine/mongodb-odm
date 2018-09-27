@@ -29,7 +29,7 @@ class ShardCommand extends AbstractCommand
     {
         $class = $input->getOption('class');
 
-        $sm = $this->getSchemaManager();
+        $sm        = $this->getSchemaManager();
         $isErrored = false;
 
         try {

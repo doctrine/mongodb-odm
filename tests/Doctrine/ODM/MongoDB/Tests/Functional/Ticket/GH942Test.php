@@ -12,7 +12,7 @@ class GH942Test extends BaseTest
 {
     public function testDiscriminatorValueUsesClassNameIfMapIsNotDefined()
     {
-        $doc = new GH942Document();
+        $doc       = new GH942Document();
         $doc->name = 'foo';
 
         $this->dm->persist($doc);
@@ -28,10 +28,10 @@ class GH942Test extends BaseTest
 
     public function testDiscriminatorValueUsesClassNameIfNotInMap()
     {
-        $parent = new GH942DocumentParent();
+        $parent       = new GH942DocumentParent();
         $parent->name = 'parent';
-        $child = new GH942DocumentChild();
-        $child->name = 'child';
+        $child        = new GH942DocumentChild();
+        $child->name  = 'child';
 
         $this->dm->persist($parent);
         $this->dm->persist($child);

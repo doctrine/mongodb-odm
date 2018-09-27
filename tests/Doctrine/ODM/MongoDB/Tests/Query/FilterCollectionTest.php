@@ -66,7 +66,7 @@ class FilterCollectionTest extends BaseTest
 
     public function testGetFilterCriteria()
     {
-        $class = $this->dm->getClassMetadata(User::class);
+        $class            = $this->dm->getClassMetadata(User::class);
         $filterCollection = $this->dm->getFilterCollection();
 
         $this->assertEmpty($filterCollection->getFilterCriteria($class));
@@ -82,7 +82,7 @@ class FilterCollectionTest extends BaseTest
 
     public function testGetFilterCriteriaMergesCriteria()
     {
-        $class = $this->dm->getClassMetadata(User::class);
+        $class            = $this->dm->getClassMetadata(User::class);
         $filterCollection = $this->dm->getFilterCollection();
 
         $filterCollection->enable('testFilter');

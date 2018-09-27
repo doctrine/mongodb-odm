@@ -30,7 +30,7 @@ class GH1011Test extends BaseTest
         $this->dm->persist($doc);
         $this->dm->flush();
         $oldCollection = $doc->embeds;
-        $doc->embeds = new ArrayCollection();
+        $doc->embeds   = new ArrayCollection();
         $doc->embeds->add(new GH1011Embedded('test2'));
         $this->uow->computeChangeSets();
         $this->assertTrue($this->uow->isCollectionScheduledForUpdate($doc->embeds));

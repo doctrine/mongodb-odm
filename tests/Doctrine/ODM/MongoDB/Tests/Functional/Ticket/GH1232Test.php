@@ -20,7 +20,7 @@ class GH1232Test extends BaseTest
         $this->dm->persist($post);
         $this->dm->flush();
 
-        $comment = new GH1232Comment();
+        $comment       = new GH1232Comment();
         $comment->post = $post;
         $this->dm->persist($comment);
         $this->dm->flush();

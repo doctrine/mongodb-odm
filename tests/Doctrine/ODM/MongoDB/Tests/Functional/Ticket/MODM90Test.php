@@ -14,8 +14,8 @@ class MODM90Test extends BaseTest
     private function getDocumentManager()
     {
         $this->listener = new MODM90EventListener();
-        $evm = $this->dm->getEventManager();
-        $events = [
+        $evm            = $this->dm->getEventManager();
+        $events         = [
             Events::preUpdate,
             Events::postUpdate,
         ];
@@ -27,9 +27,9 @@ class MODM90Test extends BaseTest
     {
         $dm = $this->getDocumentManager();
 
-        $testDoc = new MODM90TestDocument();
-        $testDoc->name = 'Parent';
-        $testDoc->embedded = new MODM90TestEmbeddedDocument();
+        $testDoc                 = new MODM90TestDocument();
+        $testDoc->name           = 'Parent';
+        $testDoc->embedded       = new MODM90TestEmbeddedDocument();
         $testDoc->embedded->name = 'Child';
         $dm->persist($testDoc);
         $dm->flush();
@@ -54,9 +54,9 @@ class MODM90Test extends BaseTest
     {
         $dm = $this->getDocumentManager();
 
-        $testDoc = new MODM90TestDocument();
-        $testDoc->name = 'Parent';
-        $testDoc->embedded = new MODM90Test2EmbeddedDocument();
+        $testDoc                 = new MODM90TestDocument();
+        $testDoc->name           = 'Parent';
+        $testDoc->embedded       = new MODM90Test2EmbeddedDocument();
         $testDoc->embedded->name = 'Child';
         $dm->persist($testDoc);
         $dm->flush();
@@ -73,8 +73,8 @@ class MODM90EventListener
     public $called = [];
     public function __call($method, $args)
     {
-        $document = $args[0]->getDocument();
-        $className = get_class($document);
+        $document                = $args[0]->getDocument();
+        $className               = get_class($document);
         $this->called[$method][] = $className;
     }
 }

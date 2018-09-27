@@ -26,7 +26,7 @@ class Book
 
     public function __construct()
     {
-        $this->chapters = new ArrayCollection();
+        $this->chapters           = new ArrayCollection();
         $this->identifiedChapters = new ArrayCollection();
     }
 }

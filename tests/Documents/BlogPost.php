@@ -72,7 +72,7 @@ class BlogPost
 
     public function addComment(Comment $comment)
     {
-        $comment->parent = $this;
+        $comment->parent  = $this;
         $this->comments[] = $comment;
     }
 

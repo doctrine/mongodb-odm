@@ -15,20 +15,20 @@ class NestedDocumentsTest extends BaseTest
 {
     public function testSimple()
     {
-        $product = new Product();
+        $product        = new Product();
         $product->title = 'Product';
 
-        $order = new Order();
+        $order        = new Order();
         $order->title = 'Order';
 
         $this->dm->persist($product);
         $this->dm->persist($order);
         $this->dm->flush();
 
-        $productBackup = new ProductBackup();
+        $productBackup        = new ProductBackup();
         $productBackup->title = $product->title;
-        $productBackup->id = $product->id;
-        $order->product = $productBackup;
+        $productBackup->id    = $product->id;
+        $order->product       = $productBackup;
 
         $this->dm->flush();
         $this->dm->clear();
@@ -62,7 +62,7 @@ class NestedDocumentsTest extends BaseTest
         $test2 = $this->dm->getDocumentCollection(Order::class)->findOne();
         $this->assertNotEquals($test1['title'], $test2['product']['title']);
 
-        $order = $this->dm->find(Order::class, $order->id);
+        $order   = $this->dm->find(Order::class, $order->id);
         $product = $this->dm->find(Product::class, $product->id);
         $this->assertNotEquals($product->title, $order->product->title);
     }
@@ -70,8 +70,8 @@ class NestedDocumentsTest extends BaseTest
     public function testNestedCategories()
     {
         $category = new Category('Root');
-        $child1 = $category->addChild('Child 1');
-        $child2 = $child1->addChild('Child 2');
+        $child1   = $category->addChild('Child 1');
+        $child2   = $child1->addChild('Child 2');
         $this->dm->persist($category);
         $this->dm->flush();
         $this->dm->clear();
@@ -98,7 +98,7 @@ class NestedDocumentsTest extends BaseTest
 
     public function testNestedReference()
     {
-        $test = new Hierarchy('Root');
+        $test   = new Hierarchy('Root');
         $child1 = $test->addChild('Child 1');
         $child2 = $test->addChild('Child 2');
         $this->dm->persist($child1);
@@ -209,7 +209,7 @@ class BaseCategory
 
     public function __construct($name)
     {
-        $this->name = $name;
+        $this->name     = $name;
         $this->children = new ArrayCollection();
     }
 

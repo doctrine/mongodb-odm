@@ -23,14 +23,14 @@ class GH566Test extends BaseTest
         $this->dm->persist($doc2);
         $this->dm->persist($doc3);
 
-        $embeddedDoc1 = new GH566EmbeddedDocument();
+        $embeddedDoc1           = new GH566EmbeddedDocument();
         $embeddedDoc1->sequence = 1;
-        $embeddedDoc1->parent = $doc1;
-        $embeddedDoc2 = new GH566EmbeddedDocument();
+        $embeddedDoc1->parent   = $doc1;
+        $embeddedDoc2           = new GH566EmbeddedDocument();
         $embeddedDoc2->sequence = 2;
-        $embeddedDoc2->parent = $doc2;
+        $embeddedDoc2->parent   = $doc2;
 
-        $doc3->version = $embeddedDoc2;
+        $doc3->version  = $embeddedDoc2;
         $doc3->versions = new ArrayCollection([
             $embeddedDoc1,
             $embeddedDoc2,
@@ -46,18 +46,18 @@ class GH566Test extends BaseTest
         $doc2->children->setInitialized(false);
         $doc3->children->setInitialized(false);
 
-        $doc1 = $this->dm->find($class, $doc1->id);
+        $doc1         = $this->dm->find($class, $doc1->id);
         $doc1Children = iterator_to_array($doc1->children, false);
 
         $this->assertCount(0, $doc1Children);
 
-        $doc2 = $this->dm->find($class, $doc2->id);
+        $doc2         = $this->dm->find($class, $doc2->id);
         $doc2Children = iterator_to_array($doc2->children, false);
 
         $this->assertCount(1, $doc2Children);
         $this->assertSame($doc3, $doc2Children[0]);
 
-        $doc3 = $this->dm->find($class, $doc3->id);
+        $doc3         = $this->dm->find($class, $doc3->id);
         $doc3Children = iterator_to_array($doc3->children, false);
 
         $this->assertCount(0, $doc3Children);

@@ -61,8 +61,8 @@ class GraphLookup extends Stage
     {
         parent::__construct($builder);
 
-        $this->dm = $documentManager;
-        $this->class = $class;
+        $this->dm                      = $documentManager;
+        $this->class                   = $class;
         $this->restrictSearchWithMatch = new GraphLookup\Match($this->builder, $this);
         $this->from($from);
     }
@@ -241,7 +241,7 @@ class GraphLookup extends Stage
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);
         }
 
-        $referenceMapping = $this->class->getFieldMapping($fieldName);
+        $referenceMapping  = $this->class->getFieldMapping($fieldName);
         $this->targetClass = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
         if ($this->targetClass->isSharded()) {
             throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);

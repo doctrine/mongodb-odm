@@ -27,8 +27,8 @@ final class Command
     {
         self::checkRequestIds($startedEvent, $succeededEvent);
 
-        $instance = new self();
-        $instance->startedEvent = $startedEvent;
+        $instance                = new self();
+        $instance->startedEvent  = $startedEvent;
         $instance->finishedEvent = $succeededEvent;
 
         return $instance;
@@ -38,8 +38,8 @@ final class Command
     {
         self::checkRequestIds($startedEvent, $failedEvent);
 
-        $instance = new self();
-        $instance->startedEvent = $startedEvent;
+        $instance                = new self();
+        $instance->startedEvent  = $startedEvent;
         $instance->finishedEvent = $failedEvent;
 
         return $instance;

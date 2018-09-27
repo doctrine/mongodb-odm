@@ -22,19 +22,19 @@ class UnitOfWorkPerformanceTest extends BaseTest
     {
         $users = [];
         for ($i = 1; $i <= 10000; ++$i) {
-            $user = new CmsUser();
-            $user->status = 'user';
+            $user           = new CmsUser();
+            $user->status   = 'user';
             $user->username = 'user' . $i;
-            $user->name = 'Mr.Smith-' . $i;
+            $user->name     = 'Mr.Smith-' . $i;
             $this->dm->persist($user);
             $users[] = $user;
         }
         $this->dm->flush();
 
         foreach ($users as $user) {
-            $user->status = 'other';
+            $user->status    = 'other';
             $user->username .= '++';
-            $user->name = str_replace('Mr.', 'Mrs.', $user->name);
+            $user->name      = str_replace('Mr.', 'Mrs.', $user->name);
         }
 
         $s = microtime(true);

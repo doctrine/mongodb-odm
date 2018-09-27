@@ -22,7 +22,7 @@ class DocumentRepositoryTest extends BaseTest
     public function testMatchingAcceptsCriteriaWithNullWhereExpression()
     {
         $repository = $this->dm->getRepository(User::class);
-        $criteria = new Criteria();
+        $criteria   = new Criteria();
 
         $this->assertNull($criteria->getWhereExpression());
         $this->assertInstanceOf(Collection::class, $repository->matching($criteria));
@@ -30,14 +30,14 @@ class DocumentRepositoryTest extends BaseTest
 
     public function testFindByRefOneFull()
     {
-        $user = new User();
+        $user    = new User();
         $account = new Account('name');
         $user->setAccount($account);
         $this->dm->persist($user);
         $this->dm->persist($account);
         $this->dm->flush();
 
-        $query = $this->dm
+        $query         = $this->dm
             ->getUnitOfWork()
             ->getDocumentPersister(User::class)
             ->prepareQueryOrNewObj(['account' => $account]);
@@ -49,14 +49,14 @@ class DocumentRepositoryTest extends BaseTest
 
     public function testFindByRefOneWithoutTargetDocumentFull()
     {
-        $user = new User();
+        $user    = new User();
         $account = new Account('name');
         $user->setAccount($account);
         $this->dm->persist($user);
         $this->dm->persist($account);
         $this->dm->flush();
 
-        $query = $this->dm
+        $query         = $this->dm
             ->getUnitOfWork()
             ->getDocumentPersister(Account::class)
             ->prepareQueryOrNewObj(['user' => $user]);
@@ -72,14 +72,14 @@ class DocumentRepositoryTest extends BaseTest
 
     public function testFindByRefOneWithoutTargetDocumentStoredAsDbRef()
     {
-        $user = new User();
+        $user    = new User();
         $account = new Account('name');
         $account->setUserDbRef($user);
         $this->dm->persist($user);
         $this->dm->persist($account);
         $this->dm->flush();
 
-        $query = $this->dm
+        $query         = $this->dm
             ->getUnitOfWork()
             ->getDocumentPersister(Account::class)
             ->prepareQueryOrNewObj(['userDbRef' => $user]);
@@ -94,13 +94,13 @@ class DocumentRepositoryTest extends BaseTest
 
     public function testFindDiscriminatedByRefManyFull()
     {
-        $project = new SubProject('mongodb-odm');
+        $project   = new SubProject('mongodb-odm');
         $developer = new Developer('alcaeus', new ArrayCollection([$project]));
         $this->dm->persist($project);
         $this->dm->persist($developer);
         $this->dm->flush();
 
-        $query = $this->dm
+        $query         = $this->dm
             ->getUnitOfWork()
             ->getDocumentPersister(Developer::class)
             ->prepareQueryOrNewObj(['projects' => $project]);
@@ -112,7 +112,7 @@ class DocumentRepositoryTest extends BaseTest
 
     public function testFindByRefOneSimple()
     {
-        $user = new User();
+        $user    = new User();
         $account = new Account('name');
         $user->setAccountSimple($account);
         $this->dm->persist($user);
@@ -123,7 +123,7 @@ class DocumentRepositoryTest extends BaseTest
 
     public function testFindByEmbedOne()
     {
-        $user = new User();
+        $user    = new User();
         $address = new Address();
         $address->setCity('Cracow');
         $user->setAddress($address);
@@ -134,7 +134,7 @@ class DocumentRepositoryTest extends BaseTest
 
     public function testFindByRefManyFull()
     {
-        $user = new User();
+        $user  = new User();
         $group = new Group('group');
         $user->addGroup($group);
         $this->dm->persist($user);
@@ -160,7 +160,7 @@ class DocumentRepositoryTest extends BaseTest
 
     public function testFindByRefManySimple()
     {
-        $user = new User();
+        $user  = new User();
         $group = new Group('group');
         $user->addGroupSimple($group);
         $this->dm->persist($user);
@@ -171,7 +171,7 @@ class DocumentRepositoryTest extends BaseTest
 
     public function testFindByEmbedMany()
     {
-        $user = new User();
+        $user        = new User();
         $phonenumber = new Phonenumber('12345678');
         $user->addPhonenumber($phonenumber);
         $this->dm->persist($user);

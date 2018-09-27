@@ -17,7 +17,7 @@ class RawTypeTest extends BaseTest
      */
     public function testRawType($value)
     {
-        $test = new RawType();
+        $test      = new RawType();
         $test->raw = $value;
 
         $this->dm->persist($test);

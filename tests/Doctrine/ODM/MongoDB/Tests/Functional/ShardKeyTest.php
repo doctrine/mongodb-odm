@@ -43,11 +43,11 @@ class ShardKeyTest extends BaseTest
         $this->dm->flush();
 
         /** @var ShardedOne $o */
-        $o = $this->dm->find(get_class($o), $o->id);
+        $o        = $this->dm->find(get_class($o), $o->id);
         $o->title = 'test2';
         $this->dm->flush();
 
-        $queries = $this->logger->getAll();
+        $queries   = $this->logger->getAll();
         $lastQuery = end($queries);
         $this->assertSame('update', $lastQuery->getCommandName());
 
@@ -58,12 +58,12 @@ class ShardKeyTest extends BaseTest
 
     public function testUpsert()
     {
-        $o = new ShardedOne();
+        $o     = new ShardedOne();
         $o->id = new ObjectId();
         $this->dm->persist($o);
         $this->dm->flush();
 
-        $queries = $this->logger->getAll();
+        $queries   = $this->logger->getAll();
         $lastQuery = end($queries);
         $this->assertSame('update', $lastQuery->getCommandName());
 
@@ -81,7 +81,7 @@ class ShardKeyTest extends BaseTest
         $this->dm->remove($o);
         $this->dm->flush();
 
-        $queries = $this->logger->getAll();
+        $queries   = $this->logger->getAll();
         $lastQuery = end($queries);
         $this->assertSame('delete', $lastQuery->getCommandName());
 
@@ -97,7 +97,7 @@ class ShardKeyTest extends BaseTest
         $this->dm->flush();
         $this->dm->refresh($o);
 
-        $queries = $this->logger->getAll();
+        $queries   = $this->logger->getAll();
         $lastQuery = end($queries);
         $this->assertSame('find', $lastQuery->getCommandName());
 

@@ -33,10 +33,10 @@ class UpdateCommand extends AbstractCommand
     {
         $class = $input->getOption('class');
 
-        $timeout = $input->getOption('timeout');
+        $timeout       = $input->getOption('timeout');
         $this->timeout = isset($timeout) ? (int) $timeout : null;
 
-        $sm = $this->getSchemaManager();
+        $sm        = $this->getSchemaManager();
         $isErrored = false;
 
         try {

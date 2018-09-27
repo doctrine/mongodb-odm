@@ -19,23 +19,23 @@ class GH852Test extends BaseTest
      */
     public function testA(Closure $idGenerator)
     {
-        $parent = new GH852Document();
-        $parent->id = $idGenerator('parent');
+        $parent       = new GH852Document();
+        $parent->id   = $idGenerator('parent');
         $parent->name = 'parent';
 
-        $childA = new GH852Document();
-        $childA->id = $idGenerator('childA');
+        $childA       = new GH852Document();
+        $childA->id   = $idGenerator('childA');
         $childA->name = 'childA';
 
-        $childB = new GH852Document();
-        $childB->id = $idGenerator('childB');
+        $childB       = new GH852Document();
+        $childB->id   = $idGenerator('childB');
         $childB->name = 'childB';
 
-        $childC = new GH852Document();
-        $childC->id = $idGenerator('childC');
+        $childC       = new GH852Document();
+        $childC->id   = $idGenerator('childC');
         $childC->name = 'childC';
 
-        $parent->refOne = $childA;
+        $parent->refOne    = $childA;
         $parent->refMany[] = $childB;
         $parent->refMany[] = $childC;
 

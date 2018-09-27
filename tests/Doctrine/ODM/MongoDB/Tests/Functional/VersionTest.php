@@ -12,9 +12,9 @@ class VersionTest extends BaseTest
 {
     public function testVersioningWhenManipulatingEmbedMany()
     {
-        $expectedVersion = 1;
-        $doc = new VersionedDocument();
-        $doc->name = 'test';
+        $expectedVersion  = 1;
+        $doc              = new VersionedDocument();
+        $doc->name        = 'test';
         $doc->embedMany[] = new VersionedEmbeddedDocument('embed 1');
         $doc->embedMany[] = new VersionedEmbeddedDocument('embed 2');
         $this->dm->persist($doc);
@@ -79,7 +79,7 @@ class VersionedEmbeddedDocument
 
     public function __construct($value)
     {
-        $this->value = $value;
+        $this->value     = $value;
         $this->embedMany = new ArrayCollection();
     }
 }

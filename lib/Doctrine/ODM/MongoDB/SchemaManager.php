@@ -32,7 +32,7 @@ class SchemaManager
 
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
-        $this->dm = $dm;
+        $this->dm              = $dm;
         $this->metadataFactory = $cmf;
     }
 
@@ -85,13 +85,13 @@ class SchemaManager
         }
 
         $documentIndexes = $this->getDocumentIndexes($documentName);
-        $collection = $this->dm->getDocumentCollection($documentName);
-        $mongoIndexes = iterator_to_array($collection->listIndexes());
+        $collection      = $this->dm->getDocumentCollection($documentName);
+        $mongoIndexes    = iterator_to_array($collection->listIndexes());
 
         /* Determine which Mongo indexes should be deleted. Exclude the ID index
          * and those that are equivalent to any in the class metadata.
          */
-        $self = $this;
+        $self         = $this;
         $mongoIndexes = array_filter($mongoIndexes, static function (IndexInfo $mongoIndex) use ($documentIndexes, $self) {
             if ($mongoIndex['name'] === '_id_') {
                 return false;
@@ -132,8 +132,8 @@ class SchemaManager
 
         $visited[$documentName] = true;
 
-        $class = $this->dm->getClassMetadata($documentName);
-        $indexes = $this->prepareIndexes($class);
+        $class                   = $this->dm->getClassMetadata($documentName);
+        $indexes                 = $this->prepareIndexes($class);
         $embeddedDocumentIndexes = [];
 
         // Add indexes from embedded & referenced documents
@@ -151,7 +151,7 @@ class SchemaManager
                     if (isset($embeddedDocumentIndexes[$embed])) {
                         $embeddedIndexes = $embeddedDocumentIndexes[$embed];
                     } else {
-                        $embeddedIndexes = $this->doGetDocumentIndexes($embed, $visited);
+                        $embeddedIndexes                 = $this->doGetDocumentIndexes($embed, $visited);
                         $embeddedDocumentIndexes[$embed] = $embeddedIndexes;
                     }
 
@@ -185,8 +185,8 @@ class SchemaManager
 
     private function prepareIndexes(ClassMetadata $class) : array
     {
-        $persister = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
-        $indexes = $class->getIndexes();
+        $persister  = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
+        $indexes    = $class->getIndexes();
         $newIndexes = [];
 
         foreach ($indexes as $index) {
@@ -198,7 +198,7 @@ class SchemaManager
             foreach ($index['keys'] as $key => $value) {
                 $key = $persister->prepareFieldName($key);
                 if ($class->hasField($key)) {
-                    $mapping = $class->getFieldMapping($key);
+                    $mapping                            = $class->getFieldMapping($key);
                     $newIndex['keys'][$mapping['name']] = $value;
                 } else {
                     $newIndex['keys'][$key] = $value;
@@ -234,7 +234,7 @@ class SchemaManager
 
         $collection = $this->dm->getDocumentCollection($class->name);
         foreach ($indexes as $index) {
-            $keys = $index['keys'];
+            $keys    = $index['keys'];
             $options = $index['options'];
 
             if (! isset($options['timeout']) && isset($timeoutMs)) {
@@ -571,7 +571,7 @@ class SchemaManager
      */
     public function enableShardingForDbByDocumentName(string $documentName) : void
     {
-        $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
+        $dbName  = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $adminDb = $this->dm->getClient()->selectDatabase('admin');
 
         try {
@@ -588,10 +588,10 @@ class SchemaManager
 
     private function runShardCollectionCommand(string $documentName) : array
     {
-        $class = $this->dm->getClassMetadata($documentName);
-        $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
+        $class    = $this->dm->getClassMetadata($documentName);
+        $dbName   = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $shardKey = $class->getShardKey();
-        $adminDb = $this->dm->getClient()->selectDatabase('admin');
+        $adminDb  = $this->dm->getClient()->selectDatabase('admin');
 
         return $adminDb->command(
             [
@@ -635,7 +635,7 @@ class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        $database = $this->dm->getDocumentDatabase($documentName);
+        $database    = $this->dm->getDocumentDatabase($documentName);
         $collections = $database->listCollections(['filter' => ['name' => $class->getCollection()]]);
         if (! iterator_count($collections)) {
             return false;

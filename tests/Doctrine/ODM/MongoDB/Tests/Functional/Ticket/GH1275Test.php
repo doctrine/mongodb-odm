@@ -23,8 +23,8 @@ class GH1275Test extends BaseTest
         $this->dm->persist($container);
         $this->dm->flush();
 
-        $itemOne = new Item($container, 'Number One');
-        $itemTwo = new Item($container, 'Number Two');
+        $itemOne   = new Item($container, 'Number One');
+        $itemTwo   = new Item($container, 'Number Two');
         $itemThree = new Item($container, 'Number Three');
 
         $this->dm->persist($itemOne);
@@ -64,8 +64,8 @@ class GH1275Test extends BaseTest
         $this->dm->persist($container);
         $this->dm->flush();
 
-        $itemOne = new Item($container, 'Number One');
-        $itemTwo = new Item($container, 'Number Two');
+        $itemOne   = new Item($container, 'Number One');
+        $itemTwo   = new Item($container, 'Number Two');
         $itemThree = new Item($container, 'Number Three');
 
         $this->dm->persist($itemOne);
@@ -170,7 +170,7 @@ class GH1275Test extends BaseTest
             array_map($getNameCallback, $container->$strategy->toArray())
         );
 
-        $two = $container->$strategy->get(1);
+        $two   = $container->$strategy->get(1);
         $three = $container->$strategy->get(2);
         $container->$strategy->set(1, $three);
         $container->$strategy->set(2, $two);
@@ -203,7 +203,7 @@ class Item
     public function __construct(Container $c, $name)
     {
         $this->container = $c;
-        $this->name = $name;
+        $this->name      = $name;
     }
 }
 
@@ -299,12 +299,12 @@ class Container
 
     public function __construct()
     {
-        $this->items = new ArrayCollection();
-        $this->addToSet = new ArrayCollection();
-        $this->set = new ArrayCollection();
-        $this->setArray = new ArrayCollection();
-        $this->pushAll = new ArrayCollection();
-        $this->atomicSet = new ArrayCollection();
+        $this->items          = new ArrayCollection();
+        $this->addToSet       = new ArrayCollection();
+        $this->set            = new ArrayCollection();
+        $this->setArray       = new ArrayCollection();
+        $this->pushAll        = new ArrayCollection();
+        $this->atomicSet      = new ArrayCollection();
         $this->atomicSetArray = new ArrayCollection();
     }
 

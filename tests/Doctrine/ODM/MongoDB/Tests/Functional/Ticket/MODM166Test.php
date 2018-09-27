@@ -19,7 +19,7 @@ class MODM166Test extends BaseTest
         parent::setUp();
 
         $this->listener = new MODM166EventListener();
-        $evm = $this->dm->getEventManager();
+        $evm            = $this->dm->getEventManager();
         $evm->addEventListener(Events::onFlush, $this->listener);
         return $this->dm;
     }
@@ -39,7 +39,7 @@ class MODM166Test extends BaseTest
         $this->dm->clear();
 
         $repository = $this->dm->getRepository(get_class($test));
-        $test = $repository->findOneBy(['username' => 'lucy']);
+        $test       = $repository->findOneBy(['username' => 'lucy']);
 
         $phonenumbers = [];
         foreach ($test->getPhonenumbers() as $phonenumber) {
@@ -56,7 +56,7 @@ class MODM166EventListener
     public function onFlush(OnFlushEventArgs $eventArgs)
     {
         $documentManager = $eventArgs->getDocumentManager();
-        $unitOfWork = $documentManager->getUnitOfWork();
+        $unitOfWork      = $documentManager->getUnitOfWork();
 
         foreach ($unitOfWork->getScheduledDocumentUpdates() as $document) {
             $metadata = $documentManager->getClassMetadata(get_class($document));

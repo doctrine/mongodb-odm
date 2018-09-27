@@ -46,7 +46,7 @@ class GH593Test extends BaseTest
          * $mongoData property has already been cleared and DocumentPersister
          * would be unable to issue a new query for related documents.
          */
-        $user1 = $this->dm->find($class, $user1->getId());
+        $user1          = $this->dm->find($class, $user1->getId());
         $user1following = iterator_to_array($user1->following, false);
 
         /* FilterCollection criteria will only be considered upon initialization
@@ -90,7 +90,7 @@ class GH593Test extends BaseTest
          * $mongoData property has already been cleared and DocumentPersister
          * would be unable to issue a new query for related documents.
          */
-        $user3 = $this->dm->find($class, $user3->getId());
+        $user3           = $this->dm->find($class, $user3->getId());
         $user3followedBy = iterator_to_array($user3->followedBy, false);
 
         $this->assertCount(1, $user3followedBy);
@@ -115,7 +115,7 @@ class GH593User
 
     public function __construct()
     {
-        $this->following = new ArrayCollection();
+        $this->following  = new ArrayCollection();
         $this->followedBy = new ArrayCollection();
     }
 

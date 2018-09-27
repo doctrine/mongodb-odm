@@ -42,7 +42,7 @@ class Lookup extends Stage
     {
         parent::__construct($builder);
 
-        $this->dm = $documentManager;
+        $this->dm    = $documentManager;
         $this->class = $class;
 
         $this->from($from);
@@ -155,7 +155,7 @@ class Lookup extends Stage
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);
         }
 
-        $referenceMapping = $this->class->getFieldMapping($fieldName);
+        $referenceMapping  = $this->class->getFieldMapping($fieldName);
         $this->targetClass = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
         if ($this->targetClass->isSharded()) {
             throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);

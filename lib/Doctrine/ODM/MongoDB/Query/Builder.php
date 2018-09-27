@@ -112,7 +112,7 @@ class Builder
      */
     public function __construct(DocumentManager $dm, $documentName = null)
     {
-        $this->dm = $dm;
+        $this->dm   = $dm;
         $this->expr = new Expr($dm);
         if ($documentName === null) {
             return;
@@ -398,7 +398,7 @@ class Builder
      */
     public function distinct(string $field) : self
     {
-        $this->query['type'] = Query::TYPE_DISTINCT;
+        $this->query['type']     = Query::TYPE_DISTINCT;
         $this->query['distinct'] = $field;
         return $this;
     }
@@ -917,7 +917,7 @@ class Builder
      */
     public function map($map) : self
     {
-        $this->query['type'] = Query::TYPE_MAP_REDUCE;
+        $this->query['type']      = Query::TYPE_MAP_REDUCE;
         $this->query['mapReduce'] = [
             'map' => $map,
             'reduce' => null,
@@ -941,7 +941,7 @@ class Builder
      */
     public function mapReduce($map, $reduce, $out = ['inline' => true], array $options = []) : self
     {
-        $this->query['type'] = Query::TYPE_MAP_REDUCE;
+        $this->query['type']      = Query::TYPE_MAP_REDUCE;
         $this->query['mapReduce'] = [
             'map' => $map,
             'reduce' => $reduce,
@@ -1608,7 +1608,7 @@ class Builder
     public function updateOne(?string $documentName = null) : self
     {
         $this->setDocumentName($documentName);
-        $this->query['type'] = Query::TYPE_UPDATE;
+        $this->query['type']     = Query::TYPE_UPDATE;
         $this->query['multiple'] = false;
 
         return $this;
@@ -1617,7 +1617,7 @@ class Builder
     public function updateMany(?string $documentName = null) : self
     {
         $this->setDocumentName($documentName);
-        $this->query['type'] = Query::TYPE_UPDATE;
+        $this->query['type']     = Query::TYPE_UPDATE;
         $this->query['multiple'] = true;
 
         return $this;
@@ -1656,12 +1656,12 @@ class Builder
     private function getDiscriminatorValues($classNames) : array
     {
         $discriminatorValues = [];
-        $collections = [];
+        $collections         = [];
         foreach ($classNames as $className) {
-            $class = $this->dm->getClassMetadata($className);
+            $class                 = $this->dm->getClassMetadata($className);
             $discriminatorValues[] = $class->discriminatorValue;
-            $key = $this->dm->getDocumentDatabase($className)->getDatabaseName() . '.' . $class->getCollection();
-            $collections[$key] = $key;
+            $key                   = $this->dm->getDocumentDatabase($className)->getDatabaseName() . '.' . $class->getCollection();
+            $collections[$key]     = $key;
         }
         if (count($collections) > 1) {
             throw new InvalidArgumentException('Documents involved are not all mapped to the same database collection.');
@@ -1676,10 +1676,10 @@ class Builder
     {
         if (is_array($documentName)) {
             $documentNames = $documentName;
-            $documentName = $documentNames[0];
+            $documentName  = $documentNames[0];
 
-            $metadata = $this->dm->getClassMetadata($documentName);
-            $discriminatorField = $metadata->discriminatorField;
+            $metadata            = $this->dm->getClassMetadata($documentName);
+            $discriminatorField  = $metadata->discriminatorField;
             $discriminatorValues = $this->getDiscriminatorValues($documentNames);
 
             // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
@@ -1695,7 +1695,7 @@ class Builder
         }
 
         $this->collection = $this->dm->getDocumentCollection($documentName);
-        $this->class = $this->dm->getClassMetadata($documentName);
+        $this->class      = $this->dm->getClassMetadata($documentName);
 
         // Expr also needs to know
         $this->expr->setClassMetadata($this->class);

@@ -16,9 +16,9 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testFieldInheritance()
     {
         // @TODO: This can be a generic test for all drivers
-        $super = $this->dm->getClassMetadata(AnnotationDriverTestSuper::class);
+        $super  = $this->dm->getClassMetadata(AnnotationDriverTestSuper::class);
         $parent = $this->dm->getClassMetadata(AnnotationDriverTestParent::class);
-        $child = $this->dm->getClassMetadata(AnnotationDriverTestChild::class);
+        $child  = $this->dm->getClassMetadata(AnnotationDriverTestChild::class);
 
         $this->assertFalse($super->hasField('id'), 'MappedSuperclass does not register its own public field');
         $this->assertFalse($super->hasField('protected'), 'MappedSuperclass does not register its own protected field');
@@ -70,8 +70,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testLoadMetadataForNonDocumentThrowsException()
     {
-        $cm = new ClassMetadata('stdClass');
-        $reader = new AnnotationReader();
+        $cm               = new ClassMetadata('stdClass');
+        $reader           = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
         $this->expectException(MappingException::class);
@@ -83,8 +83,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testColumnWithMissingTypeDefaultsToString()
     {
-        $cm = new ClassMetadata(ColumnWithoutType::class);
-        $reader = new AnnotationReader();
+        $cm               = new ClassMetadata(ColumnWithoutType::class);
+        $reader           = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
         $annotationDriver->loadMetadataForClass(InvalidColumn::class, $cm);
@@ -97,10 +97,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testGetAllClassNamesIsIdempotent()
     {
         $annotationDriver = $this->_loadDriverForCMSDocuments();
-        $original = $annotationDriver->getAllClassNames();
+        $original         = $annotationDriver->getAllClassNames();
 
         $annotationDriver = $this->_loadDriverForCMSDocuments();
-        $afterTestReset = $annotationDriver->getAllClassNames();
+        $afterTestReset   = $annotationDriver->getAllClassNames();
 
         $this->assertEquals($original, $afterTestReset);
     }
@@ -111,10 +111,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances()
     {
         $annotationDriver = $this->_loadDriverForCMSDocuments();
-        $original = $annotationDriver->getAllClassNames();
+        $original         = $annotationDriver->getAllClassNames();
 
         $annotationDriver = $this->_loadDriverForCMSDocuments();
-        $afterTestReset = $annotationDriver->getAllClassNames();
+        $afterTestReset   = $annotationDriver->getAllClassNames();
 
         $this->assertEquals($original, $afterTestReset);
     }
@@ -125,7 +125,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate()
     {
         $annotationDriver = $this->_loadDriverForCMSDocuments();
-        $classes = $annotationDriver->getAllClassNames();
+        $classes          = $annotationDriver->getAllClassNames();
 
         $this->assertContains(CmsUser::class, $classes);
     }
@@ -138,7 +138,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $extraneousClassName = ColumnWithoutType::class;
 
         $annotationDriver = $this->_loadDriverForCMSDocuments();
-        $classes = $annotationDriver->getAllClassNames();
+        $classes          = $annotationDriver->getAllClassNames();
 
         $this->assertNotContains($extraneousClassName, $classes);
     }

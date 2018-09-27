@@ -46,7 +46,7 @@ class Expr
      */
     public function __construct(DocumentManager $dm, ClassMetadata $class)
     {
-        $this->dm = $dm;
+        $this->dm    = $dm;
         $this->class = $class;
     }
 
@@ -480,7 +480,7 @@ class Expr
      */
     public function field(string $fieldName) : self
     {
-        $fieldName = $this->getDocumentPersister()->prepareFieldName($fieldName);
+        $fieldName          = $this->getDocumentPersister()->prepareFieldName($fieldName);
         $this->currentField = (string) $fieldName;
 
         return $this;

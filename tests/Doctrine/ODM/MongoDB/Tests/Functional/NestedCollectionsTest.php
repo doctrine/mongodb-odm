@@ -18,7 +18,7 @@ class NestedCollectionsTest extends BaseTest
      */
     public function testStrategy($field)
     {
-        $doc = new DocWithNestedCollections();
+        $doc         = new DocWithNestedCollections();
         $privateBook = new Phonebook('Private');
         $privateBook->addPhonenumber(new Phonenumber('12345678'));
         $doc->{$field}[] = $privateBook;

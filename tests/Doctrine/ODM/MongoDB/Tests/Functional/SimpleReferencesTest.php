@@ -87,7 +87,7 @@ class SimpleReferencesTest extends BaseTest
 
     public function testPersistentCollectionOwningSide()
     {
-        $test = $this->dm->getRepository(SimpleReferenceUser::class)->findOneBy([]);
+        $test  = $this->dm->getRepository(SimpleReferenceUser::class)->findOneBy([]);
         $users = $test->getUsers()->toArray();
         $this->assertEquals(2, $test->getUsers()->count());
         $this->assertEquals('jwage', current($users)->getUsername());

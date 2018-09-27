@@ -13,30 +13,30 @@ class IndexesTest extends BaseTest
     {
         $this->dm->getSchemaManager()->ensureDocumentIndexes($class);
 
-        $test = new $class();
+        $test           = new $class();
         $test->username = 'jwage';
-        $test->email = 'jonwage@gmail.com';
+        $test->email    = 'jonwage@gmail.com';
         $this->dm->persist($test);
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = new $class();
+        $test           = new $class();
         $test->username = 'jwage';
-        $test->email = 'jonathan.wage@sensio.com';
+        $test->email    = 'jonathan.wage@sensio.com';
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $test = new $class();
+        $test           = new $class();
         $test->username = 'jwage';
-        $test->email = 'jonathan.wage@sensio.com';
+        $test->email    = 'jonathan.wage@sensio.com';
         $this->dm->persist($test);
         $this->dm->flush();
     }
 
     public function testEmbeddedIndexes()
     {
-        $class = $this->dm->getClassMetadata(DocumentWithEmbeddedIndexes::class);
-        $sm = $this->dm->getSchemaManager();
+        $class   = $this->dm->getClassMetadata(DocumentWithEmbeddedIndexes::class);
+        $sm      = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
         $this->assertTrue(isset($indexes[0]['keys']['embedded.name']));
@@ -54,8 +54,8 @@ class IndexesTest extends BaseTest
 
     public function testDiscriminatedEmbeddedIndexes()
     {
-        $class = $this->dm->getClassMetadata(DocumentWithIndexInDiscriminatedEmbeds::class);
-        $sm = $this->dm->getSchemaManager();
+        $class   = $this->dm->getClassMetadata(DocumentWithIndexInDiscriminatedEmbeds::class);
+        $sm      = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
         $this->assertTrue(isset($indexes[0]['keys']['embedded.name']));
@@ -70,8 +70,8 @@ class IndexesTest extends BaseTest
 
     public function testDiscriminatorIndexes()
     {
-        $class = $this->dm->getClassMetadata(DocumentWithDiscriminatorIndex::class);
-        $sm = $this->dm->getSchemaManager();
+        $class   = $this->dm->getClassMetadata(DocumentWithDiscriminatorIndex::class);
+        $sm      = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
         $this->assertTrue(isset($indexes[0]['keys']['type']));
@@ -80,35 +80,35 @@ class IndexesTest extends BaseTest
 
     public function testIndexDefinitions()
     {
-        $class = $this->dm->getClassMetadata(UniqueOnFieldTest::class);
+        $class   = $this->dm->getClassMetadata(UniqueOnFieldTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
-        $class = $this->dm->getClassMetadata(UniqueOnDocumentTest::class);
+        $class   = $this->dm->getClassMetadata(UniqueOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
-        $class = $this->dm->getClassMetadata(IndexesOnDocumentTest::class);
+        $class   = $this->dm->getClassMetadata(IndexesOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
-        $class = $this->dm->getClassMetadata(PartialIndexOnDocumentTest::class);
+        $class   = $this->dm->getClassMetadata(PartialIndexOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
         $this->assertTrue(isset($indexes[0]['options']['partialFilterExpression']));
         $this->assertSame(['counter' => ['$gt' => 5]], $indexes[0]['options']['partialFilterExpression']);
 
-        $class = $this->dm->getClassMetadata(UniqueSparseOnFieldTest::class);
+        $class   = $this->dm->getClassMetadata(UniqueSparseOnFieldTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -117,7 +117,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
-        $class = $this->dm->getClassMetadata(UniqueSparseOnDocumentTest::class);
+        $class   = $this->dm->getClassMetadata(UniqueSparseOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -126,7 +126,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
-        $class = $this->dm->getClassMetadata(SparseIndexesOnDocumentTest::class);
+        $class   = $this->dm->getClassMetadata(SparseIndexesOnDocumentTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -135,7 +135,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
-        $class = $this->dm->getClassMetadata(MultipleFieldsUniqueIndexTest::class);
+        $class   = $this->dm->getClassMetadata(MultipleFieldsUniqueIndexTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -144,7 +144,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['unique']));
         $this->assertEquals(true, $indexes[0]['options']['unique']);
 
-        $class = $this->dm->getClassMetadata(MultipleFieldsUniqueSparseIndexTest::class);
+        $class   = $this->dm->getClassMetadata(MultipleFieldsUniqueSparseIndexTest::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);
@@ -155,7 +155,7 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[0]['options']['sparse']));
         $this->assertEquals(true, $indexes[0]['options']['sparse']);
 
-        $class = $this->dm->getClassMetadata(MultipleFieldIndexes::class);
+        $class   = $this->dm->getClassMetadata(MultipleFieldIndexes::class);
         $indexes = $class->getIndexes();
         $this->assertTrue(isset($indexes[0]['keys']['username']));
         $this->assertEquals(1, $indexes[0]['keys']['username']);

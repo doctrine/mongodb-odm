@@ -34,8 +34,8 @@ class User
     public function __construct()
     {
         $this->phonenumbers = new ArrayCollection();
-        $this->groups = [];
-        $this->createdAt = new DateTime();
+        $this->groups       = [];
+        $this->createdAt    = new DateTime();
     }
 
     public function getId()

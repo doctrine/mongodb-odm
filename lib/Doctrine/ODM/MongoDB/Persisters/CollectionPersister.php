@@ -42,8 +42,8 @@ class CollectionPersister
 
     public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {
-        $this->dm = $dm;
-        $this->pb = $pb;
+        $this->dm  = $dm;
+        $this->pb  = $pb;
         $this->uow = $uow;
     }
 
@@ -60,7 +60,7 @@ class CollectionPersister
             throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
         }
         [$propertyPath, $parent] = $this->getPathAndParent($coll);
-        $query = ['$unset' => [$propertyPath => true]];
+        $query                   = ['$unset' => [$propertyPath => true]];
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -112,7 +112,7 @@ class CollectionPersister
         $coll->initialize();
         $mapping = $coll->getMapping();
         $setData = $this->pb->prepareAssociatedCollectionValue($coll, CollectionHelper::usesSet($mapping['strategy']));
-        $query = ['$set' => [$propertyPath => $setData]];
+        $query   = ['$set' => [$propertyPath => $setData]];
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -209,18 +209,18 @@ class CollectionPersister
     private function getPathAndParent(PersistentCollectionInterface $coll) : array
     {
         $mapping = $coll->getMapping();
-        $fields = [];
-        $parent = $coll->getOwner();
+        $fields  = [];
+        $parent  = $coll->getOwner();
         while (($association = $this->uow->getParentAssociation($parent)) !== null) {
             [$m, $owner, $field] = $association;
             if (isset($m['reference'])) {
                 break;
             }
-            $parent = $owner;
+            $parent   = $owner;
             $fields[] = $field;
         }
         $propertyPath = implode('.', array_reverse($fields));
-        $path = $mapping['name'];
+        $path         = $mapping['name'];
         if ($propertyPath) {
             $path = $propertyPath . '.' . $path;
         }
@@ -233,14 +233,14 @@ class CollectionPersister
     private function executeQuery(object $document, array $newObj, array $options) : void
     {
         $className = get_class($document);
-        $class = $this->dm->getClassMetadata($className);
-        $id = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
-        $query = ['_id' => $id];
+        $class     = $this->dm->getClassMetadata($className);
+        $id        = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
+        $query     = ['_id' => $id];
         if ($class->isVersioned) {
             $query[$class->fieldMappings[$class->versionField]['name']] = $class->reflFields[$class->versionField]->getValue($document);
         }
         $collection = $this->dm->getDocumentCollection($className);
-        $result = $collection->updateOne($query, $newObj, $options);
+        $result     = $collection->updateOne($query, $newObj, $options);
         if ($class->isVersioned && ! $result->getMatchedCount()) {
             throw LockException::lockFailed($document);
         }

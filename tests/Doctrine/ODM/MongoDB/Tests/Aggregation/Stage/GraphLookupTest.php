@@ -299,12 +299,12 @@ class GraphLookupTest extends BaseTest
 
     private function insertEmployeeTestData()
     {
-        $dev = new Employee('Dev');
-        $eliot = new Employee('Eliot', $dev);
-        $ron = new Employee('Ron', $eliot);
+        $dev    = new Employee('Dev');
+        $eliot  = new Employee('Eliot', $dev);
+        $ron    = new Employee('Ron', $eliot);
         $andrew = new Employee('Andrew', $eliot);
-        $asya = new Employee('Asya', $ron);
-        $dan = new Employee('Dan', $andrew);
+        $asya   = new Employee('Asya', $ron);
+        $dan    = new Employee('Dan', $andrew);
 
         $this->dm->persist($asya);
         $this->dm->persist($dan);
@@ -324,9 +324,9 @@ class GraphLookupTest extends BaseTest
         $bos->addConnection($pwm);
         $lhr->addConnection($pwm);
 
-        $dev = new Traveller('Dev', $jfk);
+        $dev   = new Traveller('Dev', $jfk);
         $eliot = new Traveller('Eliot', $jfk);
-        $jeff = new Traveller('Jeff', $bos);
+        $jeff  = new Traveller('Jeff', $bos);
 
         $this->dm->persist($dev);
         $this->dm->persist($eliot);

@@ -23,8 +23,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testSetShardKeyOptionsByAttributes()
     {
-        $class = new ClassMetadata(stdClass::class);
-        $driver = $this->_loadDriver();
+        $class   = new ClassMetadata(stdClass::class);
+        $driver  = $this->_loadDriver();
         $element = new SimpleXmlElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
 
         /** @uses XmlDriver::setShardKey */
@@ -40,8 +40,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testGetAssociationCollectionClass()
     {
-        $class = new ClassMetadata(User::class);
-        $driver = $this->_loadDriver();
+        $class   = new ClassMetadata(User::class);
+        $driver  = $this->_loadDriver();
         $element = new SimpleXmlElement('<reference-many target-document="Phonenumber" collection-class="Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection" field="phonenumbers"></reference-many>');
 
         /** @uses XmlDriver::setShardKey */
@@ -54,7 +54,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testInvalidMappingFileTriggersException() : void
     {
-        $className = InvalidMappingDocument::class;
+        $className     = InvalidMappingDocument::class;
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata($className);

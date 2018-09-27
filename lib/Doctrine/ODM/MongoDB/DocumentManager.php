@@ -143,12 +143,12 @@ class DocumentManager implements ObjectManager
      */
     protected function __construct(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
-        $this->config = $config ?: new Configuration();
+        $this->config       = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
-        $this->client = $client ?: new Client('mongodb://127.0.0.1', [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+        $this->client       = $client ?: new Client('mongodb://127.0.0.1', [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
-        $this->metadataFactory = new $metadataFactoryClassName();
+        $this->metadataFactory    = new $metadataFactoryClassName();
         $this->metadataFactory->setDocumentManager($this);
         $this->metadataFactory->setConfiguration($this->config);
 
@@ -157,8 +157,8 @@ class DocumentManager implements ObjectManager
             $this->metadataFactory->setCacheDriver($cacheDriver);
         }
 
-        $hydratorDir = $this->config->getHydratorDir();
-        $hydratorNs = $this->config->getHydratorNamespace();
+        $hydratorDir           = $this->config->getHydratorDir();
+        $hydratorNs            = $this->config->getHydratorNamespace();
         $this->hydratorFactory = new HydratorFactory(
             $this,
             $this->eventManager,
@@ -169,8 +169,8 @@ class DocumentManager implements ObjectManager
 
         $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
         $this->hydratorFactory->setUnitOfWork($this->unitOfWork);
-        $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
-        $this->proxyFactory = new ProxyFactory(
+        $this->schemaManager     = new SchemaManager($this, $this->metadataFactory);
+        $this->proxyFactory      = new ProxyFactory(
             $this,
             $this->config->getProxyDir(),
             $this->config->getProxyNamespace(),
@@ -284,10 +284,10 @@ class DocumentManager implements ObjectManager
             return $this->documentDatabases[$className];
         }
 
-        $metadata = $this->metadataFactory->getMetadataFor($className);
-        $db = $metadata->getDatabase();
-        $db = $db ?: $this->config->getDefaultDB();
-        $db = $db ?: 'doctrine';
+        $metadata                            = $this->metadataFactory->getMetadataFor($className);
+        $db                                  = $metadata->getDatabase();
+        $db                                  = $db ?: $this->config->getDefaultDB();
+        $db                                  = $db ?: 'doctrine';
         $this->documentDatabases[$className] = $this->client->selectDatabase($db);
 
         return $this->documentDatabases[$className];
@@ -558,7 +558,7 @@ class DocumentManager implements ObjectManager
     public function getReference(string $documentName, $identifier) : object
     {
         /** @var ClassMetadata $class */
-        $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
+        $class    = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         $document = $this->unitOfWork->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
@@ -591,7 +591,7 @@ class DocumentManager implements ObjectManager
      */
     public function getPartialReference(string $documentName, $identifier) : object
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
+        $class    = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         $document = $this->unitOfWork->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
@@ -684,7 +684,7 @@ class DocumentManager implements ObjectManager
     public function createReference(object $document, array $referenceMapping)
     {
         $class = $this->getClassMetadata(get_class($document));
-        $id = $this->unitOfWork->getDocumentIdentifier($document);
+        $id    = $this->unitOfWork->getDocumentIdentifier($document);
 
         if ($id === null) {
             throw new RuntimeException(
@@ -692,7 +692,7 @@ class DocumentManager implements ObjectManager
             );
         }
 
-        $storeAs = $referenceMapping['storeAs'] ?? null;
+        $storeAs   = $referenceMapping['storeAs'] ?? null;
         $reference = [];
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:

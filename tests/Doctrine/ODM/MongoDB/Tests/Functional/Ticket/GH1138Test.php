@@ -35,7 +35,7 @@ class GH1138Test extends BaseTest
         $listener = new GH1138Listener();
         $this->dm->getEventManager()->addEventListener(Events::onFlush, $listener);
 
-        $doc = new GH1138Document();
+        $doc       = new GH1138Document();
         $doc->name = 'foo';
 
         $this->dm->persist($doc);
@@ -65,7 +65,7 @@ class GH1138Listener
 
     public function onFlush(OnFlushEventArgs $args)
     {
-        $dm = $args->getDocumentManager();
+        $dm  = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
 
         foreach ($uow->getScheduledDocumentInsertions() as $document) {
@@ -75,7 +75,7 @@ class GH1138Listener
             }
 
             $document->name .= '-changed';
-            $cm = $dm->getClassMetadata(GH1138Document::class);
+            $cm              = $dm->getClassMetadata(GH1138Document::class);
             $uow->recomputeSingleDocumentChangeSet($cm, $document);
         }
 

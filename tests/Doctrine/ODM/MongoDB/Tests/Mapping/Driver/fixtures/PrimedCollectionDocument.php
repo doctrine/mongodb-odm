@@ -17,7 +17,7 @@ class PrimedCollectionDocument
     public function __construct()
     {
         $this->inverseMappedBy = new ArrayCollection();
-        $this->references = new ArrayCollection();
+        $this->references      = new ArrayCollection();
     }
 
     public function getId()

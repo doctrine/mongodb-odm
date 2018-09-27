@@ -94,7 +94,7 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function setDocumentManager(DocumentManager $dm)
     {
-        $this->dm = $dm;
+        $this->dm  = $dm;
         $this->uow = $dm->getUnitOfWork();
     }
 
@@ -204,7 +204,7 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function setOwner($document, array $mapping)
     {
-        $this->owner = $document;
+        $this->owner   = $document;
         $this->mapping = $mapping;
     }
 
@@ -219,14 +219,14 @@ trait PersistentCollectionTrait
             }
         }
         $this->snapshot = $this->coll->toArray();
-        $this->isDirty = false;
+        $this->isDirty  = false;
     }
 
     /** {@inheritdoc} */
     public function clearSnapshot()
     {
         $this->snapshot = [];
-        $this->isDirty = $this->coll->count() ? true : false;
+        $this->isDirty  = $this->coll->count() ? true : false;
     }
 
     /** {@inheritdoc} */
@@ -663,7 +663,7 @@ trait PersistentCollectionTrait
 
         $this->initialize();
 
-        $this->owner = null;
+        $this->owner    = null;
         $this->snapshot = [];
 
         $this->changed();

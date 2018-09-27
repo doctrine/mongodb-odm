@@ -12,16 +12,16 @@ class GH1428Test extends BaseTest
 {
     public function testShortNameLossOnReplacingMiddleEmbeddedDocOfNestedEmbedding()
     {
-        $owner = new GH1428Document();
+        $owner          = new GH1428Document();
         $nestedEmbedded = new GH1428NestedEmbeddedDocument();
         $this->dm->persist($owner);
         $this->dm->flush();
 
-        $owner->embedded = new GH1428EmbeddedDocument();
+        $owner->embedded                 = new GH1428EmbeddedDocument();
         $owner->embedded->nestedEmbedded = $nestedEmbedded;
         $this->dm->flush();
 
-        $owner->embedded = new GH1428EmbeddedDocument();
+        $owner->embedded                 = new GH1428EmbeddedDocument();
         $owner->embedded->nestedEmbedded = $nestedEmbedded;
 
         try {

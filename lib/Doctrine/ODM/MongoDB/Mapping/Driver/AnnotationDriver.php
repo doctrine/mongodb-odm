@@ -137,8 +137,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 continue;
             }
 
-            $indexes = [];
-            $mapping = ['fieldName' => $property->getName()];
+            $indexes    = [];
+            $mapping    = ['fieldName' => $property->getName()];
             $fieldAnnot = null;
 
             foreach ($this->reader->getPropertyAnnotations($property) as $annot) {
@@ -228,7 +228,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
     private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []) : void
     {
-        $keys = array_merge($keys, $index->keys);
+        $keys    = array_merge($keys, $index->keys);
         $options = [];
         $allowed = ['name', 'dropDups', 'background', 'unique', 'sparse', 'expireAfterSeconds'];
         foreach ($allowed as $name) {

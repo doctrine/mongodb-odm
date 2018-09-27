@@ -38,8 +38,8 @@ class DropCommand extends AbstractCommand
         // Default to the full drop order if no options were specified
         $drop = empty($drop) ? $this->dropOrder : $drop;
 
-        $class = $input->getOption('class');
-        $sm = $this->getSchemaManager();
+        $class     = $input->getOption('class');
+        $sm        = $this->getSchemaManager();
         $isErrored = false;
 
         foreach ($drop as $option) {

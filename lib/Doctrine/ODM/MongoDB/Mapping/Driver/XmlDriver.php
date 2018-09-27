@@ -109,7 +109,7 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlRoot['collection'])) {
             if (isset($xmlRoot['capped-collection'])) {
-                $config = ['name' => (string) $xmlRoot['collection']];
+                $config           = ['name' => (string) $xmlRoot['collection']];
                 $config['capped'] = (bool) $xmlRoot['capped-collection'];
                 if (isset($xmlRoot['capped-collection-max'])) {
                     $config['max'] = (int) $xmlRoot['capped-collection-max'];
@@ -165,7 +165,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($xmlRoot->id)) {
-            $field = $xmlRoot->id;
+            $field   = $xmlRoot->id;
             $mapping = [
                 'id' => true,
                 'fieldName' => 'id',
@@ -195,10 +195,10 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
-                $mapping = [];
+                $mapping    = [];
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
-                    $mapping[$key] = (string) $value;
+                    $mapping[$key]     = (string) $value;
                     $booleanAttributes = ['reference', 'embed', 'unique', 'sparse'];
                     if (! in_array($key, $booleanAttributes)) {
                         continue;
@@ -280,7 +280,7 @@ class XmlDriver extends FileDriver
             return;
         }
 
-        $keys = [$name => $mapping['order'] ?? 'asc'];
+        $keys    = [$name => $mapping['order'] ?? 'asc'];
         $options = [];
 
         if (isset($mapping['background'])) {
@@ -304,9 +304,9 @@ class XmlDriver extends FileDriver
 
     private function addEmbedMapping(ClassMetadata $class, SimpleXmlElement $embed, string $type) : void
     {
-        $attributes = $embed->attributes();
+        $attributes      = $embed->attributes();
         $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
-        $mapping = [
+        $mapping         = [
             'type'            => $type,
             'embedded'        => true,
             'targetDocument'  => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
@@ -318,12 +318,12 @@ class XmlDriver extends FileDriver
             $mapping['fieldName'] = (string) $attributes['field-name'];
         }
         if (isset($embed->{'discriminator-field'})) {
-            $attr = $embed->{'discriminator-field'};
+            $attr                          = $embed->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
         }
         if (isset($embed->{'discriminator-map'})) {
             foreach ($embed->{'discriminator-map'}->{'discriminator-mapping'} as $discriminatorMapping) {
-                $attr = $discriminatorMapping->attributes();
+                $attr                                                 = $discriminatorMapping->attributes();
                 $mapping['discriminatorMap'][(string) $attr['value']] = (string) $attr['class'];
             }
         }
@@ -345,9 +345,9 @@ class XmlDriver extends FileDriver
         if (count($cascade) === 1) {
             $cascade = current($cascade) ?: next($cascade);
         }
-        $attributes = $reference->attributes();
+        $attributes      = $reference->attributes();
         $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
-        $mapping = [
+        $mapping         = [
             'cascade'          => $cascade,
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ((string) $attributes['orphan-removal'] === 'true') : false,
             'type'             => $type,
@@ -369,12 +369,12 @@ class XmlDriver extends FileDriver
             $mapping['fieldName'] = (string) $attributes['field-name'];
         }
         if (isset($reference->{'discriminator-field'})) {
-            $attr = $reference->{'discriminator-field'};
+            $attr                          = $reference->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
         }
         if (isset($reference->{'discriminator-map'})) {
             foreach ($reference->{'discriminator-map'}->{'discriminator-mapping'} as $discriminatorMapping) {
-                $attr = $discriminatorMapping->attributes();
+                $attr                                                 = $discriminatorMapping->attributes();
                 $mapping['discriminatorMap'][(string) $attr['value']] = (string) $attr['class'];
             }
         }
@@ -383,13 +383,13 @@ class XmlDriver extends FileDriver
         }
         if (isset($reference->{'sort'})) {
             foreach ($reference->{'sort'}->{'sort'} as $sort) {
-                $attr = $sort->attributes();
+                $attr                                     = $sort->attributes();
                 $mapping['sort'][(string) $attr['field']] = (string) ($attr['order'] ?? 'asc');
             }
         }
         if (isset($reference->{'criteria'})) {
             foreach ($reference->{'criteria'}->{'criteria'} as $criteria) {
-                $attr = $criteria->attributes();
+                $attr                                         = $criteria->attributes();
                 $mapping['criteria'][(string) $attr['field']] = (string) $attr['value'];
             }
         }
@@ -401,7 +401,7 @@ class XmlDriver extends FileDriver
         }
         if (isset($reference->{'prime'})) {
             foreach ($reference->{'prime'}->{'field'} as $field) {
-                $attr = $field->attributes();
+                $attr               = $field->attributes();
                 $mapping['prime'][] = (string) $attr['name'];
             }
         }
@@ -518,7 +518,7 @@ class XmlDriver extends FileDriver
     {
         $attributes = $xmlShardkey->attributes();
 
-        $keys = [];
+        $keys    = [];
         $options = [];
         foreach ($xmlShardkey->{'key'} as $key) {
             $keys[(string) $key['name']] = (string) ($key['order'] ?? 'asc');
@@ -587,7 +587,7 @@ class XmlDriver extends FileDriver
             }
 
             foreach ($xmlElement->$type as $documentElement) {
-                $documentName = (string) $documentElement['name'];
+                $documentName          = (string) $documentElement['name'];
                 $result[$documentName] = $documentElement;
             }
         }

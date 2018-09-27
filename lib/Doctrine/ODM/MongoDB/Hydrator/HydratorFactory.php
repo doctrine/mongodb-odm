@@ -98,11 +98,11 @@ class HydratorFactory
         if (! $hydratorNs) {
             throw HydratorException::hydratorNamespaceRequired();
         }
-        $this->dm = $dm;
-        $this->evm = $evm;
-        $this->hydratorDir = $hydratorDir;
+        $this->dm                = $dm;
+        $this->evm               = $evm;
+        $this->hydratorDir       = $hydratorDir;
         $this->hydratorNamespace = $hydratorNs;
-        $this->autoGenerate = $autoGenerate;
+        $this->autoGenerate      = $autoGenerate;
     }
 
     /**
@@ -122,8 +122,8 @@ class HydratorFactory
             return $this->hydrators[$className];
         }
         $hydratorClassName = str_replace('\\', '', $className) . 'Hydrator';
-        $fqn = $this->hydratorNamespace . '\\' . $hydratorClassName;
-        $class = $this->dm->getClassMetadata($className);
+        $fqn               = $this->hydratorNamespace . '\\' . $hydratorClassName;
+        $class             = $this->dm->getClassMetadata($className);
 
         if (! class_exists($fqn, false)) {
             $fileName = $this->hydratorDir . DIRECTORY_SEPARATOR . $hydratorClassName . '.php';
@@ -167,7 +167,7 @@ class HydratorFactory
         $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         foreach ($classes as $class) {
             $hydratorClassName = str_replace('\\', '', $class->name) . 'Hydrator';
-            $hydratorFileName = $hydratorDir . $hydratorClassName . '.php';
+            $hydratorFileName  = $hydratorDir . $hydratorClassName . '.php';
             $this->generateHydratorClass($class, $hydratorClassName, $hydratorFileName);
         }
     }
@@ -353,7 +353,7 @@ EOF
         }
 
         $namespace = $this->hydratorNamespace;
-        $code = sprintf(
+        $code      = sprintf(
             <<<EOF
 <?php
 

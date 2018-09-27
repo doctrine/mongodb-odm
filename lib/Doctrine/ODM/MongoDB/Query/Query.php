@@ -54,7 +54,7 @@ class Query implements IteratorAggregate
     public const HINT_REFRESH = 1;
     // 2 was used for HINT_SLAVE_OKAY, which was removed in 2.0
     public const HINT_READ_PREFERENCE = 3;
-    public const HINT_READ_ONLY = 5;
+    public const HINT_READ_ONLY       = 5;
 
     /**
      * The DocumentManager instance.
@@ -150,10 +150,10 @@ class Query implements IteratorAggregate
         $this->collection = $collection;
         $this->query      = $query;
         $this->options    = $options;
-        $this->dm = $dm;
-        $this->class = $class;
-        $this->hydrate = $hydrate;
-        $this->primers = $primers;
+        $this->dm         = $dm;
+        $this->class      = $class;
+        $this->hydrate    = $hydrate;
+        $this->primers    = $primers;
 
         $this->setReadOnly($readOnly);
         $this->setRefresh($refresh);
@@ -286,7 +286,7 @@ class Query implements IteratorAggregate
      */
     public function getSingleResult()
     {
-        $clonedQuery = clone $this;
+        $clonedQuery                 = clone $this;
         $clonedQuery->query['limit'] = 1;
         return $clonedQuery->getIterator()->current() ?: null;
     }
@@ -363,7 +363,7 @@ class Query implements IteratorAggregate
 
         if (! empty($this->primers)) {
             $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
-            $cursor = new PrimingIterator($cursor, $this->class, $referencePrimer, $this->primers, $this->unitOfWorkHints);
+            $cursor          = new PrimingIterator($cursor, $this->class, $referencePrimer, $this->primers, $this->unitOfWorkHints);
         }
 
         return $cursor;
@@ -419,8 +419,8 @@ class Query implements IteratorAggregate
                 return $this->makeIterator($cursor);
 
             case self::TYPE_FIND_AND_UPDATE:
-                $queryOptions = $this->getQueryOptions('select', 'sort', 'upsert');
-                $queryOptions = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
+                $queryOptions                   = $this->getQueryOptions('select', 'sort', 'upsert');
+                $queryOptions                   = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
                 $queryOptions['returnDocument'] = $this->query['new'] ?? false ? FindOneAndUpdate::RETURN_DOCUMENT_AFTER : FindOneAndUpdate::RETURN_DOCUMENT_BEFORE;
 
                 return $this->collection->findOneAndUpdate(
@@ -461,7 +461,7 @@ class Query implements IteratorAggregate
 
             case self::TYPE_DISTINCT:
                 $collection = $this->collection;
-                $query = $this->query;
+                $query      = $this->query;
 
                 return $collection->distinct(
                     $query['distinct'],
@@ -471,7 +471,7 @@ class Query implements IteratorAggregate
 
             case self::TYPE_COUNT:
                 $collection = $this->collection;
-                $query = $this->query;
+                $query      = $this->query;
 
                 return $collection->count(
                     $query['query'],

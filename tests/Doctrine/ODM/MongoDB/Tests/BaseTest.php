@@ -30,7 +30,7 @@ abstract class BaseTest extends TestCase
 
     public function setUp()
     {
-        $this->dm = $this->createTestDocumentManager();
+        $this->dm  = $this->createTestDocumentManager();
         $this->uow = $this->dm->getUnitOfWork();
     }
 
@@ -43,8 +43,8 @@ abstract class BaseTest extends TestCase
         // Check if the database exists. Calling listCollections on a non-existing
         // database in a sharded setup will cause an invalid command cursor to be
         // returned
-        $client = $this->dm->getClient();
-        $databases = iterator_to_array($client->listDatabases());
+        $client        = $this->dm->getClient();
+        $databases     = iterator_to_array($client->listDatabases());
         $databaseNames = array_map(static function (DatabaseInfo $database) {
             return $database->getName();
         }, $databases);

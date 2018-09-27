@@ -101,16 +101,16 @@ class SchemaManagerTest extends TestCase
             }
 
             $this->documentDatabases[$cm->name] = $this->getMockDatabase();
-            $this->classMetadatas[$cm->name] = $cm;
+            $this->classMetadatas[$cm->name]    = $cm;
         }
 
-        $this->dm->unitOfWork = $this->getMockUnitOfWork();
-        $this->dm->metadataFactory = $cmf;
+        $this->dm->unitOfWork          = $this->getMockUnitOfWork();
+        $this->dm->metadataFactory     = $cmf;
         $this->dm->documentCollections = $this->documentCollections;
-        $this->dm->documentBuckets = $this->documentBuckets;
-        $this->dm->documentDatabases = $this->documentDatabases;
+        $this->dm->documentBuckets     = $this->documentBuckets;
+        $this->dm->documentDatabases   = $this->documentDatabases;
 
-        $this->schemaManager = new SchemaManager($this->dm, $cmf);
+        $this->schemaManager     = new SchemaManager($this->dm, $cmf);
         $this->dm->schemaManager = $this->schemaManager;
     }
 
@@ -231,7 +231,7 @@ class SchemaManagerTest extends TestCase
     public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes()
     {
         $collection = $this->documentCollections[CmsArticle::class];
-        $indexes = [[
+        $indexes    = [[
             'v' => 1,
             'key' => ['topic' => -1],
             'name' => 'topic_-1',
@@ -276,10 +276,10 @@ class SchemaManagerTest extends TestCase
 
     public function testCreateDocumentCollection()
     {
-        $cm = $this->classMetadatas[CmsArticle::class];
+        $cm                   = $this->classMetadatas[CmsArticle::class];
         $cm->collectionCapped = true;
-        $cm->collectionSize = 1048576;
-        $cm->collectionMax = 32;
+        $cm->collectionSize   = 1048576;
+        $cm->collectionMax    = 32;
 
         $database = $this->documentDatabases[CmsArticle::class];
         $database->expects($this->once())
@@ -406,7 +406,7 @@ class SchemaManagerTest extends TestCase
      */
     public function testIsMongoIndexEquivalentToDocumentIndex($expected, $mongoIndex, $documentIndex)
     {
-        $defaultMongoIndex = [
+        $defaultMongoIndex    = [
             'key' => ['foo' => 1, 'bar' => -1],
         ];
         $defaultDocumentIndex = [
@@ -414,7 +414,7 @@ class SchemaManagerTest extends TestCase
             'options' => [],
         ];
 
-        $mongoIndex += $defaultMongoIndex;
+        $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
         $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
@@ -594,7 +594,7 @@ class SchemaManagerTest extends TestCase
      */
     public function testIsMongoIndexEquivalentToDocumentIndexWithTextIndexes($expected, $mongoIndex, $documentIndex)
     {
-        $defaultMongoIndex = [
+        $defaultMongoIndex    = [
             'key' => ['_fts' => 'text', '_ftsx' => 1],
             'weights' => ['bar' => 1, 'foo' => 1],
             'default_language' => 'english',
@@ -606,7 +606,7 @@ class SchemaManagerTest extends TestCase
             'options' => [],
         ];
 
-        $mongoIndex += $defaultMongoIndex;
+        $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
         $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
@@ -756,10 +756,10 @@ class SchemaManagerTest extends TestCase
 
         $em = $this->createMock(EventManager::class);
 
-        $dm = new DocumentManagerMock();
+        $dm               = new DocumentManagerMock();
         $dm->eventManager = $em;
-        $dm->config = $config;
-        $dm->client = $this->createMock(Client::class);
+        $dm->config       = $config;
+        $dm->client       = $this->createMock(Client::class);
 
         return $dm;
     }

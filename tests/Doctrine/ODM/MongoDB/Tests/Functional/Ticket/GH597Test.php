@@ -23,7 +23,7 @@ class GH597Test extends BaseTest
         $this->assertPostDocument($expectedDocument, $post);
 
         // fill documents with comments
-        $post = $this->dm->find(GH597Post::class, $post->getId());
+        $post           = $this->dm->find(GH597Post::class, $post->getId());
         $post->comments = new ArrayCollection([
             new GH597Comment('Comment 1'),
             new GH597Comment('Comment 2'),
@@ -114,7 +114,7 @@ class GH597Test extends BaseTest
     private function assertPostDocument(array $expected, GH597Post $post)
     {
         $collection = $this->dm->getDocumentCollection(GH597Post::class);
-        $document = $collection->findOne(['_id' => new ObjectId($post->getId())]);
+        $document   = $collection->findOne(['_id' => new ObjectId($post->getId())]);
         $this->assertEquals($expected, $document);
     }
 }
@@ -133,7 +133,7 @@ class GH597Post
 
     public function __construct()
     {
-        $this->comments = new ArrayCollection();
+        $this->comments      = new ArrayCollection();
         $this->referenceMany = new ArrayCollection();
     }
 

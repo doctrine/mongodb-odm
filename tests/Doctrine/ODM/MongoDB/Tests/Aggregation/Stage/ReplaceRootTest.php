@@ -16,9 +16,9 @@ class ReplaceRootTest extends BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
-        $dateTime = new DateTimeImmutable('2000-01-01T00:00Z');
+        $dateTime  = new DateTimeImmutable('2000-01-01T00:00Z');
         $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
-        $stage = $builder
+        $stage     = $builder
             ->replaceRoot()
                 ->field('isToday')
                 ->eq('$createdAt', $dateTime);
@@ -37,9 +37,9 @@ class ReplaceRootTest extends BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
-        $dateTime = new DateTimeImmutable('2000-01-01T00:00Z');
+        $dateTime  = new DateTimeImmutable('2000-01-01T00:00Z');
         $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
-        $stage = $builder
+        $stage     = $builder
             ->replaceRoot(
                 $builder->expr()
                     ->field('isToday')

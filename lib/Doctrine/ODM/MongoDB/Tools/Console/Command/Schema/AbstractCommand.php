@@ -11,9 +11,9 @@ use Symfony\Component\Console\Command\Command;
 
 abstract class AbstractCommand extends Command
 {
-    public const DB = 'db';
+    public const DB         = 'db';
     public const COLLECTION = 'collection';
-    public const INDEX = 'index';
+    public const INDEX      = 'index';
 
     abstract protected function processDocumentCollection(SchemaManager $sm, $document);
 

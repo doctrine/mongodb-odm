@@ -17,7 +17,7 @@ class Phonenumber
 
     public function __construct($phonenumber = null, ?User $lastCalledBy = null)
     {
-        $this->phonenumber = $phonenumber;
+        $this->phonenumber  = $phonenumber;
         $this->lastCalledBy = $lastCalledBy;
     }
 

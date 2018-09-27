@@ -22,7 +22,7 @@ class OperatorTest extends BaseTest
     public function testProxiedExpressionOperators($expected, $operator, $args)
     {
         $stage = $this->getStubStage();
-        $args = $this->resolveArgs($args);
+        $args  = $this->resolveArgs($args);
 
         $this->assertSame($stage, $stage->$operator(...$args));
         $this->assertSame($expected, $stage->getExpression());

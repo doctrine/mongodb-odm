@@ -94,14 +94,14 @@ class User extends BaseDocument
 
     public function __construct()
     {
-        $this->phonebooks = new ArrayCollection();
-        $this->phonenumbers = new ArrayCollection();
-        $this->groups = new ArrayCollection();
-        $this->groupsSimple = new ArrayCollection();
-        $this->sortedGroups = new ArrayCollection();
+        $this->phonebooks      = new ArrayCollection();
+        $this->phonenumbers    = new ArrayCollection();
+        $this->groups          = new ArrayCollection();
+        $this->groupsSimple    = new ArrayCollection();
+        $this->sortedGroups    = new ArrayCollection();
         $this->sortedGroupsAsc = new ArrayCollection();
-        $this->posts = new ArrayCollection();
-        $this->createdAt = new DateTime();
+        $this->posts           = new ArrayCollection();
+        $this->createdAt       = new DateTime();
     }
 
     public function setId($id)

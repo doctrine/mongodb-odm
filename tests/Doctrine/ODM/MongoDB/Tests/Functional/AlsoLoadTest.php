@@ -160,11 +160,11 @@ class AlsoLoadTest extends BaseTest
 
     public function testNotSaved()
     {
-        $document = new AlsoLoadDocument();
-        $document->baz = 'baz';
+        $document            = new AlsoLoadDocument();
+        $document->baz       = 'baz';
         $document->firstName = 'Jonathan';
-        $document->lastName = 'Wage';
-        $document->name = 'Kris Wallsmith';
+        $document->lastName  = 'Wage';
+        $document->name      = 'Kris Wallsmith';
 
         $this->dm->persist($document);
         $this->dm->flush();

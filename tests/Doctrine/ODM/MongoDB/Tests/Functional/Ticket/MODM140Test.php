@@ -15,7 +15,7 @@ class MODM140Test extends BaseTest
 {
     public function testInsertingNestedEmbeddedCollections()
     {
-        $category = new Category();
+        $category       = new Category();
         $category->name = 'My Category';
 
         $post1 = new Post();
@@ -29,7 +29,7 @@ class MODM140Test extends BaseTest
         $this->dm->clear();
 
         $category = $this->dm->getRepository(Category::class)->findOneBy(['name' => 'My Category']);
-        $post2 = new Post();
+        $post2    = new Post();
         $post2->versions->add(new PostVersion('P2V1'));
         $post2->versions->add(new PostVersion('P2V2'));
         $category->posts->add($post2);
@@ -48,10 +48,10 @@ class MODM140Test extends BaseTest
     {
         $comment = new Comment();
 
-        $post = new Post();
+        $post             = new Post();
         $post->comments[] = $comment;
 
-        $category = new Category();
+        $category       = new Category();
         $category->name = 'My Category';
         $category->posts->add($post);
 
@@ -68,7 +68,7 @@ class MODM140Test extends BaseTest
 
     public function testAddingAnotherEmbeddedDocument()
     {
-        $test = new EmbeddedTestLevel0();
+        $test       = new EmbeddedTestLevel0();
         $test->name = 'test';
 
         $this->dm->persist($test);
@@ -78,15 +78,15 @@ class MODM140Test extends BaseTest
         $test = $this->dm->getRepository(EmbeddedTestLevel0::class)->findOneBy(['name' => 'test']);
         $this->assertInstanceOf(EmbeddedTestLevel0::class, $test);
 
-        $level1 = new EmbeddedTestLevel1();
+        $level1       = new EmbeddedTestLevel1();
         $level1->name = 'test level 1 #1';
 
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'test level 2 #1 in level 1 #1';
+        $level2           = new EmbeddedTestLevel2();
+        $level2->name     = 'test level 2 #1 in level 1 #1';
         $level1->level2[] = $level2;
 
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'test level 2 #2 in level 1 #1';
+        $level2           = new EmbeddedTestLevel2();
+        $level2->name     = 'test level 2 #2 in level 1 #1';
         $level1->level2[] = $level2;
 
         $test->level1[] = $level1;
@@ -98,15 +98,15 @@ class MODM140Test extends BaseTest
         $this->assertCount(1, $test->level1);
         $this->assertCount(2, $test->level1[0]->level2);
 
-        $level1 = new EmbeddedTestLevel1();
+        $level1       = new EmbeddedTestLevel1();
         $level1->name = 'test level 1 #2';
 
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'test level 2 #1 in level 1 #2';
+        $level2           = new EmbeddedTestLevel2();
+        $level2->name     = 'test level 2 #1 in level 1 #2';
         $level1->level2[] = $level2;
 
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'test level 2 #2 in level 1 #2';
+        $level2           = new EmbeddedTestLevel2();
+        $level2->name     = 'test level 2 #2 in level 1 #2';
         $level1->level2[] = $level2;
 
         $test->level1[] = $level1;

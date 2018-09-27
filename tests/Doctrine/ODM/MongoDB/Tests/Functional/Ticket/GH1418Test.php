@@ -40,14 +40,14 @@ class GH1418Test extends BaseTest
 
     public function testReadDocumentAndManage()
     {
-        $document = new GH1418Document();
+        $document     = new GH1418Document();
         $document->id = 1;
 
-        $embedded = new GH1418Embedded();
-        $embedded->id = 1;
+        $embedded       = new GH1418Embedded();
+        $embedded->id   = 1;
         $embedded->name = 'maciej';
 
-        $document->embedOne = clone $embedded;
+        $document->embedOne    = clone $embedded;
         $document->embedMany[] = clone $embedded;
 
         $this->dm->persist($document);
@@ -70,7 +70,7 @@ class GH1418Test extends BaseTest
 
         $document = $this->dm->merge($document);
 
-        $document->embedOne->name = 'alcaeus';
+        $document->embedOne->name     = 'alcaeus';
         $document->embedMany[0]->name = 'alcaeus';
 
         $this->dm->flush();

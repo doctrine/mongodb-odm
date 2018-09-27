@@ -37,7 +37,7 @@ abstract class AbstractBucket extends Stage
 
     public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class)
     {
-        $this->dm = $documentManager;
+        $this->dm    = $documentManager;
         $this->class = $class;
 
         parent::__construct($builder);

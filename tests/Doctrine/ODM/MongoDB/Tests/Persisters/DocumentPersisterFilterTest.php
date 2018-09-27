@@ -14,7 +14,7 @@ class DocumentPersisterFilterTest extends BaseTest
 {
     public function testAddFilterToPreparedQuery()
     {
-        $persister = $this->uow->getDocumentPersister(User::class);
+        $persister        = $this->uow->getDocumentPersister(User::class);
         $filterCollection = $this->dm->getFilterCollection();
 
         $filterCollection->enable('testFilter');

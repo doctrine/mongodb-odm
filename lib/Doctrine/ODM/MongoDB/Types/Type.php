@@ -21,29 +21,29 @@ use function str_replace;
  */
 abstract class Type
 {
-    public const ID = 'id';
-    public const INTID = 'int_id';
-    public const CUSTOMID = 'custom_id';
-    public const BOOL = 'bool';
-    public const BOOLEAN = 'boolean';
-    public const INT = 'int';
-    public const INTEGER = 'integer';
-    public const FLOAT = 'float';
-    public const STRING = 'string';
-    public const DATE = 'date';
-    public const KEY = 'key';
-    public const TIMESTAMP = 'timestamp';
-    public const BINDATA = 'bin';
-    public const BINDATAFUNC = 'bin_func';
-    public const BINDATABYTEARRAY = 'bin_bytearray';
-    public const BINDATAUUID = 'bin_uuid';
+    public const ID                 = 'id';
+    public const INTID              = 'int_id';
+    public const CUSTOMID           = 'custom_id';
+    public const BOOL               = 'bool';
+    public const BOOLEAN            = 'boolean';
+    public const INT                = 'int';
+    public const INTEGER            = 'integer';
+    public const FLOAT              = 'float';
+    public const STRING             = 'string';
+    public const DATE               = 'date';
+    public const KEY                = 'key';
+    public const TIMESTAMP          = 'timestamp';
+    public const BINDATA            = 'bin';
+    public const BINDATAFUNC        = 'bin_func';
+    public const BINDATABYTEARRAY   = 'bin_bytearray';
+    public const BINDATAUUID        = 'bin_uuid';
     public const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
-    public const BINDATAMD5 = 'bin_md5';
-    public const BINDATACUSTOM = 'bin_custom';
-    public const HASH = 'hash';
-    public const COLLECTION = 'collection';
-    public const OBJECTID = 'object_id';
-    public const RAW = 'raw';
+    public const BINDATAMD5         = 'bin_md5';
+    public const BINDATACUSTOM      = 'bin_custom';
+    public const HASH               = 'hash';
+    public const COLLECTION         = 'collection';
+    public const OBJECTID           = 'object_id';
+    public const RAW                = 'raw';
 
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static $typeObjects = [];
@@ -135,7 +135,7 @@ abstract class Type
             throw new InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
         }
         if (! isset(self::$typeObjects[$type])) {
-            $className = self::$typesMap[$type];
+            $className                = self::$typesMap[$type];
             self::$typeObjects[$type] = new $className();
         }
         return self::$typeObjects[$type];

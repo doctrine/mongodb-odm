@@ -100,7 +100,7 @@ class DocumentManagerTest extends BaseTest
 
     public function testGetPartialReference()
     {
-        $id = new ObjectId();
+        $id   = new ObjectId();
         $user = $this->dm->getPartialReference(CmsUser::class, $id);
         $this->assertTrue($this->dm->contains($user));
         $this->assertEquals($id, $user->id);
@@ -177,7 +177,7 @@ class DocumentManagerTest extends BaseTest
 
     public function testCreateDbRefWithNonNullEmptyId()
     {
-        $phonenumber = new CmsPhonenumber();
+        $phonenumber              = new CmsPhonenumber();
         $phonenumber->phonenumber = 0;
         $this->dm->persist($phonenumber);
 
@@ -203,7 +203,7 @@ class DocumentManagerTest extends BaseTest
     {
         $r = new User();
         $this->dm->persist($r);
-        $d = new ReferenceStoreAsDocument();
+        $d     = new ReferenceStoreAsDocument();
         $class = $this->dm->getClassMetadata(get_class($d));
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref1']);

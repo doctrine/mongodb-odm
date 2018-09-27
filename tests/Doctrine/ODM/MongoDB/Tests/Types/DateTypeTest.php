@@ -12,7 +12,6 @@ use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use const PHP_INT_SIZE;
-use function call_user_func;
 use function date;
 use function strtotime;
 
@@ -23,11 +22,11 @@ class DateTypeTest extends TestCase
         $type = Type::getType(Type::DATE);
 
         $timestamp = 100000000.001;
-        $dateTime = $type->getDateTime($timestamp);
+        $dateTime  = $type->getDateTime($timestamp);
         $this->assertEquals($timestamp, $dateTime->format('U.u'));
 
         $mongoDate = new UTCDateTime(100000000001);
-        $dateTime = $type->getDateTime($mongoDate);
+        $dateTime  = $type->getDateTime($mongoDate);
         $this->assertEquals($timestamp, $dateTime->format('U.u'));
     }
 
@@ -41,7 +40,7 @@ class DateTypeTest extends TestCase
         $this->assertSame($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are not converted');
 
         $timestamp = 100000000.123;
-        $dateTime = DateTime::createFromFormat('U.u', (string) $timestamp);
+        $dateTime  = DateTime::createFromFormat('U.u', (string) $timestamp);
         $mongoDate = new UTCDateTime(100000000123);
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTime), 'DateTime objects are converted to MongoDate objects');
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($timestamp), 'Numeric timestamps are converted to MongoDate objects');
@@ -65,7 +64,7 @@ class DateTypeTest extends TestCase
     {
         $type = Type::getType(Type::DATE);
 
-        $date = new DateTime('1900-01-01 00:00:00.123', new DateTimeZone('UTC'));
+        $date      = new DateTime('1900-01-01 00:00:00.123', new DateTimeZone('UTC'));
         $timestamp = '-2208988800.123';
         $this->assertEquals($type->convertToDatabaseValue($timestamp), $type->convertToDatabaseValue($date));
     }
@@ -96,7 +95,7 @@ class DateTypeTest extends TestCase
      */
     public function testConvertToPHPValue($input, $output)
     {
-        $type = Type::getType(Type::DATE);
+        $type   = Type::getType(Type::DATE);
         $return = $type->convertToPHPValue($input);
 
         $this->assertInstanceOf('DateTime', $return);
@@ -132,7 +131,7 @@ class DateTypeTest extends TestCase
     {
         $yesterday = strtotime('yesterday');
         $mongoDate = new UTCDateTime($yesterday * 1000);
-        $dateTime = new DateTime('@' . $yesterday);
+        $dateTime  = new DateTime('@' . $yesterday);
 
         return [
             [$dateTime, $dateTime],
@@ -162,7 +161,7 @@ class DateTypeTest extends TestCase
             $this->markTestSkipped('Platform is not 64-bit');
         }
 
-        $type = Type::getType(Type::DATE);
+        $type   = Type::getType(Type::DATE);
         $return = $type->convertToDatabaseValue('1900-01-01');
 
         $this->assertInstanceOf(UTCDateTime::class, $return);

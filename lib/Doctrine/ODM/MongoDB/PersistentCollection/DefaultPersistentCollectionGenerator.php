@@ -52,7 +52,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
 
     public function __construct(string $collectionDir, string $collectionNs)
     {
-        $this->collectionDir = $collectionDir;
+        $this->collectionDir       = $collectionDir;
         $this->collectionNamespace = $collectionNs;
     }
 
@@ -62,8 +62,8 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
     public function generateClass(string $class, string $dir) : void
     {
         $collClassName = str_replace('\\', '', $class) . 'Persistent';
-        $className = $this->collectionNamespace . '\\' . $collClassName;
-        $fileName = $dir . DIRECTORY_SEPARATOR . $collClassName . '.php';
+        $className     = $this->collectionNamespace . '\\' . $collClassName;
+        $fileName      = $dir . DIRECTORY_SEPARATOR . $collClassName . '.php';
         $this->generateCollectionClass($class, $className, $fileName);
     }
 
@@ -81,7 +81,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
         }
 
         $collClassName = str_replace('\\', '', $collectionClass) . 'Persistent';
-        $className = $this->collectionNamespace . '\\' . $collClassName;
+        $className     = $this->collectionNamespace . '\\' . $collClassName;
         if (! class_exists($className, false)) {
             $fileName = $this->collectionDir . DIRECTORY_SEPARATOR . $collClassName . '.php';
             switch ($autoGenerate) {
@@ -115,10 +115,10 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
      */
     private function generateCollectionClass(string $for, string $targetFqcn, $fileName)
     {
-        $exploded = explode('\\', $targetFqcn);
-        $class = array_pop($exploded);
+        $exploded  = explode('\\', $targetFqcn);
+        $class     = array_pop($exploded);
         $namespace = implode('\\', $exploded);
-        $code = <<<CODE
+        $code      = <<<CODE
 <?php
 
 namespace $namespace;
@@ -150,8 +150,8 @@ class $class extends \\$for implements \\Doctrine\\ODM\\MongoDB\\PersistentColle
     }
 
 CODE;
-        $rc = new ReflectionClass($for);
-        $rt = new ReflectionClass('Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait');
+        $rc        = new ReflectionClass($for);
+        $rt        = new ReflectionClass('Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait');
         foreach ($rc->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             if ($rt->hasMethod($method->name) ||
                 $method->isConstructor() ||
@@ -209,13 +209,13 @@ CODE;
 
     private function buildParametersString(ReflectionMethod $method) : string
     {
-        $parameters = $method->getParameters();
+        $parameters           = $method->getParameters();
         $parameterDefinitions = [];
 
         /** @var ReflectionParameter $param */
         foreach ($parameters as $param) {
             $parameterDefinition = '';
-            $parameterType = $this->getParameterType($param);
+            $parameterType       = $this->getParameterType($param);
 
             if ($parameterType) {
                 $parameterDefinition .= $parameterType . ' ';
@@ -231,7 +231,7 @@ CODE;
                 }
             }
 
-            $parameters[]     = '$' . $param->name;
+            $parameters[]         = '$' . $param->name;
             $parameterDefinition .= '$' . $param->name;
 
             if ($param->isDefaultValueAvailable()) {
@@ -311,7 +311,7 @@ CODE;
         ReflectionMethod $method,
         ?ReflectionParameter $parameter = null
     ) : string {
-        $name = method_exists($type, 'getName') ? $type->getName() : (string) $type;
+        $name      = method_exists($type, 'getName') ? $type->getName() : (string) $type;
         $nameLower = strtolower($name);
         if ($nameLower === 'self') {
             $name = $method->getDeclaringClass()->getName();

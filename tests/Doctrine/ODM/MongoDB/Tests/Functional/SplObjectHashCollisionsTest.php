@@ -17,8 +17,8 @@ class SplObjectHashCollisionsTest extends BaseTest
      */
     public function testParentAssociationsIsCleared($f)
     {
-        $d = new SplColDoc();
-        $d->one = new SplColEmbed('d.one.v1');
+        $d         = new SplColDoc();
+        $d->one    = new SplColEmbed('d.one.v1');
         $d->many[] = new SplColEmbed('d.many.0.v1');
         $d->many[] = new SplColEmbed('d.many.1.v1');
 
@@ -35,8 +35,8 @@ class SplObjectHashCollisionsTest extends BaseTest
      */
     public function testParentAssociationsLeftover($f, $leftover)
     {
-        $d = new SplColDoc();
-        $d->one = new SplColEmbed('d.one.v1');
+        $d         = new SplColDoc();
+        $d->one    = new SplColEmbed('d.one.v1');
         $d->many[] = new SplColEmbed('d.many.0.v1');
         $d->many[] = new SplColEmbed('d.many.1.v1');
         $this->dm->persist($d);

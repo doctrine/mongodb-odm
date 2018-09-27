@@ -13,10 +13,10 @@ class PreLoadEventArgsTest extends BaseTest
     public function testGetData()
     {
         $document = new Group('test');
-        $dm = $this->dm;
-        $data = ['id' => '1234', 'name' => 'test'];
+        $dm       = $this->dm;
+        $data     = ['id' => '1234', 'name' => 'test'];
 
-        $eventArgs = new PreLoadEventArgs($document, $dm, $data);
+        $eventArgs     = new PreLoadEventArgs($document, $dm, $data);
         $eventArgsData =& $eventArgs->getData();
 
         $this->assertEquals('test', $eventArgsData['name']);

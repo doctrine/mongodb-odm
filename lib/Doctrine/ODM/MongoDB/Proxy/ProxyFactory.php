@@ -52,11 +52,11 @@ class ProxyFactory extends AbstractProxyFactory
      */
     public function __construct(DocumentManager $documentManager, $proxyDir, $proxyNamespace, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
-        $this->metadataFactory = $documentManager->getMetadataFactory();
-        $this->uow = $documentManager->getUnitOfWork();
-        $this->proxyNamespace = $proxyNamespace;
+        $this->metadataFactory       = $documentManager->getMetadataFactory();
+        $this->uow                   = $documentManager->getUnitOfWork();
+        $this->proxyNamespace        = $proxyNamespace;
         $this->lifecycleEventManager = new LifecycleEventManager($documentManager, $this->uow, $documentManager->getEventManager());
-        $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNamespace);
+        $proxyGenerator              = new ProxyGenerator($proxyDir, $proxyNamespace);
 
         $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
 

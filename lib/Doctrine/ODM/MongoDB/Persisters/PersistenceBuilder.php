@@ -42,7 +42,7 @@ class PersistenceBuilder
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
-        $this->dm = $dm;
+        $this->dm  = $dm;
         $this->uow = $uow;
     }
 
@@ -55,7 +55,7 @@ class PersistenceBuilder
      */
     public function prepareInsertData($document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class     = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
         $insertData = [];
@@ -111,7 +111,7 @@ class PersistenceBuilder
      */
     public function prepareUpdateData($document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class     = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
         $updateData = [];
@@ -132,10 +132,10 @@ class PersistenceBuilder
                 } else {
                     if ($new !== null && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                         $operator = '$inc';
-                        $value = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
+                        $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
                     } else {
                         $operator = '$set';
-                        $value = $new === null ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                        $value    = $new === null ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new);
                     }
 
                     $updateData[$operator][$mapping['name']] = $value;
@@ -219,7 +219,7 @@ class PersistenceBuilder
      */
     public function prepareUpsertData($document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class     = $this->dm->getClassMetadata(get_class($document));
         $changeset = $this->uow->getDocumentChangeSet($document);
 
         $updateData = [];
@@ -233,10 +233,10 @@ class PersistenceBuilder
                 if ($new !== null) {
                     if (empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                         $operator = '$inc';
-                        $value = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
+                        $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
                     } else {
                         $operator = '$set';
-                        $value = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                        $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new);
                     }
 
                     $updateData[$operator][$mapping['name']] = $value;
@@ -324,7 +324,7 @@ class PersistenceBuilder
     public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
     {
         $embeddedDocumentValue = [];
-        $class = $this->dm->getClassMetadata(get_class($embeddedDocument));
+        $class                 = $this->dm->getClassMetadata(get_class($embeddedDocument));
 
         foreach ($class->fieldMappings as $mapping) {
             // Skip notSaved fields
@@ -450,8 +450,8 @@ class PersistenceBuilder
      */
     public function prepareAssociatedCollectionValue(PersistentCollectionInterface $coll, $includeNestedCollections = false)
     {
-        $mapping = $coll->getMapping();
-        $pb = $this;
+        $mapping  = $coll->getMapping();
+        $pb       = $this;
         $callback = isset($mapping['embedded'])
             ? static function ($v) use ($pb, $mapping, $includeNestedCollections) {
                 return $pb->prepareEmbeddedDocumentValue($mapping, $v, $includeNestedCollections);

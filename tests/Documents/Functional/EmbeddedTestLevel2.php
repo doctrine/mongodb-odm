@@ -12,10 +12,10 @@ class EmbeddedTestLevel2
     /** @ODM\Field(type="string") */
     public $name;
 
-    public $preRemove = false;
+    public $preRemove  = false;
     public $postRemove = false;
-    public $preLoad = false;
-    public $postLoad = false;
+    public $preLoad    = false;
+    public $postLoad   = false;
 
     /** @ODM\PreRemove */
     public function onPreRemove()

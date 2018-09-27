@@ -28,7 +28,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     public function getRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
-        $hashKey = $metadata->getName() . spl_object_hash($documentManager);
+        $hashKey  = $metadata->getName() . spl_object_hash($documentManager);
 
         if (isset($this->repositoryList[$hashKey])) {
             return $this->repositoryList[$hashKey];

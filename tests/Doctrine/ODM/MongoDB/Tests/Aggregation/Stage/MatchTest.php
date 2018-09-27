@@ -100,9 +100,9 @@ class MatchTest extends BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
-        $date = new DateTime();
+        $date      = new DateTime();
         $mongoDate = new UTCDateTime((int) $date->format('Uv'));
-        $stage = $builder
+        $stage     = $builder
             ->match()
                 ->field('createdAt')
                 ->lte($date);

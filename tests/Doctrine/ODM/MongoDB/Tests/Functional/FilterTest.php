@@ -41,7 +41,7 @@ class FilterTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->ids['tim'] = $tim->getId();
+        $this->ids['tim']  = $tim->getId();
         $this->ids['john'] = $john->getId();
 
         $this->fc = $this->dm->getFilterCollection();
@@ -91,7 +91,7 @@ class FilterTest extends BaseTest
     {
         $repository = $this->dm->getRepository(User::class);
 
-        $tim = $repository->find($this->ids['tim']);
+        $tim  = $repository->find($this->ids['tim']);
         $john = $repository->find($this->ids['john']);
 
         $usernames = [];
@@ -247,7 +247,7 @@ class FilterTest extends BaseTest
 
     protected function getUsernamesWithDocumentManager()
     {
-        $tim = $this->dm->getReference(User::class, $this->ids['tim']);
+        $tim  = $this->dm->getReference(User::class, $this->ids['tim']);
         $john = $this->dm->getReference(User::class, $this->ids['john']);
 
         $usernames = [];
@@ -283,9 +283,9 @@ class FilterTest extends BaseTest
 
     protected function getUsernamesWithQuery()
     {
-        $qb = $this->dm->createQueryBuilder(User::class);
+        $qb    = $this->dm->createQueryBuilder(User::class);
         $query = $qb->getQuery();
-        $all = $query->execute();
+        $all   = $query->execute();
 
         $usernames = [];
         foreach ($all as $user) {

@@ -14,9 +14,9 @@ class LifecycleCallbacksTest extends BaseTest
 {
     private function createUser($name = 'jon', $fullName = 'Jonathan H. Wage')
     {
-        $user = new User();
-        $user->name = $name;
-        $user->profile = new Profile();
+        $user                = new User();
+        $user->name          = $name;
+        $user->profile       = new Profile();
         $user->profile->name = $fullName;
         $this->dm->persist($user);
         $this->dm->flush();
@@ -32,7 +32,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertInstanceOf(DateTime::class, $user->createdAt);
         $this->assertInstanceOf(DateTime::class, $user->profile->createdAt);
 
-        $user->name = 'jon changed';
+        $user->name          = 'jon changed';
         $user->profile->name = 'changed';
         $this->dm->flush();
         $this->dm->clear();
@@ -54,8 +54,8 @@ class LifecycleCallbacksTest extends BaseTest
 
     public function testPreUpdate()
     {
-        $user = $this->createUser();
-        $user->name = 'jwage';
+        $user                = $this->createUser();
+        $user->name          = 'jwage';
         $user->profile->name = 'Jon Doe';
         $this->dm->flush();
 
@@ -68,8 +68,8 @@ class LifecycleCallbacksTest extends BaseTest
 
     public function testPreFlush()
     {
-        $user = $this->createUser();
-        $user->name = 'jwage';
+        $user                = $this->createUser();
+        $user->name          = 'jwage';
         $user->profile->name = 'Jon Doe';
         $this->dm->flush();
 
@@ -109,10 +109,10 @@ class LifecycleCallbacksTest extends BaseTest
 
     public function testEmbedManyEvent()
     {
-        $user = new User();
-        $user->name = 'jon';
-        $profile = new Profile();
-        $profile->name = 'testing cool ya';
+        $user             = new User();
+        $user->name       = 'jon';
+        $profile          = new Profile();
+        $profile->name    = 'testing cool ya';
         $user->profiles[] = $profile;
 
         $this->dm->persist($user);
@@ -130,7 +130,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($profile->postUpdate);
 
         $this->dm->clear();
-        $user = $this->dm->find(User::class, $user->id);
+        $user    = $this->dm->find(User::class, $user->id);
         $profile = $user->profiles[0];
 
         $this->assertTrue($profile->preLoad);
@@ -155,9 +155,9 @@ class LifecycleCallbacksTest extends BaseTest
 
     public function testMultipleLevelsOfEmbedded()
     {
-        $user = $this->createUser();
-        $profile = new Profile();
-        $profile->name = '2nd level';
+        $user                   = $this->createUser();
+        $profile                = new Profile();
+        $profile->name          = '2nd level';
         $user->profile->profile = $profile;
         $this->dm->flush();
 
@@ -176,12 +176,12 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($profile->postUpdate);
 
         $this->dm->clear();
-        $user = $this->dm->find(User::class, $user->id);
-        $profile = $user->profile->profile;
+        $user          = $this->dm->find(User::class, $user->id);
+        $profile       = $user->profile->profile;
         $profile->name = '2nd level changed again';
 
-        $profile2 = new Profile();
-        $profile2->name = 'test';
+        $profile2         = new Profile();
+        $profile2->name   = 'test';
         $user->profiles[] = $profile2;
         $this->dm->flush();
 
@@ -213,7 +213,7 @@ class LifecycleCallbacksTest extends BaseTest
 
     public function testReferences()
     {
-        $user = $this->createUser();
+        $user  = $this->createUser();
         $user2 = $this->createUser('maciej', 'Maciej Malarz');
 
         $user->friends[] = $user2;
@@ -229,7 +229,7 @@ class LifecycleCallbacksTest extends BaseTest
     public function testEventsNotFiredForInverseSide()
     {
         $customer = new Customer();
-        $cart = new Cart();
+        $cart     = new Cart();
 
         $this->dm->persist($customer);
         $this->dm->persist($cart);
@@ -299,21 +299,21 @@ abstract class BaseDocument
     /** @ODM\Field(type="date") */
     public $updatedAt;
 
-    public $prePersist = false;
+    public $prePersist  = false;
     public $postPersist = false;
-    public $preUpdate = false;
-    public $postUpdate = false;
-    public $preRemove = false;
-    public $postRemove = false;
-    public $preLoad = false;
-    public $postLoad = false;
-    public $preFlush = false;
+    public $preUpdate   = false;
+    public $postUpdate  = false;
+    public $preRemove   = false;
+    public $postRemove  = false;
+    public $preLoad     = false;
+    public $postLoad    = false;
+    public $preFlush    = false;
 
     /** @ODM\PrePersist */
     public function prePersist(Event\LifecycleEventArgs $e)
     {
         $this->prePersist = true;
-        $this->createdAt = new DateTime();
+        $this->createdAt  = new DateTime();
     }
 
     /** @ODM\PostPersist */

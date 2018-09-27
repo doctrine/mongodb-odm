@@ -24,7 +24,7 @@ class ResolveTargetDocumentListener
      */
     public function addResolveTargetDocument(string $originalDocument, string $newDocument, array $mapping) : void
     {
-        $mapping['targetDocument'] = ltrim($newDocument, '\\');
+        $mapping['targetDocument']                                    = ltrim($newDocument, '\\');
         $this->resolveTargetDocuments[ltrim($originalDocument, '\\')] = $mapping;
     }
 
@@ -46,8 +46,8 @@ class ResolveTargetDocumentListener
 
     private function remapAssociation(ClassMetadata $classMetadata, array $mapping) : void
     {
-        $newMapping = $this->resolveTargetDocuments[$mapping['targetDocument']];
-        $newMapping = array_replace_recursive($mapping, $newMapping);
+        $newMapping              = $this->resolveTargetDocuments[$mapping['targetDocument']];
+        $newMapping              = array_replace_recursive($mapping, $newMapping);
         $newMapping['fieldName'] = $mapping['fieldName'];
 
         // clear reference case of duplicate exception

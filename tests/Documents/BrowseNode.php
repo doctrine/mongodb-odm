@@ -24,13 +24,13 @@ class BrowseNode
 
     public function __construct($name = null)
     {
-        $this->name = $name;
+        $this->name     = $name;
         $this->children = new ArrayCollection();
     }
 
     public function addChild(BrowseNode $child)
     {
-        $child->parent = $this;
+        $child->parent    = $this;
         $this->children[] = $child;
     }
 }

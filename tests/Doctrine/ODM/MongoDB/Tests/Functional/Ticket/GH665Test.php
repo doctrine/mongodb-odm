@@ -60,7 +60,7 @@ class GH665Document
 
     public function __construct()
     {
-        $this->embeddedPushAll = new ArrayCollection();
+        $this->embeddedPushAll  = new ArrayCollection();
         $this->embeddedAddToSet = new ArrayCollection();
     }
 }

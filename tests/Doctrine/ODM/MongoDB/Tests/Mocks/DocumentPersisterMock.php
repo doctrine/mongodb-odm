@@ -11,33 +11,33 @@ use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
  */
 class DocumentPersisterMock extends DocumentPersister
 {
-    private $inserts = [];
-    private $upserts = [];
-    private $updates = [];
-    private $deletes = [];
+    private $inserts                    = [];
+    private $upserts                    = [];
+    private $updates                    = [];
+    private $deletes                    = [];
     private $identityColumnValueCounter = 1;
-    private $postInsertIds = [];
-    private $existsCalled = false;
+    private $postInsertIds              = [];
+    private $existsCalled               = false;
 
     public function insert($document, array $options = [])
     {
-        $this->inserts[] = $document;
-        $id = $this->identityColumnValueCounter++;
+        $this->inserts[]          = $document;
+        $id                       = $this->identityColumnValueCounter++;
         $this->postInsertIds[$id] = [$id, $document];
         return $id;
     }
 
     public function addInsert(object $document) : void
     {
-        $this->inserts[] = $document;
-        $id = $this->identityColumnValueCounter++;
+        $this->inserts[]          = $document;
+        $id                       = $this->identityColumnValueCounter++;
         $this->postInsertIds[$id] = [$id, $document];
     }
 
     public function addUpsert(object $document) : void
     {
-        $this->upserts[] = $document;
-        $id = $this->identityColumnValueCounter++;
+        $this->upserts[]          = $document;
+        $id                       = $this->identityColumnValueCounter++;
         $this->postInsertIds[$id] = [$id, $document];
     }
 
@@ -88,11 +88,11 @@ class DocumentPersisterMock extends DocumentPersister
 
     public function reset()
     {
-        $this->existsCalled = false;
+        $this->existsCalled               = false;
         $this->identityColumnValueCounter = 1;
-        $this->inserts = [];
-        $this->updates = [];
-        $this->deletes = [];
+        $this->inserts                    = [];
+        $this->updates                    = [];
+        $this->deletes                    = [];
     }
 
     public function isExistsCalled()

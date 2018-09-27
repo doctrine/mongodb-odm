@@ -11,7 +11,7 @@ class GH971Test extends BaseTest
 {
     public function testUpdateOfInheritedDocumentUsingFindAndUpdate()
     {
-        $name = 'Ferrari';
+        $name     = 'Ferrari';
         $features = [
             'Super Engine',
             'Huge Wheels',

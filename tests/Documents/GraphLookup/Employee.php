@@ -29,9 +29,9 @@ class Employee
 
     public function __construct($name, ?Employee $reportsTo = null)
     {
-        $this->name = $name;
-        $this->reportsTo = $reportsTo;
-        $this->reportsToId = $reportsTo;
+        $this->name               = $name;
+        $this->reportsTo          = $reportsTo;
+        $this->reportsToId        = $reportsTo;
         $this->reportingEmployees = new ArrayCollection();
 
         if (! $reportsTo) {

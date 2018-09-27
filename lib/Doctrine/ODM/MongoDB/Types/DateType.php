@@ -35,7 +35,7 @@ class DateType extends Type
      */
     public static function getDateTime($value) : DateTimeInterface
     {
-        $datetime = false;
+        $datetime  = false;
         $exception = null;
 
         if ($value instanceof DateTimeInterface) {
@@ -44,13 +44,13 @@ class DateType extends Type
             $datetime = $value->toDateTime();
             $datetime->setTimezone(new DateTimeZone(date_default_timezone_get()));
         } elseif (is_numeric($value)) {
-            $seconds = $value;
-            $value = (string) $value;
+            $seconds      = $value;
+            $value        = (string) $value;
             $microseconds = 0;
 
             if (strpos($value, '.') !== false) {
                 [$seconds, $microseconds] = explode('.', $value);
-                $microseconds = str_pad($microseconds, 6, '0'); // ensure microseconds
+                $microseconds             = str_pad($microseconds, 6, '0'); // ensure microseconds
             }
 
             $datetime = static::craftDateTime((int) $seconds, $microseconds);

@@ -11,7 +11,7 @@ class CustomFieldNameTest extends BaseTest
 {
     public function testInsertSetsLoginInsteadOfUsername()
     {
-        $test = new CustomFieldName();
+        $test           = new CustomFieldName();
         $test->username = 'test';
 
         $this->dm->persist($test);
@@ -24,7 +24,7 @@ class CustomFieldNameTest extends BaseTest
 
     public function testHydration()
     {
-        $test = new CustomFieldName();
+        $test           = new CustomFieldName();
         $test->username = 'test';
 
         $this->dm->persist($test);
@@ -38,7 +38,7 @@ class CustomFieldNameTest extends BaseTest
 
     public function testUpdateSetsLoginInsteadOfUsername()
     {
-        $test = new CustomFieldName();
+        $test           = new CustomFieldName();
         $test->username = 'test';
 
         $this->dm->persist($test);
@@ -57,7 +57,7 @@ class CustomFieldNameTest extends BaseTest
 
     public function testFindOneQueryIsPrepared()
     {
-        $test = new CustomFieldName();
+        $test           = new CustomFieldName();
         $test->username = 'test';
 
         $this->dm->persist($test);
@@ -71,7 +71,7 @@ class CustomFieldNameTest extends BaseTest
 
     public function testFindQueryIsPrepared()
     {
-        $test = new CustomFieldName();
+        $test           = new CustomFieldName();
         $test->username = 'test';
 
         $this->dm->persist($test);
@@ -85,16 +85,16 @@ class CustomFieldNameTest extends BaseTest
 
     public function testQueryBuilderAndDqlArePrepared()
     {
-        $test = new CustomFieldName();
+        $test           = new CustomFieldName();
         $test->username = 'test';
 
         $this->dm->persist($test);
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb = $this->dm->createQueryBuilder(CustomFieldName::class)->field('username')->equals('test');
+        $qb    = $this->dm->createQueryBuilder(CustomFieldName::class)->field('username')->equals('test');
         $query = $qb->getQuery();
-        $test = $query->getSingleResult();
+        $test  = $query->getSingleResult();
         $this->assertNotNull($test);
         $this->assertEquals('test', $test->username);
     }

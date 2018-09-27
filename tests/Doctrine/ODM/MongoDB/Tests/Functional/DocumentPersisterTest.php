@@ -40,7 +40,7 @@ class DocumentPersisterTest extends BaseTest
     {
         $originalData = $this->dm->getDocumentCollection($this->class)->findOne();
 
-        $document = new DocumentPersisterTestDocument();
+        $document     = new DocumentPersisterTestDocument();
         $document->id = $originalData['_id'];
 
         $this->dm->persist($document);
@@ -61,7 +61,7 @@ class DocumentPersisterTest extends BaseTest
 
     public function testExistsReturnsFalseForNonexistentDocuments()
     {
-        $document = new DocumentPersisterTestDocument();
+        $document     = new DocumentPersisterTestDocument();
         $document->id = new ObjectId();
 
         $this->assertFalse($this->documentPersister->exists($document));
@@ -70,7 +70,7 @@ class DocumentPersisterTest extends BaseTest
     public function testLoadPreparesCriteriaAndSort()
     {
         $criteria = ['name' => ['$in' => ['a', 'b']]];
-        $sort = ['name' => -1];
+        $sort     = ['name' => -1];
 
         $document = $this->documentPersister->load($criteria, null, [], 0, $sort);
 
@@ -81,9 +81,9 @@ class DocumentPersisterTest extends BaseTest
     public function testLoadAllPreparesCriteriaAndSort()
     {
         $criteria = ['name' => ['$in' => ['a', 'b']]];
-        $sort = ['name' => -1];
+        $sort     = ['name' => -1];
 
-        $cursor = $this->documentPersister->loadAll($criteria, $sort);
+        $cursor    = $this->documentPersister->loadAll($criteria, $sort);
         $documents = $cursor->toArray();
 
         $this->assertInstanceOf($this->class, $documents[0]);
@@ -96,7 +96,7 @@ class DocumentPersisterTest extends BaseTest
     {
         $sort = ['name' => -1];
 
-        $cursor = $this->documentPersister->loadAll([], $sort, 1, 2);
+        $cursor    = $this->documentPersister->loadAll([], $sort, 1, 2);
         $documents = $cursor->toArray();
 
         $this->assertInstanceOf($this->class, $documents[0]);
@@ -133,10 +133,10 @@ class DocumentPersisterTest extends BaseTest
      */
     public function testPrepareQueryOrNewObjWithHashId($hashId)
     {
-        $class = DocumentPersisterTestHashIdDocument::class;
+        $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = ['_id' => $hashId];
+        $value    = ['_id' => $hashId];
         $expected = ['_id' => (object) $hashId];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
@@ -147,30 +147,30 @@ class DocumentPersisterTest extends BaseTest
      */
     public function testPrepareQueryOrNewObjWithHashIdAndInOperators($hashId)
     {
-        $class = DocumentPersisterTestHashIdDocument::class;
+        $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = ['_id' => ['$exists' => true]];
+        $value    = ['_id' => ['$exists' => true]];
         $expected = ['_id' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['_id' => ['$elemMatch' => $hashId]];
+        $value    = ['_id' => ['$elemMatch' => $hashId]];
         $expected = ['_id' => ['$elemMatch' => (object) $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['_id' => ['$in' => [$hashId]]];
+        $value    = ['_id' => ['$in' => [$hashId]]];
         $expected = ['_id' => ['$in' => [(object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['_id' => ['$not' => ['$elemMatch' => $hashId]]];
+        $value    = ['_id' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['_id' => ['$not' => ['$elemMatch' => (object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['_id' => ['$not' => ['$in' => [$hashId]]]];
+        $value    = ['_id' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['_id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
@@ -187,37 +187,37 @@ class DocumentPersisterTest extends BaseTest
 
     public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithNormalIdType()
     {
-        $class = DocumentPersisterTestHashIdDocument::class;
+        $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $id = new ObjectId();
 
-        $value = ['simpleRef' => (string) $id];
+        $value    = ['simpleRef' => (string) $id];
         $expected = ['simpleRef' => $id];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$exists' => true]];
+        $value    = ['simpleRef' => ['$exists' => true]];
         $expected = ['simpleRef' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$elemMatch' => (string) $id]];
+        $value    = ['simpleRef' => ['$elemMatch' => (string) $id]];
         $expected = ['simpleRef' => ['$elemMatch' => $id]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$in' => [(string) $id]]];
+        $value    = ['simpleRef' => ['$in' => [(string) $id]]];
         $expected = ['simpleRef' => ['$in' => [$id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$not' => ['$elemMatch' => (string) $id]]];
+        $value    = ['simpleRef' => ['$not' => ['$elemMatch' => (string) $id]]];
         $expected = ['simpleRef' => ['$not' => ['$elemMatch' => $id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$not' => ['$in' => [(string) $id]]]];
+        $value    = ['simpleRef' => ['$not' => ['$in' => [(string) $id]]]];
         $expected = ['simpleRef' => ['$not' => ['$in' => [$id]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
@@ -228,35 +228,35 @@ class DocumentPersisterTest extends BaseTest
      */
     public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithHashIdType($hashId)
     {
-        $class = DocumentPersisterTestDocument::class;
+        $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = ['simpleRef' => $hashId];
+        $value    = ['simpleRef' => $hashId];
         $expected = ['simpleRef' => (object) $hashId];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$exists' => true]];
+        $value    = ['simpleRef' => ['$exists' => true]];
         $expected = ['simpleRef' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$elemMatch' => $hashId]];
+        $value    = ['simpleRef' => ['$elemMatch' => $hashId]];
         $expected = ['simpleRef' => ['$elemMatch' => (object) $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$in' => [$hashId]]];
+        $value    = ['simpleRef' => ['$in' => [$hashId]]];
         $expected = ['simpleRef' => ['$in' => [(object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$not' => ['$elemMatch' => $hashId]]];
+        $value    = ['simpleRef' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['simpleRef' => ['$not' => ['$elemMatch' => (object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['simpleRef' => ['$not' => ['$in' => [$hashId]]]];
+        $value    = ['simpleRef' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['simpleRef' => ['$not' => ['$in' => [(object) $hashId]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
@@ -264,37 +264,37 @@ class DocumentPersisterTest extends BaseTest
 
     public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithNormalIdType()
     {
-        $class = DocumentPersisterTestHashIdDocument::class;
+        $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $id = new ObjectId();
 
-        $value = ['complexRef.id' => (string) $id];
+        $value    = ['complexRef.id' => (string) $id];
         $expected = ['complexRef.$id' => $id];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$exists' => true]];
+        $value    = ['complexRef.id' => ['$exists' => true]];
         $expected = ['complexRef.$id' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$elemMatch' => (string) $id]];
+        $value    = ['complexRef.id' => ['$elemMatch' => (string) $id]];
         $expected = ['complexRef.$id' => ['$elemMatch' => $id]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$in' => [(string) $id]]];
+        $value    = ['complexRef.id' => ['$in' => [(string) $id]]];
         $expected = ['complexRef.$id' => ['$in' => [$id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$not' => ['$elemMatch' => (string) $id]]];
+        $value    = ['complexRef.id' => ['$not' => ['$elemMatch' => (string) $id]]];
         $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => $id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$not' => ['$in' => [(string) $id]]]];
+        $value    = ['complexRef.id' => ['$not' => ['$in' => [(string) $id]]]];
         $expected = ['complexRef.$id' => ['$not' => ['$in' => [$id]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
@@ -305,35 +305,35 @@ class DocumentPersisterTest extends BaseTest
      */
     public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithHashIdType($hashId)
     {
-        $class = DocumentPersisterTestDocument::class;
+        $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = ['complexRef.id' => $hashId];
+        $value    = ['complexRef.id' => $hashId];
         $expected = ['complexRef.$id' => (object) $hashId];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$exists' => true]];
+        $value    = ['complexRef.id' => ['$exists' => true]];
         $expected = ['complexRef.$id' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$elemMatch' => $hashId]];
+        $value    = ['complexRef.id' => ['$elemMatch' => $hashId]];
         $expected = ['complexRef.$id' => ['$elemMatch' => (object) $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$in' => [$hashId]]];
+        $value    = ['complexRef.id' => ['$in' => [$hashId]]];
         $expected = ['complexRef.$id' => ['$in' => [(object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
+        $value    = ['complexRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => (object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['complexRef.id' => ['$not' => ['$in' => [$hashId]]]];
+        $value    = ['complexRef.id' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['complexRef.$id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
@@ -341,37 +341,37 @@ class DocumentPersisterTest extends BaseTest
 
     public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithNormalIdType()
     {
-        $class = DocumentPersisterTestHashIdDocument::class;
+        $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $id = new ObjectId();
 
-        $value = ['embeddedRef.id' => (string) $id];
+        $value    = ['embeddedRef.id' => (string) $id];
         $expected = ['embeddedRef.id' => $id];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$exists' => true]];
+        $value    = ['embeddedRef.id' => ['$exists' => true]];
         $expected = ['embeddedRef.id' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$elemMatch' => (string) $id]];
+        $value    = ['embeddedRef.id' => ['$elemMatch' => (string) $id]];
         $expected = ['embeddedRef.id' => ['$elemMatch' => $id]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$in' => [(string) $id]]];
+        $value    = ['embeddedRef.id' => ['$in' => [(string) $id]]];
         $expected = ['embeddedRef.id' => ['$in' => [$id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$not' => ['$elemMatch' => (string) $id]]];
+        $value    = ['embeddedRef.id' => ['$not' => ['$elemMatch' => (string) $id]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $id]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$not' => ['$in' => [(string) $id]]]];
+        $value    = ['embeddedRef.id' => ['$not' => ['$in' => [(string) $id]]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$in' => [$id]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
@@ -382,35 +382,35 @@ class DocumentPersisterTest extends BaseTest
      */
     public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithHashIdType($hashId)
     {
-        $class = DocumentPersisterTestDocument::class;
+        $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $value = ['embeddedRef.id' => $hashId];
+        $value    = ['embeddedRef.id' => $hashId];
         $expected = ['embeddedRef.id' => (object) $hashId];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$exists' => true]];
+        $value    = ['embeddedRef.id' => ['$exists' => true]];
         $expected = ['embeddedRef.id' => ['$exists' => true]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$elemMatch' => $hashId]];
+        $value    = ['embeddedRef.id' => ['$elemMatch' => $hashId]];
         $expected = ['embeddedRef.id' => ['$elemMatch' => (object) $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$in' => [$hashId]]];
+        $value    = ['embeddedRef.id' => ['$in' => [$hashId]]];
         $expected = ['embeddedRef.id' => ['$in' => [(object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
+        $value    = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$elemMatch' => (object) $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
-        $value = ['embeddedRef.id' => ['$not' => ['$in' => [$hashId]]]];
+        $value    = ['embeddedRef.id' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
@@ -484,7 +484,7 @@ class DocumentPersisterTest extends BaseTest
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
-        $testDocument = new $class();
+        $testDocument     = new $class();
         $testDocument->id = new ObjectId();
         $this->dm->persist($testDocument);
         $this->dm->flush();
@@ -519,7 +519,7 @@ class DocumentPersisterTest extends BaseTest
 
     public function testDefaultWriteConcernIsRespected()
     {
-        $class = DocumentPersisterTestDocument::class;
+        $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->createMock(Collection::class);
@@ -542,7 +542,7 @@ class DocumentPersisterTest extends BaseTest
     {
         $this->markTestSkipped('Mocking results to update calls is no longer possible. Rewrite test to not rely on mocking');
 
-        $class = DocumentPersisterTestDocumentWithVersion::class;
+        $class             = DocumentPersisterTestDocumentWithVersion::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->createMock(Collection::class);
@@ -554,7 +554,7 @@ class DocumentPersisterTest extends BaseTest
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
-        $testDocument = new $class();
+        $testDocument     = new $class();
         $testDocument->id = 12345;
         $this->uow->registerManaged($testDocument, 12345, ['id' => 12345]);
         $testDocument->name = 'test';
@@ -568,7 +568,7 @@ class DocumentPersisterTest extends BaseTest
     {
         $this->markTestSkipped('Mocking results to update calls is no longer possible. Rewrite test to not rely on mocking');
 
-        $class = DocumentPersisterTestDocumentWithVersion::class;
+        $class             = DocumentPersisterTestDocumentWithVersion::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->createMock(Collection::class);
@@ -580,7 +580,7 @@ class DocumentPersisterTest extends BaseTest
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
-        $testDocument = new $class();
+        $testDocument     = new $class();
         $testDocument->id = 12345;
         $this->uow->registerManaged($testDocument, 12345, ['id' => 12345]);
         $this->expectException(LockException::class);

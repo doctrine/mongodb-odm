@@ -76,8 +76,8 @@ class ClassMetadataFactoryTest extends BaseTest
 
         $em = $this->createMock(EventManager::class);
 
-        $dm = new DocumentManagerMock();
-        $dm->config = $config;
+        $dm               = new DocumentManagerMock();
+        $dm->config       = $config;
         $dm->eventManager = $em;
 
         return $dm;
@@ -87,7 +87,7 @@ class ClassMetadataFactoryTest extends BaseTest
 /* Test subject class with overriden factory method for mocking purposes */
 class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 {
-    private $_mockMetadata = [];
+    private $_mockMetadata     = [];
     private $_requestedClasses = [];
 
     protected function _newClassMetadataInstance($className)

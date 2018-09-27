@@ -408,7 +408,7 @@ class LookupTest extends BaseTest
         $this->dm->persist($user1);
         $this->dm->persist($user2);
 
-        $simpleReferenceUser = new SimpleReferenceUser();
+        $simpleReferenceUser       = new SimpleReferenceUser();
         $simpleReferenceUser->user = $user1;
         $simpleReferenceUser->addUser($user1);
         $simpleReferenceUser->addUser($user2);

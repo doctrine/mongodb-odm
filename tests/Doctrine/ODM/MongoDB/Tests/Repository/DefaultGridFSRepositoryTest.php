@@ -42,7 +42,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testOpenUploadStreamUsesChunkSizeFromOptions() : void
     {
-        $uploadOptions = new UploadOptions();
+        $uploadOptions                 = new UploadOptions();
         $uploadOptions->chunkSizeBytes = 1234;
 
         $uploadStream = $this->getRepository()->openUploadStream('somefile.txt', $uploadOptions);
@@ -64,7 +64,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testUploadFromStreamStoresFile() : void
     {
-        $uploadOptions = new UploadOptions();
+        $uploadOptions           = new UploadOptions();
         $uploadOptions->metadata = new FileMetadata();
 
         $fileResource = fopen(__FILE__, 'r');
@@ -116,8 +116,8 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testUploadFromStreamPassesChunkSize() : void
     {
-        $uploadOptions = new UploadOptions();
-        $uploadOptions->metadata = new FileMetadata();
+        $uploadOptions                 = new UploadOptions();
+        $uploadOptions->metadata       = new FileMetadata();
         $uploadOptions->chunkSizeBytes = 1234;
 
         $fileResource = fopen(__FILE__, 'r');
@@ -168,7 +168,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testUploadFromFileUsesProvidedFilename() : void
     {
-        $uploadOptions = new UploadOptions();
+        $uploadOptions                 = new UploadOptions();
         $uploadOptions->chunkSizeBytes = 1234;
 
         /** @var File $file */
@@ -179,7 +179,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testReadingFileAllowsUpdatingMetadata() : void
     {
-        $uploadOptions = new UploadOptions();
+        $uploadOptions           = new UploadOptions();
         $uploadOptions->metadata = new FileMetadata();
 
         $file = $this->uploadFile(__FILE__, $uploadOptions);

@@ -15,9 +15,9 @@ use function in_array;
 class Currency
 {
     public const
-        USD   = 'USD',
-        EURO  = 'EURO',
-        JPN   = 'JPN';
+        USD  = 'USD',
+        EURO = 'EURO',
+        JPN  = 'JPN';
 
     /** @ODM\Id */
     protected $id;

@@ -23,7 +23,7 @@ class CustomTypeTest extends BaseTest
 
     public function testCustomTypeValueConversions()
     {
-        $country = new Country();
+        $country                   = new Country();
         $country->nationalHolidays = [new DateTime(), new DateTime()];
 
         $this->dm->persist($country);
@@ -41,7 +41,7 @@ class CustomTypeTest extends BaseTest
      */
     public function testConvertToDatabaseValueExpectsArray()
     {
-        $country = new Country();
+        $country                   = new Country();
         $country->nationalHolidays = new DateTime();
 
         $this->dm->persist($country);

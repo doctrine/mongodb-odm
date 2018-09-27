@@ -14,10 +14,10 @@ class EmbeddedTestLevel1
     /** @ODM\EmbedMany(targetDocument=EmbeddedTestLevel2::class) */
     public $level2 = [];
 
-    public $preRemove = false;
+    public $preRemove  = false;
     public $postRemove = false;
-    public $preLoad = false;
-    public $postLoad = false;
+    public $preLoad    = false;
+    public $postLoad   = false;
 
     /** @ODM\PreRemove */
     public function onPreRemove()

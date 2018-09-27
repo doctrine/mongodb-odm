@@ -43,7 +43,7 @@ class ResolveTargetDocumentListenerTest extends BaseTest
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);
 
-        $cm = $this->dm->getClassMetadata(ResolveTargetDocument::class);
+        $cm   = $this->dm->getClassMetadata(ResolveTargetDocument::class);
         $meta = $cm->associationMappings;
 
         $this->assertSame(ResolveTargetDocument::class, $meta['refOne']['targetDocument']);

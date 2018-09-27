@@ -32,7 +32,7 @@ class LifecycleEventManager
 
     public function __construct(DocumentManager $dm, UnitOfWork $uow, EventManager $evm)
     {
-        $this->dm = $dm;
+        $this->dm  = $dm;
         $this->evm = $evm;
         $this->uow = $uow;
     }
@@ -158,7 +158,7 @@ class LifecycleEventManager
                     continue;
                 }
                 $entryClass = $this->dm->getClassMetadata(get_class($entry));
-                $event = $this->uow->isScheduledForInsert($entry) ? Events::postPersist : Events::postUpdate;
+                $event      = $this->uow->isScheduledForInsert($entry) ? Events::postPersist : Events::postUpdate;
                 $entryClass->invokeLifecycleCallbacks($event, $entry, [new LifecycleEventArgs($entry, $this->dm)]);
                 $this->evm->dispatchEvent($event, new LifecycleEventArgs($entry, $this->dm));
 

@@ -163,7 +163,7 @@ class GeoNear extends Match
             $x = $x->jsonSerialize();
         }
 
-        $this->near = is_array($x) ? $x : [$x, $y];
+        $this->near      = is_array($x) ? $x : [$x, $y];
         $this->spherical = is_array($x) && isset($x['type']);
 
         return $this;

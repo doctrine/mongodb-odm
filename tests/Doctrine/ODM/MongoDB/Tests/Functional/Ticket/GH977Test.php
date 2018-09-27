@@ -12,13 +12,13 @@ class GH977Test extends BaseTest
 {
     public function testAutoRecompute()
     {
-        $d = new GH977TestDocument();
+        $d         = new GH977TestDocument();
         $d->value1 = 'Value 1';
         $this->dm->persist($d);
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Value 1']);
+        $d         = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Value 1']);
         $d->value1 = 'Changed';
         $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($d)), $d);
         $changeSet = $this->uow->getDocumentChangeSet($d);
@@ -35,13 +35,13 @@ class GH977Test extends BaseTest
 
     public function testRefreshClearsChangeSet()
     {
-        $d = new GH977TestDocument();
+        $d         = new GH977TestDocument();
         $d->value1 = 'Value 1';
         $this->dm->persist($d);
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Value 1']);
+        $d         = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Value 1']);
         $d->value1 = 'Changed';
         $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($d)), $d);
         $this->dm->refresh($d);

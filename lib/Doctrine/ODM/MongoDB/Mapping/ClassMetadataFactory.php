@@ -62,8 +62,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function initialize() : void
     {
-        $this->driver = $this->config->getMetadataDriverImpl();
-        $this->evm = $this->dm->getEventManager();
+        $this->driver      = $this->config->getMetadataDriverImpl();
+        $this->evm         = $this->dm->getEventManager();
         $this->initialized = true;
     }
 

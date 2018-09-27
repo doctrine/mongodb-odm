@@ -11,7 +11,7 @@ class TargetDocumentTest extends BaseTest
 {
     public function testMappedSuperClassAsTargetDocument()
     {
-        $test = new TargetDocumentTestDocument();
+        $test            = new TargetDocumentTestDocument();
         $test->reference = new TargetDocumentTestReference();
         $this->dm->persist($test);
         $this->dm->persist($test->reference);

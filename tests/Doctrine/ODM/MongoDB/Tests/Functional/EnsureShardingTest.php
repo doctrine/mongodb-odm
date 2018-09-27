@@ -26,8 +26,8 @@ class EnsureShardingTest extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
-        $indexes = iterator_to_array($collection->listIndexes());
-        $stats = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $indexes    = iterator_to_array($collection->listIndexes());
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
         $this->assertCount(2, $indexes);
         $this->assertSame(['k' => 1], $indexes[1]['key']);
@@ -40,8 +40,8 @@ class EnsureShardingTest extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
-        $indexes = iterator_to_array($collection->listIndexes());
-        $stats = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $indexes    = iterator_to_array($collection->listIndexes());
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
         $this->assertCount(2, $indexes);
         $this->assertSame(['k' => 1], $indexes[1]['key']);
@@ -60,7 +60,7 @@ class EnsureShardingTest extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
-        $stats = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
         $this->assertTrue($stats['sharded']);
     }
@@ -79,7 +79,7 @@ class EnsureShardingTest extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
-        $stats = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
         $this->assertFalse($stats['sharded']);
     }
@@ -93,7 +93,7 @@ class EnsureShardingTest extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentSharding(ShardedOne::class);
 
         $collection = $this->dm->getDocumentCollection($class);
-        $stats = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
         $this->assertTrue($stats['sharded']);
     }
