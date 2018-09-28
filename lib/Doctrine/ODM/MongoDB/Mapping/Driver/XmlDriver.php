@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
-use SimpleXmlElement;
+use SimpleXMLElement;
 use function array_keys;
 use function array_map;
 use function constant;
@@ -76,7 +76,7 @@ class XmlDriver extends FileDriver
     public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
     {
         /** @var ClassMetadata $class */
-        /** @var \SimpleXMLElement $xmlRoot */
+        /** @var SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);
         if (! $xmlRoot) {
             return;
@@ -302,7 +302,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function addEmbedMapping(ClassMetadata $class, SimpleXmlElement $embed, string $type) : void
+    private function addEmbedMapping(ClassMetadata $class, SimpleXMLElement $embed, string $type) : void
     {
         $attributes      = $embed->attributes();
         $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
@@ -409,7 +409,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addIndex(ClassMetadata $class, SimpleXmlElement $xmlIndex) : void
+    private function addIndex(ClassMetadata $class, SimpleXMLElement $xmlIndex) : void
     {
         $attributes = $xmlIndex->attributes();
 
@@ -479,7 +479,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function getPartialFilterExpression(\SimpleXMLElement $fields) : array
+    private function getPartialFilterExpression(SimpleXMLElement $fields) : array
     {
         $partialFilterExpression = [];
         foreach ($fields as $field) {
@@ -514,7 +514,7 @@ class XmlDriver extends FileDriver
         return $partialFilterExpression;
     }
 
-    private function setShardKey(ClassMetadata $class, SimpleXmlElement $xmlShardkey) : void
+    private function setShardKey(ClassMetadata $class, SimpleXMLElement $xmlShardkey) : void
     {
         $attributes = $xmlShardkey->attributes();
 
@@ -554,7 +554,7 @@ class XmlDriver extends FileDriver
      *
      * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
      */
-    private function transformReadPreference(\SimpleXMLElement $xmlReadPreference) : array
+    private function transformReadPreference(SimpleXMLElement $xmlReadPreference) : array
     {
         $tags = null;
         if (isset($xmlReadPreference->{'tag-set'})) {
@@ -623,7 +623,7 @@ class XmlDriver extends FileDriver
         }, $xmlErrors));
     }
 
-    private function addGridFSMappings(ClassMetadata $class, \SimpleXMLElement $xmlRoot) : void
+    private function addGridFSMappings(ClassMetadata $class, SimpleXMLElement $xmlRoot) : void
     {
         if (! $class->isFile) {
             return;
