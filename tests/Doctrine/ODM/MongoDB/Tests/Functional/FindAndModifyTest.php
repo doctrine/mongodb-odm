@@ -16,7 +16,7 @@ class FindAndModifyTest extends BaseTest
         $coll->insertMany($docs);
 
         // test update findAndModify
-        $q = $this->dm->createQueryBuilder()
+        $q      = $this->dm->createQueryBuilder()
             ->findAndUpdate(User::class)
             ->returnNew(true)
             ->field('count')->inc(5)
@@ -29,7 +29,7 @@ class FindAndModifyTest extends BaseTest
         $this->assertEquals(5, $result->getCount());
 
         // Test remove findAndModify
-        $q = $this->dm->createQueryBuilder()
+        $q      = $this->dm->createQueryBuilder()
             ->findAndRemove(User::class)
             ->field('username')->equals('jwage')
             ->getQuery();
@@ -51,7 +51,7 @@ class FindAndModifyTest extends BaseTest
         $this->dm->flush();
 
         // test update findAndModify
-        $q = $this->dm->createQueryBuilder()
+        $q      = $this->dm->createQueryBuilder()
             ->findAndUpdate(User::class)
             ->returnNew(true)
             ->field('username')->equals('jwage')

@@ -13,8 +13,8 @@ class GH1435Test extends BaseTest
     {
         $id = (string) new ObjectId();
 
-        $document = new GH1435Document();
-        $document->id = $id;
+        $document       = new GH1435Document();
+        $document->id   = $id;
         $document->name = 'test';
 
         $this->dm->persist($document);
@@ -30,8 +30,8 @@ class GH1435Test extends BaseTest
     {
         $id = 10;
 
-        $document = new GH1435DocumentIncrement();
-        $document->id = $id;
+        $document       = new GH1435DocumentIncrement();
+        $document->id   = $id;
         $document->name = 'test';
 
         $this->dm->persist($document);
@@ -45,7 +45,7 @@ class GH1435Test extends BaseTest
 
     public function testUpdateWithIncrement()
     {
-        $document = new GH1435DocumentIncrement();
+        $document       = new GH1435DocumentIncrement();
         $document->name = 'test';
 
         $this->dm->persist($document);

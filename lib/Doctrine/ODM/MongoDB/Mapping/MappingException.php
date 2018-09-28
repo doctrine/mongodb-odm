@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
+use ReflectionException;
 use function sprintf;
 
 /**
@@ -13,212 +14,212 @@ use function sprintf;
  */
 class MappingException extends BaseMappingException
 {
-    public static function typeExists(string $name): self
+    public static function typeExists(string $name) : self
     {
         return new self(sprintf('Type %s already exists.', $name));
     }
 
-    public static function typeNotFound(string $name): self
+    public static function typeNotFound(string $name) : self
     {
         return new self(sprintf('Type to be overwritten %s does not exist.', $name));
     }
 
-    public static function mappingNotFound(string $className, string $fieldName): self
+    public static function mappingNotFound(string $className, string $fieldName) : self
     {
         return new self(sprintf("No mapping found for field '%s' in class '%s'.", $fieldName, $className));
     }
 
-    public static function referenceMappingNotFound(string $className, string $fieldName): self
+    public static function referenceMappingNotFound(string $className, string $fieldName) : self
     {
         return new self(sprintf("No reference mapping found for field '%s' in class '%s'.", $fieldName, $className));
     }
 
-    public static function mappingNotFoundInClassNorDescendants(string $className, string $fieldName): self
+    public static function mappingNotFoundInClassNorDescendants(string $className, string $fieldName) : self
     {
         return new self(sprintf("No mapping found for field '%s' in class '%s' nor its descendants.", $fieldName, $className));
     }
 
-    public static function referenceFieldConflict(string $fieldName, string $className, string $className2): self
+    public static function referenceFieldConflict(string $fieldName, string $className, string $className2) : self
     {
         return new self(sprintf("Reference mapping for field '%s' in class '%s' conflicts with one mapped in class '%s'.", $fieldName, $className, $className2));
     }
 
-    public static function mappingNotFoundByDbName(string $className, string $dbFieldName): self
+    public static function mappingNotFoundByDbName(string $className, string $dbFieldName) : self
     {
         return new self(sprintf("No mapping found for field by DB name '%s' in class '%s'.", $dbFieldName, $className));
     }
 
-    public static function duplicateFieldMapping(string $document, string $fieldName): self
+    public static function duplicateFieldMapping(string $document, string $fieldName) : self
     {
         return new self(sprintf('Property "%s" in "%s" was already declared, but it must be declared only once', $fieldName, $document));
     }
 
-    public static function discriminatorFieldConflict(string $document, string $fieldName): self
+    public static function discriminatorFieldConflict(string $document, string $fieldName) : self
     {
         return new self(sprintf('Discriminator field "%s" in "%s" conflicts with a mapped field\'s "name" attribute.', $fieldName, $document));
     }
 
-    public static function invalidClassInDiscriminatorMap(string $className, string $owningClass): self
+    public static function invalidClassInDiscriminatorMap(string $className, string $owningClass) : self
     {
         return new self(sprintf("Document class '%s' used in the discriminator map of class '%s' does not exist.", $className, $owningClass));
     }
 
-    public static function invalidDiscriminatorValue(string $value, string $owningClass): self
+    public static function invalidDiscriminatorValue(string $value, string $owningClass) : self
     {
         return new self(sprintf("Discriminator value '%s' used in the declaration of class '%s' does not exist.", $value, $owningClass));
     }
 
-    public static function missingFieldName(string $className): self
+    public static function missingFieldName(string $className) : self
     {
         return new self(sprintf("The Document class '%s' field mapping misses the 'fieldName' attribute.", $className));
     }
 
-    public static function classIsNotAValidDocument(string $className): self
+    public static function classIsNotAValidDocument(string $className) : self
     {
         return new self(sprintf('Class %s is not a valid document or mapped super class.', $className));
     }
 
-    public static function reflectionFailure(string $document, \ReflectionException $previousException): self
+    public static function reflectionFailure(string $document, ReflectionException $previousException) : self
     {
         return new self('An error occurred in ' . $document, 0, $previousException);
     }
 
-    public static function identifierRequired(string $documentName): self
+    public static function identifierRequired(string $documentName) : self
     {
         return new self(sprintf("No identifier/primary key specified for Document '%s'. Every Document must have an identifier/primary key.", $documentName));
     }
 
-    public static function missingIdentifierField(string $className, string $fieldName): self
+    public static function missingIdentifierField(string $className, string $fieldName) : self
     {
         return new self(sprintf('The identifier %s is missing for a query of %s', $fieldName, $className));
     }
 
-    public static function missingIdGeneratorClass(string $className): self
+    public static function missingIdGeneratorClass(string $className) : self
     {
         return new self(sprintf('The class-option for the custom ID generator is missing in class %s.', $className));
     }
 
-    public static function classIsNotAValidGenerator(string $className): self
+    public static function classIsNotAValidGenerator(string $className) : self
     {
         return new self(sprintf('The class %s if not a valid ID generator of type AbstractIdGenerator.', $className));
     }
 
-    public static function missingGeneratorSetter(string $className, string $optionName): self
+    public static function missingGeneratorSetter(string $className, string $optionName) : self
     {
         return new self(sprintf('The class %s is missing a setter for the option %s.', $className, $optionName));
     }
 
-    public static function cascadeOnEmbeddedNotAllowed(string $className, string $fieldName): self
+    public static function cascadeOnEmbeddedNotAllowed(string $className, string $fieldName) : self
     {
         return new self(sprintf('Cascade on %s::%s is not allowed.', $className, $fieldName));
     }
 
-    public static function simpleReferenceRequiresTargetDocument(string $className, string $fieldName): self
+    public static function simpleReferenceRequiresTargetDocument(string $className, string $fieldName) : self
     {
         return new self(sprintf('Target document must be specified for simple reference: %s::%s', $className, $fieldName));
     }
 
-    public static function simpleReferenceMustNotTargetDiscriminatedDocument(string $targetDocument): self
+    public static function simpleReferenceMustNotTargetDiscriminatedDocument(string $targetDocument) : self
     {
         return new self(sprintf('Simple reference must not target document using Single Collection Inheritance, %s targeted.', $targetDocument));
     }
 
-    public static function atomicCollectionStrategyNotAllowed(string $strategy, string $className, string $fieldName): self
+    public static function atomicCollectionStrategyNotAllowed(string $strategy, string $className, string $fieldName) : self
     {
         return new self(sprintf('%s collection strategy can be used only in top level document, used in %s::%s', $strategy, $className, $fieldName));
     }
 
-    public static function owningAndInverseReferencesRequireTargetDocument(string $className, string $fieldName): self
+    public static function owningAndInverseReferencesRequireTargetDocument(string $className, string $fieldName) : self
     {
         return new self(sprintf('Target document must be specified for owning/inverse sides of reference: %s::%s', $className, $fieldName));
     }
 
-    public static function mustNotChangeIdentifierFieldsType(string $className, string $fieldName): self
+    public static function mustNotChangeIdentifierFieldsType(string $className, string $fieldName) : self
     {
         return new self(sprintf('%s::%s was declared an identifier and must stay this way.', $className, $fieldName));
     }
 
-    public static function referenceManySortMustNotBeUsedWithNonSetCollectionStrategy(string $className, string $fieldName, string $strategy): self
+    public static function referenceManySortMustNotBeUsedWithNonSetCollectionStrategy(string $className, string $fieldName, string $strategy) : self
     {
         return new self(sprintf("ReferenceMany's sort can not be used with addToSet and pushAll strategies, %s used in %s::%s", $strategy, $className, $fieldName));
     }
 
-    public static function invalidStorageStrategy(string $className, string $fieldName, string $type, string $strategy): self
+    public static function invalidStorageStrategy(string $className, string $fieldName, string $type, string $strategy) : self
     {
         return new self(sprintf('Invalid strategy %s used in %s::%s with type %s', $strategy, $className, $fieldName, $type));
     }
 
-    public static function collectionClassDoesNotImplementCommonInterface(string $className, string $fieldName, string $collectionClass): self
+    public static function collectionClassDoesNotImplementCommonInterface(string $className, string $fieldName, string $collectionClass) : self
     {
         return new self(sprintf('%s used as custom collection class for %s::%s has to implement %s interface.', $collectionClass, $className, $fieldName, Collection::class));
     }
 
-    public static function shardKeyInSingleCollInheritanceSubclass(string $subclassName): self
+    public static function shardKeyInSingleCollInheritanceSubclass(string $subclassName) : self
     {
         return new self(sprintf('Shard key overriding in subclass is forbidden for single collection inheritance: %s', $subclassName));
     }
 
-    public static function embeddedDocumentCantHaveShardKey(string $className): self
+    public static function embeddedDocumentCantHaveShardKey(string $className) : self
     {
         return new self(sprintf("Embedded document can't have shard key: %s", $className));
     }
 
-    public static function onlySetStrategyAllowedInShardKey(string $className, string $fieldName): self
+    public static function onlySetStrategyAllowedInShardKey(string $className, string $fieldName) : self
     {
         return new self(sprintf('Only fields using the SET strategy can be used in the shard key: %s::%s', $className, $fieldName));
     }
 
-    public static function noMultiKeyShardKeys(string $className, string $fieldName): self
+    public static function noMultiKeyShardKeys(string $className, string $fieldName) : self
     {
         return new self(sprintf('No multikey indexes are allowed in the shard key: %s::%s', $className, $fieldName));
     }
 
-    public static function cannotLookupDbRefReference(string $className, string $fieldName): self
+    public static function cannotLookupDbRefReference(string $className, string $fieldName) : self
     {
         return new self(sprintf("Cannot use reference '%s' in class '%s' for lookup or graphLookup: dbRef references are not supported.", $fieldName, $className));
     }
 
-    public static function repositoryMethodLookupNotAllowed(string $className, string $fieldName): self
+    public static function repositoryMethodLookupNotAllowed(string $className, string $fieldName) : self
     {
         return new self(sprintf("Cannot use reference '%s' in class '%s' for lookup or graphLookup. repositoryMethod is not supported in \$lookup and \$graphLookup stages.", $fieldName, $className));
     }
 
-    public static function cannotUseShardedCollectionInOutStage(string $className): self
+    public static function cannotUseShardedCollectionInOutStage(string $className) : self
     {
         return new self(sprintf("Cannot use class '%s' as collection for out stage. Sharded collections are not allowed.", $className));
     }
 
-    public static function cannotUseShardedCollectionInLookupStages(string $className): self
+    public static function cannotUseShardedCollectionInLookupStages(string $className) : self
     {
         return new self(sprintf("Cannot use class '%s' as collection for lookup or graphLookup stage. Sharded collections are not allowed.", $className));
     }
 
-    public static function referencePrimersOnlySupportedForInverseReferenceMany(string $className, string $fieldName): self
+    public static function referencePrimersOnlySupportedForInverseReferenceMany(string $className, string $fieldName) : self
     {
         return new self(sprintf("Cannot use reference priming on '%s' in class '%s'. Reference priming is only supported for inverse references", $fieldName, $className));
     }
 
-    public static function connectFromFieldMustReferenceSameDocument(string $fieldName): self
+    public static function connectFromFieldMustReferenceSameDocument(string $fieldName) : self
     {
         return new self(sprintf("Cannot use field '%s' as connectFromField in a \$graphLookup stage. Reference must target the document itself.", $fieldName));
     }
 
-    public static function repositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $className, string $fieldName): self
+    public static function repositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $className, string $fieldName) : self
     {
         return new self(sprintf("'repositoryMethod' used on '%s' in class '%s' can not be combined with skip, limit or sort.", $fieldName, $className));
     }
 
-    public static function xmlMappingFileInvalid(string $filename, string $errorDetails): self
+    public static function xmlMappingFileInvalid(string $filename, string $errorDetails) : self
     {
         return new self(sprintf("The mapping file %s is invalid: \n%s", $filename, $errorDetails));
     }
 
-    public static function fieldNotAllowedForGridFS(string $className, string $fieldName): self
+    public static function fieldNotAllowedForGridFS(string $className, string $fieldName) : self
     {
         return new self(sprintf("Field '%s' in class '%s' is not a valid field for GridFS documents. You should move it to an embedded metadata document.", $fieldName, $className));
     }
 
-    public static function discriminatorNotAllowedForGridFS(string $className): self
+    public static function discriminatorNotAllowedForGridFS(string $className) : self
     {
         return new self(sprintf("Class '%s' cannot be discriminated because it is marked as a GridFS file", $className));
     }

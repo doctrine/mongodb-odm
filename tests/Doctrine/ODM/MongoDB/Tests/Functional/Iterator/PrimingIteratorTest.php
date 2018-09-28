@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 
+use ArrayIterator;
 use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
+use Iterator;
 use MongoDB\BSON\ObjectId;
 use function is_array;
 
@@ -15,8 +17,8 @@ final class PrimingIteratorTest extends BaseTest
 {
     public function testPrimerIsCalledOnceForEveryField()
     {
-        $primer = $this->createMock(ReferencePrimer::class);
-        $class = $this->dm->getClassMetadata(User::class);
+        $primer   = $this->createMock(ReferencePrimer::class);
+        $class    = $this->dm->getClassMetadata(User::class);
         $iterator = new PrimingIterator($this->getIterator(), $class, $primer, ['user' => true, 'hits' => true]);
 
         $primer
@@ -32,7 +34,7 @@ final class PrimingIteratorTest extends BaseTest
         $this->assertCount(3, $iterator->toArray());
     }
 
-    private function getIterator($items = null): \Iterator
+    private function getIterator($items = null) : Iterator
     {
         if (! is_array($items)) {
             $items = [
@@ -42,6 +44,6 @@ final class PrimingIteratorTest extends BaseTest
             ];
         }
 
-        return new \ArrayIterator($items);
+        return new ArrayIterator($items);
     }
 }

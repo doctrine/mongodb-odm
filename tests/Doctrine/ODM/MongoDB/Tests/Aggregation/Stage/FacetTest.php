@@ -7,6 +7,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Facet;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use InvalidArgumentException;
+use LogicException;
+use stdClass;
 
 class FacetTest extends BaseTest
 {
@@ -57,7 +60,7 @@ class FacetTest extends BaseTest
     {
         $facetStage = new Facet($this->getTestAggregationBuilder());
 
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('requires you set a current field using field().');
         $facetStage->pipeline($this->getTestAggregationBuilder());
     }
@@ -66,10 +69,10 @@ class FacetTest extends BaseTest
     {
         $facetStage = new Facet($this->getTestAggregationBuilder());
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('expects either an aggregation builder or an aggregation stage.');
         $facetStage
             ->field('someField')
-            ->pipeline(new \stdClass());
+            ->pipeline(new stdClass());
     }
 }

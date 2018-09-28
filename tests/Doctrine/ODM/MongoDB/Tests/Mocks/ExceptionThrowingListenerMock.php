@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
+use Exception;
 
 class ExceptionThrowingListenerMock implements EventSubscriber
 {
@@ -16,6 +17,6 @@ class ExceptionThrowingListenerMock implements EventSubscriber
 
     public function onFlush(OnFlushEventArgs $args)
     {
-        throw new \Exception('This should not happen');
+        throw new Exception('This should not happen');
     }
 }

@@ -11,14 +11,13 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 
 /**
  * Abstract factory for creating persistent collection classes.
- *
  */
 abstract class AbstractPersistentCollectionFactory implements PersistentCollectionFactory
 {
     /**
      * {@inheritdoc}
      */
-    public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null): PersistentCollectionInterface
+    public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null) : PersistentCollectionInterface
     {
         if ($coll === null) {
             $coll = ! empty($mapping['collectionClass'])
@@ -40,7 +39,8 @@ abstract class AbstractPersistentCollectionFactory implements PersistentCollecti
      * Creates instance of collection class to be wrapped by PersistentCollection.
      *
      * @param string $collectionClass FQCN of class to instantiate
+     *
      * @return BaseCollection
      */
-    abstract protected function createCollectionClass(string $collectionClass): BaseCollection;
+    abstract protected function createCollectionClass(string $collectionClass) : BaseCollection;
 }

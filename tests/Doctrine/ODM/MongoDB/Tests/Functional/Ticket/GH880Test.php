@@ -11,14 +11,14 @@ class GH880Test extends BaseTest
 {
     public function test880()
     {
-        $docs = [];
+        $docs   = [];
         $docs[] = new GH880Document('hello', 1);
         $docs[] = new GH880Document('world', 1);
         foreach ($docs as $doc) {
             $this->dm->persist($doc);
         }
         $this->dm->flush();
-        $query = $this->dm->createQueryBuilder(GH880Document::class);
+        $query  = $this->dm->createQueryBuilder(GH880Document::class);
         $cursor = $query->find()->getQuery()->execute();
         foreach ($cursor as $c) {
             $this->assertEquals(1, $c->category);
@@ -52,7 +52,7 @@ class GH880Document
 
     public function __construct($status = '', $category = 0)
     {
-        $this->status = $status;
+        $this->status   = $status;
         $this->category = $category;
     }
 }

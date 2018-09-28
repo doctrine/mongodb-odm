@@ -12,12 +12,12 @@ class GH1294Test extends BaseTest
 {
     public function testRegexSearchOnIdentifierWithUuidStrategy()
     {
-        $user1 = new GH1294User();
-        $user1->id = 'aaa111aaa';
+        $user1       = new GH1294User();
+        $user1->id   = 'aaa111aaa';
         $user1->name = 'Steven';
 
-        $user2 = new GH1294User();
-        $user2->id = 'bbb111bbb';
+        $user2       = new GH1294User();
+        $user2->id   = 'bbb111bbb';
         $user2->name = 'Jeff';
 
         $this->dm->persist($user1);

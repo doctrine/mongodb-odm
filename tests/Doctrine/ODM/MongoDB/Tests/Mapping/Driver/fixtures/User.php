@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TestDocuments;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class User
@@ -33,8 +34,8 @@ class User
     public function __construct()
     {
         $this->phonenumbers = new ArrayCollection();
-        $this->groups = [];
-        $this->createdAt = new \DateTime();
+        $this->groups       = [];
+        $this->createdAt    = new DateTime();
     }
 
     public function getId()

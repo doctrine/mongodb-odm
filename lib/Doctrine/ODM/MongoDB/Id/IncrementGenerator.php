@@ -18,7 +18,6 @@ use function get_class;
  * The 'key' property determines the document ID used to store the id values in the
  * collection. If not specified it defaults to the name of the collection for the
  * document.
- *
  */
 class IncrementGenerator extends AbstractIdGenerator
 {
@@ -39,12 +38,12 @@ class IncrementGenerator extends AbstractIdGenerator
         $this->collection = $collection;
     }
 
-    public function setKey(string $key): void
+    public function setKey(string $key) : void
     {
         $this->key = $key;
     }
 
-    public function setStartingId(int $startingId): void
+    public function setStartingId(int $startingId) : void
     {
         $this->startingId = $startingId;
     }
@@ -53,21 +52,21 @@ class IncrementGenerator extends AbstractIdGenerator
     public function generate(DocumentManager $dm, object $document)
     {
         $className = get_class($document);
-        $db = $dm->getDocumentDatabase($className);
+        $db        = $dm->getDocumentDatabase($className);
 
-        $key = $this->key ?: $dm->getDocumentCollection($className)->getCollectionName();
+        $key            = $this->key ?: $dm->getDocumentCollection($className)->getCollectionName();
         $collectionName = $this->collection ?: 'doctrine_increment_ids';
-        $collection = $db->selectCollection($collectionName);
+        $collection     = $db->selectCollection($collectionName);
 
         /*
          * Unable to use '$inc' and '$setOnInsert' together due to known bug.
          * @see https://jira.mongodb.org/browse/SERVER-10711
          * Results in error: Cannot update 'current_id' and 'current_id' at the same time
          */
-        $query = ['_id' => $key, 'current_id' => ['$exists' => true]];
-        $update = ['$inc' => ['current_id' => 1]];
+        $query   = ['_id' => $key, 'current_id' => ['$exists' => true]];
+        $update  = ['$inc' => ['current_id' => 1]];
         $options = ['upsert' => false, 'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER];
-        $result = $collection->findOneAndUpdate($query, $update, $options);
+        $result  = $collection->findOneAndUpdate($query, $update, $options);
 
         /*
          * Updated nothing - counter doesn't exist, creating new counter.
@@ -75,8 +74,8 @@ class IncrementGenerator extends AbstractIdGenerator
          * an exception during a possible race condition.
          */
         if ($result === null) {
-            $query = ['_id' => $key];
-            $update = ['$inc' => ['current_id' => $this->startingId]];
+            $query   = ['_id' => $key];
+            $update  = ['$inc' => ['current_id' => $this->startingId]];
             $options = ['upsert' => true, 'returnDocument' => FindOneAndUpdate::RETURN_DOCUMENT_AFTER];
             $collection->findOneAndUpdate($query, $update, $options);
 

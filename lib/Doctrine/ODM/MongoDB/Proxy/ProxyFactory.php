@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Proxy;
 
+use Closure;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
@@ -24,7 +25,6 @@ use function get_class;
 
 /**
  * This factory is used to create proxy objects for documents at runtime.
- *
  */
 class ProxyFactory extends AbstractProxyFactory
 {
@@ -52,11 +52,11 @@ class ProxyFactory extends AbstractProxyFactory
      */
     public function __construct(DocumentManager $documentManager, $proxyDir, $proxyNamespace, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
-        $this->metadataFactory = $documentManager->getMetadataFactory();
-        $this->uow = $documentManager->getUnitOfWork();
-        $this->proxyNamespace = $proxyNamespace;
+        $this->metadataFactory       = $documentManager->getMetadataFactory();
+        $this->uow                   = $documentManager->getUnitOfWork();
+        $this->proxyNamespace        = $proxyNamespace;
         $this->lifecycleEventManager = new LifecycleEventManager($documentManager, $this->uow, $documentManager->getEventManager());
-        $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNamespace);
+        $proxyGenerator              = new ProxyGenerator($proxyDir, $proxyNamespace);
 
         $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
 
@@ -94,8 +94,7 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Generates a closure capable of initializing a proxy
      *
-     *
-     * @return \Closure
+     * @return Closure
      *
      * @throws DocumentNotFoundException
      */
@@ -181,8 +180,7 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Generates a closure capable of finalizing a cloned proxy
      *
-     *
-     * @return \Closure
+     * @return Closure
      *
      * @throws DocumentNotFoundException
      */

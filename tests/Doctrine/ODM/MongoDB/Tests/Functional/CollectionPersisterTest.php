@@ -16,7 +16,7 @@ class CollectionPersisterTest extends BaseTest
     public function testDeleteReferenceMany()
     {
         $persister = $this->getCollectionPersister();
-        $user = $this->getTestUser('jwage');
+        $user      = $this->getTestUser('jwage');
         $persister->delete($user->phonenumbers, []);
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -26,7 +26,7 @@ class CollectionPersisterTest extends BaseTest
     public function testDeleteEmbedMany()
     {
         $persister = $this->getCollectionPersister();
-        $user = $this->getTestUser('jwage');
+        $user      = $this->getTestUser('jwage');
         $persister->delete($user->categories, []);
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -36,7 +36,7 @@ class CollectionPersisterTest extends BaseTest
     public function testDeleteNestedEmbedMany()
     {
         $persister = $this->getCollectionPersister();
-        $user = $this->getTestUser('jwage');
+        $user      = $this->getTestUser('jwage');
 
         $persister->delete($user->categories[0]->children[0]->children, []);
         $persister->delete($user->categories[0]->children[1]->children, []);
@@ -61,7 +61,7 @@ class CollectionPersisterTest extends BaseTest
     public function testDeleteRows()
     {
         $persister = $this->getCollectionPersister();
-        $user = $this->getTestUser('jwage');
+        $user      = $this->getTestUser('jwage');
 
         unset($user->phonenumbers[0]);
         unset($user->phonenumbers[1]);
@@ -96,7 +96,7 @@ class CollectionPersisterTest extends BaseTest
 
     public function testInsertRows()
     {
-        $user = $this->getTestUser('jwage');
+        $user                 = $this->getTestUser('jwage');
         $user->phonenumbers[] = new CollectionPersisterPhonenumber('6155139185');
         $user->phonenumbers[] = new CollectionPersisterPhonenumber('6155139185');
         $this->dm->flush();
@@ -113,8 +113,8 @@ class CollectionPersisterTest extends BaseTest
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         $this->assertCount(4, $check['categories']);
 
-        $user->categories[3]->children[0] = new CollectionPersisterCategory('Test');
-        $user->categories[3]->children[1] = new CollectionPersisterCategory('Test');
+        $user->categories[3]->children[0]              = new CollectionPersisterCategory('Test');
+        $user->categories[3]->children[1]              = new CollectionPersisterCategory('Test');
         $user->categories[3]->children[1]->children[0] = new CollectionPersisterCategory('Test');
         $user->categories[3]->children[1]->children[1] = new CollectionPersisterCategory('Test');
         $this->dm->flush();
@@ -126,8 +126,8 @@ class CollectionPersisterTest extends BaseTest
 
     private function getTestUser($username)
     {
-        $user = new CollectionPersisterUser();
-        $user->username = $username;
+        $user                  = new CollectionPersisterUser();
+        $user->username        = $username;
         $user->phonenumbers[0] = new CollectionPersisterPhonenumber('6155139185');
         $user->phonenumbers[1] = new CollectionPersisterPhonenumber('6155139185');
 
@@ -154,14 +154,14 @@ class CollectionPersisterTest extends BaseTest
     private function getCollectionPersister()
     {
         $uow = $this->dm->getUnitOfWork();
-        $pb = new PersistenceBuilder($this->dm, $uow);
+        $pb  = new PersistenceBuilder($this->dm, $uow);
         return new CollectionPersister($this->dm, $pb, $uow);
     }
 
     public function testNestedEmbedManySetStrategy()
     {
-        $post = new CollectionPersisterPost('postA');
-        $commentA = new CollectionPersisterComment('commentA', 'userA');
+        $post      = new CollectionPersisterPost('postA');
+        $commentA  = new CollectionPersisterComment('commentA', 'userA');
         $commentAA = new CollectionPersisterComment('commentAA', 'userB');
         $commentAB = new CollectionPersisterComment('commentAB', 'userC');
 
@@ -184,7 +184,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertEquals($commentAB->by, $doc['comments']['a']['comments']['b']['by']);
 
         // Add a new top-level comment with a nested comment
-        $commentB = new CollectionPersisterComment('commentB', 'userD');
+        $commentB  = new CollectionPersisterComment('commentB', 'userD');
         $commentBA = new CollectionPersisterComment('commentBA', 'userE');
 
         $post->comments->set('b', $commentB);
@@ -207,7 +207,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertEquals($commentBA->by, $doc['comments']['b']['comments']['a']['by']);
 
         // Update two comments
-        $commentB->comment = 'commentB-modified';
+        $commentB->comment  = 'commentB-modified';
         $commentAB->comment = 'commentAB-modified';
 
         $this->dm->persist($post);
@@ -242,11 +242,11 @@ class CollectionPersisterTest extends BaseTest
 
     public function testFindBySetStrategyKey()
     {
-        $post = new CollectionPersisterPost('postA');
-        $commentA = new CollectionPersisterComment('commentA', 'userA');
+        $post      = new CollectionPersisterPost('postA');
+        $commentA  = new CollectionPersisterComment('commentA', 'userA');
         $commentAB = new CollectionPersisterComment('commentAA', 'userB');
 
-        $post->comments['a'] = $commentA;
+        $post->comments['a']     = $commentA;
         $commentA->comments['b'] = $commentAB;
 
         $this->dm->persist($post);
@@ -318,7 +318,7 @@ class CollectionPersisterPost
     public function __construct($post)
     {
         $this->comments = new ArrayCollection();
-        $this->post = $post;
+        $this->post     = $post;
     }
 }
 
@@ -340,7 +340,7 @@ class CollectionPersisterComment
     public function __construct($comment, $by)
     {
         $this->comments = new ArrayCollection();
-        $this->comment = $comment;
-        $this->by = $by;
+        $this->comment  = $comment;
+        $this->by       = $by;
     }
 }

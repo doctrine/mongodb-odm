@@ -18,6 +18,7 @@ use Doctrine\ODM\MongoDB\Id\AlnumGenerator;
 use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
+use ReflectionException;
 use function get_class;
 use function get_class_methods;
 use function in_array;
@@ -27,7 +28,6 @@ use function ucfirst;
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a document database.
- *
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -46,12 +46,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var EventManager The event manager instance */
     private $evm;
 
-    public function setDocumentManager(DocumentManager $dm): void
+    public function setDocumentManager(DocumentManager $dm) : void
     {
         $this->dm = $dm;
     }
 
-    public function setConfiguration(Configuration $config): void
+    public function setConfiguration(Configuration $config) : void
     {
         $this->config = $config;
     }
@@ -60,17 +60,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Lazy initialization of this stuff, especially the metadata driver,
      * since these are not needed at all when a metadata cache is active.
      */
-    protected function initialize(): void
+    protected function initialize() : void
     {
-        $this->driver = $this->config->getMetadataDriverImpl();
-        $this->evm = $this->dm->getEventManager();
+        $this->driver      = $this->config->getMetadataDriverImpl();
+        $this->evm         = $this->dm->getEventManager();
         $this->initialized = true;
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName): string
+    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName) : string
     {
         return $this->config->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
     }
@@ -86,21 +86,21 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
+    protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService) : void
     {
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
+    protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService) : void
     {
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function isEntity(ClassMetadataInterface $class): bool
+    protected function isEntity(ClassMetadataInterface $class) : bool
     {
         return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument;
     }
@@ -108,7 +108,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []): void
+    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []) : void
     {
         /** @var $class ClassMetadata */
         /** @var $parent ClassMetadata */
@@ -138,7 +138,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         // Invoke driver
         try {
             $this->driver->loadMetadataForClass($class->getName(), $class);
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             throw MappingException::reflectionFailure($class->getName(), $e);
         }
 
@@ -178,7 +178,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws MappingException
      */
-    protected function validateIdentifier(ClassMetadata $class): void
+    protected function validateIdentifier(ClassMetadata $class) : void
     {
         if (! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument) {
             throw MappingException::identifierRequired($class->name);
@@ -188,12 +188,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritdoc}
      */
-    protected function newClassMetadataInstance($className): ClassMetadata
+    protected function newClassMetadataInstance($className) : ClassMetadata
     {
         return new ClassMetadata($className);
     }
 
-    private function completeIdGeneratorMapping(ClassMetadata $class): void
+    private function completeIdGeneratorMapping(ClassMetadata $class) : void
     {
         $idGenOptions = $class->generatorOptions;
         switch ($class->generatorType) {
@@ -263,7 +263,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited fields to the subclass mapping.
      */
-    private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass): void
+    private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
             if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
@@ -285,7 +285,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws MappingException
      */
-    private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass): void
+    private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         foreach ($parentClass->associationMappings as $field => $mapping) {
             if ($parentClass->isMappedSuperclass) {
@@ -305,7 +305,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited indexes to the subclass mapping.
      */
-    private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass): void
+    private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         foreach ($parentClass->indexes as $index) {
             $subClass->addIndex($index['keys'], $index['options']);
@@ -315,7 +315,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited shard key to the subclass mapping.
      */
-    private function setInheritedShardKey(ClassMetadata $subClass, ClassMetadata $parentClass): void
+    private function setInheritedShardKey(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         if (! $parentClass->isSharded()) {
             return;

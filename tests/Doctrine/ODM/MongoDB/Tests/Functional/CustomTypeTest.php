@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Exception;
 use function array_map;
 use function array_values;
 use function is_array;
@@ -21,8 +23,8 @@ class CustomTypeTest extends BaseTest
 
     public function testCustomTypeValueConversions()
     {
-        $country = new Country();
-        $country->nationalHolidays = [new \DateTime(), new \DateTime()];
+        $country                   = new Country();
+        $country->nationalHolidays = [new DateTime(), new DateTime()];
 
         $this->dm->persist($country);
         $this->dm->flush();
@@ -39,8 +41,8 @@ class CustomTypeTest extends BaseTest
      */
     public function testConvertToDatabaseValueExpectsArray()
     {
-        $country = new Country();
-        $country->nationalHolidays = new \DateTime();
+        $country                   = new Country();
+        $country->nationalHolidays = new DateTime();
 
         $this->dm->persist($country);
         $this->dm->flush();
@@ -66,7 +68,7 @@ class DateCollectionType extends Type
 
         $converter = Type::getType('date');
 
-        $value = array_map(function ($date) use ($converter) {
+        $value = array_map(static function ($date) use ($converter) {
             return $converter->convertToDatabaseValue($date);
         }, array_values($value));
 
@@ -85,7 +87,7 @@ class DateCollectionType extends Type
 
         $converter = Type::getType('date');
 
-        $value = array_map(function ($date) use ($converter) {
+        $value = array_map(static function ($date) use ($converter) {
             return $converter->convertToPHPValue($date);
         }, array_values($value));
 
@@ -95,14 +97,14 @@ class DateCollectionType extends Type
     /**
      * Method never called
      */
-    public function closureToMongo(): string
+    public function closureToMongo() : string
     {
         // todo: microseconds o.O
         return '$return = array_map(function($v) { if ($v instanceof \MongoDB\BSON\UTCDateTime) { $v = $v->getTimestamp(); } else if (is_string($v)) { $v = strtotime($v); } return new \MongoDB\BSON\UTCDateTime($v); }, $value);';
     }
 }
 
-class CustomTypeException extends \Exception
+class CustomTypeException extends Exception
 {
 }
 

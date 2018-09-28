@@ -13,7 +13,6 @@ use function strtolower;
 
 /**
  * Fluent interface for adding a $sort stage to an aggregation pipeline.
- *
  */
 class Sort extends Stage
 {
@@ -48,7 +47,7 @@ class Sort extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
             '$sort' => $this->sort,

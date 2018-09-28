@@ -18,7 +18,7 @@ class Phonebook
 
     public function __construct($title)
     {
-        $this->title = $title;
+        $this->title        = $title;
         $this->phonenumbers = new ArrayCollection();
     }
 

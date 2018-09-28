@@ -9,16 +9,15 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Provides event arguments for the onClear event.
- *
  */
 class OnClearEventArgs extends BaseOnClearEventArgs
 {
-    public function getDocumentManager(): DocumentManager
+    public function getDocumentManager() : DocumentManager
     {
         return $this->getObjectManager();
     }
 
-    public function getDocumentClass(): ?string
+    public function getDocumentClass() : ?string
     {
         return $this->getEntityClass();
     }
@@ -26,7 +25,7 @@ class OnClearEventArgs extends BaseOnClearEventArgs
     /**
      * Returns whether this event clears all documents.
      */
-    public function clearsAllDocuments(): bool
+    public function clearsAllDocuments() : bool
     {
         return $this->clearsAllEntities();
     }

@@ -27,12 +27,12 @@ class BucketTest extends BaseTest
             ->avg('$value');
 
         $this->assertSame([
-        '$bucketAuto' => [
-            'groupBy' => '$someField',
-            'buckets' => 3,
-            'granularity' => 'R10',
-            'output' => ['averageValue' => ['$avg' => '$value']],
-        ],
+            '$bucketAuto' => [
+                'groupBy' => '$someField',
+                'buckets' => 3,
+                'granularity' => 'R10',
+                'output' => ['averageValue' => ['$avg' => '$value']],
+            ],
         ], $bucketStage->getExpression());
     }
 
@@ -48,12 +48,12 @@ class BucketTest extends BaseTest
             ->avg('$value');
 
         $this->assertSame([[
-        '$bucketAuto' => [
-            'groupBy' => '$someField',
-            'buckets' => 3,
-            'granularity' => 'R10',
-            'output' => ['averageValue' => ['$avg' => '$value']],
-        ],
+            '$bucketAuto' => [
+                'groupBy' => '$someField',
+                'buckets' => 3,
+                'granularity' => 'R10',
+                'output' => ['averageValue' => ['$avg' => '$value']],
+            ],
         ],
         ], $builder->getPipeline());
     }
@@ -66,10 +66,10 @@ class BucketTest extends BaseTest
             ->buckets(3);
 
         $this->assertSame([
-        '$bucketAuto' => [
-            'groupBy' => '$someField',
-            'buckets' => 3,
-        ],
+            '$bucketAuto' => [
+                'groupBy' => '$someField',
+                'buckets' => 3,
+            ],
         ], $bucketStage->getExpression());
     }
 
@@ -87,12 +87,12 @@ class BucketTest extends BaseTest
 
         $this->assertEquals(
             [[
-            '$bucketAuto' => [
-                'groupBy' => '$ip',
-                'buckets' => 3,
-                'granularity' => 'R10',
-                'output' => ['averageValue' => ['$avg' => '$value']],
-            ],
+                '$bucketAuto' => [
+                    'groupBy' => '$ip',
+                    'buckets' => 3,
+                    'granularity' => 'R10',
+                    'output' => ['averageValue' => ['$avg' => '$value']],
+                ],
             ],
             ],
             $builder->getPipeline()

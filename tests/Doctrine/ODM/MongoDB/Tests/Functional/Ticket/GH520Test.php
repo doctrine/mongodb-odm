@@ -13,7 +13,7 @@ class GH520Test extends BaseTest
 {
     public function testPrimeWithGetSingleResult()
     {
-        $document = new GH520Document();
+        $document      = new GH520Document();
         $document->ref = new GH520Document();
 
         $this->dm->persist($document);
@@ -47,7 +47,7 @@ class GH520Test extends BaseTest
         $this->dm->clear();
 
         $primedIds = null;
-        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$primedIds) {
+        $primer    = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$primedIds) {
             $primedIds = $ids;
         };
 

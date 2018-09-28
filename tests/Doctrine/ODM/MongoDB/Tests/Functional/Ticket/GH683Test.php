@@ -15,10 +15,10 @@ class GH683Test extends BaseTest
 {
     public function testEmbedOne()
     {
-        $parent = new ParentDocument();
+        $parent       = new ParentDocument();
         $parent->name = 'Parent';
 
-        $sub1 = new EmbeddedSubDocument1();
+        $sub1       = new EmbeddedSubDocument1();
         $sub1->name = 'Sub 1';
 
         $parent->embedOne = $sub1;
@@ -35,13 +35,13 @@ class GH683Test extends BaseTest
 
     public function testEmbedMany()
     {
-        $parent = new ParentDocument();
+        $parent       = new ParentDocument();
         $parent->name = 'Parent';
 
-        $sub1 = new EmbeddedSubDocument1();
+        $sub1       = new EmbeddedSubDocument1();
         $sub1->name = 'Sub 1';
 
-        $sub2 = new EmbeddedSubDocument2();
+        $sub2       = new EmbeddedSubDocument2();
         $sub2->name = 'Sub 2';
 
         $parent->embedMany = new ArrayCollection();
@@ -54,8 +54,8 @@ class GH683Test extends BaseTest
 
         $id = $parent->id;
 
-        $parent = $this->dm->find(get_class($parent), $id);
-        $firstSub = $parent->embedMany->get(0);
+        $parent    = $this->dm->find(get_class($parent), $id);
+        $firstSub  = $parent->embedMany->get(0);
         $secondSub = $parent->embedMany->get(1);
         $this->assertInstanceOf(get_class($sub1), $firstSub);
         $this->assertInstanceOf(get_class($sub2), $secondSub);

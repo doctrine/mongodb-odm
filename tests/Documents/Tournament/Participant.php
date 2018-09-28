@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /**
  * @ODM\Document
  * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODm\DiscriminatorMap({"solo"=ParticipantSolo::class, "team"=ParticipantTeam::class})
+ * @ODM\DiscriminatorMap({"solo"=ParticipantSolo::class, "team"=ParticipantTeam::class})
  */
 class Participant
 {

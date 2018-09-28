@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Exception;
 use function get_class;
 
 class GH999Test extends BaseTest
@@ -73,6 +74,6 @@ class GH999Document
     /** @ODM\PostUpdate */
     public function postUpdate()
     {
-        throw new \Exception('Did not expect postUpdate to be called when persisting a new document');
+        throw new Exception('Did not expect postUpdate to be called when persisting a new document');
     }
 }

@@ -12,10 +12,10 @@ class GH245Test extends BaseTest
 {
     public function testTest()
     {
-        $order = new GH245Order();
+        $order     = new GH245Order();
         $order->id = 1;
 
-        $orderLog = new GH245OrderLog();
+        $orderLog        = new GH245OrderLog();
         $orderLog->order = $order;
 
         $this->dm->persist($orderLog);

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use function end;
 use function explode;
-use function get_class;
 use function gettype;
 use function is_object;
 use function sprintf;
@@ -20,29 +21,29 @@ use function str_replace;
  */
 abstract class Type
 {
-    public const ID = 'id';
-    public const INTID = 'int_id';
-    public const CUSTOMID = 'custom_id';
-    public const BOOL = 'bool';
-    public const BOOLEAN = 'boolean';
-    public const INT = 'int';
-    public const INTEGER = 'integer';
-    public const FLOAT = 'float';
-    public const STRING = 'string';
-    public const DATE = 'date';
-    public const KEY = 'key';
-    public const TIMESTAMP = 'timestamp';
-    public const BINDATA = 'bin';
-    public const BINDATAFUNC = 'bin_func';
-    public const BINDATABYTEARRAY = 'bin_bytearray';
-    public const BINDATAUUID = 'bin_uuid';
+    public const ID                 = 'id';
+    public const INTID              = 'int_id';
+    public const CUSTOMID           = 'custom_id';
+    public const BOOL               = 'bool';
+    public const BOOLEAN            = 'boolean';
+    public const INT                = 'int';
+    public const INTEGER            = 'integer';
+    public const FLOAT              = 'float';
+    public const STRING             = 'string';
+    public const DATE               = 'date';
+    public const KEY                = 'key';
+    public const TIMESTAMP          = 'timestamp';
+    public const BINDATA            = 'bin';
+    public const BINDATAFUNC        = 'bin_func';
+    public const BINDATABYTEARRAY   = 'bin_bytearray';
+    public const BINDATAUUID        = 'bin_uuid';
     public const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
-    public const BINDATAMD5 = 'bin_md5';
-    public const BINDATACUSTOM = 'bin_custom';
-    public const HASH = 'hash';
-    public const COLLECTION = 'collection';
-    public const OBJECTID = 'object_id';
-    public const RAW = 'raw';
+    public const BINDATAMD5         = 'bin_md5';
+    public const BINDATACUSTOM      = 'bin_custom';
+    public const HASH               = 'hash';
+    public const COLLECTION         = 'collection';
+    public const OBJECTID           = 'object_id';
+    public const RAW                = 'raw';
 
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static $typeObjects = [];
@@ -84,6 +85,7 @@ abstract class Type
      * of this type.
      *
      * @param mixed $value The value to convert.
+     *
      * @return mixed The database representation of the value.
      */
     public function convertToDatabaseValue($value)
@@ -96,6 +98,7 @@ abstract class Type
      * of this type.
      *
      * @param mixed $value The value to convert.
+     *
      * @return mixed The PHP representation of the value.
      */
     public function convertToPHPValue($value)
@@ -103,12 +106,12 @@ abstract class Type
         return $value;
     }
 
-    public function closureToMongo(): string
+    public function closureToMongo() : string
     {
         return '$return = $value;';
     }
 
-    public function closureToPHP(): string
+    public function closureToPHP() : string
     {
         return '$return = $value;';
     }
@@ -116,7 +119,7 @@ abstract class Type
     /**
      * Register a new type in the type map.
      */
-    public static function registerType(string $name, string $class): void
+    public static function registerType(string $name, string $class) : void
     {
         self::$typesMap[$name] = $class;
     }
@@ -124,15 +127,15 @@ abstract class Type
     /**
      * Get a Type instance.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function getType(string $type)
     {
         if (! isset(self::$typesMap[$type])) {
-            throw new \InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
+            throw new InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
         }
         if (! isset(self::$typeObjects[$type])) {
-            $className = self::$typesMap[$type];
+            $className                = self::$typesMap[$type];
             self::$typeObjects[$type] = new $className();
         }
         return self::$typeObjects[$type];
@@ -142,12 +145,13 @@ abstract class Type
      * Get a Type instance based on the type of the passed php variable.
      *
      * @param mixed $variable
-     * @throws \InvalidArgumentException
+     *
+     * @throws InvalidArgumentException
      */
-    public static function getTypeFromPHPVariable($variable): ?Type
+    public static function getTypeFromPHPVariable($variable) : ?Type
     {
         if (is_object($variable)) {
-            if ($variable instanceof \DateTimeInterface) {
+            if ($variable instanceof DateTimeInterface) {
                 return self::getType('date');
             }
 
@@ -176,10 +180,11 @@ abstract class Type
     /**
      * Adds a custom type to the type map.
      *
-     * @static
      * @throws MappingException
+     *
+     * @static
      */
-    public static function addType(string $name, string $className): void
+    public static function addType(string $name, string $className) : void
     {
         if (isset(self::$typesMap[$name])) {
             throw MappingException::typeExists($name);
@@ -193,7 +198,7 @@ abstract class Type
      *
      * @static
      */
-    public static function hasType(string $name): bool
+    public static function hasType(string $name) : bool
     {
         return isset(self::$typesMap[$name]);
     }
@@ -201,10 +206,11 @@ abstract class Type
     /**
      * Overrides an already defined type to use a different implementation.
      *
-     * @static
      * @throws MappingException
+     *
+     * @static
      */
-    public static function overrideType(string $name, string $className): void
+    public static function overrideType(string $name, string $className) : void
     {
         if (! isset(self::$typesMap[$name])) {
             throw MappingException::typeNotFound($name);
@@ -217,14 +223,14 @@ abstract class Type
      * Get the types array map which holds all registered types and the corresponding
      * type class
      */
-    public static function getTypesMap(): array
+    public static function getTypesMap() : array
     {
         return self::$typesMap;
     }
 
     public function __toString()
     {
-        $e = explode('\\', get_class($this));
+        $e = explode('\\', static::class);
         return str_replace('Type', '', end($e));
     }
 }

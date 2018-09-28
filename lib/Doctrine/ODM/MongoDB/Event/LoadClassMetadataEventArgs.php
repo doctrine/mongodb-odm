@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
-    public function getDocumentManager(): DocumentManager
+    public function getDocumentManager() : DocumentManager
     {
         return $this->getObjectManager();
     }

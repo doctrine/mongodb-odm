@@ -61,8 +61,8 @@ class GraphLookup extends Stage
     {
         parent::__construct($builder);
 
-        $this->dm = $documentManager;
-        $this->class = $class;
+        $this->dm                      = $documentManager;
+        $this->class                   = $class;
         $this->restrictSearchWithMatch = new GraphLookup\Match($this->builder, $this);
         $this->from($from);
     }
@@ -73,7 +73,7 @@ class GraphLookup extends Stage
      * Contains the documents traversed in the $graphLookup stage to reach the
      * document.
      */
-    public function alias(string $alias): self
+    public function alias(string $alias) : self
     {
         $this->as = $alias;
 
@@ -87,7 +87,7 @@ class GraphLookup extends Stage
      * Optionally, connectFromField may be an array of field names, each of
      * which is individually followed through the traversal process.
      */
-    public function connectFromField(string $connectFromField): self
+    public function connectFromField(string $connectFromField) : self
     {
         // No targetClass mapping - simply use field name as is
         if (! $this->targetClass) {
@@ -115,7 +115,7 @@ class GraphLookup extends Stage
      * Field name in other documents against which to match the value of the
      * field specified by the connectFromField parameter.
      */
-    public function connectToField(string $connectToField): self
+    public function connectToField(string $connectToField) : self
     {
         $this->connectToField = $this->convertTargetFieldName($connectToField);
         return $this;
@@ -128,7 +128,7 @@ class GraphLookup extends Stage
      * represented as a NumberLong. Recursion depth value starts at zero, so the
      * first lookup corresponds to zero depth.
      */
-    public function depthField(string $depthField): self
+    public function depthField(string $depthField) : self
     {
         $this->depthField = $depthField;
 
@@ -142,7 +142,7 @@ class GraphLookup extends Stage
      * The from collection cannot be sharded and must be in the same database as
      * any other collections used in the operation.
      */
-    public function from(string $from): self
+    public function from(string $from) : self
     {
         // $from can either be
         // a) a field name indicating a reference to a different document. Currently, only REFERENCE_STORE_AS_ID is supported
@@ -172,7 +172,7 @@ class GraphLookup extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         $restrictSearchWithMatch = $this->restrictSearchWithMatch->getExpression() ?: (object) [];
 
@@ -201,7 +201,7 @@ class GraphLookup extends Stage
     /**
      * Non-negative integral number specifying the maximum recursion depth.
      */
-    public function maxDepth(int $maxDepth): self
+    public function maxDepth(int $maxDepth) : self
     {
         $this->maxDepth = $maxDepth;
 
@@ -211,7 +211,7 @@ class GraphLookup extends Stage
     /**
      * A document specifying additional conditions for the recursive search.
      */
-    public function restrictSearchWithMatch(): GraphLookup\Match
+    public function restrictSearchWithMatch() : GraphLookup\Match
     {
         return $this->restrictSearchWithMatch;
     }
@@ -225,7 +225,7 @@ class GraphLookup extends Stage
      *
      * @param string|array|Expr $expression
      */
-    public function startWith($expression): self
+    public function startWith($expression) : self
     {
         $this->startWith = $expression;
 
@@ -235,13 +235,13 @@ class GraphLookup extends Stage
     /**
      * @throws MappingException
      */
-    private function fromReference(string $fieldName): self
+    private function fromReference(string $fieldName) : self
     {
         if (! $this->class->hasReference($fieldName)) {
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);
         }
 
-        $referenceMapping = $this->class->getFieldMapping($fieldName);
+        $referenceMapping  = $this->class->getFieldMapping($fieldName);
         $this->targetClass = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
         if ($this->targetClass->isSharded()) {
             throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
@@ -293,12 +293,12 @@ class GraphLookup extends Stage
         return $this->getDocumentPersister($this->targetClass)->prepareFieldName($fieldName);
     }
 
-    private function getDocumentPersister(ClassMetadata $class): DocumentPersister
+    private function getDocumentPersister(ClassMetadata $class) : DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
     }
 
-    private function getReferencedFieldName(string $fieldName, array $mapping): string
+    private function getReferencedFieldName(string $fieldName, array $mapping) : string
     {
         if (! $mapping['isOwningSide']) {
             if (isset($mapping['repositoryMethod']) || ! isset($mapping['mappedBy'])) {

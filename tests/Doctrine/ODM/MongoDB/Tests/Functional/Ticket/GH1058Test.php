@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Exception;
 use MongoDB\BSON\ObjectId;
 use function array_merge;
 use function get_class;
@@ -44,7 +45,7 @@ class GH1058Listener
 {
     public function onFlush(OnFlushEventArgs $args)
     {
-        $dm = $args->getDocumentManager();
+        $dm  = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
 
         foreach (array_merge($uow->getScheduledDocumentInsertions(), $uow->getScheduledDocumentUpserts()) as $document) {
@@ -53,7 +54,7 @@ class GH1058Listener
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($metadata, $document);
 
             if ($uow->isScheduledForUpdate($document)) {
-                throw new \Exception('Document should not be scheduled for update!');
+                throw new Exception('Document should not be scheduled for update!');
             }
         }
     }

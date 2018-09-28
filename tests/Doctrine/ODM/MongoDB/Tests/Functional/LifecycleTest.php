@@ -70,8 +70,8 @@ class ParentObject
 
     public function __construct($name, ChildObject $child, ChildEmbeddedObject $childEmbedded)
     {
-        $this->name = $name;
-        $this->child = $child;
+        $this->name          = $name;
+        $this->child         = $child;
         $this->childEmbedded = $childEmbedded;
     }
 

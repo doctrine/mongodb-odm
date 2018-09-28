@@ -25,7 +25,7 @@ class GH596Test extends BaseTest
         $class = GH596Document::class;
 
         $repository = $this->dm->getRepository($class);
-        $qb = $repository->createQueryBuilder();
+        $qb         = $repository->createQueryBuilder();
         $qb->addOr($qb->expr()->field('name')->equals('foo'));
         $qb->addOr($qb->expr()->field('name')->equals('bar'));
 
@@ -33,15 +33,15 @@ class GH596Test extends BaseTest
         $query = $query->getQuery();
 
         $expected = [
-        '$and' => [
-            [
-        '$or' => [
-                ['name' => 'foo'],
-                ['name' => 'bar'],
+            '$and' => [
+                [
+                    '$or' => [
+                        ['name' => 'foo'],
+                        ['name' => 'bar'],
+                    ],
+                ],
+                ['deleted' => false],
             ],
-            ],
-            ['deleted' => false],
-        ],
         ];
 
         $this->assertEquals($expected, $query['query']);

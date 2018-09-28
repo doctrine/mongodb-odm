@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $unwind stage to an aggregation pipeline.
- *
  */
 class Unwind extends Stage
 {
@@ -32,7 +31,7 @@ class Unwind extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         // Fallback behavior for MongoDB < 3.2
         if ($this->includeArrayIndex === null && ! $this->preserveNullAndEmptyArrays) {
@@ -58,7 +57,7 @@ class Unwind extends Stage
      * The name of a new field to hold the array index of the element. The name
      * cannot start with a dollar sign $.
      */
-    public function includeArrayIndex(string $includeArrayIndex): self
+    public function includeArrayIndex(string $includeArrayIndex) : self
     {
         $this->includeArrayIndex = $includeArrayIndex;
 
@@ -68,9 +67,8 @@ class Unwind extends Stage
     /**
      * If true, if the path is null, missing, or an empty array, $unwind outputs
      * the document.
-     *
      */
-    public function preserveNullAndEmptyArrays(bool $preserveNullAndEmptyArrays = true): self
+    public function preserveNullAndEmptyArrays(bool $preserveNullAndEmptyArrays = true) : self
     {
         $this->preserveNullAndEmptyArrays = $preserveNullAndEmptyArrays;
 

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
+use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use const PHP_INT_SIZE;
 use function get_class;
@@ -20,7 +22,7 @@ class DateTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());
+        $this->assertInstanceOf(DateTime::class, $user->getCreatedAt());
 
         $user->setCreatedAt('1985-09-01 00:00:00');
         $this->dm->flush();
@@ -29,7 +31,7 @@ class DateTest extends BaseTest
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'w00ting']);
         $this->assertNotNull($user);
         $this->assertEquals('w00ting', $user->getUsername());
-        $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());
+        $this->assertInstanceOf(DateTime::class, $user->getCreatedAt());
         $this->assertEquals('09/01/1985', $user->getCreatedAt()->format('m/d/Y'));
     }
 
@@ -54,19 +56,19 @@ class DateTest extends BaseTest
     public function provideEquivalentDates()
     {
         return [
-            [new \DateTime('1985-09-01 00:00:00'), new \DateTime('1985-09-01 00:00:00')],
-            [new \DateTime('2012-07-11T14:55:14-04:00'), new \DateTime('2012-07-11T19:55:14+01:00')],
-            [new \DateTime('@1342033881'), new UTCDateTime(1342033881000)],
-            [\DateTime::createFromFormat('U.u', '100000000.123'), new UTCDateTime(100000000123)],
-            [\DateTime::createFromFormat('U.u', '100000000.123000'), new UTCDateTime(100000000123)],
-            [new UTCDateTime(100000000123), \DateTime::createFromFormat('U.u', '100000000.123')],
+            [new DateTime('1985-09-01 00:00:00'), new DateTime('1985-09-01 00:00:00')],
+            [new DateTime('2012-07-11T14:55:14-04:00'), new DateTime('2012-07-11T19:55:14+01:00')],
+            [new DateTime('@1342033881'), new UTCDateTime(1342033881000)],
+            [DateTime::createFromFormat('U.u', '100000000.123'), new UTCDateTime(100000000123)],
+            [DateTime::createFromFormat('U.u', '100000000.123000'), new UTCDateTime(100000000123)],
+            [new UTCDateTime(100000000123), DateTime::createFromFormat('U.u', '100000000.123')],
         ];
     }
 
     public function testDateInstanceValueChangeDoesCauseUpdateIfValueIsTheSame()
     {
         $user = new User();
-        $user->setCreatedAt(new \DateTime('1985-09-01'));
+        $user->setCreatedAt(new DateTime('1985-09-01'));
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
@@ -82,7 +84,7 @@ class DateTest extends BaseTest
     public function testOldDate()
     {
         if (PHP_INT_SIZE === 4) {
-            $this->expectException(\InvalidArgumentException::class);
+            $this->expectException(InvalidArgumentException::class);
         }
 
         $user = new User();
@@ -100,7 +102,7 @@ class DateTest extends BaseTest
         $this->assertArrayHasKey('createdAt', $test);
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'datetest2']);
-        $this->assertInstanceOf(\DateTime::class, $user->getCreatedAt());
+        $this->assertInstanceOf(DateTime::class, $user->getCreatedAt());
         $this->assertEquals('1900-01-01', $user->getCreatedAt()->format('Y-m-d'));
     }
 }

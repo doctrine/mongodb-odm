@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Documents\Ecommerce;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use InvalidArgumentException;
 
 /**
  * @ODM\EmbeddedDocument()
@@ -16,18 +17,21 @@ class Option
 
     /**
      * @ODM\Field(type="string")
+     *
      * @var string
      */
     protected $name;
 
     /**
      * @ODM\EmbedOne(targetDocument="Documents\Ecommerce\Money")
+     *
      * @var float
      */
     protected $money;
 
     /**
      * @ODM\ReferenceOne(targetDocument="Documents\Ecommerce\StockItem", cascade="all")
+     *
      * @var Documents\StockItem
      */
     protected $stockItem;
@@ -40,11 +44,11 @@ class Option
     {
         $this->name = (string) $name;
         if (empty($this->name)) {
-            throw new \InvalidArgumentException('option name cannot be empty');
+            throw new InvalidArgumentException('option name cannot be empty');
         }
         $this->money = $money;
         if (empty($this->money)) {
-            throw new \InvalidArgumentException('option price cannot be empty');
+            throw new InvalidArgumentException('option price cannot be empty');
         }
         $this->stockItem = $stockItem;
     }

@@ -30,12 +30,12 @@ class MemoryUsageTest extends BaseTest
     {
         $memoryUsage = [];
         for ($i = 0; $i < 100; $i++) {
-            $ph1 = new CmsPhonenumber();
+            $ph1              = new CmsPhonenumber();
             $ph1->phonenumber = '12345';
-            $ph2 = new CmsPhonenumber();
+            $ph2              = new CmsPhonenumber();
             $ph2->phonenumber = '12346';
 
-            $user = new CmsUser();
+            $user           = new CmsUser();
             $user->username = 'jwage';
             $user->addPhonenumber($ph1);
             $user->addPhonenumber($ph2);
@@ -50,7 +50,7 @@ class MemoryUsageTest extends BaseTest
         }
 
         $start = current($memoryUsage);
-        $end = end($memoryUsage);
+        $end   = end($memoryUsage);
 
         $increase = $end - $start;
 
@@ -59,7 +59,7 @@ class MemoryUsageTest extends BaseTest
 
     private function formatMemory($size)
     {
-        $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
+        $unit                              = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
         return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
     }
 }

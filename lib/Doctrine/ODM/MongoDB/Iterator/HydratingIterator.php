@@ -6,15 +6,18 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Generator;
+use Iterator;
+use Traversable;
 
 /**
  * Iterator that wraps a traversable and hydrates results into objects
  *
  * @internal
  */
-final class HydratingIterator implements \Iterator
+final class HydratingIterator implements Iterator
 {
-    /** @var \Generator */
+    /** @var Generator */
     private $iterator;
 
     /** @var UnitOfWork */
@@ -26,16 +29,17 @@ final class HydratingIterator implements \Iterator
     /** @var array */
     private $unitOfWorkHints;
 
-    public function __construct(\Traversable $traversable, UnitOfWork $unitOfWork, ClassMetadata $class, array $unitOfWorkHints = [])
+    public function __construct(Traversable $traversable, UnitOfWork $unitOfWork, ClassMetadata $class, array $unitOfWorkHints = [])
     {
-        $this->iterator = $this->wrapTraversable($traversable);
-        $this->unitOfWork = $unitOfWork;
-        $this->class = $class;
+        $this->iterator        = $this->wrapTraversable($traversable);
+        $this->unitOfWork      = $unitOfWork;
+        $this->class           = $class;
         $this->unitOfWorkHints = $unitOfWorkHints;
     }
 
     /**
      * @see http://php.net/iterator.current
+     *
      * @return mixed
      */
     public function current()
@@ -45,6 +49,7 @@ final class HydratingIterator implements \Iterator
 
     /**
      * @see http://php.net/iterator.mixed
+     *
      * @return mixed
      */
     public function key()
@@ -55,7 +60,7 @@ final class HydratingIterator implements \Iterator
     /**
      * @see http://php.net/iterator.next
      */
-    public function next(): void
+    public function next() : void
     {
         $this->iterator->next();
     }
@@ -63,7 +68,7 @@ final class HydratingIterator implements \Iterator
     /**
      * @see http://php.net/iterator.rewind
      */
-    public function rewind(): void
+    public function rewind() : void
     {
         $this->iterator->rewind();
     }
@@ -71,7 +76,7 @@ final class HydratingIterator implements \Iterator
     /**
      * @see http://php.net/iterator.valid
      */
-    public function valid(): bool
+    public function valid() : bool
     {
         return $this->key() !== null;
     }
@@ -81,7 +86,7 @@ final class HydratingIterator implements \Iterator
         return $document !== null ? $this->unitOfWork->getOrCreateDocument($this->class->name, $document, $this->unitOfWorkHints) : null;
     }
 
-    private function wrapTraversable(\Traversable $traversable): \Generator
+    private function wrapTraversable(Traversable $traversable) : Generator
     {
         foreach ($traversable as $key => $value) {
             yield $key => $value;

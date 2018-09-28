@@ -6,6 +6,7 @@ namespace Documents\Ecommerce;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use InvalidArgumentException;
 use function array_map;
 use function array_search;
 use function in_array;
@@ -46,7 +47,7 @@ class ConfigurableProduct
     {
         $name = (string) $name;
         if (empty($name)) {
-            throw new \InvalidArgumentException('Product name cannot be empty');
+            throw new InvalidArgumentException('Product name cannot be empty');
         }
         $this->name = $name;
         return $this;
@@ -66,14 +67,14 @@ class ConfigurableProduct
         if (! $name instanceof Option) {
             $name = (string) $name;
             if (empty($name)) {
-                throw new \InvalidArgumentException('option name cannot be empty');
+                throw new InvalidArgumentException('option name cannot be empty');
             }
             $name = new Option($name, $price, $item);
             unset($price, $item);
         }
         if ($this->_findOption($name->getName()) !== null
             || in_array($name->getStockItem(), $this->_getStockItems(), true)) {
-            throw new \InvalidArgumentException('cannot add option with the same name twice');
+            throw new InvalidArgumentException('cannot add option with the same name twice');
         }
         $this->options[] = $name;
     }
@@ -87,7 +88,7 @@ class ConfigurableProduct
     {
         $option = $this->_findOption($name);
         if ($option === null) {
-            throw new \InvalidArgumentException('option ' . $name . ' doesn\'t exist');
+            throw new InvalidArgumentException('option ' . $name . ' doesn\'t exist');
         }
         if ($this->options instanceof Collection) {
             $index = $this->options->indexOf($option);
@@ -107,7 +108,7 @@ class ConfigurableProduct
     {
         $option = $this->_findOption($name);
         if (! isset($option)) {
-            throw new \InvalidArgumentException('specified option: ' . $name . ' doesn\'t exist');
+            throw new InvalidArgumentException('specified option: ' . $name . ' doesn\'t exist');
         }
         $this->selectedOption = $option;
         return $this;
@@ -131,7 +132,7 @@ class ConfigurableProduct
 
     protected function _getStockItems()
     {
-        return array_map(function ($option) {
+        return array_map(static function ($option) {
             return $option->getStockItem();
         }, $this->getOptions());
     }

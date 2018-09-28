@@ -32,7 +32,7 @@ class GH267Test extends BaseTest
         $this->dm->flush();
 
         // Get ids for use later
-        $user1Id = $user1->getId();
+        $user1Id   = $user1->getId();
         $companyId = $company->getId();
 
         // Clear out DM and read from DB afresh
@@ -41,7 +41,7 @@ class GH267Test extends BaseTest
         $qb = $this->dm->createQueryBuilder(GH267User::class)
             ->field('_id')->equals($user1Id);
 
-        $query = $qb->getQuery();
+        $query  = $qb->getQuery();
         $result = $query->execute();
         $dbUser = $result->current();
 

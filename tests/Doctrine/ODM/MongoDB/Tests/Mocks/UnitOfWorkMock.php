@@ -19,6 +19,7 @@ class UnitOfWorkMock extends UnitOfWork
 
     /**
      * @param <type> $document
+     *
      * @override
      */
     public function getDocumentChangeSet($document)

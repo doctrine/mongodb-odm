@@ -66,7 +66,7 @@ class CollectionsTest extends BaseTest
         $this->assertCount(0, $locations);
         $this->dm->flush();
         $this->dm->clear();
-        $bar = $this->dm->find(Bar::class, $bar->getId());
+        $bar       = $this->dm->find(Bar::class, $bar->getId());
         $locations = $bar->getLocations();
         $this->assertCount(0, $locations);
         $this->dm->flush();
@@ -85,7 +85,7 @@ class CollectionsTest extends BaseTest
         $sm->dropDocumentCollection(CollectionTestBasic::class);
         $sm->createDocumentCollection(CollectionTestBasic::class);
 
-        $coll = $this->dm->getDocumentCollection(CollectionTestBasic::class);
+        $coll   = $this->dm->getDocumentCollection(CollectionTestBasic::class);
         $insert = [
             ['username' => 'bob'],
             ['username' => 'alice'],
@@ -103,7 +103,7 @@ class CollectionsTest extends BaseTest
         $sm->dropDocumentCollection(CollectionTestCapped::class);
         $sm->createDocumentCollection(CollectionTestCapped::class);
 
-        $coll = $this->dm->getDocumentCollection(CollectionTestCapped::class);
+        $coll   = $this->dm->getDocumentCollection(CollectionTestCapped::class);
         $insert = [
             ['username' => 'bob'],
             ['username' => 'alice'],

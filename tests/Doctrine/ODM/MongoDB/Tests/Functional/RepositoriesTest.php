@@ -43,7 +43,7 @@ class RepositoriesTest extends BaseTest
     public function testCriteria()
     {
         $exprBuilder = Criteria::expr();
-        $expr = $exprBuilder->eq('username', 'lolcat');
+        $expr        = $exprBuilder->eq('username', 'lolcat');
 
         $users = $this->repository->matching(new Criteria($expr));
         $this->assertCount(0, $users);

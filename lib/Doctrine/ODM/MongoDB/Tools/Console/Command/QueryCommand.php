@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
 use Doctrine\Common\Util\Debug;
+use LogicException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -13,7 +14,6 @@ use function json_decode;
 
 /**
  * Command to query mongodb and inspect the outputted results from your document classes.
- *
  */
 class QueryCommand extends Console\Command\Command
 {
@@ -81,13 +81,13 @@ EOT
         $depth = $input->getOption('depth');
 
         if (! is_numeric($depth)) {
-            throw new \LogicException("Option 'depth' must contain an integer value");
+            throw new LogicException("Option 'depth' must contain an integer value");
         }
 
         $skip = $input->getOption('skip');
         if ($skip !== null) {
             if (! is_numeric($skip)) {
-                throw new \LogicException("Option 'skip' must contain an integer value");
+                throw new LogicException("Option 'skip' must contain an integer value");
             }
 
             $qb->skip((int) $skip);
@@ -96,7 +96,7 @@ EOT
         $limit = $input->getOption('limit');
         if ($limit !== null) {
             if (! is_numeric($limit)) {
-                throw new \LogicException("Option 'limit' must contain an integer value");
+                throw new LogicException("Option 'limit' must contain an integer value");
             }
 
             $qb->limit((int) $limit);

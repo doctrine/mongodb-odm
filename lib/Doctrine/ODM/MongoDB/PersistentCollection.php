@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionTrait;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
- *
  */
 class PersistentCollection implements PersistentCollectionInterface
 {
@@ -22,7 +21,7 @@ class PersistentCollection implements PersistentCollectionInterface
     public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
     {
         $this->coll = $coll;
-        $this->dm = $dm;
-        $this->uow = $uow;
+        $this->dm   = $dm;
+        $this->uow  = $uow;
     }
 }

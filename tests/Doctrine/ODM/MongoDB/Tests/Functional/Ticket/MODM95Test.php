@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Traversable;
 use function is_array;
 
 class MODM95Test extends BaseTest
@@ -73,7 +74,7 @@ class MODM95TestDocument
     {
         $this->embeddedDocuments->clear();
 
-        if (! (is_array($embeddedDocuments) || $embeddedDocuments instanceof \Traversable)) {
+        if (! (is_array($embeddedDocuments) || $embeddedDocuments instanceof Traversable)) {
             return;
         }
 

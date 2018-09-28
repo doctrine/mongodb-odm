@@ -24,7 +24,7 @@ class Developer
 
     public function __construct($name, ?Collection $projects = null)
     {
-        $this->name = $name;
+        $this->name     = $name;
         $this->projects = $projects ?? new ArrayCollection();
     }
 

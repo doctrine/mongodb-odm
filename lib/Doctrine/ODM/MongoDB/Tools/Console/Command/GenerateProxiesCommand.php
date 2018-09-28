@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
+use InvalidArgumentException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,7 +22,6 @@ use function sprintf;
 
 /**
  * Command to (re)generate the proxy classes used by doctrine.
- *
  */
 class GenerateProxiesCommand extends Console\Command\Command
 {
@@ -59,11 +59,11 @@ EOT
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
 
-        $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), function (ClassMetadata $classMetadata) {
+        $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata) {
             return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
         });
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
-        $destPath = $input->getArgument('dest-path');
+        $destPath  = $input->getArgument('dest-path');
 
         // Process destination directory
         if ($destPath === null) {
@@ -77,11 +77,11 @@ EOT
         $destPath = realpath($destPath);
 
         if (! file_exists($destPath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not exist.", $destPath)
             );
         } elseif (! is_writable($destPath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
         }

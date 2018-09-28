@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -11,6 +12,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\User;
+use stdClass;
 use function serialize;
 use function unserialize;
 
@@ -18,14 +20,14 @@ class PersistentCollectionTest extends BaseTest
 {
     public function testSlice()
     {
-        list ($start, $limit) = [0, 25];
-        $collection = $this->getMockCollection();
+         [$start, $limit] = [0, 25];
+        $collection       = $this->getMockCollection();
         $collection->expects($this->once())
             ->method('slice')
             ->with($start, $limit)
             ->will($this->returnValue(true));
-        $dm = $this->getMockDocumentManager();
-        $uow = $this->getMockUnitOfWork();
+        $dm          = $this->getMockDocumentManager();
+        $uow         = $this->getMockUnitOfWork();
         $pCollection = new PersistentCollection($collection, $dm, $uow);
         $pCollection->slice($start, $limit);
     }
@@ -37,7 +39,7 @@ class PersistentCollectionTest extends BaseTest
     public function testExceptionForGetTypeClassWithoutDocumentManager()
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
-        $owner = new \stdClass();
+        $owner      = new stdClass();
 
         $serialized = serialize($collection);
         /** @var PersistentCollection $unserialized */
@@ -82,7 +84,7 @@ class PersistentCollectionTest extends BaseTest
      *
      * @dataProvider dataGetDeletedDocuments
      */
-    public function testGetDeletedDocuments($expected, $snapshot, \Closure $callback)
+    public function testGetDeletedDocuments($expected, $snapshot, Closure $callback)
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
 
@@ -97,34 +99,34 @@ class PersistentCollectionTest extends BaseTest
 
     public static function dataGetDeletedDocuments()
     {
-        $one = new \stdClass();
-        $two = new \stdClass();
+        $one = new stdClass();
+        $two = new stdClass();
 
         return [
             'sameItems' => [
                 [],
                 [$one],
-                function ($collection) {
+                static function ($collection) {
                 },
             ],
             'added' => [
                 [],
                 [$one],
-                function ($collection) use ($two) {
+                static function ($collection) use ($two) {
                     $collection->add($two);
                 },
             ],
             'removed' => [
                 [$one],
                 [$one, $two],
-                function ($collection) use ($one) {
+                static function ($collection) use ($one) {
                     $collection->removeElement($one);
                 },
             ],
             'replaced' => [
                 [$one],
                 [$one],
-                function ($collection) use ($one, $two) {
+                static function ($collection) use ($one, $two) {
                     $collection->removeElement($one);
                     $collection->add($two);
                 },
@@ -132,14 +134,14 @@ class PersistentCollectionTest extends BaseTest
             'removed2' => [
                 [$two],
                 [$one, $two],
-                function ($collection) use ($two) {
+                static function ($collection) use ($two) {
                     $collection->removeElement($two);
                 },
             ],
             'orderChanged' => [
                 [],
                 [$one, $two],
-                function ($collection) use ($one, $two) {
+                static function ($collection) use ($one, $two) {
                     $collection->removeElement($one);
                     $collection->removeElement($two);
                     $collection->add($two);
@@ -155,7 +157,7 @@ class PersistentCollectionTest extends BaseTest
      *
      * @dataProvider dataGetInsertedDocuments
      */
-    public function testGetInsertedDocuments($expected, $snapshot, \Closure $callback)
+    public function testGetInsertedDocuments($expected, $snapshot, Closure $callback)
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
 
@@ -170,27 +172,27 @@ class PersistentCollectionTest extends BaseTest
 
     public static function dataGetInsertedDocuments()
     {
-        $one = new \stdClass();
-        $two = new \stdClass();
+        $one = new stdClass();
+        $two = new stdClass();
 
         return [
             'sameItems' => [
                 [],
                 [$one],
-                function ($collection) {
+                static function ($collection) {
                 },
             ],
             'added' => [
                 [$two],
                 [$one],
-                function ($collection) use ($two) {
+                static function ($collection) use ($two) {
                     $collection->add($two);
                 },
             ],
             'replaced' => [
                 [$two],
                 [$one],
-                function ($collection) use ($one, $two) {
+                static function ($collection) use ($one, $two) {
                     $collection->removeElement($one);
                     $collection->add($two);
                 },
@@ -198,7 +200,7 @@ class PersistentCollectionTest extends BaseTest
             'orderChanged' => [
                 [],
                 [$one, $two],
-                function ($collection) use ($one, $two) {
+                static function ($collection) use ($one, $two) {
                     $collection->removeElement($one);
                     $collection->removeElement($two);
                     $collection->add($two);
@@ -246,8 +248,8 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->exactly(2))->method('offsetSet');
-        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
-        $pcoll[] = 1;
+        $pcoll    = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll[]  = 1;
         $pcoll[1] = 2;
         $collection->expects($this->once())->method('add');
         $pcoll->add(3);

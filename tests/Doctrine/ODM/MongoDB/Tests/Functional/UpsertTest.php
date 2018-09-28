@@ -17,11 +17,11 @@ class UpsertTest extends BaseTest
      */
     public function testUpsertEmbedManyDoesNotCreateObject()
     {
-        $test = new UpsertTestUser();
+        $test     = new UpsertTestUser();
         $test->id = (string) new ObjectId();
 
-        $embedded = new UpsertTestUserEmbedded();
-        $embedded->id = (string) new ObjectId();
+        $embedded       = new UpsertTestUserEmbedded();
+        $embedded->id   = (string) new ObjectId();
         $embedded->test = 'test';
 
         $test->embedMany[] = $embedded;

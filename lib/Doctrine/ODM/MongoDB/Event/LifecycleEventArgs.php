@@ -13,12 +13,12 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
-    public function getDocument(): object
+    public function getDocument() : object
     {
         return $this->getObject();
     }
 
-    public function getDocumentManager(): DocumentManager
+    public function getDocumentManager() : DocumentManager
     {
         return $this->getObjectManager();
     }

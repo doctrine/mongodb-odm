@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding an output specification to a bucket stage.
- *
  */
 class BucketOutput extends AbstractOutput
 {
@@ -24,6 +23,7 @@ class BucketOutput extends AbstractOutput
      * field name with a dollar sign $ and enclose it in quotes.
      *
      * @param mixed|Expr $expression
+     *
      * @return Stage\Bucket
      */
     public function groupBy($expression)

@@ -36,7 +36,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var DocumentManager $dm */
-        $dm = $this->getHelper('documentManager')->getDocumentManager();
+        $dm              = $this->getHelper('documentManager')->getDocumentManager();
         $metadataFactory = $dm->getMetadataFactory();
         $metadataFactory->setCacheDriver(new VoidCache());
 

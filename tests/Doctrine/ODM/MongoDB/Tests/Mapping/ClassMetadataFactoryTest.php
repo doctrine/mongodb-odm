@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use InvalidArgumentException;
 use function sprintf;
 
 class ClassMetadataFactoryTest extends BaseTest
@@ -75,8 +76,8 @@ class ClassMetadataFactoryTest extends BaseTest
 
         $em = $this->createMock(EventManager::class);
 
-        $dm = new DocumentManagerMock();
-        $dm->config = $config;
+        $dm               = new DocumentManagerMock();
+        $dm->config       = $config;
         $dm->eventManager = $em;
 
         return $dm;
@@ -86,14 +87,14 @@ class ClassMetadataFactoryTest extends BaseTest
 /* Test subject class with overriden factory method for mocking purposes */
 class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 {
-    private $_mockMetadata = [];
+    private $_mockMetadata     = [];
     private $_requestedClasses = [];
 
     protected function _newClassMetadataInstance($className)
     {
         $this->_requestedClasses[] = $className;
         if (! isset($this->_mockMetadata[$className])) {
-            throw new \InvalidArgumentException(sprintf('No mock metadata found for class %s.', $className));
+            throw new InvalidArgumentException(sprintf('No mock metadata found for class %s.', $className));
         }
         return $this->_mockMetadata[$className];
     }

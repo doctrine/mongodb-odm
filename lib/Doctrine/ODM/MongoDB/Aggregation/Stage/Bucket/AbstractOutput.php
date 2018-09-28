@@ -26,13 +26,13 @@ abstract class AbstractOutput extends Stage
         parent::__construct($builder);
 
         $this->bucket = $bucket;
-        $this->expr = $builder->expr();
+        $this->expr   = $builder->expr();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return $this->expr->getExpression();
     }

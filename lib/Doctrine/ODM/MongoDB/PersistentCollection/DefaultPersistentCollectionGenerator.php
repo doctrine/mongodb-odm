@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\ODM\MongoDB\Configuration;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionParameter;
+use ReflectionType;
 use const DIRECTORY_SEPARATOR;
 use function array_map;
 use function array_pop;
@@ -28,7 +33,6 @@ use function var_export;
 
 /**
  * Default generator for custom PersistentCollection classes.
- *
  */
 final class DefaultPersistentCollectionGenerator implements PersistentCollectionGenerator
 {
@@ -48,25 +52,25 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
 
     public function __construct(string $collectionDir, string $collectionNs)
     {
-        $this->collectionDir = $collectionDir;
+        $this->collectionDir       = $collectionDir;
         $this->collectionNamespace = $collectionNs;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function generateClass(string $class, string $dir): void
+    public function generateClass(string $class, string $dir) : void
     {
         $collClassName = str_replace('\\', '', $class) . 'Persistent';
-        $className = $this->collectionNamespace . '\\' . $collClassName;
-        $fileName = $dir . DIRECTORY_SEPARATOR . $collClassName . '.php';
+        $className     = $this->collectionNamespace . '\\' . $collClassName;
+        $fileName      = $dir . DIRECTORY_SEPARATOR . $collClassName . '.php';
         $this->generateCollectionClass($class, $className, $fileName);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function loadClass(string $collectionClass, int $autoGenerate): string
+    public function loadClass(string $collectionClass, int $autoGenerate) : string
     {
         // These checks are not in __construct() because of BC and should be moved for 2.0
         if (! $this->collectionDir) {
@@ -77,7 +81,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
         }
 
         $collClassName = str_replace('\\', '', $collectionClass) . 'Persistent';
-        $className = $this->collectionNamespace . '\\' . $collClassName;
+        $className     = $this->collectionNamespace . '\\' . $collClassName;
         if (! class_exists($className, false)) {
             $fileName = $this->collectionDir . DIRECTORY_SEPARATOR . $collClassName . '.php';
             switch ($autoGenerate) {
@@ -111,10 +115,10 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
      */
     private function generateCollectionClass(string $for, string $targetFqcn, $fileName)
     {
-        $exploded = explode('\\', $targetFqcn);
-        $class = array_pop($exploded);
+        $exploded  = explode('\\', $targetFqcn);
+        $class     = array_pop($exploded);
         $namespace = implode('\\', $exploded);
-        $code = <<<CODE
+        $code      = <<<CODE
 <?php
 
 namespace $namespace;
@@ -146,9 +150,9 @@ class $class extends \\$for implements \\Doctrine\\ODM\\MongoDB\\PersistentColle
     }
 
 CODE;
-        $rc = new \ReflectionClass($for);
-        $rt = new \ReflectionClass('Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait');
-        foreach ($rc->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+        $rc        = new ReflectionClass($for);
+        $rt        = new ReflectionClass('Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait');
+        foreach ($rc->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             if ($rt->hasMethod($method->name) ||
                 $method->isConstructor() ||
                 $method->isFinal() ||
@@ -181,12 +185,12 @@ CODE;
         }
     }
 
-    private function generateMethod(\ReflectionMethod $method): string
+    private function generateMethod(ReflectionMethod $method) : string
     {
         $parametersString = $this->buildParametersString($method);
         $callParamsString = implode(', ', $this->getParameterNamesForDecoratedCall($method->getParameters()));
 
-        $method = <<<CODE
+        return <<<CODE
 
     /**
      * {@inheritDoc}
@@ -201,18 +205,17 @@ CODE;
     }
 
 CODE;
-        return $method;
     }
 
-    private function buildParametersString(\ReflectionMethod $method): string
+    private function buildParametersString(ReflectionMethod $method) : string
     {
-        $parameters = $method->getParameters();
+        $parameters           = $method->getParameters();
         $parameterDefinitions = [];
 
-        /** @var \ReflectionParameter $param */
+        /** @var ReflectionParameter $param */
         foreach ($parameters as $param) {
             $parameterDefinition = '';
-            $parameterType = $this->getParameterType($param);
+            $parameterType       = $this->getParameterType($param);
 
             if ($parameterType) {
                 $parameterDefinition .= $parameterType . ' ';
@@ -228,7 +231,7 @@ CODE;
                 }
             }
 
-            $parameters[]     = '$' . $param->name;
+            $parameters[]         = '$' . $param->name;
             $parameterDefinition .= '$' . $param->name;
 
             if ($param->isDefaultValueAvailable()) {
@@ -241,7 +244,7 @@ CODE;
         return implode(', ', $parameterDefinitions);
     }
 
-    private function getParameterType(\ReflectionParameter $parameter): ?string
+    private function getParameterType(ReflectionParameter $parameter) : ?string
     {
         // We need to pick the type hint class too
         if ($parameter->isArray()) {
@@ -258,7 +261,7 @@ CODE;
             if ($parameterClass) {
                 return '\\' . $parameterClass->name;
             }
-        } catch (\ReflectionException $previous) {
+        } catch (ReflectionException $previous) {
             // @todo ProxyGenerator throws specialized exceptions
             throw $previous;
         }
@@ -267,14 +270,14 @@ CODE;
     }
 
     /**
-     * @param \ReflectionParameter[] $parameters
+     * @param ReflectionParameter[] $parameters
      *
      * @return string[]
      */
-    private function getParameterNamesForDecoratedCall(array $parameters): array
+    private function getParameterNamesForDecoratedCall(array $parameters) : array
     {
         return array_map(
-            function (\ReflectionParameter $parameter) {
+            static function (ReflectionParameter $parameter) {
                 $name = '';
 
                 if (method_exists($parameter, 'isVariadic')) {
@@ -283,9 +286,7 @@ CODE;
                     }
                 }
 
-                $name .= '$' . $parameter->name;
-
-                return $name;
+                return $name . '$' . $parameter->name;
             },
             $parameters
         );
@@ -294,7 +295,7 @@ CODE;
     /**
      * @see \Doctrine\Common\Proxy\ProxyGenerator::getMethodReturnType()
      */
-    private function getMethodReturnType(\ReflectionMethod $method): string
+    private function getMethodReturnType(ReflectionMethod $method) : string
     {
         if (! method_exists($method, 'hasReturnType') || ! $method->hasReturnType()) {
             return '';
@@ -306,11 +307,11 @@ CODE;
      * @see \Doctrine\Common\Proxy\ProxyGenerator::formatType()
      */
     private function formatType(
-        \ReflectionType $type,
-        \ReflectionMethod $method,
-        ?\ReflectionParameter $parameter = null
-    ): string {
-        $name = method_exists($type, 'getName') ? $type->getName() : (string) $type;
+        ReflectionType $type,
+        ReflectionMethod $method,
+        ?ReflectionParameter $parameter = null
+    ) : string {
+        $name      = method_exists($type, 'getName') ? $type->getName() : (string) $type;
         $nameLower = strtolower($name);
         if ($nameLower === 'self') {
             $name = $method->getDeclaringClass()->getName();

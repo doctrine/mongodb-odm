@@ -25,7 +25,7 @@ final class HydratingIteratorTest extends BaseTest
     {
         $iterator = new HydratingIterator($this->getTraversable(), $this->uow, $this->dm->getClassMetadata(User::class));
 
-        $expectedKey = 0;
+        $expectedKey  = 0;
         $expectedHits = 1;
 
         foreach ($iterator as $key => $item) {

@@ -15,7 +15,7 @@ class GH1017Test extends BaseTest
     public function testSPLObjectHashCollisionOnReplacingEmbeddedDoc()
     {
         $usedHashes = [];
-        $owner = new GH1017Document();
+        $owner      = new GH1017Document();
         $this->dm->persist($owner);
         $this->dm->flush();
 
@@ -27,7 +27,7 @@ class GH1017Test extends BaseTest
             unset($owner->embedded);
 
             $owner->embedded = new GH1017EmbeddedDocument();
-            $oid = spl_object_hash($owner->embedded);
+            $oid             = spl_object_hash($owner->embedded);
             if (in_array($oid, $usedHashes)) {
                 // Collision found, let's test state of embedded doc
                 $this->assertEquals(

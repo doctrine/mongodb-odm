@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 /**
  * The Int type.
- *
  */
 class IntType extends Type
 {
@@ -20,12 +19,12 @@ class IntType extends Type
         return $value !== null ? (int) $value : null;
     }
 
-    public function closureToMongo(): string
+    public function closureToMongo() : string
     {
         return '$return = (int) $value;';
     }
 
-    public function closureToPHP(): string
+    public function closureToPHP() : string
     {
         return '$return = (int) $value;';
     }

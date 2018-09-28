@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use function iterator_to_array;
 
@@ -36,7 +37,7 @@ class CachingIteratorTest extends TestCase
     {
         $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
 
-        $expectedKey = 0;
+        $expectedKey  = 0;
         $expectedItem = 1;
 
         foreach ($iterator as $key => $item) {
@@ -57,10 +58,10 @@ class CachingIteratorTest extends TestCase
 
     public function testPartialIterationDoesNotExhaust()
     {
-        $traversable = $this->getTraversableThatThrows([1, 2, new \Exception()]);
-        $iterator = new CachingIterator($traversable);
+        $traversable = $this->getTraversableThatThrows([1, 2, new Exception()]);
+        $iterator    = new CachingIterator($traversable);
 
-        $expectedKey = 0;
+        $expectedKey  = 0;
         $expectedItem = 1;
 
         foreach ($iterator as $key => $item) {
@@ -118,7 +119,7 @@ class CachingIteratorTest extends TestCase
     private function getTraversableThatThrows($items)
     {
         foreach ($items as $item) {
-            if ($item instanceof \Exception) {
+            if ($item instanceof Exception) {
                 throw $item;
             }
 

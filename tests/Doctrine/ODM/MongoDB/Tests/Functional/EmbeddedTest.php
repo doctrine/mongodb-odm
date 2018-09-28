@@ -43,7 +43,7 @@ class EmbeddedTest extends BaseTest
 
     public function testFlushEmbedded()
     {
-        $test = new EmbeddedTestLevel0();
+        $test       = new EmbeddedTestLevel0();
         $test->name = 'test';
 
         $this->dm->persist($test);
@@ -56,8 +56,8 @@ class EmbeddedTest extends BaseTest
         // Adding this flush here makes level1 not to be inserted.
         $this->dm->flush();
 
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'test level1 #1';
+        $level1         = new EmbeddedTestLevel1();
+        $level1->name   = 'test level1 #1';
         $test->level1[] = $level1;
 
         $this->dm->flush();
@@ -68,8 +68,8 @@ class EmbeddedTest extends BaseTest
         $this->assertInstanceOf(EmbeddedTestLevel1::class, $test->level1[0]);
 
         $test->level1[0]->name = 'changed';
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'testing';
+        $level1                = new EmbeddedTestLevel1();
+        $level1->name          = 'testing';
         $test->level1->add($level1);
         $this->dm->flush();
         $this->dm->clear();
@@ -115,7 +115,7 @@ class EmbeddedTest extends BaseTest
         $this->assertEquals($addressClone, $user->getAddress());
 
         $oldAddress = $user->getAddress();
-        $address = new Address();
+        $address    = new Address();
         $address->setAddress('Someplace else');
         $user->setAddress($address);
         $this->uow->computeChangeSets();
@@ -172,12 +172,12 @@ class EmbeddedTest extends BaseTest
     public function testPostRemoveEventOnEmbeddedManyDocument()
     {
         // create a test document
-        $test = new EmbeddedTestLevel0b();
+        $test       = new EmbeddedTestLevel0b();
         $test->name = 'embedded test';
 
         // embed one level1 in test
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'test level1 #1';
+        $level1         = new EmbeddedTestLevel1();
+        $level1->name   = 'test level1 #1';
         $test->level1[] = $level1;
 
         // persist test
@@ -186,7 +186,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test   = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -207,12 +207,12 @@ class EmbeddedTest extends BaseTest
     public function testRemoveEmbeddedManyDocument()
     {
         // create a test document
-        $test = new EmbeddedTestLevel0b();
+        $test       = new EmbeddedTestLevel0b();
         $test->name = 'embedded test';
 
         // embed one level1 in test
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'test level1 #1';
+        $level1         = new EmbeddedTestLevel1();
+        $level1->name   = 'test level1 #1';
         $test->level1[] = $level1;
 
         // persist test
@@ -252,17 +252,17 @@ class EmbeddedTest extends BaseTest
     public function testRemoveDeepEmbeddedManyDocument()
     {
         // create a test document
-        $test = new EmbeddedTestLevel0b();
+        $test       = new EmbeddedTestLevel0b();
         $test->name = 'embedded test';
 
         // embed one level1 in test
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'test level1 #1';
+        $level1          = new EmbeddedTestLevel1();
+        $level1->name    = 'test level1 #1';
         $test->oneLevel1 = $level1;
 
         // embed one level2 in level1
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'test level2 #1';
+        $level2           = new EmbeddedTestLevel2();
+        $level2->name     = 'test level2 #1';
         $level1->level2[] = $level2;
 
         // persist test
@@ -271,7 +271,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test   = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -290,7 +290,7 @@ class EmbeddedTest extends BaseTest
         $this->assertEquals(0, $level1->level2->count());
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test   = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -303,17 +303,17 @@ class EmbeddedTest extends BaseTest
     public function testPostRemoveEventOnDeepEmbeddedManyDocument()
     {
         // create a test document
-        $test = new EmbeddedTestLevel0b();
+        $test       = new EmbeddedTestLevel0b();
         $test->name = 'embedded test';
 
         // embed one level1 in test
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'test level1 #1';
+        $level1          = new EmbeddedTestLevel1();
+        $level1->name    = 'test level1 #1';
         $test->oneLevel1 = $level1;
 
         // embed one level2 in level1
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'test level2 #1';
+        $level2           = new EmbeddedTestLevel2();
+        $level2->name     = 'test level2 #1';
         $level1->level2[] = $level2;
 
         // persist test
@@ -322,7 +322,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test   = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -344,22 +344,22 @@ class EmbeddedTest extends BaseTest
     public function testEmbeddedLoadEvents()
     {
         // create a test document
-        $test = new EmbeddedTestLevel0b();
+        $test       = new EmbeddedTestLevel0b();
         $test->name = 'embedded test';
 
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'test level1 #1';
+        $level1          = new EmbeddedTestLevel1();
+        $level1->name    = 'test level1 #1';
         $test->oneLevel1 = $level1;
 
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'test level2 #1';
+        $level2           = new EmbeddedTestLevel2();
+        $level2->name     = 'test level2 #1';
         $level1->level2[] = $level2;
 
         $this->dm->persist($test);
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test   = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -456,9 +456,9 @@ class EmbeddedTest extends BaseTest
 
     public function testEmbeddedDocumentNotSavedFields()
     {
-        $document = new NotSaved();
-        $document->embedded = new NotSavedEmbedded();
-        $document->embedded->name = 'foo';
+        $document                     = new NotSaved();
+        $document->embedded           = new NotSavedEmbedded();
+        $document->embedded->name     = 'foo';
         $document->embedded->notSaved = 'bar';
 
         $this->dm->persist($document);
@@ -475,8 +475,8 @@ class EmbeddedTest extends BaseTest
     {
         $originalId = (string) new ObjectId();
 
-        $test = new ChangeEmbeddedIdTest();
-        $test->embed = new EmbeddedDocumentWithId();
+        $test            = new ChangeEmbeddedIdTest();
+        $test->embed     = new EmbeddedDocumentWithId();
         $test->embed->id = $originalId;
         $this->dm->persist($test);
 
@@ -498,8 +498,8 @@ class EmbeddedTest extends BaseTest
     {
         $originalId = (string) new ObjectId();
 
-        $test = new ChangeEmbeddedIdTest();
-        $test->embedMany[] = new EmbeddedDocumentWithId();
+        $test                   = new ChangeEmbeddedIdTest();
+        $test->embedMany[]      = new EmbeddedDocumentWithId();
         $test->embedMany[0]->id = $originalId;
         $this->dm->persist($test);
 
@@ -521,8 +521,8 @@ class EmbeddedTest extends BaseTest
     {
         $originalId = (string) new ObjectId();
 
-        $test = new ChangeEmbeddedIdTest();
-        $test->embed = new EmbeddedDocumentWithId();
+        $test              = new ChangeEmbeddedIdTest();
+        $test->embed       = new EmbeddedDocumentWithId();
         $test->embedMany[] = $test->embed;
         $test->embedMany[] = $test->embed;
 
@@ -540,14 +540,14 @@ class EmbeddedTest extends BaseTest
     {
         $test1 = new ChangeEmbeddedIdTest();
 
-        $embedded = new EmbeddedDocumentWithId();
-        $embedded->id = (string) new ObjectId();
+        $embedded         = new EmbeddedDocumentWithId();
+        $embedded->id     = (string) new ObjectId();
         $test1->embedMany = [$embedded];
 
         $this->dm->persist($test1);
         $this->dm->flush();
 
-        $test2 = new ChangeEmbeddedIdTest();
+        $test2            = new ChangeEmbeddedIdTest();
         $test2->embedMany = $test1->embedMany; //using clone will work
         $this->dm->persist($test2);
 
@@ -570,7 +570,7 @@ class EmbeddedTest extends BaseTest
         $test1 = new ChangeEmbeddedIdTest();
         $test2 = new ChangeEmbeddedIdTest();
 
-        $embedded = new EmbeddedDocumentWithId();
+        $embedded     = new EmbeddedDocumentWithId();
         $embedded->id = (string) new ObjectId();
 
         $test1->embed = $embedded;
@@ -593,10 +593,10 @@ class EmbeddedTest extends BaseTest
     {
         $test1 = new ChangeEmbeddedWithNameAnnotationTest();
 
-        $embedded = new EmbeddedDocumentWithId();
+        $embedded     = new EmbeddedDocumentWithId();
         $embedded->id = (string) new ObjectId();
 
-        $firstEmbedded = new EmbedDocumentWithAnotherEmbed();
+        $firstEmbedded        = new EmbedDocumentWithAnotherEmbed();
         $firstEmbedded->embed = $embedded;
 
         $secondEmbedded = clone $firstEmbedded;

@@ -28,21 +28,21 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
     public function testNoReturnTypes()
     {
         $class = $this->generator->loadClass(CollNoReturnType::class, Configuration::AUTOGENERATE_EVAL);
-        $coll = new $class(new CollNoReturnType(), $this->dm, $this->uow);
+        $coll  = new $class(new CollNoReturnType(), $this->dm, $this->uow);
         $this->assertInstanceOf(CollNoReturnType::class, $coll);
     }
 
     public function testWithReturnType()
     {
         $class = $this->generator->loadClass(CollWithReturnType::class, Configuration::AUTOGENERATE_EVAL);
-        $coll = new $class(new CollWithReturnType(), $this->dm, $this->uow);
+        $coll  = new $class(new CollWithReturnType(), $this->dm, $this->uow);
         $this->assertInstanceOf(CollWithReturnType::class, $coll);
     }
 
     public function testWithNullableReturnType()
     {
         $class = $this->generator->loadClass(CollWithNullableReturnType::class, Configuration::AUTOGENERATE_EVAL);
-        $coll = new $class(new CollWithNullableReturnType(), $this->dm, $this->uow);
+        $coll  = new $class(new CollWithNullableReturnType(), $this->dm, $this->uow);
         $this->assertInstanceOf(CollWithNullableReturnType::class, $coll);
     }
 }

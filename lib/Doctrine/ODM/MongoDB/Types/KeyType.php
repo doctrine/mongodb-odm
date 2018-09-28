@@ -9,7 +9,6 @@ use MongoDB\BSON\MinKey;
 
 /**
  * The Key type.
- *
  */
 class KeyType extends Type
 {

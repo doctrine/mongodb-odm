@@ -68,7 +68,7 @@ class GH1572Post
 
     public function __construct(GH1572Blog $blog)
     {
-        $this->blog = $blog;
+        $this->blog       = $blog;
         $blog->allPosts[] = $this;
     }
 }

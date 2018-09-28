@@ -45,7 +45,7 @@ class GH1525Test extends BaseTest
 
     public function testEmbedCloneWithIdStrategyNoneOnParentAndEarlyPersist()
     {
-        $uuidGen = new UuidGenerator();
+        $uuidGen  = new UuidGenerator();
         $embedded = new GH1525Embedded('embedded');
 
         $count = 2;
@@ -70,12 +70,12 @@ class GH1525Test extends BaseTest
 
     public function testEmbedCloneWithIdStrategyNoneOnParentAndLatePersist()
     {
-        $uuidGen = new UuidGenerator();
+        $uuidGen  = new UuidGenerator();
         $embedded = new GH1525Embedded('embedded');
 
         $count = 2;
         for ($i = 0; $i < $count; ++$i) {
-            $parent = new GH1525DocumentIdStrategyNone($uuidGen->generateV4(), 'test' . $i);
+            $parent           = new GH1525DocumentIdStrategyNone($uuidGen->generateV4(), 'test' . $i);
             $parent->embedded = $embedded;
             $this->dm->persist($parent);
             $this->dm->flush();
@@ -111,7 +111,7 @@ class GH1525Document
 
     public function __construct($name)
     {
-        $this->name = $name;
+        $this->name      = $name;
         $this->embedMany = new ArrayCollection();
     }
 }
@@ -130,7 +130,7 @@ class GH1525DocumentIdStrategyNone
 
     public function __construct($id, $name)
     {
-        $this->id = $id;
+        $this->id   = $id;
         $this->name = $name;
     }
 }

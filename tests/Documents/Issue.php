@@ -19,7 +19,7 @@ class Issue
 
     public function __construct($name, $description)
     {
-        $this->name = $name;
+        $this->name        = $name;
         $this->description = $description;
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
@@ -61,12 +62,12 @@ class FunctionalTest extends BaseTest
      */
     public function testUpsertObject($className, $id, $discriminator)
     {
-        $user = new $className();
-        $user->id = (string) $id;
+        $user           = new $className();
+        $user->id       = (string) $id;
         $user->username = 'test';
-        $user->count = 1;
-        $group = new Group('Group');
-        $user->groups = [$group];
+        $user->count    = 1;
+        $group          = new Group('Group');
+        $user->groups   = [$group];
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
@@ -81,11 +82,11 @@ class FunctionalTest extends BaseTest
 
         $group2 = new Group('Group');
 
-        $user = new $className();
-        $user->id = $id;
-        $user->hits = 5;
-        $user->count = 2;
-        $user->groups = [$group2];
+        $user                = new $className();
+        $user->id            = $id;
+        $user->hits          = 5;
+        $user->count         = 2;
+        $user->groups        = [$group2];
         $user->nullableField = 'foo';
         $this->dm->persist($user);
         $this->dm->flush();
@@ -102,8 +103,8 @@ class FunctionalTest extends BaseTest
         $this->assertEquals('test', $check['username']);
         $this->assertEquals('foo', $check['nullableField']);
 
-        $user = new $className();
-        $user->id = $id;
+        $user       = new $className();
+        $user->id   = $id;
         $user->hits = 100;
         $this->dm->persist($user);
         $this->dm->flush();
@@ -128,7 +129,7 @@ class FunctionalTest extends BaseTest
 
     public function testNestedCategories()
     {
-        $root = new Category('Root');
+        $root   = new Category('Root');
         $child1 = new SubCategory('Child 1');
         $child2 = new SubCategory('Child 2');
         $child1->addChild($child2);
@@ -215,7 +216,7 @@ class FunctionalTest extends BaseTest
 
     public function testPersistingNewDocumentWithOnlyOneReference()
     {
-        $server = new GuestServer();
+        $server       = new GuestServer();
         $server->name = 'test';
         $this->dm->persist($server);
         $this->dm->flush();
@@ -225,7 +226,7 @@ class FunctionalTest extends BaseTest
 
         $server = $this->dm->getReference(GuestServer::class, $id);
 
-        $agent = new Agent();
+        $agent         = new Agent();
         $agent->server = $server;
         $this->dm->persist($agent);
         $this->dm->flush();
@@ -248,7 +249,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $coll = $this->dm->getDocumentCollection(User::class);
+        $coll     = $this->dm->getDocumentCollection(User::class);
         $document = $coll->findOne(['username' => 'joncolltest']);
         $this->assertCount(2, $document['logs']);
 
@@ -385,7 +386,7 @@ class FunctionalTest extends BaseTest
         $employee = new Employee();
         $employee->setName('Employee');
         $employee->setSalary(50000.00);
-        $employee->setStarted(new \DateTime());
+        $employee->setStarted(new DateTime());
 
         $address = new Address();
         $address->setAddress('555 Doctrine Rd.');
@@ -398,7 +399,7 @@ class FunctionalTest extends BaseTest
         $manager = new Manager();
         $manager->setName('Manager');
         $manager->setSalary(100000.00);
-        $manager->setStarted(new \DateTime());
+        $manager->setStarted(new DateTime());
         $manager->addProject($project);
 
         $this->dm->persist($employee);
@@ -432,8 +433,8 @@ class FunctionalTest extends BaseTest
     {
         $this->dm->getDocumentCollection(NotAnnotatedDocument::class)->drop();
 
-        $test = new NotAnnotatedDocument();
-        $test->field = 'test';
+        $test                 = new NotAnnotatedDocument();
+        $test->field          = 'test';
         $test->transientField = 'w00t';
         $this->dm->persist($test);
         $this->dm->flush();
@@ -448,7 +449,7 @@ class FunctionalTest extends BaseTest
     {
         $this->dm->getDocumentCollection(NullFieldValues::class)->drop();
 
-        $test = new NullFieldValues();
+        $test        = new NullFieldValues();
         $test->field = null;
         $this->dm->persist($test);
         $this->dm->flush();
@@ -461,7 +462,7 @@ class FunctionalTest extends BaseTest
         $this->assertNotNull($document);
         $this->assertNull($document['field']);
 
-        $document = $this->dm->find(NullFieldValues::class, $test->id);
+        $document        = $this->dm->find(NullFieldValues::class, $test->id);
         $document->field = 'test';
         $this->dm->flush();
         $this->dm->clear();
@@ -503,8 +504,8 @@ class FunctionalTest extends BaseTest
         $this->assertEquals('Jonathan Wage', $notSaved->name);
         $this->assertEquals('test', $notSaved->notSaved);
 
-        $notSaved = new NotSaved();
-        $notSaved->name = 'Roman Borschel';
+        $notSaved           = new NotSaved();
+        $notSaved->name     = 'Roman Borschel';
         $notSaved->notSaved = 'test';
         $this->dm->persist($notSaved);
         $this->dm->flush();
@@ -601,7 +602,7 @@ class FunctionalTest extends BaseTest
         $this->assertTrue(isset($test['favorite']['_doctrine_class_name']));
         $this->assertEquals(Project::class, $test['favorite']['_doctrine_class_name']);
 
-        $user = $this->dm->getRepository(FavoritesUser::class)->findOneBy(['name' => 'favorites']);
+        $user      = $this->dm->getRepository(FavoritesUser::class)->findOneBy(['name' => 'favorites']);
         $favorites = $user->getFavorites();
         $this->assertInstanceOf(Project::class, $favorites[0]);
         $this->assertInstanceOf(Group::class, $favorites[1]);
@@ -616,19 +617,19 @@ class FunctionalTest extends BaseTest
 
     public function testPreUpdate()
     {
-        $product = new PreUpdateTestProduct();
+        $product       = new PreUpdateTestProduct();
         $product->name = 'Product';
 
-        $seller = new PreUpdateTestSeller();
+        $seller       = new PreUpdateTestSeller();
         $seller->name = 'Seller';
 
         $this->dm->persist($seller);
         $this->dm->persist($product);
         $this->dm->flush();
 
-        $sellable = new PreUpdateTestSellable();
+        $sellable          = new PreUpdateTestSellable();
         $sellable->product = $product;
-        $sellable->seller = $seller;
+        $sellable->seller  = $seller;
 
         $product->sellable = $sellable;
 
@@ -641,15 +642,15 @@ class FunctionalTest extends BaseTest
         $this->assertInstanceOf(PreUpdateTestProduct::class, $product->sellable->getProduct());
         $this->assertInstanceOf(PreUpdateTestSeller::class, $product->sellable->getSeller());
 
-        $product = new PreUpdateTestProduct();
+        $product       = new PreUpdateTestProduct();
         $product->name = 'Product2';
 
         $this->dm->persist($product);
         $this->dm->flush();
 
-        $sellable = new PreUpdateTestSellable();
+        $sellable          = new PreUpdateTestSellable();
         $sellable->product = $product;
-        $sellable->seller = $this->dm->getRepository(PreUpdateTestSeller::class)->findOneBy(['name' => 'Seller']);
+        $sellable->seller  = $this->dm->getRepository(PreUpdateTestSeller::class)->findOneBy(['name' => 'Seller']);
 
         $product->sellable = $sellable;
 
@@ -663,16 +664,16 @@ class FunctionalTest extends BaseTest
 
     public function testSameCollectionTest()
     {
-        $test1 = new SameCollection1();
+        $test1       = new SameCollection1();
         $test1->name = 'test1';
         $this->dm->persist($test1);
 
-        $test2 = new SameCollection2();
+        $test2       = new SameCollection2();
         $test2->name = 'test2';
         $this->dm->persist($test2);
         $this->dm->flush();
 
-        $test3 = new SameCollection3();
+        $test3       = new SameCollection3();
         $test3->name = 'test3';
         $this->dm->persist($test3);
         $this->dm->flush();
@@ -692,20 +693,20 @@ class FunctionalTest extends BaseTest
         $test = $this->dm->getRepository(SameCollection2::class)->findOneBy(['name' => 'test1']);
         $this->assertNull($test);
 
-        $qb = $this->dm->createQueryBuilder([
+        $qb   = $this->dm->createQueryBuilder([
             SameCollection1::class,
             SameCollection2::class,
         ]);
-        $q = $qb->getQuery();
+        $q    = $qb->getQuery();
         $test = $q->execute()->toArray();
         $this->assertCount(3, $test);
 
         $test = $this->dm->getRepository(SameCollection1::class)->findAll();
         $this->assertCount(2, $test);
 
-        $qb = $this->dm->createQueryBuilder(SameCollection1::class);
+        $qb    = $this->dm->createQueryBuilder(SameCollection1::class);
         $query = $qb->getQuery();
-        $test = $query->execute()->toArray();
+        $test  = $query->execute()->toArray();
         $this->assertCount(2, $test);
     }
 
@@ -715,30 +716,30 @@ class FunctionalTest extends BaseTest
     public function testNotSameCollectionThrowsException()
     {
         $test = $this->dm->createQueryBuilder([
-             User::class,
-             Profile::class,
+            User::class,
+            Profile::class,
         ])->getQuery()->execute();
     }
 
     public function testEmbeddedNesting()
     {
-        $test = new EmbeddedTestLevel0();
+        $test       = new EmbeddedTestLevel0();
         $test->name = 'test';
 
-        $level1_0 = new EmbeddedTestLevel1();
-        $level1_0->name = 'test level1 #1';
+        $level1_0        = new EmbeddedTestLevel1();
+        $level1_0->name  = 'test level1 #1';
         $test->level1[0] = $level1_0;
 
-        $level1_1 = new EmbeddedTestLevel1();
-        $level1_1->name = 'test level1 #2';
+        $level1_1        = new EmbeddedTestLevel1();
+        $level1_1->name  = 'test level1 #2';
         $test->level1[1] = $level1_1;
 
-        $level2_0 = new EmbeddedTestLevel2();
-        $level2_0->name = 'test level2 #1';
+        $level2_0            = new EmbeddedTestLevel2();
+        $level2_0->name      = 'test level2 #1';
         $level1_1->level2[0] = $level2_0;
 
-        $level2_1 = new EmbeddedTestLevel2();
-        $level2_1->name = 'test level2 #2';
+        $level2_1            = new EmbeddedTestLevel2();
+        $level2_1->name      = 'test level2 #2';
         $level1_1->level2[1] = $level2_1;
 
         $this->dm->persist($test);
@@ -758,12 +759,12 @@ class FunctionalTest extends BaseTest
     public function testEmbeddedInheritance()
     {
         // create a level0b (inherits from level0)
-        $test = new EmbeddedTestLevel0b();
+        $test       = new EmbeddedTestLevel0b();
         $test->name = 'test b';
 
         // embed a level1
-        $level1 = new EmbeddedTestLevel1();
-        $level1->name = 'level 1';
+        $level1          = new EmbeddedTestLevel1();
+        $level1->name    = 'level 1';
         $test->oneLevel1 = $level1;
 
         // save the level0b
@@ -775,8 +776,8 @@ class FunctionalTest extends BaseTest
         $test = $this->dm->find(EmbeddedTestLevel0b::class, $test->id);
 
         // add a level2 in the level0b.level1
-        $level2 = new EmbeddedTestLevel2();
-        $level2->name = 'level 2';
+        $level2                    = new EmbeddedTestLevel2();
+        $level2->name              = 'level 2';
         $test->oneLevel1->level2[] = $level2;
 
         // OK, there is one level2
@@ -873,8 +874,8 @@ class FunctionalTest extends BaseTest
 
     public function testFunctionalParentAssociations()
     {
-        $a = new ParentAssociationTestA('a');
-        $a->child = new ParentAssociationTestB('b');
+        $a                    = new ParentAssociationTestA('a');
+        $a->child             = new ParentAssociationTestB('b');
         $a->child->children[] = new ParentAssociationTestC('c1');
         $a->child->children[] = new ParentAssociationTestC('c2');
         $this->dm->persist($a);
@@ -882,13 +883,13 @@ class FunctionalTest extends BaseTest
 
         $unitOfWork = $this->dm->getUnitOfWork();
 
-        list($mapping, $document) = $unitOfWork->getParentAssociation($a->child->children[0]);
+        [$mapping, $document] = $unitOfWork->getParentAssociation($a->child->children[0]);
         $this->assertSame($a->child, $document);
 
-        list($mapping, $document) = $unitOfWork->getParentAssociation($a->child->children[1]);
+        [$mapping, $document] = $unitOfWork->getParentAssociation($a->child->children[1]);
         $this->assertSame($a->child, $document);
 
-        list($mapping, $document) = $unitOfWork->getParentAssociation($a->child);
+        [$mapping, $document] = $unitOfWork->getParentAssociation($a->child);
         $this->assertSame($a, $document);
     }
 }

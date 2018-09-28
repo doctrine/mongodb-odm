@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Closure;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
@@ -28,6 +30,7 @@ use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use Throwable;
 use function get_class;
 use function spl_object_hash;
 use function sprintf;
@@ -38,7 +41,7 @@ class UnitOfWorkTest extends BaseTest
     public function testIsDocumentScheduled()
     {
         $class = $this->dm->getClassMetadata(ForumUser::class);
-        $user = new ForumUser();
+        $user  = new ForumUser();
         $this->assertFalse($this->uow->isDocumentScheduled($user));
         $this->uow->scheduleForInsert($class, $user);
         $this->assertTrue($this->uow->isDocumentScheduled($user));
@@ -47,7 +50,7 @@ class UnitOfWorkTest extends BaseTest
     public function testScheduleForInsert()
     {
         $class = $this->dm->getClassMetadata(ForumUser::class);
-        $user = new ForumUser();
+        $user  = new ForumUser();
         $this->assertFalse($this->uow->isScheduledForInsert($user));
         $this->uow->scheduleForInsert($class, $user);
         $this->assertTrue($this->uow->isScheduledForInsert($user));
@@ -55,8 +58,8 @@ class UnitOfWorkTest extends BaseTest
 
     public function testScheduleForUpsert()
     {
-        $class = $this->dm->getClassMetadata(ForumUser::class);
-        $user = new ForumUser();
+        $class    = $this->dm->getClassMetadata(ForumUser::class);
+        $user     = new ForumUser();
         $user->id = new ObjectId();
         $this->assertFalse($this->uow->isScheduledForInsert($user));
         $this->assertFalse($this->uow->isScheduledForUpsert($user));
@@ -67,8 +70,8 @@ class UnitOfWorkTest extends BaseTest
 
     public function testGetScheduledDocumentUpserts()
     {
-        $class = $this->dm->getClassMetadata(ForumUser::class);
-        $user = new ForumUser();
+        $class    = $this->dm->getClassMetadata(ForumUser::class);
+        $user     = new ForumUser();
         $user->id = new ObjectId();
         $this->assertEmpty($this->uow->getScheduledDocumentUpserts());
         $this->uow->scheduleForUpsert($class, $user);
@@ -77,8 +80,8 @@ class UnitOfWorkTest extends BaseTest
 
     public function testScheduleForEmbeddedUpsert()
     {
-        $class = $this->dm->getClassMetadata(ForumUser::class);
-        $test = new EmbeddedUpsertDocument();
+        $class    = $this->dm->getClassMetadata(ForumUser::class);
+        $test     = new EmbeddedUpsertDocument();
         $test->id = (string) new ObjectId();
         $this->assertFalse($this->uow->isScheduledForInsert($test));
         $this->assertFalse($this->uow->isScheduledForUpsert($test));
@@ -89,9 +92,9 @@ class UnitOfWorkTest extends BaseTest
 
     public function testScheduleForUpsertWithNonObjectIdValues()
     {
-        $doc = new UowCustomIdDocument();
+        $doc     = new UowCustomIdDocument();
         $doc->id = 'string';
-        $class = $this->dm->getClassMetadata(get_class($doc));
+        $class   = $this->dm->getClassMetadata(get_class($doc));
         $this->assertFalse($this->uow->isScheduledForInsert($doc));
         $this->assertFalse($this->uow->isScheduledForUpsert($doc));
         $this->uow->scheduleForUpsert($class, $doc);
@@ -101,8 +104,8 @@ class UnitOfWorkTest extends BaseTest
 
     public function testScheduleForInsertShouldNotUpsertDocumentsWithInconsistentIdValues()
     {
-        $class = $this->dm->getClassMetadata(ForumUser::class);
-        $user = new ForumUser();
+        $class    = $this->dm->getClassMetadata(ForumUser::class);
+        $user     = new ForumUser();
         $user->id = 1;
         $this->assertFalse($this->uow->isScheduledForInsert($user));
         $this->assertFalse($this->uow->isScheduledForUpsert($user));
@@ -113,7 +116,7 @@ class UnitOfWorkTest extends BaseTest
 
     public function testRegisterRemovedOnNewEntityIsIgnored()
     {
-        $user = new ForumUser();
+        $user           = new ForumUser();
         $user->username = 'romanb';
         $this->assertFalse($this->uow->isScheduledForDelete($user));
         $this->uow->scheduleForDelete($user);
@@ -123,13 +126,13 @@ class UnitOfWorkTest extends BaseTest
     public function testSavingSingleDocumentWithIdentityFieldForcesInsert()
     {
         // Setup fake persister and id generator for identity generation
-        $pb = $this->getMockPersistenceBuilder();
-        $class = $this->dm->getClassMetadata(ForumUser::class);
+        $pb            = $this->getMockPersistenceBuilder();
+        $class         = $this->dm->getClassMetadata(ForumUser::class);
         $userPersister = $this->getMockDocumentPersister($pb, $class);
         $this->uow->setDocumentPersister(ForumUser::class, $userPersister);
 
         // Test
-        $user = new ForumUser();
+        $user           = new ForumUser();
         $user->username = 'romanb';
         $this->uow->persist($user);
 
@@ -164,22 +167,22 @@ class UnitOfWorkTest extends BaseTest
     {
         // Setup fake persister and id generator for identity generation
         //ForumUser
-        $pb = $this->getMockPersistenceBuilder();
-        $class = $this->dm->getClassMetadata(ForumUser::class);
+        $pb            = $this->getMockPersistenceBuilder();
+        $class         = $this->dm->getClassMetadata(ForumUser::class);
         $userPersister = $this->getMockDocumentPersister($pb, $class);
         $this->uow->setDocumentPersister(ForumUser::class, $userPersister);
 
         // ForumAvatar
-        $pb = $this->getMockPersistenceBuilder();
-        $class = $this->dm->getClassMetadata(ForumAvatar::class);
+        $pb              = $this->getMockPersistenceBuilder();
+        $class           = $this->dm->getClassMetadata(ForumAvatar::class);
         $avatarPersister = $this->getMockDocumentPersister($pb, $class);
         $this->uow->setDocumentPersister(ForumAvatar::class, $avatarPersister);
 
         // Test
-        $user = new ForumUser();
+        $user           = new ForumUser();
         $user->username = 'romanb';
-        $avatar = new ForumAvatar();
-        $user->avatar = $avatar;
+        $avatar         = new ForumAvatar();
+        $user->avatar   = $avatar;
         $this->uow->persist($user); // save cascaded to avatar
 
         $this->uow->commit();
@@ -200,11 +203,11 @@ class UnitOfWorkTest extends BaseTest
     {
         $pb = $this->getMockPersistenceBuilder();
 
-        $class = $this->dm->getClassMetadata(NotifyChangedDocument::class);
+        $class     = $this->dm->getClassMetadata(NotifyChangedDocument::class);
         $persister = $this->getMockDocumentPersister($pb, $class);
         $this->uow->setDocumentPersister($class->name, $persister);
 
-        $class = $this->dm->getClassMetadata(NotifyChangedRelatedItem::class);
+        $class         = $this->dm->getClassMetadata(NotifyChangedRelatedItem::class);
         $itemPersister = $this->getMockDocumentPersister($pb, $class);
         $this->uow->setDocumentPersister($class->name, $itemPersister);
 
@@ -257,12 +260,12 @@ class UnitOfWorkTest extends BaseTest
 
     public function testGetDocumentStateWithAssignedIdentity()
     {
-        $pb = $this->getMockPersistenceBuilder();
-        $class = $this->dm->getClassMetadata(CmsPhonenumber::class);
+        $pb        = $this->getMockPersistenceBuilder();
+        $class     = $this->dm->getClassMetadata(CmsPhonenumber::class);
         $persister = $this->getMockDocumentPersister($pb, $class);
         $this->uow->setDocumentPersister(CmsPhonenumber::class, $persister);
 
-        $ph = new CmsPhonenumber();
+        $ph              = new CmsPhonenumber();
         $ph->phonenumber = '12345';
 
         $this->assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($ph));
@@ -274,7 +277,7 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->registerManaged($ph, '12345', []);
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($ph));
         $this->assertFalse($persister->isExistsCalled());
-        $ph2 = new CmsPhonenumber();
+        $ph2              = new CmsPhonenumber();
         $ph2->phonenumber = '12345';
         $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->uow->getDocumentState($ph2));
         $this->assertFalse($persister->isExistsCalled());
@@ -299,7 +302,7 @@ class UnitOfWorkTest extends BaseTest
         $d = new ParentAssociationTest('c');
 
         $documentManager = $this->getDocumentManager();
-        $unitOfWork = $this->getUnitOfWork($documentManager);
+        $unitOfWork      = $this->getUnitOfWork($documentManager);
         $unitOfWork->setParentAssociation($b, ['name' => 'b'], $a, 'b');
         $unitOfWork->setParentAssociation($c, ['name' => 'c'], $b, 'b.c');
         $unitOfWork->setParentAssociation($d, ['name' => 'd'], $c, 'b.c.d');
@@ -315,7 +318,7 @@ class UnitOfWorkTest extends BaseTest
         $this->dm->getEventManager()->addEventSubscriber(
             new PreUpdateListenerMock()
         );
-        $user = new ForumUser();
+        $user           = new ForumUser();
         $user->username = '12345';
 
         $this->dm->persist($user);
@@ -328,8 +331,8 @@ class UnitOfWorkTest extends BaseTest
 
     public function testNotSaved()
     {
-        $test = new NotSaved();
-        $test->name = 'test';
+        $test           = new NotSaved();
+        $test->name     = 'test';
         $test->notSaved = 'Jon';
         $this->dm->persist($test);
 
@@ -338,18 +341,18 @@ class UnitOfWorkTest extends BaseTest
         $this->assertArrayNotHasKey('notSaved', $changeset);
     }
 
-    public function testNoUpdatesOnGridFSFields(): void
+    public function testNoUpdatesOnGridFSFields() : void
     {
         $file = new File();
 
-        $access = \Closure::bind(function (string $property, $value): void {
+        $access = Closure::bind(function (string $property, $value) : void {
             $this->$property = $value;
         }, $file, $file);
 
         $access('id', 1234);
         $access('filename', 'foo');
         $access('length', 123);
-        $access('uploadDate', new \DateTime());
+        $access('uploadDate', new DateTime());
         $access('chunkSize', 1234);
 
         $owner = new User();
@@ -362,7 +365,7 @@ class UnitOfWorkTest extends BaseTest
             'filename' => 'file.txt',
             'chunkSize' => 256,
             'length' => 0,
-            'uploadDate' => new \DateTime(),
+            'uploadDate' => new DateTime(),
         ];
 
         $this->uow->registerManaged($file, spl_object_hash($file), $data);
@@ -376,11 +379,11 @@ class UnitOfWorkTest extends BaseTest
         $this->assertArrayHasKey('metadata', $changeset);
     }
 
-    public function testComputingChangesetForFileWithoutMetadataThrowsNoError(): void
+    public function testComputingChangesetForFileWithoutMetadataThrowsNoError() : void
     {
         $file = new FileWithoutMetadata();
 
-        $access = \Closure::bind(function (string $property, $value): void {
+        $access = Closure::bind(function (string $property, $value) : void {
             $this->$property = $value;
         }, $file, $file);
 
@@ -404,8 +407,8 @@ class UnitOfWorkTest extends BaseTest
      */
     public function testScheduleForUpdateWithArrays($origData, $updateData, $shouldInUpdate)
     {
-        $pb = $this->getMockPersistenceBuilder();
-        $class = $this->dm->getClassMetadata(ArrayTest::class);
+        $pb        = $this->getMockPersistenceBuilder();
+        $class     = $this->dm->getClassMetadata(ArrayTest::class);
         $persister = $this->getMockDocumentPersister($pb, $class);
         $this->uow->setDocumentPersister(ArrayTest::class, $persister);
 
@@ -478,7 +481,7 @@ class UnitOfWorkTest extends BaseTest
     public function testRegisterManagedEmbeddedDocumentWithMappedIdAndNullValue()
     {
         $document = new EmbeddedDocumentWithId();
-        $oid = spl_object_hash($document);
+        $oid      = spl_object_hash($document);
 
         $this->uow->registerManaged($document, null, []);
 
@@ -488,7 +491,7 @@ class UnitOfWorkTest extends BaseTest
     public function testRegisterManagedEmbeddedDocumentWithoutMappedId()
     {
         $document = new EmbeddedDocumentWithoutId();
-        $oid = spl_object_hash($document);
+        $oid      = spl_object_hash($document);
 
         $this->uow->registerManaged($document, null, []);
 
@@ -498,14 +501,14 @@ class UnitOfWorkTest extends BaseTest
     public function testRegisterManagedEmbeddedDocumentWithMappedIdStrategyNoneAndNullValue()
     {
         $document = new EmbeddedDocumentWithIdStrategyNone();
-        $oid = spl_object_hash($document);
+        $oid      = spl_object_hash($document);
 
         $this->uow->registerManaged($document, null, []);
 
         $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
 
-    public function testPersistNewGridFSFile(): void
+    public function testPersistNewGridFSFile() : void
     {
         $file = new File();
 
@@ -517,7 +520,7 @@ class UnitOfWorkTest extends BaseTest
 
     public function testPersistRemovedDocument()
     {
-        $user = new ForumUser();
+        $user           = new ForumUser();
         $user->username = 'jwage';
 
         $this->uow->persist($user);
@@ -540,7 +543,7 @@ class UnitOfWorkTest extends BaseTest
 
     public function testRemovePersistedButNotFlushedDocument()
     {
-        $user = new ForumUser();
+        $user           = new ForumUser();
         $user->username = 'jwage';
 
         $this->uow->persist($user);
@@ -552,7 +555,7 @@ class UnitOfWorkTest extends BaseTest
 
     public function testPersistRemovedEmbeddedDocument()
     {
-        $test = new PersistRemovedEmbeddedDocument();
+        $test           = new PersistRemovedEmbeddedDocument();
         $test->embedded = new EmbeddedDocumentWithId();
         $this->uow->persist($test);
         $this->uow->commit();
@@ -581,7 +584,7 @@ class UnitOfWorkTest extends BaseTest
     public function testPersistingEmbeddedDocumentWithoutIdentifier()
     {
         $address = new Address();
-        $user = new User();
+        $user    = new User();
         $user->setAddress($address);
 
         $this->assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($address));
@@ -604,7 +607,7 @@ class UnitOfWorkTest extends BaseTest
     public function testEmbeddedDocumentChangeSets()
     {
         $address = new Address();
-        $user = new User();
+        $user    = new User();
         $user->setAddress($address);
 
         $this->uow->persist($user);
@@ -632,22 +635,22 @@ class UnitOfWorkTest extends BaseTest
             'discriminatorMap' => ['forum_user' => ForumUser::class],
             'targetDocument' => User::class,
         ];
-        $data = ['type' => 'forum_user'];
+        $data    = ['type' => 'forum_user'];
 
         $this->assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
     }
 
     public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap()
     {
-        $dm = $this->getMockDocumentManager();
+        $dm  = $this->getMockDocumentManager();
         $uow = new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory());
 
         $mapping = ['targetDocument' => User::class];
-        $data = ['type' => 'forum_user'];
+        $data    = ['type' => 'forum_user'];
 
-        $userClassMetadata = new ClassMetadata(ForumUser::class);
+        $userClassMetadata                     = new ClassMetadata(ForumUser::class);
         $userClassMetadata->discriminatorField = 'type';
-        $userClassMetadata->discriminatorMap = ['forum_user' => ForumUser::class];
+        $userClassMetadata->discriminatorMap   = ['forum_user' => ForumUser::class];
 
         $dm->expects($this->once())
             ->method('getClassMetadata')
@@ -665,7 +668,7 @@ class UnitOfWorkTest extends BaseTest
 
     public function testRecomputeChangesetForUninitializedProxyDoesNotCreateChangeset()
     {
-        $user = new ForumUser();
+        $user           = new ForumUser();
         $user->username = '12345';
         $user->setAvatar(new ForumAvatar());
 
@@ -692,12 +695,12 @@ class UnitOfWorkTest extends BaseTest
         $this->dm->getEventManager()->addEventSubscriber(
             new ExceptionThrowingListenerMock()
         );
-        $user = new ForumUser();
+        $user           = new ForumUser();
         $user->username = '12345';
 
         $this->dm->persist($user);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(Throwable::class);
         $this->expectExceptionMessage('This should not happen');
 
         $this->dm->flush();
@@ -752,7 +755,7 @@ class UnitOfWorkTest extends BaseTest
 
     protected function getClassMetadata($class, $flag)
     {
-        $classMetadata = new ClassMetadata($class);
+        $classMetadata                          = new ClassMetadata($class);
         $classMetadata->{'is' . ucfirst($flag)} = true;
         return $classMetadata;
     }

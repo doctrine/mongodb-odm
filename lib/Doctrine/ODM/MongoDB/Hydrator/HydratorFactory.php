@@ -35,7 +35,6 @@ use function uniqid;
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
  * type based on document's ClassMetadata
- *
  */
 class HydratorFactory
 {
@@ -99,17 +98,17 @@ class HydratorFactory
         if (! $hydratorNs) {
             throw HydratorException::hydratorNamespaceRequired();
         }
-        $this->dm = $dm;
-        $this->evm = $evm;
-        $this->hydratorDir = $hydratorDir;
+        $this->dm                = $dm;
+        $this->evm               = $evm;
+        $this->hydratorDir       = $hydratorDir;
         $this->hydratorNamespace = $hydratorNs;
-        $this->autoGenerate = $autoGenerate;
+        $this->autoGenerate      = $autoGenerate;
     }
 
     /**
      * Sets the UnitOfWork instance.
      */
-    public function setUnitOfWork(UnitOfWork $uow): void
+    public function setUnitOfWork(UnitOfWork $uow) : void
     {
         $this->unitOfWork = $uow;
     }
@@ -117,14 +116,14 @@ class HydratorFactory
     /**
      * Gets the hydrator object for the given document class.
      */
-    public function getHydratorFor(string $className): HydratorInterface
+    public function getHydratorFor(string $className) : HydratorInterface
     {
         if (isset($this->hydrators[$className])) {
             return $this->hydrators[$className];
         }
         $hydratorClassName = str_replace('\\', '', $className) . 'Hydrator';
-        $fqn = $this->hydratorNamespace . '\\' . $hydratorClassName;
-        $class = $this->dm->getClassMetadata($className);
+        $fqn               = $this->hydratorNamespace . '\\' . $hydratorClassName;
+        $class             = $this->dm->getClassMetadata($className);
 
         if (! class_exists($fqn, false)) {
             $fileName = $this->hydratorDir . DIRECTORY_SEPARATOR . $hydratorClassName . '.php';
@@ -162,13 +161,13 @@ class HydratorFactory
      *                        directory configured on the Configuration of the DocumentManager used
      *                        by this factory is used.
      */
-    public function generateHydratorClasses(array $classes, ?string $toDir = null): void
+    public function generateHydratorClasses(array $classes, ?string $toDir = null) : void
     {
         $hydratorDir = $toDir ?: $this->hydratorDir;
         $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         foreach ($classes as $class) {
             $hydratorClassName = str_replace('\\', '', $class->name) . 'Hydrator';
-            $hydratorFileName = $hydratorDir . $hydratorClassName . '.php';
+            $hydratorFileName  = $hydratorDir . $hydratorClassName . '.php';
             $this->generateHydratorClass($class, $hydratorClassName, $hydratorFileName);
         }
     }
@@ -176,7 +175,7 @@ class HydratorFactory
     /**
      * @param string|false $fileName Filename where class code to be written or false to eval code.
      */
-    private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, $fileName): void
+    private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, $fileName) : void
     {
         $code = '';
 
@@ -354,7 +353,7 @@ EOF
         }
 
         $namespace = $this->hydratorNamespace;
-        $code = sprintf(
+        $code      = sprintf(
             <<<EOF
 <?php
 
@@ -420,7 +419,7 @@ EOF
      *
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
      */
-    public function hydrate(object $document, array $data, array $hints = []): array
+    public function hydrate(object $document, array $data, array $hints = []) : array
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners

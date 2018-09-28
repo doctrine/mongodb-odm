@@ -23,7 +23,7 @@ class QueryExpressionVisitorTest extends BaseTest
     {
         parent::setUp();
         $this->queryBuilder = $this->dm->createQueryBuilder(Bar::class);
-        $this->visitor = new QueryExpressionVisitor($this->queryBuilder);
+        $this->visitor      = new QueryExpressionVisitor($this->queryBuilder);
     }
 
     /**
@@ -75,11 +75,11 @@ class QueryExpressionVisitorTest extends BaseTest
         );
 
         $expectedQuery = [
-        '$and' => [
-            ['a' => 1],
-            ['a' => ['$ne' => 2]],
-            ['b' => 3],
-        ],
+            '$and' => [
+                ['a' => 1],
+                ['a' => ['$ne' => 2]],
+                ['b' => 3],
+            ],
         ];
 
         $expr = $this->visitor->dispatch($compositeExpr);
@@ -94,7 +94,7 @@ class QueryExpressionVisitorTest extends BaseTest
     public function testWalkCompositeExpressionShouldThrowExceptionForUnsupportedComposite()
     {
         $compositeExpr = new CompositeExpression('invalidComposite', []);
-        $expr = $this->visitor->dispatch($compositeExpr);
+        $expr          = $this->visitor->dispatch($compositeExpr);
     }
 
     public function testWalkValue()

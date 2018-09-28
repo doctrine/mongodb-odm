@@ -71,7 +71,7 @@ class Offer
 
     public function __construct($name)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->links = new ArrayCollection();
     }
 }
@@ -90,7 +90,7 @@ class Link
 
     public function __construct($url)
     {
-        $this->url = $url;
+        $this->url                 = $url;
         $this->referencedDocuments = new ArrayCollection();
     }
 }

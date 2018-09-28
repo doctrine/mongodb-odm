@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
+use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Article;
@@ -34,7 +35,7 @@ class BuilderTest extends BaseTest
                 ],
             ],
             [
-            '$match' =>
+                '$match' =>
                 [
                     '$or' => [
                         ['username' => 'admin'],
@@ -45,7 +46,7 @@ class BuilderTest extends BaseTest
             ],
             ['$sample' => ['size' => 10]],
             [
-            '$lookup' =>
+                '$lookup' =>
                 [
                     'from' => 'orders',
                     'localField' => '_id',
@@ -56,7 +57,7 @@ class BuilderTest extends BaseTest
             ['$unwind' => 'a'],
             ['$unwind' => 'b'],
             [
-            '$redact' =>
+                '$redact' =>
                 [
                     '$cond' => [
                         'if' => ['$lte' => ['$accessLevel', 3]],
@@ -66,7 +67,7 @@ class BuilderTest extends BaseTest
                 ],
             ],
             [
-            '$project' =>
+                '$project' =>
                 [
                     '_id' => false,
                     'user' => true,
@@ -87,7 +88,7 @@ class BuilderTest extends BaseTest
                 ],
             ],
             [
-            '$group' =>
+                '$group' =>
                 [
                     '_id' => '$user',
                     'numOrders' => ['$sum' => 1],
@@ -193,8 +194,8 @@ class BuilderTest extends BaseTest
 
     public function testPipelineConvertsTypes()
     {
-        $builder = $this->dm->createAggregationBuilder(Article::class);
-        $dateTime = new \DateTimeImmutable('2000-01-01T00:00Z');
+        $builder  = $this->dm->createAggregationBuilder(Article::class);
+        $dateTime = new DateTimeImmutable('2000-01-01T00:00Z');
         $builder
             ->group()
                 ->field('id')
@@ -344,22 +345,22 @@ class BuilderTest extends BaseTest
         $baseballTag = new Tag('baseball');
         $footballTag = new Tag('football');
 
-        $blogPost = new BlogPost();
+        $blogPost       = new BlogPost();
         $blogPost->name = 'Test 1';
         $blogPost->addTag($baseballTag);
         $this->dm->persist($blogPost);
 
-        $blogPost = new BlogPost();
+        $blogPost       = new BlogPost();
         $blogPost->name = 'Test 2';
         $blogPost->addTag($baseballTag);
         $this->dm->persist($blogPost);
 
-        $blogPost = new BlogPost();
+        $blogPost       = new BlogPost();
         $blogPost->name = 'Test 3';
         $blogPost->addTag($footballTag);
         $this->dm->persist($blogPost);
 
-        $blogPost = new BlogPost();
+        $blogPost       = new BlogPost();
         $blogPost->name = 'Test 4';
         $blogPost->addTag($baseballTag);
         $blogPost->addTag($footballTag);

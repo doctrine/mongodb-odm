@@ -9,7 +9,6 @@ use MongoDB\BSON\ObjectId;
 
 /**
  * AutoGenerator generates a native ObjectId
- *
  */
 class AutoGenerator extends AbstractIdGenerator
 {

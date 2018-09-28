@@ -17,7 +17,7 @@ class GH453Test extends BaseTest
     {
         $hash = ['a' => 'x', 'b' => 'y', 'c' => 'z'];
 
-        $doc = new GH453Document();
+        $doc       = new GH453Document();
         $doc->hash = $hash;
 
         $this->dm->persist($doc);
@@ -35,7 +35,7 @@ class GH453Test extends BaseTest
 
         // Check that the value is changed properly
         unset($hash['b']);
-        $doc = $this->dm->merge($doc);
+        $doc       = $this->dm->merge($doc);
         $doc->hash = $hash;
 
         $this->dm->flush();
@@ -48,7 +48,7 @@ class GH453Test extends BaseTest
     {
         $hash = [0 => 'x', 1 => 'y', 2 => 'z'];
 
-        $doc = new GH453Document();
+        $doc       = new GH453Document();
         $doc->hash = $hash;
 
         $this->dm->persist($doc);
@@ -66,7 +66,7 @@ class GH453Test extends BaseTest
 
         // Check that the value is changed properly
         unset($hash[1]);
-        $doc = $this->dm->merge($doc);
+        $doc       = $this->dm->merge($doc);
         $doc->hash = $hash;
 
         $this->dm->flush();
@@ -79,9 +79,9 @@ class GH453Test extends BaseTest
     {
         $col = ['x', 'y', 'z'];
 
-        $doc = new GH453Document();
+        $doc          = new GH453Document();
         $doc->colPush = $col;
-        $doc->colSet = $col;
+        $doc->colSet  = $col;
 
         $this->dm->persist($doc);
         $this->dm->flush();
@@ -100,9 +100,9 @@ class GH453Test extends BaseTest
 
         // Check that the value is changed properly
         unset($col[1]);
-        $doc = $this->dm->merge($doc);
+        $doc          = $this->dm->merge($doc);
         $doc->colPush = $col;
-        $doc->colSet = $col;
+        $doc->colSet  = $col;
 
         $this->dm->flush();
         $this->dm->clear();
@@ -113,24 +113,24 @@ class GH453Test extends BaseTest
 
     public function testEmbedMany()
     {
-        $colPush = new ArrayCollection([
+        $colPush     = new ArrayCollection([
             new GH453EmbeddedDocument(),
             new GH453EmbeddedDocument(),
             new GH453EmbeddedDocument(),
         ]);
-        $colSet = $colPush->map(function ($v) {
+        $colSet      = $colPush->map(static function ($v) {
             return clone $v;
         });
-        $colSetArray = $colPush->map(function ($v) {
+        $colSetArray = $colPush->map(static function ($v) {
             return clone $v;
         });
-        $colAddToSet = $colPush->map(function ($v) {
+        $colAddToSet = $colPush->map(static function ($v) {
             return clone $v;
         });
 
-        $doc = new GH453Document();
-        $doc->embedManyPush = $colPush;
-        $doc->embedManySet = $colSet;
+        $doc                    = new GH453Document();
+        $doc->embedManyPush     = $colPush;
+        $doc->embedManySet      = $colSet;
         $doc->embedManySetArray = $colSetArray;
         $doc->embedManyAddToSet = $colAddToSet;
 
@@ -146,9 +146,9 @@ class GH453Test extends BaseTest
 
         // Check that the value is changed properly
         unset($colPush[1], $colSet[1], $colSetArray[1], $colAddToSet['1']);
-        $doc = $this->dm->merge($doc);
-        $doc->embedManyPush = $colPush;
-        $doc->embedManySet = $colSet;
+        $doc                    = $this->dm->merge($doc);
+        $doc->embedManyPush     = $colPush;
+        $doc->embedManySet      = $colSet;
         $doc->embedManySetArray = $colSetArray;
         $doc->embedManyAddToSet = $colAddToSet;
 
@@ -163,43 +163,43 @@ class GH453Test extends BaseTest
 
     public function testReferenceMany()
     {
-        $colPush = new ArrayCollection([
+        $colPush     = new ArrayCollection([
             new GH453ReferencedDocument(),
             new GH453ReferencedDocument(),
             new GH453ReferencedDocument(),
         ]);
-        $colSet = $colPush->map(function ($v) {
+        $colSet      = $colPush->map(static function ($v) {
             return clone $v;
         });
-        $colSetArray = $colPush->map(function ($v) {
+        $colSetArray = $colPush->map(static function ($v) {
             return clone $v;
         });
-        $colAddToSet = $colPush->map(function ($v) {
+        $colAddToSet = $colPush->map(static function ($v) {
             return clone $v;
         });
 
         $dm = $this->dm;
 
-        $colPush->forAll(function ($k, $v) use ($dm) {
+        $colPush->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
             return true;
         });
-        $colSet->forAll(function ($k, $v) use ($dm) {
+        $colSet->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
             return true;
         });
-        $colSetArray->forAll(function ($k, $v) use ($dm) {
+        $colSetArray->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
             return true;
         });
-        $colAddToSet->forAll(function ($k, $v) use ($dm) {
+        $colAddToSet->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
             return true;
         });
 
-        $doc = new GH453Document();
-        $doc->referenceManyPush = $colPush;
-        $doc->referenceManySet = $colSet;
+        $doc                        = new GH453Document();
+        $doc->referenceManyPush     = $colPush;
+        $doc->referenceManySet      = $colSet;
         $doc->referenceManySetArray = $colSetArray;
         $doc->referenceManyAddToSet = $colAddToSet;
 
@@ -215,8 +215,8 @@ class GH453Test extends BaseTest
 
         // Check that the value is changed properly
         unset($colPush[1], $colSet[1], $colSetArray[1], $colAddToSet[1]);
-        $doc->referenceManyPush = $colPush;
-        $doc->referenceManySet = $colSet;
+        $doc->referenceManyPush     = $colPush;
+        $doc->referenceManySet      = $colSet;
         $doc->referenceManySetArray = $colSetArray;
         $doc->referenceManyAddToSet = $colAddToSet;
 

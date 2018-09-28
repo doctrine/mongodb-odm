@@ -10,7 +10,6 @@ use function is_array;
 
 /**
  * Fluent interface for adding a $geoNear stage to an aggregation pipeline.
- *
  */
 class GeoNear extends Match
 {
@@ -55,7 +54,7 @@ class GeoNear extends Match
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         $geoNear = [
             'near' => $this->near,
@@ -84,7 +83,7 @@ class GeoNear extends Match
     /**
      * The output field that contains the calculated distance. To specify a field within an embedded document, use dot notation.
      */
-    public function distanceField(string $distanceField): self
+    public function distanceField(string $distanceField) : self
     {
         $this->distanceField = $distanceField;
 
@@ -94,7 +93,7 @@ class GeoNear extends Match
     /**
      * The factor to multiply all distances returned by the query.
      */
-    public function distanceMultiplier(float $distanceMultiplier): self
+    public function distanceMultiplier(float $distanceMultiplier) : self
     {
         $this->distanceMultiplier = $distanceMultiplier;
 
@@ -104,7 +103,7 @@ class GeoNear extends Match
     /**
      * This specifies the output field that identifies the location used to calculate the distance.
      */
-    public function includeLocs(string $includeLocs): self
+    public function includeLocs(string $includeLocs) : self
     {
         $this->includeLocs = $includeLocs;
 
@@ -137,7 +136,6 @@ class GeoNear extends Match
      * The minimum distance from the center point that the documents can be.
      *
      * @return $this
-     *
      */
     public function minDistance(float $minDistance)
     {
@@ -156,15 +154,16 @@ class GeoNear extends Match
      *
      * @param float|array|Point $x
      * @param float             $y
+     *
      * @return $this
      */
-    public function near($x, $y = null): self
+    public function near($x, $y = null) : self
     {
         if ($x instanceof Point) {
             $x = $x->jsonSerialize();
         }
 
-        $this->near = is_array($x) ? $x : [$x, $y];
+        $this->near      = is_array($x) ? $x : [$x, $y];
         $this->spherical = is_array($x) && isset($x['type']);
 
         return $this;
@@ -175,7 +174,7 @@ class GeoNear extends Match
      *
      * @return $this
      */
-    public function num(int $num): self
+    public function num(int $num) : self
     {
         $this->num = $num;
 
@@ -185,7 +184,7 @@ class GeoNear extends Match
     /**
      * Required if using a 2dsphere index. Determines how MongoDB calculates the distance.
      */
-    public function spherical(bool $spherical = true): self
+    public function spherical(bool $spherical = true) : self
     {
         $this->spherical = $spherical;
 
@@ -197,7 +196,7 @@ class GeoNear extends Match
      *
      * @return $this
      */
-    public function uniqueDocs(bool $uniqueDocs = true): self
+    public function uniqueDocs(bool $uniqueDocs = true) : self
     {
         $this->uniqueDocs = $uniqueDocs;
 

@@ -12,9 +12,9 @@ class GH897Test extends BaseTest
 {
     public function testRecomputeSingleDocumentChangesetForManagedDocumentWithoutChangeset()
     {
-        $documentA = new GH897A();
+        $documentA       = new GH897A();
         $documentA->name = 'a';
-        $documentB = new GH897B();
+        $documentB       = new GH897B();
         $documentB->name = 'b';
 
         $this->dm->persist($documentA);
@@ -22,8 +22,8 @@ class GH897Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $documentA = $this->dm->find(GH897A::class, $documentA->id);
-        $documentB = $this->dm->find(GH897B::class, $documentB->id);
+        $documentA         = $this->dm->find(GH897A::class, $documentA->id);
+        $documentB         = $this->dm->find(GH897B::class, $documentB->id);
         $documentB->refOne = $documentA;
 
         /* Necessary to inject DocumentManager since it is not currently
@@ -71,7 +71,7 @@ class GH897B
             return;
         }
 
-        $documentA = $this->refOne;
+        $documentA        = $this->refOne;
         $documentA->name .= '-changed';
 
         $class = $this->dm->getClassMetadata(get_class($documentA));

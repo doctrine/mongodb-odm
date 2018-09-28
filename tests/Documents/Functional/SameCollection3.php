@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * Sample document without discriminator field to test defaultDiscriminatorValue
+ *
  * @ODM\Document(collection="same_collection")
  */
 class SameCollection3

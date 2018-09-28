@@ -20,10 +20,10 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
     public function testLoadDocumentWithDefaultValue()
     {
         // Create referenced document without discriminator value
-        $this->dm->persist($firstChildWithoutDiscriminator = new ChildDocumentWithoutDiscriminator('firstWithoutDiscriminator'));
+        $this->dm->persist($firstChildWithoutDiscriminator  = new ChildDocumentWithoutDiscriminator('firstWithoutDiscriminator'));
         $this->dm->persist($secondChildWithoutDiscriminator = new ChildDocumentWithoutDiscriminator('firstWithoutDiscriminator'));
 
-        $children = [$firstChildWithoutDiscriminator, $secondChildWithoutDiscriminator];
+        $children                                      = [$firstChildWithoutDiscriminator, $secondChildWithoutDiscriminator];
         $this->dm->persist($parentWithoutDiscriminator = new ParentDocumentWithoutDiscriminator($children));
 
         $this->dm->flush();
@@ -52,10 +52,10 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
      */
     public function testLoadDocumentWithDifferentChild()
     {
-        $this->dm->persist($firstChildWithDiscriminator = new ChildDocumentWithDiscriminatorComplex('firstWithDiscriminator', 'veryComplex'));
+        $this->dm->persist($firstChildWithDiscriminator  = new ChildDocumentWithDiscriminatorComplex('firstWithDiscriminator', 'veryComplex'));
         $this->dm->persist($secondChildWithDiscriminator = new ChildDocumentWithDiscriminatorSimple('secondWithDiscriminator'));
 
-        $children = [$firstChildWithDiscriminator, $secondChildWithDiscriminator];
+        $children                                   = [$firstChildWithDiscriminator, $secondChildWithDiscriminator];
         $this->dm->persist($parentWithDiscriminator = new ParentDocumentWithDiscriminator($children));
 
         $this->dm->flush();
@@ -101,10 +101,10 @@ abstract class ParentDocument
 
     public function __construct(array $children)
     {
-        $this->referencedChild = $children[0];
+        $this->referencedChild    = $children[0];
         $this->referencedChildren = $children;
-        $this->embeddedChild = $children[0];
-        $this->embeddedChildren = $children;
+        $this->embeddedChild      = $children[0];
+        $this->embeddedChildren   = $children;
     }
 
     public function getId()

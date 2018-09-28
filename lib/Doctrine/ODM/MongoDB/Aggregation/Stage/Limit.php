@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $limit stage to an aggregation pipeline.
- *
  */
 class Limit extends Stage
 {
@@ -26,7 +25,7 @@ class Limit extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
             '$limit' => $this->limit,

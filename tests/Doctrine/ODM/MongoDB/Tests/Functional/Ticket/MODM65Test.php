@@ -11,10 +11,10 @@ class MODM65Test extends BaseTest
 {
     public function testTest()
     {
-        $user = new MODM65User();
-        $user->socialNetworkUser = new MODM65SocialNetworkUser();
+        $user                               = new MODM65User();
+        $user->socialNetworkUser            = new MODM65SocialNetworkUser();
         $user->socialNetworkUser->firstName = 'Jonathan';
-        $user->socialNetworkUser->lastName = 'Wage';
+        $user->socialNetworkUser->lastName  = 'Wage';
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
@@ -55,11 +55,13 @@ class MODM65SocialNetworkUser
 {
     /**
      * @ODM\Field(name="fN", type="string")
+     *
      * @var string
      */
     public $firstName;
     /**
      * @ODM\Field(name="lN", type="string")
+     *
      * @var string
      */
     public $lastName;

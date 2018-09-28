@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\BlogPost;
 use Documents\Comment;
@@ -14,10 +15,10 @@ class ReferenceRepositoryMethodTest extends BaseTest
 {
     public function testOneToOne()
     {
-        $date1 = new \DateTime();
+        $date1 = new DateTime();
         $date1->setTimestamp(strtotime('-20 seconds'));
 
-        $date2 = new \DateTime();
+        $date2 = new DateTime();
         $date2->setTimestamp(strtotime('-10 seconds'));
 
         $blogPost = new BlogPost('Test');
@@ -48,15 +49,15 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $post1 = new BlogPost();
+        $post1       = new BlogPost();
         $post1->name = 'post1';
         $post1->setUser($user);
 
-        $post2 = new BlogPost();
+        $post2       = new BlogPost();
         $post2->name = 'post2';
         $post2->setUser($user);
 
-        $post3 = new BlogPost();
+        $post3       = new BlogPost();
         $post3->name = 'post3';
         $post3->setUser($user);
 
@@ -77,7 +78,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
 
         $blogPost = new BlogPost('Test');
 
-        $blogPost->addComment(new Comment('Comment', new \DateTime()));
+        $blogPost->addComment(new Comment('Comment', new DateTime()));
         $this->dm->persist($blogPost);
         $this->dm->flush();
         $this->dm->clear();
@@ -92,7 +93,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
     {
         $blogPost = new BlogPost('Test');
 
-        $blogPost->addComment(new Comment('Comment', new \DateTime()));
+        $blogPost->addComment(new Comment('Comment', new DateTime()));
         $this->dm->persist($blogPost);
         $this->dm->flush();
         $this->dm->clear();

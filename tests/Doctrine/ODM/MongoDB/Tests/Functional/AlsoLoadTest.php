@@ -160,11 +160,11 @@ class AlsoLoadTest extends BaseTest
 
     public function testNotSaved()
     {
-        $document = new AlsoLoadDocument();
-        $document->baz = 'baz';
+        $document            = new AlsoLoadDocument();
+        $document->baz       = 'baz';
         $document->firstName = 'Jonathan';
-        $document->lastName = 'Wage';
-        $document->name = 'Kris Wallsmith';
+        $document->lastName  = 'Wage';
+        $document->name      = 'Kris Wallsmith';
 
         $this->dm->persist($document);
         $this->dm->flush();
@@ -270,7 +270,7 @@ class AlsoLoadDocument
     /** @ODM\AlsoLoad({"name", "fullName"}) */
     public function populateFirstAndLastName($name)
     {
-        list($this->firstName, $this->lastName) = explode(' ', $name);
+        [$this->firstName, $this->lastName] = explode(' ', $name);
     }
 
     /** @ODM\AlsoLoad({"testOld", "testOlder"}) */

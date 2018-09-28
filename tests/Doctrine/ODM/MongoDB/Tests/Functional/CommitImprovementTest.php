@@ -77,7 +77,7 @@ class CommitImprovementTest extends BaseTest
         }
 
         $this->dm->clear();
-        $user = $this->dm->find(get_class($user), $user->getId());
+        $user         = $this->dm->find(get_class($user), $user->getId());
         $phonenumbers = $user->getPhonebooks()->first()->getPhonenumbers();
         $this->assertCount(2, $phonenumbers);
         $this->assertEquals('12345678', $phonenumbers[0]->getPhonenumber());
@@ -103,7 +103,7 @@ class CommitImprovementTest extends BaseTest
         $this->assertTrue($user->getPhonenumbers()->isDirty()); // but they should be dirty
 
         $collection = $this->dm->getDocumentCollection(get_class($user));
-        $inDb = $collection->findOne();
+        $inDb       = $collection->findOne();
         $this->assertArrayNotHasKey('phonenumbers', $inDb, 'Collection modified in postPersist should not be in database without recomputing change set');
 
         $this->dm->flush();

@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use ReflectionObject;
 use function get_class;
 
 class SplObjectHashCollisionsTest extends BaseTest
@@ -16,8 +17,8 @@ class SplObjectHashCollisionsTest extends BaseTest
      */
     public function testParentAssociationsIsCleared($f)
     {
-        $d = new SplColDoc();
-        $d->one = new SplColEmbed('d.one.v1');
+        $d         = new SplColDoc();
+        $d->one    = new SplColEmbed('d.one.v1');
         $d->many[] = new SplColEmbed('d.many.0.v1');
         $d->many[] = new SplColEmbed('d.many.1.v1');
 
@@ -34,8 +35,8 @@ class SplObjectHashCollisionsTest extends BaseTest
      */
     public function testParentAssociationsLeftover($f, $leftover)
     {
-        $d = new SplColDoc();
-        $d->one = new SplColEmbed('d.one.v1');
+        $d         = new SplColDoc();
+        $d->one    = new SplColEmbed('d.one.v1');
         $d->many[] = new SplColEmbed('d.many.0.v1');
         $d->many[] = new SplColEmbed('d.many.1.v1');
         $this->dm->persist($d);
@@ -53,26 +54,26 @@ class SplObjectHashCollisionsTest extends BaseTest
     {
         return [
             [
-        function (DocumentManager $dm) {
-                $dm->clear();
-        }, 0,
+                static function (DocumentManager $dm) {
+                    $dm->clear();
+                }, 0,
             ],
             [
-            function (DocumentManager $dm, $doc) {
-                $dm->clear(get_class($doc));
-            }, 1,
+                static function (DocumentManager $dm, $doc) {
+                    $dm->clear(get_class($doc));
+                }, 1,
             ],
             [
-            function (DocumentManager $dm, $doc) {
-                $dm->detach($doc);
-            }, 1,
+                static function (DocumentManager $dm, $doc) {
+                    $dm->detach($doc);
+                }, 1,
             ],
         ];
     }
 
     private function expectCount($prop, $expected)
     {
-        $ro = new \ReflectionObject($this->uow);
+        $ro = new ReflectionObject($this->uow);
         $rp = $ro->getProperty($prop);
         $rp->setAccessible(true);
         $this->assertCount($expected, $rp->getValue($this->uow));

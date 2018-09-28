@@ -15,12 +15,12 @@ class FileWithoutMetadata
     /** @ODM\File\Filename */
     private $filename;
 
-    public function getId(): ?string
+    public function getId() : ?string
     {
         return $this->id;
     }
 
-    public function getFilename(): ?string
+    public function getFilename() : ?string
     {
         return $this->filename;
     }

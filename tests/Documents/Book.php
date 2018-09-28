@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class Book
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Id */
     public $id;
@@ -26,7 +26,7 @@ class Book
 
     public function __construct()
     {
-        $this->chapters = new ArrayCollection();
+        $this->chapters           = new ArrayCollection();
         $this->identifiedChapters = new ArrayCollection();
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -18,8 +19,8 @@ class LifecycleListenersTest extends BaseTest
     private function getDocumentManager()
     {
         $this->listener = new MyEventListener();
-        $evm = $this->dm->getEventManager();
-        $events = [
+        $evm            = $this->dm->getEventManager();
+        $events         = [
             Events::prePersist,
             Events::postPersist,
             Events::preUpdate,
@@ -37,7 +38,7 @@ class LifecycleListenersTest extends BaseTest
     {
         $dm = $this->getDocumentManager();
 
-        $test = new TestDocument();
+        $test       = new TestDocument();
         $test->name = 'test';
         $dm->persist($test);
         $dm->flush();
@@ -49,7 +50,7 @@ class LifecycleListenersTest extends BaseTest
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
 
-        $test->embedded[0] = new TestEmbeddedDocument();
+        $test->embedded[0]       = new TestEmbeddedDocument();
         $test->embedded[0]->name = 'cool';
         $dm->flush();
         $dm->clear();
@@ -92,9 +93,9 @@ class LifecycleListenersTest extends BaseTest
         $this->assertEquals($called, $this->listener->called);
         $this->listener->called = [];
 
-        $test = new TestDocument();
-        $test->name = 'test';
-        $test->embedded[0] = new TestEmbeddedDocument();
+        $test                    = new TestDocument();
+        $test->name              = 'test';
+        $test->embedded[0]       = new TestEmbeddedDocument();
         $test->embedded[0]->name = 'cool';
         $dm->persist($test);
         $dm->flush();
@@ -117,14 +118,14 @@ class LifecycleListenersTest extends BaseTest
     {
         $dm = $this->getDocumentManager();
 
-        $test = new TestProfile();
-        $test->name = 'test';
+        $test        = new TestProfile();
+        $test->name  = 'test';
         $test->image = new Image('Test Image');
         $dm->persist($test);
         $dm->flush();
         $dm->clear();
 
-        $test = $dm->find(TestProfile::class, $test->id);
+        $test                   = $dm->find(TestProfile::class, $test->id);
         $this->listener->called = [];
 
         $test->image->thumbnails[] = new Thumbnail('Thumbnail #1');
@@ -151,11 +152,11 @@ class LifecycleListenersTest extends BaseTest
 
     public function testChangeToReferenceFieldTriggersEvents()
     {
-        $dm = $this->getDocumentManager();
-        $document = new TestDocument();
+        $dm             = $this->getDocumentManager();
+        $document       = new TestDocument();
         $document->name = 'Maciej';
         $dm->persist($document);
-        $profile = new TestProfile();
+        $profile       = new TestProfile();
         $profile->name = 'github';
         $dm->persist($profile);
         $dm->flush();
@@ -167,19 +168,19 @@ class LifecycleListenersTest extends BaseTest
             Events::postUpdate => [TestDocument::class],
         ];
 
-        $document = $dm->getRepository(get_class($document))->find($document->id);
-        $profile = $dm->getRepository(get_class($profile))->find($profile->id);
+        $document               = $dm->getRepository(get_class($document))->find($document->id);
+        $profile                = $dm->getRepository(get_class($profile))->find($profile->id);
         $this->listener->called = [];
-        $document->profile = $profile;
+        $document->profile      = $profile;
         $dm->flush();
         $dm->clear();
         $this->assertEquals($called, $this->listener->called, 'Changing ReferenceOne field did not dispatched proper events.');
         $this->listener->called = [];
 
-        $document = $dm->getRepository(get_class($document))->find($document->id);
-        $profile = $dm->getRepository(get_class($profile))->find($profile->id);
+        $document               = $dm->getRepository(get_class($document))->find($document->id);
+        $profile                = $dm->getRepository(get_class($profile))->find($profile->id);
         $this->listener->called = [];
-        $document->profiles[] = $profile;
+        $document->profiles[]   = $profile;
         $dm->flush();
         $this->assertEquals($called, $this->listener->called, 'Changing ReferenceMany field did not dispatched proper events.');
         $this->listener->called = [];
@@ -190,7 +191,7 @@ class LifecycleListenersTest extends BaseTest
         $evm = $this->dm->getEventManager();
         $evm->addEventListener([Events::postCollectionLoad], new PostCollectionLoadEventListener($this));
 
-        $document = new TestDocument();
+        $document       = new TestDocument();
         $document->name = 'Maciej';
         $this->dm->persist($document);
         $this->dm->flush();
@@ -216,8 +217,8 @@ class MyEventListener
 
     public function __call($method, $args)
     {
-        $document = $args[0]->getDocument();
-        $className = get_class($document);
+        $document                = $args[0]->getDocument();
+        $className               = get_class($document);
         $this->called[$method][] = $className;
     }
 }
@@ -247,7 +248,7 @@ class PostCollectionLoadEventListener
                 $this->phpunit->assertEquals(new TestEmbeddedDocument('For mock at 1'), $e->getCollection()[0]);
                 break;
             default:
-                throw new \BadMethodCallException('This was not expected');
+                throw new BadMethodCallException('This was not expected');
         }
     }
 }

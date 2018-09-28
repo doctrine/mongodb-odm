@@ -9,7 +9,6 @@ use MongoDB\Driver\Exception\InvalidArgumentException;
 
 /**
  * The Id type.
- *
  */
 class IdType extends Type
 {
@@ -33,12 +32,12 @@ class IdType extends Type
         return $value instanceof ObjectId ? (string) $value : $value;
     }
 
-    public function closureToMongo(): string
+    public function closureToMongo() : string
     {
         return '$return = new MongoDB\BSON\ObjectId($value);';
     }
 
-    public function closureToPHP(): string
+    public function closureToPHP() : string
     {
         return '$return = $value instanceof \MongoDB\BSON\ObjectId ? (string) $value : $value;';
     }

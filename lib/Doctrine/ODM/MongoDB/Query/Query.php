@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Query;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
@@ -11,9 +12,12 @@ use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use InvalidArgumentException;
+use IteratorAggregate;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Operation\FindOneAndUpdate;
+use UnexpectedValueException;
 use function array_combine;
 use function array_filter;
 use function array_flip;
@@ -28,9 +32,8 @@ use function is_callable;
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
  * and to hydrate the raw arrays of data to Doctrine document objects.
- *
  */
-class Query implements \IteratorAggregate
+class Query implements IteratorAggregate
 {
     public const TYPE_FIND            = 1;
     public const TYPE_FIND_AND_UPDATE = 2;
@@ -51,7 +54,7 @@ class Query implements \IteratorAggregate
     public const HINT_REFRESH = 1;
     // 2 was used for HINT_SLAVE_OKAY, which was removed in 2.0
     public const HINT_READ_PREFERENCE = 3;
-    public const HINT_READ_ONLY = 5;
+    public const HINT_READ_ONLY       = 5;
 
     /**
      * The DocumentManager instance.
@@ -113,8 +116,6 @@ class Query implements \IteratorAggregate
     private $options;
 
     /**
-     *
-     *
      * Please note that $requireIndexes was deprecated in 1.2 and will be removed in 2.0
      */
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false)
@@ -143,16 +144,16 @@ class Query implements \IteratorAggregate
                 break;
 
             default:
-                throw new \InvalidArgumentException('Invalid query type: ' . $query['type']);
+                throw new InvalidArgumentException('Invalid query type: ' . $query['type']);
         }
 
         $this->collection = $collection;
         $this->query      = $query;
         $this->options    = $options;
-        $this->dm = $dm;
-        $this->class = $class;
-        $this->hydrate = $hydrate;
-        $this->primers = $primers;
+        $this->dm         = $dm;
+        $this->class      = $class;
+        $this->hydrate    = $hydrate;
+        $this->primers    = $primers;
 
         $this->setReadOnly($readOnly);
         $this->setRefresh($refresh);
@@ -184,8 +185,9 @@ class Query implements \IteratorAggregate
     /**
      * Execute the query and returns the results.
      *
-     * @throws MongoDBException
      * @return Iterator|int|string|array
+     *
+     * @throws MongoDBException
      */
     public function execute()
     {
@@ -225,12 +227,12 @@ class Query implements \IteratorAggregate
     /**
      * Gets the ClassMetadata instance.
      */
-    public function getClass(): ClassMetadata
+    public function getClass() : ClassMetadata
     {
         return $this->class;
     }
 
-    public function getDocumentManager(): DocumentManager
+    public function getDocumentManager() : DocumentManager
     {
         return $this->dm;
     }
@@ -244,11 +246,12 @@ class Query implements \IteratorAggregate
      * be thrown if {@link Query::execute()} does not return an Iterator.
      *
      * @see http://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @throws \BadMethodCallException If the query type would not return an Iterator.
-     * @throws \UnexpectedValueException If the query did not return an Iterator.
+     *
+     * @throws BadMethodCallException If the query type would not return an Iterator.
+     * @throws UnexpectedValueException If the query did not return an Iterator.
      * @throws MongoDBException
      */
-    public function getIterator(): Iterator
+    public function getIterator() : Iterator
     {
         switch ($this->query['type']) {
             case self::TYPE_FIND:
@@ -258,7 +261,7 @@ class Query implements \IteratorAggregate
                 break;
 
             default:
-                throw new \BadMethodCallException('Iterator would not be returned for query type: ' . $this->query['type']);
+                throw new BadMethodCallException('Iterator would not be returned for query type: ' . $this->query['type']);
         }
 
         if ($this->iterator === null) {
@@ -271,7 +274,7 @@ class Query implements \IteratorAggregate
     /**
      * Return the query structure.
      */
-    public function getQuery(): array
+    public function getQuery() : array
     {
         return $this->query;
     }
@@ -283,7 +286,7 @@ class Query implements \IteratorAggregate
      */
     public function getSingleResult()
     {
-        $clonedQuery = clone $this;
+        $clonedQuery                 = clone $this;
         $clonedQuery->query['limit'] = 1;
         return $clonedQuery->getIterator()->current() ?: null;
     }
@@ -291,7 +294,7 @@ class Query implements \IteratorAggregate
     /**
      * Return the query type.
      */
-    public function getType(): int
+    public function getType() : int
     {
         return $this->query['type'];
     }
@@ -299,7 +302,7 @@ class Query implements \IteratorAggregate
     /**
      * Sets whether or not to hydrate the documents to objects.
      */
-    public function setHydrate(bool $hydrate): void
+    public function setHydrate(bool $hydrate) : void
     {
         $this->hydrate = $hydrate;
     }
@@ -310,7 +313,7 @@ class Query implements \IteratorAggregate
      *
      * This option has no effect if hydration is disabled.
      */
-    public function setReadOnly(bool $readOnly): void
+    public function setReadOnly(bool $readOnly) : void
     {
         $this->unitOfWorkHints[self::HINT_READ_ONLY] = $readOnly;
     }
@@ -321,7 +324,7 @@ class Query implements \IteratorAggregate
      *
      * This option has no effect if hydration is disabled.
      */
-    public function setRefresh(bool $refresh): void
+    public function setRefresh(bool $refresh) : void
     {
         $this->unitOfWorkHints[self::HINT_REFRESH] = (bool) $refresh;
     }
@@ -331,7 +334,7 @@ class Query implements \IteratorAggregate
      *
      * @see IteratorAggregate::toArray()
      */
-    public function toArray(): array
+    public function toArray() : array
     {
         return $this->getIterator()->toArray();
     }
@@ -340,17 +343,17 @@ class Query implements \IteratorAggregate
      * Returns an array containing the specified keys and their values from the
      * query array, provided they exist and are not null.
      */
-    private function getQueryOptions(string ...$keys): array
+    private function getQueryOptions(string ...$keys) : array
     {
         return array_filter(
             array_intersect_key($this->query, array_flip($keys)),
-            function ($value) {
+            static function ($value) {
                 return $value !== null;
             }
         );
     }
 
-    private function makeIterator(Cursor $cursor): Iterator
+    private function makeIterator(Cursor $cursor) : Iterator
     {
         if ($this->hydrate && $this->class) {
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->class, $this->unitOfWorkHints);
@@ -360,7 +363,7 @@ class Query implements \IteratorAggregate
 
         if (! empty($this->primers)) {
             $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
-            $cursor = new PrimingIterator($cursor, $this->class, $referencePrimer, $this->primers, $this->unitOfWorkHints);
+            $cursor          = new PrimingIterator($cursor, $this->class, $referencePrimer, $this->primers, $this->unitOfWorkHints);
         }
 
         return $cursor;
@@ -371,7 +374,7 @@ class Query implements \IteratorAggregate
      *
      * @return array $rename Translation map (from => to) for renaming keys
      */
-    private function renameQueryOptions(array $options, array $rename): array
+    private function renameQueryOptions(array $options, array $rename) : array
     {
         if (empty($options)) {
             return $options;
@@ -379,7 +382,7 @@ class Query implements \IteratorAggregate
 
         return array_combine(
             array_map(
-                function ($key) use ($rename) {
+                static function ($key) use ($rename) {
                     return $rename[$key] ?? $key;
                 },
                 array_keys($options)
@@ -416,9 +419,9 @@ class Query implements \IteratorAggregate
                 return $this->makeIterator($cursor);
 
             case self::TYPE_FIND_AND_UPDATE:
-                $queryOptions = $this->getQueryOptions('select', 'sort', 'upsert');
-                $queryOptions = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
-                $queryOptions['returnDocument'] = ($this->query['new'] ?? false) ? FindOneAndUpdate::RETURN_DOCUMENT_AFTER : FindOneAndUpdate::RETURN_DOCUMENT_BEFORE;
+                $queryOptions                   = $this->getQueryOptions('select', 'sort', 'upsert');
+                $queryOptions                   = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
+                $queryOptions['returnDocument'] = $this->query['new'] ?? false ? FindOneAndUpdate::RETURN_DOCUMENT_AFTER : FindOneAndUpdate::RETURN_DOCUMENT_BEFORE;
 
                 return $this->collection->findOneAndUpdate(
                     $this->query['query'],
@@ -458,7 +461,7 @@ class Query implements \IteratorAggregate
 
             case self::TYPE_DISTINCT:
                 $collection = $this->collection;
-                $query = $this->query;
+                $query      = $this->query;
 
                 return $collection->distinct(
                     $query['distinct'],
@@ -468,7 +471,7 @@ class Query implements \IteratorAggregate
 
             case self::TYPE_COUNT:
                 $collection = $this->collection;
-                $query = $this->query;
+                $query      = $this->query;
 
                 return $collection->count(
                     $query['query'],

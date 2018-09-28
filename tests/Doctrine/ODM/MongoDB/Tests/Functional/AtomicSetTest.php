@@ -44,7 +44,7 @@ class AtomicSetTest extends BaseTest
 
     public function testAtomicInsertAndUpdate()
     {
-        $user = new AtomicSetUser('Maciej');
+        $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -56,7 +56,7 @@ class AtomicSetTest extends BaseTest
         $this->assertCount(1, $user->phonenumbers);
         $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
 
-        $user->surname = 'Malarz';
+        $user->surname        = 'Malarz';
         $user->phonenumbers[] = new Phonenumber('87654321');
         $this->logger->clear();
         $this->dm->flush();
@@ -73,8 +73,8 @@ class AtomicSetTest extends BaseTest
 
     public function testAtomicUpsert()
     {
-        $user = new AtomicSetUser('Maciej');
-        $user->id = new ObjectId();
+        $user                 = new AtomicSetUser('Maciej');
+        $user->id             = new ObjectId();
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -92,7 +92,7 @@ class AtomicSetTest extends BaseTest
      */
     public function testAtomicCollectionUnset($clearWith)
     {
-        $user = new AtomicSetUser('Maciej');
+        $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -104,7 +104,7 @@ class AtomicSetTest extends BaseTest
         $this->assertCount(1, $user->phonenumbers);
         $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
 
-        $user->surname = 'Malarz';
+        $user->surname      = 'Malarz';
         $user->phonenumbers = $clearWith;
         $this->logger->clear();
         $this->dm->flush();
@@ -128,7 +128,7 @@ class AtomicSetTest extends BaseTest
 
     public function testAtomicCollectionClearAndUpdate()
     {
-        $user = new AtomicSetUser('Maciej');
+        $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -151,15 +151,15 @@ class AtomicSetTest extends BaseTest
 
     public function testAtomicCollectionReplacedAndUpdated()
     {
-        $user = new AtomicSetUser('Maciej');
+        $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
         $this->assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
-        $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $user->phonenumbers = new ArrayCollection();
+        $user                 = $this->dm->getRepository(get_class($user))->find($user->id);
+        $user->phonenumbers   = new ArrayCollection();
         $user->phonenumbers[] = new Phonenumber('87654321');
         $this->logger->clear();
         $this->dm->flush();
@@ -174,7 +174,7 @@ class AtomicSetTest extends BaseTest
 
     public function testAtomicSetArray()
     {
-        $user = new AtomicSetUser('Maciej');
+        $user                       = new AtomicSetUser('Maciej');
         $user->phonenumbersArray[1] = new Phonenumber('12345678');
         $user->phonenumbersArray[2] = new Phonenumber('87654321');
         $this->dm->persist($user);
@@ -202,7 +202,7 @@ class AtomicSetTest extends BaseTest
 
     public function testAtomicCollectionWithAnotherNested()
     {
-        $user = new AtomicSetUser('Maciej');
+        $user        = new AtomicSetUser('Maciej');
         $privateBook = new Phonebook('Private');
         $privateBook->addPhonenumber(new Phonenumber('12345678'));
         $user->phonebooks[] = $privateBook;
@@ -258,13 +258,13 @@ class AtomicSetTest extends BaseTest
 
     public function testWeNeedToGoDeeper()
     {
-        $user = new AtomicSetUser('Maciej');
-        $user->inception[0] = new AtomicSetInception('start');
-        $user->inception[0]->one = new AtomicSetInception('start.one');
-        $user->inception[0]->one->many[] = new AtomicSetInception('start.one.many.0');
-        $user->inception[0]->one->many[] = new AtomicSetInception('start.one.many.1');
-        $user->inception[0]->one->one = new AtomicSetInception('start.one.one');
-        $user->inception[0]->one->one->many[] = new AtomicSetInception('start.one.one.many.0');
+        $user                                          = new AtomicSetUser('Maciej');
+        $user->inception[0]                            = new AtomicSetInception('start');
+        $user->inception[0]->one                       = new AtomicSetInception('start.one');
+        $user->inception[0]->one->many[]               = new AtomicSetInception('start.one.many.0');
+        $user->inception[0]->one->many[]               = new AtomicSetInception('start.one.many.1');
+        $user->inception[0]->one->one                  = new AtomicSetInception('start.one.one');
+        $user->inception[0]->one->one->many[]          = new AtomicSetInception('start.one.one.many.0');
         $user->inception[0]->one->one->many[0]->many[] = new AtomicSetInception('start.one.one.many.0.many.0');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -287,7 +287,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals($user->inception[0]->one->one->many[0]->many[0]->value, 'start.one.one.many.0.many.0');
 
         unset($user->inception[0]->one->many[0]);
-        $user->inception[0]->one->many[] = new AtomicSetInception('start.one.many.2');
+        $user->inception[0]->one->many[]               = new AtomicSetInception('start.one.many.2');
         $user->inception[0]->one->one->many[0]->many[] = new AtomicSetInception('start.one.one.many.0.many.1');
         $this->logger->clear();
         $this->dm->flush();
@@ -318,11 +318,11 @@ class AtomicSetTest extends BaseTest
 
     public function testUpdatingNestedCollectionWhileDeletingParent()
     {
-        $user = new AtomicSetUser('Jon');
-        $user->inception[0] = new AtomicSetInception('start');
-        $user->inception[0]->many[0] = new AtomicSetInception('start.many.0');
+        $user                                 = new AtomicSetUser('Jon');
+        $user->inception[0]                   = new AtomicSetInception('start');
+        $user->inception[0]->many[0]          = new AtomicSetInception('start.many.0');
         $user->inception[0]->many[0]->many[0] = new AtomicSetInception('start.many.0.many.0');
-        $user->inception[0]->many[1] = new AtomicSetInception('start.many.1');
+        $user->inception[0]->many[1]          = new AtomicSetInception('start.many.1');
         $user->inception[0]->many[1]->many[0] = new AtomicSetInception('start.many.1.many.0');
         $this->dm->persist($user);
         $this->dm->flush();
@@ -341,10 +341,10 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals($user->inception[0]->many[1]->many[0]->value, 'start.many.1.many.0');
 
         $user->inception[0]->many[0]->many[0]->value = 'start.many.0.many.0-changed';
-        $user->inception[0]->many[0]->many[1] = new AtomicSetInception('start.many.0.many.1');
+        $user->inception[0]->many[0]->many[1]        = new AtomicSetInception('start.many.0.many.1');
         $user->inception[0]->many[0]->many->clear();
         $user->inception[0]->many[1]->many[1] = new AtomicSetInception('start.many.1.many.1');
-        $user->inception[0]->many[1] = new AtomicSetInception('start.many.1');
+        $user->inception[0]->many[1]          = new AtomicSetInception('start.many.1');
         $user->inception[0]->many[1]->many[0] = new AtomicSetInception('start.many.1.many.0-new');
         $this->logger->clear();
         $this->dm->flush();
@@ -383,7 +383,7 @@ class AtomicSetTest extends BaseTest
         $this->assertCount(1, $malarzm->friends);
         $this->assertEquals('Jeremy', $malarzm->friends[0]->name);
 
-        $jonwage = $this->dm->find(get_class($jonwage), $jonwage->id);
+        $jonwage            = $this->dm->find(get_class($jonwage), $jonwage->id);
         $malarzm->friends[] = $jonwage;
         $this->logger->clear();
         $this->dm->flush();
@@ -448,7 +448,7 @@ class AtomicSetTest extends BaseTest
         $this->dm->clear();
         $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
 
-        $firstChapter = $book->chapters->first();
+        $firstChapter       = $book->chapters->first();
         $firstChapter->name = 'First chapter A';
 
         // Developers commonly attempt to replace the contents of an EmbedMany with a new ArrayCollection like this:
@@ -477,9 +477,9 @@ class AtomicSetTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
-        $firstChapter = $book->identifiedChapters->first();
-        $firstChapter->name = 'First chapter A';
+        $book                = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
+        $firstChapter        = $book->identifiedChapters->first();
+        $firstChapter->name  = 'First chapter A';
         $replacementChapters = new ArrayCollection();
         $replacementChapters->add($firstChapter);
         $replacementChapters->add(new IdentifiedChapter('Second chapter B'));
@@ -528,8 +528,8 @@ class AtomicSetTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
-        $firstChapter = $book->chapters->first();
+        $book               = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
+        $firstChapter       = $book->chapters->first();
         $firstChapter->name = 'Apple';
 
         // Add some pages.
@@ -578,11 +578,11 @@ class AtomicSetUser
 
     public function __construct($name)
     {
-        $this->name = $name;
-        $this->phonenumbers = new ArrayCollection();
+        $this->name              = $name;
+        $this->phonenumbers      = new ArrayCollection();
         $this->phonenumbersArray = new ArrayCollection();
-        $this->phonebooks = new ArrayCollection();
-        $this->friends = new ArrayCollection();
+        $this->phonebooks        = new ArrayCollection();
+        $this->friends           = new ArrayCollection();
     }
 }
 
@@ -603,6 +603,6 @@ class AtomicSetInception
     public function __construct($value)
     {
         $this->value = $value;
-        $this->many = new ArrayCollection();
+        $this->many  = new ArrayCollection();
     }
 }

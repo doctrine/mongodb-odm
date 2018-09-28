@@ -12,9 +12,9 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class IndirectlyReferencedUser
 {
     /**
-     * @var User
-     *
      * @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref")
+     *
+     * @var User
      */
     public $user;
 }

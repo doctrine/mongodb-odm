@@ -46,7 +46,7 @@ class GH499Document
 
     public function __construct($id = null)
     {
-        $this->id = (string) $id;
+        $this->id      = (string) $id;
         $this->refMany = new ArrayCollection();
     }
 

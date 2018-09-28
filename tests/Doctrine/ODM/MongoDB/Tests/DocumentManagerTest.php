@@ -28,6 +28,7 @@ use Documents\Tournament\ParticipantSolo;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
+use stdClass;
 use function get_class;
 
 class DocumentManagerTest extends BaseTest
@@ -99,7 +100,7 @@ class DocumentManagerTest extends BaseTest
 
     public function testGetPartialReference()
     {
-        $id = new ObjectId();
+        $id   = new ObjectId();
         $user = $this->dm->getPartialReference(CmsUser::class, $id);
         $this->assertTrue($this->dm->contains($user));
         $this->assertEquals($id, $user->id);
@@ -125,9 +126,10 @@ class DocumentManagerTest extends BaseTest
     }
 
     /**
+     * @param string $methodName
+     *
      * @dataProvider dataMethodsAffectedByNoObjectArguments
      * @expectedException \InvalidArgumentException
-     * @param string $methodName
      */
     public function testThrowsExceptionOnNonObjectValues($methodName)
     {
@@ -146,8 +148,9 @@ class DocumentManagerTest extends BaseTest
     }
 
     /**
-     * @dataProvider dataAffectedByErrorIfClosedException
      * @param string $methodName
+     *
+     * @dataProvider dataAffectedByErrorIfClosedException
      */
     public function testAffectedByErrorIfClosedException($methodName)
     {
@@ -158,7 +161,7 @@ class DocumentManagerTest extends BaseTest
         if ($methodName === 'flush') {
             $this->dm->$methodName();
         } else {
-            $this->dm->$methodName(new \stdClass());
+            $this->dm->$methodName(new stdClass());
         }
     }
 
@@ -174,7 +177,7 @@ class DocumentManagerTest extends BaseTest
 
     public function testCreateDbRefWithNonNullEmptyId()
     {
-        $phonenumber = new CmsPhonenumber();
+        $phonenumber              = new CmsPhonenumber();
         $phonenumber->phonenumber = 0;
         $this->dm->persist($phonenumber);
 
@@ -200,7 +203,7 @@ class DocumentManagerTest extends BaseTest
     {
         $r = new User();
         $this->dm->persist($r);
-        $d = new ReferenceStoreAsDocument();
+        $d     = new ReferenceStoreAsDocument();
         $class = $this->dm->getClassMetadata(get_class($d));
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref1']);

@@ -14,8 +14,8 @@ class MODM83Test extends BaseTest
     private function getDocumentManager()
     {
         $this->listener = new MODM83EventListener();
-        $evm = $this->dm->getEventManager();
-        $events = [
+        $evm            = $this->dm->getEventManager();
+        $events         = [
             Events::preUpdate,
             Events::postUpdate,
         ];
@@ -27,19 +27,19 @@ class MODM83Test extends BaseTest
     {
         $dm = $this->getDocumentManager();
 
-        $won = new MODM83TestDocument();
-        $won->name = 'Parent';
-        $won->embedded = new MODM83TestEmbeddedDocument();
+        $won                 = new MODM83TestDocument();
+        $won->name           = 'Parent';
+        $won->embedded       = new MODM83TestEmbeddedDocument();
         $won->embedded->name = 'Child';
-        $too = new MODM83OtherDocument();
-        $too->name = 'Neighbor';
+        $too                 = new MODM83OtherDocument();
+        $too->name           = 'Neighbor';
         $dm->persist($won);
         $dm->persist($too);
         $dm->flush();
         $dm->clear();
 
-        $won = $dm->find(MODM83TestDocument::class, $won->id);
-        $too = $dm->find(MODM83OtherDocument::class, $too->id);
+        $won       = $dm->find(MODM83TestDocument::class, $won->id);
+        $too       = $dm->find(MODM83OtherDocument::class, $too->id);
         $too->name = 'Bob';
         $dm->flush();
         $dm->clear();
@@ -57,8 +57,8 @@ class MODM83EventListener
     public $called = [];
     public function __call($method, $args)
     {
-        $document = $args[0]->getDocument();
-        $className = get_class($document);
+        $document                = $args[0]->getDocument();
+        $className               = get_class($document);
         $this->called[$method][] = $className;
     }
 }

@@ -20,7 +20,7 @@ class GH1232Test extends BaseTest
         $this->dm->persist($post);
         $this->dm->flush();
 
-        $comment = new GH1232Comment();
+        $comment       = new GH1232Comment();
         $comment->post = $post;
         $this->dm->persist($comment);
         $this->dm->flush();
@@ -35,7 +35,7 @@ class GH1232Test extends BaseTest
 /** @ODM\Document */
 class GH1232Post
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Id */
     public $id;

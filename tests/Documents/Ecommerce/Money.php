@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Documents\Ecommerce;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use InvalidArgumentException;
 
 /** @ODM\EmbeddedDocument */
 class Money
@@ -19,7 +20,7 @@ class Money
     {
         $amount = (float) $amount;
         if (empty($amount) || $amount <= 0) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'money amount cannot be empty, equal or less than 0'
             );
         }

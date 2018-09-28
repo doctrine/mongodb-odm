@@ -40,7 +40,6 @@ class ReadPreferenceTest extends BaseTest
     }
 
     /**
-     * @group replication_lag
      * @dataProvider provideReadPreferenceHints
      */
     public function testHintIsSetOnQuery($readPreference, array $tags = [])

@@ -12,7 +12,7 @@ class ConfigurationTest extends BaseTest
 {
     public function testDefaultPersistentCollectionFactory()
     {
-        $c = new Configuration();
+        $c       = new Configuration();
         $factory = $c->getPersistentCollectionFactory();
         $this->assertInstanceOf(PersistentCollectionFactory::class, $factory);
         $this->assertSame($factory, $c->getPersistentCollectionFactory());

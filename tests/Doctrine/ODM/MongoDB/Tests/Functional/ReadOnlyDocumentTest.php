@@ -24,7 +24,7 @@ class ReadOnlyDocumentTest extends BaseTest
 
     public function testCanBeUpserted()
     {
-        $rod = new ReadOnlyDocument('yay');
+        $rod     = new ReadOnlyDocument('yay');
         $rod->id = new ObjectId();
         $this->dm->persist($rod);
         $this->dm->flush();
@@ -68,7 +68,7 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $rod = $this->dm->find(ReadOnlyDocument::class, $rod->id);
+        $rod        = $this->dm->find(ReadOnlyDocument::class, $rod->id);
         $rod->value = 'o.O';
         $this->dm->flush();
         $this->dm->clear();

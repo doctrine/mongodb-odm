@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -11,22 +12,23 @@ use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use ReflectionMethod;
 use function get_class;
 
 class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 {
     public function testGetShardKeyQueryScalars()
     {
-        $o = new ShardedByScalars();
-        $o->int = 1;
+        $o         = new ShardedByScalars();
+        $o->int    = 1;
         $o->string = 'hi';
-        $o->bool = true;
-        $o->float = 1.2;
+        $o->bool   = true;
+        $o->float  = 1.2;
 
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
-        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
 
         $this->assertSame(
@@ -37,15 +39,15 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 
     public function testGetShardKeyQueryObjects()
     {
-        $o = new ShardedByObjects();
-        $o->oid = '54ca2c4c81fec698130041a7';
-        $o->bin = 'hi';
-        $o->date = new \DateTime();
+        $o       = new ShardedByObjects();
+        $o->oid  = '54ca2c4c81fec698130041a7';
+        $o->bin  = 'hi';
+        $o->date = new DateTime();
 
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
-        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 
@@ -66,13 +68,13 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 
     public function testShardById()
     {
-        $o = new ShardedById();
+        $o             = new ShardedById();
         $o->identifier = new ObjectId();
 
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
-        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 
@@ -83,7 +85,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
     {
         $o = new ShardedByReferenceOne();
 
-        $userId = new ObjectId();
+        $userId       = new ObjectId();
         $o->reference = new User();
         $o->reference->setId($userId);
 
@@ -92,7 +94,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         /** @var DocumentPersister $persister */
         $persister = $this->uow->getDocumentPersister(get_class($o));
 
-        $method = new \ReflectionMethod($persister, 'getShardKeyQuery');
+        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 

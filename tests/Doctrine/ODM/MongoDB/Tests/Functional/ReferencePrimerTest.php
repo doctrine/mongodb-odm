@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use BadMethodCallException;
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
@@ -180,9 +182,6 @@ class ReferencePrimerTest extends BaseTest
         }
     }
 
-    /**
-     * @group current
-     */
     public function testPrimeReferencesNestedInNamedEmbeddedReference()
     {
         $root = new EmbedNamed();
@@ -223,8 +222,7 @@ class ReferencePrimerTest extends BaseTest
             ->field('embeddedDoc.referencedDoc')->prime(true)
             ->field('embeddedDoc.referencedDocs')->prime(true)
             ->field('embeddedDocs.referencedDoc')->prime(true)
-            ->field('embeddedDocs.referencedDocs')->prime(true)
-        ;
+            ->field('embeddedDocs.referencedDocs')->prime(true);
 
         foreach ($qb->getQuery() as $root) {
             $this->assertNotInstanceOf(Proxy::class, $root->embeddedDoc);
@@ -326,7 +324,7 @@ class ReferencePrimerTest extends BaseTest
 
     public function testPrimeReferencesWithDiscriminatedReferenceMany()
     {
-        $group = new Group();
+        $group   = new Group();
         $project = new Project('foo');
 
         $user = new FavoritesUser();
@@ -355,7 +353,7 @@ class ReferencePrimerTest extends BaseTest
 
     public function testPrimeReferencesWithDiscriminatedReferenceOne()
     {
-        $agent = new Agent();
+        $agent         = new Agent();
         $agent->server = new GuestServer();
 
         $this->dm->persist($agent->server);
@@ -385,7 +383,7 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->createQueryBuilder(Group::class)->getQuery()->toArray();
 
         $invoked = 0;
-        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
+        $primer  = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invoked) {
             $invoked++;
         };
 
@@ -404,13 +402,10 @@ class ReferencePrimerTest extends BaseTest
         $this->assertEquals(0, $invoked, 'Primer was not invoked when all references were already managed.');
     }
 
-    /**
-     * @group replication_lag
-     */
     public function testPrimeReferencesInvokesPrimer()
     {
-        $group1 = new Group();
-        $group2 = new Group();
+        $group1  = new Group();
+        $group2  = new Group();
         $account = new Account();
 
         $user = new User();
@@ -423,7 +418,7 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->clear();
 
         $invokedArgs = [];
-        $primer = function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
+        $primer      = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
             $invokedArgs[] = func_get_args();
         };
 
@@ -440,7 +435,7 @@ class ReferencePrimerTest extends BaseTest
         $this->assertSame($readPreference, $invokedArgs[0][3][Query::HINT_READ_PREFERENCE], 'Primer was invoked with UnitOfWork hints from original query.');
 
         $accountIds = [$account->getId()];
-        $groupIds = [$group1->getId(), $group2->getId()];
+        $groupIds   = [$group1->getId(), $group2->getId()];
 
         $this->assertEquals($accountIds, $invokedArgs[0][2]);
         $this->assertEquals($groupIds, $invokedArgs[1][2]);
@@ -449,7 +444,7 @@ class ReferencePrimerTest extends BaseTest
     public function testPrimeReferencesInFindAndModifyResult()
     {
         $group = new Group();
-        $user = new User();
+        $user  = new User();
 
         $this->dm->persist($user);
         $this->dm->persist($group);
@@ -493,7 +488,7 @@ class ReferencePrimerTest extends BaseTest
             ->field('username')->equals('SomeName')
             ->field('phonenumbers.lastCalledBy')->prime(true);
 
-        $user = $qb->getQuery()->getSingleResult();
+        $user         = $qb->getQuery()->getSingleResult();
         $phonenumbers = $user->getPhonenumbers();
 
         $this->assertCount(1, $phonenumbers);
@@ -565,7 +560,7 @@ class ReferencePrimerTest extends BaseTest
         $postAuthor = new User();
         $this->dm->persist($postAuthor);
 
-        $comment = new Comment('foo', new \DateTime());
+        $comment         = new Comment('foo', new DateTime());
         $comment->author = $commentAuthor;
         $this->dm->persist($comment);
 
@@ -594,7 +589,7 @@ class ReferencePrimerTest extends BaseTest
         $postAuthor = new User();
         $this->dm->persist($postAuthor);
 
-        $comment = new Comment('foo', new \DateTime());
+        $comment         = new Comment('foo', new DateTime());
         $comment->author = $commentAuthor;
         $this->dm->persist($comment);
 
@@ -609,7 +604,7 @@ class ReferencePrimerTest extends BaseTest
         $post = $this->dm->find(BlogPost::class, $post->id);
         $this->assertInstanceOf(BlogPost::class, $post);
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
 
         $post->repoCommentsWithPrimer->first();
     }
@@ -622,7 +617,7 @@ class ReferencePrimerTest extends BaseTest
         $postAuthor = new User();
         $this->dm->persist($postAuthor);
 
-        $comment = new Comment('foo', new \DateTime());
+        $comment         = new Comment('foo', new DateTime());
         $comment->author = $commentAuthor;
         $this->dm->persist($comment);
 

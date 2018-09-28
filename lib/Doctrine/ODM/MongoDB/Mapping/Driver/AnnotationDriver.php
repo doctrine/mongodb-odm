@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use ReflectionMethod;
 use const E_USER_DEPRECATED;
 use function array_merge;
 use function array_replace;
@@ -24,7 +25,6 @@ use function trigger_error;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
- *
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {
@@ -40,7 +40,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class): void
+    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class) : void
     {
         /** @var ClassMetadata $class */
         $reflClass = $class->getReflectionClass();
@@ -137,8 +137,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 continue;
             }
 
-            $indexes = [];
-            $mapping = ['fieldName' => $property->getName()];
+            $indexes    = [];
+            $mapping    = ['fieldName' => $property->getName()];
             $fieldAnnot = null;
 
             foreach ($this->reader->getPropertyAnnotations($property) as $annot) {
@@ -185,8 +185,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $this->setShardKey($class, $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey']);
         }
 
-        /** @var \ReflectionMethod $method */
-        foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+        /** @var ReflectionMethod $method */
+        foreach ($reflClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             /* Filter for the declaring class only. Callbacks from parent
              * classes will already be registered.
              */
@@ -226,9 +226,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
     }
 
-    private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []): void
+    private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []) : void
     {
-        $keys = array_merge($keys, $index->keys);
+        $keys    = array_merge($keys, $index->keys);
         $options = [];
         $allowed = ['name', 'dropDups', 'background', 'unique', 'sparse', 'expireAfterSeconds'];
         foreach ($allowed as $name) {
@@ -246,10 +246,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     *
      * @throws MappingException
      */
-    private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey): void
+    private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey) : void
     {
         $options = [];
         $allowed = ['unique', 'numInitialChunks'];
@@ -269,7 +268,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @param array|string $paths
      */
-    public static function create($paths = [], ?Reader $reader = null): AnnotationDriver
+    public static function create($paths = [], ?Reader $reader = null) : AnnotationDriver
     {
         if ($reader === null) {
             $reader = new AnnotationReader();

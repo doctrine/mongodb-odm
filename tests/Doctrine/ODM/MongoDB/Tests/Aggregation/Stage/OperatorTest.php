@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Operator;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
@@ -12,7 +13,8 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class OperatorTest extends BaseTest
 {
-    use AggregationTestTrait, AggregationOperatorsProviderTrait;
+    use AggregationTestTrait;
+    use AggregationOperatorsProviderTrait;
 
     /**
      * @dataProvider provideExpressionOperators
@@ -20,7 +22,7 @@ class OperatorTest extends BaseTest
     public function testProxiedExpressionOperators($expected, $operator, $args)
     {
         $stage = $this->getStubStage();
-        $args = $this->resolveArgs($args);
+        $args  = $this->resolveArgs($args);
 
         $this->assertSame($stage, $stage->$operator(...$args));
         $this->assertSame($expected, $stage->getExpression());
@@ -78,7 +80,7 @@ class OperatorTest extends BaseTest
     {
         $stage = $this->getStubStage();
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage(Expr::class . '::case requires a valid switch statement (call switch() first).');
 
         $stage->case('$field');
@@ -88,7 +90,7 @@ class OperatorTest extends BaseTest
     {
         $stage = $this->getStubStage();
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage(Expr::class . '::then requires a valid case statement (call case() first).');
 
         $stage->then('$field');
@@ -102,7 +104,7 @@ class OperatorTest extends BaseTest
             ->case('$field')
             ->then('$field');
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage(Expr::class . '::then requires a valid case statement (call case() first).');
 
         $stage->then('$field');
@@ -112,16 +114,16 @@ class OperatorTest extends BaseTest
     {
         $stage = $this->getStubStage();
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage(Expr::class . '::default requires a valid switch statement (call switch() first).');
 
         $stage->default('$field');
     }
 
-    private function getStubStage(): Operator
+    private function getStubStage() : Operator
     {
         return new class($this->getTestAggregationBuilder()) extends Operator {
-            public function getExpression(): array
+            public function getExpression() : array
             {
                 return $this->expr->getExpression();
             }

@@ -20,7 +20,7 @@ class DocumentManagerHelper extends Helper
         $this->dm = $dm;
     }
 
-    public function getDocumentManager(): DocumentManager
+    public function getDocumentManager() : DocumentManager
     {
         return $this->dm;
     }
@@ -30,7 +30,7 @@ class DocumentManagerHelper extends Helper
      *
      * @see \Symfony\Component\Console\Helper\HelperInterface::getName()
      */
-    public function getName(): string
+    public function getName() : string
     {
         return 'documentManager';
     }

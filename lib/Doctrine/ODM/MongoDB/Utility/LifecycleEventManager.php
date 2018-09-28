@@ -32,16 +32,17 @@ class LifecycleEventManager
 
     public function __construct(DocumentManager $dm, UnitOfWork $uow, EventManager $evm)
     {
-        $this->dm = $dm;
+        $this->dm  = $dm;
         $this->evm = $evm;
         $this->uow = $uow;
     }
 
     /**
      * @param mixed $id
+     *
      * @return bool Returns whether the exceptionDisabled flag was set
      */
-    public function documentNotFound(object $proxy, $id): bool
+    public function documentNotFound(object $proxy, $id) : bool
     {
         $eventArgs = new DocumentNotFoundEventArgs($proxy, $this->dm, $id);
         $this->evm->dispatchEvent(Events::documentNotFound, $eventArgs);
@@ -52,7 +53,7 @@ class LifecycleEventManager
     /**
      * Dispatches postCollectionLoad event.
      */
-    public function postCollectionLoad(PersistentCollectionInterface $coll): void
+    public function postCollectionLoad(PersistentCollectionInterface $coll) : void
     {
         $eventArgs = new PostCollectionLoadEventArgs($coll, $this->dm);
         $this->evm->dispatchEvent(Events::postCollectionLoad, $eventArgs);
@@ -61,7 +62,7 @@ class LifecycleEventManager
     /**
      * Invokes postPersist callbacks and events for given document cascading them to embedded documents as well.
      */
-    public function postPersist(ClassMetadata $class, object $document): void
+    public function postPersist(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::postPersist, $document, [new LifecycleEventArgs($document, $this->dm)]);
         $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
@@ -71,7 +72,7 @@ class LifecycleEventManager
     /**
      * Invokes postRemove callbacks and events for given document.
      */
-    public function postRemove(ClassMetadata $class, object $document): void
+    public function postRemove(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::postRemove, $document, [new LifecycleEventArgs($document, $this->dm)]);
         $this->evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($document, $this->dm));
@@ -81,7 +82,7 @@ class LifecycleEventManager
      * Invokes postUpdate callbacks and events for given document. The same will be done for embedded documents owned
      * by given document unless they were new in which case postPersist callbacks and events will be dispatched.
      */
-    public function postUpdate(ClassMetadata $class, object $document): void
+    public function postUpdate(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::postUpdate, $document, [new LifecycleEventArgs($document, $this->dm)]);
         $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
@@ -91,7 +92,7 @@ class LifecycleEventManager
     /**
      * Invokes prePersist callbacks and events for given document.
      */
-    public function prePersist(ClassMetadata $class, object $document): void
+    public function prePersist(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::prePersist, $document, [new LifecycleEventArgs($document, $this->dm)]);
         $this->evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->dm));
@@ -100,7 +101,7 @@ class LifecycleEventManager
     /**
      * Invokes prePersist callbacks and events for given document.
      */
-    public function preRemove(ClassMetadata $class, object $document): void
+    public function preRemove(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::preRemove, $document, [new LifecycleEventArgs($document, $this->dm)]);
         $this->evm->dispatchEvent(Events::preRemove, new LifecycleEventArgs($document, $this->dm));
@@ -109,7 +110,7 @@ class LifecycleEventManager
     /**
      * Invokes preUpdate callbacks and events for given document cascading them to embedded documents as well.
      */
-    public function preUpdate(ClassMetadata $class, object $document): void
+    public function preUpdate(ClassMetadata $class, object $document) : void
     {
         if (! empty($class->lifecycleCallbacks[Events::preUpdate])) {
             $class->invokeLifecycleCallbacks(Events::preUpdate, $document, [new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document))]);
@@ -122,7 +123,7 @@ class LifecycleEventManager
     /**
      * Cascades the preUpdate event to embedded documents.
      */
-    private function cascadePreUpdate(ClassMetadata $class, object $document): void
+    private function cascadePreUpdate(ClassMetadata $class, object $document) : void
     {
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
             $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -143,7 +144,7 @@ class LifecycleEventManager
     /**
      * Cascades the postUpdate and postPersist events to embedded documents.
      */
-    private function cascadePostUpdate(ClassMetadata $class, object $document): void
+    private function cascadePostUpdate(ClassMetadata $class, object $document) : void
     {
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
             $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -157,7 +158,7 @@ class LifecycleEventManager
                     continue;
                 }
                 $entryClass = $this->dm->getClassMetadata(get_class($entry));
-                $event = $this->uow->isScheduledForInsert($entry) ? Events::postPersist : Events::postUpdate;
+                $event      = $this->uow->isScheduledForInsert($entry) ? Events::postPersist : Events::postUpdate;
                 $entryClass->invokeLifecycleCallbacks($event, $entry, [new LifecycleEventArgs($entry, $this->dm)]);
                 $this->evm->dispatchEvent($event, new LifecycleEventArgs($entry, $this->dm));
 
@@ -169,7 +170,7 @@ class LifecycleEventManager
     /**
      * Cascades the postPersist events to embedded documents.
      */
-    private function cascadePostPersist(ClassMetadata $class, object $document): void
+    private function cascadePostPersist(ClassMetadata $class, object $document) : void
     {
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
             $value = $class->reflFields[$mapping['fieldName']]->getValue($document);

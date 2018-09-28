@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use ArrayIterator;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -100,16 +101,16 @@ class SchemaManagerTest extends TestCase
             }
 
             $this->documentDatabases[$cm->name] = $this->getMockDatabase();
-            $this->classMetadatas[$cm->name] = $cm;
+            $this->classMetadatas[$cm->name]    = $cm;
         }
 
-        $this->dm->unitOfWork = $this->getMockUnitOfWork();
-        $this->dm->metadataFactory = $cmf;
+        $this->dm->unitOfWork          = $this->getMockUnitOfWork();
+        $this->dm->metadataFactory     = $cmf;
         $this->dm->documentCollections = $this->documentCollections;
-        $this->dm->documentBuckets = $this->documentBuckets;
-        $this->dm->documentDatabases = $this->documentDatabases;
+        $this->dm->documentBuckets     = $this->documentBuckets;
+        $this->dm->documentDatabases   = $this->documentDatabases;
 
-        $this->schemaManager = new SchemaManager($this->dm, $cmf);
+        $this->schemaManager     = new SchemaManager($this->dm, $cmf);
         $this->dm->schemaManager = $this->schemaManager;
     }
 
@@ -127,24 +128,20 @@ class SchemaManagerTest extends TestCase
             $bucket->getFilesCollection()
                 ->expects($this->any())
                 ->method('listIndexes')
-                ->willReturn([])
-            ;
+                ->willReturn([]);
             $bucket->getFilesCollection()
                 ->expects($this->once())
                 ->method('createIndex')
-                ->with(['filename' => 1, 'uploadDate' => 1])
-            ;
+                ->with(['filename' => 1, 'uploadDate' => 1]);
 
             $bucket->getChunksCollection()
                 ->expects($this->any())
                 ->method('listIndexes')
-                ->willReturn([])
-            ;
+                ->willReturn([]);
             $bucket->getChunksCollection()
                 ->expects($this->once())
                 ->method('createIndex')
-                ->with(['files_id' => 1, 'n' => 1], ['unique' => true])
-            ;
+                ->with(['files_id' => 1, 'n' => 1], ['unique' => true]);
         }
 
         $this->schemaManager->ensureIndexes();
@@ -174,24 +171,20 @@ class SchemaManagerTest extends TestCase
                 $bucket->getFilesCollection()
                     ->expects($this->any())
                     ->method('listIndexes')
-                    ->willReturn([])
-                ;
+                    ->willReturn([]);
                 $bucket->getFilesCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['filename' => 1, 'uploadDate' => 1])
-                ;
+                    ->with(['filename' => 1, 'uploadDate' => 1]);
 
                 $bucket->getChunksCollection()
                     ->expects($this->any())
                     ->method('listIndexes')
-                    ->willReturn([])
-                ;
+                    ->willReturn([]);
                 $bucket->getChunksCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['files_id' => 1, 'n' => 1], ['unique' => true])
-                ;
+                    ->with(['files_id' => 1, 'n' => 1], ['unique' => true]);
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('createIndex');
                 $bucket->getChunksCollection()->expects($this->never())->method('createIndex');
@@ -214,7 +207,7 @@ class SchemaManagerTest extends TestCase
         $collection = $this->documentCollections[CmsArticle::class];
         $collection->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), $this->callback(function ($o) {
+            ->with($this->anything(), $this->callback(static function ($o) {
                 return isset($o['timeout']) && $o['timeout'] === 10000;
             }));
 
@@ -226,7 +219,7 @@ class SchemaManagerTest extends TestCase
         $collection = $this->documentCollections[CmsArticle::class];
         $collection->expects($this->once())
             ->method('listIndexes')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new \ArrayIterator([]))));
+            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator([]))));
         $collection->expects($this->once())
             ->method('createIndex');
         $collection->expects($this->never())
@@ -238,7 +231,7 @@ class SchemaManagerTest extends TestCase
     public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes()
     {
         $collection = $this->documentCollections[CmsArticle::class];
-        $indexes = [[
+        $indexes    = [[
             'v' => 1,
             'key' => ['topic' => -1],
             'name' => 'topic_-1',
@@ -246,7 +239,7 @@ class SchemaManagerTest extends TestCase
         ];
         $collection->expects($this->once())
             ->method('listIndexes')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new \ArrayIterator($indexes))));
+            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator($indexes))));
         $collection->expects($this->once())
             ->method('createIndex');
         $collection->expects($this->once())
@@ -283,10 +276,10 @@ class SchemaManagerTest extends TestCase
 
     public function testCreateDocumentCollection()
     {
-        $cm = $this->classMetadatas[CmsArticle::class];
+        $cm                   = $this->classMetadatas[CmsArticle::class];
         $cm->collectionCapped = true;
-        $cm->collectionSize = 1048576;
-        $cm->collectionMax = 32;
+        $cm->collectionSize   = 1048576;
+        $cm->collectionMax    = 32;
 
         $database = $this->documentDatabases[CmsArticle::class];
         $database->expects($this->once())
@@ -298,8 +291,7 @@ class SchemaManagerTest extends TestCase
                     'size' => 1048576,
                     'max' => 32,
                 ]
-            )
-        ;
+            );
 
         $this->schemaManager->createDocumentCollection(CmsArticle::class);
     }
@@ -309,12 +301,10 @@ class SchemaManagerTest extends TestCase
         $database = $this->documentDatabases[File::class];
         $database->expects($this->at(0))
             ->method('createCollection')
-            ->with('fs.files')
-        ;
+            ->with('fs.files');
         $database->expects($this->at(1))
             ->method('createCollection')
-            ->with('fs.chunks')
-        ;
+            ->with('fs.chunks');
 
         $this->schemaManager->createDocumentCollection(File::class);
     }
@@ -372,12 +362,10 @@ class SchemaManagerTest extends TestCase
             if ($class === File::class) {
                 $bucket->getFilesCollection()
                     ->expects($this->once())
-                    ->method('drop')
-                ;
+                    ->method('drop');
                 $bucket->getChunksCollection()
                     ->expects($this->once())
-                    ->method('drop')
-                ;
+                    ->method('drop');
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('drop');
                 $bucket->getChunksCollection()->expects($this->never())->method('drop');
@@ -418,7 +406,7 @@ class SchemaManagerTest extends TestCase
      */
     public function testIsMongoIndexEquivalentToDocumentIndex($expected, $mongoIndex, $documentIndex)
     {
-        $defaultMongoIndex = [
+        $defaultMongoIndex    = [
             'key' => ['foo' => 1, 'bar' => -1],
         ];
         $defaultDocumentIndex = [
@@ -426,7 +414,7 @@ class SchemaManagerTest extends TestCase
             'options' => [],
         ];
 
-        $mongoIndex += $defaultMongoIndex;
+        $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
         $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
@@ -606,7 +594,7 @@ class SchemaManagerTest extends TestCase
      */
     public function testIsMongoIndexEquivalentToDocumentIndexWithTextIndexes($expected, $mongoIndex, $documentIndex)
     {
-        $defaultMongoIndex = [
+        $defaultMongoIndex    = [
             'key' => ['_fts' => 'text', '_ftsx' => 1],
             'weights' => ['bar' => 1, 'foo' => 1],
             'default_language' => 'english',
@@ -618,7 +606,7 @@ class SchemaManagerTest extends TestCase
             'options' => [],
         ];
 
-        $mongoIndex += $defaultMongoIndex;
+        $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
         $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
@@ -761,17 +749,17 @@ class SchemaManagerTest extends TestCase
         return $this->createMock(Database::class);
     }
 
-    private function getMockDocumentManager(): DocumentManagerMock
+    private function getMockDocumentManager() : DocumentManagerMock
     {
         $config = new Configuration();
         $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/../../../../Documents'));
 
         $em = $this->createMock(EventManager::class);
 
-        $dm = new DocumentManagerMock();
+        $dm               = new DocumentManagerMock();
         $dm->eventManager = $em;
-        $dm->config = $config;
-        $dm->client = $this->createMock(Client::class);
+        $dm->config       = $config;
+        $dm->client       = $this->createMock(Client::class);
 
         return $dm;
     }

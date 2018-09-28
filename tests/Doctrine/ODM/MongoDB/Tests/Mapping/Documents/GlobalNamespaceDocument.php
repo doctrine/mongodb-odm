@@ -35,12 +35,14 @@ class DoctrineGlobal_User
 
     /**
      * @ODM\Field(type="string")
+     *
      * @var string
      */
     private $username;
 
     /**
      * @ODM\Field(type="string")
+     *
      * @var string
      */
     private $email;

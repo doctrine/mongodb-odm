@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Query;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
+use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Javascript;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
+use Traversable;
 use function array_filter;
 use function array_key_exists;
 use function count;
@@ -25,7 +28,6 @@ use function strtolower;
 
 /**
  * Query builder for ODM.
- *
  */
 class Builder
 {
@@ -110,7 +112,7 @@ class Builder
      */
     public function __construct(DocumentManager $dm, $documentName = null)
     {
-        $this->dm = $dm;
+        $this->dm   = $dm;
         $this->expr = new Expr($dm);
         if ($documentName === null) {
             return;
@@ -131,10 +133,11 @@ class Builder
      *
      * @see Expr::addAnd()
      * @see http://docs.mongodb.org/manual/reference/operator/and/
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions): self
+    public function addAnd($expression, ...$expressions) : self
     {
         $this->expr->addAnd(...func_get_args());
         return $this;
@@ -147,10 +150,11 @@ class Builder
      *
      * @see Expr::addNor()
      * @see http://docs.mongodb.org/manual/reference/operator/nor/
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
-    public function addNor($expression, ...$expressions): self
+    public function addNor($expression, ...$expressions) : self
     {
         $this->expr->addNor(...func_get_args());
         return $this;
@@ -163,10 +167,11 @@ class Builder
      *
      * @see Expr::addOr()
      * @see http://docs.mongodb.org/manual/reference/operator/or/
+     *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions): self
+    public function addOr($expression, ...$expressions) : self
     {
         $this->expr->addOr(...func_get_args());
         return $this;
@@ -186,9 +191,10 @@ class Builder
      * @see Expr::addToSet()
      * @see http://docs.mongodb.org/manual/reference/operator/addToSet/
      * @see http://docs.mongodb.org/manual/reference/operator/each/
+     *
      * @param mixed|Expr $valueOrExpression
      */
-    public function addToSet($valueOrExpression): self
+    public function addToSet($valueOrExpression) : self
     {
         $this->expr->addToSet($valueOrExpression);
         return $this;
@@ -200,7 +206,7 @@ class Builder
      * @see Expr::all()
      * @see http://docs.mongodb.org/manual/reference/operator/all/
      */
-    public function all(array $values): self
+    public function all(array $values) : self
     {
         $this->expr->all($values);
         return $this;
@@ -211,9 +217,10 @@ class Builder
      *
      * @see Expr::bitAnd()
      * @see http://docs.mongodb.org/manual/reference/operator/update/bit/
+     *
      * @return $this
      */
-    public function bitAnd(int $value): self
+    public function bitAnd(int $value) : self
     {
         $this->expr->bitAnd($value);
         return $this;
@@ -225,7 +232,7 @@ class Builder
      * @see Expr::bitOr()
      * @see http://docs.mongodb.org/manual/reference/operator/update/bit/
      */
-    public function bitOr(int $value): self
+    public function bitOr(int $value) : self
     {
         $this->expr->bitOr($value);
         return $this;
@@ -237,9 +244,10 @@ class Builder
      *
      * @see Expr::bitsAllClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllClear/
+     *
      * @param int|array|Binary $value
      */
-    public function bitsAllClear($value): self
+    public function bitsAllClear($value) : self
     {
         $this->expr->bitsAllClear($value);
         return $this;
@@ -251,9 +259,10 @@ class Builder
      *
      * @see Expr::bitsAllSet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllSet/
+     *
      * @param int|array|Binary $value
      */
-    public function bitsAllSet($value): self
+    public function bitsAllSet($value) : self
     {
         $this->expr->bitsAllSet($value);
         return $this;
@@ -265,9 +274,10 @@ class Builder
      *
      * @see Expr::bitsAnyClear()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnyClear/
+     *
      * @param int|array|Binary $value
      */
-    public function bitsAnyClear($value): self
+    public function bitsAnyClear($value) : self
     {
         $this->expr->bitsAnyClear($value);
         return $this;
@@ -279,9 +289,10 @@ class Builder
      *
      * @see Expr::bitsAnySet()
      * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnySet/
+     *
      * @param int|array|Binary $value
      */
-    public function bitsAnySet($value): self
+    public function bitsAnySet($value) : self
     {
         $this->expr->bitsAnySet($value);
         return $this;
@@ -293,7 +304,7 @@ class Builder
      * @see Expr::bitXor()
      * @see http://docs.mongodb.org/manual/reference/operator/update/bit/
      */
-    public function bitXor(int $value): self
+    public function bitXor(int $value) : self
     {
         $this->expr->bitXor($value);
         return $this;
@@ -307,10 +318,10 @@ class Builder
      *
      * @see Expr::caseSensitive()
      * @see http://docs.mongodb.org/manual/reference/operator/text/
-     * @throws \BadMethodCallException If the query does not already have $text criteria.
      *
+     * @throws BadMethodCallException If the query does not already have $text criteria.
      */
-    public function caseSensitive(bool $caseSensitive): self
+    public function caseSensitive(bool $caseSensitive) : self
     {
         $this->expr->caseSensitive($caseSensitive);
         return $this;
@@ -322,7 +333,7 @@ class Builder
      * @see Expr::comment()
      * @see http://docs.mongodb.org/manual/reference/operator/query/comment/
      */
-    public function comment(string $comment): self
+    public function comment(string $comment) : self
     {
         $this->expr->comment($comment);
         return $this;
@@ -331,7 +342,7 @@ class Builder
     /**
      * Change the query type to count.
      */
-    public function count(): self
+    public function count() : self
     {
         $this->query['type'] = Query::TYPE_COUNT;
         return $this;
@@ -343,7 +354,7 @@ class Builder
      * @see Expr::currentDate()
      * @see http://docs.mongodb.org/manual/reference/operator/currentDate/
      */
-    public function currentDate(string $type = 'date'): self
+    public function currentDate(string $type = 'date') : self
     {
         $this->expr->currentDate($type);
         return $this;
@@ -371,10 +382,10 @@ class Builder
      *
      * @see Builder::diacriticSensitive()
      * @see http://docs.mongodb.org/manual/reference/operator/text/
-     * @throws \BadMethodCallException If the query does not already have $text criteria.
      *
+     * @throws BadMethodCallException If the query does not already have $text criteria.
      */
-    public function diacriticSensitive(bool $diacriticSensitive): self
+    public function diacriticSensitive(bool $diacriticSensitive) : self
     {
         $this->expr->diacriticSensitive($diacriticSensitive);
         return $this;
@@ -385,9 +396,9 @@ class Builder
      *
      * @see http://docs.mongodb.org/manual/reference/command/distinct/
      */
-    public function distinct(string $field): self
+    public function distinct(string $field) : self
     {
-        $this->query['type'] = Query::TYPE_DISTINCT;
+        $this->query['type']     = Query::TYPE_DISTINCT;
         $this->query['distinct'] = $field;
         return $this;
     }
@@ -395,10 +406,10 @@ class Builder
     /**
      * Set whether the query should return its result as an EagerCursor.
      */
-    public function eagerCursor(bool $bool = true): self
+    public function eagerCursor(bool $bool = true) : self
     {
         if (! $bool && ! empty($this->primers)) {
-            throw new \BadMethodCallException("Can't set eagerCursor to false when using reference primers");
+            throw new BadMethodCallException("Can't set eagerCursor to false when using reference primers");
         }
 
         $this->query['eagerCursor'] = (bool) $bool;
@@ -412,9 +423,10 @@ class Builder
      *
      * @see Expr::elemMatch()
      * @see http://docs.mongodb.org/manual/reference/operator/elemMatch/
+     *
      * @param array|Expr $expression
      */
-    public function elemMatch($expression): self
+    public function elemMatch($expression) : self
     {
         $this->expr->elemMatch($expression);
         return $this;
@@ -424,9 +436,10 @@ class Builder
      * Specify an equality match for the current field.
      *
      * @see Expr::equals()
+     *
      * @param mixed $value
      */
-    public function equals($value): self
+    public function equals($value) : self
     {
         $this->expr->equals($value);
         return $this;
@@ -440,7 +453,7 @@ class Builder
      *
      * @param array|string $fieldName,...
      */
-    public function exclude($fieldName = null): self
+    public function exclude($fieldName = null) : self
     {
         if (! isset($this->query['select'])) {
             $this->query['select'] = [];
@@ -461,7 +474,7 @@ class Builder
      * @see Expr::exists()
      * @see http://docs.mongodb.org/manual/reference/operator/exists/
      */
-    public function exists(bool $bool): self
+    public function exists(bool $bool) : self
     {
         $this->expr->exists($bool);
         return $this;
@@ -470,7 +483,7 @@ class Builder
     /**
      * Create a new Expr instance that can be used as an expression with the Builder
      */
-    public function expr(): Expr
+    public function expr() : Expr
     {
         $expr = new Expr($this->dm);
         $expr->setClassMetadata($this->class);
@@ -481,7 +494,7 @@ class Builder
     /**
      * Set the current field to operate on.
      */
-    public function field(string $field): self
+    public function field(string $field) : self
     {
         $this->currentField = $field;
         $this->expr->field($field);
@@ -493,9 +506,10 @@ class Builder
      * Set the "finalize" option for a mapReduce or group command.
      *
      * @param string|Javascript $finalize
-     * @throws \BadMethodCallException If the query is not a mapReduce or group command.
+     *
+     * @throws BadMethodCallException If the query is not a mapReduce or group command.
      */
-    public function finalize($finalize): self
+    public function finalize($finalize) : self
     {
         switch ($this->query['type']) {
             case Query::TYPE_MAP_REDUCE:
@@ -507,7 +521,7 @@ class Builder
                 break;
 
             default:
-                throw new \BadMethodCallException('mapReduce(), map() or group() must be called before finalize()');
+                throw new BadMethodCallException('mapReduce(), map() or group() must be called before finalize()');
         }
 
         return $this;
@@ -516,7 +530,7 @@ class Builder
     /**
      * Change the query type to find and optionally set and change the class being queried.
      */
-    public function find(?string $documentName = null): self
+    public function find(?string $documentName = null) : self
     {
         $this->setDocumentName($documentName);
         $this->query['type'] = Query::TYPE_FIND;
@@ -524,7 +538,7 @@ class Builder
         return $this;
     }
 
-    public function findAndRemove(?string $documentName = null): self
+    public function findAndRemove(?string $documentName = null) : self
     {
         $this->setDocumentName($documentName);
         $this->query['type'] = Query::TYPE_FIND_AND_REMOVE;
@@ -532,7 +546,7 @@ class Builder
         return $this;
     }
 
-    public function findAndUpdate(?string $documentName = null): self
+    public function findAndUpdate(?string $documentName = null) : self
     {
         $this->setDocumentName($documentName);
         $this->query['type'] = Query::TYPE_FIND_AND_UPDATE;
@@ -548,9 +562,10 @@ class Builder
      *
      * @see Expr::geoIntersects()
      * @see http://docs.mongodb.org/manual/reference/operator/geoIntersects/
+     *
      * @param array|Geometry $geometry
      */
-    public function geoIntersects($geometry): self
+    public function geoIntersects($geometry) : self
     {
         $this->expr->geoIntersects($geometry);
         return $this;
@@ -564,9 +579,10 @@ class Builder
      *
      * @see Expr::geoWithin()
      * @see http://docs.mongodb.org/manual/reference/operator/geoWithin/
+     *
      * @param array|Geometry $geometry
      */
-    public function geoWithin($geometry): self
+    public function geoWithin($geometry) : self
     {
         $this->expr->geoWithin($geometry);
         return $this;
@@ -584,7 +600,7 @@ class Builder
      * @see Expr::geoWithinBox()
      * @see http://docs.mongodb.org/manual/reference/operator/box/
      */
-    public function geoWithinBox(float $x1, float $y1, float $x2, float $y2): self
+    public function geoWithinBox(float $x1, float $y1, float $x2, float $y2) : self
     {
         $this->expr->geoWithinBox($x1, $y1, $x2, $y2);
         return $this;
@@ -599,7 +615,7 @@ class Builder
      * @see Expr::geoWithinCenter()
      * @see http://docs.mongodb.org/manual/reference/operator/center/
      */
-    public function geoWithinCenter(float $x, float $y, float $radius): self
+    public function geoWithinCenter(float $x, float $y, float $radius) : self
     {
         $this->expr->geoWithinCenter($x, $y, $radius);
         return $this;
@@ -613,7 +629,7 @@ class Builder
      * @see Expr::geoWithinCenterSphere()
      * @see http://docs.mongodb.org/manual/reference/operator/centerSphere/
      */
-    public function geoWithinCenterSphere(float $x, float $y, float $radius): self
+    public function geoWithinCenterSphere(float $x, float $y, float $radius) : self
     {
         $this->expr->geoWithinCenterSphere($x, $y, $radius);
         return $this;
@@ -632,12 +648,13 @@ class Builder
      *
      * @see Expr::geoWithinPolygon()
      * @see http://docs.mongodb.org/manual/reference/operator/polygon/
+     *
      * @param array $point1    First point of the polygon
      * @param array $point2    Second point of the polygon
      * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
      */
-    public function geoWithinPolygon($point1, $point2, $point3, ...$points): self
+    public function geoWithinPolygon($point1, $point2, $point3, ...$points) : self
     {
         $this->expr->geoWithinPolygon(...func_get_args());
         return $this;
@@ -648,7 +665,7 @@ class Builder
      *
      * @see Expr::getNewObj()
      */
-    public function getNewObj(): array
+    public function getNewObj() : array
     {
         return $this->expr->getNewObj();
     }
@@ -656,7 +673,7 @@ class Builder
     /**
      * Gets the Query executable.
      */
-    public function getQuery(array $options = []): Query
+    public function getQuery(array $options = []) : Query
     {
         if ($this->query['type'] === Query::TYPE_MAP_REDUCE) {
             $this->hydrate = false;
@@ -678,7 +695,7 @@ class Builder
 
         if ($this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION && ! empty($query['upsert']) &&
             (empty($query['query'][$this->class->discriminatorField]) || is_array($query['query'][$this->class->discriminatorField]))) {
-            throw new \InvalidArgumentException('Upsert query that is to be performed on discriminated document does not have single ' .
+            throw new InvalidArgumentException('Upsert query that is to be performed on discriminated document does not have single ' .
                 'discriminator. Either not use base class or set \'' . $this->class->discriminatorField . '\' field manually.');
         }
 
@@ -686,7 +703,7 @@ class Builder
             $query['select'] = $documentPersister->prepareProjection($query['select']);
             if ($this->hydrate && $this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION
                 && ! isset($query['select'][$this->class->discriminatorField])) {
-                $includeMode = 0 < count(array_filter($query['select'], function ($mode) {
+                $includeMode = 0 < count(array_filter($query['select'], static function ($mode) {
                     return $mode === 1;
                 }));
                 if ($includeMode && ! isset($query['select'][$this->class->discriminatorField])) {
@@ -721,7 +738,7 @@ class Builder
      *
      * @see Expr::getQuery()
      */
-    public function getQueryArray(): array
+    public function getQueryArray() : array
     {
         return $this->expr->getQuery();
     }
@@ -729,7 +746,7 @@ class Builder
     /**
      * Get the type of this query.
      */
-    public function getType(): int
+    public function getType() : int
     {
         return $this->query['type'];
     }
@@ -739,9 +756,10 @@ class Builder
      *
      * @see Expr::gt()
      * @see http://docs.mongodb.org/manual/reference/operator/gt/
+     *
      * @param mixed $value
      */
-    public function gt($value): self
+    public function gt($value) : self
     {
         $this->expr->gt($value);
         return $this;
@@ -752,9 +770,10 @@ class Builder
      *
      * @see Expr::gte()
      * @see http://docs.mongodb.org/manual/reference/operator/gte/
+     *
      * @param mixed $value
      */
-    public function gte($value): self
+    public function gte($value) : self
     {
         $this->expr->gte($value);
         return $this;
@@ -765,13 +784,13 @@ class Builder
      *
      * @param array|string $index
      */
-    public function hint($index): self
+    public function hint($index) : self
     {
         $this->query['hint'] = $index;
         return $this;
     }
 
-    public function hydrate(bool $bool = true): self
+    public function hydrate(bool $bool = true) : self
     {
         $this->hydrate = $bool;
         return $this;
@@ -780,7 +799,7 @@ class Builder
     /**
      * Set the immortal cursor flag.
      */
-    public function immortal(bool $bool = true): self
+    public function immortal(bool $bool = true) : self
     {
         $this->query['immortal'] = $bool;
         return $this;
@@ -792,7 +811,7 @@ class Builder
      * @see Expr::in()
      * @see http://docs.mongodb.org/manual/reference/operator/in/
      */
-    public function in(array $values): self
+    public function in(array $values) : self
     {
         $this->expr->in($values);
         return $this;
@@ -805,21 +824,22 @@ class Builder
      *
      * @see Expr::inc()
      * @see http://docs.mongodb.org/manual/reference/operator/inc/
+     *
      * @param float|int $value
      */
-    public function inc($value): self
+    public function inc($value) : self
     {
         $this->expr->inc($value);
         return $this;
     }
 
-    public function includesReferenceTo(object $document): self
+    public function includesReferenceTo(object $document) : self
     {
         $this->expr->includesReferenceTo($document);
         return $this;
     }
 
-    public function insert(?string $documentName = null): self
+    public function insert(?string $documentName = null) : self
     {
         $this->setDocumentName($documentName);
         $this->query['type'] = Query::TYPE_INSERT;
@@ -835,7 +855,7 @@ class Builder
      * @see Expr::language()
      * @see http://docs.mongodb.org/manual/reference/operator/text/
      */
-    public function language(string $language): self
+    public function language(string $language) : self
     {
         $this->expr->language($language);
         return $this;
@@ -849,7 +869,7 @@ class Builder
      *
      * @see Query::prepareCursor()
      */
-    public function limit(int $limit): self
+    public function limit(int $limit) : self
     {
         $this->query['limit'] = $limit;
         return $this;
@@ -860,9 +880,10 @@ class Builder
      *
      * @see Expr::lte()
      * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     *
      * @param mixed $value
      */
-    public function lt($value): self
+    public function lt($value) : self
     {
         $this->expr->lt($value);
         return $this;
@@ -873,9 +894,10 @@ class Builder
      *
      * @see Expr::lte()
      * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     *
      * @param mixed $value
      */
-    public function lte($value): self
+    public function lte($value) : self
     {
         $this->expr->lte($value);
         return $this;
@@ -890,11 +912,12 @@ class Builder
      * The "out" option defaults to inline, like {@link Builder::mapReduce()}.
      *
      * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
+     *
      * @param string|Javascript $map
      */
-    public function map($map): self
+    public function map($map) : self
     {
-        $this->query['type'] = Query::TYPE_MAP_REDUCE;
+        $this->query['type']      = Query::TYPE_MAP_REDUCE;
         $this->query['mapReduce'] = [
             'map' => $map,
             'reduce' => null,
@@ -908,15 +931,17 @@ class Builder
      * Change the query type to a mapReduce command.
      *
      * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
+     *
      * @param string|Javascript $map
      * @param string|Javascript $reduce
      * @param array|string      $out
      * @param array             $options
+     *
      * @return $this
      */
-    public function mapReduce($map, $reduce, $out = ['inline' => true], array $options = []): self
+    public function mapReduce($map, $reduce, $out = ['inline' => true], array $options = []) : self
     {
-        $this->query['type'] = Query::TYPE_MAP_REDUCE;
+        $this->query['type']      = Query::TYPE_MAP_REDUCE;
         $this->query['mapReduce'] = [
             'map' => $map,
             'reduce' => $reduce,
@@ -929,12 +954,12 @@ class Builder
     /**
      * Set additional options for a mapReduce command.
      *
-     * @throws \BadMethodCallException If the query is not a mapReduce command.
+     * @throws BadMethodCallException If the query is not a mapReduce command.
      */
-    public function mapReduceOptions(array $options): self
+    public function mapReduceOptions(array $options) : self
     {
         if ($this->query['type'] !== Query::TYPE_MAP_REDUCE) {
-            throw new \BadMethodCallException('This method requires a mapReduce command (call map() or mapReduce() first)');
+            throw new BadMethodCallException('This method requires a mapReduce command (call map() or mapReduce() first)');
         }
 
         $this->query['mapReduce']['options'] = $options;
@@ -946,9 +971,10 @@ class Builder
      *
      * @see Expr::max()
      * @see http://docs.mongodb.org/manual/reference/operator/update/max/
+     *
      * @param mixed $value
      */
-    public function max($value): self
+    public function max($value) : self
     {
         $this->expr->max($value);
         return $this;
@@ -957,7 +983,7 @@ class Builder
     /**
      * Specifies a cumulative time limit in milliseconds for processing operations on a cursor.
      */
-    public function maxTimeMS(int $ms): self
+    public function maxTimeMS(int $ms) : self
     {
         $this->query['maxTimeMS'] = $ms;
         return $this;
@@ -968,9 +994,10 @@ class Builder
      *
      * @see Expr::min()
      * @see http://docs.mongodb.org/manual/reference/operator/update/min/
+     *
      * @param mixed $value
      */
-    public function min($value): self
+    public function min($value) : self
     {
         $this->expr->min($value);
         return $this;
@@ -981,10 +1008,11 @@ class Builder
      *
      * @see Expr::mod()
      * @see http://docs.mongodb.org/manual/reference/operator/mod/
+     *
      * @param float|int $divisor
      * @param float|int $remainder
      */
-    public function mod($divisor, $remainder = 0): self
+    public function mod($divisor, $remainder = 0) : self
     {
         $this->expr->mod($divisor, $remainder);
         return $this;
@@ -997,9 +1025,10 @@ class Builder
      *
      * @see Expr::mul()
      * @see http://docs.mongodb.org/manual/reference/operator/mul/
+     *
      * @param float|int $value
      */
-    public function mul($value): self
+    public function mul($value) : self
     {
         $this->expr->mul($value);
         return $this;
@@ -1014,10 +1043,11 @@ class Builder
      *
      * @see Expr::near()
      * @see http://docs.mongodb.org/manual/reference/operator/near/
+     *
      * @param float|array|Point $x
      * @param float             $y
      */
-    public function near($x, $y = null): self
+    public function near($x, $y = null) : self
     {
         $this->expr->near($x, $y);
         return $this;
@@ -1032,10 +1062,11 @@ class Builder
      *
      * @see Expr::nearSphere()
      * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
+     *
      * @param float|array|Point $x
      * @param float             $y
      */
-    public function nearSphere($x, $y = null): self
+    public function nearSphere($x, $y = null) : self
     {
         $this->expr->nearSphere($x, $y);
         return $this;
@@ -1048,9 +1079,10 @@ class Builder
      *
      * @see Expr::not()
      * @see http://docs.mongodb.org/manual/reference/operator/not/
+     *
      * @param array|Expr $expression
      */
-    public function not($expression): self
+    public function not($expression) : self
     {
         $this->expr->not($expression);
         return $this;
@@ -1061,9 +1093,10 @@ class Builder
      *
      * @see Expr::notEqual()
      * @see http://docs.mongodb.org/manual/reference/operator/ne/
+     *
      * @param mixed $value
      */
-    public function notEqual($value): self
+    public function notEqual($value) : self
     {
         $this->expr->notEqual($value);
         return $this;
@@ -1074,9 +1107,10 @@ class Builder
      *
      * @see Expr::notIn()
      * @see http://docs.mongodb.org/manual/reference/operator/nin/
+     *
      * @param array $values
      */
-    public function notIn(array $values): self
+    public function notIn(array $values) : self
     {
         $this->expr->notIn($values);
         return $this;
@@ -1086,12 +1120,13 @@ class Builder
      * Set the "out" option for a mapReduce command.
      *
      * @param array|string $out
-     * @throws \BadMethodCallException If the query is not a mapReduce command.
+     *
+     * @throws BadMethodCallException If the query is not a mapReduce command.
      */
-    public function out($out): self
+    public function out($out) : self
     {
         if ($this->query['type'] !== Query::TYPE_MAP_REDUCE) {
-            throw new \BadMethodCallException('This method requires a mapReduce command (call map() or mapReduce() first)');
+            throw new BadMethodCallException('This method requires a mapReduce command (call map() or mapReduce() first)');
         }
 
         $this->query['mapReduce']['out'] = $out;
@@ -1104,7 +1139,7 @@ class Builder
      * @see Expr::popFirst()
      * @see http://docs.mongodb.org/manual/reference/operator/pop/
      */
-    public function popFirst(): self
+    public function popFirst() : self
     {
         $this->expr->popFirst();
         return $this;
@@ -1116,7 +1151,7 @@ class Builder
      * @see Expr::popLast()
      * @see http://docs.mongodb.org/manual/reference/operator/pop/
      */
-    public function popLast(): self
+    public function popLast() : self
     {
         $this->expr->popLast();
         return $this;
@@ -1137,12 +1172,13 @@ class Builder
      * Closure defined in {@link ReferencePrimer::__construct()}.
      *
      * @param bool|callable $primer
-     * @throws \InvalidArgumentException If $primer is not boolean or callable.
+     *
+     * @throws InvalidArgumentException If $primer is not boolean or callable.
      */
-    public function prime($primer = true): self
+    public function prime($primer = true) : self
     {
         if (! is_bool($primer) && ! is_callable($primer)) {
-            throw new \InvalidArgumentException('$primer is not a boolean or callable');
+            throw new InvalidArgumentException('$primer is not a boolean or callable');
         }
 
         if ($primer === false) {
@@ -1152,7 +1188,7 @@ class Builder
         }
 
         if (array_key_exists('eagerCursor', $this->query) && ! $this->query['eagerCursor']) {
-            throw new \BadMethodCallException("Can't call prime() when setting eagerCursor to false");
+            throw new BadMethodCallException("Can't call prime() when setting eagerCursor to false");
         }
 
         $this->primers[$this->currentField] = $primer;
@@ -1165,9 +1201,10 @@ class Builder
      *
      * @see Expr::pull()
      * @see http://docs.mongodb.org/manual/reference/operator/pull/
+     *
      * @param mixed|Expr $valueOrExpression
      */
-    public function pull($valueOrExpression): self
+    public function pull($valueOrExpression) : self
     {
         $this->expr->pull($valueOrExpression);
         return $this;
@@ -1180,7 +1217,7 @@ class Builder
      * @see Expr::pullAll()
      * @see http://docs.mongodb.org/manual/reference/operator/pullAll/
      */
-    public function pullAll(array $values): self
+    public function pullAll(array $values) : self
     {
         $this->expr->pullAll($values);
         return $this;
@@ -1202,9 +1239,10 @@ class Builder
      * @see http://docs.mongodb.org/manual/reference/operator/each/
      * @see http://docs.mongodb.org/manual/reference/operator/slice/
      * @see http://docs.mongodb.org/manual/reference/operator/sort/
+     *
      * @param mixed|Expr $valueOrExpression
      */
-    public function push($valueOrExpression): self
+    public function push($valueOrExpression) : self
     {
         $this->expr->push($valueOrExpression);
         return $this;
@@ -1217,16 +1255,17 @@ class Builder
      * and $lt criteria on the upper bound. The upper bound is not inclusive.
      *
      * @see Expr::range()
+     *
      * @param mixed $start
      * @param mixed $end
      */
-    public function range($start, $end): self
+    public function range($start, $end) : self
     {
         $this->expr->range($start, $end);
         return $this;
     }
 
-    public function readOnly(bool $bool = true): self
+    public function readOnly(bool $bool = true) : self
     {
         $this->readOnly = $bool;
         return $this;
@@ -1236,9 +1275,10 @@ class Builder
      * Set the "reduce" option for a mapReduce or group command.
      *
      * @param string|Javascript $reduce
-     * @throws \BadMethodCallException If the query is not a mapReduce or group command.
+     *
+     * @throws BadMethodCallException If the query is not a mapReduce or group command.
      */
-    public function reduce($reduce): self
+    public function reduce($reduce) : self
     {
         switch ($this->query['type']) {
             case Query::TYPE_MAP_REDUCE:
@@ -1250,25 +1290,25 @@ class Builder
                 break;
 
             default:
-                throw new \BadMethodCallException('mapReduce(), map() or group() must be called before reduce()');
+                throw new BadMethodCallException('mapReduce(), map() or group() must be called before reduce()');
         }
 
         return $this;
     }
 
-    public function references(object $document): self
+    public function references(object $document) : self
     {
         $this->expr->references($document);
         return $this;
     }
 
-    public function refresh(bool $bool = true): self
+    public function refresh(bool $bool = true) : self
     {
         $this->refresh = $bool;
         return $this;
     }
 
-    public function remove(?string $documentName = null): self
+    public function remove(?string $documentName = null) : self
     {
         $this->setDocumentName($documentName);
         $this->query['type'] = Query::TYPE_REMOVE;
@@ -1282,13 +1322,13 @@ class Builder
      * @see Expr::rename()
      * @see http://docs.mongodb.org/manual/reference/operator/rename/
      */
-    public function rename(string $name): self
+    public function rename(string $name) : self
     {
         $this->expr->rename($name);
         return $this;
     }
 
-    public function returnNew(bool $bool = true): self
+    public function returnNew(bool $bool = true) : self
     {
         $this->refresh(true);
         $this->query['new'] = $bool;
@@ -1301,7 +1341,7 @@ class Builder
      *
      * @param array|string $fieldName,...
      */
-    public function select($fieldName = null): self
+    public function select($fieldName = null) : self
     {
         if (! isset($this->query['select'])) {
             $this->query['select'] = [];
@@ -1321,9 +1361,10 @@ class Builder
      * projection.
      *
      * @see http://docs.mongodb.org/manual/reference/projection/elemMatch/
+     *
      * @param array|Expr $expression
      */
-    public function selectElemMatch(string $fieldName, $expression): self
+    public function selectElemMatch(string $fieldName, $expression) : self
     {
         if ($expression instanceof Expr) {
             $expression = $expression->getQuery();
@@ -1337,7 +1378,7 @@ class Builder
      *
      * @see http://docs.mongodb.org/master/reference/operator/projection/meta/
      */
-    public function selectMeta(string $fieldName, string $metaDataKeyword): self
+    public function selectMeta(string $fieldName, string $metaDataKeyword) : self
     {
         $this->query['select'][$fieldName] = ['$meta' => $metaDataKeyword];
         return $this;
@@ -1352,7 +1393,7 @@ class Builder
      *
      * @see http://docs.mongodb.org/manual/reference/projection/slice/
      */
-    public function selectSlice(string $fieldName, int $countOrSkip, ?int $limit = null): self
+    public function selectSlice(string $fieldName, int $countOrSkip, ?int $limit = null) : self
     {
         $slice = $countOrSkip;
         if ($limit !== null) {
@@ -1371,9 +1412,10 @@ class Builder
      *
      * @see Expr::set()
      * @see http://docs.mongodb.org/manual/reference/operator/set/
+     *
      * @param mixed $value
      */
-    public function set($value, bool $atomic = true): self
+    public function set($value, bool $atomic = true) : self
     {
         $this->expr->set($value, $atomic && $this->query['type'] !== Query::TYPE_INSERT);
         return $this;
@@ -1384,7 +1426,7 @@ class Builder
      *
      * @see Expr::setNewObj()
      */
-    public function setNewObj(array $newObj): self
+    public function setNewObj(array $newObj) : self
     {
         $this->expr->setNewObj($newObj);
         return $this;
@@ -1401,9 +1443,10 @@ class Builder
      *
      * @see Expr::setOnInsert()
      * @see https://docs.mongodb.org/manual/reference/operator/update/setOnInsert/
+     *
      * @param mixed $value
      */
-    public function setOnInsert($value): self
+    public function setOnInsert($value) : self
     {
         $this->expr->setOnInsert($value);
         return $this;
@@ -1416,7 +1459,7 @@ class Builder
      *
      * @see http://docs.mongodb.org/manual/core/read-preference/
      */
-    public function setReadPreference(ReadPreference $readPreference): self
+    public function setReadPreference(ReadPreference $readPreference) : self
     {
         $this->query['readPreference'] = $readPreference;
         return $this;
@@ -1427,7 +1470,7 @@ class Builder
      *
      * @see Expr::setQuery()
      */
-    public function setQueryArray(array $query): self
+    public function setQueryArray(array $query) : self
     {
         $this->expr->setQuery($query);
         return $this;
@@ -1439,7 +1482,7 @@ class Builder
      * @see Expr::size()
      * @see http://docs.mongodb.org/manual/reference/operator/size/
      */
-    public function size(int $size): self
+    public function size(int $size) : self
     {
         $this->expr->size($size);
         return $this;
@@ -1453,7 +1496,7 @@ class Builder
      *
      * @see Query::prepareCursor()
      */
-    public function skip(int $skip): self
+    public function skip(int $skip) : self
     {
         $this->query['skip'] = $skip;
         return $this;
@@ -1462,7 +1505,7 @@ class Builder
     /**
      * Set the snapshot cursor flag.
      */
-    public function snapshot(bool $bool = true): self
+    public function snapshot(bool $bool = true) : self
     {
         $this->query['snapshot'] = $bool;
         return $this;
@@ -1477,7 +1520,7 @@ class Builder
      * @param array|string $fieldName Field name or array of field/order pairs
      * @param int|string   $order     Field order (if one field is specified)
      */
-    public function sort($fieldName, $order = 1): self
+    public function sort($fieldName, $order = 1) : self
     {
         if (! isset($this->query['sort'])) {
             $this->query['sort'] = [];
@@ -1505,7 +1548,7 @@ class Builder
      *
      * @see http://docs.mongodb.org/master/reference/operator/projection/meta/#sort
      */
-    public function sortMeta(string $fieldName, string $metaDataKeyword): self
+    public function sortMeta(string $fieldName, string $metaDataKeyword) : self
     {
         /* It's possible that the field is already projected without the $meta
          * operator. We'll assume that the user knows what they're doing in that
@@ -1528,7 +1571,7 @@ class Builder
      * @see Expr::text()
      * @see http://docs.mongodb.org/master/reference/operator/query/text/
      */
-    public function text(string $search): self
+    public function text(string $search) : self
     {
         $this->expr->text($search);
         return $this;
@@ -1542,7 +1585,7 @@ class Builder
      *
      * @param int|string $type
      */
-    public function type($type): self
+    public function type($type) : self
     {
         $this->expr->type($type);
         return $this;
@@ -1556,25 +1599,25 @@ class Builder
      * @see Expr::unsetField()
      * @see http://docs.mongodb.org/manual/reference/operator/unset/
      */
-    public function unsetField(): self
+    public function unsetField() : self
     {
         $this->expr->unsetField();
         return $this;
     }
 
-    public function updateOne(?string $documentName = null): self
+    public function updateOne(?string $documentName = null) : self
     {
         $this->setDocumentName($documentName);
-        $this->query['type'] = Query::TYPE_UPDATE;
+        $this->query['type']     = Query::TYPE_UPDATE;
         $this->query['multiple'] = false;
 
         return $this;
     }
 
-    public function updateMany(?string $documentName = null): self
+    public function updateMany(?string $documentName = null) : self
     {
         $this->setDocumentName($documentName);
-        $this->query['type'] = Query::TYPE_UPDATE;
+        $this->query['type']     = Query::TYPE_UPDATE;
         $this->query['multiple'] = true;
 
         return $this;
@@ -1583,7 +1626,7 @@ class Builder
     /**
      * Set the "upsert" option for an update or findAndUpdate query.
      */
-    public function upsert(bool $bool = true): self
+    public function upsert(bool $bool = true) : self
     {
         $this->query['upsert'] = $bool;
         return $this;
@@ -1594,9 +1637,10 @@ class Builder
      *
      * @see Expr::where()
      * @see http://docs.mongodb.org/manual/reference/operator/where/
+     *
      * @param string|Javascript $javascript
      */
-    public function where($javascript): self
+    public function where($javascript) : self
     {
         $this->expr->where($javascript);
         return $this;
@@ -1605,21 +1649,22 @@ class Builder
     /**
      * Get Discriminator Values
      *
-     * @param \Traversable $classNames
-     * @throws \InvalidArgumentException If the number of found collections > 1.
+     * @param Traversable $classNames
+     *
+     * @throws InvalidArgumentException If the number of found collections > 1.
      */
-    private function getDiscriminatorValues($classNames): array
+    private function getDiscriminatorValues($classNames) : array
     {
         $discriminatorValues = [];
-        $collections = [];
+        $collections         = [];
         foreach ($classNames as $className) {
-            $class = $this->dm->getClassMetadata($className);
+            $class                 = $this->dm->getClassMetadata($className);
             $discriminatorValues[] = $class->discriminatorValue;
-            $key = $this->dm->getDocumentDatabase($className)->getDatabaseName() . '.' . $class->getCollection();
-            $collections[$key] = $key;
+            $key                   = $this->dm->getDocumentDatabase($className)->getDatabaseName() . '.' . $class->getCollection();
+            $collections[$key]     = $key;
         }
         if (count($collections) > 1) {
-            throw new \InvalidArgumentException('Documents involved are not all mapped to the same database collection.');
+            throw new InvalidArgumentException('Documents involved are not all mapped to the same database collection.');
         }
         return $discriminatorValues;
     }
@@ -1631,10 +1676,10 @@ class Builder
     {
         if (is_array($documentName)) {
             $documentNames = $documentName;
-            $documentName = $documentNames[0];
+            $documentName  = $documentNames[0];
 
-            $metadata = $this->dm->getClassMetadata($documentName);
-            $discriminatorField = $metadata->discriminatorField;
+            $metadata            = $this->dm->getClassMetadata($documentName);
+            $discriminatorField  = $metadata->discriminatorField;
             $discriminatorValues = $this->getDiscriminatorValues($documentNames);
 
             // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list
@@ -1650,7 +1695,7 @@ class Builder
         }
 
         $this->collection = $this->dm->getDocumentCollection($documentName);
-        $this->class = $this->dm->getClassMetadata($documentName);
+        $this->class      = $this->dm->getClassMetadata($documentName);
 
         // Expr also needs to know
         $this->expr->setClassMetadata($this->class);

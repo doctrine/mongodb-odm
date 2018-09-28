@@ -18,7 +18,6 @@ interface PersistentCollectionInterface extends Collection
 {
     /**
      * Sets the document manager and unit of work (used during merge operations).
-     *
      */
     public function setDocumentManager(DocumentManager $dm);
 
@@ -150,6 +149,7 @@ interface PersistentCollectionInterface extends Collection
 
     /**
      * @return ClassMetadata
+     *
      * @throws MongoDBException
      */
     public function getTypeClass();

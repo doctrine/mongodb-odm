@@ -36,9 +36,9 @@ class PersistenceBuilderTest extends BaseTest
     public function testQueryBuilderUpdateWithDiscriminatorMap()
     {
         $testCollection = new SameCollection1();
-        $id = '4f28aa84acee413889000001';
+        $id             = '4f28aa84acee413889000001';
 
-        $testCollection->id = $id;
+        $testCollection->id   = $id;
         $testCollection->name = 'First entry';
         $this->dm->persist($testCollection);
         $this->dm->flush();
@@ -63,28 +63,28 @@ class PersistenceBuilderTest extends BaseTest
 
     public function testFindWithOrOnCollectionWithDiscriminatorMap()
     {
-        $sameCollection1 = new SameCollection1();
+        $sameCollection1  = new SameCollection1();
         $sameCollection2a = new SameCollection2();
         $sameCollection2b = new SameCollection2();
-        $ids = [
+        $ids              = [
             '4f28aa84acee413889000001',
             '4f28aa84acee41388900002a',
             '4f28aa84acee41388900002b',
         ];
 
-        $sameCollection1->id = $ids[0];
+        $sameCollection1->id   = $ids[0];
         $sameCollection1->name = 'First entry in SameCollection1';
         $sameCollection1->test = 1;
         $this->dm->persist($sameCollection1);
         $this->dm->flush();
 
-        $sameCollection2a->id = $ids[1];
+        $sameCollection2a->id   = $ids[1];
         $sameCollection2a->name = 'First entry in SameCollection2';
-        $sameCollection2a->ok = true;
+        $sameCollection2a->ok   = true;
         $this->dm->persist($sameCollection2a);
         $this->dm->flush();
 
-        $sameCollection2b->id = $ids[2];
+        $sameCollection2b->id   = $ids[2];
         $sameCollection2b->name = 'Second entry in SameCollection2';
         $sameCollection2b->w00t = '!!';
         $this->dm->persist($sameCollection2b);
@@ -99,8 +99,8 @@ class PersistenceBuilderTest extends BaseTest
         $qb
             ->field('id')->in($ids)
             ->select('id')->hydrate(false);
-        $query = $qb->getQuery();
-        $debug = $query->debug('query');
+        $query   = $qb->getQuery();
+        $debug   = $query->debug('query');
         $results = $query->execute();
 
         $this->assertInstanceOf(Iterator::class, $results);
@@ -115,14 +115,14 @@ class PersistenceBuilderTest extends BaseTest
 
     public function testPrepareUpdateDataDoesNotIncludeId()
     {
-        $article = new CmsArticle();
+        $article        = new CmsArticle();
         $article->topic = 'persistence builder test';
         $this->dm->persist($article);
         $this->dm->flush();
         $this->dm->clear();
 
-        $article = $this->dm->getRepository(get_class($article))->find($article->id);
-        $article->id = null;
+        $article        = $this->dm->getRepository(get_class($article))->find($article->id);
+        $article->id    = null;
         $article->topic = 'test';
 
         $this->uow->computeChangeSets();
@@ -132,11 +132,11 @@ class PersistenceBuilderTest extends BaseTest
 
     public function testPrepareInsertDataWithCreatedReferenceOne()
     {
-        $article = new CmsArticle();
+        $article        = new CmsArticle();
         $article->title = 'persistence builder test';
         $this->dm->persist($article);
         $this->dm->flush();
-        $comment = new CmsComment();
+        $comment          = new CmsComment();
         $comment->article = $article;
 
         $this->dm->persist($comment);
@@ -154,14 +154,14 @@ class PersistenceBuilderTest extends BaseTest
 
     public function testPrepareInsertDataWithFetchedReferenceOne()
     {
-        $article = new CmsArticle();
+        $article        = new CmsArticle();
         $article->title = 'persistence builder test';
         $this->dm->persist($article);
         $this->dm->flush();
         $this->dm->clear();
 
-        $article = $this->dm->find(get_class($article), $article->id);
-        $comment = new CmsComment();
+        $article          = $this->dm->find(get_class($article), $article->id);
+        $comment          = new CmsComment();
         $comment->article = $article;
 
         $this->dm->persist($comment);
@@ -179,16 +179,16 @@ class PersistenceBuilderTest extends BaseTest
 
     public function testPrepareUpsertData()
     {
-        $article = new CmsArticle();
+        $article        = new CmsArticle();
         $article->title = 'persistence builder test';
         $this->dm->persist($article);
         $this->dm->flush();
         $this->dm->clear();
 
-        $article = $this->dm->find(get_class($article), $article->id);
-        $comment = new CmsComment();
-        $comment->topic = 'test';
-        $comment->text = 'text';
+        $article          = $this->dm->find(get_class($article), $article->id);
+        $comment          = new CmsComment();
+        $comment->topic   = 'test';
+        $comment->text    = 'text';
         $comment->article = $article;
 
         $this->dm->persist($comment);
@@ -251,14 +251,14 @@ class PersistenceBuilderTest extends BaseTest
 
     public function testAdvancedQueriesOnReferenceWithDiscriminatorMap()
     {
-        $article = new CmsArticle();
-        $article->id = '4f8373f952fbfe7411000001';
+        $article        = new CmsArticle();
+        $article->id    = '4f8373f952fbfe7411000001';
         $article->title = 'advanced queries test';
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $comment = new CmsComment();
-        $comment->id = '4f8373f952fbfe7411000002';
+        $comment          = new CmsComment();
+        $comment->id      = '4f8373f952fbfe7411000002';
         $comment->article = $article;
         $this->dm->persist($comment);
         $this->dm->flush();
@@ -274,7 +274,7 @@ class PersistenceBuilderTest extends BaseTest
         $qb = $this->dm->createQueryBuilder(CmsComment::class);
         $qb
             ->field('article.id')->in([$articleId]);
-        $query = $qb->getQuery();
+        $query   = $qb->getQuery();
         $results = $query->execute();
 
         $this->assertInstanceOf(Iterator::class, $results);

@@ -12,10 +12,10 @@ class GH788Test extends BaseTest
 {
     public function testDocumentWithDiscriminatorMap()
     {
-        $listed = new GH788DocumentListed();
+        $listed       = new GH788DocumentListed();
         $listed->name = 'listed';
 
-        $unlisted = new GH788DocumentUnlisted();
+        $unlisted       = new GH788DocumentUnlisted();
         $unlisted->name = 'unlisted';
 
         $this->dm->persist($listed);
@@ -44,19 +44,19 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $listed = new GH788ExternEmbedListed();
-        $listed->name = 'listed';
+        $listed                 = new GH788ExternEmbedListed();
+        $listed->name           = 'listed';
         $doc->externEmbedMany[] = $listed;
 
-        $unlisted = new GH788ExternEmbedUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted               = new GH788ExternEmbedUnlisted();
+        $unlisted->name         = 'unlisted';
         $doc->externEmbedMany[] = $unlisted;
 
         $this->dm->persist($doc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc        = $this->dm->find(get_class($doc), $doc->id);
         $collection = $doc->externEmbedMany;
 
         $this->assertCount(2, $collection);
@@ -70,19 +70,19 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $listed = new GH788InlineEmbedListed();
-        $listed->name = 'listed';
+        $listed                 = new GH788InlineEmbedListed();
+        $listed->name           = 'listed';
         $doc->inlineEmbedMany[] = $listed;
 
-        $unlisted = new GH788InlineEmbedUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted               = new GH788InlineEmbedUnlisted();
+        $unlisted->name         = 'unlisted';
         $doc->inlineEmbedMany[] = $unlisted;
 
         $this->dm->persist($doc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc        = $this->dm->find(get_class($doc), $doc->id);
         $collection = $doc->inlineEmbedMany;
 
         $this->assertCount(2, $collection);
@@ -96,19 +96,19 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $listed = new GH788ExternEmbedListed();
-        $listed->name = 'listed';
+        $listed                   = new GH788ExternEmbedListed();
+        $listed->name             = 'listed';
         $doc->noTargetEmbedMany[] = $listed;
 
-        $unlisted = new GH788ExternEmbedUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted                 = new GH788ExternEmbedUnlisted();
+        $unlisted->name           = 'unlisted';
         $doc->noTargetEmbedMany[] = $unlisted;
 
         $this->dm->persist($doc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc        = $this->dm->find(get_class($doc), $doc->id);
         $collection = $doc->noTargetEmbedMany;
 
         $this->assertCount(2, $collection);
@@ -122,8 +122,8 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $unlisted = new GH788ExternEmbedUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted            = new GH788ExternEmbedUnlisted();
+        $unlisted->name      = 'unlisted';
         $doc->externEmbedOne = $unlisted;
 
         $this->dm->persist($doc);
@@ -140,8 +140,8 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $unlisted = new GH788InlineEmbedUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted            = new GH788InlineEmbedUnlisted();
+        $unlisted->name      = 'unlisted';
         $doc->inlineEmbedOne = $unlisted;
 
         $this->dm->persist($doc);
@@ -158,8 +158,8 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $unlisted = new GH788ExternEmbedUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted              = new GH788ExternEmbedUnlisted();
+        $unlisted->name        = 'unlisted';
         $doc->noTargetEmbedOne = $unlisted;
 
         $this->dm->persist($doc);
@@ -176,19 +176,19 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $listed = new GH788ExternRefListed();
-        $listed->name = 'listed';
+        $listed               = new GH788ExternRefListed();
+        $listed->name         = 'listed';
         $doc->externRefMany[] = $listed;
 
-        $unlisted = new GH788ExternRefUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted             = new GH788ExternRefUnlisted();
+        $unlisted->name       = 'unlisted';
         $doc->externRefMany[] = $unlisted;
 
         $this->dm->persist($doc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc        = $this->dm->find(get_class($doc), $doc->id);
         $collection = $doc->externRefMany;
 
         $this->assertCount(2, $collection);
@@ -204,19 +204,19 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $listed = new GH788InlineRefListed();
-        $listed->name = 'listed';
+        $listed               = new GH788InlineRefListed();
+        $listed->name         = 'listed';
         $doc->inlineRefMany[] = $listed;
 
-        $unlisted = new GH788InlineRefUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted             = new GH788InlineRefUnlisted();
+        $unlisted->name       = 'unlisted';
         $doc->inlineRefMany[] = $unlisted;
 
         $this->dm->persist($doc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc        = $this->dm->find(get_class($doc), $doc->id);
         $collection = $doc->inlineRefMany;
 
         $this->assertCount(2, $collection);
@@ -232,19 +232,19 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $listed = new GH788ExternRefListed();
-        $listed->name = 'listed';
+        $listed                 = new GH788ExternRefListed();
+        $listed->name           = 'listed';
         $doc->noTargetRefMany[] = $listed;
 
-        $unlisted = new GH788ExternRefUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted               = new GH788ExternRefUnlisted();
+        $unlisted->name         = 'unlisted';
         $doc->noTargetRefMany[] = $unlisted;
 
         $this->dm->persist($doc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc        = $this->dm->find(get_class($doc), $doc->id);
         $collection = $doc->noTargetRefMany;
 
         $this->assertCount(2, $collection);
@@ -260,8 +260,8 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $unlisted = new GH788ExternRefUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted          = new GH788ExternRefUnlisted();
+        $unlisted->name    = 'unlisted';
         $doc->externRefOne = $unlisted;
 
         $this->dm->persist($doc);
@@ -279,8 +279,8 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $unlisted = new GH788InlineRefUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted          = new GH788InlineRefUnlisted();
+        $unlisted->name    = 'unlisted';
         $doc->inlineRefOne = $unlisted;
 
         $this->dm->persist($doc);
@@ -298,8 +298,8 @@ class GH788Test extends BaseTest
     {
         $doc = new GH788Document();
 
-        $unlisted = new GH788ExternRefUnlisted();
-        $unlisted->name = 'unlisted';
+        $unlisted            = new GH788ExternRefUnlisted();
+        $unlisted->name      = 'unlisted';
         $doc->noTargetRefOne = $unlisted;
 
         $this->dm->persist($doc);
@@ -388,12 +388,12 @@ class GH788Document
 
     public function __construct()
     {
-        $this->externEmbedMany = new ArrayCollection();
-        $this->externRefMany = new ArrayCollection();
-        $this->inlineEmbedMany = new ArrayCollection();
-        $this->inlineRefMany = new ArrayCollection();
+        $this->externEmbedMany   = new ArrayCollection();
+        $this->externRefMany     = new ArrayCollection();
+        $this->inlineEmbedMany   = new ArrayCollection();
+        $this->inlineRefMany     = new ArrayCollection();
         $this->noTargetEmbedMany = new ArrayCollection();
-        $this->noTargetRefMany = new ArrayCollection();
+        $this->noTargetRefMany   = new ArrayCollection();
     }
 }
 

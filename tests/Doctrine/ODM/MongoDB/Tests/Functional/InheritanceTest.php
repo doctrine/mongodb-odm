@@ -31,18 +31,18 @@ class InheritanceTest extends BaseTest
         $this->assertNotSame('', $user->getId());
         $this->assertNotSame('', $user->getProfile()->getProfileId());
 
-        $qb = $this->dm->createQueryBuilder(SpecialUser::class)
+        $qb    = $this->dm->createQueryBuilder(SpecialUser::class)
             ->field('id')
             ->equals($user->getId());
         $query = $qb->getQuery();
-        $user = $query->getSingleResult();
+        $user  = $query->getSingleResult();
 
         $user->getProfile()->setLastName('Wage');
         $this->dm->flush();
         $this->dm->clear();
 
         $query = $qb->getQuery();
-        $user = $query->getSingleResult();
+        $user  = $query->getSingleResult();
         $this->assertEquals('Wage', $user->getProfile()->getLastName());
         $this->assertInstanceOf(SpecialUser::class, $user);
     }
@@ -53,7 +53,7 @@ class InheritanceTest extends BaseTest
         $this->dm->persist($subProject);
         $this->dm->flush();
 
-        $coll = $this->dm->getDocumentCollection(SubProject::class);
+        $coll     = $this->dm->getDocumentCollection(SubProject::class);
         $document = $coll->findOne(['name' => 'Sub Project']);
         $this->assertEquals('sub-project', $document['type']);
 
@@ -61,7 +61,7 @@ class InheritanceTest extends BaseTest
         $this->dm->persist($project);
         $this->dm->flush();
 
-        $coll = $this->dm->getDocumentCollection(OtherSubProject::class);
+        $coll     = $this->dm->getDocumentCollection(OtherSubProject::class);
         $document = $coll->findOne(['name' => 'Other Sub Project']);
         $this->assertEquals('other-sub-project', $document['type']);
 
@@ -77,7 +77,7 @@ class InheritanceTest extends BaseTest
         $this->assertInstanceOf(SubProject::class, $document);
         $this->dm->clear();
 
-        $id = $document->getId();
+        $id       = $document->getId();
         $document = $this->dm->find(Project::class, $id);
         $this->assertInstanceOf(SubProject::class, $document);
 

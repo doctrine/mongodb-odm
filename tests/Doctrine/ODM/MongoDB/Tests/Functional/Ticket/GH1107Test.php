@@ -11,7 +11,7 @@ class GH1107Test extends BaseTest
 {
     public function testOverrideIdStrategy()
     {
-        $childObj = new GH1107ChildClass();
+        $childObj       = new GH1107ChildClass();
         $childObj->name = 'ChildObject';
         $this->dm->persist($childObj);
         $this->dm->flush();

@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Issue;
 use Documents\User;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use function get_class;
@@ -37,7 +38,7 @@ class LockTest extends BaseTest
     {
         $id = new ObjectId();
 
-        $article = new LockInt('Test LockInt');
+        $article     = new LockInt('Test LockInt');
         $article->id = $id;
 
         $this->dm->persist($article);
@@ -85,7 +86,7 @@ class LockTest extends BaseTest
 
     public function testLockTimestampSetsDefaultValue()
     {
-        $test = new LockTimestamp();
+        $test        = new LockTimestamp();
         $test->title = 'Testing';
 
         $this->assertNull($test->version, 'Pre-Condition');
@@ -109,9 +110,9 @@ class LockTest extends BaseTest
     {
         $id = new ObjectId();
 
-        $test = new LockTimestamp();
+        $test        = new LockTimestamp();
         $test->title = 'Testing';
-        $test->id = $id;
+        $test->id    = $id;
 
         $this->assertNull($test->version, 'Pre-Condition');
 
@@ -153,7 +154,7 @@ class LockTest extends BaseTest
      */
     public function testLockVersionedDocument()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -164,7 +165,7 @@ class LockTest extends BaseTest
 
     public function testLockVersionedDocumentMissmatchThrowsException()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -193,7 +194,7 @@ class LockTest extends BaseTest
     {
         $article = new LockInt();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Document is not MANAGED.');
 
         $this->dm->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
@@ -201,7 +202,7 @@ class LockTest extends BaseTest
 
     public function testLockPessimisticWrite()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -215,7 +216,7 @@ class LockTest extends BaseTest
 
     public function testLockPessimisticRead()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -229,7 +230,7 @@ class LockTest extends BaseTest
 
     public function testUnlock()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -250,7 +251,7 @@ class LockTest extends BaseTest
 
     public function testPessimisticReadLockThrowsExceptionOnRemove()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -267,7 +268,7 @@ class LockTest extends BaseTest
 
     public function testPessimisticReadLockThrowsExceptionOnUpdate()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -284,7 +285,7 @@ class LockTest extends BaseTest
 
     public function testPessimisticWriteLockThrowExceptionOnRemove()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -301,7 +302,7 @@ class LockTest extends BaseTest
 
     public function testPessimisticWriteLockThrowExceptionOnUpdate()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -318,7 +319,7 @@ class LockTest extends BaseTest
 
     public function testPessimisticWriteLockThrowExceptionOnRead()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -335,7 +336,7 @@ class LockTest extends BaseTest
 
     public function testPessimisticReadLockFunctional()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -354,7 +355,7 @@ class LockTest extends BaseTest
 
     public function testPessimisticWriteLockFunctional()
     {
-        $article = new LockInt();
+        $article        = new LockInt();
         $article->title = 'my article';
 
         $this->dm->persist($article);
@@ -443,7 +444,7 @@ abstract class AbstractVersionBase
     public function __construct($title = null)
     {
         $this->issues = new ArrayCollection();
-        $this->title = $title;
+        $this->title  = $title;
     }
 
     public function getId()

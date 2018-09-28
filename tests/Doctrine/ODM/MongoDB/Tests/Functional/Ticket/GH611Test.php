@@ -13,8 +13,8 @@ class GH611Test extends BaseTest
     {
         $documentId = (string) (new ObjectId());
 
-        $document = new GH611Document();
-        $document->id = $documentId;
+        $document           = new GH611Document();
+        $document->id       = $documentId;
         $document->embedded = new GH611EmbeddedDocument(1, 'a');
 
         $this->dm->persist($document);
@@ -139,7 +139,7 @@ class GH611EmbeddedDocument
 
     public function __construct($id, $name)
     {
-        $this->id = $id;
+        $this->id   = $id;
         $this->name = $name;
     }
 }

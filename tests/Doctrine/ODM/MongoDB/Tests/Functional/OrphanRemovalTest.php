@@ -12,14 +12,14 @@ class OrphanRemovalTest extends BaseTest
 {
     public function testOrphanRemoval()
     {
-        $profile1 = new OrphanRemovalProfile();
-        $user = new OrphanRemovalUser();
+        $profile1      = new OrphanRemovalProfile();
+        $user          = new OrphanRemovalUser();
         $user->profile = $profile1;
         $this->dm->persist($user);
         $this->dm->persist($user->profile);
         $this->dm->flush();
 
-        $profile2 = new OrphanRemovalProfile();
+        $profile2      = new OrphanRemovalProfile();
         $user->profile = $profile2;
         $this->dm->persist($user->profile);
         $this->dm->flush();
@@ -27,7 +27,7 @@ class OrphanRemovalTest extends BaseTest
 
         $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
 
-        $user = $this->getUserRepository()->find($user->id);
+        $user          = $this->getUserRepository()->find($user->id);
         $user->profile = null;
 
         $this->dm->flush();
@@ -38,14 +38,14 @@ class OrphanRemovalTest extends BaseTest
 
     public function testNoOrphanRemoval()
     {
-        $profile1 = new OrphanRemovalProfile();
-        $user = new OrphanRemovalUser();
+        $profile1                     = new OrphanRemovalProfile();
+        $user                         = new OrphanRemovalUser();
         $user->profileNoOrphanRemoval = $profile1;
         $this->dm->persist($user);
         $this->dm->persist($user->profileNoOrphanRemoval);
         $this->dm->flush();
 
-        $profile2 = new OrphanRemovalProfile();
+        $profile2                     = new OrphanRemovalProfile();
         $user->profileNoOrphanRemoval = $profile2;
         $this->dm->persist($user->profileNoOrphanRemoval);
         $this->dm->flush();
@@ -53,7 +53,7 @@ class OrphanRemovalTest extends BaseTest
 
         $this->assertNotNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been left as-is');
 
-        $user = $this->getUserRepository()->find($user->id);
+        $user                         = $this->getUserRepository()->find($user->id);
         $user->profileNoOrphanRemoval = null;
 
         $this->dm->flush();
@@ -67,7 +67,7 @@ class OrphanRemovalTest extends BaseTest
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
 
-        $user = new OrphanRemovalUser();
+        $user                = new OrphanRemovalUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
         $this->dm->persist($user);
@@ -87,7 +87,7 @@ class OrphanRemovalTest extends BaseTest
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
 
-        $user = new OrphanRemovalUser();
+        $user                               = new OrphanRemovalUser();
         $user->profileManyNoOrphanRemoval[] = $profile1;
         $user->profileManyNoOrphanRemoval[] = $profile2;
         $this->dm->persist($user);
@@ -107,7 +107,7 @@ class OrphanRemovalTest extends BaseTest
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
 
-        $user = new OrphanRemovalUser();
+        $user                = new OrphanRemovalUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
         $this->dm->persist($user);
@@ -128,7 +128,7 @@ class OrphanRemovalTest extends BaseTest
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
 
-        $user = new OrphanRemovalUser();
+        $user                = new OrphanRemovalUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
         $this->dm->persist($user);
@@ -154,7 +154,7 @@ class OrphanRemovalTest extends BaseTest
         $profile2 = new OrphanRemovalProfile();
         $profile3 = new OrphanRemovalProfile();
 
-        $user = new OrphanRemovalUser();
+        $user                = new OrphanRemovalUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
         $this->dm->persist($user);
@@ -180,7 +180,7 @@ class OrphanRemovalTest extends BaseTest
         $profile2 = new OrphanRemovalProfile();
         $profile3 = new OrphanRemovalProfile();
 
-        $user = new OrphanRemovalUser();
+        $user                = new OrphanRemovalUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
         $this->dm->persist($user);
@@ -206,7 +206,7 @@ class OrphanRemovalTest extends BaseTest
         $profile2 = new OrphanRemovalProfile();
         $profile3 = new OrphanRemovalProfile();
 
-        $user = new OrphanRemovalUser();
+        $user                = new OrphanRemovalUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
         $this->dm->persist($user);
@@ -229,7 +229,7 @@ class OrphanRemovalTest extends BaseTest
     {
         $profile = new OrphanRemovalProfile();
 
-        $user = new OrphanRemovalUser();
+        $user                = new OrphanRemovalUser();
         $user->profileMany[] = $profile;
         $this->dm->persist($user);
         $this->dm->persist($profile);
@@ -246,8 +246,8 @@ class OrphanRemovalTest extends BaseTest
 
     public function testOrphanRemovalOnRemoveWithoutCascade()
     {
-        $profile1 = new OrphanRemovalProfile();
-        $user = new OrphanRemovalUser();
+        $profile1      = new OrphanRemovalProfile();
+        $user          = new OrphanRemovalUser();
         $user->profile = $profile1;
         $this->dm->persist($user);
         $this->dm->persist($user->profile);
@@ -264,7 +264,7 @@ class OrphanRemovalTest extends BaseTest
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
 
-        $user = new OrphanRemovalUser();
+        $user                = new OrphanRemovalUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
         $this->dm->persist($user);

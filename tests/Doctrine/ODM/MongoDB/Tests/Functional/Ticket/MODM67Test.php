@@ -15,8 +15,8 @@ class MODM67Test extends BaseTest
     private function getDocumentManager()
     {
         $this->listener = new MODM67TestEventListener($this->dm);
-        $evm = $this->dm->getEventManager();
-        $events = [
+        $evm            = $this->dm->getEventManager();
+        $events         = [
             Events::prePersist,
             Events::postPersist,
             Events::preUpdate,
@@ -31,7 +31,7 @@ class MODM67Test extends BaseTest
     {
         $dm = $this->getDocumentManager();
 
-        $testDoc = new MODM67DerivedClass();
+        $testDoc           = new MODM67DerivedClass();
         $testDoc->embedOne = new MODM67EmbeddedObject();
 
         $dm->persist($testDoc);
@@ -45,7 +45,7 @@ class MODM67Test extends BaseTest
 
         $dm->clear();
 
-        $testDoc = $dm->find(MODM67DerivedClass::class, $testDoc->id);
+        $testDoc                        = $dm->find(MODM67DerivedClass::class, $testDoc->id);
         $testDoc->embedOne->numAccesses = 1;
         $dm->flush();
 

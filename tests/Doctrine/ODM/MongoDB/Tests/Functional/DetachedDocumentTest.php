@@ -17,10 +17,10 @@ class DetachedDocumentTest extends BaseTest
 {
     public function testSimpleDetachMerge()
     {
-        $user = new CmsUser();
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'dev';
+        $user->status   = 'dev';
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
@@ -42,12 +42,12 @@ class DetachedDocumentTest extends BaseTest
 
     public function testSerializeUnserializeModifyMerge()
     {
-        $user = new CmsUser();
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $ph1 = new CmsPhonenumber();
+        $ph1              = new CmsPhonenumber();
         $ph1->phonenumber = '1234';
         $user->addPhonenumber($ph1);
 
@@ -64,7 +64,7 @@ class DetachedDocumentTest extends BaseTest
 
         $user = unserialize($serialized);
 
-        $ph2 = new CmsPhonenumber();
+        $ph2              = new CmsPhonenumber();
         $ph2->phonenumber = '56789';
         $user->addPhonenumber($ph2);
         $this->assertCount(2, $user->getPhonenumbers());
@@ -92,16 +92,16 @@ class DetachedDocumentTest extends BaseTest
 
     public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
     {
-        $user = new CmsUser();
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $address = new CmsAddress();
-        $address->city = 'Berlin';
+        $address          = new CmsAddress();
+        $address->city    = 'Berlin';
         $address->country = 'Germany';
-        $address->street = 'Sesamestreet';
-        $address->zip = 12345;
+        $address->street  = 'Sesamestreet';
+        $address->zip     = 12345;
         $address->setUser($user);
         $this->dm->persist($address);
         $this->dm->persist($user);

@@ -12,7 +12,6 @@ use function spl_object_hash;
 
 /**
  * Abstract factory for creating document repositories.
- *
  */
 abstract class AbstractRepositoryFactory implements RepositoryFactory
 {
@@ -26,10 +25,10 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * {@inheritdoc}
      */
-    public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
+    public function getRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
-        $hashKey = $metadata->getName() . spl_object_hash($documentManager);
+        $hashKey  = $metadata->getName() . spl_object_hash($documentManager);
 
         if (isset($this->repositoryList[$hashKey])) {
             return $this->repositoryList[$hashKey];
@@ -47,7 +46,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      *
      * @return ObjectRepository|GridFSRepository
      */
-    protected function createRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
+    protected function createRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
 
@@ -65,5 +64,5 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Instantiates requested repository.
      */
-    abstract protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata): ObjectRepository;
+    abstract protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata) : ObjectRepository;
 }

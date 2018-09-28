@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
+use InvalidArgumentException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,7 +20,6 @@ use function sprintf;
 
 /**
  * Command to (re)generate the persistent collection classes used by doctrine.
- *
  */
 class GeneratePersistentCollectionsCommand extends Console\Command\Command
 {
@@ -59,7 +59,7 @@ EOT
 
         $metadatas = $dm->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
-        $destPath = $input->getArgument('dest-path');
+        $destPath  = $input->getArgument('dest-path');
 
         // Process destination directory
         if ($destPath === null) {
@@ -73,17 +73,17 @@ EOT
         $destPath = realpath($destPath);
 
         if (! file_exists($destPath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf("Persistent collections destination directory '<info>%s</info>' does not exist.", $destPath)
             );
         } elseif (! is_writable($destPath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf("Persistent collections destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
         }
 
         if (count($metadatas)) {
-            $generated = [];
+            $generated           = [];
             $collectionGenerator = $dm->getConfiguration()->getPersistentCollectionGenerator();
             foreach ($metadatas as $metadata) {
                 $output->write(

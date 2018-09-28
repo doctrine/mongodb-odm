@@ -16,7 +16,7 @@ class GH1152Test extends BaseTest
         $listener = new GH1152Listener();
         $this->dm->getEventManager()->addEventListener(Events::postLoad, $listener);
 
-        $parent = new GH1152Parent();
+        $parent        = new GH1152Parent();
         $parent->child = new GH1152Child();
 
         $this->dm->persist($parent);
@@ -28,7 +28,7 @@ class GH1152Test extends BaseTest
         $this->assertNotNull($parent);
 
         $this->assertNotNull($parent->child->parentAssociation);
-        list($mapping, $parentAssociation, $fieldName) = $parent->child->parentAssociation;
+        [$mapping, $parentAssociation, $fieldName] = $parent->child->parentAssociation;
 
         $this->assertSame($parent, $parentAssociation);
     }
@@ -37,7 +37,7 @@ class GH1152Test extends BaseTest
 /** @ODM\Document */
 class GH1152Parent
 {
-    public const CLASSNAME = __CLASS__;
+    public const CLASSNAME = self::class;
 
     /** @ODM\Id */
     public $id;
@@ -56,7 +56,7 @@ class GH1152Listener
 {
     public function postLoad(LifecycleEventArgs $args)
     {
-        $dm = $args->getDocumentManager();
+        $dm       = $args->getDocumentManager();
         $document = $args->getDocument();
 
         if (! $document instanceof GH1152Child) {

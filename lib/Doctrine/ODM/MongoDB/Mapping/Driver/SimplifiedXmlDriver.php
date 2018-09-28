@@ -8,7 +8,6 @@ use Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator;
 
 /**
  * XmlDriver that additionally looks for mapping information in a global file.
- *
  */
 class SimplifiedXmlDriver extends XmlDriver
 {

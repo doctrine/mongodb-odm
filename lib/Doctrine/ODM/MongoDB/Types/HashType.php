@@ -9,7 +9,6 @@ use function is_array;
 
 /**
  * The Hash type.
- *
  */
 class HashType extends Type
 {

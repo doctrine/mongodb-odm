@@ -25,8 +25,8 @@ class Traveller
 
     public function __construct($name, Airport $nearestAirport)
     {
-        $this->name = $name;
-        $this->nearestAirport = $nearestAirport;
+        $this->name             = $name;
+        $this->nearestAirport   = $nearestAirport;
         $this->nearestAirportId = $nearestAirport;
     }
 }

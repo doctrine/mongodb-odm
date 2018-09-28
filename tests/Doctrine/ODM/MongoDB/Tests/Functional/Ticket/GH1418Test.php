@@ -14,12 +14,12 @@ class GH1418Test extends BaseTest
     {
         $document = new GH1418Document();
         $this->dm->getHydratorFactory()->hydrate($document, [
-          '_id' => 1,
-          'name' => 'maciej',
-          'embedOne' => ['name' => 'maciej', 'sourceId' => 1],
-          'embedMany' => [
-              ['name' => 'maciej', 'sourceId' => 2],
-          ],
+            '_id' => 1,
+            'name' => 'maciej',
+            'embedOne' => ['name' => 'maciej', 'sourceId' => 1],
+            'embedMany' => [
+                ['name' => 'maciej', 'sourceId' => 2],
+            ],
         ], [ Query::HINT_READ_ONLY => true ]);
 
         $this->assertEquals(1, $document->embedOne->id);
@@ -40,14 +40,14 @@ class GH1418Test extends BaseTest
 
     public function testReadDocumentAndManage()
     {
-        $document = new GH1418Document();
+        $document     = new GH1418Document();
         $document->id = 1;
 
-        $embedded = new GH1418Embedded();
-        $embedded->id = 1;
+        $embedded       = new GH1418Embedded();
+        $embedded->id   = 1;
         $embedded->name = 'maciej';
 
-        $document->embedOne = clone $embedded;
+        $document->embedOne    = clone $embedded;
         $document->embedMany[] = clone $embedded;
 
         $this->dm->persist($document);
@@ -70,7 +70,7 @@ class GH1418Test extends BaseTest
 
         $document = $this->dm->merge($document);
 
-        $document->embedOne->name = 'alcaeus';
+        $document->embedOne->name     = 'alcaeus';
         $document->embedMany[0]->name = 'alcaeus';
 
         $this->dm->flush();

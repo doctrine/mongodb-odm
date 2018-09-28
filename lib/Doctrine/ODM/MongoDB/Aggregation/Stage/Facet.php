@@ -6,11 +6,12 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+use InvalidArgumentException;
+use LogicException;
 use function array_map;
 
 /**
  * Fluent interface for adding a $facet stage to an aggregation pipeline.
- *
  */
 class Facet extends Stage
 {
@@ -23,10 +24,10 @@ class Facet extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
-            '$facet' => array_map(function (Builder $builder) {
+            '$facet' => array_map(static function (Builder $builder) {
                 return $builder->getPipeline();
             }, $this->pipelines),
         ];
@@ -35,7 +36,7 @@ class Facet extends Stage
     /**
      * Set the current field for building the pipeline stage.
      */
-    public function field(string $field): self
+    public function field(string $field) : self
     {
         $this->field = $field;
         return $this;
@@ -46,10 +47,10 @@ class Facet extends Stage
      *
      * @param Builder|Stage $builder
      */
-    public function pipeline($builder): self
+    public function pipeline($builder) : self
     {
         if (! $this->field) {
-            throw new \LogicException(__METHOD__ . ' requires you set a current field using field().');
+            throw new LogicException(__METHOD__ . ' requires you set a current field using field().');
         }
 
         if ($builder instanceof Stage) {
@@ -57,7 +58,7 @@ class Facet extends Stage
         }
 
         if (! $builder instanceof Builder) {
-            throw new \InvalidArgumentException(__METHOD__ . ' expects either an aggregation builder or an aggregation stage.');
+            throw new InvalidArgumentException(__METHOD__ . ' expects either an aggregation builder or an aggregation stage.');
         }
 
         $this->pipelines[$this->field] = $builder;

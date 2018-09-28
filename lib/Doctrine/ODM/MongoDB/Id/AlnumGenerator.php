@@ -24,7 +24,6 @@ use function strlen;
  * (with only 6 chars you will have more than 56 billion unique id's, 15 billion in 'awkward safe mode')
  *
  * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
- *
  */
 class AlnumGenerator extends IncrementGenerator
 {
@@ -43,7 +42,7 @@ class AlnumGenerator extends IncrementGenerator
     /**
      * Set padding on generated id
      */
-    public function setPad(int $pad): void
+    public function setPad(int $pad) : void
     {
         $this->pad = $pad;
     }
@@ -51,7 +50,7 @@ class AlnumGenerator extends IncrementGenerator
     /**
      * Enable awkwardSafeMode character set
      */
-    public function setAwkwardSafeMode(bool $awkwardSafeMode = false): void
+    public function setAwkwardSafeMode(bool $awkwardSafeMode = false) : void
     {
         $this->awkwardSafeMode = $awkwardSafeMode;
     }
@@ -59,7 +58,7 @@ class AlnumGenerator extends IncrementGenerator
     /**
      * Set the character set used for ID generation
      */
-    public function setChars(string $chars): void
+    public function setChars(string $chars) : void
     {
         $this->chars = $chars;
     }
@@ -67,14 +66,14 @@ class AlnumGenerator extends IncrementGenerator
     /** @inheritDoc */
     public function generate(DocumentManager $dm, object $document)
     {
-        $id = (string) parent::generate($dm, $document);
+        $id    = (string) parent::generate($dm, $document);
         $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;
         $base  = (string) strlen($index);
 
         $out = '';
         do {
             $out = $index[bcmod($id, $base)] . $out;
-            $id = bcdiv($id, $base);
+            $id  = bcdiv($id, $base);
         } while (bccomp($id, '0') === 1);
 
         if (is_numeric($this->pad)) {

@@ -26,8 +26,8 @@ class Airport
 
     public function __construct($code)
     {
-        $this->code = $code;
-        $this->connections = new ArrayCollection();
+        $this->code          = $code;
+        $this->connections   = new ArrayCollection();
         $this->connectionIds = new ArrayCollection();
     }
 

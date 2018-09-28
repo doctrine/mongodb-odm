@@ -11,7 +11,7 @@ class GH426Test extends BaseTest
 {
     public function testTest()
     {
-        $form = new GH426Form();
+        $form           = new GH426Form();
         $form->fields[] = new GH426Field($form);
         $form->fields[] = new GH426Field($form);
 

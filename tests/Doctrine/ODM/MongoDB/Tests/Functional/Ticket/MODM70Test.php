@@ -39,12 +39,14 @@ class Avatar
 
     /**
      * @ODM\Field(name="na", type="string")
+     *
      * @var string
      */
     protected $name;
 
     /**
      * @ODM\Field(name="sex", type="int")
+     *
      * @var int
      */
     protected $sex;
@@ -54,14 +56,15 @@ class Avatar
      *  targetDocument=AvatarPart::class,
      *  name="aP"
      * )
+     *
      * @var array AvatarPart
      */
     protected $avatarParts;
 
     public function __construct($name, $sex, $avatarParts = null)
     {
-        $this->name = $name;
-        $this->sex = $sex;
+        $this->name        = $name;
+        $this->sex         = $sex;
         $this->avatarParts = $avatarParts;
     }
 
@@ -123,6 +126,7 @@ class AvatarPart
 {
     /**
      * @ODM\Field(name="col", type="string")
+     *
      * @var string
      */
     protected $color;

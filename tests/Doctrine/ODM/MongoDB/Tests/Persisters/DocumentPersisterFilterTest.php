@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\BlogPost;
 use Documents\Comment;
@@ -13,7 +14,7 @@ class DocumentPersisterFilterTest extends BaseTest
 {
     public function testAddFilterToPreparedQuery()
     {
-        $persister = $this->uow->getDocumentPersister(User::class);
+        $persister        = $this->uow->getDocumentPersister(User::class);
         $filterCollection = $this->dm->getFilterCollection();
 
         $filterCollection->enable('testFilter');
@@ -25,10 +26,10 @@ class DocumentPersisterFilterTest extends BaseTest
         $preparedQuery = ['username' => 'Toby'];
 
         $expectedCriteria = [
-        '$and' => [
-            ['username' => 'Toby'],
-            ['username' => 'Tim'],
-        ],
+            '$and' => [
+                ['username' => 'Toby'],
+                ['username' => 'Tim'],
+            ],
         ];
 
         $this->assertSame($expectedCriteria, $persister->addFilterToPreparedQuery($preparedQuery));
@@ -37,8 +38,8 @@ class DocumentPersisterFilterTest extends BaseTest
     public function testFilterCrieriaShouldAndWithMappingCriteriaOwningSide()
     {
         $blogPost = new BlogPost('Roger');
-        $blogPost->addComment(new Comment('comment by normal user', new \DateTime(), false));
-        $blogPost->addComment(new Comment('comment by admin', new \DateTime(), true));
+        $blogPost->addComment(new Comment('comment by normal user', new DateTime(), false));
+        $blogPost->addComment(new Comment('comment by admin', new DateTime(), true));
 
         $this->dm->persist($blogPost);
         $this->dm->flush();

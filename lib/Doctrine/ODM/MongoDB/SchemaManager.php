@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use InvalidArgumentException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Model\IndexInfo;
@@ -31,7 +32,7 @@ class SchemaManager
 
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
-        $this->dm = $dm;
+        $this->dm              = $dm;
         $this->metadataFactory = $cmf;
     }
 
@@ -39,7 +40,7 @@ class SchemaManager
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory.
      */
-    public function ensureIndexes(?int $timeout = null): void
+    public function ensureIndexes(?int $timeout = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -56,7 +57,7 @@ class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      */
-    public function updateIndexes(?int $timeout = null): void
+    public function updateIndexes(?int $timeout = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -73,25 +74,25 @@ class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function updateDocumentIndexes(string $documentName, ?int $timeout = null): void
+    public function updateDocumentIndexes(string $documentName, ?int $timeout = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
 
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
-            throw new \InvalidArgumentException('Cannot update document indexes for mapped super classes, embedded documents or aggregation result documents.');
+            throw new InvalidArgumentException('Cannot update document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
 
         $documentIndexes = $this->getDocumentIndexes($documentName);
-        $collection = $this->dm->getDocumentCollection($documentName);
-        $mongoIndexes = iterator_to_array($collection->listIndexes());
+        $collection      = $this->dm->getDocumentCollection($documentName);
+        $mongoIndexes    = iterator_to_array($collection->listIndexes());
 
         /* Determine which Mongo indexes should be deleted. Exclude the ID index
          * and those that are equivalent to any in the class metadata.
          */
-        $self = $this;
-        $mongoIndexes = array_filter($mongoIndexes, function (IndexInfo $mongoIndex) use ($documentIndexes, $self) {
+        $self         = $this;
+        $mongoIndexes = array_filter($mongoIndexes, static function (IndexInfo $mongoIndex) use ($documentIndexes, $self) {
             if ($mongoIndex['name'] === '_id_') {
                 return false;
             }
@@ -117,13 +118,13 @@ class SchemaManager
         $this->ensureDocumentIndexes($documentName, $timeout);
     }
 
-    public function getDocumentIndexes(string $documentName): array
+    public function getDocumentIndexes(string $documentName) : array
     {
         $visited = [];
         return $this->doGetDocumentIndexes($documentName, $visited);
     }
 
-    private function doGetDocumentIndexes(string $documentName, array &$visited): array
+    private function doGetDocumentIndexes(string $documentName, array &$visited) : array
     {
         if (isset($visited[$documentName])) {
             return [];
@@ -131,8 +132,8 @@ class SchemaManager
 
         $visited[$documentName] = true;
 
-        $class = $this->dm->getClassMetadata($documentName);
-        $indexes = $this->prepareIndexes($class);
+        $class                   = $this->dm->getClassMetadata($documentName);
+        $indexes                 = $this->prepareIndexes($class);
         $embeddedDocumentIndexes = [];
 
         // Add indexes from embedded & referenced documents
@@ -150,7 +151,7 @@ class SchemaManager
                     if (isset($embeddedDocumentIndexes[$embed])) {
                         $embeddedIndexes = $embeddedDocumentIndexes[$embed];
                     } else {
-                        $embeddedIndexes = $this->doGetDocumentIndexes($embed, $visited);
+                        $embeddedIndexes                 = $this->doGetDocumentIndexes($embed, $visited);
                         $embeddedDocumentIndexes[$embed] = $embeddedIndexes;
                     }
 
@@ -182,10 +183,10 @@ class SchemaManager
         return $indexes;
     }
 
-    private function prepareIndexes(ClassMetadata $class): array
+    private function prepareIndexes(ClassMetadata $class) : array
     {
-        $persister = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
-        $indexes = $class->getIndexes();
+        $persister  = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
+        $indexes    = $class->getIndexes();
         $newIndexes = [];
 
         foreach ($indexes as $index) {
@@ -197,7 +198,7 @@ class SchemaManager
             foreach ($index['keys'] as $key => $value) {
                 $key = $persister->prepareFieldName($key);
                 if ($class->hasField($key)) {
-                    $mapping = $class->getFieldMapping($key);
+                    $mapping                            = $class->getFieldMapping($key);
                     $newIndex['keys'][$mapping['name']] = $value;
                 } else {
                     $newIndex['keys'][$key] = $value;
@@ -213,13 +214,13 @@ class SchemaManager
     /**
      * Ensure the given document's indexes are created.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function ensureDocumentIndexes(string $documentName, ?int $timeoutMs = null): void
+    public function ensureDocumentIndexes(string $documentName, ?int $timeoutMs = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
-            throw new \InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or query result documents.');
+            throw new InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
         if ($class->isFile) {
@@ -233,7 +234,7 @@ class SchemaManager
 
         $collection = $this->dm->getDocumentCollection($class->name);
         foreach ($indexes as $index) {
-            $keys = $index['keys'];
+            $keys    = $index['keys'];
             $options = $index['options'];
 
             if (! isset($options['timeout']) && isset($timeoutMs)) {
@@ -248,7 +249,7 @@ class SchemaManager
      * Delete indexes for all documents that can be loaded with the
      * metadata factory.
      */
-    public function deleteIndexes(): void
+    public function deleteIndexes() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -262,13 +263,13 @@ class SchemaManager
     /**
      * Delete the given document's indexes.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function deleteDocumentIndexes(string $documentName): void
+    public function deleteDocumentIndexes(string $documentName) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
-            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
+            throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
         $this->dm->getDocumentCollection($documentName)->dropIndexes();
@@ -277,7 +278,7 @@ class SchemaManager
     /**
      * Create all the mapped document collections in the metadata factory.
      */
-    public function createCollections(): void
+    public function createCollections() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -290,14 +291,14 @@ class SchemaManager
     /**
      * Create the document collection for a mapped class.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function createDocumentCollection(string $documentName): void
+    public function createDocumentCollection(string $documentName) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
 
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
-            throw new \InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
+            throw new InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
         }
 
         if ($class->isFile) {
@@ -320,7 +321,7 @@ class SchemaManager
     /**
      * Drop all the mapped document collections in the metadata factory.
      */
-    public function dropCollections(): void
+    public function dropCollections() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -334,13 +335,13 @@ class SchemaManager
     /**
      * Drop the document collection for a mapped class.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function dropDocumentCollection(string $documentName): void
+    public function dropDocumentCollection(string $documentName) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
-            throw new \InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
+            throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
         $this->dm->getDocumentCollection($documentName)->drop();
@@ -355,7 +356,7 @@ class SchemaManager
     /**
      * Drop all the mapped document databases in the metadata factory.
      */
-    public function dropDatabases(): void
+    public function dropDatabases() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -369,13 +370,13 @@ class SchemaManager
     /**
      * Drop the document database for a mapped class.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function dropDocumentDatabase(string $documentName): void
+    public function dropDocumentDatabase(string $documentName) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
-            throw new \InvalidArgumentException('Cannot drop document database for mapped super classes, embedded documents or query result documents.');
+            throw new InvalidArgumentException('Cannot drop document database for mapped super classes, embedded documents or query result documents.');
         }
 
         $this->dm->getDocumentDatabase($documentName)->drop();
@@ -401,7 +402,7 @@ class SchemaManager
      *
      * @param array|IndexInfo $mongoIndex Mongo index data.
      */
-    public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, array $documentIndex): bool
+    public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, array $documentIndex) : bool
     {
         $documentIndexOptions = $documentIndex['options'];
 
@@ -464,7 +465,7 @@ class SchemaManager
      *
      * @param array|IndexInfo $mongoIndex Mongo index data.
      */
-    private function isEquivalentIndexKeys($mongoIndex, array $documentIndex): bool
+    private function isEquivalentIndexKeys($mongoIndex, array $documentIndex) : bool
     {
         $mongoIndexKeys    = $mongoIndex['key'];
         $documentIndexKeys = $documentIndex['keys'];
@@ -477,7 +478,7 @@ class SchemaManager
         if (isset($mongoIndexKeys['_fts']) && $mongoIndexKeys['_fts'] === 'text') {
             unset($mongoIndexKeys['_fts'], $mongoIndexKeys['_ftsx']);
 
-            $documentIndexKeys = array_filter($documentIndexKeys, function ($type) {
+            $documentIndexKeys = array_filter($documentIndexKeys, static function ($type) {
                 return $type !== 'text';
             });
         }
@@ -495,7 +496,7 @@ class SchemaManager
      *
      * @param array|IndexInfo $mongoIndex Mongo index data.
      */
-    private function isEquivalentTextIndexWeights($mongoIndex, array $documentIndex): bool
+    private function isEquivalentTextIndexWeights($mongoIndex, array $documentIndex) : bool
     {
         $mongoIndexWeights    = $mongoIndex['weights'];
         $documentIndexWeights = $documentIndex['options']['weights'] ?? [];
@@ -527,7 +528,7 @@ class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function ensureSharding(): void
+    public function ensureSharding() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || ! $class->isSharded()) {
@@ -543,7 +544,7 @@ class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function ensureDocumentSharding(string $documentName): void
+    public function ensureDocumentSharding(string $documentName) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if (! $class->isSharded()) {
@@ -568,9 +569,9 @@ class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function enableShardingForDbByDocumentName(string $documentName): void
+    public function enableShardingForDbByDocumentName(string $documentName) : void
     {
-        $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
+        $dbName  = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $adminDb = $this->dm->getClient()->selectDatabase('admin');
 
         try {
@@ -585,30 +586,28 @@ class SchemaManager
         }
     }
 
-    private function runShardCollectionCommand(string $documentName): array
+    private function runShardCollectionCommand(string $documentName) : array
     {
-        $class = $this->dm->getClassMetadata($documentName);
-        $dbName = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
+        $class    = $this->dm->getClassMetadata($documentName);
+        $dbName   = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $shardKey = $class->getShardKey();
-        $adminDb = $this->dm->getClient()->selectDatabase('admin');
+        $adminDb  = $this->dm->getClient()->selectDatabase('admin');
 
-        $result = $adminDb->command(
+        return $adminDb->command(
             [
                 'shardCollection' => $dbName . '.' . $class->getCollection(),
                 'key'             => $shardKey['keys'],
             ]
         )->toArray()[0];
-
-        return $result;
     }
 
-    private function ensureGridFSIndexes(ClassMetadata $class): void
+    private function ensureGridFSIndexes(ClassMetadata $class) : void
     {
         $this->ensureChunksIndex($class);
         $this->ensureFilesIndex($class);
     }
 
-    private function ensureChunksIndex(ClassMetadata $class): void
+    private function ensureChunksIndex(ClassMetadata $class) : void
     {
         $chunksCollection = $this->dm->getDocumentBucket($class->getName())->getChunksCollection();
         foreach ($chunksCollection->listIndexes() as $index) {
@@ -620,7 +619,7 @@ class SchemaManager
         $chunksCollection->createIndex(self::GRIDFS_FILE_COLLECTION_INDEX, ['unique' => true]);
     }
 
-    private function ensureFilesIndex(ClassMetadata $class): void
+    private function ensureFilesIndex(ClassMetadata $class) : void
     {
         $filesCollection = $this->dm->getDocumentCollection($class->getName());
         foreach ($filesCollection->listIndexes() as $index) {
@@ -632,11 +631,11 @@ class SchemaManager
         $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX);
     }
 
-    private function collectionIsSharded(string $documentName): bool
+    private function collectionIsSharded(string $documentName) : bool
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        $database = $this->dm->getDocumentDatabase($documentName);
+        $database    = $this->dm->getDocumentDatabase($documentName);
         $collections = $database->listCollections(['filter' => ['name' => $class->getCollection()]]);
         if (! iterator_count($collections)) {
             return false;

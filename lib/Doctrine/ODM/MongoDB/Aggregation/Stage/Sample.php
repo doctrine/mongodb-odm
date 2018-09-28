@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $sample stage to an aggregation pipeline.
- *
  */
 class Sample extends Stage
 {
@@ -26,7 +25,7 @@ class Sample extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
             '$sample' => ['size' => $this->size],

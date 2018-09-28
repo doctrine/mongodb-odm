@@ -16,10 +16,10 @@ class GH602Test extends BaseTest
     public function testReferenceManyOwningSidePreparesFilterCriteriaForDifferentClass()
     {
         $thingClass = GH602Thing::class;
-        $userClass = GH602User::class;
+        $userClass  = GH602User::class;
         $this->enableDeletedFilter($thingClass);
 
-        $user1 = new GH602User();
+        $user1  = new GH602User();
         $thing1 = new GH602Thing();
         $thing2 = new GH602Thing();
 
@@ -37,7 +37,7 @@ class GH602Test extends BaseTest
          * $mongoData property has already been cleared and DocumentPersister
          * would be unable to issue a new query for related documents.
          */
-        $user1 = $this->dm->find($userClass, $user1->getId());
+        $user1      = $this->dm->find($userClass, $user1->getId());
         $user1likes = iterator_to_array($user1->likes, false);
 
         /* FilterCollection criteria will only be considered upon initialization
@@ -62,11 +62,11 @@ class GH602Test extends BaseTest
     public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass()
     {
         $thingClass = GH602Thing::class;
-        $userClass = GH602User::class;
+        $userClass  = GH602User::class;
         $this->enableDeletedFilter($userClass);
 
-        $user1 = new GH602User();
-        $user2 = new GH602User();
+        $user1  = new GH602User();
+        $user2  = new GH602User();
         $thing1 = new GH602Thing();
 
         $user1->likes->add($thing1);
@@ -83,7 +83,7 @@ class GH602Test extends BaseTest
          * $mongoData property has already been cleared and DocumentPersister
          * would be unable to issue a new query for related documents.
          */
-        $thing1 = $this->dm->find($thingClass, $thing1->getId());
+        $thing1        = $this->dm->find($thingClass, $thing1->getId());
         $thing1likedBy = iterator_to_array($thing1->likedBy, false);
 
         $this->assertCount(1, $thing1likedBy);

@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
+use InvalidArgumentException;
 use function array_map;
 use function call_user_func_array;
 
@@ -57,7 +58,7 @@ class FilterCollection
      *
      * @return BsonFilter[]
      */
-    public function getEnabledFilters(): array
+    public function getEnabledFilters() : array
     {
         return $this->enabledFilters;
     }
@@ -65,18 +66,18 @@ class FilterCollection
     /**
      * Enables a filter from the collection.
      *
-     * @throws \InvalidArgumentException If the filter does not exist.
+     * @throws InvalidArgumentException If the filter does not exist.
      */
-    public function enable(string $name): BsonFilter
+    public function enable(string $name) : BsonFilter
     {
         if (! $this->has($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
+            throw new InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
         if (! $this->isEnabled($name)) {
-            $filterClass = $this->config->getFilterClassName($name);
+            $filterClass      = $this->config->getFilterClassName($name);
             $filterParameters = $this->config->getFilterParameters($name);
-            $filter = new $filterClass($this->dm);
+            $filter           = new $filterClass($this->dm);
 
             foreach ($filterParameters as $param => $value) {
                 $filter->setParameter($param, $value);
@@ -91,9 +92,9 @@ class FilterCollection
     /**
      * Disables a filter.
      *
-     * @throws \InvalidArgumentException If the filter does not exist.
+     * @throws InvalidArgumentException If the filter does not exist.
      */
-    public function disable(string $name): BsonFilter
+    public function disable(string $name) : BsonFilter
     {
         // Get the filter to return it
         $filter = $this->getFilter($name);
@@ -106,12 +107,12 @@ class FilterCollection
     /**
      * Get an enabled filter from the collection.
      *
-     * @throws \InvalidArgumentException If the filter is not enabled.
+     * @throws InvalidArgumentException If the filter is not enabled.
      */
-    public function getFilter(string $name): BsonFilter
+    public function getFilter(string $name) : BsonFilter
     {
         if (! $this->isEnabled($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
+            throw new InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
         return $this->enabledFilters[$name];
     }
@@ -120,9 +121,10 @@ class FilterCollection
      * Checks whether filter with given name is defined.
      *
      * @param string $name Name of the filter.
+     *
      * @return bool true if the filter exists, false if not.
      */
-    public function has(string $name): bool
+    public function has(string $name) : bool
     {
         return $this->config->getFilterClassName($name) !== null;
     }
@@ -130,7 +132,7 @@ class FilterCollection
     /**
      * Checks whether filter with given name is enabled.
      */
-    public function isEnabled(string $name): bool
+    public function isEnabled(string $name) : bool
     {
         return isset($this->enabledFilters[$name]);
     }
@@ -138,7 +140,7 @@ class FilterCollection
     /**
      * Gets enabled filter criteria.
      */
-    public function getFilterCriteria(ClassMetadata $class): array
+    public function getFilterCriteria(ClassMetadata $class) : array
     {
         if (empty($this->enabledFilters)) {
             return [];
@@ -147,7 +149,7 @@ class FilterCollection
         return call_user_func_array(
             [$this->cm, 'merge'],
             array_map(
-                function ($filter) use ($class) {
+                static function ($filter) use ($class) {
                     return $filter->addFilterCriteria($class);
                 },
                 $this->enabledFilters

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -71,13 +72,13 @@ class IdTest extends BaseTest
 
     public function testCollectionId()
     {
-        $user1 = new CollectionIdUser('Jonathan H. Wage');
-        $reference1 = new ReferencedCollectionId('referenced 1');
+        $user1            = new CollectionIdUser('Jonathan H. Wage');
+        $reference1       = new ReferencedCollectionId('referenced 1');
         $user1->reference = $reference1;
 
         $user2 = new CollectionIdUser('Jonathan H. Wage');
 
-        $reference2 = new ReferencedCollectionId('referenced 2');
+        $reference2       = new ReferencedCollectionId('referenced 2');
         $user2->reference = $reference2;
 
         $this->dm->persist($user1);
@@ -119,13 +120,13 @@ class IdTest extends BaseTest
 
     public function testEmbeddedDocumentWithId()
     {
-        $user1 = new CollectionIdUser('Jonathan H. Wage');
+        $user1             = new CollectionIdUser('Jonathan H. Wage');
         $user1->embedded[] = new EmbeddedCollectionId('embedded #1');
         $user1->embedded[] = new EmbeddedCollectionId('embedded #2');
         $this->dm->persist($user1);
         $this->dm->flush();
 
-        $user2 = new CollectionIdUser('Jonathan H. Wage');
+        $user2             = new CollectionIdUser('Jonathan H. Wage');
         $user2->embedded[] = new EmbeddedCollectionId('embedded #1');
         $user2->embedded[] = new EmbeddedCollectionId('embedded #2');
         $this->dm->persist($user2);
@@ -150,7 +151,7 @@ class IdTest extends BaseTest
         $this->assertEquals('test', $class->idGenerator->getSalt());
 
         $serialized = serialize($class);
-        $class = unserialize($serialized);
+        $class      = unserialize($serialized);
 
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
         $this->assertEquals(['salt' => 'test'], $class->generatorOptions);
@@ -165,10 +166,10 @@ class IdTest extends BaseTest
     {
         $this->assertNotSame($user1Id, $user2Id);
 
-        $user1 = new CustomIdUser(sprintf('User1 with %s ID', gettype($user1Id)));
+        $user1     = new CustomIdUser(sprintf('User1 with %s ID', gettype($user1Id)));
         $user1->id = $user1Id;
 
-        $user2 = new CustomIdUser(sprintf('User2 with %s ID', gettype($user2Id)));
+        $user2     = new CustomIdUser(sprintf('User2 with %s ID', gettype($user2Id)));
         $user2->id = $user2Id;
 
         $this->dm->persist($user1);
@@ -209,7 +210,7 @@ class IdTest extends BaseTest
     {
         $className = $this->createIdTestClass($type, $strategy);
 
-        $object = new $className();
+        $object     = new $className();
         $object->id = $id;
 
         $this->dm->persist($object);
@@ -283,7 +284,7 @@ class IdTest extends BaseTest
             ['object_id', 'none', (string) $identifier, (string) $identifier, ObjectId::class],
 
             // date
-            ['date', 'none', new \DateTime(date('Y-m-d')), new \DateTime(date('Y-m-d')), UTCDateTime::class],
+            ['date', 'none', new DateTime(date('Y-m-d')), new DateTime(date('Y-m-d')), UTCDateTime::class],
 
             // bin
             ['bin', 'none', 'test-data', 'test-data', Binary::class],
@@ -306,7 +307,7 @@ class IdTest extends BaseTest
     {
         $className = $this->createIdTestClass($type, 'none');
 
-        $object = new $className();
+        $object     = new $className();
         $object->id = $id;
 
         $this->dm->persist($object);
@@ -347,7 +348,7 @@ class IdTest extends BaseTest
     public function testStrategyAutoWithNotValidIdThrowsException()
     {
         $this->createIdTestClass('id', 'auto');
-        $user = new TestIdTypesIdAutoUser();
+        $user     = new TestIdTypesIdAutoUser();
         $user->id = 1;
         $this->dm->persist($user);
     }
@@ -355,7 +356,7 @@ class IdTest extends BaseTest
     private function createIdTestClass($type, $strategy)
     {
         $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));
-        $className = sprintf(__NAMESPACE__ . '\\%s', $shortClassName);
+        $className      = sprintf(__NAMESPACE__ . '\\%s', $shortClassName);
 
         if (! class_exists($className)) {
             $code = sprintf(

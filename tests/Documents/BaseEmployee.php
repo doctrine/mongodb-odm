@@ -51,7 +51,7 @@ abstract class BaseEmployee
 
     public function incrementChanges($num)
     {
-        $this->changes = $this->changes + $num;
+        $this->changes += $num;
         return $this;
     }
 

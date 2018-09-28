@@ -14,8 +14,8 @@ class GH529Test extends BaseTest
     public function testAutoIdWithConsistentValues()
     {
         $identifier = new ObjectId();
-        $doc = new GH529AutoIdDocument();
-        $doc->id = $identifier;
+        $doc        = new GH529AutoIdDocument();
+        $doc->id    = $identifier;
 
         $this->dm->persist($doc);
         $this->dm->flush();
@@ -32,7 +32,7 @@ class GH529Test extends BaseTest
         /* All values are consistent for CustomIdType, since the PHP and DB
          * conversions return the value as-is.
          */
-        $doc = new GH529CustomIdDocument();
+        $doc     = new GH529CustomIdDocument();
         $doc->id = 'foo';
 
         $this->dm->persist($doc);
@@ -47,7 +47,7 @@ class GH529Test extends BaseTest
 
     public function testIntIdWithConsistentValues()
     {
-        $doc = new GH529IntIdDocument();
+        $doc     = new GH529IntIdDocument();
         $doc->id = 1;
 
         $this->dm->persist($doc);
@@ -62,7 +62,7 @@ class GH529Test extends BaseTest
 
     public function testIntIdWithInconsistentValues()
     {
-        $doc = new GH529IntIdDocument();
+        $doc     = new GH529IntIdDocument();
         $doc->id = 3.14;
 
         $this->dm->persist($doc);

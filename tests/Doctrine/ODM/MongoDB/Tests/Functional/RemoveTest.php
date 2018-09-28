@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
 use Documents\BlogPost;
@@ -69,12 +70,12 @@ class RemoveTest extends BaseTest
     public function testUnsetFromReferencedCollectionWithCascade()
     {
         $developerRepository = $this->dm->getRepository(Developer::class);
-        $projectRepository = $this->dm->getRepository(Project::class);
+        $projectRepository   = $this->dm->getRepository(Project::class);
 
         // Developer owns the one-to-many relationship and cascades
         $developer = new Developer('developer');
-        $project1 = new Project('project1');
-        $project2 = new Project('project2');
+        $project1  = new Project('project1');
+        $project2  = new Project('project2');
 
         $developer->getProjects()->add($project1);
         $developer->getProjects()->add($project2);
@@ -84,8 +85,8 @@ class RemoveTest extends BaseTest
         $this->dm->clear();
 
         $developer = $developerRepository->find($developer->getId());
-        $project1 = $projectRepository->find($project1->getId());
-        $project2 = $projectRepository->find($project2->getId());
+        $project1  = $projectRepository->find($project1->getId());
+        $project2  = $projectRepository->find($project2->getId());
 
         // Persist is cascaded
         $this->assertNotNull($developer);
@@ -99,8 +100,8 @@ class RemoveTest extends BaseTest
         $this->dm->clear();
 
         $developer = $developerRepository->find($developer->getId());
-        $project1 = $projectRepository->find($project1->getId());
-        $project2 = $projectRepository->find($project2->getId());
+        $project1  = $projectRepository->find($project1->getId());
+        $project2  = $projectRepository->find($project2->getId());
 
         // Removing owner's reference does not cause referenced document to be removed
         $this->assertNotNull($developer);
@@ -114,8 +115,8 @@ class RemoveTest extends BaseTest
         $this->dm->clear();
 
         $developer = $developerRepository->find($developer->getId());
-        $project1 = $projectRepository->find($project1->getId());
-        $project2 = $projectRepository->find($project2->getId());
+        $project1  = $projectRepository->find($project1->getId());
+        $project2  = $projectRepository->find($project2->getId());
 
         // Remove cascades to referenced documents
         $this->assertNull($developer);
@@ -129,7 +130,7 @@ class RemoveTest extends BaseTest
         $commentRepository = $this->dm->getRepository(CmsComment::class);
 
         // CmsArticle owns the one-to-many relationship but does not cascade
-        $article = new CmsArticle();
+        $article  = new CmsArticle();
         $comment1 = new CmsComment();
         $comment2 = new CmsComment();
 
@@ -148,7 +149,7 @@ class RemoveTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $article = $articleRepository->find($article->id);
+        $article  = $articleRepository->find($article->id);
         $comment1 = $commentRepository->find($comment1->id);
         $comment2 = $commentRepository->find($comment2->id);
 
@@ -157,7 +158,7 @@ class RemoveTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $article = $articleRepository->find($article->id);
+        $article  = $articleRepository->find($article->id);
         $comment1 = $commentRepository->find($comment1->id);
         $comment2 = $commentRepository->find($comment2->id);
 
@@ -172,7 +173,7 @@ class RemoveTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $article = $articleRepository->find($article->id);
+        $article  = $articleRepository->find($article->id);
         $comment1 = $commentRepository->find($comment1->id);
         $comment2 = $commentRepository->find($comment2->id);
 
@@ -185,14 +186,14 @@ class RemoveTest extends BaseTest
     public function testUnsetFromReferencedCollectionWithCascadeAndMappedBy()
     {
         $blogPostRepository = $this->dm->getRepository(BlogPost::class);
-        $commentRepository = $this->dm->getRepository(Comment::class);
+        $commentRepository  = $this->dm->getRepository(Comment::class);
 
         /* CmsComment owns the one-to-many relationship, since BlogPost uses
          * mappedBy. Both sides cascade operations.
          */
         $blogPost = new BlogPost();
-        $comment1 = new Comment('comment1', new \DateTime());
-        $comment2 = new Comment('comment2', new \DateTime());
+        $comment1 = new Comment('comment1', new DateTime());
+        $comment2 = new Comment('comment2', new DateTime());
 
         $blogPost->addComment($comment1);
         $blogPost->addComment($comment2);

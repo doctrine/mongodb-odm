@@ -41,8 +41,8 @@ class EcommerceTest extends BaseTest
 
     public function testEmbedding()
     {
-        $product = $this->getProduct();
-        $price =  $product->getOption('small')->getPrice(true);
+        $product  = $this->getProduct();
+        $price    =  $product->getOption('small')->getPrice(true);
         $currency = $price->getCurrency();
         $this->assertInstanceOf(Currency::class, $currency);
         $this->assertCount(3, $product->getOptions());
@@ -59,8 +59,8 @@ class EcommerceTest extends BaseTest
 
     public function testMoneyDocumentsAvailableForReference()
     {
-        $product = $this->getProduct();
-        $price =  $product->getOption('small')->getPrice(true);
+        $product  = $this->getProduct();
+        $price    =  $product->getOption('small')->getPrice(true);
         $currency = $price->getCurrency();
         $this->assertInstanceOf(Currency::class, $currency);
         $this->assertNotNull($currency->getId());

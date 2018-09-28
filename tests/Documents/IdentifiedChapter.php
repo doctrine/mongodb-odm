@@ -21,7 +21,7 @@ class IdentifiedChapter
 
     public function __construct($name = null)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->pages = new ArrayCollection();
     }
 }

@@ -18,11 +18,11 @@ class OrphanRemovalEmbedTest extends BaseTest
      */
     public function testUnsettingEmbedOne()
     {
-        $profile = new OrphanRemovalCascadeProfile();
-        $address = new OrphanRemovalCascadeAddress();
-        $user = new OrphanRemovalCascadeUser();
+        $profile          = new OrphanRemovalCascadeProfile();
+        $address          = new OrphanRemovalCascadeAddress();
+        $user             = new OrphanRemovalCascadeUser();
         $profile->address = $address;
-        $user->profile = $profile;
+        $user->profile    = $profile;
 
         $this->dm->persist($user);
         $this->dm->flush();
@@ -40,15 +40,15 @@ class OrphanRemovalEmbedTest extends BaseTest
      */
     public function testRemoveEmbedMany()
     {
-        $profile1 = new OrphanRemovalCascadeProfile();
-        $address1 = new OrphanRemovalCascadeAddress();
+        $profile1          = new OrphanRemovalCascadeProfile();
+        $address1          = new OrphanRemovalCascadeAddress();
         $profile1->address = $address1;
 
-        $profile2 = new OrphanRemovalCascadeProfile();
-        $address2 = new OrphanRemovalCascadeAddress();
+        $profile2          = new OrphanRemovalCascadeProfile();
+        $address2          = new OrphanRemovalCascadeAddress();
         $profile2->address = $address2;
 
-        $user = new OrphanRemovalCascadeUser();
+        $user                = new OrphanRemovalCascadeUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
 
@@ -75,15 +75,15 @@ class OrphanRemovalEmbedTest extends BaseTest
      */
     public function testClearEmbedMany()
     {
-        $profile1 = new OrphanRemovalCascadeProfile();
-        $address1 = new OrphanRemovalCascadeAddress();
+        $profile1          = new OrphanRemovalCascadeProfile();
+        $address1          = new OrphanRemovalCascadeAddress();
         $profile1->address = $address1;
 
-        $profile2 = new OrphanRemovalCascadeProfile();
-        $address2 = new OrphanRemovalCascadeAddress();
+        $profile2          = new OrphanRemovalCascadeProfile();
+        $address2          = new OrphanRemovalCascadeAddress();
         $profile2->address = $address2;
 
-        $user = new OrphanRemovalCascadeUser();
+        $user                = new OrphanRemovalCascadeUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
 
@@ -104,19 +104,19 @@ class OrphanRemovalEmbedTest extends BaseTest
      */
     public function testClearAndAddEmbedMany()
     {
-        $profile1 = new OrphanRemovalCascadeProfile();
-        $address1 = new OrphanRemovalCascadeAddress();
+        $profile1          = new OrphanRemovalCascadeProfile();
+        $address1          = new OrphanRemovalCascadeAddress();
         $profile1->address = $address1;
 
-        $profile2 = new OrphanRemovalCascadeProfile();
-        $address2 = new OrphanRemovalCascadeAddress();
+        $profile2          = new OrphanRemovalCascadeProfile();
+        $address2          = new OrphanRemovalCascadeAddress();
         $profile2->address = $address2;
 
-        $profile3 = new OrphanRemovalCascadeProfile();
-        $address3 = new OrphanRemovalCascadeAddress();
+        $profile3          = new OrphanRemovalCascadeProfile();
+        $address3          = new OrphanRemovalCascadeAddress();
         $profile3->address = $address3;
 
-        $user = new OrphanRemovalCascadeUser();
+        $user                = new OrphanRemovalCascadeUser();
         $user->profileMany[] = $profile1;
         $user->profileMany[] = $profile2;
 

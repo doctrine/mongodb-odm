@@ -30,15 +30,15 @@ class ReplaceRoot extends Operator
     {
         parent::__construct($builder);
 
-        $this->dm = $documentManager;
-        $this->class = $class;
+        $this->dm         = $documentManager;
+        $this->class      = $class;
         $this->expression = $expression;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
             '$replaceRoot' => $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression(),
@@ -56,7 +56,7 @@ class ReplaceRoot extends Operator
         return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
     }
 
-    private function getDocumentPersister(): DocumentPersister
+    private function getDocumentPersister() : DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }

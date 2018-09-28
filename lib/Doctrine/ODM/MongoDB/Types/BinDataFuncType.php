@@ -8,7 +8,6 @@ use MongoDB\BSON\Binary;
 
 /**
  * The BinData type for function data.
- *
  */
 class BinDataFuncType extends BinDataType
 {

@@ -30,8 +30,8 @@ class Comment
 
     public function __construct($text, DateTime $date, $isByAdmin = false)
     {
-        $this->text = $text;
-        $this->date = $date;
+        $this->text      = $text;
+        $this->date      = $date;
         $this->isByAdmin = $isByAdmin;
     }
 

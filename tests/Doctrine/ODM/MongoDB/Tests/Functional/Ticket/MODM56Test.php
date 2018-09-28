@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\UTCDateTime;
@@ -16,10 +17,10 @@ class MODM56Test extends BaseTest
         $this->dm->persist($parent);
         $this->dm->flush();
 
-        $childOne = new MODM56Child('Child One');
+        $childOne           = new MODM56Child('Child One');
         $parent->children[] = $childOne;
 
-        $childTwo = new MODM56Child('Child Two');
+        $childTwo           = new MODM56Child('Child Two');
         $parent->children[] = $childTwo;
         $this->dm->flush();
 
@@ -56,7 +57,7 @@ class MODM56Parent
     /** @ODM\PreUpdate */
     public function preUpdate()
     {
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new DateTime();
     }
 }
 

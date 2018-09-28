@@ -9,9 +9,9 @@ use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 
 class Filter extends BsonFilter
 {
-    public function addFilterCriteria(ClassMetadata $class): array
+    public function addFilterCriteria(ClassMetadata $class) : array
     {
-        return ($class->name === $this->parameters['class'])
+        return $class->name === $this->parameters['class']
             ? [$this->parameters['field'] => $this->parameters['value']]
             : [];
     }

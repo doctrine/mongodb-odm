@@ -19,7 +19,7 @@ class GH1225Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
+        $doc         = $this->dm->getRepository(get_class($doc))->find($doc->id);
         $embeddedDoc = $doc->embeds->first();
         $doc->embeds->clear();
         $doc->embeds->add($embeddedDoc);

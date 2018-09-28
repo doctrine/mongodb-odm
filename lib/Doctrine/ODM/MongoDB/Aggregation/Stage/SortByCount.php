@@ -25,13 +25,13 @@ class SortByCount extends Stage
         parent::__construct($builder);
 
         $documentPersister = $documentManager->getUnitOfWork()->getDocumentPersister($class->name);
-        $this->fieldName = '$' . $documentPersister->prepareFieldName(substr($fieldName, 1));
+        $this->fieldName   = '$' . $documentPersister->prepareFieldName(substr($fieldName, 1));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getExpression(): array
+    public function getExpression() : array
     {
         return [
             '$sortByCount' => $this->fieldName,
