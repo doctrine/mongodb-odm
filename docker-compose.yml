@@ -1,0 +1,16 @@
+---
+version: "2.1"
+services:
+  tests:
+    build: .
+    depends_on:
+    - mongodb
+    environment:
+      DOCTRINE_MONGODB_SERVER: "mongodb://mongodb:27017"
+    volumes:
+    - .:/tests:delegated
+    - ~/.composer:/root/.composer
+    working_dir: /tests
+
+  mongodb:
+    image: mongo:3.6

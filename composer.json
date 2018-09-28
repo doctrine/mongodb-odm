@@ -24,6 +24,7 @@
     "require": {
         "php": "^7.2",
         "ext-mongodb": "^1.5",
+        "ext-bcmath": "*",
         "symfony/console": "^3.4|^4.1",
         "doctrine/annotations": "^1.6",
         "doctrine/collections": "^1.5",
