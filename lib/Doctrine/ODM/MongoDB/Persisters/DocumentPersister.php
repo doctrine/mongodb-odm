@@ -580,13 +580,13 @@ class DocumentPersister
     /**
      * Creates or fills a single document object from an query result.
      *
-     * @param object $result   The query result.
-     * @param object $document The document object to fill, if any.
-     * @param array  $hints    Hints for document creation.
+     * @param array|null $result   The query result.
+     * @param object     $document The document object to fill, if any.
+     * @param array      $hints    Hints for document creation.
      *
      * @return object The filled and managed document object or NULL, if the query result is empty.
      */
-    private function createDocument($result, ?object $document = null, array $hints = []) : ?object
+    private function createDocument(?array $result, ?object $document = null, array $hints = []) : ?object
     {
         if ($result === null) {
             return null;
