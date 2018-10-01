@@ -39,6 +39,8 @@ use function sprintf;
  */
 class DocumentManager implements ObjectManager
 {
+    public const CLIENT_TYPEMAP = ['root' => 'array', 'document' => 'array'];
+
     /**
      * The Doctrine MongoDB connection instance.
      *
@@ -145,7 +147,9 @@ class DocumentManager implements ObjectManager
     {
         $this->config       = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
-        $this->client       = $client ?: new Client('mongodb://127.0.0.1', [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+        $this->client       = $client ?: new Client('mongodb://127.0.0.1', [], ['typeMap' => self::CLIENT_TYPEMAP]);
+
+        $this->checkTypeMap();
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory    = new $metadataFactoryClassName();
@@ -789,5 +793,16 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->filterCollection;
+    }
+
+    private function checkTypeMap() : void
+    {
+        $typeMap = $this->client->getTypeMap();
+
+        foreach (self::CLIENT_TYPEMAP as $part => $expectedType) {
+            if (! isset($typeMap[$part]) || $typeMap[$part] !== $expectedType) {
+                throw MongoDBException::invalidTypeMap($part, $expectedType);
+            }
+        }
     }
 }
