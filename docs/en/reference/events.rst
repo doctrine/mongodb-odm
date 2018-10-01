@@ -317,7 +317,7 @@ EventManager that is passed to the DocumentManager factory:
     $eventManager->addEventListener(array(Events::preUpdate), new MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
 
-    $documentManager = DocumentManager::create($mongo, $config, $eventManager);
+    $documentManager = DocumentManager::create(null, $config, $eventManager);
 
 You can also retrieve the event manager instance after the
 DocumentManager was created:

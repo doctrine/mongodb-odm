@@ -129,7 +129,7 @@ you cannot be guaranteed that the targetDocument resolution will occur reliably:
     $evm->addEventListener(\Doctrine\ODM\MongoDB\Events::loadClassMetadata, $rtdl);
 
     // Create the document manager as you normally would
-    $dm = \Doctrine\ODM\MongoDB\DocumentManager::create($connectionOptions, $config, $evm);
+    $dm = \Doctrine\ODM\MongoDB\DocumentManager::create(null, $config, $evm);
 
 Final Thoughts
 --------------
