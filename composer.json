@@ -24,19 +24,19 @@
     "require": {
         "php": "^7.2",
         "ext-mongodb": "^1.5",
-        "symfony/console": "^3.4|^4.1",
         "doctrine/annotations": "^1.6",
+        "doctrine/cache": "^1.7",
         "doctrine/collections": "^1.5",
         "doctrine/common": "^2.9",
-        "doctrine/cache": "^1.7",
         "doctrine/instantiator": "^1.1",
-        "mongodb/mongodb": "^1.2.0"
+        "mongodb/mongodb": "^1.2.0",
+        "symfony/console": "^3.4|^4.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0",
+        "doctrine/coding-standard": "^5.0",
         "jmikola/geojson": "^1.0",
         "phpstan/phpstan": "^0.10.3",
-        "doctrine/coding-standard": "^5.0"
+        "phpunit/phpunit": "^7.0"
     },
     "autoload": {
         "psr-4": { "Doctrine\\ODM\\MongoDB\\": "lib/Doctrine/ODM/MongoDB" }
@@ -47,6 +47,9 @@
             "Documents\\": "tests/Documents",
             "Stubs\\": "tests/Stubs"
         }
+    },
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "branch-alias": {
