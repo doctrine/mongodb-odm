@@ -132,4 +132,9 @@ class MongoDBException extends Exception
     {
         return new self(sprintf('Cannot open file "%s" for uploading to GridFS.', $filename));
     }
+
+    public static function invalidTypeMap(string $part, string $epectedType) : self
+    {
+        return new self(sprintf('Invalid typemap provided. Type "%s" is required for "%s".', $epectedType, $part));
+    }
 }

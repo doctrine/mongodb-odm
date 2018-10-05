@@ -344,7 +344,6 @@ we'll use:
 
     <?php
 
-    use Doctrine\MongoDB\Connection;
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
     use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
@@ -379,7 +378,7 @@ the autoloader like so:
 
 Ultimately, our application will utilize ODM through its ``DocumentManager``
 class. Before we can instantiate a ``DocumentManager``, we need to construct the
-``Connection`` and ``Configuration`` objects required by its factory method:
+``Configuration`` object required by its factory method:
 
 .. code-block:: php
 
@@ -387,7 +386,6 @@ class. Before we can instantiate a ``DocumentManager``, we need to construct the
 
     // ...
 
-    $connection = new Connection();
     $config = new Configuration();
 
 Next, we'll specify some essential configuration options. The following assumes
@@ -434,7 +432,7 @@ At this point, we have everything necessary to construct a ``DocumentManager``:
 
     // ...
 
-    $dm = DocumentManager::create($connection, $config);
+    $dm = DocumentManager::create(null, $config);
 
 The final ``bootstrap.php`` file should look like this:
 
@@ -443,7 +441,6 @@ The final ``bootstrap.php`` file should look like this:
     <?php
 
     use Doctrine\Common\Annotations\AnnotationRegistry;
-    use Doctrine\MongoDB\Connection;
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
     use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
@@ -457,8 +454,6 @@ The final ``bootstrap.php`` file should look like this:
 
     AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
-    $connection = new Connection();
-
     $config = new Configuration();
     $config->setProxyDir(__DIR__ . '/Proxies');
     $config->setProxyNamespace('Proxies');
@@ -467,24 +462,36 @@ The final ``bootstrap.php`` file should look like this:
     $config->setDefaultDB('doctrine_odm');
     $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
 
-    $dm = DocumentManager::create($connection, $config);
+    $dm = DocumentManager::create(null, $config);
 
 That is it! Your ``DocumentManager`` instance is ready to be used!
 
-Using PHP 7
------------
+Providing a custom client
+-------------------------
 
-You can use Doctrine MongoDB ODM with PHP 7, but there are a few extra steps during
-the installation. Since the legacy driver (referred to as ``ext-mongo``) is not
-available on PHP 7, you will need the new driver (``ext-mongodb``) installed and
-use a polyfill to provide the API of the legacy driver.
+Passing ``null`` to the factory method as first argument tells the document
+manager to create a new MongoDB client instance with the appropriate typemap.
+If you want to pass custom options (e.g. SSL options, authentication options) to
+the client, you'll have to create it yourself manually:
 
-To do this, you have to require ``alcaeus/mongo-php-adapter`` before adding a composer
-dependency to ODM. To do this, run the following command:
+.. code-block:: php
 
-.. code-block:: console
+    <?php
 
-    $ composer config "platform.ext-mongo" "1.6.16" && composer require "alcaeus/mongo-php-adapter"
+    use Doctrine\ODM\MongoDB\Configuration;
+    use Doctrine\ODM\MongoDB\DocumentManager;
+    use MongoDB\Client;
+
+    $client = new Client('mongodb://127.0.0.1', [], ['typeMap' => DocumentManager::CLIENT_TYPEMAP]);
+    $config = new Configuration();
+
+    // ...
+
+    $dm = DocumentManager::create($client, $config);
+
+Please note the ``typeMap`` option. This is necessary so ODM can appropriately
+handle the results. If you need the client elsewhere with a different typeMap,
+please create separate clients for your application and ODM.
 
 .. _MongoDB: https://www.mongodb.com/
 .. _10gen: http://www.10gen.com
