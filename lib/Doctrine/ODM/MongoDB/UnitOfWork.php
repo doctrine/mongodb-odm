@@ -15,7 +15,6 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -23,6 +22,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use ProxyManager\Proxy\GhostObjectInterface;
 use UnexpectedValueException;
 use function array_filter;
 use function count;
@@ -825,7 +825,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($documentsToProcess as $document) {
                 // Ignore uninitialized proxy objects
-                if ($document instanceof Proxy && ! $document->__isInitialized__) {
+                if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
                     continue;
                 }
                 // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION, UPSERT OR DELETION are processed here.
@@ -856,7 +856,7 @@ class UnitOfWork implements PropertyChangedListener
         $class                 = $this->dm->getClassMetadata(get_class($parentDocument));
         $topOrExistingDocument = ( ! $isNewParentDocument || ! $class->isEmbeddedDocument);
 
-        if ($value instanceof Proxy && ! $value->__isInitialized__) {
+        if ($value instanceof GhostObjectInterface && ! $value->isProxyInitialized()) {
             return;
         }
 
@@ -971,7 +971,7 @@ class UnitOfWork implements PropertyChangedListener
     public function recomputeSingleDocumentChangeSet(ClassMetadata $class, object $document) : void
     {
         // Ignore uninitialized proxy objects
-        if ($document instanceof Proxy && ! $document->__isInitialized__) {
+        if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
             return;
         }
 
@@ -1329,7 +1329,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->identityMap[$class->name][$id] = $document;
 
         if ($document instanceof NotifyPropertyChanged &&
-            ( ! $document instanceof Proxy || $document->__isInitialized())) {
+            ( ! $document instanceof GhostObjectInterface || $document->isProxyInitialized())) {
             $document->addPropertyChangedListener($this);
         }
 
@@ -1684,8 +1684,8 @@ class UnitOfWork implements PropertyChangedListener
         $managedCopy = $document;
 
         if ($this->getDocumentState($document, self::STATE_DETACHED) !== self::STATE_MANAGED) {
-            if ($document instanceof Proxy && ! $document->__isInitialized()) {
-                $document->__load();
+            if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+                $document->initializeProxy();
             }
 
             $identifier = $class->getIdentifier();
@@ -1702,8 +1702,8 @@ class UnitOfWork implements PropertyChangedListener
                     throw new InvalidArgumentException('Removed entity detected during merge. Cannot merge with a removed entity.');
                 }
 
-                if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized__) {
-                    $managedCopy->__load();
+                if ($managedCopy instanceof GhostObjectInterface && ! $managedCopy->isProxyInitialized()) {
+                    $managedCopy->initializeProxy();
                 }
             }
 
@@ -1742,7 +1742,7 @@ class UnitOfWork implements PropertyChangedListener
 
                         if ($other === null) {
                             $prop->setValue($managedCopy, null);
-                        } elseif ($other instanceof Proxy && ! $other->__isInitialized__) {
+                        } elseif ($other instanceof GhostObjectInterface && ! $other->isProxyInitialized()) {
                             // Do not merge fields marked lazy that have not been fetched
                             continue;
                         } elseif (! $assoc2['isCascadeMerge']) {
@@ -1758,7 +1758,7 @@ class UnitOfWork implements PropertyChangedListener
                                     $other = $this
                                         ->dm
                                         ->getProxyFactory()
-                                        ->getProxy($assoc2['targetDocument'], [$targetClass->identifier => $relatedId]);
+                                        ->getProxy($targetClass, $relatedId);
                                     $this->registerManaged($other, $relatedId, []);
                                 }
                             }
@@ -2077,8 +2077,8 @@ class UnitOfWork implements PropertyChangedListener
             if (! $mapping['isCascadeRemove'] && ( ! isset($mapping['orphanRemoval']) || ! $mapping['orphanRemoval'])) {
                 continue;
             }
-            if ($document instanceof Proxy && ! $document->__isInitialized__) {
-                $document->__load();
+            if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+                $document->initializeProxy();
             }
 
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -2503,9 +2503,9 @@ class UnitOfWork implements PropertyChangedListener
         if ($isManagedObject) {
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_hash($document);
-            if ($document instanceof Proxy && ! $document->__isInitialized__) {
-                $document->__isInitialized__ = true;
-                $overrideLocalValues         = true;
+            if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+                $document->setProxyInitializer(null);
+                $overrideLocalValues = true;
                 if ($document instanceof NotifyPropertyChanged) {
                     $document->addPropertyChangedListener($this);
                 }
@@ -2740,8 +2740,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function initializeObject(object $obj) : void
     {
-        if ($obj instanceof Proxy) {
-            $obj->__load();
+        if ($obj instanceof GhostObjectInterface) {
+            $obj->initializeProxy();
         } elseif ($obj instanceof PersistentCollectionInterface) {
             $obj->initialize();
         }

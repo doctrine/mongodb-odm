@@ -7,8 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\Query;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class HydratorTest extends BaseTest
 {
@@ -39,8 +39,8 @@ class HydratorTest extends BaseTest
         $this->assertInstanceOf(DateTime::class, $user->birthdate);
         $this->assertInstanceOf(HydrationClosureReferenceOne::class, $user->referenceOne);
         $this->assertInstanceOf(PersistentCollection::class, $user->referenceMany);
-        $this->assertInstanceOf(Proxy::class, $user->referenceMany[0]);
-        $this->assertInstanceOf(Proxy::class, $user->referenceMany[1]);
+        $this->assertInstanceOf(GhostObjectInterface::class, $user->referenceMany[0]);
+        $this->assertInstanceOf(GhostObjectInterface::class, $user->referenceMany[1]);
         $this->assertInstanceOf(PersistentCollection::class, $user->embedMany);
         $this->assertEquals('jon', $user->embedOne->name);
         $this->assertEquals('jon', $user->embedMany[0]->name);

@@ -26,7 +26,7 @@ class IdentifiersTest extends BaseTest
         $test = $this->dm->getRepository(get_class($event))->find($event->getId());
 
         $this->assertEquals($user->getId(), $test->getUser()->getId());
-        $this->assertFalse($test->getUser()->__isInitialized__);
+        $this->assertFalse($test->getUser()->isProxyInitialized());
 
         $this->dm->clear();
 
@@ -35,10 +35,10 @@ class IdentifiersTest extends BaseTest
         $test = $this->dm->getRepository(get_class($event))->find($event->getId());
         $this->assertEquals($user->getId(), $class->getIdentifierValue($test->getUser()));
         $this->assertEquals($user->getId(), $class->getFieldValue($test->getUser(), 'id'));
-        $this->assertFalse($test->getUser()->__isInitialized__);
+        $this->assertFalse($test->getUser()->isProxyInitialized());
 
         $this->assertEquals('jwage', $test->getUser()->getUsername());
-        $this->assertTrue($test->getUser()->__isInitialized__);
+        $this->assertTrue($test->getUser()->isProxyInitialized());
     }
 
     public function testIdentifiersAreSet()

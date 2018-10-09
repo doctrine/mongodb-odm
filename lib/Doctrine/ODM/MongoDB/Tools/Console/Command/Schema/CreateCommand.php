@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use BadMethodCallException;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -107,19 +106,11 @@ class CreateCommand extends AbstractCommand
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
 
-        if ($classMetadata->isEmbeddedDocument || $classMetadata->isMappedSuperclass || $classMetadata->isQueryResultDocument) {
-            return;
-        }
-
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
     }
 
     protected function processProxy(SchemaManager $sm)
     {
-        $classes = array_filter($this->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata) {
-            return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
-        });
-
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($classes);
+        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($this->getMetadataFactory()->getAllMetadata());
     }
 }

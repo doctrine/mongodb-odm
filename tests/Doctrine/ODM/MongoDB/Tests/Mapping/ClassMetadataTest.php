@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -20,6 +19,7 @@ use Documents\CmsUser;
 use Documents\SpecialUser;
 use Documents\User;
 use Documents\UserRepository;
+use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use stdClass;
 use function array_merge;
@@ -328,8 +328,8 @@ class ClassMetadataTest extends BaseTest
         $metadata = $this->dm->getClassMetadata(Album::class);
 
         $this->assertEquals($document->getName(), $metadata->getFieldValue($proxy, 'name'));
-        $this->assertInstanceOf(Proxy::class, $proxy);
-        $this->assertTrue($proxy->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $proxy);
+        $this->assertTrue($proxy->isProxyInitialized());
     }
 
     public function testGetFieldValueOfIdentifierDoesNotInitializeProxy()
@@ -343,8 +343,8 @@ class ClassMetadataTest extends BaseTest
         $metadata = $this->dm->getClassMetadata(Album::class);
 
         $this->assertEquals($document->getId(), $metadata->getFieldValue($proxy, 'id'));
-        $this->assertInstanceOf(Proxy::class, $proxy);
-        $this->assertFalse($proxy->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $proxy);
+        $this->assertFalse($proxy->isProxyInitialized());
     }
 
     public function testSetFieldValue()
@@ -365,7 +365,7 @@ class ClassMetadataTest extends BaseTest
         $this->dm->clear();
 
         $proxy = $this->dm->getReference(Album::class, $document->getId());
-        $this->assertInstanceOf(Proxy::class, $proxy);
+        $this->assertInstanceOf(GhostObjectInterface::class, $proxy);
 
         $metadata = $this->dm->getClassMetadata(Album::class);
         $metadata->setFieldValue($proxy, 'name', 'nevermind');
@@ -374,7 +374,7 @@ class ClassMetadataTest extends BaseTest
         $this->dm->clear();
 
         $proxy = $this->dm->getReference(Album::class, $document->getId());
-        $this->assertInstanceOf(Proxy::class, $proxy);
+        $this->assertInstanceOf(GhostObjectInterface::class, $proxy);
 
         $this->assertEquals('nevermind', $proxy->getName());
     }

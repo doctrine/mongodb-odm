@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Closure;
-use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -20,6 +19,7 @@ use Documents\ProfileNotify;
 use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
+use ProxyManager\Proxy\GhostObjectInterface;
 use function get_class;
 
 class ReferencesTest extends BaseTest
@@ -73,7 +73,8 @@ class ReferencesTest extends BaseTest
 
         $profile = $user->getProfile();
 
-        $this->assertInstanceOf(\Proxies\__CG__\Documents\Profile::class, $profile);
+        $this->assertInstanceOf(Profile::class, $profile);
+        $this->assertInstanceOf(GhostObjectInterface::class, $profile);
 
         $profile->getFirstName();
 
@@ -94,8 +95,8 @@ class ReferencesTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(get_class($user), $user->getId());
-        $this->assertInstanceOf(Proxy::class, $user->getProfileNotify());
-        $this->assertFalse($user->getProfileNotify()->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $user->getProfileNotify());
+        $this->assertFalse($user->getProfileNotify()->isProxyInitialized());
 
         $user->getProfileNotify()->setLastName('Malarz');
         $this->dm->flush();
@@ -352,7 +353,7 @@ class ReferencesTest extends BaseTest
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
-     * @expectedExceptionMessage The "Proxies\__CG__\Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier {"identifier":2} could not be found.
+     * @expectedExceptionMessage The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier {"identifier":2} could not be found.
      */
     public function testDocumentNotFoundExceptionWithArrayId()
     {
@@ -377,12 +378,12 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
-        $test->referenceOne->__load();
+        $test->referenceOne->initializeProxy();
     }
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
-     * @expectedExceptionMessage The "Proxies\__CG__\Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.
+     * @expectedExceptionMessage The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.
      */
     public function testDocumentNotFoundExceptionWithObjectId()
     {
@@ -408,12 +409,12 @@ class ReferencesTest extends BaseTest
 
         $user    = $this->dm->find(get_class($user), $user->getId());
         $profile = $user->getProfile();
-        $profile->__load();
+        $profile->initializeProxy();
     }
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
-     * @expectedExceptionMessage The "Proxies\__CG__\Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier "testbindata" could not be found.
+     * @expectedExceptionMessage The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier "testbindata" could not be found.
      */
     public function testDocumentNotFoundExceptionWithMongoBinDataId()
     {
@@ -438,7 +439,7 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
-        $test->referenceOne->__load();
+        $test->referenceOne->initializeProxy();
     }
 
     public function testDocumentNotFoundEvent()
@@ -474,7 +475,7 @@ class ReferencesTest extends BaseTest
 
         $this->dm->getEventManager()->addEventListener(Events::documentNotFound, new DocumentNotFoundListener($closure));
 
-        $profile->__load();
+        $profile->initializeProxy();
     }
 }
 

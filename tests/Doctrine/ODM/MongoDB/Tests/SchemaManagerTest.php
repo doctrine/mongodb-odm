@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\Proxy\ClassNameResolver;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -756,10 +757,11 @@ class SchemaManagerTest extends TestCase
 
         $em = $this->createMock(EventManager::class);
 
-        $dm               = new DocumentManagerMock();
-        $dm->eventManager = $em;
-        $dm->config       = $config;
-        $dm->client       = $this->createMock(Client::class);
+        $dm                    = new DocumentManagerMock();
+        $dm->eventManager      = $em;
+        $dm->config            = $config;
+        $dm->client            = $this->createMock(Client::class);
+        $dm->classNameResolver = new ClassNameResolver($config);
 
         return $dm;
     }

@@ -7,8 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use ProxyManager\Proxy\GhostObjectInterface;
 use function iterator_to_array;
 
 class GH593Test extends BaseTest
@@ -56,16 +56,16 @@ class GH593Test extends BaseTest
          */
         $this->assertCount(2, $user1following);
 
-        $this->assertInstanceOf(Proxy::class, $user1following[0]);
-        $this->assertTrue($user1following[0]->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $user1following[0]);
+        $this->assertTrue($user1following[0]->isProxyInitialized());
         $this->assertEquals($user2->getId(), $user1following[0]->getId());
 
-        $this->assertInstanceOf(Proxy::class, $user1following[1]);
-        $this->assertFalse($user1following[1]->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $user1following[1]);
+        $this->assertFalse($user1following[1]->isProxyInitialized());
         $this->assertEquals($user3->getId(), $user1following[1]->getId());
 
         $this->expectException(DocumentNotFoundException::class);
-        $user1following[1]->__load();
+        $user1following[1]->initializeProxy();
     }
 
     public function testReferenceManyInverseSidePreparesFilterCriteria()

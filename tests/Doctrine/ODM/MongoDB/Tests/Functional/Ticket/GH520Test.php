@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class GH520Test extends BaseTest
 {
@@ -27,8 +27,8 @@ class GH520Test extends BaseTest
 
         $document = $query->getSingleResult();
 
-        $this->assertInstanceOf(Proxy::class, $document->ref);
-        $this->assertTrue($document->ref->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $document->ref);
+        $this->assertTrue($document->ref->isProxyInitialized());
     }
 
     public function testPrimeWithGetSingleResultWillNotPrimeEntireResultSet()

@@ -7,8 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class GH936Test extends BaseTest
 {
@@ -27,7 +27,7 @@ class GH936Test extends BaseTest
 
         $foo = $this->dm->find(GH936Document::class, $foo->id);
 
-        $this->assertInstanceOf(Proxy::class, $foo->ref);
+        $this->assertInstanceOf(GhostObjectInterface::class, $foo->ref);
 
         $this->dm->remove($foo);
         $this->dm->flush();

@@ -37,6 +37,10 @@
 * The `setRetryConnect` and `setRetryQuery` methods have been dropped without
   replacement. You should implement proper error handling instead of simply
   re-running queries or connection attempts.
+* The `AUTOGENERATE_ALWAYS` and `AUTOGENERATE_NEVER` generation strategies for
+  proxy objects have been removed. Use `AUTOGENERATE_EVAL` and
+  `AUTOGENERATE_FILE_NOT_EXISTS` instead. This does not affect hydrator or
+  collection generation strategies.
 
 ## Cursor changes
 
@@ -168,6 +172,24 @@ or annotations. To migrate away from YAML mappings, first update to MongoDB ODM
   `Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver` has been dropped
   without replacement. You should register a class loader in the
   `AnnotationRegistry` instead.
+
+## Proxy objects
+
+The proxy implementation no longer relies on Doctrine proxies but rather
+the [Proxy Manager](https://github.com/ocramius/ProxyManager) library by
+ocramius. If you are checking for proxies, the following changed:
+* Proxies no longer implement `Doctrine\ODM\MongoDB\Proxy\Proxy` or
+  any other Doctrine proxy interface. To check whether a returned object is a
+  proxy, check for the `ProxyManager\Proxy\GhostObjectInterface` interface.
+* The `__load` method has been replaced by `initializeProxy`.
+* The `__isInitialized` method has been replaced by `isProxyInitialized`.
+* To resolve the original class name for a proxy object, you can no longer use
+  the `Doctrine\Common\Util\ClassUtils` class. Instead, fetch the class name
+  resolver from the document manager:
+  ```php
+  $dm->getClassNameResolver()->getRealClass($className);
+  $dm->getClassNameResolver()->getClass($object);
+  ```
 
 ## Repository
 

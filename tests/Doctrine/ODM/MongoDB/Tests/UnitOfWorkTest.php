@@ -16,7 +16,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ExceptionThrowingListenerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock;
@@ -30,6 +29,7 @@ use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use ProxyManager\Proxy\GhostObjectInterface;
 use Throwable;
 use function get_class;
 use function spl_object_hash;
@@ -681,7 +681,7 @@ class UnitOfWorkTest extends BaseTest
         $user = $this->dm->find(ForumUser::class, $id);
         $this->assertInstanceOf(ForumUser::class, $user);
 
-        $this->assertInstanceOf(Proxy::class, $user->getAvatar());
+        $this->assertInstanceOf(GhostObjectInterface::class, $user->getAvatar());
 
         $classMetadata = $this->dm->getClassMetadata(ForumAvatar::class);
 

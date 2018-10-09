@@ -8,10 +8,10 @@ use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use InvalidArgumentException;
 use LogicException;
+use ProxyManager\Proxy\GhostObjectInterface;
 use Traversable;
 use function array_push;
 use function array_shift;
@@ -136,7 +136,7 @@ class ReferencePrimer
                 continue;
             }
 
-            if ($mapping['type'] === 'one' && $fieldValue instanceof Proxy && ! $fieldValue->__isInitialized()) {
+            if ($mapping['type'] === 'one' && $fieldValue instanceof GhostObjectInterface && ! $fieldValue->isProxyInitialized()) {
                 $refClass                                    = $this->dm->getClassMetadata(get_class($fieldValue));
                 $id                                          = $this->uow->getDocumentIdentifier($fieldValue);
                 $groupedIds[$refClass->name][serialize($id)] = $id;
@@ -253,7 +253,7 @@ class ReferencePrimer
 
             $document = $this->uow->tryGetById($id, $class);
 
-            if ($document && ! (($document instanceof Proxy && ! $document->__isInitialized()))) {
+            if ($document && ! (($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()))) {
                 continue;
             }
 

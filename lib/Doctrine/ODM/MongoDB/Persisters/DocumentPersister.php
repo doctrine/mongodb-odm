@@ -18,7 +18,6 @@ use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
@@ -32,6 +31,7 @@ use MongoDB\Driver\Cursor;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Exception\WriteException;
 use MongoDB\GridFS\Bucket;
+use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
 use function array_combine;
 use function array_fill;
@@ -682,7 +682,7 @@ class DocumentPersister
             }
 
             // only query for the referenced object if it is not already initialized or the collection is sorted
-            if (! (($reference instanceof Proxy && ! $reference->__isInitialized__)) && ! $sorted) {
+            if (! (($reference instanceof GhostObjectInterface && ! $reference->isProxyInitialized())) && ! $sorted) {
                 continue;
             }
 
@@ -716,11 +716,11 @@ class DocumentPersister
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById($documentData['_id'], $class);
-                if ($document instanceof Proxy && ! $document->__isInitialized()) {
+                if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
                     $data = $this->hydratorFactory->hydrate($document, $documentData);
                     $this->uow->setOriginalDocumentData($document, $data);
-                    $document->__isInitialized__ = true;
                 }
+
                 if (! $sorted) {
                     continue;
                 }
