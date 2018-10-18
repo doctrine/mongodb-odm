@@ -11,8 +11,8 @@ Upgrade Path
 Please review list of deprecated functionality we included with previous releases and adhere
 to made suggestions:
 
-* [1.1 release](https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-1.1.md#deprecations)
-* [1.2 release](https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-1.2.md#deprecations)
+* [1.1 release](https://github.com/doctrine/mongodb-odm/blob/1.1.x/CHANGELOG-1.1.md#deprecations)
+* [1.2 release](https://github.com/doctrine/mongodb-odm/blob/1.2.x/CHANGELOG-1.2.md#deprecations)
 
 #### `AnnotationDriver::registerAnnotationClasses()` has been removed
 
