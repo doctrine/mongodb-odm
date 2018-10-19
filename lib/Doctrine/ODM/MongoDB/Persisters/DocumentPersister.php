@@ -1354,11 +1354,15 @@ class DocumentPersister
 
     private function handleCollections($document, $options)
     {
+        $collections = [];
         // Collection deletions (deletions of complete collections)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
             if ($this->uow->isCollectionScheduledForDeletion($coll)) {
-                $this->cp->delete($coll, $options);
+                $collections[] = $coll;
             }
+        }
+        if (!empty($collections)) {
+            $this->cp->deleteAll($collections, $options);
         }
         // Collection updates (deleteRows, updateRows, insertRows)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
