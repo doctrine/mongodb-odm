@@ -69,6 +69,38 @@ class CollectionPersister
     }
 
     /**
+     * Deletes a PersistentCollection instances completely from a document using $unset. Collections can belong to
+     * different parents. Collections that is belong to one parent will be deleted in one query.
+     *
+     * @param PersistentCollectionInterface[] $collections
+     * @param array $options
+     */
+    public function deleteAll(array $collections, array $options)
+    {
+        $parents = [];
+        $unsetPathsMap = [];
+
+        foreach ($collections as $coll) {
+            $mapping = $coll->getMapping();
+            if ($mapping['isInverseSide']) {
+                continue; // ignore inverse side
+            }
+            if (CollectionHelper::isAtomic($mapping['strategy'])) {
+                throw new \UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
+            }
+            list($propertyPath, $parent) = $this->getPathAndParent($coll);
+            $oid = \spl_object_hash($parent);
+            $parents[$oid] = $parent;
+            $unsetPathsMap[$oid][$propertyPath] = true;
+        }
+
+        foreach ($unsetPathsMap as $oid => $unsetPaths) {
+            $query = array('$unset' => $unsetPaths);
+            $this->executeQuery($parents[$oid], $query, $options);
+        }
+    }
+
+    /**
      * Deletes a PersistentCollection instance completely from a document using $unset.
      *
      * @param PersistentCollectionInterface $coll

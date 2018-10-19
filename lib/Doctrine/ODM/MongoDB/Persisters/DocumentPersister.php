@@ -22,7 +22,6 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\MongoDB\CursorInterface;
-use Doctrine\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
@@ -1357,11 +1356,15 @@ class DocumentPersister
 
     private function handleCollections($document, $options)
     {
+        $collections = [];
         // Collection deletions (deletions of complete collections)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
             if ($this->uow->isCollectionScheduledForDeletion($coll)) {
-                $this->cp->delete($coll, $options);
+                $collections[] = $coll;
             }
+        }
+        if (!empty($collections)) {
+            $this->cp->deleteAll($collections, $options);
         }
         // Collection updates (deleteRows, updateRows, insertRows)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
