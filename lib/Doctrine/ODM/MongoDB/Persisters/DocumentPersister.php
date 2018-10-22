@@ -1272,11 +1272,13 @@ class DocumentPersister
         $collections = [];
         // Collection deletions (deletions of complete collections)
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
-            if ($this->uow->isCollectionScheduledForDeletion($coll)) {
-                $collections[] = $coll;
+            if (! $this->uow->isCollectionScheduledForDeletion($coll)) {
+                continue;
             }
+
+            $collections[] = $coll;
         }
-        if (!empty($collections)) {
+        if (! empty($collections)) {
             $this->cp->deleteAll($collections, $options);
         }
         // Collection updates (deleteRows, updateRows, insertRows)
