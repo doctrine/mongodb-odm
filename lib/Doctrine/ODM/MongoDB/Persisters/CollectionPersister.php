@@ -25,6 +25,18 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use UnexpectedValueException;
+use function array_fill_keys;
+use function array_keys;
+use function array_map;
+use function array_reverse;
+use function array_unique;
+use function array_values;
+use function count;
+use function get_class;
+use function implode;
+use function spl_object_hash;
+use function strpos;
 
 /**
  * The CollectionPersister is responsible for persisting collections of embedded
@@ -72,11 +84,11 @@ class CollectionPersister
      * Deletes a PersistentCollection instances completely from a document using $unset. If collections belong to the different
      *
      * @param PersistentCollectionInterface[] $collections
-     * @param array $options
+     * @param array                           $options
      */
     public function deleteAll(array $collections, array $options)
     {
-        $parents = [];
+        $parents       = [];
         $unsetPathsMap = [];
 
         foreach ($collections as $coll) {
@@ -85,16 +97,17 @@ class CollectionPersister
                 continue; // ignore inverse side
             }
             if (CollectionHelper::isAtomic($mapping['strategy'])) {
-                throw new \UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
+                throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
             }
-            list($propertyPath, $parent) = $this->getPathAndParent($coll);
-            $oid = \spl_object_hash($parent);
-            $parents[$oid] = $parent;
+            list($propertyPath, $parent)        = $this->getPathAndParent($coll);
+            $oid                                = spl_object_hash($parent);
+            $parents[$oid]                      = $parent;
             $unsetPathsMap[$oid][$propertyPath] = true;
         }
 
-        foreach ($unsetPathsMap as $oid => $unsetPaths) {
-            $query = array('$unset' => $unsetPaths);
+        foreach ($unsetPathsMap as $oid => $paths) {
+            $unsetPaths = array_fill_keys($this->excludeSubPaths(array_keys($paths)), true);
+            $query      = ['$unset' => $unsetPaths];
             $this->executeQuery($parents[$oid], $query, $options);
         }
     }
@@ -314,5 +327,29 @@ class CollectionPersister
         if ($class->isVersioned && ! $result['n']) {
             throw LockException::lockFailed($document);
         }
+    }
+
+    private function excludeSubPaths(array $paths)
+    {
+        $checkedPaths = [];
+        $pathsAmount  = count($paths);
+        $paths        = array_unique($paths);
+        for ($i = 0; $i < $pathsAmount; $i++) {
+            $isSubPath = false;
+            $j         = 0;
+            for (; $j < $pathsAmount; $j++) {
+                if ($i !== $j && strpos($paths[$i], $paths[$j]) === 0) {
+                    $isSubPath = true;
+                    break;
+                }
+            }
+            if ($isSubPath) {
+                continue;
+            }
+
+            $checkedPaths[] = $paths[$i];
+        }
+
+        return $checkedPaths;
     }
 }
