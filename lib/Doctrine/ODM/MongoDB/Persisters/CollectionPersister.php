@@ -94,8 +94,9 @@ class CollectionPersister
             $unsetPathsMap[$oid][$propertyPath] = true;
         }
 
-        foreach ($unsetPathsMap as $oid => $unsetPaths) {
-            $query = array('$unset' => $unsetPaths);
+        foreach ($unsetPathsMap as $oid => $paths) {
+            $unsetPaths = array_fill_keys($this->excludeSubPaths(array_keys($paths)), true);
+            $query      = ['$unset' => $unsetPaths];
             $this->executeQuery($parents[$oid], $query, $options);
         }
     }
@@ -315,5 +316,27 @@ class CollectionPersister
         if ($class->isVersioned && ! $result['n']) {
             throw LockException::lockFailed($document);
         }
+    }
+
+    private function excludeSubPaths(array $paths)
+    {
+        $checkedPaths = [];
+        $pathsAmount  = count($paths);
+        $paths        = array_unique($paths);
+        for ($i = 0; $i < $pathsAmount; $i++) {
+            $isSubPath = false;
+            $j         = $i;
+            for (; $j < $pathsAmount; $j++) {
+                if ($i !== $j && strpos($paths[$i], $paths[$j]) === 0) {
+                    $isSubPath = true;
+                    break;
+                }
+            }
+            if ($isSubPath) {
+                continue;
+            }
+            $checkedPaths[] = $paths[$i];
+        }
+        return $checkedPaths;
     }
 }

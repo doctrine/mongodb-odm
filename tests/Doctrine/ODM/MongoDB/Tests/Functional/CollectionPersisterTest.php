@@ -104,6 +104,25 @@ class CollectionPersisterTest extends BaseTest
         $this->assertTrue(isset($check['categories'][1]), 'Test that the category with the children still exists');
     }
 
+    public function testDeleteAllNestedEmbedManyAndNestedParent()
+    {
+        $persister = $this->getCollectionPersister();
+        $user      = $this->getTestUser('jwage');
+        $persister->deleteAll(
+            [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
+            []
+        );
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
+        $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
+        $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
+        $persister->deleteAll(
+            [$user->categories[0]->children, $user->categories[0]->children[1]->children, $user->categories],
+            []
+        );
+        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
+        $this->assertFalse(isset($check['categories']), 'Test that the nested categories field was deleted');
+    }
+
     public function testDeleteRows()
     {
         $persister = $this->getCollectionPersister();
