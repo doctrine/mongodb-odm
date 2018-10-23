@@ -59,12 +59,16 @@ Example:
 
     class User
     {
+
+        /** @var ArrayCollection  */
         private $addresses;
+
+        /** @var ArrayCollection  */
         private $articles;
 
         public function __construct()
         {
-            $this->addresses = new ArrayCollection;
-            $this->articles = new ArrayCollection;
+            $this->addresses = new ArrayCollection();
+            $this->articles = new ArrayCollection();
         }
     }

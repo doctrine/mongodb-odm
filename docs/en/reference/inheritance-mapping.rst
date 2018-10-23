@@ -128,7 +128,7 @@ would get an Employee instance back:
     $dm->persist($employee);
     $dm->flush();
 
-    $employee = $dm->find('Person', $employee->getId()); // instanceof Employee
+    $employee = $dm->find(Person::class, $employee->getId()); // instanceof Employee
 
 Even though we queried for a Person, Doctrine will know to return an Employee
 instance because of the discriminator map!

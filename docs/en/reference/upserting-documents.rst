@@ -24,9 +24,9 @@ The above would result in an operation like the following:
     <?php
 
     $articleCollection->update(
-        array('_id' => new MongoDB\BSON\ObjectId($articleId)),
-        array('$inc' => array('numViews' => 1)),
-        array('upsert' => true, 'safe' => true)
+        ['_id' => new MongoDB\BSON\ObjectId($articleId)],
+        ['$inc' => ['numViews' => 1]],
+        ['upsert' => true, 'safe' => true]
     );
 
 The extra benefit is the fact that you don't have to fetch the ``$article`` in order

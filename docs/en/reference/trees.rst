@@ -24,7 +24,7 @@ Full Tree in Single Document
         private $body;
 
         /** @EmbedMany(targetDocument=Comment::class) */
-        private $comments = array();
+        private $comments = [];
 
         // ...
     }
@@ -39,7 +39,7 @@ Full Tree in Single Document
         private $text;
 
         /** @EmbedMany(targetDocument=Comment::class) */
-        private $replies = array();
+        private $replies = [];
 
         // ...
     }
@@ -50,7 +50,7 @@ Retrieve a blog post and only select the first 10 comments:
 
     <?php
 
-    $post = $dm->createQueryBuilder('BlogPost')
+    $post = $dm->createQueryBuilder(BlogPost::class)
         ->selectSlice('replies', 0, 10)
         ->getQuery()
         ->getSingleResult();
@@ -91,7 +91,7 @@ Query for children by a specific parent id:
 
     <?php
 
-    $children = $dm->createQueryBuilder('Category')
+    $children = $dm->createQueryBuilder(Category::class)
         ->field('parent.id')->equals('theid')
         ->getQuery()
         ->execute();
@@ -119,7 +119,7 @@ Child Reference
          * @ReferenceMany(targetDocument=Category::class)
          * @Index
          */
-        private $children = array();
+        private $children = [];
 
         // ...
     }
@@ -130,7 +130,7 @@ Query for immediate children of a category:
 
     <?php
 
-    $category = $dm->createQueryBuilder('Category')
+    $category = $dm->createQueryBuilder(Category::class)
         ->field('id')->equals('theid')
         ->getQuery()
         ->getSingleResult();
@@ -143,7 +143,7 @@ Query for immediate parent of a category:
 
     <?php
 
-    $parent = $dm->createQueryBuilder('Category')
+    $parent = $dm->createQueryBuilder(Category::class)
         ->field('children.id')->equals('theid')
         ->getQuery()
         ->getSingleResult();
@@ -177,7 +177,7 @@ Array of Ancestors
          * @ReferenceMany(targetDocument=Category::class)
          * @Index
          */
-        private $ancestors = array();
+        private $ancestors = [];
 
         /**
          * @ReferenceOne(targetDocument=Category::class)
@@ -199,7 +199,7 @@ Query for all descendants of a category:
 
     <?php
 
-    $categories = $dm->createQueryBuilder('Category')
+    $categories = $dm->createQueryBuilder(Category::class)
         ->field('ancestors.id')->equals('theid')
         ->getQuery()
         ->execute();
@@ -210,7 +210,7 @@ Query for all ancestors of a category:
 
     <?php
 
-    $category = $dm->createQuery('Category')
+    $category = $dm->createQuery(Category::class)
         ->field('id')->equals('theid')
         ->getQuery()
         ->getSingleResult();
@@ -248,7 +248,7 @@ Query for the entire tree:
 
     <?php
 
-    $categories = $dm->createQuery('Category')
+    $categories = $dm->createQuery(Category::class)
         ->sort('path', 'asc')
         ->getQuery()
         ->execute();
@@ -258,7 +258,7 @@ Query for the node 'b' and all its descendants:
 .. code-block:: php
 
     <?php
-    $categories = $dm->createQuery('Category')
+    $categories = $dm->createQuery(Category::class)
         ->field('path')->equals('/^a,b,/')
         ->getQuery()
         ->execute();

@@ -28,7 +28,7 @@ implement the ``NotifyPropertyChanged`` interface from the
 
     abstract class DomainObject implements NotifyPropertyChanged
     {
-        private $_listeners = array();
+        private $_listeners = [];
 
         public function addPropertyChangedListener(PropertyChangedListener $listener): void
         {
@@ -38,7 +38,7 @@ implement the ``NotifyPropertyChanged`` interface from the
         /** Notifies listeners of a change. */
         protected function _onPropertyChanged($propName, $oldValue, $newValue): void
         {
-            if ($this->_listeners) {
+            if (!empty($this->_listeners)) {
                 foreach ($this->_listeners as $listener) {
                     $listener->propertyChanged($this, $propName, $oldValue, $newValue);
                 }

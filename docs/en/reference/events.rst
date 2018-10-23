@@ -39,7 +39,7 @@ Now we can add some event listeners to the ``$evm``. Let's create a
 
         public function __construct(EventManager $evm)
         {
-            $evm->addEventListener(array(self::preFoo, self::postFoo), $this);
+            $evm->addEventListener([self::preFoo, self::postFoo], $this);
         }
 
         public function preFoo(EventArgs $e): void 
@@ -72,7 +72,7 @@ method.
 
     <?php
 
-    $evm->removeEventListener(array(self::preFoo, self::postFoo), $this);
+    $evm->removeEventListener([self::preFoo, self::postFoo], $this);
 
 The Doctrine event system also has a simple concept of event
 subscribers. We can define a simple ``TestEventSubscriber`` class
@@ -97,7 +97,7 @@ array of events it should be subscribed to.
 
         public function getSubscribedEvents(): array
         {
-            return array(self::preFoo);
+            return [self::preFoo];
         }
     }
 
@@ -314,7 +314,7 @@ EventManager that is passed to the DocumentManager factory:
     <?php
 
     $eventManager = new EventManager();
-    $eventManager->addEventListener(array(Events::preUpdate), new MyEventListener());
+    $eventManager->addEventListener([Events::preUpdate], new MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
 
     $documentManager = DocumentManager::create(null, $config, $eventManager);
@@ -326,7 +326,7 @@ DocumentManager was created:
 
     <?php
 
-    $documentManager->getEventManager()->addEventListener(array(Events::preUpdate), new MyEventListener());
+    $documentManager->getEventManager()->addEventListener([Events::preUpdate], new MyEventListener());
     $documentManager->getEventManager()->addEventSubscriber(new MyEventSubscriber());
 
 Implementing Event Listeners
@@ -708,10 +708,10 @@ this process and manipulate the instance with the ``loadClassMetadata`` event:
         public function loadClassMetadata(\Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs $eventArgs): void
         {
             $classMetadata = $eventArgs->getClassMetadata();
-            $fieldMapping = array(
+            $fieldMapping = [
                 'fieldName' => 'about',
                 'type' => 'string'
-            );
+            ];
             $classMetadata->mapField($fieldMapping);
         }
     }

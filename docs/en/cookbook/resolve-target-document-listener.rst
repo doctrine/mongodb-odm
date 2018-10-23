@@ -115,14 +115,14 @@ you cannot be guaranteed that the targetDocument resolution will occur reliably:
 .. code-block:: php
 
     <?php
-    $evm  = new \Doctrine\Common\EventManager;
-    $rtdl = new \Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
+    $evm  = new \Doctrine\Common\EventManager();
+    $rtdl = new \Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener();
 
     // Adds a target-document class
     $rtdl->addResolveTargetDocument(
-        'Acme\\InvoiceModule\\Model\\InvoiceSubjectInterface',
-        'Acme\\CustomerModule\\Document\\Customer',
-        array()
+        \Acme\InvoiceModule\Model\InvoiceSubjectInterface::class,
+        \Acme\CustomerModule\Document\Customer::class,
+        []
     );
 
     // Add the ResolveTargetDocumentListener

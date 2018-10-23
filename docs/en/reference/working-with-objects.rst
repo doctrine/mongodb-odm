@@ -142,10 +142,10 @@ Example:
 
     <?php
 
-    $user = $dm->getRepository('User')->find($userId);
+    $user = $dm->getRepository(User::class)->find($userId);
     // ...
     $user->setPassword('changeme');
-    $dm->flush(null, array('safe' => true, 'fsync' => true));
+    $dm->flush(null, ['safe' => true, 'fsync' => true]);
 
 You can configure the default flush options on your ``Configuration`` object
 if you want to set them globally for all flushes.
@@ -156,10 +156,12 @@ Example:
 
     <?php
 
-    $config->setDefaultCommitOptions(array(
+    $config->setDefaultCommitOptions(
+      [
         'safe' => true,
         'fsync' => true
-    ));
+      ]
+    );
 
 .. note::
 
@@ -458,7 +460,7 @@ example:
 
     <?php
 
-    $user = $dm->find('User', $id);
+    $user = $dm->find(User::class, $id);
 
 The return value is either the found document instance or null if
 no instance could be found with the given identifier.
@@ -470,7 +472,7 @@ following:
 
     <?php
 
-    $user = $dm->getRepository('User')->find($id);
+    $user = $dm->getRepository(User::class)->find($id);
 
 ``DocumentManager#getRepository($documentName)`` returns a
 repository object which provides many ways to retrieve documents of
@@ -490,13 +492,13 @@ methods on a repository as follows:
     <?php
 
     // All users that are 20 years old
-    $users = $dm->getRepository('User')->findBy(array('age' => 20));
+    $users = $dm->getRepository(User::class)->findBy(['age' => 20]);
 
     // All users that are 20 years old and have a surname of 'Miller'
-    $users = $dm->getRepository('User')->findBy(array('age' => 20, 'surname' => 'Miller'));
+    $users = $dm->getRepository(User::class)->findBy(['age' => 20, 'surname' => 'Miller']);
 
     // A single user by its nickname
-    $user = $dm->getRepository('User')->findOneBy(array('nickname' => 'romanb'));
+    $user = $dm->getRepository(User::class)->findOneBy(['nickname' => 'romanb']);
 
 .. note::
 
@@ -526,7 +528,7 @@ simple example:
     <?php
 
     // All users with an age between 20 and 30 (inclusive).
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->field('age')->range(20, 30);
     $q = $qb->getQuery()
     $users = $q->execute();
@@ -540,8 +542,8 @@ To query documents with a ReferenceOne association to another document, use the 
 
     <?php
 
-    $group = $dm->find('Group', $id);
-    $usersWithGroup = $dm->createQueryBuilder('User')
+    $group = $dm->find(Group::class, $id);
+    $usersWithGroup = $dm->createQueryBuilder(User::class)
         ->field('group')->references($group)
         ->getQuery()->execute();
 
@@ -551,6 +553,6 @@ To find documents with a ReferenceMany association that includes a certain docum
 
     <?php
 
-    $users = $dm->createQueryBuilder('User')
+    $users = $dm->createQueryBuilder(User::class)
         ->field('groups')->includesReferenceTo($group)
         ->getQuery()->execute();

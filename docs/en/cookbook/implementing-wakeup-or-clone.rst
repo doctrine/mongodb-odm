@@ -29,7 +29,7 @@ implementation code in an identity check as follows:
         public function __wakeup()
         {
             // If the document has an identity, proceed as normal.
-            if ($this->id) {
+            if (null !== $this->id) {
                 // ... Your code here as normal ...
             }
             // otherwise do nothing, do NOT throw an exception!
@@ -54,7 +54,7 @@ Safely implementing ``__clone`` is pretty much the same:
         public function __clone()
         {
             // If the document has an identity, proceed as normal.
-            if ($this->id) {
+            if (null !== $this->id) {
                 // ... Your code here as normal ...
             }
             // otherwise do nothing, do NOT throw an exception!

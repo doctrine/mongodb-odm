@@ -262,7 +262,7 @@ Here is an example how to manually set a string identifier for your documents:
             /** @Id(strategy="NONE", type="string") */
             private $id;
 
-            public function setId($id)
+            public function setId(string $id): void
             {
                 $this->id = $id;
             }
@@ -303,7 +303,7 @@ Now you can retrieve the document later:
 
     //...
 
-    $document = $dm->find('MyPersistentClass', 'my_unique_identifier');
+    $document = $dm->find(MyPersistentClass::class, 'my_unique_identifier');
 
 You can define your own ID generator by extending the
 ``Doctrine\ODM\MongoDB\Id\AbstractIdGenerator`` class and specifying the class
@@ -321,7 +321,7 @@ as an option for the ``CUSTOM`` strategy:
             /** @Id(strategy="CUSTOM", type="string", options={"class"="Vendor\Specific\Generator"}) */
             private $id;
 
-            public function setId(string $id)
+            public function setId(string $id): void
             {
                 $this->id = $id;
             }
@@ -482,7 +482,7 @@ Here is an example:
     // ...
 
     // Register my type
-    Type::addType('mytype', 'My\Project\Types\MyType');
+    Type::addType('mytype', \My\Project\Types\MyType::class);
 
 As can be seen above, when registering the custom types in the
 configuration you specify a unique name for the mapping type and
@@ -549,7 +549,7 @@ may pass an array of document class names when creating a query builder:
 
     <?php
 
-    $query = $dm->createQuery(array('Article', 'Album'));
+    $query = $dm->createQuery([Article::class, Album::class]);
     $documents = $query->execute();
 
 The above will return a cursor that will allow you to iterate over all

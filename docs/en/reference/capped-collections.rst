@@ -65,7 +65,7 @@ that can be acquired from your ``DocumentManager`` instance:
 
     <?php
 
-    $documentManager->getSchemaManager()->createDocumentCollection('Category');
+    $documentManager->getSchemaManager()->createDocumentCollection(Category::class);
 
 You can drop the collection too if it already exists:
 
@@ -73,4 +73,4 @@ You can drop the collection too if it already exists:
 
     <?php
 
-    $documentManager->getSchemaManager()->dropDocumentCollection('Category');
+    $documentManager->getSchemaManager()->dropDocumentCollection(Category::class);

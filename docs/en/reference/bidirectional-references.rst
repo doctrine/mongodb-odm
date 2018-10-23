@@ -97,7 +97,7 @@ And we retrieve the ``User`` later to access the posts for that user:
 
     <?php
 
-    $user = $dm->find('User', $user->id);
+    $user = $dm->find(User::class, $user->id);
 
     $posts = $user->getPosts();
     foreach ($posts as $post) {

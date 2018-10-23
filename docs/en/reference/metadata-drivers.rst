@@ -180,7 +180,7 @@ the ``ClassMetadataFactory``:
     <?php
 
     $cmf = $em->getMetadataFactory();
-    $class = $cmf->getMetadataFor('MyDocumentName');
+    $class = $cmf->getMetadataFor(MyDocumentName::class);
 
 Now you can learn about the document and use the data stored in the
 ``ClassMetadata`` instance to get all mapped fields for example and

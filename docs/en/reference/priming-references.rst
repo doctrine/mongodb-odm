@@ -29,7 +29,7 @@ accounts.
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->limit(100);
     $query = $qb->getQuery();
     $users = $query->execute();
@@ -57,7 +57,7 @@ builder's ``prime()`` method allows us to do just that.
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->field('accounts')->prime(true)
         ->limit(100);
     $query = $qb->getQuery();

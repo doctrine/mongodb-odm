@@ -30,7 +30,7 @@ will be invoked with the first value found as its single argument.
     <?php
 
     /** @AlsoLoad({"name", "fullName"}) */
-    public function populateFirstAndLastName($name)
+    public function populateFirstAndLastName(string $name): void
     {
         list($this->firstName, $this->lastName) = explode(' ', $name);
     }
@@ -225,7 +225,7 @@ Optional attributes:
      *     defaultDiscriminatorValue="book"
      * )
      */
-    private $tags = array();
+    private $tags = [];
 
 Depending on the embedded document's class, a value of ``user`` or ``author``
 will be stored in the ``type`` field and used to reconstruct the proper class
@@ -299,9 +299,9 @@ relationship.
         /** @Field(type="float") */
         private $amount;
 
-        public function __construct($amount)
+        public function __construct(float $amount)
         {
-            $this->amount = (float) $amount;
+            $this->amount = $amount;
         }
         //...
     }
@@ -312,7 +312,7 @@ relationship.
         /** @EmbedOne(targetDocument=Money::class) */
         private $money;
 
-        public function setMoney(Money $money)
+        public function setMoney(Money $money): void
         {
             $this->money = $money;
         }
@@ -477,7 +477,7 @@ annotation will cause Doctrine to ignore the callbacks.
     class User
     {
         /** @PostPersist */
-        public function sendWelcomeEmail() {}
+        public function sendWelcomeEmail(): void {}
     }
 
 @Id
@@ -663,7 +663,7 @@ method to be registered.
         // ...
 
         /** @PostLoad */
-        public function postLoad()
+        public function postLoad(): void
         {
             // ...
         }
@@ -688,7 +688,7 @@ the method to be registered.
         // ...
 
         /** @PostPersist */
-        public function postPersist()
+        public function postPersist(): void
         {
             // ...
         }
@@ -713,7 +713,7 @@ the method to be registered.
         // ...
 
         /** @PostRemove */
-        public function postRemove()
+        public function postRemove(): void
         {
             // ...
         }
@@ -738,7 +738,7 @@ the method to be registered.
         // ...
 
         /** @PostUpdate */
-        public function postUpdate()
+        public function postUpdate(): void
         {
             // ...
         }
@@ -763,7 +763,7 @@ method to be registered.
         // ...
 
         /** @PreFlush */
-        public function preFlush()
+        public function preFlush(): void
         {
             // ...
         }
@@ -790,7 +790,7 @@ method to be registered.
         // ...
 
         /** @PreLoad */
-        public function preLoad(PreLoadEventArgs $eventArgs)
+        public function preLoad(PreLoadEventArgs $eventArgs): void
         {
             // ...
         }
@@ -815,7 +815,7 @@ the method to be registered.
         // ...
 
         /** @PrePersist */
-        public function prePersist()
+        public function prePersist(): void
         {
             // ...
         }
@@ -840,7 +840,7 @@ the method to be registered.
         // ...
 
         /** @PreRemove */
-        public function preRemove()
+        public function preRemove(): void
         {
             // ...
         }
@@ -865,7 +865,7 @@ the method to be registered.
         // ...
 
         /** @PreUpdate */
-        public function preUpdated()
+        public function preUpdated(): void
         {
             // ...
         }

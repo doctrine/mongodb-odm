@@ -22,7 +22,7 @@ For example you can update a job and return it:
 
     <?php
 
-    $job = $dm->createQueryBuilder('Job')
+    $job = $dm->createQueryBuilder(Job::class)
         // Find the job
         ->findAndUpdate()
         ->field('in_progress')->equals(false)
@@ -42,7 +42,7 @@ Here is an example where we return the new updated job document:
 .. code-block:: php
 
     <?php
-    $job = $dm->createQueryBuilder('Job')
+    $job = $dm->createQueryBuilder(Job::class)
         // Find the job
         ->findAndUpdate()
         ->returnNew()
@@ -67,7 +67,7 @@ You can also remove a document and return it:
 
     <?php
 
-    $job = $dm->createQueryBuilder('Job')
+    $job = $dm->createQueryBuilder(Job::class)
         ->findAndRemove()
         ->sort('priority', 'desc')
         ->getQuery()

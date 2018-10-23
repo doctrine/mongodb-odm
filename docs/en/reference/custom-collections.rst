@@ -108,9 +108,9 @@ Alternatively, you may want to implement the whole class from scratch:
 
     class SectionCollection implements Collection
     {
-        private $elements = array();
+        private $elements = [];
 
-        public function __construct(array $elements = array())
+        public function __construct(array $elements = [])
         {
             $this->elements = $elements;
         }
@@ -146,13 +146,13 @@ You may decide to implement this class from scratch or extend our
             $this->eventDispatcher = $eventDispatcher;
         }
 
-        protected function createCollectionClass($collectionClass)
+        protected function createCollectionClass(string $collectionClass)
         {
             switch ($collectionClass) {
                 case SectionCollection::class:
-                    return new $collectionClass(array(), $this->eventDispatcher);
+                    return new $collectionClass([], $this->eventDispatcher);
                 default:
-                    return new $collectionClass;
+                    return new $collectionClass();
             }
         }
     }
