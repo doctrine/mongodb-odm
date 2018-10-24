@@ -35,7 +35,7 @@ to find a document by its identifier:
 
     <?php
 
-    $users = $dm->find('User', $id);
+    $users = $dm->find(User::class, $id);
 
 The ``find()`` method is just a convenience shortcut method to:
 
@@ -43,7 +43,7 @@ The ``find()`` method is just a convenience shortcut method to:
 
     <?php
 
-    $user = $dm->getRepository('User')->find($id);
+    $user = $dm->getRepository(User::class)->find($id);
 
 .. note::
 
@@ -59,8 +59,8 @@ On the ``DocumentRepository`` you have a few other methods for finding documents
 
     <?php
 
-    $users = $dm->getRepository('User')->findBy(array('type' => 'employee'));
-    $user = $dm->getRepository('User')->findOneBy(array('username' => 'jwage'));
+    $users = $dm->getRepository(User::class)->findBy(['type' => 'employee']);
+    $user = $dm->getRepository(User::class)->findOneBy(['username' => 'jwage']);
 
 Creating a Query Builder
 ------------------------
@@ -72,7 +72,7 @@ You can easily create a new ``Query\Builder`` object with the
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User');
+    $qb = $dm->createQueryBuilder(User::class);
 
 The first and only argument is optional, you can specify it later
 with the ``find()``, ``update()`` (deprecated), ``updateOne()``,
@@ -86,7 +86,7 @@ with the ``find()``, ``update()`` (deprecated), ``updateOne()``,
 
     // ...
 
-    $qb->find('User');
+    $qb->find(User::class);
 
 Executing Queries
 ~~~~~~~~~~~~~~~~~
@@ -97,7 +97,7 @@ You can execute a query by getting a ``Query`` through the ``getQuery()`` method
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User');
+    $qb = $dm->createQueryBuilder(User::class);
     $query = $qb->getQuery();
 
 Now you can ``execute()`` that query and it will return a cursor for you to iterate over the results:
@@ -119,7 +119,7 @@ you are not sure if your the query constructed with Builder is in fact correct y
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User');
+    $qb = $dm->createQueryBuilder(User::class);
     $query = $qb->getQuery();
     $debug = $query->debug();
 
@@ -137,7 +137,7 @@ You can configure queries to return an eager cursor instead of a normal mongodb 
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->eagerCursor(true);
     $query = $qb->getQuery();
     $cursor = $query->execute(); // instanceof Doctrine\ODM\MongoDB\EagerCursor
@@ -162,7 +162,7 @@ If you want to just get a single result you can use the ``Query#getSingleResult(
 
     <?php
 
-    $user = $dm->createQueryBuilder('User')
+    $user = $dm->createQueryBuilder(User::class)
         ->field('username')->equals('jwage')
         ->getQuery()
         ->getSingleResult();
@@ -177,7 +177,7 @@ the ``select()`` method:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->select('username', 'password');
     $query = $qb->getQuery();
     $users = $query->execute();
@@ -194,7 +194,7 @@ You can force MongoDB to use a specific index for a query with the ``hint()`` me
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->hint('user_pass_idx');
     $query = $qb->getQuery();
     $users = $query->execute();
@@ -215,7 +215,7 @@ method:
 
     <?php
 
-    $ages = $dm->createQueryBuilder('User')
+    $ages = $dm->createQueryBuilder(User::class)
         ->distinct('age')
         ->getQuery()
         ->execute();
@@ -246,7 +246,7 @@ changeset will be reset in the process.
 
     <?php
 
-    $user = $dm->createQueryBuilder('User')
+    $user = $dm->createQueryBuilder(User::class)
         ->field('username')->equals('jwage')
         ->refresh()
         ->getQuery()
@@ -271,7 +271,7 @@ to update fetched documents.
 
     <?php
 
-    $user = $dm->createQueryBuilder('User')
+    $user = $dm->createQueryBuilder(User::class)
         ->field('username')->equals('malarzm')
         ->readOnly()
         ->getQuery()
@@ -307,7 +307,7 @@ get the raw results directly back from mongo by using the
 
     <?php
 
-    $users = $dm->createQueryBuilder('User')
+    $users = $dm->createQueryBuilder(User::class)
         ->hydrate(false)
         ->getQuery()
         ->execute();
@@ -328,7 +328,7 @@ we show twenty at a time:
 
     <?php
 
-    $blogPosts = $dm->createQueryBuilder('BlogPost')
+    $blogPosts = $dm->createQueryBuilder(BlogPost::class)
         ->limit(20)
         ->skip(40)
         ->getQuery()
@@ -343,7 +343,7 @@ You can sort the results by using the ``sort()`` method:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Article')
+    $qb = $dm->createQueryBuilder(Article::class)
         ->sort('createdAt', 'desc');
 
 If you want to an additional sort you can call ``sort()`` again. The calls are stacked and ordered
@@ -365,7 +365,7 @@ object:
 
     <?php
 
-    $qb = $this->dm->createQueryBuilder('Event')
+    $qb = $this->dm->createQueryBuilder(Event::class)
         ->field('type')->equals('sale')
         ->map('function() { emit(this.userId, 1); }')
         ->reduce("function(k, vals) {
@@ -391,7 +391,7 @@ you can just call the ``where()`` method:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->where("function() { return this.type == 'admin'; }");
 
 You can read more about the `$where operator <https://docs.mongodb.com/manual/reference/operator/query/where/>`_ in the Mongo docs.
@@ -426,7 +426,7 @@ Query for active administrator users:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->field('type')->equals('admin')
         ->field('active')->equals(true);
 
@@ -436,8 +436,8 @@ Query for articles that have some tags:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Article')
-        ->field('tags.name')->in(array('tag1', 'tag2'));
+    $qb = $dm->createQueryBuilder(Article::class)
+        ->field('tags.name')->in(['tag1', 'tag2']);
 
 Read more about the
 `$in operator <https://docs.mongodb.com/manual/reference/operator/query/in/>`_
@@ -449,8 +449,8 @@ Query for articles that do not have some tags:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Article')
-        ->field('tags.name')->notIn(array('tag3'));
+    $qb = $dm->createQueryBuilder(Article::class)
+        ->field('tags.name')->notIn(['tag3']);
 
 Read more about the
 `$nin operator <https://docs.mongodb.com/manual/reference/operator/query/nin/>`_
@@ -460,7 +460,7 @@ in the Mongo docs.
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->field('type')->notEqual('admin');
 
 Read more about the
@@ -473,7 +473,7 @@ Query for accounts with an amount due greater than 30:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Account')
+    $qb = $dm->createQueryBuilder(Account::class)
         ->field('amount_due')->gt(30);
 
 Query for accounts with an amount due greater than or equal to 30:
@@ -482,7 +482,7 @@ Query for accounts with an amount due greater than or equal to 30:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Account')
+    $qb = $dm->createQueryBuilder(Account::class)
         ->field('amount_due')->gte(30);
 
 Query for accounts with an amount due less than 30:
@@ -491,7 +491,7 @@ Query for accounts with an amount due less than 30:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Account')
+    $qb = $dm->createQueryBuilder(Account::class)
         ->field('amount_due')->lt(30);
 
 Query for accounts with an amount due less than or equal to 30:
@@ -500,7 +500,7 @@ Query for accounts with an amount due less than or equal to 30:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Account')
+    $qb = $dm->createQueryBuilder(Account::class)
         ->field('amount_due')->lte(30);
 
 Query for accounts with an amount due between 10 and 20:
@@ -509,7 +509,7 @@ Query for accounts with an amount due between 10 and 20:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Account')
+    $qb = $dm->createQueryBuilder(Account::class)
         ->field('amount_due')->range(10, 20);
 
 Read more about
@@ -522,7 +522,7 @@ Query for articles with no comments:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Article')
+    $qb = $dm->createQueryBuilder(Article::class)
         ->field('comments')->size(0);
 
 Read more about the
@@ -536,7 +536,7 @@ username:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->field('login')->exists(true);
 
 Read more about the
@@ -550,7 +550,7 @@ type:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->field('type')->type('integer');
 
 Read more about the
@@ -563,8 +563,8 @@ Query for users that are in all the specified Groups:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
-        ->field('groups')->all(array('Group 1', 'Group 2'));
+    $qb = $dm->createQueryBuilder(User::class)
+        ->field('groups')->all(['Group 1', 'Group 2']);
 
 Read more about the
 `$all operator <https://docs.mongodb.com/manual/reference/operator/query/all/>`_
@@ -574,8 +574,8 @@ in the Mongo docs.
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Transaction')
-        ->field('field')->mod('field', array(10, 1));
+    $qb = $dm->createQueryBuilder(Transaction::class)
+        ->field('field')->mod('field', [10, 1]);
 
 Read more about the
 `$mod operator <https://docs.mongodb.com/manual/reference/operator/query/mod/>`_ in the Mongo docs.
@@ -586,7 +586,7 @@ Query for users who have subscribed or are in a trial.
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User');
+    $qb = $dm->createQueryBuilder(User::class);
     $qb->addOr($qb->expr()->field('subscriber')->equals(true));
     $qb->addOr($qb->expr()->field('inTrial')->equals(true));
 
@@ -602,7 +602,7 @@ following example, we query for all articles written by a particular user.
     <?php
 
     // Suppose $user has already been fetched from the database
-    $qb = $dm->createQueryBuilder('Article')
+    $qb = $dm->createQueryBuilder(Article::class)
         ->field('user')->references($user);
 
 The ``includesReferenceTo()`` method may be used to query the owning side of a
@@ -615,7 +615,7 @@ account.
     <?php
 
     // Suppose $account has already been fetched from the database
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->field('accounts')->includesReferenceTo($account);
 
 Text Search
@@ -653,7 +653,7 @@ You can then run queries using the text operator:
     <?php
 
     // Run a text search against the index
-    $qb = $dm->createQueryBuilder('Document')
+    $qb = $dm->createQueryBuilder(Document::class)
         ->text('words you are looking for');
 
 To fetch the calculated score for the text search, use the ``selectMeta()``
@@ -664,7 +664,7 @@ method:
     <?php
 
     // Run a text search against the index
-    $qb = $dm->createQueryBuilder('Document')
+    $qb = $dm->createQueryBuilder(Document::class)
         ->selectMeta('score', 'textScore')
         ->text('words you are looking for');
 
@@ -676,7 +676,7 @@ method:
     <?php
 
     // Run a text search against the index
-    $qb = $dm->createQueryBuilder('Document')
+    $qb = $dm->createQueryBuilder(Document::class)
         ->language('it')
         ->text('parole che stai cercando');
 
@@ -713,7 +713,7 @@ In ODM the distinction is done by explicitly calling ``updateMany()`` method of 
 
     <?php
 
-    $dm->createQueryBuilder('User')
+    $dm->createQueryBuilder(User::class)
         ->updateMany()
         ->field('someField')->set('newValue')
         ->field('username')->equals('sgoettschkes')
@@ -729,7 +729,7 @@ Change a users password:
 
     <?php
 
-    $dm->createQueryBuilder('User')
+    $dm->createQueryBuilder(User::class)
         ->updateOne()
         ->field('password')->set('newpassword')
         ->field('username')->equals('jwage')
@@ -744,7 +744,7 @@ tell it the update is not an atomic one:
 
     <?php
 
-    $dm->createQueryBuilder('User')
+    $dm->createQueryBuilder(User::class)
         ->updateOne()
         ->field('username')->set('jwage', false)
         ->field('password')->set('password', false)
@@ -763,12 +763,14 @@ You can set an entirely new object to update as well:
 
     <?php
 
-    $dm->createQueryBuilder('User')
-        ->setNewObj(array(
-            'username' => 'jwage',
-            'password' => 'password',
-            // ... other fields
-        ))
+    $dm->createQueryBuilder(User::class)
+        ->setNewObj(
+           [
+               'username' => 'jwage',
+               'password' => 'password',
+               // ... other fields
+           ]
+        )
         ->field('username')->equals('jwage')
         ->getQuery()
         ->execute();
@@ -779,7 +781,7 @@ Increment the value of a document:
 
     <?php
 
-    $dm->createQueryBuilder('Package')
+    $dm->createQueryBuilder(Package::class)
         ->field('id')->equals('theid')
         ->field('downloads')->inc(1)
         ->getQuery()
@@ -796,7 +798,7 @@ exists:
 
     <?php
 
-    $dm->createQueryBuilder('User')
+    $dm->createQueryBuilder(User::class)
         ->updateMany()
         ->field('login')->unsetField()->exists(true)
         ->getQuery()
@@ -812,7 +814,7 @@ Append new tag to the tags array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')
+    $dm->createQueryBuilder(Article::class)
         ->updateOne()
         ->field('tags')->push('tag5')
         ->field('id')->equals('theid')
@@ -829,9 +831,9 @@ Append new tags to the tags array:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Article');
+    $qb = $dm->createQueryBuilder(Article::class);
     $qb->updateOne()
-        ->field('tags')->push($qb->expr()->each(array('tag6', 'tag7')))
+        ->field('tags')->push($qb->expr()->each(['tag6', 'tag7']))
         ->field('id')->equals('theid')
         ->getQuery()
         ->execute();
@@ -842,7 +844,7 @@ Add value to array only if its not in the array already:
 
     <?php
 
-    $dm->createQueryBuilder('Article')
+    $dm->createQueryBuilder(Article::class)
         ->updateOne()
         ->field('tags')->addToSet('tag1')
         ->field('id')->equals('theid')
@@ -860,9 +862,9 @@ already:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Article');
+    $qb = $dm->createQueryBuilder(Article::class);
     $qb->updateOne()
-        ->field('tags')->addToSet($qb->expr()->each(array('tag6', 'tag7')))
+        ->field('tags')->addToSet($qb->expr()->each(['tag6', 'tag7']))
         ->field('id')->equals('theid')
         ->getQuery()
         ->execute();
@@ -873,7 +875,7 @@ Remove first element in an array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')
+    $dm->createQueryBuilder(Article::class)
         ->updateOne()
         ->field('tags')->popFirst()
         ->field('id')->equals('theid')
@@ -886,7 +888,7 @@ Remove last element in an array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')
+    $dm->createQueryBuilder(Article::class)
         ->updateOne()
         ->field('tags')->popLast()
         ->field('id')->equals('theid')
@@ -903,7 +905,7 @@ Remove all occurrences of value from array:
 
     <?php
 
-    $dm->createQueryBuilder('Article')
+    $dm->createQueryBuilder(Article::class)
         ->updateMany()
         ->field('tags')->pull('tag1')
         ->getQuery()
@@ -917,9 +919,9 @@ in the Mongo docs.
 
     <?php
 
-    $dm->createQueryBuilder('Article')
+    $dm->createQueryBuilder(Article::class)
         ->updateMany()
-        ->field('tags')->pullAll(array('tag1', 'tag2'))
+        ->field('tags')->pullAll(['tag1', 'tag2'])
         ->getQuery()
         ->execute();
 
@@ -941,7 +943,7 @@ Here is an example where we remove users who have never logged in:
 
     <?php
 
-    $dm->createQueryBuilder('User')
+    $dm->createQueryBuilder(User::class)
         ->remove()
         ->field('num_logins')->equals(0)
         ->getQuery()
@@ -964,8 +966,8 @@ operation similar to SQL's GROUP BY command.
 
     <?php
 
-    $result = $this->dm->createQueryBuilder('Documents\User')
-        ->group(array(), array('count' => 0))
+    $result = $this->dm->createQueryBuilder(\Documents\User::class)
+        ->group([], ['count' => 0])
         ->reduce('function (obj, prev) { prev.count++; }')
         ->field('a')->gt(1)
         ->getQuery()
@@ -979,5 +981,5 @@ code:
     <?php
 
     $reduce = 'function (obj, prev) { prev.count++; }';
-    $condition = array('a' => array( '$gt' => 1));
-    $result = $collection->group(array(), array('count' => 0), $reduce, $condition);
+    $condition = ['a' => ['$gt' => 1]];
+    $result = $collection->group([], ['count' => 0], $reduce, $condition);

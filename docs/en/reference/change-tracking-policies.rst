@@ -84,7 +84,7 @@ follows:
     {
         // ...
 
-        private $_listeners = array();
+        private $_listeners = [];
 
         public function addPropertyChangedListener(PropertyChangedListener $listener): void
         {
@@ -107,9 +107,9 @@ behavior:
     {
         // ...
 
-        protected function _onPropertyChanged($propName, $oldValue, $newValue): void
+        protected function _onPropertyChanged(string $propName, $oldValue, $newValue): void
         {
-            if ($this->_listeners) {
+            if (!empty($this->_listeners)) {
                 foreach ($this->_listeners as $listener) {
                     $listener->propertyChanged($this, $propName, $oldValue, $newValue);
                 }

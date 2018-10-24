@@ -95,7 +95,7 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $em->getRepository('Documents\BlogPost')->findOneBy(array('title' => 'test'));
+    $blogPost = $em->getRepository(Documents\BlogPost::class)->findOneBy(['title' => 'test']);
 
 MongoDB ODM
 ~~~~~~~~~~~
@@ -158,7 +158,7 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $dm->getRepository('Documents\BlogPost')->findOneBy(array('title' => 'test'));
+    $blogPost = $dm->getRepository(Documents\BlogPost::class)->findOneBy(['title' => 'test']);
 
 Repository Classes
 ------------------
@@ -178,7 +178,7 @@ You can implement the same repository interface for the ORM and MongoDB ODM easi
     {
         public function findPostById(int $id): ?BlogPost
         {
-            return $this->findOneBy(array('id' => $id));
+            return $this->findOneBy(['id' => $id]);
         }
     }
 
@@ -197,7 +197,7 @@ Now define the same repository methods for the MongoDB ODM:
     {
         public function findPostById(string $id): ?BlogPost
         {
-            return $this->findOneBy(array('id' => $id));
+            return $this->findOneBy(['id' => $id]);
         }
     }
 

@@ -28,7 +28,7 @@ setup a document like the following with a ``$keywords`` property that is mapped
         private $title;
 
         /** @Field(type="collection") @Index */
-        private $keywords = array();
+        private $keywords = [];
 
         // ...
     }
@@ -68,9 +68,9 @@ to find documents that have at least one of the keywords:
 
     <?php
 
-    $keywords = array('nike shoes', 'air jordan');
+    $keywords = ['nike shoes', 'air jordan'];
 
-    $qb = $dm->createQueryBuilder('Product')
+    $qb = $dm->createQueryBuilder(Product::class)
         ->field('keywords')->in($keywords);
 
 You can make the query more strict by using the ``all()`` method instead of ``in()``:
@@ -79,9 +79,9 @@ You can make the query more strict by using the ``all()`` method instead of ``in
 
     <?php
 
-    $keywords = array('nike shoes', 'air jordan');
+    $keywords = ['nike shoes', 'air jordan'];
 
-    $qb = $dm->createQueryBuilder('Product')
+    $qb = $dm->createQueryBuilder(Product::class)
         ->field('keywords')->all($keywords);
 
 The above query would only return products that have both of the keywords!
@@ -99,7 +99,7 @@ the results to your query. Here is an example:
     $queryString = $_REQUEST['q'];
     $keywords = explode(' ', $queryString);
 
-    $qb = $dm->createQueryBuilder('Product')
+    $qb = $dm->createQueryBuilder(Product::class)
         ->field('keywords')->all($keywords);
 
 Embedded Documents

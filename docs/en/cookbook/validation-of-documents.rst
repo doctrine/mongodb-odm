@@ -107,7 +107,7 @@ validation callbacks.
                 throw new ValidateException();
             }
 
-            if ($this->customer == null) {
+            if ($this->customer === null) {
                 throw new OrderRequiresCustomerException();
             }
         }

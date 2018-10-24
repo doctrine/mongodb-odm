@@ -40,10 +40,10 @@ should be accessed via ``BsonFilter::getParameter()``.
         {
             // Check if the entity implements the LocalAware interface
             if ( ! $targetDocument->reflClass->implementsInterface('LocaleAware')) {
-                return array();
+                return [];
             }
 
-            return array('locale' => $this->getParameter('locale'));
+            return ['locale' => $this->getParameter('locale')];
         }
     }
 
@@ -55,7 +55,7 @@ Filter classes are added to the configuration as following:
 
     <?php
 
-    $config->addFilter('locale', '\Vendor\Filter\MyLocaleFilter');
+    $config->addFilter('locale', \Vendor\Filter\MyLocaleFilter::class);
 
 The ``Configuration#addFilter()`` method takes a name for the filter and the
 name of the filter class, which will be constructed as necessary.
@@ -66,7 +66,7 @@ An optional third parameter may be used to set parameters at configuration time:
 
     <?php
 
-    $config->addFilter('locale', '\Vendor\Filter\MyLocaleFilter', array('locale' => 'en'));
+    $config->addFilter('locale', \Vendor\Filter\MyLocaleFilter::class, ['locale' => 'en']);
 
 Disabling/Enabling Filters and Setting Parameters
 -------------------------------------------------
@@ -80,7 +80,7 @@ may be used to enabled and return a filter, after which you may set parameters.
     <?php
 
     $filter = $dm->getFilterCollection()->enable("locale");
-    $filter->setParameter('locale', array('$in' => array('en', 'fr'));
+    $filter->setParameter('locale', ['$in' => ['en', 'fr']]);
 
     // Disable the filter (perhaps temporarily to run an unfiltered query)
     $filter = $dm->getFilterCollection()->disable("locale");

@@ -58,7 +58,7 @@ of MongoDB via the ODM's query builder. Here is a simple map reduce example:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('Documents\Event')
+    $qb = $dm->createQueryBuilder(Documents\Event::class)
         ->field('type')
         ->equals('sale')
         ->map('function() { emit(this.user.$id, 1); }')
@@ -102,12 +102,14 @@ PHP driver directly:
         return sum;
     }');
 
-    $result = $db->command(array(
-        'mapreduce' => 'events',
-        'map' => $map,
-        'reduce' => $reduce,
-        'query' => array('type' => 'sale'),
-    ));
+    $result = $db->command(
+        [
+            'mapreduce' => 'events',
+            'map' => $map,
+            'reduce' => $reduce,
+            'query' => ['type' => 'sale'],
+        ]
+    );
 
     foreach ($result['results'] as $user) {
         printf("User %s had %d sale(s).\n", $user['_id'], $user['value']);

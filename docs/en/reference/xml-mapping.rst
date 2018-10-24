@@ -66,7 +66,7 @@ of the constructor, like this:
     <?php
 
     // $config instanceof Doctrine\ODM\MongoDB\Configuration
-    $driver = new XmlDriver(array('/path/to/files'));
+    $driver = new XmlDriver(['/path/to/files']);
     $config->setMetadataDriverImpl($driver);
 
 Simplified XML Driver
@@ -84,10 +84,10 @@ Configuration of this client works a little bit different:
 .. code-block:: php
 
     <?php
-    $namespaces = array(
+    $namespaces = [
         'MyProject\Documents' => '/path/to/files1',
         'OtherProject\Documents' => '/path/to/files2'
-    );
+    ];
     $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedXmlDriver($namespaces);
     $driver->setGlobalBasename('global'); // global.mongodb-odm.xml
 

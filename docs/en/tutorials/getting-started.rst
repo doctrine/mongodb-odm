@@ -33,7 +33,7 @@ First define the ``User`` document:
     {
         private $name;
         private $email;
-        private $posts = array();
+        private $posts = [];
 
         // ...
     }
@@ -83,7 +83,7 @@ You can provide your mapping information in Annotations or XML:
             private $email;
 
             /** @ODM\ReferenceMany(targetDocument=BlogPost::class, cascade="all") */
-            private $posts = array();
+            private $posts = [];
 
             // ...
         }
@@ -248,7 +248,7 @@ You can retrieve the user later by its identifier:
     // ...
 
     $userId = '....';
-    $user = $dm->find('User', $userId);
+    $user = $dm->find(User::class, $userId);
 
 Or you can find the user by name even:
 
@@ -256,7 +256,7 @@ Or you can find the user by name even:
 
     <?php
 
-    $user = $dm->getRepository('User')->findOneBy(array('name' => 'Bulat S.'));
+    $user = $dm->getRepository(User::class)->findOneBy(['name' => 'Bulat S.']);
 
 If you want to iterate over the posts the user references it is as easy as the following:
 

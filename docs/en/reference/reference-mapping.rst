@@ -99,7 +99,7 @@ Reference many documents:
             /**
              * @ReferenceMany(targetDocument=Account::class)
              */
-            private $accounts = array();
+            private $accounts = [];
 
             // ...
         }
@@ -142,7 +142,7 @@ omit the ``targetDocument`` option:
             // ..
 
             /** @ReferenceMany */
-            private $favorites = array();
+            private $favorites = [];
 
             // ...
         }
@@ -180,7 +180,7 @@ The name of the field within the DBRef object can be customized via the
             /**
              * @ReferenceMany(discriminatorField="type")
              */
-            private $favorites = array();
+            private $favorites = [];
 
             // ...
         }
@@ -213,7 +213,7 @@ in each `DBRef`_ object:
              *   }
              * )
              */
-            private $favorites = array();
+            private $favorites = [];
 
             // ...
         }
@@ -250,7 +250,7 @@ a certain class, you can optionally specify a default discriminator value:
              *   defaultDiscriminatorValue="album"
              * )
              */
-            private $favorites = array();
+            private $favorites = [];
 
             // ...
         }
@@ -419,7 +419,7 @@ Now two examples of what happens when you remove the references:
 
     <?php
 
-    $contact = $dm->find("Addressbook\Contact", $contactId);
+    $contact = $dm->find(Addressbook\Contact::class, $contactId);
     $contact->newStandingData(new StandingData("Firstname", "Lastname", "Street"));
     $contact->removeAddress(1);
 

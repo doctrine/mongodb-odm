@@ -71,16 +71,17 @@ An implementation might look like this in a ``User`` document:
     <?php
 
     use Doctrine\ODM\MongoDB\SoftDelete\SoftDeleteable;
+    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-    /** @mongodb:Document */
+    /** @ODM\Document */
     class User implements SoftDeleteable
     {
         // ...
 
-        /** @mongodb:Date @mongodb:Index */
+        /** @ODM\Field(type="date") @ODM\Index */
         private $deletedAt;
 
-        public function getDeletedAt()
+        public function getDeletedAt(): ?\DateTime
         {
             return $this->deletedAt;
         }
@@ -97,8 +98,8 @@ Once you have the ``$sdm`` you can start managing the soft delete state of your 
 
     <?php
 
-    $jwage = $dm->getRepository('User')->findOneBy(array('username' => 'jwage'));
-    $fabpot = $dm->getRepository('User')->findOneBy(array('username' => 'fabpot'));
+    $jwage = $dm->getRepository(User::class)->findOneBy(['username' => 'jwage']);
+    $fabpot = $dm->getRepository(User::class)->findOneBy(['username' => 'fabpot']);
     $sdm->delete($jwage);
     $sdm->delete($fabpot);
     $sdm->flush();
@@ -151,7 +152,7 @@ Using the events is easy, just define a class like the following:
 
         public function getSubscribedEvents(): array
         {
-            return array(Events::preSoftDelete);
+            return [Events::preSoftDelete];
         }
     }
 
@@ -196,7 +197,7 @@ You just need to setup an event listener like the following:
             $sdm = $args->getSoftDeleteManager();
             $document = $args->getDocument();
             if ($document instanceof User) {
-                $sdm->deleteBy('Post', array('user.id' => $document->getId()));
+                $sdm->deleteBy(Post:class, ['user.id' => $document->getId()]);
             }
         }
 
@@ -205,16 +206,16 @@ You just need to setup an event listener like the following:
             $sdm = $args->getSoftDeleteManager();
             $document = $args->getDocument();
             if ($document instanceof User) {
-                $sdm->restoreBy('Post', array('user.id' => $document->getId()));
+                $sdm->restoreBy(Post::class, ['user.id' => $document->getId()]);
             }
         }
 
         public function getSubscribedEvents(): array
         {
-            return array(
+            return [
                 Events::preSoftDelete,
                 Events::preRestore
-            );
+            ];
         }
     }
 

@@ -86,7 +86,7 @@ Next create the `Order` entity that has a `$product` and `$productId` property l
             return $this->productId;
         }
 
-        public function setProduct(Product $product)
+        public function setProduct(Product $product): void
         {
             $this->productId = $product->getId();
             $this->product = $product;
@@ -109,7 +109,7 @@ Now we need to setup an event subscriber that will set the `$product` property o
 
     $eventManager = $em->getEventManager();
     $eventManager->addEventListener(
-        array(\Doctrine\ORM\Events::postLoad), new MyEventSubscriber($dm)
+        [\Doctrine\ORM\Events::postLoad], new MyEventSubscriber($dm)
     );
 
 So now we need to define a class named `MyEventSubscriber` and pass a dependency to the `DocumentManager`. It will have a `postLoad()` method that sets the product document reference:
@@ -174,7 +174,7 @@ Later we can retrieve the entity and lazily load the reference to the document i
 
     <?php
 
-    $order = $em->find('Order', $order->getId());
+    $order = $em->find(Order::class, $order->getId());
 
     // Instance of an uninitialized product proxy
     $product = $order->getProduct();

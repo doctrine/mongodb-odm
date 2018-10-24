@@ -65,7 +65,7 @@ Embed many documents:
             // ...
 
             /** @EmbedMany(targetDocument=Phonenumber::class) */
-            private $phonenumbers = array();
+            private $phonenumbers = [];
 
             // ...
         }
@@ -108,7 +108,7 @@ you can simply omit the ``targetDocument`` option:
             // ..
 
             /** @EmbedMany */
-            private $tasks = array();
+            private $tasks = [];
 
             // ...
         }
@@ -136,7 +136,7 @@ the embedded document. The field name can be customized with the
             /**
              * @EmbedMany(discriminatorField="type")
              */
-            private $tasks = array();
+            private $tasks = [];
 
             // ...
         }
@@ -169,7 +169,7 @@ in each embedded document:
              *   }
              * )
              */
-            private $tasks = array();
+            private $tasks = [];
 
             // ...
         }
@@ -207,7 +207,7 @@ discriminator:
              *   defaultDiscriminatorValue="download"
              * )
              */
-            private $tasks = array();
+            private $tasks = [];
 
             // ...
         }

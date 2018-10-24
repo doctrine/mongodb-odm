@@ -60,7 +60,7 @@ and latitude with the ``near($longitude, $latitude)`` method:
 
     <?php
 
-    $cities = $this->dm->createQuery('City')
+    $cities = $this->dm->createQuery(City::class)
         ->field('coordinates')->near(-120, 40)
         ->execute();
 

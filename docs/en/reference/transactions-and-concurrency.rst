@@ -119,7 +119,7 @@ You can specify the expected version of a document during a query with ``Documen
     /* @var $dm DocumentManager */
 
     try {
-        $document = $dm->find('User', $theDocumentId, LockMode::OPTIMISTIC, $expectedVersion);
+        $document = $dm->find(User::class, $theDocumentId, LockMode::OPTIMISTIC, $expectedVersion);
 
         // do the work
 
@@ -142,7 +142,7 @@ Alternatively, an expected version may be specified for an existing document wit
 
     /* @var $dm DocumentManager */
 
-    $document = $dm->find('User', $theDocumentId);
+    $document = $dm->find(User::class, $theDocumentId);
 
     try {
         // assert version
@@ -196,7 +196,7 @@ The form (GET Request):
 
     /* @var $dm DocumentManager */
 
-    $post = $dm->find('BlogPost', 123456);
+    $post = $dm->find(BlogPost::class, 123456);
 
     echo '<input type="hidden" name="id" value="' . $post->getId() . '" />';
     echo '<input type="hidden" name="version" value="' . $post->getCurrentVersion() . '" />';
@@ -214,7 +214,7 @@ And the change headline action (POST Request):
     $postId = (int)$_POST['id'];
     $postVersion = (int)$_POST['version'];
 
-    $post = $dm->find('BlogPost', $postId, LockMode::OPTIMISTIC, $postVersion);
+    $post = $dm->find(BlogPost::class, $postId, LockMode::OPTIMISTIC, $postVersion);
 
 .. _transactions_and_concurrency_pessimistic_locking:
 

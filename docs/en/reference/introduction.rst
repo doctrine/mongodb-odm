@@ -38,7 +38,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         private $changes = 0;
 
         /** @ODM\Field(type="collection") */
-        private $notes = array();
+        private $notes = [];
 
         /** @ODM\Field(type="string") */
         private $name;
@@ -69,10 +69,10 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         public function getSalary(): ?int { return $this->salary; }
         public function setSalary(int $salary): void { $this->salary = (int) $salary; }
 
-        public function getStarted() { return $this->started; }
+        public function getStarted(): ?DateTime { return $this->started; }
         public function setStarted(DateTime $started) { $this->started = $started; }
 
-        public function getLeft() { return $this->left; }
+        public function getLeft(): ?DateTime { return $this->left; }
         public function setLeft(DateTime $left) { $this->left = $left; }
 
         public function getAddress(): ?Address { return $this->address; }

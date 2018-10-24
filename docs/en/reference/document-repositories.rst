@@ -145,7 +145,7 @@ In order to change the way Doctrine instantiates repositories, you will need to 
             $this->eventDispatcher = $eventDispatcher;
         }
 
-        protected function instantiateRepository($repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata)
+        protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata)
         {
             switch ($repositoryClassName) {
                 case UserRepository::class:

@@ -22,7 +22,7 @@ Example:
 
     <?php
 
-    $qb = $dm->createQueryBuilder('User')
+    $qb = $dm->createQueryBuilder(User::class)
         ->eagerCursor(true);
     $query = $qb->getQuery();
     $users = $query->execute();

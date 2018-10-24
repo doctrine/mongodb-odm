@@ -28,4 +28,4 @@ with a object instance and a method to call:
 
     // ...
 
-    $config->setLoggerCallable(array($obj, 'method'));
+    $config->setLoggerCallable([$obj, 'method']);
