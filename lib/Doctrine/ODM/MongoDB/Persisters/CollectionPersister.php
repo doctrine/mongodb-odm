@@ -34,11 +34,12 @@ use function array_intersect_key;
 use function array_keys;
 use function array_map;
 use function array_reverse;
-use function array_unique;
 use function array_values;
 use function count;
+use function end;
 use function get_class;
 use function implode;
+use function sort;
 use function spl_object_hash;
 use function strpos;
 
@@ -672,25 +673,19 @@ class CollectionPersister
      */
     private function excludeSubPaths(array $paths)
     {
-        $checkedPaths = [];
-        $pathsAmount  = count($paths);
-        $paths        = array_unique($paths);
-        for ($i = 0; $i < $pathsAmount; $i++) {
-            $isSubPath = false;
-            $j         = 0;
-            for (; $j < $pathsAmount; $j++) {
-                if ($i !== $j && strpos($paths[$i], $paths[$j]) === 0) {
-                    $isSubPath = true;
-                    break;
-                }
-            }
-            if ($isSubPath) {
+        if (empty($paths)) {
+            return $paths;
+        }
+        sort($paths);
+        $uniquePaths = [$paths[0]];
+        for ($i = 1; $i < count($paths); ++$i) {
+            if (strpos($paths[$i], end($uniquePaths)) === 0) {
                 continue;
             }
 
-            $checkedPaths[] = $paths[$i];
+            $uniquePaths[] = $paths[$i];
         }
 
-        return $checkedPaths;
+        return $uniquePaths;
     }
 }
