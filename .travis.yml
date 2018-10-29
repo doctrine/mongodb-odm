@@ -5,6 +5,7 @@ language: php
 # Note: latest PHP version is tested with coverage; lowest is tested with --prefer-lowest
 php:
   - 7.2
+  - 7.3
 
 env:
   global:
