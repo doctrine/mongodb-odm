@@ -64,6 +64,11 @@ class MappingException extends BaseMappingException
         return new self(sprintf("Document class '%s' used in the discriminator map of class '%s' does not exist.", $className, $owningClass));
     }
 
+    public static function unlistedClassInDiscriminatorMap(string $className) : self
+    {
+        return new self(sprintf('Document class "%s" is unlisted in the discriminator map.', $className));
+    }
+
     public static function invalidDiscriminatorValue(string $value, string $owningClass) : self
     {
         return new self(sprintf("Discriminator value '%s' used in the declaration of class '%s' does not exist.", $value, $owningClass));

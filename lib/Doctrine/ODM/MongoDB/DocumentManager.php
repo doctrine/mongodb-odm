@@ -734,27 +734,47 @@ class DocumentManager implements ObjectManager
          * class that is not defined in the discriminator map may only have a
          * discriminator field and no value, so default to the full class name.
          */
-        if (isset($class->discriminatorField)) {
-            $reference[$class->discriminatorField] = $class->discriminatorValue ?? $class->name;
+        $discriminatorField = null;
+        $discriminatorValue = null;
+        if (isset($referenceMapping['discriminatorField'])) {
+            $discriminatorField = $referenceMapping['discriminatorField'];
+            if (isset($referenceMapping['discriminatorMap'])) {
+                $pos = array_search($class->name, $referenceMapping['discriminatorMap']);
+                if ($pos !== false) {
+                    $discriminatorValue = $pos;
+                }
+            } else {
+                $discriminatorValue = $class->name;
+            }
+        } else {
+            $discriminatorField = $class->discriminatorField;
+            $discriminatorValue = $class->discriminatorValue;
         }
+
+        if (isset($discriminatorField)) {
+            if ($discriminatorValue === null) {
+                throw MappingException::unlistedClassInDiscriminatorMap($class->name);
+            }
+            $reference[$discriminatorField] = $discriminatorValue;
 
         /* Add a discriminator value if the referenced document is not mapped
          * explicitly to a targetDocument class.
          */
-        if (! isset($referenceMapping['targetDocument'])) {
+        } elseif (! isset($referenceMapping['targetDocument'])) {
             $discriminatorField = $referenceMapping['discriminatorField'];
-            $discriminatorValue = isset($referenceMapping['discriminatorMap'])
-                ? array_search($class->name, $referenceMapping['discriminatorMap'])
-                : $class->name;
 
-            /* If the discriminator value was not found in the map, use the full
-             * class name. In the future, it may be preferable to throw an
-             * exception here (perhaps based on some strictness option).
-             *
-             * @see PersistenceBuilder::prepareEmbeddedDocumentValue()
-             */
-            if ($discriminatorValue === false) {
+            $discriminatorMap = null;
+            if (isset($referenceMapping['discriminatorMap'])) {
+                $discriminatorMap = $referenceMapping['discriminatorMap'];
+            }
+            if (! isset($discriminatorMap)) {
                 $discriminatorValue = $class->name;
+            } else {
+                $discriminatorValue = array_search($class->name, $discriminatorMap);
+
+                if ($discriminatorValue === false) {
+                    throw MappingException::unlistedClassInDiscriminatorMap($class->name);
+                }
             }
 
             $reference[$discriminatorField] = $discriminatorValue;

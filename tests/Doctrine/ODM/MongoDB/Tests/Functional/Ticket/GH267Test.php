@@ -67,7 +67,7 @@ class GH267User
     /** @ODM\Field(type="string") */
     protected $name;
 
-    /** @ODM\ReferenceOne(name="company", targetDocument=GH267Company::class, discriminatorMap={"seller"="SellerCompany", "buyer"="BuyerCompany"}, inversedBy="users") */
+    /** @ODM\ReferenceOne(name="company", targetDocument=GH267Company::class, discriminatorMap={"seller"="GH267SellerCompany", "buyer"="GH267BuyerCompany"}, inversedBy="users") */
     protected $company;
 
     public function __construct($name)

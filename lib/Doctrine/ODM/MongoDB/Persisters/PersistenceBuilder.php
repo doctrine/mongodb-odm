@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -96,7 +97,13 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            $insertData[$class->discriminatorField] = $class->discriminatorValue ?? $class->name;
+            if ($class->discriminatorValue === null) {
+                if (! empty($class->discriminatorMap)) {
+                    throw MappingException::unlistedClassInDiscriminatorMap($class->name);
+                }
+                $class->discriminatorValue = $class->name;
+            }
+            $insertData[$class->discriminatorField] = $class->discriminatorValue;
         }
 
         return $insertData;
@@ -277,7 +284,13 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            $updateData['$set'][$class->discriminatorField] = $class->discriminatorValue ?? $class->name;
+            if ($class->discriminatorValue === null) {
+                if (! empty($class->discriminatorMap)) {
+                    throw MappingException::unlistedClassInDiscriminatorMap($class->name);
+                }
+                $class->discriminatorValue = $class->name;
+            }
+            $updateData['$set'][$class->discriminatorField] = $class->discriminatorValue;
         }
 
         return $updateData;
@@ -379,17 +392,13 @@ class PersistenceBuilder
          */
         if (! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = $embeddedMapping['discriminatorField'];
-            $discriminatorValue = isset($embeddedMapping['discriminatorMap'])
-                ? array_search($class->name, $embeddedMapping['discriminatorMap'])
-                : $class->name;
+            if (! empty($embeddedMapping['discriminatorMap'])) {
+                $discriminatorValue = array_search($class->name, $embeddedMapping['discriminatorMap']);
 
-            /* If the discriminator value was not found in the map, use the full
-             * class name. In the future, it may be preferable to throw an
-             * exception here (perhaps based on some strictness option).
-             *
-             * @see DocumentManager::createDBRef()
-             */
-            if ($discriminatorValue === false) {
+                if ($discriminatorValue === false) {
+                    throw MappingException::unlistedClassInDiscriminatorMap($class->name);
+                }
+            } else {
                 $discriminatorValue = $class->name;
             }
 
@@ -401,7 +410,13 @@ class PersistenceBuilder
          * discriminator field and no value, so default to the full class name.
          */
         if (isset($class->discriminatorField)) {
-            $embeddedDocumentValue[$class->discriminatorField] = $class->discriminatorValue ?? $class->name;
+            if ($class->discriminatorValue === null) {
+                if (! empty($class->discriminatorMap)) {
+                    throw MappingException::unlistedClassInDiscriminatorMap($class->name);
+                }
+                $class->discriminatorValue = $class->name;
+            }
+            $embeddedDocumentValue[$class->discriminatorField] =  $class->discriminatorValue;
         }
 
         // Ensure empty embedded documents are stored as BSON objects

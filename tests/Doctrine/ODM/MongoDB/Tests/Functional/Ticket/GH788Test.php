@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use function get_class;
 
 class GH788Test extends BaseTest
@@ -19,7 +20,6 @@ class GH788Test extends BaseTest
         $unlisted->name = 'unlisted';
 
         $this->dm->persist($listed);
-        $this->dm->persist($unlisted);
         $this->dm->flush();
         $this->dm->clear();
 
@@ -27,17 +27,11 @@ class GH788Test extends BaseTest
         $this->assertInstanceOf(GH788DocumentListed::class, $doc);
         $this->assertEquals('listed', $doc->name);
 
-        $doc = $this->dm->find(get_class($unlisted), $unlisted->id);
-        $this->assertInstanceOf(GH788DocumentUnlisted::class, $doc);
-        $this->assertEquals('unlisted', $doc->name);
+        $this->dm->persist($unlisted);
 
-        /* Attempting to find the unlisted class by the parent class will not
-         * work, as DocumentPersister::addDiscriminatorToPreparedQuery() adds
-         * discriminator criteria to the query, which limits the results to
-         * known, listed classes.
-         */
-        $doc = $this->dm->find(get_class($listed), $unlisted->id);
-        $this->assertNull($doc);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788DocumentUnlisted::class . '" is unlisted in the discriminator map.');
+        $this->dm->flush();
     }
 
     public function testEmbedManyWithExternalDiscriminatorMap()
@@ -53,17 +47,10 @@ class GH788Test extends BaseTest
         $doc->externEmbedMany[] = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788ExternEmbedUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc        = $this->dm->find(get_class($doc), $doc->id);
-        $collection = $doc->externEmbedMany;
-
-        $this->assertCount(2, $collection);
-        $this->assertInstanceOf(GH788ExternEmbedListed::class, $collection[0]);
-        $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(GH788ExternEmbedUnlisted::class, $collection[1]);
-        $this->assertEquals('unlisted', $collection[1]->name);
     }
 
     public function testEmbedManyWithInlineDiscriminatorMap()
@@ -79,17 +66,10 @@ class GH788Test extends BaseTest
         $doc->inlineEmbedMany[] = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788InlineEmbedUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc        = $this->dm->find(get_class($doc), $doc->id);
-        $collection = $doc->inlineEmbedMany;
-
-        $this->assertCount(2, $collection);
-        $this->assertInstanceOf(GH788InlineEmbedListed::class, $collection[0]);
-        $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(GH788InlineEmbedUnlisted::class, $collection[1]);
-        $this->assertEquals('unlisted', $collection[1]->name);
     }
 
     public function testEmbedManyWithNoTargetAndExternalDiscriminatorMap()
@@ -105,17 +85,10 @@ class GH788Test extends BaseTest
         $doc->noTargetEmbedMany[] = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788ExternEmbedUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc        = $this->dm->find(get_class($doc), $doc->id);
-        $collection = $doc->noTargetEmbedMany;
-
-        $this->assertCount(2, $collection);
-        $this->assertInstanceOf(GH788ExternEmbedListed::class, $collection[0]);
-        $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(GH788ExternEmbedUnlisted::class, $collection[1]);
-        $this->assertEquals('unlisted', $collection[1]->name);
     }
 
     public function testEmbedOneWithExternalDiscriminatorMap()
@@ -127,13 +100,10 @@ class GH788Test extends BaseTest
         $doc->externEmbedOne = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788ExternEmbedUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc = $this->dm->find(get_class($doc), $doc->id);
-
-        $this->assertInstanceOf(GH788ExternEmbedUnlisted::class, $doc->externEmbedOne);
-        $this->assertEquals('unlisted', $doc->externEmbedOne->name);
     }
 
     public function testEmbedOneWithInlineDiscriminatorMap()
@@ -145,13 +115,10 @@ class GH788Test extends BaseTest
         $doc->inlineEmbedOne = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788InlineEmbedUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc = $this->dm->find(get_class($doc), $doc->id);
-
-        $this->assertInstanceOf(GH788InlineEmbedUnlisted::class, $doc->inlineEmbedOne);
-        $this->assertEquals('unlisted', $doc->inlineEmbedOne->name);
     }
 
     public function testEmbedOneWithNoTargetAndExternalDiscriminatorMap()
@@ -163,13 +130,10 @@ class GH788Test extends BaseTest
         $doc->noTargetEmbedOne = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788ExternEmbedUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc = $this->dm->find(get_class($doc), $doc->id);
-
-        $this->assertInstanceOf(GH788ExternEmbedUnlisted::class, $doc->noTargetEmbedOne);
-        $this->assertEquals('unlisted', $doc->noTargetEmbedOne->name);
     }
 
     public function testRefManyWithExternalDiscriminatorMap()
@@ -185,19 +149,10 @@ class GH788Test extends BaseTest
         $doc->externRefMany[] = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788ExternRefUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc        = $this->dm->find(get_class($doc), $doc->id);
-        $collection = $doc->externRefMany;
-
-        $this->assertCount(2, $collection);
-        $this->assertInstanceOf(GH788ExternRefListed::class, $collection[0]);
-        $this->assertEquals($listed->id, $collection[0]->id);
-        $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(GH788ExternRefUnlisted::class, $collection[1]);
-        $this->assertEquals($unlisted->id, $collection[1]->id);
-        $this->assertEquals('unlisted', $collection[1]->name);
     }
 
     public function testRefManyWithInlineDiscriminatorMap()
@@ -213,19 +168,10 @@ class GH788Test extends BaseTest
         $doc->inlineRefMany[] = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788InlineRefUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc        = $this->dm->find(get_class($doc), $doc->id);
-        $collection = $doc->inlineRefMany;
-
-        $this->assertCount(2, $collection);
-        $this->assertInstanceOf(GH788InlineRefListed::class, $collection[0]);
-        $this->assertEquals($listed->id, $collection[0]->id);
-        $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(GH788InlineRefUnlisted::class, $collection[1]);
-        $this->assertEquals($unlisted->id, $collection[1]->id);
-        $this->assertEquals('unlisted', $collection[1]->name);
     }
 
     public function testRefManyWithNoTargetAndExternalDiscriminatorMap()
@@ -241,19 +187,10 @@ class GH788Test extends BaseTest
         $doc->noTargetRefMany[] = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788ExternRefUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc        = $this->dm->find(get_class($doc), $doc->id);
-        $collection = $doc->noTargetRefMany;
-
-        $this->assertCount(2, $collection);
-        $this->assertInstanceOf(GH788ExternRefListed::class, $collection[0]);
-        $this->assertEquals($listed->id, $collection[0]->id);
-        $this->assertEquals('listed', $collection[0]->name);
-        $this->assertInstanceOf(GH788ExternRefUnlisted::class, $collection[1]);
-        $this->assertEquals($unlisted->id, $collection[1]->id);
-        $this->assertEquals('unlisted', $collection[1]->name);
     }
 
     public function testRefOneWithExternalDiscriminatorMap()
@@ -265,14 +202,10 @@ class GH788Test extends BaseTest
         $doc->externRefOne = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788ExternRefUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc = $this->dm->find(get_class($doc), $doc->id);
-
-        $this->assertInstanceOf(GH788ExternRefUnlisted::class, $doc->externRefOne);
-        $this->assertEquals($unlisted->id, $doc->externRefOne->id);
-        $this->assertEquals('unlisted', $doc->externRefOne->name);
     }
 
     public function testRefOneWithInlineDiscriminatorMap()
@@ -284,14 +217,10 @@ class GH788Test extends BaseTest
         $doc->inlineRefOne = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788InlineRefUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc = $this->dm->find(get_class($doc), $doc->id);
-
-        $this->assertInstanceOf(GH788InlineRefUnlisted::class, $doc->inlineRefOne);
-        $this->assertEquals($unlisted->id, $doc->inlineRefOne->id);
-        $this->assertEquals('unlisted', $doc->inlineRefOne->name);
     }
 
     public function testRefOneWithNoTargetAndExternalDiscriminatorMap()
@@ -303,14 +232,10 @@ class GH788Test extends BaseTest
         $doc->noTargetRefOne = $unlisted;
 
         $this->dm->persist($doc);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH788ExternRefUnlisted::class . '" is unlisted in the discriminator map.');
         $this->dm->flush();
-        $this->dm->clear();
-
-        $doc = $this->dm->find(get_class($doc), $doc->id);
-
-        $this->assertInstanceOf(GH788ExternRefUnlisted::class, $doc->noTargetRefOne);
-        $this->assertEquals($unlisted->id, $doc->noTargetRefOne->id);
-        $this->assertEquals('unlisted', $doc->noTargetRefOne->name);
     }
 }
 
