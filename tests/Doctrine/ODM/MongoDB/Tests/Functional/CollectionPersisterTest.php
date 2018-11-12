@@ -63,7 +63,7 @@ class CollectionPersisterTest extends BaseTest
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
         $persister->deleteAll([$user->categories], []);
-        $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
+        $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
 
@@ -72,7 +72,7 @@ class CollectionPersisterTest extends BaseTest
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
         $persister->deleteAll([$user->phonenumbers], []);
-        $user = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
+        $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
     }
 
@@ -84,14 +84,14 @@ class CollectionPersisterTest extends BaseTest
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             []
         );
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
+        $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
         $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
         $persister->deleteAll(
             [$user->categories[0]->children, $user->categories[1]->children],
             []
         );
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
+        $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         $this->assertFalse(isset($check['categories'][0]['children']), 'Test that the nested children categories field was deleted');
         $this->assertTrue(isset($check['categories'][0]), 'Test that the category with the children still exists');
         $this->assertFalse(isset($check['categories'][1]['children']), 'Test that the nested children categories field was deleted');
@@ -106,14 +106,14 @@ class CollectionPersisterTest extends BaseTest
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             []
         );
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
+        $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
         $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
         $persister->deleteAll(
             [$user->categories[0]->children, $user->categories[0]->children[1]->children, $user->categories],
             []
         );
-        $check = $this->dm->getDocumentCollection(__NAMESPACE__ . '\CollectionPersisterUser')->findOne(['username' => 'jwage']);
+        $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         $this->assertFalse(isset($check['categories']), 'Test that the nested categories field was deleted');
     }
 

@@ -81,15 +81,15 @@ class CollectionPersister
         $parents       = [];
         $unsetPathsMap = [];
 
-        foreach ($collections as $coll) {
-            $mapping = $coll->getMapping();
+        foreach ($collections as $collection) {
+            $mapping = $collection->getMapping();
             if ($mapping['isInverseSide']) {
                 continue; // ignore inverse side
             }
             if (CollectionHelper::isAtomic($mapping['strategy'])) {
                 throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
             }
-            [$propertyPath, $parent]            = $this->getPathAndParent($coll);
+            [$propertyPath, $parent]            = $this->getPathAndParent($collection);
             $oid                                = spl_object_hash($parent);
             $parents[$oid]                      = $parent;
             $unsetPathsMap[$oid][$propertyPath] = true;
@@ -635,7 +635,7 @@ class CollectionPersister
         }
         sort($paths);
         $uniquePaths = [$paths[0]];
-        for ($i = 1; $i < count($paths); ++$i) {
+        for ($i = 1, $count = count($paths); $i < $count; ++$i) {
             if (strpos($paths[$i], end($uniquePaths)) === 0) {
                 continue;
             }
