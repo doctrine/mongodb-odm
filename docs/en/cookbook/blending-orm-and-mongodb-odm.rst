@@ -176,10 +176,8 @@ Later we can retrieve the entity and lazily load the reference to the document i
 
     $order = $em->find(Order::class, $order->getId());
 
-    // Instance of an uninitialized product proxy
     $product = $order->getProduct();
 
-    // Initializes proxy and queries the database
     echo "Order Title: " . $product->getTitle();
 
 If you were to print the `$order` you would see that we got back regular PHP objects:

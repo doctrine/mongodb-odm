@@ -10,11 +10,11 @@ use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\AbstractIdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
 use LogicException;
+use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionProperty;
 use function array_filter;
@@ -1457,10 +1457,10 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setFieldValue(object $document, string $field, $value) : void
     {
-        if ($document instanceof Proxy && ! $document->__isInitialized()) {
+        if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
             //property changes to an uninitialized proxy will not be tracked or persisted,
             //so the proxy needs to be loaded first.
-            $document->__load();
+            $document->initializeProxy();
         }
 
         $this->reflFields[$field]->setValue($document, $value);
@@ -1473,8 +1473,8 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function getFieldValue(object $document, string $field)
     {
-        if ($document instanceof Proxy && $field !== $this->identifier && ! $document->__isInitialized()) {
-            $document->__load();
+        if ($document instanceof GhostObjectInterface && $field !== $this->identifier && ! $document->isProxyInitialized()) {
+            $document->initializeProxy();
         }
 
         return $this->reflFields[$field]->getValue($document);

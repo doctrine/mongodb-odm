@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
 use InvalidArgumentException;
 use Symfony\Component\Console;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use const PHP_EOL;
 use function array_filter;
@@ -40,11 +40,6 @@ class GenerateProxiesCommand extends Console\Command\Command
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match documents that should be processed.'
             ),
-            new InputArgument(
-                'dest-path',
-                InputArgument::OPTIONAL,
-                'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.'
-            ),
         ])
         ->setHelp(<<<EOT
 Generates proxy classes for document classes.
@@ -57,18 +52,14 @@ EOT
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
+        /** @var DocumentManager $dm */
         $dm = $this->getHelper('documentManager')->getDocumentManager();
 
         $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata) {
             return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
         });
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
-        $destPath  = $input->getArgument('dest-path');
-
-        // Process destination directory
-        if ($destPath === null) {
-            $destPath = $dm->getConfiguration()->getProxyDir();
-        }
+        $destPath  = $dm->getConfiguration()->getProxyDir();
 
         if (! is_dir($destPath)) {
             mkdir($destPath, 0775, true);
@@ -94,7 +85,7 @@ EOT
             }
 
             // Generating Proxies
-            $dm->getProxyFactory()->generateProxyClasses($metadatas, $destPath);
+            $dm->getProxyFactory()->generateProxyClasses($metadatas);
 
             // Outputting information message
             $output->write(PHP_EOL . sprintf('Proxy classes generated to "<info>%s</INFO>"', $destPath) . PHP_EOL);

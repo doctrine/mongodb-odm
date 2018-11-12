@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use Documents\CmsAddress;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
-use function get_class;
 use function serialize;
 use function unserialize;
 
@@ -88,37 +85,5 @@ class DetachedDocumentTest extends BaseTest
         $phonenumbers = $user->getPhonenumbers();
         $this->assertTrue($this->dm->contains($phonenumbers[0]));
         $this->assertTrue($this->dm->contains($phonenumbers[1]));
-    }
-
-    public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Guilherme';
-        $user->username = 'gblanco';
-        $user->status   = 'developer';
-
-        $address          = new CmsAddress();
-        $address->city    = 'Berlin';
-        $address->country = 'Germany';
-        $address->street  = 'Sesamestreet';
-        $address->zip     = 12345;
-        $address->setUser($user);
-        $this->dm->persist($address);
-        $this->dm->persist($user);
-
-        $this->dm->flush();
-        $this->dm->clear();
-
-        $address2 = $this->dm->find(get_class($address), $address->id);
-        $this->assertInstanceOf(Proxy::class, $address2->user);
-        $this->assertFalse($address2->user->__isInitialized());
-        $detachedAddress2 = unserialize(serialize($address2));
-        $this->assertInstanceOf(Proxy::class, $detachedAddress2->user);
-        $this->assertFalse($detachedAddress2->user->__isInitialized());
-
-        $managedAddress2 = $this->dm->merge($detachedAddress2);
-        $this->assertInstanceOf(Proxy::class, $managedAddress2->user);
-        $this->assertNotSame($managedAddress2->user, $detachedAddress2->user);
-        $this->assertFalse($managedAddress2->user->__isInitialized());
     }
 }

@@ -11,7 +11,9 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
+use Doctrine\ODM\MongoDB\Proxy\ClassNameResolver;
+use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
+use Doctrine\ODM\MongoDB\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use InvalidArgumentException;
@@ -139,6 +141,9 @@ class DocumentManager implements ObjectManager
      */
     private $filterCollection;
 
+    /** @var ClassNameResolver */
+    private $classNameResolver;
+
     /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
@@ -174,13 +179,9 @@ class DocumentManager implements ObjectManager
         $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
         $this->hydratorFactory->setUnitOfWork($this->unitOfWork);
         $this->schemaManager     = new SchemaManager($this, $this->metadataFactory);
-        $this->proxyFactory      = new ProxyFactory(
-            $this,
-            $this->config->getProxyDir(),
-            $this->config->getProxyNamespace(),
-            $this->config->getAutoGenerateProxyClasses()
-        );
+        $this->proxyFactory      = new StaticProxyFactory($this);
         $this->repositoryFactory = $this->config->getRepositoryFactory();
+        $this->classNameResolver = new ClassNameResolver($this->config);
     }
 
     /**
@@ -263,18 +264,22 @@ class DocumentManager implements ObjectManager
         return $this->schemaManager;
     }
 
+    /** Returns the class name resolver which is used to resolve real class names for proxy objects. */
+    public function getClassNameResolver() : ClassNameResolver
+    {
+        return $this->classNameResolver;
+    }
+
     /**
      * Returns the metadata for a class.
      *
      * @internal Performance-sensitive method.
      *
      * @param string $className The class name.
-     *
-     * @return ClassMetadata
      */
-    public function getClassMetadata($className)
+    public function getClassMetadata($className) : ClassMetadata
     {
-        return $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
+        return $this->metadataFactory->getMetadataFor($className);
     }
 
     /**
@@ -282,7 +287,7 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentDatabase(string $className) : Database
     {
-        $className = ltrim($className, '\\');
+        $className = $this->classNameResolver->getRealClass($className);
 
         if (isset($this->documentDatabases[$className])) {
             return $this->documentDatabases[$className];
@@ -314,7 +319,7 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentCollection(string $className) : Collection
     {
-        $className = ltrim($className, '\\');
+        $className = $this->classNameResolver->getRealClass($className);
 
         /** @var ClassMetadata $metadata */
         $metadata = $this->metadataFactory->getMetadataFor($className);
@@ -349,7 +354,7 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentBucket(string $className) : Bucket
     {
-        $className = ltrim($className, '\\');
+        $className = $this->classNameResolver->getRealClass($className);
 
         /** @var ClassMetadata $metadata */
         $metadata = $this->metadataFactory->getMetadataFor($className);
@@ -570,7 +575,7 @@ class DocumentManager implements ObjectManager
             return $document;
         }
 
-        $document = $this->proxyFactory->getProxy($class->name, [$class->identifier => $identifier]);
+        $document = $this->proxyFactory->getProxy($class, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, []);
 
         return $document;

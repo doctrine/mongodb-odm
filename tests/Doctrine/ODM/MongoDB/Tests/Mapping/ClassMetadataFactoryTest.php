@@ -8,7 +8,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use InvalidArgumentException;
@@ -32,6 +31,7 @@ class ClassMetadataFactoryTest extends BaseTest
         // SUT
         $cmf = new ClassMetadataFactoryTestSubject();
         $cmf->setMetadataFor(TestDocument1::class, $cm1);
+        $cmf->setDocumentManager($this->dm);
 
         // Prechecks
         $this->assertEquals([], $cm1->parentClasses);
@@ -45,28 +45,6 @@ class ClassMetadataFactoryTest extends BaseTest
         $this->assertEquals('group', $cm1->collection);
         $this->assertEquals([], $cm1->parentClasses);
         $this->assertTrue($cm1->hasField('name'));
-    }
-
-    public function testHasGetMetadataNamespaceSeparatorIsNotNormalized()
-    {
-        require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
-
-        $driver = AnnotationDriver::create(__DIR__ . '/Documents');
-
-        $dm = $this->getMockDocumentManager($driver);
-
-        $cmf = new ClassMetadataFactory();
-        $cmf->setConfiguration($dm->getConfiguration());
-        $cmf->setDocumentManager($dm);
-
-        $m1 = $cmf->getMetadataFor('DoctrineGlobal_Article');
-        $h1 = $cmf->hasMetadataFor('DoctrineGlobal_Article');
-        $h2 = $cmf->hasMetadataFor('\DoctrineGlobal_Article');
-        $m2 = $cmf->getMetadataFor('\DoctrineGlobal_Article');
-
-        $this->assertNotSame($m1, $m2);
-        $this->assertFalse($h2);
-        $this->assertTrue($h1);
     }
 
     protected function getMockDocumentManager($driver)

@@ -8,8 +8,8 @@ use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use MongoDB\BSON\Binary;
+use ProxyManager\Proxy\GhostObjectInterface;
 use function get_class;
 
 class GH852Test extends BaseTest
@@ -48,24 +48,24 @@ class GH852Test extends BaseTest
         $this->assertEquals($idGenerator('parent'), $parent->id);
         $this->assertEquals('parent', $parent->name);
 
-        $this->assertInstanceOf(Proxy::class, $parent->refOne);
-        $this->assertFalse($parent->refOne->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $parent->refOne);
+        $this->assertFalse($parent->refOne->isProxyInitialized());
         $this->assertEquals($idGenerator('childA'), $parent->refOne->id);
         $this->assertEquals('childA', $parent->refOne->name);
-        $this->assertTrue($parent->refOne->__isInitialized());
+        $this->assertTrue($parent->refOne->isProxyInitialized());
 
         $this->assertCount(2, $parent->refMany);
 
         /* These proxies will be initialized when we first access the collection
          * by DocumentPersister::loadReferenceManyCollectionOwningSide().
          */
-        $this->assertInstanceOf(Proxy::class, $parent->refMany[0]);
-        $this->assertTrue($parent->refMany[0]->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $parent->refMany[0]);
+        $this->assertTrue($parent->refMany[0]->isProxyInitialized());
         $this->assertEquals($idGenerator('childB'), $parent->refMany[0]->id);
         $this->assertEquals('childB', $parent->refMany[0]->name);
 
-        $this->assertInstanceOf(Proxy::class, $parent->refMany[1]);
-        $this->assertTrue($parent->refMany[1]->__isInitialized());
+        $this->assertInstanceOf(GhostObjectInterface::class, $parent->refMany[1]);
+        $this->assertTrue($parent->refMany[1]->isProxyInitialized());
         $this->assertEquals($idGenerator('childC'), $parent->refMany[1]->id);
         $this->assertEquals('childC', $parent->refMany[1]->name);
 

@@ -11,9 +11,9 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use ProxyManager\Proxy\GhostObjectInterface;
 use const DIRECTORY_SEPARATOR;
 use function array_key_exists;
 use function chmod;
@@ -444,25 +444,11 @@ EOF
             }
         }
 
-        if ($document instanceof Proxy) {
-            $document->__isInitialized__ = true;
-            $document->__setInitializer(null);
-            $document->__setCloner(null);
+        if ($document instanceof GhostObjectInterface) {
+            $document->setProxyInitializer(null);
         }
 
         $data = $this->getHydratorFor($metadata->name)->hydrate($document, $data, $hints);
-
-        if ($document instanceof Proxy) {
-            // lazy properties may be left uninitialized
-            $properties = $document->__getLazyProperties();
-            foreach ($properties as $propertyName => $property) {
-                if (isset($document->$propertyName)) {
-                    continue;
-                }
-
-                $document->$propertyName = $properties[$propertyName];
-            }
-        }
 
         // Invoke the postLoad lifecycle callbacks and listeners
         if (! empty($metadata->lifecycleCallbacks[Events::postLoad])) {

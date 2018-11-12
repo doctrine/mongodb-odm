@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
 use function current;
 use function end;
@@ -79,10 +80,11 @@ class SimpleReferencesTest extends BaseTest
 
         $this->assertNotNull($test);
         $this->assertNotNull($test->getUser());
-        $this->assertInstanceOf('Proxies\__CG__\Documents\User', $test->getUser());
-        $this->assertFalse($test->getUser()->__isInitialized__);
+        $this->assertInstanceOf(User::class, $test->getUser());
+        $this->assertInstanceOf(GhostObjectInterface::class, $test->getUser());
+        $this->assertFalse($test->getUser()->isProxyInitialized());
         $this->assertEquals('jwage', $test->getUser()->getUsername());
-        $this->assertTrue($test->getUser()->__isInitialized__);
+        $this->assertTrue($test->getUser()->isProxyInitialized());
     }
 
     public function testPersistentCollectionOwningSide()
