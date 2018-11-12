@@ -73,7 +73,7 @@ correspond to a value from the configured discriminator map.
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
      * @DiscriminatorField("type")
-     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     * @DiscriminatorMap({"person" = Person::class, "employee" = Employee::class})
      * @DefaultDiscriminatorValue("person")
      */
     class Person
@@ -115,9 +115,11 @@ during hydration to select the instantiation class.
 This annotation is required for the top-most class in a
 :ref:`single collection inheritance <single_collection_inheritance>` hierarchy.
 It takes an array as its only argument, which maps keys to class names. The
-class names may be fully qualified or relative to the current namespace. When
+class constant `::class` must be used as source of class name. When
 a document is persisted to the database, its class name key will be stored in
-the discriminator field instead of the |FQCN|.
+the discriminator field instead of the |FQCN|. If class of persisted to the
+database document is not registered in discriminator map and discriminator map
+is not empty - ``\Doctrine\ODM\MongoDB\Mapping\MappingException`` will be thrown.
 
 .. code-block:: php
 
@@ -127,7 +129,7 @@ the discriminator field instead of the |FQCN|.
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
      * @DiscriminatorField("type")
-     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     * @DiscriminatorMap({"person" = Person::class, "employee" = Employee::class})
      */
     class Person
     {
@@ -219,8 +221,8 @@ Optional attributes:
      *     strategy="set",
      *     discriminatorField="type",
      *     discriminatorMap={
-     *         "book"="Documents\BookTag",
-     *         "song"="Documents\SongTag"
+     *         "book"=Documents\BookTag::class,
+     *         "song"=Documents\SongTag::class
      *     },
      *     defaultDiscriminatorValue="book"
      * )
@@ -269,8 +271,8 @@ Optional attributes:
      * @EmbedOne(
      *     discriminatorField="type",
      *     discriminatorMap={
-     *         "user"="Documents\User",
-     *         "author"="Documents\Author"
+     *         "user"=Documents\User::class,
+     *         "author"=Documents\Author::class
      *     },
      *     defaultDiscriminatorValue="user"
      * )
@@ -596,7 +598,7 @@ Examples:
      * @Document
      * @InheritanceType("SINGLE_COLLECTION")
      * @DiscriminatorField("type")
-     * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
+     * @DiscriminatorMap({"person"=Person::class, "employee"=Employee::class})
      */
     class Person
     {
@@ -964,13 +966,13 @@ Optional attributes:
     /**
      * @ReferenceMany(
      *     strategy="set",
-     *     targetDocument="Documents\Item",
+     *     targetDocument=Documents\Item::class,
      *     cascade="all",
      *     sort={"sort_field": "asc"}
      *     discriminatorField="type",
      *     discriminatorMap={
-     *         "book"="Documents\BookItem",
-     *         "song"="Documents\SongItem"
+     *         "book"=Documents\BookItem::class,
+     *         "song"=Documents\SongItem::class
      *     },
      *     defaultDiscriminatorValue="book"
      * )
@@ -1030,12 +1032,12 @@ Optional attributes:
 
     /**
      * @ReferenceOne(
-     *     targetDocument="Documents\Item",
+     *     targetDocument=Documents\Item::class,
      *     cascade="all",
      *     discriminatorField="type",
      *     discriminatorMap={
-     *         "book"="Documents\BookItem",
-     *         "song"="Documents\SongItem"
+     *         "book"=Documents\BookItem::class,
+     *         "song"=Documents\SongItem::class
      *     },
      *     defaultDiscriminatorValue="book"
      * )

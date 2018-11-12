@@ -13,7 +13,7 @@ class Money
     /** @ODM\Field(type="float") */
     protected $amount;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\Ecommerce\Currency", cascade="all") */
+    /** @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\Currency::class, cascade="all") */
     protected $currency;
 
     public function __construct($amount, Currency $currency)

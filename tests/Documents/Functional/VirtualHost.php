@@ -12,7 +12,7 @@ class VirtualHost
 {
     /** @ODM\Id */
     protected $id;
-    /** @ODM\EmbedOne(targetDocument="Documents\Functional\VirtualHostDirective") */
+    /** @ODM\EmbedOne(targetDocument=Documents\Functional\VirtualHostDirective::class) */
     protected $vhostDirective;
 
     public function getId()

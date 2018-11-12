@@ -261,7 +261,7 @@ class GH788Document
      * @ODM\EmbedMany(
      *   discriminatorField="type",
      *   discriminatorMap={
-     *     "b"="GH788InlineEmbedListed"
+     *     "b"=GH788InlineEmbedListed::class
      *   }
      * )
      */
@@ -271,7 +271,7 @@ class GH788Document
      * @ODM\EmbedOne(
      *   discriminatorField="type",
      *   discriminatorMap={
-     *     "b"="GH788InlineEmbedListed"
+     *     "b"=GH788InlineEmbedListed::class
      *   }
      * )
      */
@@ -281,7 +281,7 @@ class GH788Document
      * @ODM\ReferenceMany(
      *   discriminatorField="type",
      *   discriminatorMap={
-     *     "c"="GH788InlineRefListed"
+     *     "c"=GH788InlineRefListed::class
      *   },
      *   cascade="all"
      * )
@@ -292,7 +292,7 @@ class GH788Document
      * @ODM\ReferenceOne(
      *   discriminatorField="type",
      *   discriminatorMap={
-     *     "c"="GH788InlineRefListed"
+     *     "c"=GH788InlineRefListed::class
      *   },
      *   cascade="all"
      * )

@@ -513,7 +513,7 @@ class Person
     /** @ODM\ReferenceOne(storeAs="dbRefWithDb") */
     public $bestFriend;
 
-    /** @ODM\ReferenceOne(storeAs="id", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    /** @ODM\ReferenceOne(storeAs="id", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class) */
     public $bestFriendSimple;
 
     /** @ODM\ReferenceOne */
@@ -522,7 +522,7 @@ class Person
     /** @ODM\ReferenceMany(storeAs="dbRefWithDb") */
     public $friends = [];
 
-    /** @ODM\ReferenceMany(storeAs="id", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    /** @ODM\ReferenceMany(storeAs="id", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class) */
     public $friendsSimple = [];
 
     /** @ODM\ReferenceMany */
@@ -540,7 +540,7 @@ class Person
 /** @ODM\EmbeddedDocument */
 class Pet
 {
-    /** @ODM\ReferenceOne(name="pO", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    /** @ODM\ReferenceOne(name="pO", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class) */
     public $owner;
 
     /** @ODM\Field(type="string") */
@@ -556,18 +556,18 @@ class Pet
 /** @ODM\EmbeddedDocument */
 class EmbedTest
 {
-    /** @ODM\EmbedOne(name="eO", targetDocument="Doctrine\ODM\MongoDB\Tests\EmbedTest") */
+    /** @ODM\EmbedOne(name="eO", targetDocument=Doctrine\ODM\MongoDB\Tests\EmbedTest::class) */
     public $embeddedOne;
 
-    /** @ODM\EmbedMany(name="e1", targetDocument="Doctrine\ODM\MongoDB\Tests\EmbedTest") */
+    /** @ODM\EmbedMany(name="e1", targetDocument=Doctrine\ODM\MongoDB\Tests\EmbedTest::class) */
     public $embeddedMany;
 
     /** @ODM\Field(name="n", type="string") */
     public $name;
 
-    /** @ODM\ReferenceOne(name="p", targetDocument="Doctrine\ODM\MongoDB\Tests\Person") */
+    /** @ODM\ReferenceOne(name="p", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class) */
     public $person;
 
-    /** @ODM\EmbedOne(name="eP", targetDocument="Doctrine\ODM\MongoDB\Tests\Pet") */
+    /** @ODM\EmbedOne(name="eP", targetDocument=Doctrine\ODM\MongoDB\Tests\Pet::class) */
     public $pet;
 }

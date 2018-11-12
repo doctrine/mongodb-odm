@@ -819,9 +819,9 @@ class EmbeddedAssociationsCascadeTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="Documents\Address") */
+    /** @ODM\EmbedOne(targetDocument=Documents\Address::class) */
     public $address;
 
-    /** @ODM\EmbedOne(targetDocument="Documents\Address") */
+    /** @ODM\EmbedOne(targetDocument=Documents\Address::class) */
     public $addresses;
 }

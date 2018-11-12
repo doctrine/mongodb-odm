@@ -28,7 +28,6 @@ use function constant;
 use function count;
 use function get_class;
 use function in_array;
-use function interface_exists;
 use function is_array;
 use function is_string;
 use function is_subclass_of;
@@ -1901,28 +1900,6 @@ class ClassMetadata implements BaseClassMetadata
 
         if (isset($mapping['association']) && ! isset($mapping['targetDocument']) && ! isset($mapping['discriminatorField'])) {
             $mapping['discriminatorField'] = self::DEFAULT_DISCRIMINATOR_FIELD;
-        }
-
-        if (isset($mapping['targetDocument']) && ! class_exists($mapping['targetDocument']) && ! interface_exists($mapping['targetDocument'])) {
-            $fullClassName = $this->reflClass->getNamespaceName() . '\\' . $mapping['targetDocument'];
-            if (! class_exists($fullClassName) && ! interface_exists($fullClassName)) {
-                throw MappingException::nonExistingClass($mapping['targetDocument']);
-            }
-
-            $mapping['targetDocument'] = $fullClassName;
-        }
-
-        if (isset($mapping['discriminatorMap'])) {
-            foreach ($mapping['discriminatorMap'] as $value => $targetDocument) {
-                if (class_exists($targetDocument) || interface_exists($targetDocument)) {
-                    continue;
-                }
-                $fullClassName = $this->reflClass->getNamespaceName() . '\\' . $targetDocument;
-                if (! class_exists($fullClassName) && ! interface_exists($fullClassName)) {
-                    throw MappingException::nonExistingClass($fullClassName);
-                }
-                $mapping['discriminatorMap'][$value] = $fullClassName;
-            }
         }
 
         if (isset($mapping['version'])) {

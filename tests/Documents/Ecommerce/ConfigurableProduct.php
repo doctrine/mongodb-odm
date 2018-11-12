@@ -22,7 +22,7 @@ class ConfigurableProduct
     /** @ODM\Field(type="string") */
     protected $name;
 
-    /** @ODM\EmbedMany(targetDocument="Documents\Ecommerce\Option") */
+    /** @ODM\EmbedMany(targetDocument=Documents\Ecommerce\Option::class) */
     protected $options = [];
 
     /** @var Documents\Option */

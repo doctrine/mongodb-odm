@@ -479,7 +479,7 @@ pipeline stages. Take the following relationship for example:
 
     /**
      * @ReferenceMany(
-     *     targetDocument="Documents\Item",
+     *     targetDocument=Documents\Item::class,
      *     cascade="all",
      *     storeAs="id"
      * )
@@ -504,7 +504,7 @@ to be considered when looking up one-to-one relationships:
 
     /**
      * @ReferenceOne(
-     *     targetDocument="Documents\Item",
+     *     targetDocument=Documents\Item::class,
      *     cascade="all",
      *     storeAs="id"
      * )

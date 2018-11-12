@@ -730,12 +730,24 @@ class DocumentManager implements ObjectManager
                 throw new InvalidArgumentException(sprintf('Reference type %s is invalid.', $storeAs));
         }
 
-        /* If the class has a discriminator (field and value), use it. A child
-         * class that is not defined in the discriminator map may only have a
-         * discriminator field and no value, so default to the full class name.
-         */
+        return $reference + $this->getDiscriminatorData($referenceMapping, $class);
+    }
+
+    /**
+     * Build discriminator portion of reference for specified reference mapping and class metadata.
+     *
+     * @param array         $referenceMapping Mappings of reference for which discriminator data is created.
+     * @param ClassMetadata $class            Metadata of reference document class.
+     *
+     * @return array with next structure [{discriminator field} => {discriminator value}]
+     *
+     * @throws MappingException When discriminator map is present and reference class in not registered in it.
+     */
+    private function getDiscriminatorData(array $referenceMapping, ClassMetadata $class) : array
+    {
         $discriminatorField = null;
         $discriminatorValue = null;
+        $discriminatorData  = [];
         if (isset($referenceMapping['discriminatorField'])) {
             $discriminatorField = $referenceMapping['discriminatorField'];
             if (isset($referenceMapping['discriminatorMap'])) {
@@ -751,15 +763,11 @@ class DocumentManager implements ObjectManager
             $discriminatorValue = $class->discriminatorValue;
         }
 
-        if (isset($discriminatorField)) {
+        if ($discriminatorField !== null) {
             if ($discriminatorValue === null) {
                 throw MappingException::unlistedClassInDiscriminatorMap($class->name);
             }
-            $reference[$discriminatorField] = $discriminatorValue;
-
-        /* Add a discriminator value if the referenced document is not mapped
-         * explicitly to a targetDocument class.
-         */
+            $discriminatorData = [$discriminatorField => $discriminatorValue];
         } elseif (! isset($referenceMapping['targetDocument'])) {
             $discriminatorField = $referenceMapping['discriminatorField'];
 
@@ -767,7 +775,7 @@ class DocumentManager implements ObjectManager
             if (isset($referenceMapping['discriminatorMap'])) {
                 $discriminatorMap = $referenceMapping['discriminatorMap'];
             }
-            if (! isset($discriminatorMap)) {
+            if ($discriminatorMap === null) {
                 $discriminatorValue = $class->name;
             } else {
                 $discriminatorValue = array_search($class->name, $discriminatorMap);
@@ -776,11 +784,10 @@ class DocumentManager implements ObjectManager
                     throw MappingException::unlistedClassInDiscriminatorMap($class->name);
                 }
             }
-
-            $reference[$discriminatorField] = $discriminatorValue;
+            $discriminatorData = [$discriminatorField => $discriminatorValue];
         }
 
-        return $reference;
+        return $discriminatorData;
     }
 
     /**

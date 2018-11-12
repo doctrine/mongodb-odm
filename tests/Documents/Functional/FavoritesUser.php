@@ -19,8 +19,8 @@ class FavoritesUser
      * @ODM\ReferenceMany(
      *   discriminatorField="type",
      *   discriminatorMap={
-     *     "group"="Documents\Group",
-     *     "project"="Documents\Project"
+     *     "group"=Documents\Group::class,
+     *     "project"=Documents\Project::class
      *   }
      * )
      */

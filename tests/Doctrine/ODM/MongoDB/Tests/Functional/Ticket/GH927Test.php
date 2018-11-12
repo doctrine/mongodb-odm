@@ -25,7 +25,7 @@ class GH927Parent
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH927Reference") */
+    /** @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH927Reference::class) */
     protected $reference;
 }
 

@@ -15,7 +15,7 @@ class Bar
     /** @ODM\Field(type="string") */
     private $name;
 
-    /** @ODM\EmbedMany(targetDocument="Documents\Bars\Location") */
+    /** @ODM\EmbedMany(targetDocument=Documents\Bars\Location::class) */
     private $locations = [];
 
     public function __construct($name = null)

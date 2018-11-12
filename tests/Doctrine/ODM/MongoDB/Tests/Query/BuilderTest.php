@@ -942,16 +942,16 @@ class ParentClass
  */
 class ChildA extends ParentClass
 {
-    /** @ODM\ReferenceOne(targetDocument="Documents\Feature") */
+    /** @ODM\ReferenceOne(targetDocument=Documents\Feature::class) */
     public $featureFull;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\Feature") */
+    /** @ODM\ReferenceMany(targetDocument=Documents\Feature::class) */
     public $featureFullMany;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\Feature") */
+    /** @ODM\ReferenceOne(targetDocument=Documents\Feature::class) */
     public $conflict;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\Feature") */
+    /** @ODM\ReferenceMany(targetDocument=Documents\Feature::class) */
     public $conflictMany;
 }
 
@@ -960,16 +960,16 @@ class ChildA extends ParentClass
  */
 class ChildB extends ParentClass
 {
-    /** @ODM\ReferenceOne(targetDocument="Documents\Feature", storeAs="id") */
+    /** @ODM\ReferenceOne(targetDocument=Documents\Feature::class, storeAs="id") */
     public $featureSimple;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\Feature", storeAs="id") */
+    /** @ODM\ReferenceMany(targetDocument=Documents\Feature::class, storeAs="id") */
     public $featureSimpleMany;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\Feature", storeAs="id") */
+    /** @ODM\ReferenceOne(targetDocument=Documents\Feature::class, storeAs="id") */
     public $conflict;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\Feature", storeAs="id") */
+    /** @ODM\ReferenceMany(targetDocument=Documents\Feature::class, storeAs="id") */
     public $conflictMany;
 }
 
