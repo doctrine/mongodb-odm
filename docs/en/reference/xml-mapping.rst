@@ -110,12 +110,12 @@ of several common elements:
 
         <document name="Documents\User" db="documents" collection="users">
             <id />
-            <field fieldName="username" name="login" type="string" />
-            <field fieldName="email" type="string" unique="true" order="desc" />
-            <field fieldName="createdAt" type="date" />
+            <field field-name="username" name="login" type="string" />
+            <field field-name="email" type="string" unique="true" order="desc" />
+            <field field-name="createdAt" type="date" />
             <indexes>
                 <index unique="true" dropDups="true">
-                    <key name="username" order="desc">
+                    <key name="username" order="desc" />
                     <option name="safe" value="true" />
                 </index>
             </indexes>
