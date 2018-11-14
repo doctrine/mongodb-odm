@@ -37,14 +37,8 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
         $this->assertNotNull($parentWithDiscriminator);
         $this->assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getReferencedChild(), 'Referenced document correctly respects defaultDiscriminatorValue in referenceOne mapping');
         $this->assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getEmbeddedChild(), 'Embedded document correctly respects defaultDiscriminatorValue in referenceOne mapping');
-
-        foreach ($parentWithDiscriminator->getReferencedChildren() as $child) {
-            $this->assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $child, 'Referenced document correctly respects defaultDiscriminatorValue in referenceMany mapping');
-        }
-
-        foreach ($parentWithDiscriminator->getEmbeddedChildren() as $child) {
-            $this->assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $child, 'Embedded document correctly respects defaultDiscriminatorValue in referenceMany mapping');
-        }
+        $this->assertContainsOnlyInstancesOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getReferencedChildren(), 'Referenced document correctly respects defaultDiscriminatorValue in referenceMany mapping');
+        $this->assertContainsOnlyInstancesOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getEmbeddedChildren(), 'Embedded document correctly respects defaultDiscriminatorValue in referenceMany mapping');
     }
 
     /**
