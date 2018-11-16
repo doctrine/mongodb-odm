@@ -80,6 +80,15 @@ class BasicInheritanceMappingTest extends BaseTest
         $this->assertSame('secondary', $class->readPreference);
         $this->assertEquals([ ['dc' => 'east'] ], $class->readPreferenceTags);
     }
+
+    public function testGridFSOptionsAreInherited()
+    {
+        $class = $this->factory->getMetadataFor(GridFSChildClass::class);
+
+        $this->assertTrue($class->isFile);
+        $this->assertSame(112, $class->getChunkSizeBytes());
+        $this->assertSame('myFile', $class->getBucketName());
+    }
 }
 
 class TransientBaseClass
@@ -123,4 +132,23 @@ class DocumentSubClass2 extends MappedSuperclassBase
 
     /** @ODM\Field(type="string") */
     private $name;
+}
+
+/**
+ * @ODM\File(bucketName="myFile", chunkSizeBytes=112)
+ * @ODM\DiscriminatorField("type")
+ */
+class GridFSParentClass
+{
+    /** @ODM\Id */
+    private $id;
+}
+
+/**
+ * @ODM\File
+ */
+class GridFSChildClass extends GridFSParentClass
+{
+    /** @ODM\Id */
+    private $id;
 }

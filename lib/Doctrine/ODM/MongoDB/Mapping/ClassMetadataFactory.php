@@ -135,8 +135,18 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
             $class->setReadPreference($parent->readPreference, $parent->readPreferenceTags);
             $class->setWriteConcern($parent->writeConcern);
+
             if ($parent->isMappedSuperclass) {
                 $class->setCustomRepositoryClass($parent->customRepositoryClassName);
+            }
+
+            if ($parent->isFile) {
+                $class->isFile = true;
+                $class->setBucketName($parent->bucketName);
+
+                if ($parent->chunkSizeBytes !== null) {
+                    $class->setChunkSizeBytes($parent->chunkSizeBytes);
+                }
             }
         }
 

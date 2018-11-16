@@ -192,9 +192,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY: The name of the GridFS bucket the document is mapped to.
      *
-     * @var string|null
+     * @var string
      */
-    public $bucketName;
+    public $bucketName = 'fs';
 
     /**
      * READ-ONLY: If the collection should be a fixed size.
