@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
-use Doctrine\Common\Util\Debug;
 use LogicException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use function dump;
 use function is_numeric;
 use function json_decode;
 
@@ -54,13 +54,6 @@ class QueryCommand extends Console\Command\Command
                 InputOption::VALUE_REQUIRED,
                 'The number of documents to return.'
             ),
-            new InputOption(
-                'depth',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Dumping depth of Document graph.',
-                7
-            ),
         ])
         ->setHelp(<<<EOT
 Execute a query and output the results.
@@ -77,12 +70,6 @@ EOT
         $qb = $dm->getRepository($input->getArgument('class'))->createQueryBuilder();
         $qb->setQueryArray((array) json_decode($input->getArgument('query')));
         $qb->hydrate((bool) $input->getOption('hydrate'));
-
-        $depth = $input->getOption('depth');
-
-        if (! is_numeric($depth)) {
-            throw new LogicException("Option 'depth' must contain an integer value");
-        }
 
         $skip = $input->getOption('skip');
         if ($skip !== null) {
@@ -103,7 +90,7 @@ EOT
         }
 
         foreach ($qb->getQuery() as $result) {
-            Debug::dump($result, $depth);
+            dump($result);
         }
     }
 }

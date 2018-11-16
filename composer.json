@@ -31,7 +31,8 @@
         "doctrine/instantiator": "^1.1",
         "mongodb/mongodb": "^1.2.0",
         "ocramius/proxy-manager": "^2.2",
-        "symfony/console": "^3.4|^4.1"
+        "symfony/console": "^3.4|^4.1",
+        "symfony/var-dumper": "^4.1"
     },
     "require-dev": {
         "doctrine/coding-standard": "^5.0",
