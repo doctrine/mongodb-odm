@@ -907,7 +907,23 @@ class Expr
     {
         return $this->operator('$max', $expression);
     }
-
+    
+    /**
+     * Combines multiple documents into a single document.
+     *
+     * @see http://docs.mongodb.com/manual/reference/operator/aggregation/mergeObjects/
+     *
+     * @param Object1,Object2,...
+     */
+    public function mergeObjects()
+    {
+        $arrayarg = array();
+        foreach (func_get_args() as $param) {
+            $arrayarg[] =$param;
+        }
+        return $this->operator('$mergeObjects', $arrayarg);
+    }
+    
     /**
      * Returns the metadata associated with a document in a pipeline operations.
      *
