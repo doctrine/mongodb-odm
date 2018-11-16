@@ -171,7 +171,7 @@ class IndexesTest extends BaseTest
 
     /**
      * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error collection
+     * @expectedExceptionMessage duplicate key error
      */
     public function testUniqueIndexOnField()
     {
@@ -180,7 +180,7 @@ class IndexesTest extends BaseTest
 
     /**
      * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error collection
+     * @expectedExceptionMessage duplicate key error
      */
     public function testUniqueIndexOnDocument()
     {
@@ -189,7 +189,7 @@ class IndexesTest extends BaseTest
 
     /**
      * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error collection
+     * @expectedExceptionMessage duplicate key error
      */
     public function testIndexesOnDocument()
     {
@@ -198,7 +198,7 @@ class IndexesTest extends BaseTest
 
     /**
      * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error collection
+     * @expectedExceptionMessage duplicate key error
      */
     public function testMultipleFieldsUniqueIndexOnDocument()
     {
@@ -207,7 +207,7 @@ class IndexesTest extends BaseTest
 
     /**
      * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error collection
+     * @expectedExceptionMessage duplicate key error
      */
     public function testMultipleFieldIndexes()
     {

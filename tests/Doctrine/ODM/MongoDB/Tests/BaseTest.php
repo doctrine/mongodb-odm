@@ -55,6 +55,11 @@ abstract class BaseTest extends TestCase
         $collections = $client->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
 
         foreach ($collections as $collection) {
+            // See https://jira.mongodb.org/browse/SERVER-16541
+            if ($collection->getName() === 'system.indexes') {
+                continue;
+            }
+
             $client->selectCollection(DOCTRINE_MONGODB_DATABASE, $collection->getName())->drop();
         }
     }
