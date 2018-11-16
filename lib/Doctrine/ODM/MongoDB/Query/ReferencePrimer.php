@@ -115,7 +115,7 @@ class ReferencePrimer
          * the priming query.
          */
         if ($mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID && empty($mapping['targetDocument'])) {
-            throw new LogicException(sprintf('Field "%s" is a simple reference without a target document class in class "%s"', $fieldName, $class->name));
+            throw new LogicException(sprintf('Field "%s" is an identifier reference without a target document class in class "%s"', $fieldName, $class->name));
         }
 
         if ($primer !== null && ! is_callable($primer)) {

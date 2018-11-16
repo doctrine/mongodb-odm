@@ -116,12 +116,12 @@ class MappingException extends BaseMappingException
 
     public static function simpleReferenceRequiresTargetDocument(string $className, string $fieldName) : self
     {
-        return new self(sprintf('Target document must be specified for simple reference: %s::%s', $className, $fieldName));
+        return new self(sprintf('Target document must be specified for identifier reference: %s::%s', $className, $fieldName));
     }
 
     public static function simpleReferenceMustNotTargetDiscriminatedDocument(string $targetDocument) : self
     {
-        return new self(sprintf('Simple reference must not target document using Single Collection Inheritance, %s targeted.', $targetDocument));
+        return new self(sprintf('Identifier reference must not target document using Single Collection Inheritance, %s targeted.', $targetDocument));
     }
 
     public static function atomicCollectionStrategyNotAllowed(string $strategy, string $className, string $fieldName) : self

@@ -465,7 +465,7 @@ class ClassMetadataTest extends BaseTest
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Target document must be specified for simple reference: stdClass::assoc
+     * @expectedExceptionMessage Target document must be specified for identifier reference: stdClass::assoc
      */
     public function testSimpleReferenceRequiresTargetDocument()
     {
@@ -481,7 +481,7 @@ class ClassMetadataTest extends BaseTest
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Target document must be specified for simple reference: stdClass::assoc
+     * @expectedExceptionMessage Target document must be specified for identifier reference: stdClass::assoc
      */
     public function testSimpleAsStringReferenceRequiresTargetDocument()
     {
@@ -523,7 +523,7 @@ class ClassMetadataTest extends BaseTest
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Target document must be specified for simple reference: stdClass::assoc
+     * @expectedExceptionMessage Target document must be specified for identifier reference: stdClass::assoc
      */
     public function testStoreAsIdReferenceRequiresTargetDocument()
     {
