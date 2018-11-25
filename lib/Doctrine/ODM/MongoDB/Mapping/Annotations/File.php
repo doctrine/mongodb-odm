@@ -14,8 +14,8 @@ final class File extends AbstractDocument
     /** @var string|null */
     public $db;
 
-    /** @var string */
-    public $bucketName = 'fs';
+    /** @var string|null */
+    public $bucketName;
 
     /** @var string|null */
     public $repositoryClass;
