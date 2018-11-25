@@ -189,7 +189,7 @@ class DocumentManagerTest extends BaseTest
 
     /**
      * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Simple reference must not target document using Single Collection Inheritance, Documents\Tournament\Participant targeted.
+     * @expectedExceptionMessage Identifier reference must not target document using Single Collection Inheritance, Documents\Tournament\Participant targeted.
      */
     public function testDisriminatedSimpleReferenceFails()
     {
