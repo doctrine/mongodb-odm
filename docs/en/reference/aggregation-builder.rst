@@ -75,9 +75,9 @@ the aggregation builder.
             ->expression(
                 $builder->expr()
                     ->field('month')
-                    ->month('purchaseDate')
+                    ->month('$purchaseDate')
                     ->field('year')
-                    ->year('purchaseDate')
+                    ->year('$purchaseDate')
             )
             ->field('numPurchases')
             ->sum(1)
