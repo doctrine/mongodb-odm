@@ -209,6 +209,10 @@ Optional attributes:
     ``collectionClass`` - A |FQCN| of class that implements ``Collection``
     interface and is used to hold documents. Doctrine's ``ArrayCollection`` is
     used by default.
+-
+    ``notSaved`` - ``false`` by default. If set to ``true``, the property is
+    loaded from the database if it exists there. Upon writing data back to the
+    database, the data from this field is not updated at all.
 
 .. code-block:: php
 
@@ -260,6 +264,9 @@ Optional attributes:
 -
     ``defaultDiscriminatorValue`` - A default value for discriminatorField if no
     value has been set in the embedded document.
+-
+    ``notSaved`` - The property is loaded if it exists in the database; however,
+    ODM will not save the property value back to the database.
 
 .. code-block:: php
 
@@ -354,6 +361,9 @@ Optional attributes:
    ``nullable`` - By default, ODM will ``$unset`` fields in MongoDB if the PHP
    value is null. Specify true for this option to force ODM to store a null
    value in the database instead of unsetting the field.
+-
+   ``notSaved`` - The property is loaded if it exists in the database; however,
+   ODM will not save the property value back to the database.
 
 Examples:
 
@@ -632,19 +642,6 @@ and should not be managed directly. See
     {
         // ...
     }
-
-@NotSaved
----------
-
-The annotation is used to specify properties that are loaded if they exist in
-MongoDB; however, ODM will not save the property value back to the database.
-
-.. code-block:: php
-
-    <?php
-
-    /** @NotSaved */
-    public $field;
 
 @PostLoad
 ---------
@@ -956,6 +953,9 @@ Optional attributes:
     ``prime`` - A list of references contained in the target document that will
     be initialized when the collection is loaded. Only allowed for inverse
     references.
+-
+    ``notSaved`` - The property is loaded if it exists in the database; however,
+    ODM will not save the property value back to the database.
 
 .. code-block:: php
 
@@ -1023,6 +1023,9 @@ Optional attributes:
     ``limit`` - Limit for the query that loads the reference.
 -
     ``skip`` - Skip for the query that loads the reference.
+-
+    ``notSaved`` - The property is loaded if it exists in the database; however,
+    ODM will not save the property value back to the database.
 
 .. code-block:: php
 

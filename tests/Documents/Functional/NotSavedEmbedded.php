@@ -12,6 +12,6 @@ class NotSavedEmbedded
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\NotSaved */
+    /** @ODM\Field(notSaved=true) */
     public $notSaved;
 }

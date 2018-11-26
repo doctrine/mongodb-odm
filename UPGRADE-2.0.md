@@ -150,6 +150,9 @@ or annotations. To migrate away from YAML mappings, first update to MongoDB ODM
   `BinMD5`, `BinUUID`, `BinUUIDRFC4122`, `Bool`, `Boolean`, `Collection`,
   `Date`, `Float`, `Hash`, `Increment`, `Int`, `Integer`, `Key`, `ObjectId`,
   `Raw`, `String`, `Timestamp`.
+* The `NotSaved` annotation has been dropped in favor of the `notSaved`
+  attribute on the `Field` annotation. The `notSaved` attribute can also be
+  applied to reference and embed mappings.
 * The `$name` and `$fieldName` properties in the `DiscriminatorField` annotation
   class have been dropped. The field name is now passed via the default `$value`
   property.
