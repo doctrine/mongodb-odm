@@ -8,7 +8,7 @@ use LogicException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use function dump;
+use Symfony\Component\VarDumper\VarDumper;
 use function is_numeric;
 use function json_decode;
 
@@ -90,7 +90,7 @@ EOT
         }
 
         foreach ($qb->getQuery() as $result) {
-            dump($result);
+            VarDumper::dump($result);
         }
     }
 }
