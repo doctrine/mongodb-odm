@@ -50,10 +50,10 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}, strategy="addToSet") */
     protected $uniqueGroups;
 
-    /** @ODM\ReferenceMany(targetDocument=Group::class, name="groups", sort={"name"="asc"}, strategy="setArray") */
+    /** @ODM\ReferenceMany(targetDocument=Group::class, name="groups", notSaved=true, sort={"name"="asc"}, strategy="setArray") */
     protected $sortedAscGroups;
 
-    /** @ODM\ReferenceMany(targetDocument=Group::class, name="groups", sort={"name"="desc"}, strategy="setArray") */
+    /** @ODM\ReferenceMany(targetDocument=Group::class, name="groups", notSaved=true, sort={"name"="desc"}, strategy="setArray") */
     protected $sortedDescGroups;
 
     /** @ODM\ReferenceOne(targetDocument=Account::class, cascade={"all"}) */

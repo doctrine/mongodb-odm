@@ -1939,6 +1939,7 @@ class ClassMetadata implements BaseClassMetadata
         }
 
         $this->applyStorageStrategy($mapping);
+        $this->checkDuplicateMapping($mapping);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         if (isset($mapping['association'])) {
@@ -2076,5 +2077,31 @@ class ClassMetadata implements BaseClassMetadata
     private function isAllowedGridFSField(string $name) : bool
     {
         return in_array($name, self::ALLOWED_GRIDFS_FIELDS, true);
+    }
+
+    private function checkDuplicateMapping(array $mapping) : void
+    {
+        if ($mapping['notSaved'] ?? false) {
+            return;
+        }
+
+        foreach ($this->fieldMappings as $fieldName => $otherMapping) {
+            // Ignore fields with the same name - we can safely override their mapping
+            if ($mapping['fieldName'] === $fieldName) {
+                continue;
+            }
+
+            // Ignore fields with a different name in the database
+            if ($mapping['name'] !== $otherMapping['name']) {
+                continue;
+            }
+
+            // If the other field is not saved, ignore it as well
+            if ($otherMapping['notSaved'] ?? false) {
+                continue;
+            }
+
+            throw MappingException::duplicateDatabaseFieldName($this->getName(), $mapping['fieldName'], $mapping['name'], $fieldName);
+        }
     }
 }

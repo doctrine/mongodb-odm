@@ -7,7 +7,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Documents\User;
 use ReflectionMethod;
 use SimpleXmlElement;
 use stdClass;
@@ -36,20 +35,6 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $shardKey = $class->getShardKey();
         $this->assertSame(['unique' => true, 'numInitialChunks' => 4096], $shardKey['options']);
         $this->assertSame(['_id' => 1], $shardKey['keys']);
-    }
-
-    public function testGetAssociationCollectionClass()
-    {
-        $class   = new ClassMetadata(User::class);
-        $driver  = $this->_loadDriver();
-        $element = new SimpleXmlElement('<reference-many target-document="Phonenumber" collection-class="Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\PhonenumberCollection" field="phonenumbers"></reference-many>');
-
-        /** @uses XmlDriver::setShardKey */
-        $m = new ReflectionMethod(get_class($driver), 'addReferenceMapping');
-        $m->setAccessible(true);
-        $m->invoke($driver, $class, $element, 'many');
-
-        $this->assertEquals(PhonenumberCollection::class, $class->getAssociationCollectionClass('phonenumbers'));
     }
 
     public function testInvalidMappingFileTriggersException() : void

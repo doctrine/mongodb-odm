@@ -448,6 +448,24 @@ abstract class AbstractMappingDriverTest extends BaseTest
         ], $class->getFieldMapping('metadata'), true);
     }
 
+    /**
+     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @expectedExceptionMessage Field "bar" in class "Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverDuplicateDatabaseName" is mapped to field "baz" in the database, but that name is already in use by field "foo".
+     */
+    public function testDuplicateDatabaseNameInMappingCauseErrors()
+    {
+        $this->loadMetadata(AbstractMappingDriverDuplicateDatabaseName::class);
+    }
+
+    public function testDuplicateDatabaseNameWithNotSavedDoesNotThrowExeption()
+    {
+        $metadata = $this->loadMetadata(AbstractMappingDriverDuplicateDatabaseNameNotSaved::class);
+
+        $this->assertTrue($metadata->hasField('foo'));
+        $this->assertTrue($metadata->hasField('bar'));
+        $this->assertTrue($metadata->fieldMappings['bar']['notSaved']);
+    }
+
     protected function loadMetadata($className) : ClassMetadata
     {
         $mappingDriver = $this->_loadDriver();
@@ -703,4 +721,44 @@ class AbstractMappingDriverFileMetadata
 {
     /** @ODM\Field */
     public $contentType;
+}
+
+/** @ODM\MappedSuperclass */
+class AbstractMappingDriverSuperClass
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @var @ODM\Field(type="string") */
+    protected $override;
+}
+
+/**
+ * @ODM\Document
+ */
+class AbstractMappingDriverDuplicateDatabaseName extends AbstractMappingDriverSuperClass
+{
+    /** @ODM\Field(type="int") */
+    public $override;
+
+    /** @ODM\Field(type="string", name="baz") */
+    public $foo;
+
+    /** @ODM\Field(type="string", name="baz") */
+    public $bar;
+}
+
+/**
+ * @ODM\Document
+ */
+class AbstractMappingDriverDuplicateDatabaseNameNotSaved extends AbstractMappingDriverSuperClass
+{
+    /** @ODM\Field(type="int") */
+    public $override;
+
+    /** @ODM\Field(type="string", name="baz") */
+    public $foo;
+
+    /** @ODM\Field(type="string", name="baz", notSaved=true) */
+    public $bar;
 }
