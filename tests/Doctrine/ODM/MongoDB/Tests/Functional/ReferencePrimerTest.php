@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use BadMethodCallException;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -545,36 +544,7 @@ class ReferencePrimerTest extends BaseTest
         $this->assertTrue($comment->author->isProxyInitialized());
     }
 
-    public function testPrimeReferencesInReferenceManyWithRepositoryMethodThrowsException()
-    {
-        $this->markTestSkipped('Test invalid until we\'ve figured out how to treat cursors vs. builders in repositoryMethod');
-        $commentAuthor = new User();
-        $this->dm->persist($commentAuthor);
-
-        $postAuthor = new User();
-        $this->dm->persist($postAuthor);
-
-        $comment         = new Comment('foo', new DateTime());
-        $comment->author = $commentAuthor;
-        $this->dm->persist($comment);
-
-        $post = new BlogPost('foo');
-        $post->setUser($postAuthor);
-        $post->addComment($comment);
-
-        $this->dm->flush();
-        $this->dm->clear();
-
-        /** @var BlogPost $post */
-        $post = $this->dm->find(BlogPost::class, $post->id);
-        $this->assertInstanceOf(BlogPost::class, $post);
-
-        $this->expectException(BadMethodCallException::class);
-
-        $post->repoCommentsWithPrimer->first();
-    }
-
-    public function testPrimeReferencesInReferenceManyWithRepositoryMethod()
+    public function testPrimeReferencesInReferenceManyWithRepositoryMethodEager()
     {
         $commentAuthor = new User();
         $this->dm->persist($commentAuthor);

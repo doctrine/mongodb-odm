@@ -540,23 +540,10 @@ class DocumentPersisterTest extends BaseTest
 
     public function testVersionIncrementOnUpdateSuccess()
     {
-        $this->markTestSkipped('Mocking results to update calls is no longer possible. Rewrite test to not rely on mocking');
+        $testDocument = new DocumentPersisterTestDocumentWithVersion();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
 
-        $class             = DocumentPersisterTestDocumentWithVersion::class;
-        $documentPersister = $this->uow->getDocumentPersister($class);
-
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->any())
-            ->method('updateOne')
-            ->will($this->returnValue(['n' => 1]));
-
-        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($documentPersister, $collection);
-
-        $testDocument     = new $class();
-        $testDocument->id = 12345;
-        $this->uow->registerManaged($testDocument, 12345, ['id' => 12345]);
         $testDocument->name = 'test';
         $this->dm->persist($testDocument);
         $this->dm->flush();
@@ -566,29 +553,18 @@ class DocumentPersisterTest extends BaseTest
 
     public function testNoVersionIncrementOnUpdateFailure()
     {
-        $this->markTestSkipped('Mocking results to update calls is no longer possible. Rewrite test to not rely on mocking');
+        $class = DocumentPersisterTestDocumentWithVersion::class;
 
-        $class             = DocumentPersisterTestDocumentWithVersion::class;
-        $documentPersister = $this->uow->getDocumentPersister($class);
-
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->any())
-            ->method('updateOne')
-            ->will($this->returnValue(['n' => 0]));
-
-        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($documentPersister, $collection);
-
-        $testDocument     = new $class();
-        $testDocument->id = 12345;
-        $this->uow->registerManaged($testDocument, 12345, ['id' => 12345]);
-        $this->expectException(LockException::class);
-        $testDocument->name = 'test';
+        $testDocument = new $class();
         $this->dm->persist($testDocument);
         $this->dm->flush();
 
-        $this->assertEquals(1, $testDocument->revision);
+        $this->dm->getDocumentCollection($class)->updateOne([], ['$inc' => ['revision' => 1]]);
+
+        $testDocument->name = 'test';
+        $this->dm->persist($testDocument);
+        $this->expectException(LockException::class);
+        $this->dm->flush();
     }
 }
 
