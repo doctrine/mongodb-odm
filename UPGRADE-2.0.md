@@ -212,6 +212,8 @@ ocramius. If you are checking for proxies, the following changed:
 * The `getIterator` method in `Doctrine\ODM\MongoDB\Query\Query` returns an
   iterator of type `Doctrine\ODM\MongoDB\Iterator\Iterator` instead of a MongoDB
   cursor.
+* The `eagerCursor` helper in `Doctrine\ODM\MongoDB\Query\Builder` and its logic
+  have been removed entirely without replacement.
 
 ## Schema manager
 

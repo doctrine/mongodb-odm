@@ -20,13 +20,4 @@ class CommentRepository extends DocumentRepository
     {
         return $this->getDocumentPersister()->loadAll();
     }
-
-    public function findManyCommentsEager()
-    {
-        return $this
-            ->createQueryBuilder()
-            ->eagerCursor(true)
-            ->getQuery()
-            ->getIterator();
-    }
 }

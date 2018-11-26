@@ -404,19 +404,6 @@ class Builder
     }
 
     /**
-     * Set whether the query should return its result as an EagerCursor.
-     */
-    public function eagerCursor(bool $bool = true) : self
-    {
-        if (! $bool && ! empty($this->primers)) {
-            throw new BadMethodCallException("Can't set eagerCursor to false when using reference primers");
-        }
-
-        $this->query['eagerCursor'] = (bool) $bool;
-        return $this;
-    }
-
-    /**
      * Specify $elemMatch criteria for the current field.
      *
      * You can create a new expression using the {@link Builder::expr()} method.
@@ -1185,10 +1172,6 @@ class Builder
             unset($this->primers[$this->currentField]);
 
             return $this;
-        }
-
-        if (array_key_exists('eagerCursor', $this->query) && ! $this->query['eagerCursor']) {
-            throw new BadMethodCallException("Can't call prime() when setting eagerCursor to false");
         }
 
         $this->primers[$this->currentField] = $primer;

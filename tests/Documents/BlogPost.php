@@ -48,9 +48,6 @@ class BlogPost
     /** @ODM\ReferenceMany(targetDocument=Comment::class, repositoryMethod="findManyComments") */
     public $repoCommentsWithoutMappedBy;
 
-    /** @ODM\ReferenceMany(targetDocument=Comment::class, mappedBy="parent", repositoryMethod="findManyCommentsEager", prime={"author"}) */
-    public $repoCommentsEager;
-
     /** @ODM\ReferenceOne(targetDocument=User::class, inversedBy="posts", nullable=true) */
     public $user;
 

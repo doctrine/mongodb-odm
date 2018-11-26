@@ -115,20 +115,9 @@ class Query implements IteratorAggregate
      */
     private $options;
 
-    /**
-     * Please note that $requireIndexes was deprecated in 1.2 and will be removed in 2.0
-     */
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false)
     {
         $primers = array_filter($primers);
-
-        if (! empty($primers)) {
-            $query['eagerCursor'] = true;
-        }
-
-        if (! empty($query['eagerCursor'])) {
-            $query['useIdentifierKeys'] = false;
-        }
 
         switch ($query['type']) {
             case self::TYPE_FIND:

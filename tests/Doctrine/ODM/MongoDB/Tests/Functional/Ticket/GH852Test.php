@@ -78,10 +78,9 @@ class GH852Test extends BaseTest
         $this->assertCount(1, $docs);
         $this->assertCount(2, $docs->current()->refMany);
 
-        // these lines are relevant for $useKeys = false in EagerCursor::initialize()
         $this->dm->clear();
         $docs = $this->dm->createQueryBuilder(get_class($parent))
-                ->eagerCursor()->getQuery()->execute();
+                ->getQuery()->execute();
         $this->assertCount(4, $docs);
 
         // these lines are relevant for $useKeys = false in DocumentRepository::matching()

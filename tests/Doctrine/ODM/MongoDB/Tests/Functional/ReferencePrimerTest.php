@@ -70,29 +70,6 @@ class ReferencePrimerTest extends BaseTest
             ->toArray();
     }
 
-    public function testPrimeImpliesEagerCursor()
-    {
-        $query = $this->dm->createQueryBuilder(User::class)
-            ->field('account')
-            ->prime(true)
-            ->getQuery()
-            ->getQuery();
-
-        $this->assertArrayHasKey('eagerCursor', $query);
-        $this->assertTrue($query['eagerCursor']);
-    }
-
-    /**
-     * @expectedException BadMethodCallException
-     */
-    public function testPrimeForbidsLazyCursor()
-    {
-        $this->dm->createQueryBuilder(User::class)
-            ->field('account')
-            ->prime(true)
-            ->eagerCursor(false);
-    }
-
     /**
      * @doesNotPerformAssertions
      */
@@ -101,19 +78,7 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->createQueryBuilder(User::class)
             ->field('account')
             ->prime(true)
-            ->prime(false)
-            ->eagerCursor(false);
-    }
-
-    /**
-     * @expectedException BadMethodCallException
-     */
-    public function testLazyCursorForbidsPrime()
-    {
-        $this->dm->createQueryBuilder(User::class)
-            ->eagerCursor(false)
-            ->field('account')
-            ->prime(true);
+            ->prime(false);
     }
 
     public function testPrimeReferencesWithDBRefObjects()
@@ -609,7 +574,7 @@ class ReferencePrimerTest extends BaseTest
         $post->repoCommentsWithPrimer->first();
     }
 
-    public function testPrimeReferencesInReferenceManyWithRepositoryMethodEager()
+    public function testPrimeReferencesInReferenceManyWithRepositoryMethod()
     {
         $commentAuthor = new User();
         $this->dm->persist($commentAuthor);
@@ -632,7 +597,7 @@ class ReferencePrimerTest extends BaseTest
         $post = $this->dm->find(BlogPost::class, $post->id);
         $this->assertInstanceOf(BlogPost::class, $post);
 
-        $comment = $post->repoCommentsEager->first();
+        $comment = $post->repoCommentsWithPrimer->first();
         $this->assertInstanceOf(GhostObjectInterface::class, $comment->author);
         $this->assertTrue($comment->author->isProxyInitialized());
     }
