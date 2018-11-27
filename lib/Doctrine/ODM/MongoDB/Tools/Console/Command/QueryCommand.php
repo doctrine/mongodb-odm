@@ -8,7 +8,8 @@ use LogicException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\VarDumper\VarDumper;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\CliDumper;
 use function is_numeric;
 use function json_decode;
 
@@ -89,8 +90,13 @@ EOT
             $qb->limit((int) $limit);
         }
 
+        $cloner = new VarCloner();
+        $dumper = new CliDumper(static function (string $payload) use ($output) : void {
+            $output->write($payload);
+        });
+
         foreach ($qb->getQuery() as $result) {
-            VarDumper::dump($result);
+            $dumper->dump($cloner->cloneVar($result));
         }
     }
 }
