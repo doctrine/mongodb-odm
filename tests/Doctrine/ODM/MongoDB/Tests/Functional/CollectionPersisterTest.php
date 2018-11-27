@@ -58,7 +58,7 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
-        $persister->deleteAll([$user->categories], []);
+        $persister->deleteAll($user, [$user->categories], []);
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
@@ -67,7 +67,7 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
-        $persister->deleteAll([$user->phonenumbers], []);
+        $persister->deleteAll($user, [$user->phonenumbers], []);
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
     }
@@ -77,6 +77,7 @@ class CollectionPersisterTest extends BaseTest
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
         $persister->deleteAll(
+            $user,
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             []
         );
@@ -84,6 +85,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
         $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
         $persister->deleteAll(
+            $user,
             [$user->categories[0]->children, $user->categories[1]->children],
             []
         );
@@ -99,6 +101,7 @@ class CollectionPersisterTest extends BaseTest
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
         $persister->deleteAll(
+            $user,
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             []
         );
@@ -106,6 +109,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
         $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
         $persister->deleteAll(
+            $user,
             [$user->categories[0]->children, $user->categories[0]->children[1]->children, $user->categories],
             []
         );

@@ -57,19 +57,7 @@ use function strpos;
  */
 class CollectionPersister
 {
-    /**
-     * Validation map that is used for strategy validation in insertCollections method.
-     */
-    const INSERT_STRATEGIES_MAP = [
-        ClassMetadata::STORAGE_STRATEGY_PUSH_ALL => true,
-        ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET => true,
-    ];
-
-    /**
-     * The DocumentManager instance.
-     *
-     * @var DocumentManager
-     */
+    /** @var DocumentManager */
     private $dm;
 
     /**
@@ -94,14 +82,14 @@ class CollectionPersister
     }
 
     /**
-     * Deletes a PersistentCollection instances completely from a document using $unset. If collections belong to the different
+     * Deletes a PersistentCollection instances completely from a document using $unset.
      *
+     * @param object                          $parent
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    public function deleteAll(array $collections, array $options)
+    public function deleteAll($parent, array $collections, array $options)
     {
-        $parents       = [];
         $unsetPathsMap = [];
 
         foreach ($collections as $collection) {
@@ -112,17 +100,17 @@ class CollectionPersister
             if (CollectionHelper::isAtomic($mapping['strategy'])) {
                 throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
             }
-            list($propertyPath, $parent)        = $this->getPathAndParent($collection);
-            $oid                                = spl_object_hash($parent);
-            $parents[$oid]                      = $parent;
-            $unsetPathsMap[$oid][$propertyPath] = true;
+            list($propertyPath)           = $this->getPathAndParent($collection);
+            $unsetPathsMap[$propertyPath] = true;
         }
 
-        foreach ($unsetPathsMap as $oid => $paths) {
-            $unsetPaths = array_fill_keys($this->excludeSubPaths(array_keys($paths)), true);
-            $query      = ['$unset' => $unsetPaths];
-            $this->executeQuery($parents[$oid], $query, $options);
+        if (empty($unsetPathsMap)) {
+            return;
         }
+
+        $unsetPaths = array_fill_keys($this->excludeSubPaths(array_keys($unsetPathsMap)), true);
+        $query      = ['$unset' => $unsetPaths];
+        $this->executeQuery($parent, $query, $options);
     }
 
     /**
@@ -185,10 +173,11 @@ class CollectionPersister
     /**
      * Updates a list PersistentCollection instances deleting removed rows and inserting new rows.
      *
+     * @param object                          $parent
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    public function updateAll(array $collections, array $options)
+    public function updateAll($parent, array $collections, array $options)
     {
         $setStrategyColls     = [];
         $addPushStrategyColls = [];
@@ -220,14 +209,14 @@ class CollectionPersister
         }
 
         if (! empty($setStrategyColls)) {
-            $this->setCollections($setStrategyColls, $options);
+            $this->setCollections($parent, $setStrategyColls, $options);
         }
         if (empty($addPushStrategyColls)) {
             return;
         }
 
-        $this->deleteCollections($addPushStrategyColls, $options);
-        $this->insertCollections($addPushStrategyColls, $options); // TODO
+        $this->deleteCollections($parent, $addPushStrategyColls, $options);
+        $this->insertCollections($parent, $addPushStrategyColls, $options);
     }
 
     /**
@@ -259,43 +248,39 @@ class CollectionPersister
      * set as a BSON array, which means the collection elements will be
      * reindexed numerically before storage.
      *
+     * @param object                          $parent
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    private function setCollections(array $collections, array $options)
+    private function setCollections($parent, array $collections, array $options)
     {
-        $parents     = [];
         $pathCollMap = [];
-        $pathsMap    = [];
+        $paths       = [];
         foreach ($collections as $coll) {
-            list($propertyPath, $parent)      = $this->getPathAndParent($coll);
-            $oid                              = spl_object_hash($parent);
-            $parents[$oid]                    = $parent;
-            $pathCollMap[$oid][$propertyPath] = $coll;
-            $pathsMap[$oid][]                 = $propertyPath;
+            list($propertyPath)         = $this->getPathAndParent($coll);
+            $pathCollMap[$propertyPath] = $coll;
+            $paths[]                    = $propertyPath;
         }
 
-        foreach ($pathsMap as $oid => $paths) {
-            $paths = $this->excludeSubPaths($paths);
-            /** @var PersistentCollectionInterface[] $setColls */
-            $setColls   = array_intersect_key($pathCollMap[$oid], array_flip($paths));
-            $setPayload = [];
-            foreach ($setColls as $propertyPath => $coll) {
-                $coll->initialize();
-                $mapping                   = $coll->getMapping();
-                $setData                   = $this->pb->prepareAssociatedCollectionValue(
-                    $coll,
-                    CollectionHelper::usesSet($mapping['strategy'])
-                );
-                $setPayload[$propertyPath] = $setData;
-            }
-            if (empty($setPayload)) {
-                continue;
-            }
-
-            $query = ['$set' => $setPayload];
-            $this->executeQuery($parents[$oid], $query, $options);
+        $paths = $this->excludeSubPaths($paths);
+        /** @var PersistentCollectionInterface[] $setColls */
+        $setColls   = array_intersect_key($pathCollMap, array_flip($paths));
+        $setPayload = [];
+        foreach ($setColls as $propertyPath => $coll) {
+            $coll->initialize();
+            $mapping                   = $coll->getMapping();
+            $setData                   = $this->pb->prepareAssociatedCollectionValue(
+                $coll,
+                CollectionHelper::usesSet($mapping['strategy'])
+            );
+            $setPayload[$propertyPath] = $setData;
         }
+        if (empty($setPayload)) {
+            return;
+        }
+
+        $query = ['$set' => $setPayload];
+        $this->executeQuery($parent, $query, $options);
     }
 
     /**
@@ -339,14 +324,14 @@ class CollectionPersister
      *
      * This method is intended to be used with the "pushAll" and "addToSet" strategies.
      *
+     * @param object                          $parent
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    private function deleteCollections(array $collections, array $options)
+    private function deleteCollections($parent, array $collections, array $options)
     {
-        $parents       = [];
         $pathCollMap   = [];
-        $pathsMap      = [];
+        $paths         = [];
         $deleteDiffMap = [];
 
         foreach ($collections as $coll) {
@@ -359,43 +344,39 @@ class CollectionPersister
             if (empty($deleteDiff)) {
                 continue;
             }
-            list($propertyPath, $parent) = $this->getPathAndParent($coll);
+            list($propertyPath) = $this->getPathAndParent($coll);
 
-            $oid                                = spl_object_hash($parent);
-            $parents[$oid]                      = $parent;
-            $pathCollMap[$oid][$propertyPath]   = $coll;
-            $pathsMap[$oid][]                   = $propertyPath;
-            $deleteDiffMap[$oid][$propertyPath] = $deleteDiff;
+            $pathCollMap[$propertyPath]   = $coll;
+            $paths[]                      = $propertyPath;
+            $deleteDiffMap[$propertyPath] = $deleteDiff;
         }
 
-        foreach ($pathsMap as $oid => $paths) {
-            $paths        = $this->excludeSubPaths($paths);
-            $deleteColls  = array_intersect_key($pathCollMap[$oid], array_flip($paths));
-            $unsetPayload = [];
-            $pullPayload  = [];
-            foreach ($deleteColls as $propertyPath => $coll) {
-                $deleteDiff = $deleteDiffMap[$oid][$propertyPath];
-                foreach ($deleteDiff as $key => $document) {
-                    $unsetPayload[$propertyPath . '.' . $key] = true;
-                }
-                $pullPayload[$propertyPath] = null;
+        $paths        = $this->excludeSubPaths($paths);
+        $deleteColls  = array_intersect_key($pathCollMap, array_flip($paths));
+        $unsetPayload = [];
+        $pullPayload  = [];
+        foreach ($deleteColls as $propertyPath => $coll) {
+            $deleteDiff = $deleteDiffMap[$propertyPath];
+            foreach ($deleteDiff as $key => $document) {
+                $unsetPayload[$propertyPath . '.' . $key] = true;
             }
-
-            if (! empty($unsetPayload)) {
-                $this->executeQuery($parents[$oid], ['$unset' => $unsetPayload], $options);
-            }
-            if (empty($pullPayload)) {
-                continue;
-            }
-
-            /**
-             * @todo This is a hack right now because we don't have a proper way to
-             * remove an element from an array by its key. Unsetting the key results
-             * in the element being left in the array as null so we have to pull
-             * null values.
-             */
-            $this->executeQuery($parents[$oid], ['$pull' => $pullPayload], $options);
+            $pullPayload[$propertyPath] = null;
         }
+
+        if (! empty($unsetPayload)) {
+            $this->executeQuery($parent, ['$unset' => $unsetPayload], $options);
+        }
+        if (empty($pullPayload)) {
+            return;
+        }
+
+        /**
+         * @todo This is a hack right now because we don't have a proper way to
+         * remove an element from an array by its key. Unsetting the key results
+         * in the element being left in the array as null so we have to pull
+         * null values.
+         */
+        $this->executeQuery($parent, ['$pull' => $pullPayload], $options);
     }
 
     /**
@@ -448,16 +429,16 @@ class CollectionPersister
      *
      * This method is intended to be used with the "pushAll" and "addToSet" strategies.
      *
+     * @param object                          $parent
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    private function insertCollections(array $collections, array $options)
+    private function insertCollections($parent, array $collections, array $options)
     {
-        $parents             = [];
         $pushAllPathCollMap  = [];
         $addToSetPathCollMap = [];
-        $pushAllPathsMap     = [];
-        $addToSetPathsMap    = [];
+        $pushAllPaths        = [];
+        $addToSetPaths       = [];
         $diffsMap            = [];
 
         foreach ($collections as $coll) {
@@ -474,24 +455,18 @@ class CollectionPersister
             $mapping  = $coll->getMapping();
             $strategy = $mapping['strategy'];
 
-            if (empty(self::INSERT_STRATEGIES_MAP[$strategy])) {
-                throw new LogicException('Invalid strategy ' . $strategy . ' given for insertCollections');
-            }
-
-            list($propertyPath, $parent)   = $this->getPathAndParent($coll);
-            $oid                           = spl_object_hash($parent);
-            $parents[$oid]                 = $parent;
-            $diffsMap[$oid][$propertyPath] = $insertDiff;
+            list($propertyPath)      = $this->getPathAndParent($coll);
+            $diffsMap[$propertyPath] = $insertDiff;
 
             switch ($strategy) {
                 case ClassMetadata::STORAGE_STRATEGY_PUSH_ALL:
-                    $pushAllPathCollMap[$oid][$propertyPath] = $coll;
-                    $pushAllPathsMap[$oid][]                 = $propertyPath;
+                    $pushAllPathCollMap[$propertyPath] = $coll;
+                    $pushAllPaths[]                    = $propertyPath;
                     break;
 
                 case ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET:
-                    $addToSetPathCollMap[$oid][$propertyPath] = $coll;
-                    $addToSetPathsMap[$oid][]                 = $propertyPath;
+                    $addToSetPathCollMap[$propertyPath] = $coll;
+                    $addToSetPaths[]                    = $propertyPath;
                     break;
 
                 default:
@@ -499,28 +474,26 @@ class CollectionPersister
             }
         }
 
-        foreach ($parents as $oid => $parent) {
-            if (! empty($pushAllPathsMap[$oid])) {
-                $this->pushAllCollections(
-                    $parent,
-                    $pushAllPathsMap[$oid],
-                    $pushAllPathCollMap[$oid],
-                    $diffsMap[$oid],
-                    $options
-                );
-            }
-            if (empty($addToSetPathsMap[$oid])) {
-                continue;
-            }
-
-            $this->addToSetCollections(
+        if (! empty($pushAllPaths)) {
+            $this->pushAllCollections(
                 $parent,
-                $addToSetPathsMap[$oid],
-                $addToSetPathCollMap[$oid],
-                $diffsMap[$oid],
+                $pushAllPaths,
+                $pushAllPathCollMap,
+                $diffsMap,
                 $options
             );
         }
+        if (empty($addToSetPaths)) {
+            return;
+        }
+
+        $this->addToSetCollections(
+            $parent,
+            $addToSetPaths,
+            $addToSetPathCollMap,
+            $diffsMap,
+            $options
+        );
     }
 
     /**
