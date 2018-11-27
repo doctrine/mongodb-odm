@@ -40,7 +40,6 @@
        reference/find-and-update
        reference/filters
        reference/priming-references
-       reference/eager-cursors
        reference/map-reduce
        reference/capped-collections
        reference/storage-strategies

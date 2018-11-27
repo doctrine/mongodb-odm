@@ -120,10 +120,7 @@ added to the query.
 
 .. note::
 
-    When using inverse references with ``repositoryMethod``, be sure to return
-    an eager cursor from the repository method if you want to rely on primers
-    defined in the mapping. If the result is not an eager cursor, an exception
-    will be thrown and the collection won't be loaded. Also, any primers you
+    When using inverse references with ``repositoryMethod``, any primers you
     might have added in the ``repositoryMethod`` are overwritten with those
     specified in the mapping.
 
