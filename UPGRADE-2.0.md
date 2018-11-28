@@ -24,6 +24,11 @@
   the `create`, `getClient`, `getDocumentDatabase`, `getDocumentCollection`, and
   `getDocumentCollections` methods have been updated to handle classes from
   `mongodb/mongodb` instead of `doctrine/mongodb`.
+  
+## Commands
+
+* The `--depth` option in the `odm:query` command was dropped without
+  replacement.
 
 ## Configuration
 
