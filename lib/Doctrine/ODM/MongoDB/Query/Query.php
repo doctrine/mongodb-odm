@@ -26,6 +26,7 @@ use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_values;
+use function assert;
 use function is_array;
 use function is_callable;
 
@@ -373,7 +374,7 @@ class Query implements IteratorAggregate
             return $options;
         }
 
-        return array_combine(
+        $options = array_combine(
             array_map(
                 static function ($key) use ($rename) {
                     return $rename[$key] ?? $key;
@@ -382,6 +383,11 @@ class Query implements IteratorAggregate
             ),
             array_values($options)
         );
+
+        // Necessary because of https://github.com/phpstan/phpstan/issues/1580
+        assert($options !== false);
+
+        return $options;
     }
 
     /**

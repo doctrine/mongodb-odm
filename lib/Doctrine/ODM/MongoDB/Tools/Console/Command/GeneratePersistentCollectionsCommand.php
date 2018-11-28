@@ -10,9 +10,11 @@ use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use const PHP_EOL;
+use function assert;
 use function count;
 use function file_exists;
 use function is_dir;
+use function is_string;
 use function is_writable;
 use function mkdir;
 use function realpath;
@@ -55,10 +57,13 @@ EOT
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
+        $filter = $input->getOption('filter');
+        assert(is_string($filter));
+
         $dm = $this->getHelper('documentManager')->getDocumentManager();
 
         $metadatas = $dm->getMetadataFactory()->getAllMetadata();
-        $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
+        $metadatas = MetadataFilter::filter($metadatas, $filter);
         $destPath  = $input->getArgument('dest-path');
 
         // Process destination directory
@@ -71,6 +76,7 @@ EOT
         }
 
         $destPath = realpath($destPath);
+        assert($destPath !== false);
 
         if (! file_exists($destPath)) {
             throw new InvalidArgumentException(

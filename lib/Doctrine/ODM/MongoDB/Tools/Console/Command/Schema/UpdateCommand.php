@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+use function is_string;
 use function sprintf;
 
 class UpdateCommand extends AbstractCommand
@@ -31,16 +32,15 @@ class UpdateCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $class = $input->getOption('class');
-
+        $class         = $input->getOption('class');
         $timeout       = $input->getOption('timeout');
-        $this->timeout = isset($timeout) ? (int) $timeout : null;
+        $this->timeout = is_string($timeout) ? (int) $timeout : null;
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
 
         try {
-            if (isset($class)) {
+            if (is_string($class)) {
                 $this->processDocumentIndex($sm, $class);
                 $output->writeln(sprintf('Updated <comment>index(es)</comment> for <info>%s</info>', $class));
             } else {

@@ -22,7 +22,6 @@ use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_pop;
-use function call_user_func_array;
 use function class_exists;
 use function constant;
 use function count;
@@ -220,7 +219,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY Describes how MongoDB clients route read operations to the members of a replica set.
      *
-     * @var string|int|null
+     * @var string|null
      */
     public $readPreference;
 
@@ -663,7 +662,7 @@ class ClassMetadata implements BaseClassMetadata
 
         foreach ($this->lifecycleCallbacks[$event] as $callback) {
             if ($arguments !== null) {
-                call_user_func_array([$document, $callback], $arguments);
+                $document->$callback(...$arguments);
             } else {
                 $document->$callback();
             }
@@ -953,8 +952,8 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Sets the read preference used by this class.
      *
-     * @param string|int|null $readPreference
-     * @param array|null      $tags
+     * @param string|null $readPreference
+     * @param array|null  $tags
      */
     public function setReadPreference($readPreference, $tags) : void
     {

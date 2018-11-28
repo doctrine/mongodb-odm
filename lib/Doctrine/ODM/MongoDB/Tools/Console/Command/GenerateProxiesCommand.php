@@ -12,9 +12,11 @@ use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputOption;
 use const PHP_EOL;
 use function array_filter;
+use function assert;
 use function count;
 use function file_exists;
 use function is_dir;
+use function is_string;
 use function is_writable;
 use function mkdir;
 use function realpath;
@@ -52,6 +54,9 @@ EOT
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
+        $filter = $input->getOption('filter');
+        assert(is_string($filter));
+
         /** @var DocumentManager $dm */
         $dm = $this->getHelper('documentManager')->getDocumentManager();
 
@@ -59,7 +64,7 @@ EOT
         $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata) : bool {
             return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
         });
-        $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
+        $metadatas = MetadataFilter::filter($metadatas, $filter);
         $destPath  = $dm->getConfiguration()->getProxyDir();
 
         if (! is_dir($destPath)) {
@@ -67,6 +72,7 @@ EOT
         }
 
         $destPath = realpath($destPath);
+        assert($destPath !== false);
 
         if (! file_exists($destPath)) {
             throw new InvalidArgumentException(

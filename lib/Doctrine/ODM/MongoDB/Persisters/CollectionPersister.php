@@ -21,6 +21,7 @@ use function array_keys;
 use function array_map;
 use function array_reverse;
 use function array_values;
+use function assert;
 use function count;
 use function end;
 use function get_class;
@@ -74,7 +75,7 @@ class CollectionPersister
             if (CollectionHelper::isAtomic($mapping['strategy'])) {
                 throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
             }
-            [$propertyPath ]              = $this->getPathAndParent($collection);
+            [$propertyPath]               = $this->getPathAndParent($collection);
             $unsetPathsMap[$propertyPath] = true;
         }
 
@@ -82,7 +83,10 @@ class CollectionPersister
             return;
         }
 
-        $unsetPaths = array_fill_keys($this->excludeSubPaths(array_keys($unsetPathsMap)), true);
+        /** @var string[] $unsetPaths */
+        $unsetPaths = array_keys($unsetPathsMap);
+
+        $unsetPaths = array_fill_keys($this->excludeSubPaths($unsetPaths), true);
         $query      = ['$unset' => $unsetPaths];
         $this->executeQuery($parent, $query, $options);
     }
@@ -454,7 +458,10 @@ class CollectionPersister
         sort($paths);
         $uniquePaths = [$paths[0]];
         for ($i = 1, $count = count($paths); $i < $count; ++$i) {
-            if (strpos($paths[$i], end($uniquePaths)) === 0) {
+            $lastUniquePath = end($uniquePaths);
+            assert($lastUniquePath !== false);
+
+            if (strpos($paths[$i], $lastUniquePath) === 0) {
                 continue;
             }
 

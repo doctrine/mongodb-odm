@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use function array_filter;
 use function assert;
+use function is_string;
 use function sprintf;
 use function ucfirst;
 
@@ -44,10 +45,9 @@ class CreateCommand extends AbstractCommand
         // Default to the full creation order if no options were specified
         $create = empty($create) ? $this->createOrder : $create;
 
-        $class = $input->getOption('class');
-
+        $class         = $input->getOption('class');
         $timeout       = $input->getOption('timeout');
-        $this->timeout = isset($timeout) ? (int) $timeout : null;
+        $this->timeout = is_string($timeout) ? (int) $timeout : null;
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
@@ -62,8 +62,8 @@ class CreateCommand extends AbstractCommand
                 $output->writeln(sprintf(
                     'Created <comment>%s%s</comment> for <info>%s</info>',
                     $option,
-                    (isset($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's')),
-                    $class ?? 'all classes'
+                    is_string($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's'),
+                    is_string($class) ? $class : 'all classes'
                 ));
             } catch (Throwable $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');

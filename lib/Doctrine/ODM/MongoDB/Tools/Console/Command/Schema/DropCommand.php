@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use function array_filter;
+use function is_string;
 use function sprintf;
 use function ucfirst;
 
@@ -44,7 +45,7 @@ class DropCommand extends AbstractCommand
 
         foreach ($drop as $option) {
             try {
-                if (isset($class)) {
+                if (is_string($class)) {
                     $this->{'processDocument' . ucfirst($option)}($sm, $class);
                 } else {
                     $this->{'process' . ucfirst($option)}($sm);
@@ -52,8 +53,8 @@ class DropCommand extends AbstractCommand
                 $output->writeln(sprintf(
                     'Dropped <comment>%s%s</comment> for <info>%s</info>',
                     $option,
-                    (isset($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's')),
-                    $class ?? 'all classes'
+                    is_string($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's'),
+                    is_string($class) ? $class : 'all classes'
                 ));
             } catch (Throwable $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');

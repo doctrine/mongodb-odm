@@ -317,7 +317,12 @@ CODE;
             $name = $method->getDeclaringClass()->getName();
         }
         if ($nameLower === 'parent') {
-            $name = $method->getDeclaringClass()->getParentClass()->getName();
+            $parentClass = $method->getDeclaringClass()->getParentClass();
+            if (! $parentClass) {
+                throw PersistentCollectionException::parentClassRequired($method->getDeclaringClass()->getName(), $method->getName());
+            }
+
+            $name = $parentClass->getName();
         }
         if (! $type->isBuiltin() && ! class_exists($name) && ! interface_exists($name)) {
             if ($parameter !== null) {

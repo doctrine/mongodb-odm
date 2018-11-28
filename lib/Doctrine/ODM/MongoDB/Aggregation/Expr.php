@@ -320,7 +320,9 @@ class Expr
     public static function convertExpression($expression)
     {
         if (is_array($expression)) {
-            return array_map(['static', 'convertExpression'], $expression);
+            return array_map(static function ($expression) {
+                return static::convertExpression($expression);
+            }, $expression);
         } elseif ($expression instanceof self) {
             return $expression->getExpression();
         }

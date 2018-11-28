@@ -273,7 +273,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * Factory method for the Annotation Driver
      *
-     * @param array|string $paths
+     * @param string[]|string $paths
      */
     public static function create($paths = [], ?Reader $reader = null) : AnnotationDriver
     {

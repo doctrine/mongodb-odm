@@ -22,7 +22,7 @@ class MetadataFilter extends FilterIterator implements Countable
      * Filter Metadatas by one or more filter options.
      *
      * @param  ClassMetadata[] $metadatas
-     * @param  array|string    $filter
+     * @param  string[]|string $filter
      *
      * @return ClassMetadata[]
      */

@@ -52,6 +52,7 @@ use function in_array;
 use function is_array;
 use function is_object;
 use function is_scalar;
+use function is_string;
 use function max;
 use function spl_object_hash;
 use function sprintf;
@@ -167,7 +168,8 @@ class DocumentPersister
     }
 
     /**
-     * Gets the ClassMetadata instance of the document class this persister is used for.
+     * Gets the ClassMetadata instance of the document class this persister is
+     * used for.
      */
     public function getClassMetadata() : ClassMetadata
     {
@@ -448,7 +450,8 @@ class DocumentPersister
      *
      * @throws LockException
      *
-     * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
+     * @todo Check identity map? loadById method? Try to guess whether
+     *     $criteria is the id?
      */
     public function load($criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null) : ?object
     {
@@ -523,6 +526,7 @@ class DocumentPersister
 
         $shardKeyQueryPart = [];
         foreach ($keys as $key) {
+            assert(is_string($key));
             $mapping = $this->class->getFieldMappingByDbFieldName($key);
             $this->guardMissingShardKey($document, $key, $data);
 
@@ -816,6 +820,8 @@ class DocumentPersister
             $primers         = array_combine($mapping['prime'], array_fill(0, count($mapping['prime']), true));
             $class           = $this->dm->getClassMetadata($mapping['targetDocument']);
 
+            assert(is_array($primers));
+
             $cursor = new PrimingIterator($cursor, $class, $referencePrimer, $primers, $collection->getHints());
         }
 
@@ -871,7 +877,8 @@ class DocumentPersister
     }
 
     /**
-     * Prepare a mongodb field name and convert the PHP property names to MongoDB field names.
+     * Prepare a mongodb field name and convert the PHP property names to
+     * MongoDB field names.
      */
     public function prepareFieldName(string $fieldName) : string
     {
@@ -965,7 +972,8 @@ class DocumentPersister
      * Prepares a query value and converts the PHP value to the database value
      * if it is an identifier.
      *
-     * It also handles converting $fieldName to the database name if they are different.
+     * It also handles converting $fieldName to the database name if they are
+     * different.
      *
      * @param mixed $value
      */
@@ -1165,12 +1173,7 @@ class DocumentPersister
         return [[$fieldName, $value]];
     }
 
-    /**
-     * Prepares a query expression.
-     *
-     * @param array|object $expression
-     */
-    private function prepareQueryExpression($expression, ClassMetadata $class) : array
+    private function prepareQueryExpression(array $expression, ClassMetadata $class) : array
     {
         foreach ($expression as $k => $v) {
             // Ignore query operators whose arguments need no type conversion
@@ -1307,8 +1310,9 @@ class DocumentPersister
     }
 
     /**
-     * If the document is new, ignore shard key field value, otherwise throw an exception.
-     * Also, shard key field should be present in actual document data.
+     * If the document is new, ignore shard key field value, otherwise throw an
+     * exception. Also, shard key field should be present in actual document
+     * data.
      *
      * @throws MongoDBException
      */

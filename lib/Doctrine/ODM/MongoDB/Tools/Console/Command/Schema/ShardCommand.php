@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+use function is_string;
 use function sprintf;
 
 class ShardCommand extends AbstractCommand
@@ -33,7 +34,7 @@ class ShardCommand extends AbstractCommand
         $isErrored = false;
 
         try {
-            if (isset($class)) {
+            if (is_string($class)) {
                 $this->processDocumentIndex($sm, $class);
                 $output->writeln(sprintf('Enabled sharding for <info>%s</info>', $class));
             } else {

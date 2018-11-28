@@ -10,15 +10,16 @@ use DateTimeZone;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use Throwable;
+use const STR_PAD_LEFT;
+use function abs;
 use function date_default_timezone_get;
-use function explode;
 use function gettype;
 use function is_numeric;
 use function is_scalar;
 use function is_string;
+use function round;
 use function sprintf;
 use function str_pad;
-use function strpos;
 
 /**
  * The Date type.
@@ -44,16 +45,12 @@ class DateType extends Type
             $datetime = $value->toDateTime();
             $datetime->setTimezone(new DateTimeZone(date_default_timezone_get()));
         } elseif (is_numeric($value)) {
-            $seconds      = $value;
-            $value        = (string) $value;
-            $microseconds = 0;
+            $value         = (float) $value;
+            $seconds       = (int) $value;
+            $microseconds  = abs(round($value - $seconds, 6));
+            $microseconds *= 1000000;
 
-            if (strpos($value, '.') !== false) {
-                [$seconds, $microseconds] = explode('.', $value);
-                $microseconds             = str_pad($microseconds, 6, '0'); // ensure microseconds
-            }
-
-            $datetime = static::craftDateTime((int) $seconds, $microseconds);
+            $datetime = static::craftDateTime($seconds, (int) $microseconds);
         } elseif (is_string($value)) {
             try {
                 $datetime = new DateTime($value);
@@ -69,13 +66,15 @@ class DateType extends Type
         return $datetime;
     }
 
-    private static function craftDateTime(int $seconds, $microseconds = 0) : DateTime
+    /**
+     * @return DateTime|false
+     */
+    private static function craftDateTime(int $seconds, int $microseconds = 0)
     {
-        // @todo fix typing for $microseconds
         $datetime = new DateTime();
         $datetime->setTimestamp($seconds);
         if ($microseconds > 0) {
-            $datetime = DateTime::createFromFormat('Y-m-d H:i:s.u', $datetime->format('Y-m-d H:i:s') . '.' . $microseconds);
+            $datetime = DateTime::createFromFormat('Y-m-d H:i:s.u', $datetime->format('Y-m-d H:i:s') . '.' . str_pad((string) $microseconds, 6, '0', STR_PAD_LEFT));
         }
 
         return $datetime;

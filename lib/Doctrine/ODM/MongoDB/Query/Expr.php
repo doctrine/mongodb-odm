@@ -1370,8 +1370,12 @@ class Expr
          * operator (checking the first key is sufficient). If neither of these
          * conditions are met, we'll wrap the query value with $in.
          */
-        if (is_array($query) && (empty($query) || strpos(key($query), '$') === 0)) {
-            return;
+        if (is_array($query)) {
+            $key = key($query);
+
+            if (empty($query) || (is_string($key) && strpos($key, '$') === 0)) {
+                return;
+            }
         }
 
         $query = ['$in' => [$query]];
