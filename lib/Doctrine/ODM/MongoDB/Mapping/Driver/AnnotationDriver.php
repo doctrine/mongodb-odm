@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use ReflectionClass;
 use ReflectionMethod;
 use const E_USER_DEPRECATED;
 use function array_merge;
@@ -19,8 +20,6 @@ use function array_replace;
 use function constant;
 use function get_class;
 use function is_array;
-use function ksort;
-use function reset;
 use function trigger_error;
 
 /**
@@ -28,14 +27,17 @@ use function trigger_error;
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {
-    /** @var int[] */
-    protected $entityAnnotationClasses = [
-        ODM\Document::class            => 1,
-        ODM\MappedSuperclass::class    => 2,
-        ODM\EmbeddedDocument::class    => 3,
-        ODM\QueryResultDocument::class => 4,
-        ODM\File::class                => 5,
-    ];
+    public function isTransient($className)
+    {
+        $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
+
+        foreach ($classAnnotations as $annot) {
+            if ($annot instanceof ODM\AbstractDocument) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * {@inheritdoc}
@@ -47,15 +49,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
 
-        $documentAnnots = [];
+        $documentAnnot = null;
         foreach ($classAnnotations as $annot) {
             $classAnnotations[get_class($annot)] = $annot;
 
-            foreach ($this->entityAnnotationClasses as $annotClass => $i) {
-                if ($annot instanceof $annotClass) {
-                    $documentAnnots[$i] = $annot;
-                    continue 2;
+            if ($annot instanceof ODM\AbstractDocument) {
+                if ($documentAnnot !== null) {
+                    throw MappingException::classCanOnlyBeMappedByOneAbstractDocument($className, $documentAnnot, $annot);
                 }
+                $documentAnnot = $annot;
             }
 
             // non-document class annotations
@@ -83,13 +85,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
-        if (! $documentAnnots) {
+        if ($documentAnnot === null) {
             throw MappingException::classIsNotAValidDocument($className);
         }
-
-        // find the winning document annotation
-        ksort($documentAnnots);
-        $documentAnnot = reset($documentAnnots);
 
         if ($documentAnnot instanceof ODM\MappedSuperclass) {
             $class->isMappedSuperclass = true;

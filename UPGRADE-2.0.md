@@ -143,6 +143,9 @@ or annotations. To migrate away from YAML mappings, first update to MongoDB ODM
 
 ### Annotation mapping
 
+* Combining `@Document`, `@EmbeddedDocument`, `@File`, `@MappedSuperclass` and
+  `@QueryResultDocument` annotations on a single class will result in a 
+  `MappingException`.
 * The `$safe` property in the `@Index` and `@UniqueIndesx` annotations has been 
   dropped without replacement.
 * The following annotation classes have been dropped in favor of specifying the
