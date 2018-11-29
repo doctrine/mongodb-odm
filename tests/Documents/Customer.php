@@ -15,7 +15,7 @@ class Customer
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\Field(name="cart", type="string") */
+    /** @ODM\Field(name="cartTest", type="string") */
     public $cartTest;
 
     /** @ODM\ReferenceOne(targetDocument=Cart::class, mappedBy="customer") */

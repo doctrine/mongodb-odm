@@ -109,7 +109,7 @@ Migrating your schema can be a difficult task, but Doctrine provides a few
 different methods for dealing with it:
 
 -  **@AlsoLoad** - load values from old fields or transform data through methods
--  **@NotSaved** - load values into fields without saving them again
+-  **@Field(notSaved=true)** - load values into fields without saving them again
 -  **@PostLoad** - execute code after all fields have been loaded
 -  **@PrePersist** - execute code before your document gets saved
 
@@ -166,10 +166,10 @@ Later on, you may want to migrate this data into an embedded Address document:
         /** @Field(type="string") */
         public $name;
 
-        /** @NotSaved */
+        /** @Field(notSaved=true) */
         public $street;
 
-        /** @NotSaved */
+        /** @Field(notSaved=true) */
         public $city;
 
         /** @EmbedOne(targetDocument=Address::class) */

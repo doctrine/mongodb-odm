@@ -46,8 +46,8 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertEquals($customer->cart->id, $customer->cart->id);
 
         $check = $this->dm->getDocumentCollection(get_class($customer))->findOne();
-        $this->assertArrayHasKey('cart', $check);
-        $this->assertEquals('test', $check['cart']);
+        $this->assertArrayHasKey('cartTest', $check);
+        $this->assertEquals('test', $check['cartTest']);
 
         $customer->cart     = null;
         $customer->cartTest = 'ok';
@@ -55,8 +55,8 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(get_class($customer))->findOne();
-        $this->assertArrayHasKey('cart', $check);
-        $this->assertEquals('ok', $check['cart']);
+        $this->assertArrayHasKey('cartTest', $check);
+        $this->assertEquals('ok', $check['cartTest']);
 
         $customer = $this->dm->getRepository(Customer::class)->find($customer->id);
         $this->assertInstanceOf(Cart::class, $customer->cart);

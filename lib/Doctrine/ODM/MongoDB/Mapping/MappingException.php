@@ -54,6 +54,11 @@ class MappingException extends BaseMappingException
         return new self(sprintf('Property "%s" in "%s" was already declared, but it must be declared only once', $fieldName, $document));
     }
 
+    public static function duplicateDatabaseFieldName(string $document, string $offendingFieldName, string $databaseName, string $originalFieldName) : self
+    {
+        return new self(sprintf('Field "%s" in class "%s" is mapped to field "%s" in the database, but that name is already in use by field "%s".', $offendingFieldName, $document, $databaseName, $originalFieldName));
+    }
+
     public static function discriminatorFieldConflict(string $document, string $fieldName) : self
     {
         return new self(sprintf('Discriminator field "%s" in "%s" conflicts with a mapped field\'s "name" attribute.', $fieldName, $document));

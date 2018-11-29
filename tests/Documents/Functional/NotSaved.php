@@ -15,7 +15,7 @@ class NotSaved
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\NotSaved */
+    /** @ODM\Field(notSaved=true) */
     public $notSaved;
 
     /** @ODM\EmbedOne(targetDocument=NotSavedEmbedded::class) */
