@@ -15,8 +15,11 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\Collection;
+use MongoDB\DeleteResult;
 use MongoDB\Driver\Cursor;
+use MongoDB\InsertOneResult;
 use MongoDB\Operation\FindOneAndUpdate;
+use MongoDB\UpdateResult;
 use UnexpectedValueException;
 use function array_combine;
 use function array_filter;
@@ -175,7 +178,7 @@ class Query implements IteratorAggregate
     /**
      * Execute the query and returns the results.
      *
-     * @return Iterator|int|string|array|object
+     * @return Iterator|UpdateResult|InsertOneResult|DeleteResult|array|object|int|null
      *
      * @throws MongoDBException
      */
@@ -185,10 +188,6 @@ class Query implements IteratorAggregate
 
         if (! $this->hydrate) {
             return $results;
-        }
-
-        if ($results instanceof Cursor) {
-            $results = $this->makeIterator($results);
         }
 
         $uow = $this->dm->getUnitOfWork();
@@ -399,7 +398,7 @@ class Query implements IteratorAggregate
      * on the driver's write concern. Queries and some mapReduce commands will
      * return an Iterator.
      *
-     * @return Iterator|string|int|array|object|null
+     * @return Iterator|UpdateResult|InsertOneResult|DeleteResult|array|object|int|null
      */
     public function runQuery()
     {
@@ -476,6 +475,9 @@ class Query implements IteratorAggregate
                     $query['query'],
                     array_merge($options, $this->getQueryOptions('hint', 'limit', 'skip', 'readPreference'))
                 );
+
+            default:
+                throw new InvalidArgumentException('Invalid query type: ' . $this->query['type']);
         }
     }
 }

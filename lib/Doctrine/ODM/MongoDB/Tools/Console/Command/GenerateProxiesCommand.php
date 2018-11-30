@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
+use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
@@ -66,6 +67,10 @@ EOT
         });
         $metadatas = MetadataFilter::filter($metadatas, $filter);
         $destPath  = $dm->getConfiguration()->getProxyDir();
+
+        if (! is_string($destPath)) {
+            throw ConfigurationException::proxyDirMissing();
+        }
 
         if (! is_dir($destPath)) {
             mkdir($destPath, 0775, true);

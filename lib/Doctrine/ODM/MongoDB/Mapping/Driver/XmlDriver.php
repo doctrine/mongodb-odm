@@ -170,6 +170,7 @@ class XmlDriver extends FileDriver
                 'fieldName' => 'id',
             ];
 
+            /** @var SimpleXMLElement $attributes */
             $attributes = $field->attributes();
             foreach ($attributes as $key => $value) {
                 $mapping[$key] = (string) $value;

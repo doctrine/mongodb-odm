@@ -227,9 +227,9 @@ class ClassMetadata implements BaseClassMetadata
      * READ-ONLY Associated with readPreference Allows to specify criteria so that your application can target read
      * operations to specific members, based on custom parameters.
      *
-     * @var string[][]|null
+     * @var string[][]
      */
-    public $readPreferenceTags;
+    public $readPreferenceTags = [];
 
     /**
      * READ-ONLY: Describes the level of acknowledgement requested from MongoDB for write operations.
@@ -487,7 +487,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass|null
+     * @var ReflectionClass
      */
     public $reflClass;
 
@@ -498,7 +498,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public $isReadOnly;
 
-    /** @var InstantiatorInterface|null */
+    /** @var InstantiatorInterface */
     private $instantiator;
 
     /**
@@ -561,10 +561,6 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function getReflectionClass() : ReflectionClass
     {
-        if (! $this->reflClass) {
-            $this->reflClass = new ReflectionClass($this->name);
-        }
-
         return $this->reflClass;
     }
 
@@ -597,10 +593,10 @@ class ClassMetadata implements BaseClassMetadata
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
+     *
+     * return (string|null)[]
      */
     public function getIdentifierFieldNames() : array
     {
@@ -951,11 +947,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Sets the read preference used by this class.
-     *
-     * @param string|null $readPreference
-     * @param array|null  $tags
      */
-    public function setReadPreference($readPreference, $tags) : void
+    public function setReadPreference(?string $readPreference, array $tags) : void
     {
         $this->readPreference     = $readPreference;
         $this->readPreferenceTags = $tags;
@@ -1604,7 +1597,7 @@ class ClassMetadata implements BaseClassMetadata
             return;
         }
 
-        $this->rootDocumentName = array_pop($classNames);
+        $this->rootDocumentName = (string) array_pop($classNames);
     }
 
     /**
@@ -1792,14 +1785,15 @@ class ClassMetadata implements BaseClassMetadata
         if (! isset($mapping['fieldName']) && isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
         }
-        if (! isset($mapping['fieldName'])) {
+        if (! isset($mapping['fieldName']) || ! is_string($mapping['fieldName'])) {
             throw MappingException::missingFieldName($this->name);
         }
         if (! isset($mapping['name'])) {
             $mapping['name'] = $mapping['fieldName'];
         }
+
         if ($this->identifier === $mapping['name'] && empty($mapping['id'])) {
-            throw MappingException::mustNotChangeIdentifierFieldsType($this->name, $mapping['name']);
+            throw MappingException::mustNotChangeIdentifierFieldsType($this->name, (string) $mapping['name']);
         }
         if ($this->discriminatorField !== null && $this->discriminatorField === $mapping['name']) {
             throw MappingException::discriminatorFieldConflict($this->name, $this->discriminatorField);
@@ -2050,7 +2044,7 @@ class ClassMetadata implements BaseClassMetadata
     {
         // Restore ReflectionClass and properties
         $this->reflClass    = new ReflectionClass($this->name);
-        $this->instantiator = $this->instantiator ?: new Instantiator();
+        $this->instantiator = new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declared'])) {

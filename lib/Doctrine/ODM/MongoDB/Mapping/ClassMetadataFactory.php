@@ -10,6 +10,7 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Events;
@@ -68,7 +69,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function initialize() : void
     {
-        $this->driver      = $this->config->getMetadataDriverImpl();
+        $driver = $this->config->getMetadataDriverImpl();
+        if ($driver === null) {
+            throw ConfigurationException::noMetadataDriverConfigured();
+        }
+
+        $this->driver      = $driver;
         $this->evm         = $this->dm->getEventManager();
         $this->initialized = true;
     }

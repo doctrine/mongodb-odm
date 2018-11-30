@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
@@ -752,9 +753,14 @@ class DocumentPersister
 
     public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection) : Query
     {
-        $hints             = $collection->getHints();
-        $mapping           = $collection->getMapping();
-        $owner             = $collection->getOwner();
+        $hints   = $collection->getHints();
+        $mapping = $collection->getMapping();
+        $owner   = $collection->getOwner();
+
+        if ($owner === null) {
+            throw PersistentCollectionException::ownerRequiredToLoadCollection();
+        }
+
         $ownerClass        = $this->dm->getClassMetadata(get_class($owner));
         $targetClass       = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping   = $targetClass->fieldMappings[$mapping['mappedBy']] ?? [];

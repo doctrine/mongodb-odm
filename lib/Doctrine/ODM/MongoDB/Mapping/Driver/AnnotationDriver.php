@@ -87,7 +87,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
                 $class->setDefaultDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ReadPreference) {
-                $class->setReadPreference($annot->value, $annot->tags);
+                $class->setReadPreference($annot->value, $annot->tags ?? []);
             }
         }
 

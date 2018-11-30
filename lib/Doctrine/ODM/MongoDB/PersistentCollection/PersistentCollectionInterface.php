@@ -74,11 +74,8 @@ interface PersistentCollectionInterface extends Collection
      * INTERNAL:
      * Sets the collection's owning entity together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
-     *
-     * @param object $document
-     * @param array  $mapping
      */
-    public function setOwner($document, array $mapping);
+    public function setOwner(object $document, array $mapping);
 
     /**
      * INTERNAL:
@@ -137,10 +134,8 @@ interface PersistentCollectionInterface extends Collection
     /**
      * INTERNAL:
      * Gets the collection owner.
-     *
-     * @return object|null
      */
-    public function getOwner();
+    public function getOwner() : ?object;
 
     /**
      * @return array

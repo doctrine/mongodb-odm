@@ -67,6 +67,10 @@ class ReferencePrimer
         $this->uow = $uow;
 
         $this->defaultPrimer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) : void {
+            if ($class->identifier === null) {
+                return;
+            }
+
             $qb = $dm->createQueryBuilder($class->name)
                 ->field($class->identifier)->in($ids);
 
@@ -253,6 +257,10 @@ class ReferencePrimer
             if ($mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID) {
                 $className = $this->uow->getClassNameForAssociation($mapping, $reference);
                 $class     = $this->dm->getClassMetadata($className);
+            }
+
+            if ($class === null) {
+                continue;
             }
 
             $document = $this->uow->tryGetById($id, $class);

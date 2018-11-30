@@ -1661,7 +1661,7 @@ class Builder
             $documentName  = $documentNames[0];
 
             $metadata            = $this->dm->getClassMetadata($documentName);
-            $discriminatorField  = $metadata->discriminatorField;
+            $discriminatorField  = $metadata->discriminatorField ?? ClassMetadata::DEFAULT_DISCRIMINATOR_FIELD;
             $discriminatorValues = $this->getDiscriminatorValues($documentNames);
 
             // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list

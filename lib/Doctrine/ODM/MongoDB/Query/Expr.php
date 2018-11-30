@@ -18,6 +18,7 @@ use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function array_values;
+use function assert;
 use function explode;
 use function func_get_args;
 use function in_array;
@@ -1103,6 +1104,7 @@ class Expr
     public function set($value, bool $atomic = true) : self
     {
         $this->requiresCurrentField();
+        assert($this->currentField !== null);
 
         if ($atomic) {
             $this->newObj['$set'][$this->currentField] = $value;
@@ -1288,6 +1290,9 @@ class Expr
      */
     private function getReferenceMapping() : array
     {
+        $this->requiresCurrentField();
+        assert($this->currentField !== null);
+
         try {
             return $this->class->getFieldMapping($this->currentField);
         } catch (MappingException $e) {
@@ -1302,7 +1307,7 @@ class Expr
                     continue;
                 }
 
-                if ($mapping !== null && $mapping !== $childClass->getFieldMapping($this->currentField)) {
+                if ($foundIn !== null && $mapping !== null && $mapping !== $childClass->getFieldMapping($this->currentField)) {
                     throw MappingException::referenceFieldConflict($this->currentField, $foundIn->name, $childClass->name);
                 }
                 $mapping = $childClass->getFieldMapping($this->currentField);

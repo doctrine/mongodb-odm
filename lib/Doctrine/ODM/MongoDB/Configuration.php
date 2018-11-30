@@ -78,7 +78,7 @@ class Configuration
      */
     private $attributes = [];
 
-    /** @var ProxyManagerConfiguration|null */
+    /** @var ProxyManagerConfiguration */
     private $proxyManagerConfiguration;
 
     /** @var int */
@@ -370,11 +370,11 @@ class Configuration
             : null;
     }
 
-    public function getFilterParameters(string $name) : ?array
+    public function getFilterParameters(string $name) : array
     {
         return isset($this->attributes['filters'][$name])
             ? $this->attributes['filters'][$name]['parameters']
-            : null;
+            : [];
     }
 
     /**
@@ -446,6 +446,14 @@ class Configuration
     public function getPersistentCollectionGenerator() : PersistentCollectionGenerator
     {
         if (! isset($this->attributes['persistentCollectionGenerator'])) {
+            if ($this->getPersistentCollectionDir() === null) {
+                throw ConfigurationException::persistentCollectionDirMissing();
+            }
+
+            if ($this->getPersistentCollectionNamespace() === null) {
+                throw ConfigurationException::persistentCollectionNamespaceMissing();
+            }
+
             $this->attributes['persistentCollectionGenerator'] = new DefaultPersistentCollectionGenerator(
                 $this->getPersistentCollectionDir(),
                 $this->getPersistentCollectionNamespace()

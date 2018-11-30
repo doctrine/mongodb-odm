@@ -76,7 +76,7 @@ class HydratorFactory
     /**
      * The directory that contains all hydrator classes.
      *
-     * @var string|null
+     * @var string
      */
     private $hydratorDir;
 

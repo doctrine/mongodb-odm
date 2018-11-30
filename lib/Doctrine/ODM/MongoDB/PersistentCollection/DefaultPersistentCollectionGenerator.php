@@ -292,20 +292,16 @@ CODE;
         );
     }
 
-    /**
-     * @see \Doctrine\Common\Proxy\ProxyGenerator::getMethodReturnType()
-     */
     private function getMethodReturnType(ReflectionMethod $method) : string
     {
-        if (! method_exists($method, 'hasReturnType') || ! $method->hasReturnType()) {
+        $returnType = $method->getReturnType();
+        if ($returnType === null) {
             return '';
         }
-        return ': ' . $this->formatType($method->getReturnType(), $method);
+
+        return ': ' . $this->formatType($returnType, $method);
     }
 
-    /**
-     * @see \Doctrine\Common\Proxy\ProxyGenerator::formatType()
-     */
     private function formatType(
         ReflectionType $type,
         ReflectionMethod $method,

@@ -69,4 +69,9 @@ class PersistentCollectionException extends MongoDBException
             )
         );
     }
+
+    public static function ownerRequiredToLoadCollection() : self
+    {
+        return new self('Cannot load persistent collection without an owner.');
+    }
 }
