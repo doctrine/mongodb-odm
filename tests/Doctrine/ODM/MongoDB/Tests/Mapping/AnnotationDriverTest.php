@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Documents\CmsUser;
+use function get_class;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -162,6 +163,70 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $cm = $this->dm->getClassMetadata(ColumnWithoutType::class);
         $this->assertNull($cm->writeConcern);
+    }
+
+    /**
+     * @dataProvider provideClassCanBeMappedByOneAbstractDocument
+     */
+    public function testClassCanBeMappedByOneAbstractDocument(object $wrong, string $messageRegExp)
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageRegExp($messageRegExp);
+
+        $cm               = new ClassMetadata(get_class($wrong));
+        $reader           = new AnnotationReader();
+        $annotationDriver = new AnnotationDriver($reader);
+
+        $annotationDriver->loadMetadataForClass(get_class($wrong), $cm);
+    }
+
+    public function provideClassCanBeMappedByOneAbstractDocument()
+    {
+        yield [
+            /**
+             * @ODM\Document()
+             * @ODM\EmbeddedDocument
+             */
+            new class () {
+            },
+            '/as EmbeddedDocument because it was already mapped as Document\.$/',
+        ];
+        yield [
+            /**
+             * @ODM\Document()
+             * @ODM\File
+             */
+            new class () {
+            },
+            '/as File because it was already mapped as Document\.$/',
+        ];
+        yield [
+            /**
+             * @ODM\Document()
+             * @ODM\QueryResultDocument
+             */
+            new class () {
+            },
+            '/as QueryResultDocument because it was already mapped as Document\.$/',
+        ];
+        yield [
+            /**
+             * @ODM\Document()
+             * @ODM\MappedSuperclass
+             */
+            new class () {
+            },
+            '/as MappedSuperclass because it was already mapped as Document\.$/',
+        ];
+        yield [
+            /**
+             * @ODM\MappedSuperclass()
+             * @ODM\Document
+             */
+            new class () {
+            },
+            '/as Document because it was already mapped as MappedSuperclass\.$/',
+        ];
     }
 
     protected function _loadDriverForCMSDocuments()

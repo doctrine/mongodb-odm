@@ -6,7 +6,9 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractDocument;
 use ReflectionException;
+use ReflectionObject;
 use function sprintf;
 
 /**
@@ -82,6 +84,16 @@ class MappingException extends BaseMappingException
     public static function classIsNotAValidDocument(string $className) : self
     {
         return new self(sprintf('Class %s is not a valid document or mapped super class.', $className));
+    }
+
+    public static function classCanOnlyBeMappedByOneAbstractDocument(string $className, AbstractDocument $mappedAs, AbstractDocument $offending) : self
+    {
+        return new self(sprintf(
+            "Can not map class '%s' as %s because it was already mapped as %s.",
+            $className,
+            (new ReflectionObject($offending))->getShortName(),
+            (new ReflectionObject($mappedAs))->getShortName()
+        ));
     }
 
     public static function reflectionFailure(string $document, ReflectionException $previousException) : self
