@@ -164,8 +164,8 @@ in each embedded document:
             /**
              * @EmbedMany(
              *   discriminatorMap={
-             *     "download"="DownloadTask",
-             *     "build"="BuildTask"
+             *     "download"=DownloadTask::class,
+             *     "build"=BuildTask::class
              *   }
              * )
              */
@@ -201,8 +201,8 @@ discriminator:
             /**
              * @EmbedMany(
              *   discriminatorMap={
-             *     "download"="DownloadTask",
-             *     "build"="BuildTask"
+             *     "download"=DownloadTask::class,
+             *     "build"=BuildTask::class
              *   },
              *   defaultDiscriminatorValue="download"
              * )

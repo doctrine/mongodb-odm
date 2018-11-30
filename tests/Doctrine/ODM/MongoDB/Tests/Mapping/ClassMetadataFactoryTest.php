@@ -95,3 +95,8 @@ class TestDocument1
     private $other;
     private $association;
 }
+
+class Other
+{
+    private $name;
+}

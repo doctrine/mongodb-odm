@@ -520,7 +520,7 @@ the collection. Here is an example:
     /**
      * @Document(collection="my_documents")
      * @DiscriminatorField("type")
-     * @DiscriminatorMap({"article"="Article", "album"="Album"})
+     * @DiscriminatorMap({"article"=Article::class, "album"=Album::class})
      */
     class Article
     {
@@ -530,7 +530,7 @@ the collection. Here is an example:
     /**
      * @Document(collection="my_documents")
      * @DiscriminatorField("type")
-     * @DiscriminatorMap({"article"="Article", "album"="Album"})
+     * @DiscriminatorMap({"article"=Article::class, "album"=Album::class})
      */
     class Album
     {

@@ -20,7 +20,7 @@ class StockItem
     /** @ODM\Field(type="int") */
     private $inventory;
 
-    /** @ODM\EmbedOne(targetDocument="Documents\Ecommerce\Money") */
+    /** @ODM\EmbedOne(targetDocument=Documents\Ecommerce\Money::class) */
     private $cost;
 
     public function getId()

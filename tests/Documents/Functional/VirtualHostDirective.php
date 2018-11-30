@@ -17,7 +17,7 @@ class VirtualHostDirective
     protected $name;
     /** @ODM\Field(type="string") */
     protected $value;
-    /** @ODM\EmbedMany(targetDocument="Documents\Functional\VirtualHostDirective") */
+    /** @ODM\EmbedMany(targetDocument=Documents\Functional\VirtualHostDirective::class) */
     protected $directives;
 
 

@@ -86,21 +86,21 @@ class DocWithNestedCollections
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonebook") */
+    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class) */
     public $atomicSet;
 
-    /** @ODM\EmbedMany(strategy="atomicSetArray", targetDocument="Documents\Phonebook") */
+    /** @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonebook::class) */
     public $atomicSetArray;
 
-    /** @ODM\EmbedMany(strategy="set", targetDocument="Documents\Phonebook") */
+    /** @ODM\EmbedMany(strategy="set", targetDocument=Documents\Phonebook::class) */
     public $set;
 
-    /** @ODM\EmbedMany(strategy="setArray", targetDocument="Documents\Phonebook") */
+    /** @ODM\EmbedMany(strategy="setArray", targetDocument=Documents\Phonebook::class) */
     public $setArray;
 
-    /** @ODM\EmbedMany(strategy="pushAll", targetDocument="Documents\Phonebook") */
+    /** @ODM\EmbedMany(strategy="pushAll", targetDocument=Documents\Phonebook::class) */
     public $pushAll;
 
-    /** @ODM\EmbedMany(strategy="addToSet", targetDocument="Documents\Phonebook") */
+    /** @ODM\EmbedMany(strategy="addToSet", targetDocument=Documents\Phonebook::class) */
     public $addToSet;
 }

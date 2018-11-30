@@ -596,7 +596,7 @@ class EmbeddedTest extends BaseTest
         $embedded     = new EmbeddedDocumentWithId();
         $embedded->id = (string) new ObjectId();
 
-        $firstEmbedded        = new EmbedDocumentWithAnotherEmbed();
+        $firstEmbedded        = new EmbeddedDocumentWithAnotherEmbedded();
         $firstEmbedded->embed = $embedded;
 
         $secondEmbedded = clone $firstEmbedded;
@@ -668,7 +668,7 @@ class ChangeEmbeddedWithNameAnnotationTest
 /**
  * @ODM\EmbeddedDocument
  */
-class EmbedDocumentWithAnotherEmbed
+class EmbeddedDocumentWithAnotherEmbedded
 {
     /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class, name="m_id") */
     public $embed;

@@ -561,13 +561,13 @@ class AtomicSetUser
     /** @ODM\Field(type="string") */
     public $surname;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonenumber") */
+    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonenumber::class) */
     public $phonenumbers;
 
-    /** @ODM\EmbedMany(strategy="atomicSetArray", targetDocument="Documents\Phonenumber") */
+    /** @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonenumber::class) */
     public $phonenumbersArray;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument="Documents\Phonebook") */
+    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class) */
     public $phonebooks;
 
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=AtomicSetInception::class) */

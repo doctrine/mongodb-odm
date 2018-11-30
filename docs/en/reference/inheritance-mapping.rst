@@ -72,7 +72,7 @@ Simple example:
          * @Document
          * @InheritanceType("SINGLE_COLLECTION")
          * @DiscriminatorField("type")
-         * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
+         * @DiscriminatorMap({"person"=Person::class, "employee"=Employee::class})
          */
         class Person
         {
@@ -149,7 +149,7 @@ discriminator field:
          * @Document
          * @InheritanceType("SINGLE_COLLECTION")
          * @DiscriminatorField("type")
-         * @DiscriminatorMap({"person"="Person", "employee"="Employee"})
+         * @DiscriminatorMap({"person"=Person::class, "employee"=Employee::class})
          * @DefaultDiscriminatorValue("person")
          */
         class Person

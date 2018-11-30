@@ -23,14 +23,14 @@ class Option
     protected $name;
 
     /**
-     * @ODM\EmbedOne(targetDocument="Documents\Ecommerce\Money")
+     * @ODM\EmbedOne(targetDocument=Documents\Ecommerce\Money::class)
      *
      * @var float
      */
     protected $money;
 
     /**
-     * @ODM\ReferenceOne(targetDocument="Documents\Ecommerce\StockItem", cascade="all")
+     * @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\StockItem::class, cascade="all")
      *
      * @var Documents\StockItem
      */

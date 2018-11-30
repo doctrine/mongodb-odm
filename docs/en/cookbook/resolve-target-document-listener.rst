@@ -75,7 +75,7 @@ An Invoice document:
     class Invoice
     {
         /**
-         * @ODM\ReferenceOne(targetDocument="Acme\InvoiceModule\Model\InvoiceSubjectInterface")
+         * @ODM\ReferenceOne(targetDocument=Acme\InvoiceModule\Model\InvoiceSubjectInterface::class)
          * @var InvoiceSubjectInterface
          */
         protected $subject;

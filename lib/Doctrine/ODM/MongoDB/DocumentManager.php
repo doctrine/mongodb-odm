@@ -735,37 +735,64 @@ class DocumentManager implements ObjectManager
                 throw new InvalidArgumentException(sprintf('Reference type %s is invalid.', $storeAs));
         }
 
-        /* If the class has a discriminator (field and value), use it. A child
-         * class that is not defined in the discriminator map may only have a
-         * discriminator field and no value, so default to the full class name.
-         */
-        if (isset($class->discriminatorField)) {
-            $reference[$class->discriminatorField] = $class->discriminatorValue ?? $class->name;
-        }
+        return $reference + $this->getDiscriminatorData($referenceMapping, $class);
+    }
 
-        /* Add a discriminator value if the referenced document is not mapped
-         * explicitly to a targetDocument class.
-         */
-        if (! isset($referenceMapping['targetDocument'])) {
+    /**
+     * Build discriminator portion of reference for specified reference mapping and class metadata.
+     *
+     * @param array         $referenceMapping Mappings of reference for which discriminator data is created.
+     * @param ClassMetadata $class            Metadata of reference document class.
+     *
+     * @return array with next structure [{discriminator field} => {discriminator value}]
+     *
+     * @throws MappingException When discriminator map is present and reference class in not registered in it.
+     */
+    private function getDiscriminatorData(array $referenceMapping, ClassMetadata $class) : array
+    {
+        $discriminatorField = null;
+        $discriminatorValue = null;
+        $discriminatorData  = [];
+        if (isset($referenceMapping['discriminatorField'])) {
             $discriminatorField = $referenceMapping['discriminatorField'];
-            $discriminatorValue = isset($referenceMapping['discriminatorMap'])
-                ? array_search($class->name, $referenceMapping['discriminatorMap'])
-                : $class->name;
-
-            /* If the discriminator value was not found in the map, use the full
-             * class name. In the future, it may be preferable to throw an
-             * exception here (perhaps based on some strictness option).
-             *
-             * @see PersistenceBuilder::prepareEmbeddedDocumentValue()
-             */
-            if ($discriminatorValue === false) {
+            if (isset($referenceMapping['discriminatorMap'])) {
+                $pos = array_search($class->name, $referenceMapping['discriminatorMap']);
+                if ($pos !== false) {
+                    $discriminatorValue = $pos;
+                }
+            } else {
                 $discriminatorValue = $class->name;
             }
-
-            $reference[$discriminatorField] = $discriminatorValue;
+        } else {
+            $discriminatorField = $class->discriminatorField;
+            $discriminatorValue = $class->discriminatorValue;
         }
 
-        return $reference;
+        if ($discriminatorField !== null) {
+            if ($discriminatorValue === null) {
+                throw MappingException::unlistedClassInDiscriminatorMap($class->name);
+            }
+            $discriminatorData = [$discriminatorField => $discriminatorValue];
+        } elseif (! isset($referenceMapping['targetDocument'])) {
+            $discriminatorField = $referenceMapping['discriminatorField'];
+
+            $discriminatorMap = null;
+            if (isset($referenceMapping['discriminatorMap'])) {
+                $discriminatorMap = $referenceMapping['discriminatorMap'];
+            }
+            if ($discriminatorMap === null) {
+                $discriminatorValue = $class->name;
+            } else {
+                $discriminatorValue = array_search($class->name, $discriminatorMap);
+
+                if ($discriminatorValue === false) {
+                    throw MappingException::unlistedClassInDiscriminatorMap($class->name);
+                }
+            }
+            $discriminatorData = [$discriminatorField => $discriminatorValue];
+        }
+
+        return $discriminatorData;
     }
 
     /**

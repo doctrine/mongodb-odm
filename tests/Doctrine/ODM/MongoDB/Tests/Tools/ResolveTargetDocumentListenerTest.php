@@ -70,16 +70,16 @@ class ResolveTargetDocument implements ResolveTargetInterface
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface") */
+    /** @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface::class) */
     private $refOne;
 
-    /** @ODM\ReferenceMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface") */
+    /** @ODM\ReferenceMany(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface::class) */
     private $refMany;
 
-    /** @ODM\EmbedOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface") */
+    /** @ODM\EmbedOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface::class) */
     private $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument="Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface") */
+    /** @ODM\EmbedMany(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface::class) */
     private $embedMany;
 
     public function getId()

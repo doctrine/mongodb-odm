@@ -25,7 +25,7 @@ class TargetDocumentTestDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\TargetDocumentTestReference") */
+    /** @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\TargetDocumentTestReference::class) */
     public $reference;
 }
 

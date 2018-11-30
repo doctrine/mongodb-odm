@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 
@@ -34,7 +35,6 @@ class GH942Test extends BaseTest
         $child->name  = 'child';
 
         $this->dm->persist($parent);
-        $this->dm->persist($child);
         $this->dm->flush();
         $this->dm->clear();
 
@@ -44,11 +44,11 @@ class GH942Test extends BaseTest
         $this->assertSame('parent', $parent['name']);
         $this->assertSame('p', $parent['type']);
 
-        $child = $this->dm->getDocumentCollection(GH942DocumentChild::CLASSNAME)
-            ->findOne(['_id' => new ObjectId($child->id)]);
+        $this->dm->persist($child);
 
-        $this->assertSame('child', $child['name']);
-        $this->assertSame(GH942DocumentChild::CLASSNAME, $child['type']);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Document class "' . GH942DocumentChild::class . '" is unlisted in the discriminator map.');
+        $this->dm->flush();
     }
 }
 

@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Documents\Account;
 use Documents\Address;
 use Documents\Album;
-use Documents\Bar;
+use Documents\Bars\Bar;
 use Documents\CmsUser;
 use Documents\SpecialUser;
 use Documents\User;
@@ -819,9 +819,9 @@ class EmbeddedAssociationsCascadeTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument="Documents\Address") */
+    /** @ODM\EmbedOne(targetDocument=Documents\Address::class) */
     public $address;
 
-    /** @ODM\EmbedOne(targetDocument="Documents\Address") */
+    /** @ODM\EmbedOne(targetDocument=Documents\Address::class) */
     public $addresses;
 }

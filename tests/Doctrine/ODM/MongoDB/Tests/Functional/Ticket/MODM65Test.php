@@ -40,7 +40,7 @@ class MODM65User
      * @ODM\EmbedOne(
      *  discriminatorField="php",
      *  discriminatorMap={
-     *      "fbu"="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\MODM65SocialNetworkUser"
+     *      "fbu"=Doctrine\ODM\MongoDB\Tests\Functional\Ticket\MODM65SocialNetworkUser::class
      *  },
      *  name="snu"
      * )

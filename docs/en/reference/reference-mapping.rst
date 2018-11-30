@@ -208,8 +208,8 @@ in each `DBRef`_ object:
             /**
              * @ReferenceMany(
              *   discriminatorMap={
-             *     "album"="Album",
-             *     "song"="Song"
+             *     "album"=Album::class,
+             *     "song"=Song::class
              *   }
              * )
              */
@@ -244,8 +244,8 @@ a certain class, you can optionally specify a default discriminator value:
             /**
              * @ReferenceMany(
              *   discriminatorMap={
-             *     "album"="Album",
-             *     "song"="Song"
+             *     "album"=Album::class,
+             *     "song"=Song::class
              *   },
              *   defaultDiscriminatorValue="album"
              * )

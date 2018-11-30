@@ -21,7 +21,7 @@ class DoctrineGlobal_Article
     /** @ODM\ReferenceMany(targetDocument=DoctrineGlobal_User::class) */
     protected $author;
 
-    /** @ODM\ReferenceMany(targetDocument="\DoctrineGlobal_User") */
+    /** @ODM\ReferenceMany(targetDocument=\DoctrineGlobal_User::class) */
     protected $editor;
 }
 

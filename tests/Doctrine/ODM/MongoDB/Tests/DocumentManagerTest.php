@@ -256,7 +256,7 @@ class WrongSimpleRefDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\Tournament\Participant", storeAs="id") */
+    /** @ODM\ReferenceOne(targetDocument=Documents\Tournament\Participant::class, storeAs="id") */
     public $ref;
 }
 

@@ -51,7 +51,7 @@ class GH426Field
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(inversedBy="fields", discriminatorMap={"f":"GH426Form"}, discriminatorField="type", cascade={"all"}) */
+    /** @ODM\ReferenceOne(inversedBy="fields", discriminatorMap={"f":GH426Form::class}, discriminatorField="type", cascade={"all"}) */
     public $form;
 
     public function __construct(GH426Form $form)
