@@ -403,7 +403,8 @@ class LockTest extends BaseTest
         );
 
         $d->issues->add(new Issue('oops', 'version mismatch'));
-        $this->uow->getCollectionPersister()->update($d->issues, []);
+        $this->uow->scheduleCollectionUpdate($d->issues);
+        $this->uow->getCollectionPersister()->update($d, [$d->issues], []);
     }
 
     /**
@@ -422,7 +423,7 @@ class LockTest extends BaseTest
             ['$set' => ['version' => 2]]
         );
 
-        $this->uow->getCollectionPersister()->delete($d->issues, []);
+        $this->uow->getCollectionPersister()->delete($d, [$d->issues], []);
     }
 }
 

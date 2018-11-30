@@ -1279,7 +1279,7 @@ class DocumentPersister
             $collections[] = $coll;
         }
         if (! empty($collections)) {
-            $this->cp->deleteAll($document, $collections, $options);
+            $this->cp->delete($document, $collections, $options);
         }
         // Collection updates (deleteRows, updateRows, insertRows)
         $collections = [];
@@ -1291,7 +1291,7 @@ class DocumentPersister
             $collections[] = $coll;
         }
         if (! empty($collections)) {
-            $this->cp->updateAll($document, $collections, $options);
+            $this->cp->update($document, $collections, $options);
         }
         // Take new snapshots from visited collections
         foreach ($this->uow->getVisitedCollections($document) as $coll) {

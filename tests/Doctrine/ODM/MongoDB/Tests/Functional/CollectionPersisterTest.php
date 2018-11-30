@@ -36,20 +36,20 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
-        $persister->delete($user->phonenumbers, []);
+        $persister->delete($user, [$user->categories], []);
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
+        $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
 
     public function testDeleteEmbedMany() : void
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
-        $persister->delete($user->categories, []);
+        $persister->delete($user, [$user->phonenumbers], []);
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
+        $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
     }
 
     public function testDeleteNestedEmbedMany() : void
@@ -57,94 +57,64 @@ class CollectionPersisterTest extends BaseTest
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
 
-        $persister->delete($user->categories[0]->children[0]->children, []);
-        $persister->delete($user->categories[0]->children[1]->children, []);
-
-        $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-
-        $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
-        $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
-
-        $persister->delete($user->categories[0]->children, []);
-        $persister->delete($user->categories[1]->children, []);
-
-        $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-
-        $this->assertFalse(isset($check['categories'][0]['children']), 'Test that the nested children categories field was deleted');
-        $this->assertTrue(isset($check['categories'][0]), 'Test that the category with the children still exists');
-
-        $this->assertFalse(isset($check['categories'][1]['children']), 'Test that the nested children categories field was deleted');
-        $this->assertTrue(isset($check['categories'][1]), 'Test that the category with the children still exists');
-    }
-
-    public function testDeleteAllEmbedMany() : void
-    {
-        $persister = $this->getCollectionPersister();
-        $user      = $this->getTestUser('jwage');
-        $persister->deleteAll($user, [$user->categories], []);
-        $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
-    }
-
-    public function testDeleteAllReferenceMany() : void
-    {
-        $persister = $this->getCollectionPersister();
-        $user      = $this->getTestUser('jwage');
-        $persister->deleteAll($user, [$user->phonenumbers], []);
-        $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
-    }
-
-    public function testDeleteAllNestedEmbedMany() : void
-    {
-        $persister = $this->getCollectionPersister();
-        $user      = $this->getTestUser('jwage');
         $this->logger->clear();
-        $persister->deleteAll(
+        $persister->delete(
             $user,
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             []
         );
         $this->assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
+
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
+
         $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
         $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
+
         $this->logger->clear();
-        $persister->deleteAll(
+        $persister->delete(
             $user,
             [$user->categories[0]->children, $user->categories[1]->children],
             []
         );
         $this->assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
+
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
+
         $this->assertFalse(isset($check['categories'][0]['children']), 'Test that the nested children categories field was deleted');
         $this->assertTrue(isset($check['categories'][0]), 'Test that the category with the children still exists');
+
         $this->assertFalse(isset($check['categories'][1]['children']), 'Test that the nested children categories field was deleted');
         $this->assertTrue(isset($check['categories'][1]), 'Test that the category with the children still exists');
     }
 
-    public function testDeleteAllNestedEmbedManyAndNestedParent() : void
+    public function testDeleteNestedEmbedManyAndNestedParent() : void
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
+
         $this->logger->clear();
-        $persister->deleteAll(
+        $persister->delete(
             $user,
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             []
         );
         $this->assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
+
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
+
         $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
         $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
+
         $this->logger->clear();
-        $persister->deleteAll(
+        $persister->delete(
             $user,
             [$user->categories[0]->children, $user->categories[0]->children[1]->children, $user->categories],
             []
         );
         $this->assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
+
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
+
         $this->assertFalse(isset($check['categories']), 'Test that the nested categories field was deleted');
     }
 

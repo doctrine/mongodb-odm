@@ -26,7 +26,6 @@ use function end;
 use function get_class;
 use function implode;
 use function sort;
-use function sprintf;
 use function strpos;
 
 /**
@@ -63,7 +62,7 @@ class CollectionPersister
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    public function deleteAll(object $parent, array $collections, array $options) : void
+    public function delete(object $parent, array $collections, array $options) : void
     {
         $unsetPathsMap = [];
 
@@ -89,63 +88,12 @@ class CollectionPersister
     }
 
     /**
-     * Deletes a PersistentCollection instance completely from a document using $unset.
-     */
-    public function delete(PersistentCollectionInterface $coll, array $options) : void
-    {
-        $mapping = $coll->getMapping();
-        if ($mapping['isInverseSide']) {
-            return; // ignore inverse side
-        }
-        if (CollectionHelper::isAtomic($mapping['strategy'])) {
-            throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
-        }
-        [$propertyPath, $parent] = $this->getPathAndParent($coll);
-        $query                   = ['$unset' => [$propertyPath => true]];
-        $this->executeQuery($parent, $query, $options);
-    }
-
-    /**
-     * Updates a PersistentCollection instance deleting removed rows and
-     * inserting new rows.
-     */
-    public function update(PersistentCollectionInterface $coll, array $options) : void
-    {
-        $mapping = $coll->getMapping();
-
-        if ($mapping['isInverseSide']) {
-            return; // ignore inverse side
-        }
-
-        switch ($mapping['strategy']) {
-            case ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET:
-            case ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY:
-                throw new UnexpectedValueException($mapping['strategy'] . ' update collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
-
-            case ClassMetadata::STORAGE_STRATEGY_SET:
-            case ClassMetadata::STORAGE_STRATEGY_SET_ARRAY:
-                $this->setCollection($coll, $options);
-                break;
-
-            case ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET:
-            case ClassMetadata::STORAGE_STRATEGY_PUSH_ALL:
-                $coll->initialize();
-                $this->deleteElements($coll, $options);
-                $this->insertElements($coll, $options);
-                break;
-
-            default:
-                throw new UnexpectedValueException('Unsupported collection strategy: ' . $mapping['strategy']);
-        }
-    }
-
-    /**
      * Updates a list PersistentCollection instances deleting removed rows and inserting new rows.
      *
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    public function updateAll(object $parent, array $collections, array $options) : void
+    public function update(object $parent, array $collections, array $options) : void
     {
         $setStrategyColls     = [];
         $addPushStrategyColls = [];
@@ -183,34 +131,16 @@ class CollectionPersister
             return;
         }
 
-        $this->deleteCollections($parent, $addPushStrategyColls, $options);
-        $this->insertCollections($parent, $addPushStrategyColls, $options);
-    }
-
-    /**
-     * Sets a PersistentCollection instance.
-     *
-     * This method is intended to be used with the "set" or "setArray"
-     * strategies. The "setArray" strategy will ensure that the collection is
-     * set as a BSON array, which means the collection elements will be
-     * reindexed numerically before storage.
-     */
-    private function setCollection(PersistentCollectionInterface $coll, array $options) : void
-    {
-        [$propertyPath, $parent] = $this->getPathAndParent($coll);
-        $coll->initialize();
-        $mapping = $coll->getMapping();
-        $setData = $this->pb->prepareAssociatedCollectionValue($coll, CollectionHelper::usesSet($mapping['strategy']));
-        $query   = ['$set' => [$propertyPath => $setData]];
-        $this->executeQuery($parent, $query, $options);
+        $this->deleteElements($parent, $addPushStrategyColls, $options);
+        $this->insertElements($parent, $addPushStrategyColls, $options);
     }
 
     /**
      * Sets a list of PersistentCollection instances.
      *
      * This method is intended to be used with the "set" or "setArray"
-     * strategies. The "setArray" strategy will ensure that the collection is
-     * set as a BSON array, which means the collection elements will be
+     * strategies. The "setArray" strategy will ensure that the collections is
+     * set as a BSON array, which means the collections elements will be
      * reindexed numerically before storage.
      *
      * @param PersistentCollectionInterface[] $collections
@@ -248,39 +178,6 @@ class CollectionPersister
     }
 
     /**
-     * Deletes removed elements from a PersistentCollection instance.
-     *
-     * This method is intended to be used with the "pushAll" and "addToSet"
-     * strategies.
-     */
-    private function deleteElements(PersistentCollectionInterface $coll, array $options) : void
-    {
-        $deleteDiff = $coll->getDeleteDiff();
-
-        if (empty($deleteDiff)) {
-            return;
-        }
-
-        [$propertyPath, $parent] = $this->getPathAndParent($coll);
-
-        $query = ['$unset' => []];
-
-        foreach ($deleteDiff as $key => $document) {
-            $query['$unset'][$propertyPath . '.' . $key] = true;
-        }
-
-        $this->executeQuery($parent, $query, $options);
-
-        /**
-         * @todo This is a hack right now because we don't have a proper way to
-         * remove an element from an array by its key. Unsetting the key results
-         * in the element being left in the array as null so we have to pull
-         * null values.
-         */
-        $this->executeQuery($parent, ['$pull' => [$propertyPath => null]], $options);
-    }
-
-    /**
      * Deletes removed elements from a list of PersistentCollection instances.
      *
      * This method is intended to be used with the "pushAll" and "addToSet" strategies.
@@ -288,7 +185,7 @@ class CollectionPersister
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    private function deleteCollections(object $parent, array $collections, array $options) : void
+    private function deleteElements(object $parent, array $collections, array $options) : void
     {
         $pathCollMap   = [];
         $paths         = [];
@@ -340,60 +237,14 @@ class CollectionPersister
     }
 
     /**
-     * Inserts new elements for a PersistentCollection instance.
-     *
-     * This method is intended to be used with the "pushAll" and "addToSet"
-     * strategies.
-     */
-    private function insertElements(PersistentCollectionInterface $coll, array $options) : void
-    {
-        $insertDiff = $coll->getInsertDiff();
-
-        if (empty($insertDiff)) {
-            return;
-        }
-
-        $mapping = $coll->getMapping();
-
-        switch ($mapping['strategy']) {
-            case ClassMetadata::STORAGE_STRATEGY_PUSH_ALL:
-                $operator = 'push';
-                break;
-
-            case ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET:
-                $operator = 'addToSet';
-                break;
-
-            default:
-                throw new LogicException(sprintf('Invalid strategy %s given for insertElements', $mapping['strategy']));
-        }
-
-        [$propertyPath, $parent] = $this->getPathAndParent($coll);
-
-        $callback = isset($mapping['embedded'])
-            ? function ($v) use ($mapping) {
-                return $this->pb->prepareEmbeddedDocumentValue($mapping, $v);
-            }
-            : function ($v) use ($mapping) {
-                return $this->pb->prepareReferencedDocumentValue($mapping, $v);
-            };
-
-        $value = array_values(array_map($callback, $insertDiff));
-
-        $query = ['$' . $operator => [$propertyPath => ['$each' => $value]]];
-
-        $this->executeQuery($parent, $query, $options);
-    }
-
-    /**
-     * Inserts new elements for a list of PersistentCollection instances.
+     * Inserts new elements for a PersistentCollection instances.
      *
      * This method is intended to be used with the "pushAll" and "addToSet" strategies.
      *
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    private function insertCollections(object $parent, array $collections, array $options) : void
+    private function insertElements(object $parent, array $collections, array $options) : void
     {
         $pushAllPathCollMap  = [];
         $addToSetPathCollMap = [];
