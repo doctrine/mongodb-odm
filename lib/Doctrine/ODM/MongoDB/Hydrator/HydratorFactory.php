@@ -205,7 +205,7 @@ EOF
         if (isset(\$data['%1\$s'])) {
             \$value = \$data['%1\$s'];
             %3\$s
-            \$this->class->reflFields['%2\$s']->setValue(\$document, clone \$return);
+            \$reflFields['%2\$s']->setValue(\$document, clone \$return);
             \$hydratedData['%2\$s'] = \$return;
         }
 
@@ -216,19 +216,43 @@ EOF
                     Type::getType($mapping['type'])->closureToPHP()
                 );
             } elseif (! isset($mapping['association'])) {
+                $condition      = null;
+                $conditionBlock = null;
+                if (! empty($mapping['nullable'])) {
+                    $condition      = sprintf("isset(\$data['%1\$s']) || array_key_exists('%1\$s', \$data)", $mapping['name']);
+                    $conditionBlock = sprintf(
+                        <<<EOF
+if (\$value !== null) {
+                \$typeIdentifier = \$fieldMappings['%1\$s']['type'];
+                %2\$s
+            } else {
+                \$return = null;
+            }
+EOF
+                        ,
+                        $mapping['fieldName'],
+                        Type::getType($mapping['type'])->closureToPHP()
+                    );
+                } else {
+                    $condition      = sprintf("isset(\$data['%1\$s'])", $mapping['name']);
+                    $conditionBlock = sprintf(
+                        <<<EOF
+\$typeIdentifier = \$fieldMappings['%1\$s']['type'];
+            %2\$s
+EOF
+                        ,
+                        $mapping['fieldName'],
+                        Type::getType($mapping['type'])->closureToPHP()
+                    );
+                }
                 $code .= sprintf(
                     <<<EOF
 
         /** @Field(type="{$mapping['type']}") */
-        if (isset(\$data['%1\$s']) || (! empty(\$this->class->fieldMappings['%2\$s']['nullable']) && array_key_exists('%1\$s', \$data))) {
+        if ($condition) {
             \$value = \$data['%1\$s'];
-            if (\$value !== null) {
-                \$typeIdentifier = \$this->class->fieldMappings['%2\$s']['type'];
-                %3\$s
-            } else {
-                \$return = null;
-            }
-            \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
+            {$conditionBlock}
+            \$reflFields['%2\$s']->setValue(\$document, \$return);
             \$hydratedData['%2\$s'] = \$return;
         }
 
@@ -245,12 +269,12 @@ EOF
         /** @ReferenceOne */
         if (isset(\$data['%1\$s'])) {
             \$reference = \$data['%1\$s'];
-            \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$reference);
-            \$identifier = ClassMetadata::getReferenceId(\$reference, \$this->class->fieldMappings['%2\$s']['storeAs']);
+            \$className = \$this->unitOfWork->getClassNameForAssociation(\$fieldMappings['%2\$s'], \$reference);
+            \$identifier = ClassMetadata::getReferenceId(\$reference, \$fieldMappings['%2\$s']['storeAs']);
             \$targetMetadata = \$this->dm->getClassMetadata(\$className);
             \$id = \$targetMetadata->getPHPIdentifierValue(\$identifier);
             \$return = \$this->dm->getReference(\$className, \$id);
-            \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
+            \$reflFields['%2\$s']->setValue(\$document, \$return);
             \$hydratedData['%2\$s'] = \$return;
         }
 
@@ -264,9 +288,9 @@ EOF
                     $code .= sprintf(
                         <<<EOF
 
-        \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
+        \$className = \$fieldMappings['%2\$s']['targetDocument'];
         \$return = \$this->dm->getRepository(\$className)->%3\$s(\$document);
-        \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
+        \$reflFields['%2\$s']->setValue(\$document, \$return);
         \$hydratedData['%2\$s'] = \$return;
 
 EOF
@@ -279,18 +303,18 @@ EOF
                     $code .= sprintf(
                         <<<EOF
 
-        \$mapping = \$this->class->fieldMappings['%2\$s'];
+        \$mapping = \$fieldMappings['%2\$s'];
         \$className = \$mapping['targetDocument'];
         \$targetClass = \$this->dm->getClassMetadata(\$mapping['targetDocument']);
         \$mappedByMapping = \$targetClass->fieldMappings[\$mapping['mappedBy']];
         \$mappedByFieldName = ClassMetadata::getReferenceFieldName(\$mappedByMapping['storeAs'], \$mapping['mappedBy']);
         \$criteria = array_merge(
             array(\$mappedByFieldName => \$data['_id']),
-            isset(\$this->class->fieldMappings['%2\$s']['criteria']) ? \$this->class->fieldMappings['%2\$s']['criteria'] : array()
+            isset(\$fieldMappings['%2\$s']['criteria']) ? \$fieldMappings['%2\$s']['criteria'] : array()
         );
-        \$sort = isset(\$this->class->fieldMappings['%2\$s']['sort']) ? \$this->class->fieldMappings['%2\$s']['sort'] : array();
+        \$sort = isset(\$fieldMappings['%2\$s']['sort']) ? \$fieldMappings['%2\$s']['sort'] : array();
         \$return = \$this->unitOfWork->getDocumentPersister(\$className)->load(\$criteria, null, array(), 0, \$sort);
-        \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
+        \$reflFields['%2\$s']->setValue(\$document, \$return);
         \$hydratedData['%2\$s'] = \$return;
 
 EOF
@@ -305,14 +329,14 @@ EOF
 
         /** @Many */
         \$mongoData = isset(\$data['%1\$s']) ? \$data['%1\$s'] : null;
-        \$return = \$this->dm->getConfiguration()->getPersistentCollectionFactory()->create(\$this->dm, \$this->class->fieldMappings['%2\$s']);
+        \$return = \$this->persistentCollectionFactory->create(\$this->dm, \$fieldMappings['%2\$s']);
         \$return->setHints(\$hints);
-        \$return->setOwner(\$document, \$this->class->fieldMappings['%2\$s']);
+        \$return->setOwner(\$document, \$fieldMappings['%2\$s']);
         \$return->setInitialized(false);
         if (\$mongoData) {
             \$return->setMongoData(\$mongoData);
         }
-        \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
+        \$reflFields['%2\$s']->setValue(\$document, \$return);
         \$hydratedData['%2\$s'] = \$return;
 
 EOF
@@ -327,11 +351,11 @@ EOF
         /** @EmbedOne */
         if (isset(\$data['%1\$s'])) {
             \$embeddedDocument = \$data['%1\$s'];
-            \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$embeddedDocument);
+            \$className = \$this->unitOfWork->getClassNameForAssociation(\$fieldMappings['%2\$s'], \$embeddedDocument);
             \$embeddedMetadata = \$this->dm->getClassMetadata(\$className);
             \$return = \$embeddedMetadata->newInstance();
 
-            \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
+            \$this->unitOfWork->setParentAssociation(\$return, \$fieldMappings['%2\$s'], \$document, '%1\$s');
 
             \$embeddedData = \$this->dm->getHydratorFactory()->hydrate(\$return, \$embeddedDocument, \$hints);
             \$embeddedId = \$embeddedMetadata->identifier && isset(\$embeddedData[\$embeddedMetadata->identifier]) ? \$embeddedData[\$embeddedMetadata->identifier] : null;
@@ -340,7 +364,7 @@ EOF
                 \$this->unitOfWork->registerManaged(\$return, \$embeddedId, \$embeddedData);
             }
 
-            \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
+            \$reflFields['%2\$s']->setValue(\$document, \$return);
             \$hydratedData['%2\$s'] = \$return;
         }
 
@@ -372,18 +396,24 @@ class $hydratorClassName implements HydratorInterface
 {
     private \$dm;
     private \$unitOfWork;
-    private \$class;
+    private \$fieldMappings;
+    private \$reflFields;
+    private \$persistentCollectionFactory;
 
     public function __construct(DocumentManager \$dm, UnitOfWork \$uow, ClassMetadata \$class)
     {
         \$this->dm = \$dm;
         \$this->unitOfWork = \$uow;
-        \$this->class = \$class;
+        \$this->fieldMappings = \$class->fieldMappings;
+        \$this->reflFields = \$class->reflFields;
+        \$this->persistentCollectionFactory = \$dm->getConfiguration()->getPersistentCollectionFactory();
     }
 
     public function hydrate(object \$document, array \$data, array \$hints = array()): array
     {
         \$hydratedData = array();
+        \$fieldMappings = \$this->fieldMappings;
+        \$reflFields = \$this->reflFields;
 %s        return \$hydratedData;
     }
 }

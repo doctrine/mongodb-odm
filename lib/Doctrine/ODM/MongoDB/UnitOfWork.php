@@ -2671,13 +2671,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function propertyChanged($document, $propertyName, $oldValue, $newValue)
     {
-        $oid   = spl_object_hash($document);
         $class = $this->dm->getClassMetadata(get_class($document));
 
         if (! isset($class->fieldMappings[$propertyName])) {
             return; // ignore non-persistent fields
         }
 
+        $oid = spl_object_hash($document);
         // Update changeset and mark document for synchronization
         $this->documentChangeSets[$oid][$propertyName] = [$oldValue, $newValue];
         if (isset($this->scheduledForDirtyCheck[$class->name][$oid])) {

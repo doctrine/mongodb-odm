@@ -629,15 +629,20 @@ class DocumentPersister
     private function loadEmbedManyCollection(PersistentCollectionInterface $collection) : void
     {
         $embeddedDocuments = $collection->getMongoData();
-        $mapping           = $collection->getMapping();
-        $owner             = $collection->getOwner();
         if (! $embeddedDocuments) {
             return;
         }
+        $mapping          = $collection->getMapping();
+        $owner            = $collection->getOwner();
+        $isHash           = CollectionHelper::isHash($mapping['strategy']);
+        $classMetadataMap = [];
 
         foreach ($embeddedDocuments as $key => $embeddedDocument) {
-            $className              = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
-            $embeddedMetadata       = $this->dm->getClassMetadata($className);
+            $className = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
+            if (empty($classMetadataMap[$className])) {
+                $classMetadataMap[$className] = $this->dm->getClassMetadata($className);
+            }
+            $embeddedMetadata       = $classMetadataMap[$className];
             $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
             $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
@@ -648,7 +653,7 @@ class DocumentPersister
             if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
                 $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
             }
-            if (CollectionHelper::isHash($mapping['strategy'])) {
+            if ($isHash) {
                 $collection->set($key, $embeddedDocumentObject);
             } else {
                 $collection->add($embeddedDocumentObject);
