@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsComment;
 use Documents\User;
 
-class BucketTest extends BaseTest
+class BucketAutoTest extends BaseTest
 {
     use AggregationTestTrait;
 
