@@ -203,18 +203,6 @@ class SchemaManagerTest extends TestCase
         $this->schemaManager->ensureDocumentIndexes(CmsProduct::class);
     }
 
-    public function testEnsureDocumentIndexesWithTimeout()
-    {
-        $collection = $this->documentCollections[CmsArticle::class];
-        $collection->expects($this->once())
-            ->method('createIndex')
-            ->with($this->anything(), $this->callback(static function ($o) {
-                return isset($o['timeout']) && $o['timeout'] === 10000;
-            }));
-
-        $this->schemaManager->ensureDocumentIndexes(CmsArticle::class, 10000);
-    }
-
     public function testUpdateDocumentIndexesShouldCreateMappedIndexes()
     {
         $collection = $this->documentCollections[CmsArticle::class];

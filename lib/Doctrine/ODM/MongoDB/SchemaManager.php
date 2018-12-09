@@ -41,7 +41,7 @@ class SchemaManager
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory.
      */
-    public function ensureIndexes(?int $timeout = null) : void
+    public function ensureIndexes() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -49,7 +49,7 @@ class SchemaManager
                 continue;
             }
 
-            $this->ensureDocumentIndexes($class->name, $timeout);
+            $this->ensureDocumentIndexes($class->name);
         }
     }
 
@@ -59,7 +59,7 @@ class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      */
-    public function updateIndexes(?int $timeout = null) : void
+    public function updateIndexes() : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -67,7 +67,7 @@ class SchemaManager
                 continue;
             }
 
-            $this->updateDocumentIndexes($class->name, $timeout);
+            $this->updateDocumentIndexes($class->name);
         }
     }
 
@@ -79,7 +79,7 @@ class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function updateDocumentIndexes(string $documentName, ?int $timeout = null) : void
+    public function updateDocumentIndexes(string $documentName) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
 
@@ -118,7 +118,7 @@ class SchemaManager
             $collection->dropIndex($mongoIndex['name']);
         }
 
-        $this->ensureDocumentIndexes($documentName, $timeout);
+        $this->ensureDocumentIndexes($documentName);
     }
 
     public function getDocumentIndexes(string $documentName) : array
@@ -219,7 +219,7 @@ class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function ensureDocumentIndexes(string $documentName, ?int $timeoutMs = null) : void
+    public function ensureDocumentIndexes(string $documentName) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -239,10 +239,6 @@ class SchemaManager
         foreach ($indexes as $index) {
             $keys    = $index['keys'];
             $options = $index['options'];
-
-            if (! isset($options['timeout']) && isset($timeoutMs)) {
-                $options['timeout'] = $timeoutMs;
-            }
 
             $collection->createIndex($keys, $options);
         }
