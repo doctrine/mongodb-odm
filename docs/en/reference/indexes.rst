@@ -41,9 +41,6 @@ You can customize the index with some additional options:
    indexing many keys and Mongo complains about the index name being
    too long.
 -
-   **dropDups** - If a unique index is being created and duplicate
-   values exist, drop all but one duplicate value.
--
    **background** - Create indexes in the background while other
    operations are taking place. By default, index creation happens
    synchronously. If you specify TRUE with this option, index creation

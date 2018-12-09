@@ -237,7 +237,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     {
         $keys    = array_merge($keys, $index->keys);
         $options = [];
-        $allowed = ['name', 'dropDups', 'background', 'unique', 'sparse', 'expireAfterSeconds'];
+        $allowed = ['name', 'background', 'unique', 'sparse', 'expireAfterSeconds'];
         foreach ($allowed as $name) {
             if (! isset($index->$name)) {
                 continue;

@@ -15,9 +15,6 @@ abstract class AbstractIndex extends Annotation
     public $name;
 
     /** @var bool|null */
-    public $dropDups;
-
-    /** @var bool|null */
     public $background;
 
     /** @var int|null */

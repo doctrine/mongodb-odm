@@ -397,15 +397,11 @@ class SchemaManager
      *
      *   (a) Key/direction pairs differ or are not in the same order
      *   (b) Sparse or unique options differ
-     *   (c) Mongo index is unique without dropDups and mapped index is unique
-     *       with dropDups
-     *   (d) Geospatial options differ (bits, max, min)
-     *   (e) The partialFilterExpression differs
+     *   (c) Geospatial options differ (bits, max, min)
+     *   (d) The partialFilterExpression differs
      *
-     * Regarding (c), the inverse case is not a reason to delete and
-     * recreate the index, since dropDups only affects creation of
-     * the unique index. Additionally, the background option is only
-     * relevant to index creation and is not considered.
+     * The background option is only relevant to index creation and is not
+     * considered.
      *
      * @param array|IndexInfo $mongoIndex Mongo index data.
      */
@@ -422,11 +418,6 @@ class SchemaManager
         }
 
         if (empty($mongoIndex['unique']) xor empty($documentIndexOptions['unique'])) {
-            return false;
-        }
-
-        if (! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
-            ! empty($documentIndexOptions['unique']) && ! empty($documentIndexOptions['dropDups'])) {
             return false;
         }
 

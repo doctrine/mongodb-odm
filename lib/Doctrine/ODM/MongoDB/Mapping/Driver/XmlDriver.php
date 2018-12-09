@@ -286,9 +286,6 @@ class XmlDriver extends FileDriver
         if (isset($mapping['background'])) {
             $options['background'] = (bool) $mapping['background'];
         }
-        if (isset($mapping['drop-dups'])) {
-            $options['dropDups'] = (bool) $mapping['drop-dups'];
-        }
         if (isset($mapping['index-name'])) {
             $options['name'] = (string) $mapping['index-name'];
         }
@@ -423,9 +420,6 @@ class XmlDriver extends FileDriver
 
         if (isset($attributes['background'])) {
             $options['background'] = ((string) $attributes['background'] === 'true');
-        }
-        if (isset($attributes['drop-dups'])) {
-            $options['dropDups'] = ((string) $attributes['drop-dups'] === 'true');
         }
         if (isset($attributes['name'])) {
             $options['name'] = (string) $attributes['name'];

@@ -359,8 +359,6 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->assertNotEmpty($indexes[1]['options']);
         $this->assertTrue(isset($indexes[1]['options']['unique']));
         $this->assertEquals(true, $indexes[1]['options']['unique']);
-        $this->assertTrue(isset($indexes[1]['options']['dropDups']));
-        $this->assertEquals(true, $indexes[1]['options']['dropDups']);
 
         $this->assertTrue(isset($indexes[2]['keys']['lock']));
         $this->assertEquals(1, $indexes[2]['keys']['lock']);
@@ -373,15 +371,11 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->assertNotEmpty($indexes[3]['options']);
         $this->assertTrue(isset($indexes[3]['options']['unique']));
         $this->assertEquals(true, $indexes[3]['options']['unique']);
-        $this->assertTrue(isset($indexes[3]['options']['dropDups']));
-        $this->assertEquals(true, $indexes[3]['options']['dropDups']);
 
         $this->assertTrue(isset($indexes[4]['keys']['username']));
         $this->assertEquals(-1, $indexes[4]['keys']['username']);
         $this->assertTrue(isset($indexes[4]['options']['unique']));
         $this->assertEquals(true, $indexes[4]['options']['unique']);
-        $this->assertTrue(isset($indexes[4]['options']['dropDups']));
-        $this->assertEquals(false, $indexes[4]['options']['dropDups']);
 
         return $class;
     }
@@ -510,19 +504,19 @@ class AbstractMappingDriverUser
 
     /**
      * @ODM\Field(name="username", type="string")
-     * @ODM\UniqueIndex(order="desc", dropDups=false)
+     * @ODM\UniqueIndex(order="desc")
      */
     public $name;
 
     /**
      * @ODM\Field(type="string")
-     * @ODM\UniqueIndex(order="desc", dropDups=true)
+     * @ODM\UniqueIndex(order="desc")
      */
     public $email;
 
     /**
      * @ODM\Field(type="int")
-     * @ODM\UniqueIndex(order="desc", dropDups=true)
+     * @ODM\UniqueIndex(order="desc")
      */
     public $mysqlProfileId;
 
@@ -656,9 +650,9 @@ class AbstractMappingDriverUser
             ],
             'defaultDiscriminatorValue' => 'home',
         ]);
-        $metadata->addIndex(['username' => 'desc'], ['unique' => true, 'dropDups' => false]);
-        $metadata->addIndex(['email' => 'desc'], ['unique' => true, 'dropDups' => true]);
-        $metadata->addIndex(['mysqlProfileId' => 'desc'], ['unique' => true, 'dropDups' => true]);
+        $metadata->addIndex(['username' => 'desc'], ['unique' => true]);
+        $metadata->addIndex(['email' => 'desc'], ['unique' => true]);
+        $metadata->addIndex(['mysqlProfileId' => 'desc'], ['unique' => true]);
         $metadata->addIndex(['createdAt' => 'asc'], ['expireAfterSeconds' => 3600]);
         $metadata->setShardKey(['name' => 'asc'], ['unique' => true, 'numInitialChunks' => 4096]);
     }

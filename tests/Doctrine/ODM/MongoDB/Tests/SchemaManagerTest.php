@@ -471,27 +471,6 @@ class SchemaManagerTest extends TestCase
                 'mongoIndex' => ['unique' => true],
                 'documentIndex' => ['options' => ['unique' => true]],
             ],
-            // DropDups option
-            'dropDupsWithoutUniqueInMongoIndex' => [
-                'expected' => true,
-                'mongoIndex' => ['dropDups' => true],
-                'documentIndex' => [],
-            ],
-            'dropDupsWithoutUniqueInDocumentIndex' => [
-                'expected' => true,
-                'mongoIndex' => [],
-                'documentIndex' => ['options' => ['dropDups' => true]],
-            ],
-            'dropDupsOnlyInMongoIndex' => [
-                'expected' => true,
-                'mongoIndex' => ['unique' => true, 'dropDups' => true],
-                'documentIndex' => ['options' => ['unique' => true]],
-            ],
-            'dropDupsOnlyInDocumentIndex' => [
-                'expected' => false,
-                'mongoIndex' => ['unique' => true],
-                'documentIndex' => ['options' => ['unique' => true, 'dropDups' => true]],
-            ],
             // bits option
             'bitsOnlyInMongoIndex' => [
                 'expected' => false,

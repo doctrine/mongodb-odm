@@ -31,7 +31,6 @@
         <indexes>
             <index unique="true">
                 <key name="username" order="desc" />
-                <option name="dropDups" value="false" />
             </index>
             <index>
                 <key name="createdAt" order="asc" />

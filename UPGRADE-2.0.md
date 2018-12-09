@@ -111,6 +111,8 @@ are no longer possible:
   `dbRefWithDB`. This omits the `$db` key in the `DBRef` object when possible.
   This only has implications if you consume documents outside of ODM and require
   the `$db` key to be set or if you are using multiple databases to store data.
+* The `dropDups` option on indexes has been dropped without replacement since it
+  is no longer respected by MongoDB.
 
 ### YAML mapping
 

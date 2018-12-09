@@ -114,7 +114,7 @@ of several common elements:
             <field field-name="email" type="string" unique="true" order="desc" />
             <field field-name="createdAt" type="date" />
             <indexes>
-                <index unique="true" dropDups="true">
+                <index unique="true">
                     <key name="username" order="desc" />
                     <option name="safe" value="true" />
                 </index>
