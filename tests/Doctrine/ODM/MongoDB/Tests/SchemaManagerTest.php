@@ -23,6 +23,7 @@ use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
+use MongoDB\Model\IndexInfo;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\Constraint\ArraySubset;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -500,7 +501,7 @@ class SchemaManagerTest extends BaseTest
         $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
-        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
+        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
     }
 
     public function dataIsMongoIndexEquivalentToDocumentIndex()
@@ -671,7 +672,7 @@ class SchemaManagerTest extends BaseTest
         $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
-        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
+        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
     }
 
     public function dataIsMongoTextIndexEquivalentToDocumentIndex()

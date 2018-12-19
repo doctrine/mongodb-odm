@@ -395,81 +395,16 @@ final class SchemaManager
         $this->dm->getDocumentDatabase($documentName)->drop($this->getWriteOptions($maxTimeMs, $writeConcern));
     }
 
-    /**
-     * Determine if an index returned by MongoCollection::getIndexInfo() can be
-     * considered equivalent to an index in class metadata.
-     *
-     * Indexes are considered different if:
-     *
-     *   (a) Key/direction pairs differ or are not in the same order
-     *   (b) Sparse or unique options differ
-     *   (c) Geospatial options differ (bits, max, min)
-     *   (d) The partialFilterExpression differs
-     *
-     * The background option is only relevant to index creation and is not
-     * considered.
-     *
-     * @param array|IndexInfo $mongoIndex Mongo index data.
-     */
-    public function isMongoIndexEquivalentToDocumentIndex($mongoIndex, array $documentIndex) : bool
+    public function isMongoIndexEquivalentToDocumentIndex(IndexInfo $mongoIndex, array $documentIndex) : bool
     {
-        $documentIndexOptions = $documentIndex['options'];
-
-        if (! $this->isEquivalentIndexKeys($mongoIndex, $documentIndex)) {
-            return false;
-        }
-
-        if (empty($mongoIndex['sparse']) xor empty($documentIndexOptions['sparse'])) {
-            return false;
-        }
-
-        if (empty($mongoIndex['unique']) xor empty($documentIndexOptions['unique'])) {
-            return false;
-        }
-
-        foreach (['bits', 'max', 'min'] as $option) {
-            if (isset($mongoIndex[$option]) xor isset($documentIndexOptions[$option])) {
-                return false;
-            }
-
-            if (isset($mongoIndex[$option], $documentIndexOptions[$option]) &&
-                $mongoIndex[$option] !== $documentIndexOptions[$option]) {
-                return false;
-            }
-        }
-
-        if (empty($mongoIndex['partialFilterExpression']) xor empty($documentIndexOptions['partialFilterExpression'])) {
-            return false;
-        }
-
-        if (isset($mongoIndex['partialFilterExpression'], $documentIndexOptions['partialFilterExpression']) &&
-            $mongoIndex['partialFilterExpression'] !== $documentIndexOptions['partialFilterExpression']) {
-            return false;
-        }
-
-        if (isset($mongoIndex['weights']) && ! $this->isEquivalentTextIndexWeights($mongoIndex, $documentIndex)) {
-            return false;
-        }
-
-        foreach (['default_language', 'language_override', 'textIndexVersion'] as $option) {
-            /* Text indexes will always report defaults for these options, so
-             * only compare if we have explicit values in the document index. */
-            if (isset($mongoIndex[$option], $documentIndexOptions[$option]) &&
-                $mongoIndex[$option] !== $documentIndexOptions[$option]) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->isEquivalentIndexKeys($mongoIndex, $documentIndex) && $this->isEquivalentIndexOptions($mongoIndex, $documentIndex);
     }
 
     /**
      * Determine if the keys for a MongoDB index can be considered equivalent to
      * those for an index in class metadata.
-     *
-     * @param array|IndexInfo $mongoIndex Mongo index data.
      */
-    private function isEquivalentIndexKeys($mongoIndex, array $documentIndex) : bool
+    private function isEquivalentIndexKeys(IndexInfo $mongoIndex, array $documentIndex) : bool
     {
         $mongoIndexKeys    = $mongoIndex['key'];
         $documentIndexKeys = $documentIndex['keys'];
@@ -495,12 +430,75 @@ final class SchemaManager
     }
 
     /**
+     * Determine if an index returned by MongoCollection::getIndexInfo() can be
+     * considered equivalent to an index in class metadata based on options.
+     *
+     * Indexes are considered different if:
+     *
+     *   (a) Key/direction pairs differ or are not in the same order
+     *   (b) Sparse or unique options differ
+     *   (c) Geospatial options differ (bits, max, min)
+     *   (d) The partialFilterExpression differs
+     *
+     * The background option is only relevant to index creation and is not
+     * considered.
+     */
+    private function isEquivalentIndexOptions(IndexInfo $mongoIndex, array $documentIndex) : bool
+    {
+        $mongoIndexOptions = $mongoIndex->__debugInfo();
+        unset($mongoIndexOptions['v'], $mongoIndexOptions['ns'], $mongoIndexOptions['key']);
+
+        $documentIndexOptions = $documentIndex['options'];
+
+        if (empty($mongoIndexOptions['sparse']) xor empty($documentIndexOptions['sparse'])) {
+            return false;
+        }
+
+        if (empty($mongoIndexOptions['unique']) xor empty($documentIndexOptions['unique'])) {
+            return false;
+        }
+
+        foreach (['bits', 'max', 'min'] as $option) {
+            if (isset($mongoIndexOptions[$option]) xor isset($documentIndexOptions[$option])) {
+                return false;
+            }
+
+            if (isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
+                $mongoIndexOptions[$option] !== $documentIndexOptions[$option]) {
+                return false;
+            }
+        }
+
+        if (empty($mongoIndexOptions['partialFilterExpression']) xor empty($documentIndexOptions['partialFilterExpression'])) {
+            return false;
+        }
+
+        if (isset($mongoIndexOptions['partialFilterExpression'], $documentIndexOptions['partialFilterExpression']) &&
+            $mongoIndexOptions['partialFilterExpression'] !== $documentIndexOptions['partialFilterExpression']) {
+            return false;
+        }
+
+        if (isset($mongoIndexOptions['weights']) && ! $this->isEquivalentTextIndexWeights($mongoIndex, $documentIndex)) {
+            return false;
+        }
+
+        foreach (['default_language', 'language_override', 'textIndexVersion'] as $option) {
+            /* Text indexes will always report defaults for these options, so
+             * only compare if we have explicit values in the document index. */
+            if (isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
+                $mongoIndexOptions[$option] !== $documentIndexOptions[$option]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Determine if the text index weights for a MongoDB index can be considered
      * equivalent to those for an index in class metadata.
-     *
-     * @param array|IndexInfo $mongoIndex Mongo index data.
      */
-    private function isEquivalentTextIndexWeights($mongoIndex, array $documentIndex) : bool
+    private function isEquivalentTextIndexWeights(IndexInfo $mongoIndex, array $documentIndex) : bool
     {
         $mongoIndexWeights    = $mongoIndex['weights'];
         $documentIndexWeights = $documentIndex['options']['weights'] ?? [];
