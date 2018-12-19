@@ -649,6 +649,12 @@ class SchemaManagerTest extends BaseTest
                 'mongoIndex' => [],
                 'documentIndex' => ['keys' => ['foo' => 'text', 'bar' => 'text']],
             ],
+            // geoHaystack index options
+            'geoHaystackOptionsDifferent' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['bucketSize' => 16]],
+            ],
         ];
     }
 

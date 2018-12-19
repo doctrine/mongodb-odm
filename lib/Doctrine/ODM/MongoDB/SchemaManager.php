@@ -11,6 +11,7 @@ use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
+use function array_diff_key;
 use function array_filter;
 use function array_merge;
 use function array_unique;
@@ -27,6 +28,16 @@ final class SchemaManager
     private const GRIDFS_CHUNKS_COLLECTION_INDEX = ['filename' => 1, 'uploadDate' => 1];
 
     private const CODE_SHARDING_ALREADY_INITIALIZED = 23;
+
+    private const ALLOWED_MISSING_INDEX_OPTIONS = [
+        'partialFilterExpression',
+        'sparse',
+        'unique',
+        'weights',
+        'default_language',
+        'language_override',
+        'textIndexVersion',
+    ];
 
     /** @var DocumentManager */
     protected $dm;
@@ -450,6 +461,10 @@ final class SchemaManager
 
         $documentIndexOptions = $documentIndex['options'];
 
+        if ($this->indexOptionsAreMissing($mongoIndexOptions, $documentIndexOptions)) {
+            return false;
+        }
+
         if (empty($mongoIndexOptions['sparse']) xor empty($documentIndexOptions['sparse'])) {
             return false;
         }
@@ -459,10 +474,6 @@ final class SchemaManager
         }
 
         foreach (['bits', 'max', 'min'] as $option) {
-            if (isset($mongoIndexOptions[$option]) xor isset($documentIndexOptions[$option])) {
-                return false;
-            }
-
             if (isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
                 $mongoIndexOptions[$option] !== $documentIndexOptions[$option]) {
                 return false;
@@ -492,6 +503,21 @@ final class SchemaManager
         }
 
         return true;
+    }
+
+    /**
+     * Checks if any index options are missing.
+     *
+     * Options added to the ALLOWED_MISSING_INDEX_OPTIONS constant are ignored
+     * and are expected to be checked later
+     */
+    private function indexOptionsAreMissing(array $mongoIndexOptions, array $documentIndexOptions) : bool
+    {
+        foreach (self::ALLOWED_MISSING_INDEX_OPTIONS as $option) {
+            unset($mongoIndexOptions[$option], $documentIndexOptions[$option]);
+        }
+
+        return array_diff_key($mongoIndexOptions, $documentIndexOptions) !== [] || array_diff_key($documentIndexOptions, $mongoIndexOptions) !== [];
     }
 
     /**
