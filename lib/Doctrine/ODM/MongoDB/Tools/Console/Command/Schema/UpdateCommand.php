@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\SchemaManager;
+use MongoDB\Driver\WriteConcern;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,15 +16,11 @@ use function sprintf;
 
 class UpdateCommand extends AbstractCommand
 {
-    /** @var int|null */
-    private $timeout;
-
     protected function configure()
     {
         $this
             ->setName('odm:schema:update')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
-            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
             ->setDescription('Update indexes for your documents');
     }
 
@@ -32,19 +29,17 @@ class UpdateCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $class         = $input->getOption('class');
-        $timeout       = $input->getOption('timeout');
-        $this->timeout = is_string($timeout) ? (int) $timeout : null;
+        $class = $input->getOption('class');
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
 
         try {
             if (is_string($class)) {
-                $this->processDocumentIndex($sm, $class);
+                $this->processDocumentIndex($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 $output->writeln(sprintf('Updated <comment>index(es)</comment> for <info>%s</info>', $class));
             } else {
-                $this->processIndex($sm);
+                $this->processIndex($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 $output->writeln('Updated <comment>indexes</comment> for <info>all classes</info>');
             }
         } catch (Throwable $e) {
@@ -55,20 +50,20 @@ class UpdateCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, string $document)
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->updateDocumentIndexes($document, $this->timeout);
+        $sm->updateDocumentIndexes($document, $maxTimeMs, $writeConcern);
     }
 
-    protected function processIndex(SchemaManager $sm)
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->updateIndexes($this->timeout);
+        $sm->updateIndexes($maxTimeMs, $writeConcern);
     }
 
     /**
      * @throws BadMethodCallException
      */
-    protected function processDocumentCollection(SchemaManager $sm, string $document)
+    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a document collection');
     }
@@ -76,7 +71,7 @@ class UpdateCommand extends AbstractCommand
     /**
      * @throws BadMethodCallException
      */
-    protected function processCollection(SchemaManager $sm)
+    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a collection');
     }
@@ -84,7 +79,7 @@ class UpdateCommand extends AbstractCommand
     /**
      * @throws BadMethodCallException
      */
-    protected function processDocumentDb(SchemaManager $sm, string $document)
+    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a document database');
     }
@@ -92,7 +87,7 @@ class UpdateCommand extends AbstractCommand
     /**
      * @throws BadMethodCallException
      */
-    protected function processDb(SchemaManager $sm)
+    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a database');
     }

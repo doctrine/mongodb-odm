@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
+use MongoDB\Driver\WriteConcern;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -46,9 +47,9 @@ class DropCommand extends AbstractCommand
         foreach ($drop as $option) {
             try {
                 if (is_string($class)) {
-                    $this->{'processDocument' . ucfirst($option)}($sm, $class);
+                    $this->{'processDocument' . ucfirst($option)}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 } else {
-                    $this->{'process' . ucfirst($option)}($sm);
+                    $this->{'process' . ucfirst($option)}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 }
                 $output->writeln(sprintf(
                     'Dropped <comment>%s%s</comment> for <info>%s</info>',
@@ -65,33 +66,33 @@ class DropCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentCollection(SchemaManager $sm, string $document)
+    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->dropDocumentCollection($document);
+        $sm->dropDocumentCollection($document, $maxTimeMs, $writeConcern);
     }
 
-    protected function processCollection(SchemaManager $sm)
+    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->dropCollections();
+        $sm->dropCollections($maxTimeMs, $writeConcern);
     }
 
-    protected function processDocumentDb(SchemaManager $sm, string $document)
+    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->dropDocumentDatabase($document);
+        $sm->dropDocumentDatabase($document, $maxTimeMs, $writeConcern);
     }
 
-    protected function processDb(SchemaManager $sm)
+    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->dropDatabases();
+        $sm->dropDatabases($maxTimeMs, $writeConcern);
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, string $document)
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->deleteDocumentIndexes($document);
+        $sm->deleteDocumentIndexes($document, $maxTimeMs, $writeConcern);
     }
 
-    protected function processIndex(SchemaManager $sm)
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->deleteIndexes();
+        $sm->deleteIndexes($maxTimeMs, $writeConcern);
     }
 }

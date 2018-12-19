@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\SchemaManager;
+use MongoDB\Driver\WriteConcern;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,15 +23,11 @@ class CreateCommand extends AbstractCommand
     /** @var string[] */
     private $createOrder = [self::COLLECTION, self::INDEX];
 
-    /** @var int|null */
-    private $timeout;
-
     protected function configure()
     {
         $this
             ->setName('odm:schema:create')
             ->addOption('class', 'c', InputOption::VALUE_REQUIRED, 'Document class to process (default: all classes)')
-            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Create collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Create indexes')
             ->setDescription('Create databases, collections and indexes for your documents');
@@ -45,9 +42,7 @@ class CreateCommand extends AbstractCommand
         // Default to the full creation order if no options were specified
         $create = empty($create) ? $this->createOrder : $create;
 
-        $class         = $input->getOption('class');
-        $timeout       = $input->getOption('timeout');
-        $this->timeout = is_string($timeout) ? (int) $timeout : null;
+        $class = $input->getOption('class');
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
@@ -55,9 +50,9 @@ class CreateCommand extends AbstractCommand
         foreach ($create as $option) {
             try {
                 if (isset($class)) {
-                    $this->{'processDocument' . ucfirst($option)}($sm, $class);
+                    $this->{'processDocument' . ucfirst($option)}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 } else {
-                    $this->{'process' . ucfirst($option)}($sm);
+                    $this->{'process' . ucfirst($option)}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 }
                 $output->writeln(sprintf(
                     'Created <comment>%s%s</comment> for <info>%s</info>',
@@ -74,34 +69,34 @@ class CreateCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentCollection(SchemaManager $sm, string $document)
+    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->createDocumentCollection($document);
+        $sm->createDocumentCollection($document, $maxTimeMs, $writeConcern);
     }
 
-    protected function processCollection(SchemaManager $sm)
+    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->createCollections();
+        $sm->createCollections($maxTimeMs, $writeConcern);
     }
 
-    protected function processDocumentDb(SchemaManager $sm, string $document)
+    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
     }
 
-    protected function processDb(SchemaManager $sm)
+    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, string $document)
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->ensureDocumentIndexes($document, $this->timeout);
+        $sm->ensureDocumentIndexes($document, $maxTimeMs, $writeConcern);
     }
 
-    protected function processIndex(SchemaManager $sm)
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $sm->ensureIndexes($this->timeout);
+        $sm->ensureIndexes($maxTimeMs, $writeConcern);
     }
 
     protected function processDocumentProxy(SchemaManager $sm, string $document)

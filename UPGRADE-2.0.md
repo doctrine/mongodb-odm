@@ -29,6 +29,8 @@
 
 * The `--depth` option in the `odm:query` command was dropped without
   replacement.
+* The `--timeout` option for all schema commands was dropped. You should use the
+  `--maxTimeMs` option instead.
 
 ## Aggregation builder
 * The `debug` method in `Doctrine\ODM\MongoDB\Aggregation\Stage\Match` was dropped
