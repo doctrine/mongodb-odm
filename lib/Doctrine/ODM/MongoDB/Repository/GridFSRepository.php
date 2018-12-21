@@ -35,8 +35,7 @@ interface GridFSRepository extends ObjectRepository
     /**
      * Writes the contents of a readable stream to a GridFS file.
      *
-     * @param resource    $source   Readable stream
-     * @param object|null $metadata
+     * @param resource $source Readable stream
      *
      * @return object The newly created GridFS file
      */
@@ -45,9 +44,7 @@ interface GridFSRepository extends ObjectRepository
     /**
      * Writes the contents of a file to a GridFS file.
      *
-     * @param string      $path
      * @param string|null $filename The filename to upload the file with. If no filename is provided, the name of the source file will be used.
-     * @param object|null $metadata
      *
      * @return object The newly created GridFS file
      */

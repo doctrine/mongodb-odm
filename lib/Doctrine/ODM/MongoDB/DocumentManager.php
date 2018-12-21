@@ -15,6 +15,7 @@ use Doctrine\ODM\MongoDB\Proxy\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use InvalidArgumentException;
 use MongoDB\Client;
@@ -24,6 +25,7 @@ use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
 use RuntimeException;
 use function array_search;
+use function assert;
 use function get_class;
 use function gettype;
 use function is_object;
@@ -293,7 +295,9 @@ class DocumentManager implements ObjectManager
             return $this->documentDatabases[$className];
         }
 
-        $metadata                            = $this->metadataFactory->getMetadataFor($className);
+        $metadata = $this->metadataFactory->getMetadataFor($className);
+        assert($metadata instanceof ClassMetadata);
+
         $db                                  = $metadata->getDatabase();
         $db                                  = $db ?: $this->config->getDefaultDB();
         $db                                  = $db ?: 'doctrine';
@@ -323,6 +327,7 @@ class DocumentManager implements ObjectManager
 
         /** @var ClassMetadata $metadata */
         $metadata = $this->metadataFactory->getMetadataFor($className);
+        assert($metadata instanceof ClassMetadata);
         if ($metadata->isFile) {
             return $this->getDocumentBucket($className)->getFilesCollection();
         }
@@ -562,7 +567,7 @@ class DocumentManager implements ObjectManager
      * has its identifier populated. Otherwise a proxy is returned that automatically
      * loads itself on first access.
      *
-     * @param string|object $identifier
+     * @param mixed $identifier
      */
     public function getReference(string $documentName, $identifier) : object
     {
@@ -600,7 +605,8 @@ class DocumentManager implements ObjectManager
      */
     public function getPartialReference(string $documentName, $identifier) : object
     {
-        $class    = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
+        $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
+        assert($class instanceof ClassMetadata);
         $document = $this->unitOfWork->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
@@ -623,12 +629,15 @@ class DocumentManager implements ObjectManager
      * @param mixed  $identifier
      * @param int    $lockMode
      * @param int    $lockVersion
-     *
-     * @return object $document
      */
-    public function find($documentName, $identifier, $lockMode = LockMode::NONE, $lockVersion = null)
+    public function find($documentName, $identifier, $lockMode = LockMode::NONE, $lockVersion = null) : ?object
     {
-        return $this->getRepository($documentName)->find($identifier, $lockMode, $lockVersion);
+        $repository = $this->getRepository($documentName);
+        if ($repository instanceof DocumentRepository) {
+            return $repository->find($identifier, $lockMode, $lockVersion);
+        }
+
+        return $repository->find($identifier);
     }
 
     /**
@@ -701,8 +710,7 @@ class DocumentManager implements ObjectManager
             );
         }
 
-        $storeAs   = $referenceMapping['storeAs'] ?? null;
-        $reference = [];
+        $storeAs = $referenceMapping['storeAs'] ?? null;
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
                 if ($class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION) {

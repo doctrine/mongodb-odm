@@ -10,6 +10,7 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Events;
@@ -19,6 +20,7 @@ use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use ReflectionException;
+use function assert;
 use function get_class;
 use function get_class_methods;
 use function in_array;
@@ -67,7 +69,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function initialize() : void
     {
-        $this->driver      = $this->config->getMetadataDriverImpl();
+        $driver = $this->config->getMetadataDriverImpl();
+        if ($driver === null) {
+            throw ConfigurationException::noMetadataDriverConfigured();
+        }
+
+        $this->driver      = $driver;
         $this->evm         = $this->dm->getEventManager();
         $this->initialized = true;
     }
@@ -107,6 +114,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function isEntity(ClassMetadataInterface $class) : bool
     {
+        assert($class instanceof ClassMetadata);
         return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument;
     }
 
@@ -115,9 +123,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []) : void
     {
-        /** @var $class ClassMetadata */
-        /** @var $parent ClassMetadata */
-        if ($parent) {
+        assert($class instanceof ClassMetadata);
+        if ($parent instanceof ClassMetadata) {
             $class->setInheritanceType($parent->inheritanceType);
             $class->setDiscriminatorField($parent->discriminatorField);
             $class->setDiscriminatorMap($parent->discriminatorMap);
@@ -159,7 +166,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $this->validateIdentifier($class);
 
-        if ($parent && $rootEntityFound && $parent->generatorType === $class->generatorType) {
+        if ($parent instanceof ClassMetadata && $rootEntityFound && $parent->generatorType === $class->generatorType) {
             if ($parent->generatorType) {
                 $class->setIdGeneratorType($parent->generatorType);
             }
@@ -173,7 +180,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->completeIdGeneratorMapping($class);
         }
 
-        if ($parent && $parent->isInheritanceTypeSingleCollection()) {
+        if ($parent instanceof ClassMetadata && $parent->isInheritanceTypeSingleCollection()) {
             $class->setDatabase($parent->getDatabase());
             $class->setCollection($parent->getCollection());
         }
@@ -230,7 +237,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
                 $uuidGenerator = new UuidGenerator();
-                isset($idGenOptions['salt']) && $uuidGenerator->setSalt((string) $idGenOptions['salt']);
+                if (isset($idGenOptions['salt'])) {
+                    $uuidGenerator->setSalt((string) $idGenOptions['salt']);
+                }
                 $class->setIdGenerator($uuidGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:

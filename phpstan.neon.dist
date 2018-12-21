@@ -1,4 +1,8 @@
 parameters:
-  level: 1
+  level: 7
   paths:
     - %rootDir%/../../../lib
+
+  ignoreErrors:
+    # See https://github.com/mongodb/mongo-php-driver/issues/940
+    - '#^PHPDoc tag @throws with type MongoDB\\Driver\\Exception\\Exception is not subtype of Throwable$#'

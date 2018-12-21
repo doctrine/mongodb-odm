@@ -14,7 +14,6 @@ use MongoDB\BSON\Binary;
 use MongoDB\BSON\Javascript;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
-use Traversable;
 use function array_filter;
 use function array_key_exists;
 use function count;
@@ -1475,7 +1474,7 @@ class Builder
      * Set the skip for the query cursor.
      *
      * This is only relevant for find queries, or mapReduce queries that store
-     * results in an output collecton and return a cursor.
+     * results in an output collection and return a cursor.
      *
      * @see Query::prepareCursor()
      */
@@ -1632,7 +1631,7 @@ class Builder
     /**
      * Get Discriminator Values
      *
-     * @param Traversable $classNames
+     * @param string[] $classNames
      *
      * @throws InvalidArgumentException If the number of found collections > 1.
      */
@@ -1653,7 +1652,7 @@ class Builder
     }
 
     /**
-     * @param string[]|string $documentName an array of document names or just one.
+     * @param string[]|string|null $documentName an array of document names or just one.
      */
     private function setDocumentName($documentName)
     {
@@ -1662,7 +1661,7 @@ class Builder
             $documentName  = $documentNames[0];
 
             $metadata            = $this->dm->getClassMetadata($documentName);
-            $discriminatorField  = $metadata->discriminatorField;
+            $discriminatorField  = $metadata->discriminatorField ?? ClassMetadata::DEFAULT_DISCRIMINATOR_FIELD;
             $discriminatorValues = $this->getDiscriminatorValues($documentNames);
 
             // If a defaultDiscriminatorValue is set and it is among the discriminators being queries, add NULL to the list

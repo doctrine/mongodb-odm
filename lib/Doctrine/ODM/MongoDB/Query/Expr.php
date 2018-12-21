@@ -18,6 +18,7 @@ use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function array_values;
+use function assert;
 use function explode;
 use function func_get_args;
 use function in_array;
@@ -429,12 +430,10 @@ class Expr
      *
      * @see Builder::exists()
      * @see http://docs.mongodb.org/manual/reference/operator/exists/
-     *
-     * @return $this
      */
     public function exists(bool $bool) : self
     {
-        return $this->operator('$exists', (bool) $bool);
+        return $this->operator('$exists', $bool);
     }
 
     /**
@@ -556,8 +555,6 @@ class Expr
      * @param array $point2    Second point of the polygon
      * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
-     *
-     * @return $this
      *
      * @throws InvalidArgumentException If less than three points are given.
      */
@@ -711,7 +708,7 @@ class Expr
             throw new BadMethodCallException('This method requires a $text operator (call text() first)');
         }
 
-        $this->query['$text']['$language'] = (string) $language;
+        $this->query['$text']['$language'] = $language;
 
         return $this;
     }
@@ -1107,6 +1104,7 @@ class Expr
     public function set($value, bool $atomic = true) : self
     {
         $this->requiresCurrentField();
+        assert($this->currentField !== null);
 
         if ($atomic) {
             $this->newObj['$set'][$this->currentField] = $value;
@@ -1292,13 +1290,16 @@ class Expr
      */
     private function getReferenceMapping() : array
     {
-        $mapping = null;
+        $this->requiresCurrentField();
+        assert($this->currentField !== null);
+
         try {
-            $mapping = $this->class->getFieldMapping($this->currentField);
+            return $this->class->getFieldMapping($this->currentField);
         } catch (MappingException $e) {
             if (empty($this->class->discriminatorMap)) {
                 throw $e;
             }
+            $mapping = null;
             $foundIn = null;
             foreach ($this->class->discriminatorMap as $child) {
                 $childClass = $this->dm->getClassMetadata($child);
@@ -1306,7 +1307,7 @@ class Expr
                     continue;
                 }
 
-                if ($mapping !== null && $mapping !== $childClass->getFieldMapping($this->currentField)) {
+                if ($foundIn !== null && $mapping !== null && $mapping !== $childClass->getFieldMapping($this->currentField)) {
                     throw MappingException::referenceFieldConflict($this->currentField, $foundIn->name, $childClass->name);
                 }
                 $mapping = $childClass->getFieldMapping($this->currentField);
@@ -1315,8 +1316,9 @@ class Expr
             if ($mapping === null) {
                 throw MappingException::mappingNotFoundInClassNorDescendants($this->class->name, $this->currentField);
             }
+
+            return $mapping;
         }
-        return $mapping;
     }
 
     /**
@@ -1328,7 +1330,7 @@ class Expr
             $order = strtolower($order) === 'asc' ? 1 : -1;
         }
 
-        return (int) $order;
+        return $order;
     }
 
     /**
@@ -1373,8 +1375,12 @@ class Expr
          * operator (checking the first key is sufficient). If neither of these
          * conditions are met, we'll wrap the query value with $in.
          */
-        if (is_array($query) && (empty($query) || strpos(key($query), '$') === 0)) {
-            return;
+        if (is_array($query)) {
+            $key = key($query);
+
+            if (empty($query) || (is_string($key) && strpos($key, '$') === 0)) {
+                return;
+            }
         }
 
         $query = ['$in' => [$query]];

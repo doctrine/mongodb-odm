@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+use function is_string;
 use function sprintf;
 
 class UpdateCommand extends AbstractCommand
@@ -27,20 +28,19 @@ class UpdateCommand extends AbstractCommand
     }
 
     /**
-     * @return int|void|null
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $class = $input->getOption('class');
-
+        $class         = $input->getOption('class');
         $timeout       = $input->getOption('timeout');
-        $this->timeout = isset($timeout) ? (int) $timeout : null;
+        $this->timeout = is_string($timeout) ? (int) $timeout : null;
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
 
         try {
-            if (isset($class)) {
+            if (is_string($class)) {
                 $this->processDocumentIndex($sm, $class);
                 $output->writeln(sprintf('Updated <comment>index(es)</comment> for <info>%s</info>', $class));
             } else {
@@ -55,10 +55,7 @@ class UpdateCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    /**
-     * @param object $document
-     */
-    protected function processDocumentIndex(SchemaManager $sm, $document)
+    protected function processDocumentIndex(SchemaManager $sm, string $document)
     {
         $sm->updateDocumentIndexes($document, $this->timeout);
     }
@@ -69,11 +66,9 @@ class UpdateCommand extends AbstractCommand
     }
 
     /**
-     * @param object $document
-     *
      * @throws BadMethodCallException
      */
-    protected function processDocumentCollection(SchemaManager $sm, $document)
+    protected function processDocumentCollection(SchemaManager $sm, string $document)
     {
         throw new BadMethodCallException('Cannot update a document collection');
     }
@@ -87,11 +82,9 @@ class UpdateCommand extends AbstractCommand
     }
 
     /**
-     * @param object $document
-     *
      * @throws BadMethodCallException
      */
-    protected function processDocumentDb(SchemaManager $sm, $document)
+    protected function processDocumentDb(SchemaManager $sm, string $document)
     {
         throw new BadMethodCallException('Cannot update a document database');
     }

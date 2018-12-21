@@ -58,4 +58,20 @@ class PersistentCollectionException extends MongoDBException
             $previous
         );
     }
+
+    public static function parentClassRequired(string $className, string $methodName) : self
+    {
+        return new self(
+            sprintf(
+                'The method "%s" in class "%s" defines a parent return type, but the class does not extend any class.',
+                $methodName,
+                $className
+            )
+        );
+    }
+
+    public static function ownerRequiredToLoadCollection() : self
+    {
+        return new self('Cannot load persistent collection without an owner.');
+    }
 }

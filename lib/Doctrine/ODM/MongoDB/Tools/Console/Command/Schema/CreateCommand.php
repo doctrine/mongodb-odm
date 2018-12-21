@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use function array_filter;
+use function assert;
+use function is_string;
 use function sprintf;
 use function ucfirst;
 
@@ -42,10 +45,9 @@ class CreateCommand extends AbstractCommand
         // Default to the full creation order if no options were specified
         $create = empty($create) ? $this->createOrder : $create;
 
-        $class = $input->getOption('class');
-
+        $class         = $input->getOption('class');
         $timeout       = $input->getOption('timeout');
-        $this->timeout = isset($timeout) ? (int) $timeout : null;
+        $this->timeout = is_string($timeout) ? (int) $timeout : null;
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
@@ -60,8 +62,8 @@ class CreateCommand extends AbstractCommand
                 $output->writeln(sprintf(
                     'Created <comment>%s%s</comment> for <info>%s</info>',
                     $option,
-                    (isset($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's')),
-                    $class ?? 'all classes'
+                    is_string($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's'),
+                    is_string($class) ? $class : 'all classes'
                 ));
             } catch (Throwable $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');
@@ -72,7 +74,7 @@ class CreateCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentCollection(SchemaManager $sm, $document)
+    protected function processDocumentCollection(SchemaManager $sm, string $document)
     {
         $sm->createDocumentCollection($document);
     }
@@ -82,7 +84,7 @@ class CreateCommand extends AbstractCommand
         $sm->createCollections();
     }
 
-    protected function processDocumentDb(SchemaManager $sm, $document)
+    protected function processDocumentDb(SchemaManager $sm, string $document)
     {
         throw new BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
     }
@@ -92,7 +94,7 @@ class CreateCommand extends AbstractCommand
         throw new BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, $document)
+    protected function processDocumentIndex(SchemaManager $sm, string $document)
     {
         $sm->ensureDocumentIndexes($document, $this->timeout);
     }
@@ -102,15 +104,18 @@ class CreateCommand extends AbstractCommand
         $sm->ensureIndexes($this->timeout);
     }
 
-    protected function processDocumentProxy(SchemaManager $sm, $document)
+    protected function processDocumentProxy(SchemaManager $sm, string $document)
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
+        assert($classMetadata instanceof ClassMetadata);
 
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
     }
 
     protected function processProxy(SchemaManager $sm)
     {
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($this->getMetadataFactory()->getAllMetadata());
+        /** @var ClassMetadata[] $metadatas */
+        $metadatas = $this->getMetadataFactory()->getAllMetadata();
+        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($metadatas);
     }
 }

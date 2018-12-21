@@ -18,6 +18,7 @@ use OutOfRangeException;
 use function array_map;
 use function array_merge;
 use function array_unshift;
+use function assert;
 use function is_array;
 use function sprintf;
 
@@ -78,7 +79,10 @@ class Builder
      */
     public function addFields() : Stage\AddFields
     {
-        return $this->addStage(new Stage\AddFields($this));
+        $stage = new Stage\AddFields($this);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -95,7 +99,10 @@ class Builder
      */
     public function bucket() : Stage\Bucket
     {
-        return $this->addStage(new Stage\Bucket($this, $this->dm, $this->class));
+        $stage = new Stage\Bucket($this, $this->dm, $this->class);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -114,7 +121,10 @@ class Builder
      */
     public function bucketAuto() : Stage\BucketAuto
     {
-        return $this->addStage(new Stage\BucketAuto($this, $this->dm, $this->class));
+        $stage = new Stage\BucketAuto($this, $this->dm, $this->class);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -127,7 +137,10 @@ class Builder
      */
     public function collStats() : Stage\CollStats
     {
-        return $this->addStage(new Stage\CollStats($this));
+        $stage = new Stage\CollStats($this);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -138,7 +151,10 @@ class Builder
      */
     public function count(string $fieldName) : Stage\Count
     {
-        return $this->addStage(new Stage\Count($this, $fieldName));
+        $stage = new Stage\Count($this, $fieldName);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -150,6 +166,7 @@ class Builder
         $options = array_merge($options, ['cursor' => true]);
 
         $cursor = $this->collection->aggregate($this->getPipeline(), $options);
+        assert($cursor instanceof Cursor);
 
         return $this->prepareIterator($cursor);
     }
@@ -168,7 +185,10 @@ class Builder
      */
     public function facet() : Stage\Facet
     {
-        return $this->addStage(new Stage\Facet($this));
+        $stage = new Stage\Facet($this);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -188,7 +208,10 @@ class Builder
      */
     public function geoNear($x, $y = null) : Stage\GeoNear
     {
-        return $this->addStage(new Stage\GeoNear($this, $x, $y));
+        $stage = new Stage\GeoNear($this, $x, $y);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -243,7 +266,10 @@ class Builder
      */
     public function graphLookup(string $from) : Stage\GraphLookup
     {
-        return $this->addStage(new Stage\GraphLookup($this, $from, $this->dm, $this->class));
+        $stage = new Stage\GraphLookup($this, $from, $this->dm, $this->class);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -254,7 +280,10 @@ class Builder
      */
     public function group() : Stage\Group
     {
-        return $this->addStage(new Stage\Group($this));
+        $stage = new Stage\Group($this);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -274,7 +303,10 @@ class Builder
      */
     public function indexStats() : Stage\IndexStats
     {
-        return $this->addStage(new Stage\IndexStats($this));
+        $stage = new Stage\IndexStats($this);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -284,7 +316,10 @@ class Builder
      */
     public function limit(int $limit) : Stage\Limit
     {
-        return $this->addStage(new Stage\Limit($this, $limit));
+        $stage = new Stage\Limit($this, $limit);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -296,7 +331,10 @@ class Builder
      */
     public function lookup(string $from) : Stage\Lookup
     {
-        return $this->addStage(new Stage\Lookup($this, $from, $this->dm, $this->class));
+        $stage = new Stage\Lookup($this, $from, $this->dm, $this->class);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -307,7 +345,10 @@ class Builder
      */
     public function match() : Stage\Match
     {
-        return $this->addStage(new Stage\Match($this));
+        $stage = new Stage\Match($this);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -329,7 +370,10 @@ class Builder
      */
     public function out(string $from) : Stage\Out
     {
-        return $this->addStage(new Stage\Out($this, $from, $this->dm));
+        $stage = new Stage\Out($this, $from, $this->dm);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -341,7 +385,10 @@ class Builder
      */
     public function project() : Stage\Project
     {
-        return $this->addStage(new Stage\Project($this));
+        $stage = new Stage\Project($this);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -352,7 +399,10 @@ class Builder
      */
     public function redact() : Stage\Redact
     {
-        return $this->addStage(new Stage\Redact($this));
+        $stage = new Stage\Redact($this);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -368,7 +418,10 @@ class Builder
      */
     public function replaceRoot($expression = null) : Stage\ReplaceRoot
     {
-        return $this->addStage(new Stage\ReplaceRoot($this, $this->dm, $this->class, $expression));
+        $stage = new Stage\ReplaceRoot($this, $this->dm, $this->class, $expression);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -378,7 +431,10 @@ class Builder
      */
     public function sample(int $size) : Stage\Sample
     {
-        return $this->addStage(new Stage\Sample($this, $size));
+        $stage = new Stage\Sample($this, $size);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -389,7 +445,10 @@ class Builder
      */
     public function skip(int $skip) : Stage\Skip
     {
-        return $this->addStage(new Stage\Skip($this, $skip));
+        $stage = new Stage\Skip($this, $skip);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -408,7 +467,10 @@ class Builder
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
         // fixme: move to sort stage
-        return $this->addStage(new Stage\Sort($this, $this->getDocumentPersister()->prepareSort($fields)));
+        $stage = new Stage\Sort($this, $this->getDocumentPersister()->prepareSort($fields));
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -419,7 +481,10 @@ class Builder
      */
     public function sortByCount(string $expression) : Stage\SortByCount
     {
-        return $this->addStage(new Stage\SortByCount($this, $expression, $this->dm, $this->class));
+        $stage = new Stage\SortByCount($this, $expression, $this->dm, $this->class);
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     /**
@@ -432,7 +497,10 @@ class Builder
     public function unwind(string $fieldName) : Stage\Unwind
     {
         // Fixme: move field name translation to stage
-        return $this->addStage(new Stage\Unwind($this, $this->getDocumentPersister()->prepareFieldName($fieldName)));
+        $stage = new Stage\Unwind($this, $this->getDocumentPersister()->prepareFieldName($fieldName));
+        $this->addStage($stage);
+
+        return $stage;
     }
 
     protected function addStage(Stage $stage) : Stage

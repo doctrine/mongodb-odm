@@ -47,7 +47,7 @@ EOT
             }
 
             ++$errors;
-            $output->writeln(sprintf('%s has mapping issues.', $meta->name));
+            $output->writeln(sprintf('%s has mapping issues.', $meta->getName()));
         }
         if ($errors) {
             $output->writeln(sprintf('<error>%d document(s) have mapping issues.</error>', $errors));

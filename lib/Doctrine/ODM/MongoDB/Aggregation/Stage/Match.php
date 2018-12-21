@@ -107,20 +107,6 @@ class Match extends Stage
     }
 
     /**
-     * Return an array of information about the Builder state for debugging.
-     *
-     * The $name parameter may be used to return a specific key from the
-     * internal $query array property. If omitted, the entire array will be
-     * returned.
-     *
-     * @return mixed
-     */
-    public function debug(?string $name = null)
-    {
-        return $name !== null ? $this->query[$name] : $this->query;
-    }
-
-    /**
      * Specify $elemMatch criteria for the current field.
      *
      * You can create a new expression using the {@link Builder::matchExpr()}
@@ -397,50 +383,6 @@ class Match extends Stage
     public function lte($value) : self
     {
         $this->query->lte($value);
-
-        return $this;
-    }
-
-    /**
-     * Add $maxDistance criteria to the query.
-     *
-     * If the query uses GeoJSON points, $maxDistance will be interpreted in
-     * meters. If legacy point coordinates are used, $maxDistance will be
-     * interpreted in radians.
-     *
-     * @see Expr::maxDistance()
-     * @see http://docs.mongodb.org/manual/reference/command/geoNear/
-     * @see http://docs.mongodb.org/manual/reference/operator/maxDistance/
-     * @see http://docs.mongodb.org/manual/reference/operator/near/
-     * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
-     *
-     * @return $this
-     */
-    public function maxDistance(float $maxDistance)
-    {
-        $this->query->maxDistance($maxDistance);
-
-        return $this;
-    }
-
-    /**
-     * Add $minDistance criteria to the query.
-     *
-     * If the query uses GeoJSON points, $minDistance will be interpreted in
-     * meters. If legacy point coordinates are used, $minDistance will be
-     * interpreted in radians.
-     *
-     * @see Expr::minDistance()
-     * @see http://docs.mongodb.org/manual/reference/command/geoNear/
-     * @see http://docs.mongodb.org/manual/reference/operator/minDistance/
-     * @see http://docs.mongodb.org/manual/reference/operator/near/
-     * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
-     *
-     * @return $this
-     */
-    public function minDistance(float $minDistance)
-    {
-        $this->query->minDistance($minDistance);
 
         return $this;
     }

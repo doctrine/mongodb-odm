@@ -12,6 +12,7 @@ use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
@@ -235,7 +236,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * The persistence builder instance used in DocumentPersisters.
      *
-     * @var PersistenceBuilder
+     * @var PersistenceBuilder|null
      */
     private $persistenceBuilder;
 
@@ -287,7 +288,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Sets the parent association for a given embedded document.
      */
-    public function setParentAssociation(object $document, array $mapping, object $parent, string $propertyPath) : void
+    public function setParentAssociation(object $document, array $mapping, ?object $parent, string $propertyPath) : void
     {
         $oid                                   = spl_object_hash($document);
         $this->embeddedDocumentsRegistry[$oid] = $document;
@@ -860,10 +861,11 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ($value instanceof PersistentCollectionInterface && $value->isDirty() && ($assoc['isOwningSide'] || isset($assoc['embedded']))) {
+        if ($value instanceof PersistentCollectionInterface && $value->isDirty() && $value->getOwner() !== null && ($assoc['isOwningSide'] || isset($assoc['embedded']))) {
             if ($topOrExistingDocument || CollectionHelper::usesSet($assoc['strategy'])) {
                 $this->scheduleCollectionUpdate($value);
             }
+
             $topmostOwner                                               = $this->getOwningDocument($value->getOwner());
             $this->visitedCollections[spl_object_hash($topmostOwner)][] = $value;
             if (! empty($assoc['orphanRemoval']) || isset($assoc['embedded'])) {
@@ -1014,7 +1016,7 @@ class UnitOfWork implements PropertyChangedListener
                 ));
             }
 
-            if ($class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
+            if ($class->generatorType !== ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null && $class->idGenerator !== null) {
                 $idValue = $class->idGenerator->generate($this->dm, $document);
                 $idValue = $class->getPHPIdentifierValue($class->getDatabaseIdentifierValue($idValue));
                 $class->setIdentifierValue($document, $idValue);
@@ -1376,7 +1378,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Check for a version field, if available, to avoid a DB lookup.
-        if ($class->isVersioned) {
+        if ($class->isVersioned && $class->versionField !== null) {
             return $class->getFieldValue($document, $class->versionField)
                 ? self::STATE_DETACHED
                 : self::STATE_NEW;
@@ -2263,6 +2265,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function unscheduleCollectionDeletion(PersistentCollectionInterface $coll) : void
     {
+        if ($coll->getOwner() === null) {
+            return;
+        }
+
         $oid = spl_object_hash($coll);
         if (! isset($this->collectionDeletions[$oid])) {
             return;
@@ -2301,6 +2307,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function unscheduleCollectionUpdate(PersistentCollectionInterface $coll) : void
     {
+        if ($coll->getOwner() === null) {
+            return;
+        }
+
         $oid = spl_object_hash($coll);
         if (! isset($this->collectionUpdates[$oid])) {
             return;
@@ -2368,6 +2378,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function scheduleCollectionOwner(PersistentCollectionInterface $coll) : void
     {
+        if ($coll->getOwner() === null) {
+            return;
+        }
+
         $document                                                                          = $this->getOwningDocument($coll->getOwner());
         $this->hasScheduledCollections[spl_object_hash($document)][spl_object_hash($coll)] = $coll;
 
@@ -2423,7 +2437,7 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the class name for an association (embed or reference) with respect
      * to any discriminator value.
      *
-     * @param array|object|null $data
+     * @param array|null $data
      */
     public function getClassNameForAssociation(array $mapping, $data) : string
     {
@@ -2438,7 +2452,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($discriminatorValue !== null) {
             return $mapping['discriminatorMap'][$discriminatorValue]
-                ?? $discriminatorValue;
+                ?? (string) $discriminatorValue;
         }
 
         $class = $this->dm->getClassMetadata($mapping['targetDocument']);
@@ -2543,6 +2557,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function loadCollection(PersistentCollectionInterface $collection) : void
     {
+        if ($collection->getOwner() === null) {
+            throw PersistentCollectionException::ownerRequiredToLoadCollection();
+        }
+
         $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);
         $this->lifecycleEventManager->postCollectionLoad($collection);
     }

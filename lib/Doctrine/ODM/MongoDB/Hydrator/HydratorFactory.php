@@ -76,7 +76,7 @@ class HydratorFactory
     /**
      * The directory that contains all hydrator classes.
      *
-     * @var string|null
+     * @var string
      */
     private $hydratorDir;
 
@@ -145,7 +145,7 @@ class HydratorFactory
                     break;
 
                 case Configuration::AUTOGENERATE_EVAL:
-                    $this->generateHydratorClass($class, $hydratorClassName, false);
+                    $this->generateHydratorClass($class, $hydratorClassName, null);
                     break;
             }
         }
@@ -172,10 +172,7 @@ class HydratorFactory
         }
     }
 
-    /**
-     * @param string|false $fileName Filename where class code to be written or false to eval code.
-     */
-    private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, $fileName) : void
+    private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, ?string $fileName) : void
     {
         $code = '';
 
@@ -392,26 +389,28 @@ EOF
             $code
         );
 
-        if ($fileName === false) {
+        if ($fileName === null) {
             if (! class_exists($namespace . '\\' . $hydratorClassName)) {
                 eval(substr($code, 5));
             }
-        } else {
-            $parentDirectory = dirname($fileName);
 
-            if (! is_dir($parentDirectory) && (@mkdir($parentDirectory, 0775, true) === false)) {
-                throw HydratorException::hydratorDirectoryNotWritable();
-            }
-
-            if (! is_writable($parentDirectory)) {
-                throw HydratorException::hydratorDirectoryNotWritable();
-            }
-
-            $tmpFileName = $fileName . '.' . uniqid('', true);
-            file_put_contents($tmpFileName, $code);
-            rename($tmpFileName, $fileName);
-            chmod($fileName, 0664);
+            return;
         }
+
+        $parentDirectory = dirname($fileName);
+
+        if (! is_dir($parentDirectory) && (@mkdir($parentDirectory, 0775, true) === false)) {
+            throw HydratorException::hydratorDirectoryNotWritable();
+        }
+
+        if (! is_writable($parentDirectory)) {
+            throw HydratorException::hydratorDirectoryNotWritable();
+        }
+
+        $tmpFileName = $fileName . '.' . uniqid('', true);
+        file_put_contents($tmpFileName, $code);
+        rename($tmpFileName, $fileName);
+        chmod($fileName, 0664);
     }
 
     /**

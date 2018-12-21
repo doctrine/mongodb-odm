@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Proxy\Factory;
 
 use Closure;
-use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
@@ -27,7 +26,7 @@ class StaticProxyFactory implements ProxyFactory
     /** @var UnitOfWork The UnitOfWork this factory is bound to. */
     private $uow;
 
-    /** @var EventManager */
+    /** @var LifecycleEventManager */
     private $lifecycleEventManager;
 
     /** @var LazyLoadingGhostFactory */

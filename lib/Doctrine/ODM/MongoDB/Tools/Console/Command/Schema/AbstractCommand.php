@@ -15,15 +15,15 @@ abstract class AbstractCommand extends Command
     public const COLLECTION = 'collection';
     public const INDEX      = 'index';
 
-    abstract protected function processDocumentCollection(SchemaManager $sm, $document);
+    abstract protected function processDocumentCollection(SchemaManager $sm, string $document);
 
     abstract protected function processCollection(SchemaManager $sm);
 
-    abstract protected function processDocumentDb(SchemaManager $sm, $document);
+    abstract protected function processDocumentDb(SchemaManager $sm, string $document);
 
     abstract protected function processDb(SchemaManager $sm);
 
-    abstract protected function processDocumentIndex(SchemaManager $sm, $document);
+    abstract protected function processDocumentIndex(SchemaManager $sm, string $document);
 
     abstract protected function processIndex(SchemaManager $sm);
 

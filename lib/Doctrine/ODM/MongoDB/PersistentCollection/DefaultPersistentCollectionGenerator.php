@@ -292,20 +292,16 @@ CODE;
         );
     }
 
-    /**
-     * @see \Doctrine\Common\Proxy\ProxyGenerator::getMethodReturnType()
-     */
     private function getMethodReturnType(ReflectionMethod $method) : string
     {
-        if (! method_exists($method, 'hasReturnType') || ! $method->hasReturnType()) {
+        $returnType = $method->getReturnType();
+        if ($returnType === null) {
             return '';
         }
-        return ': ' . $this->formatType($method->getReturnType(), $method);
+
+        return ': ' . $this->formatType($returnType, $method);
     }
 
-    /**
-     * @see \Doctrine\Common\Proxy\ProxyGenerator::formatType()
-     */
     private function formatType(
         ReflectionType $type,
         ReflectionMethod $method,
@@ -317,7 +313,12 @@ CODE;
             $name = $method->getDeclaringClass()->getName();
         }
         if ($nameLower === 'parent') {
-            $name = $method->getDeclaringClass()->getParentClass()->getName();
+            $parentClass = $method->getDeclaringClass()->getParentClass();
+            if (! $parentClass) {
+                throw PersistentCollectionException::parentClassRequired($method->getDeclaringClass()->getName(), $method->getName());
+            }
+
+            $name = $parentClass->getName();
         }
         if (! $type->isBuiltin() && ! class_exists($name) && ! interface_exists($name)) {
             if ($parameter !== null) {

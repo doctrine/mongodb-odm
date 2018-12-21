@@ -22,7 +22,6 @@ use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_pop;
-use function call_user_func_array;
 use function class_exists;
 use function constant;
 use function count;
@@ -220,7 +219,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY Describes how MongoDB clients route read operations to the members of a replica set.
      *
-     * @var string|int|null
+     * @var string|null
      */
     public $readPreference;
 
@@ -228,9 +227,9 @@ class ClassMetadata implements BaseClassMetadata
      * READ-ONLY Associated with readPreference Allows to specify criteria so that your application can target read
      * operations to specific members, based on custom parameters.
      *
-     * @var string[][]|null
+     * @var string[][]
      */
-    public $readPreferenceTags;
+    public $readPreferenceTags = [];
 
     /**
      * READ-ONLY: Describes the level of acknowledgement requested from MongoDB for write operations.
@@ -256,9 +255,9 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
      *
-     * @var string|null
+     * @var array<string, array>
      */
-    public $shardKey;
+    public $shardKey = [];
 
     /**
      * READ-ONLY: The name of the document class.
@@ -329,7 +328,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
-     * @var AbstractIdGenerator
+     * @var AbstractIdGenerator|null
      */
     public $idGenerator;
 
@@ -400,7 +399,7 @@ class ClassMetadata implements BaseClassMetadata
      * READ-ONLY: The definition of the discriminator field used in SINGLE_COLLECTION
      * inheritance mapping.
      *
-     * @var string
+     * @var string|null
      */
     public $discriminatorField;
 
@@ -409,7 +408,7 @@ class ClassMetadata implements BaseClassMetadata
      *
      * @see discriminatorField
      *
-     * @var string
+     * @var string|null
      */
     public $defaultDiscriminatorValue;
 
@@ -499,7 +498,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public $isReadOnly;
 
-    /** @var InstantiatorInterface|null */
+    /** @var InstantiatorInterface */
     private $instantiator;
 
     /**
@@ -562,10 +561,6 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function getReflectionClass() : ReflectionClass
     {
-        if (! $this->reflClass) {
-            $this->reflClass = new ReflectionClass($this->name);
-        }
-
         return $this->reflClass;
     }
 
@@ -598,10 +593,10 @@ class ClassMetadata implements BaseClassMetadata
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
+     *
+     * return (string|null)[]
      */
     public function getIdentifierFieldNames() : array
     {
@@ -663,7 +658,7 @@ class ClassMetadata implements BaseClassMetadata
 
         foreach ($this->lifecycleCallbacks[$event] as $callback) {
             if ($arguments !== null) {
-                call_user_func_array([$document, $callback], $arguments);
+                $document->$callback(...$arguments);
             } else {
                 $document->$callback();
             }
@@ -740,7 +735,7 @@ class ClassMetadata implements BaseClassMetadata
      * are only used to discern the hydration class and are not mapped to class
      * properties.
      *
-     * @param string|array $discriminatorField
+     * @param array|string|null $discriminatorField
      *
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
@@ -757,6 +752,7 @@ class ClassMetadata implements BaseClassMetadata
             return;
         }
 
+        // @todo: deprecate, document and remove this:
         // Handle array argument with name/fieldName keys for BC
         if (is_array($discriminatorField)) {
             if (isset($discriminatorField['name'])) {
@@ -804,7 +800,7 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Sets the default discriminator value to be used for this class
-     * Used for JOINED and SINGLE_TABLE inheritance mapping strategies if the document has no discriminator value
+     * Used for SINGLE_TABLE inheritance mapping strategies if the document has no discriminator value
      *
      * @throws MappingException
      */
@@ -852,7 +848,7 @@ class ClassMetadata implements BaseClassMetadata
         $this->indexes[] = [
             'keys' => array_map(static function ($value) {
                 if ($value === 1 || $value === -1) {
-                    return (int) $value;
+                    return $value;
                 }
                 if (is_string($value)) {
                     $lower = strtolower($value);
@@ -893,7 +889,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setShardKey(array $keys, array $options = []) : void
     {
-        if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && $this->shardKey !== null) {
+        if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && $this->shardKey !== []) {
             throw MappingException::shardKeyInSingleCollInheritanceSubclass($this->getName());
         }
 
@@ -918,7 +914,7 @@ class ClassMetadata implements BaseClassMetadata
         $this->shardKey = [
             'keys' => array_map(static function ($value) {
                 if ($value === 1 || $value === -1) {
-                    return (int) $value;
+                    return $value;
                 }
                 if (is_string($value)) {
                     $lower = strtolower($value);
@@ -951,11 +947,8 @@ class ClassMetadata implements BaseClassMetadata
 
     /**
      * Sets the read preference used by this class.
-     *
-     * @param string|int|null $readPreference
-     * @param array|null      $tags
      */
-    public function setReadPreference($readPreference, $tags) : void
+    public function setReadPreference(?string $readPreference, array $tags) : void
     {
         $this->readPreference     = $readPreference;
         $this->readPreferenceTags = $tags;
@@ -1529,10 +1522,7 @@ class ClassMetadata implements BaseClassMetadata
     public function isNullable(string $fieldName) : bool
     {
         $mapping = $this->getFieldMapping($fieldName);
-        if ($mapping !== false) {
-            return isset($mapping['nullable']) && $mapping['nullable'] === true;
-        }
-        return false;
+        return isset($mapping['nullable']) && $mapping['nullable'] === true;
     }
 
     /**
@@ -1607,7 +1597,7 @@ class ClassMetadata implements BaseClassMetadata
             return;
         }
 
-        $this->rootDocumentName = array_pop($classNames);
+        $this->rootDocumentName = (string) array_pop($classNames);
     }
 
     /**
@@ -1795,14 +1785,15 @@ class ClassMetadata implements BaseClassMetadata
         if (! isset($mapping['fieldName']) && isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
         }
-        if (! isset($mapping['fieldName'])) {
+        if (! isset($mapping['fieldName']) || ! is_string($mapping['fieldName'])) {
             throw MappingException::missingFieldName($this->name);
         }
         if (! isset($mapping['name'])) {
             $mapping['name'] = $mapping['fieldName'];
         }
+
         if ($this->identifier === $mapping['name'] && empty($mapping['id'])) {
-            throw MappingException::mustNotChangeIdentifierFieldsType($this->name, $mapping['name']);
+            throw MappingException::mustNotChangeIdentifierFieldsType($this->name, (string) $mapping['name']);
         }
         if ($this->discriminatorField !== null && $this->discriminatorField === $mapping['name']) {
             throw MappingException::discriminatorFieldConflict($this->name, $this->discriminatorField);
@@ -2053,7 +2044,7 @@ class ClassMetadata implements BaseClassMetadata
     {
         // Restore ReflectionClass and properties
         $this->reflClass    = new ReflectionClass($this->name);
-        $this->instantiator = $this->instantiator ?: new Instantiator();
+        $this->instantiator = new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declared'])) {

@@ -9,10 +9,12 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
+use function assert;
 use function end;
 use function explode;
 use function gettype;
 use function is_object;
+use function is_string;
 use function sprintf;
 use function str_replace;
 
@@ -129,7 +131,7 @@ abstract class Type
      *
      * @throws InvalidArgumentException
      */
-    public static function getType(string $type)
+    public static function getType(string $type) : Type
     {
         if (! isset(self::$typesMap[$type])) {
             throw new InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
@@ -230,7 +232,10 @@ abstract class Type
 
     public function __toString()
     {
-        $e = explode('\\', static::class);
-        return str_replace('Type', '', end($e));
+        $e         = explode('\\', static::class);
+        $className = end($e);
+        assert(is_string($className));
+
+        return str_replace('Type', '', $className);
     }
 }

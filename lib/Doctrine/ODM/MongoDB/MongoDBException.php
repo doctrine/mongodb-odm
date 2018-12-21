@@ -137,4 +137,9 @@ class MongoDBException extends Exception
     {
         return new self(sprintf('Invalid typemap provided. Type "%s" is required for "%s".', $epectedType, $part));
     }
+
+    public static function cannotRefreshDocument() : self
+    {
+        return new self('Failed to fetch current data of document being refreshed. Was it removed in the meantime?');
+    }
 }

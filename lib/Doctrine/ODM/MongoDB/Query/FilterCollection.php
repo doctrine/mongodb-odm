@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 use InvalidArgumentException;
 use function array_map;
-use function call_user_func_array;
+use function array_values;
 
 /**
  * Collection class for all the query filters.
@@ -146,13 +146,12 @@ class FilterCollection
             return [];
         }
 
-        return call_user_func_array(
-            [$this->cm, 'merge'],
-            array_map(
+        return $this->cm->merge(
+            ...array_map(
                 static function ($filter) use ($class) {
                     return $filter->addFilterCriteria($class);
                 },
-                $this->enabledFilters
+                array_values($this->enabledFilters)
             )
         );
     }

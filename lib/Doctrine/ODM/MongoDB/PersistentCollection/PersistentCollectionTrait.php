@@ -34,7 +34,7 @@ trait PersistentCollectionTrait
     /**
      * Collection's owning entity
      *
-     * @var object
+     * @var object|null
      */
     private $owner;
 
@@ -66,7 +66,7 @@ trait PersistentCollectionTrait
     /**
      * The DocumentManager that manages the persistence of the collection.
      *
-     * @var DocumentManager
+     * @var DocumentManager|null
      */
     private $dm;
 
@@ -171,7 +171,7 @@ trait PersistentCollectionTrait
 
         $this->isDirty = true;
 
-        if (! $this->needsSchedulingForDirtyCheck()) {
+        if (! $this->needsSchedulingForDirtyCheck() || $this->owner === null) {
             return;
         }
 
@@ -202,7 +202,7 @@ trait PersistentCollectionTrait
     }
 
     /** {@inheritdoc} */
-    public function setOwner($document, array $mapping)
+    public function setOwner(object $document, array $mapping)
     {
         $this->owner   = $document;
         $this->mapping = $mapping;
@@ -290,7 +290,7 @@ trait PersistentCollectionTrait
     }
 
     /** {@inheritdoc} */
-    public function getOwner()
+    public function getOwner() : ?object
     {
         return $this->owner;
     }
@@ -304,16 +304,19 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getTypeClass()
     {
-        switch (true) {
-            case $this->dm === null:
-                throw new MongoDBException('No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager method.');
-            case empty($this->mapping):
-                throw new MongoDBException('No mapping is associated with this PersistentCollection, please set one using setOwner method.');
-            case empty($this->mapping['targetDocument']):
-                throw new MongoDBException('Specifying targetDocument is required for the ClassMetadata to be obtained.');
-            default:
-                return $this->dm->getClassMetadata($this->mapping['targetDocument']);
+        if ($this->dm === null) {
+            throw new MongoDBException('No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager method.');
         }
+
+        if (empty($this->mapping)) {
+            throw new MongoDBException('No mapping is associated with this PersistentCollection, please set one using setOwner method.');
+        }
+
+        if (empty($this->mapping['targetDocument'])) {
+            throw new MongoDBException('Specifying targetDocument is required for the ClassMetadata to be obtained.');
+        }
+
+        return $this->dm->getClassMetadata($this->mapping['targetDocument']);
     }
 
     /** {@inheritdoc} */
@@ -604,7 +607,7 @@ trait PersistentCollectionTrait
             return $this->doAdd($value, true);
         }
 
-        return $this->doSet($offset, $value, true);
+        $this->doSet($offset, $value, true);
     }
 
     /**
@@ -612,7 +615,7 @@ trait PersistentCollectionTrait
      */
     public function offsetUnset($offset)
     {
-        return $this->doRemove($offset, true);
+        $this->doRemove($offset, true);
     }
 
     public function key()
@@ -702,12 +705,17 @@ trait PersistentCollectionTrait
      * @param mixed $offset
      * @param bool  $arrayAccess
      *
-     * @return mixed|void
+     * @return bool
      */
     private function doRemove($offset, $arrayAccess)
     {
         $this->initialize();
-        $removed = $arrayAccess ? $this->coll->offsetUnset($offset) : $this->coll->remove($offset);
+        if ($arrayAccess) {
+            $this->coll->offsetUnset($offset);
+            $removed = true;
+        } else {
+            $removed = $this->coll->remove($offset);
+        }
 
         if (! $removed && ! $arrayAccess) {
             return $removed;

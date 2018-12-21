@@ -19,10 +19,7 @@ class Out extends Stage
     /** @var string */
     private $collection;
 
-    /**
-     * @param string $collection
-     */
-    public function __construct(Builder $builder, $collection, DocumentManager $documentManager)
+    public function __construct(Builder $builder, string $collection, DocumentManager $documentManager)
     {
         parent::__construct($builder);
 
@@ -48,7 +45,7 @@ class Out extends Stage
         try {
             $class = $this->dm->getClassMetadata($collection);
         } catch (BaseMappingException $e) {
-            $this->collection = (string) $collection;
+            $this->collection = $collection;
             return $this;
         }
 

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -16,6 +17,7 @@ use Traversable;
 use function array_push;
 use function array_shift;
 use function array_values;
+use function assert;
 use function call_user_func;
 use function count;
 use function explode;
@@ -65,6 +67,10 @@ class ReferencePrimer
         $this->uow = $uow;
 
         $this->defaultPrimer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) : void {
+            if ($class->identifier === null) {
+                return;
+            }
+
             $qb = $dm->createQueryBuilder($class->name)
                 ->field($class->identifier)->in($ids);
 
@@ -72,7 +78,9 @@ class ReferencePrimer
                 $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE]);
             }
 
-            $qb->getQuery()->execute()->toArray(false);
+            $iterator = $qb->getQuery()->execute();
+            assert($iterator instanceof Iterator);
+            $iterator->toArray();
         };
     }
 
@@ -249,6 +257,10 @@ class ReferencePrimer
             if ($mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID) {
                 $className = $this->uow->getClassNameForAssociation($mapping, $reference);
                 $class     = $this->dm->getClassMetadata($className);
+            }
+
+            if ($class === null) {
+                continue;
             }
 
             $document = $this->uow->tryGetById($id, $class);

@@ -10,7 +10,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
+use function assert;
 use function is_numeric;
+use function is_string;
 use function json_decode;
 
 /**
@@ -67,9 +69,12 @@ EOT
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
+        $query = $input->getArgument('query');
+        assert(is_string($query));
+
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         $qb = $dm->getRepository($input->getArgument('class'))->createQueryBuilder();
-        $qb->setQueryArray((array) json_decode($input->getArgument('query')));
+        $qb->setQueryArray((array) json_decode($query));
         $qb->hydrate((bool) $input->getOption('hydrate'));
 
         $skip = $input->getOption('skip');

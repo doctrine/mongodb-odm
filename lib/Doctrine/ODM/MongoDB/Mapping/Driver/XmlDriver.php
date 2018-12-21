@@ -14,6 +14,7 @@ use LibXMLError;
 use SimpleXMLElement;
 use function array_keys;
 use function array_map;
+use function assert;
 use function constant;
 use function count;
 use function current;
@@ -34,6 +35,8 @@ use function trim;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
+ *
+ * @method SimpleXMLElement getElement(string $className)
  */
 class XmlDriver extends FileDriver
 {
@@ -75,12 +78,8 @@ class XmlDriver extends FileDriver
      */
     public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
     {
-        /** @var ClassMetadata $class */
-        /** @var SimpleXMLElement $xmlRoot */
+        assert($class instanceof ClassMetadata);
         $xmlRoot = $this->getElement($className);
-        if (! $xmlRoot) {
-            return;
-        }
 
         if ($xmlRoot->getName() === 'document') {
             if (isset($xmlRoot['repository-class'])) {
@@ -171,6 +170,7 @@ class XmlDriver extends FileDriver
                 'fieldName' => 'id',
             ];
 
+            /** @var SimpleXMLElement $attributes */
             $attributes = $field->attributes();
             foreach ($attributes as $key => $value) {
                 $mapping[$key] = (string) $value;

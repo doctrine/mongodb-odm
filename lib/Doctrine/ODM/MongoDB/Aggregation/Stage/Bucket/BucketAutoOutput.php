@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+use function assert;
 
 /**
  * Fluent interface for adding an output specification to a bucket stage.
@@ -23,6 +24,7 @@ class BucketAutoOutput extends AbstractOutput
      */
     public function groupBy($expression) : Stage\BucketAuto
     {
+        assert($this->bucket instanceof Stage\BucketAuto);
         return $this->bucket->groupBy($expression);
     }
 
@@ -31,6 +33,7 @@ class BucketAutoOutput extends AbstractOutput
      */
     public function buckets(int $buckets) : Stage\BucketAuto
     {
+        assert($this->bucket instanceof Stage\BucketAuto);
         return $this->bucket->buckets($buckets);
     }
 
@@ -41,6 +44,7 @@ class BucketAutoOutput extends AbstractOutput
      */
     public function granularity(string $granularity) : Stage\BucketAuto
     {
+        assert($this->bucket instanceof Stage\BucketAuto);
         return $this->bucket->granularity($granularity);
     }
 }

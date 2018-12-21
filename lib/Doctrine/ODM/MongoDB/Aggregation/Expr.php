@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use BadMethodCallException;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
 use LogicException;
 use function array_map;
 use function array_merge;
+use function assert;
 use function func_get_args;
 use function is_array;
 use function is_string;
@@ -38,14 +40,15 @@ class Expr
      */
     private $currentField;
 
-    /** @var array */
+    /** @var array|null */
     private $switchBranch;
 
     /**
      * @inheritDoc
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class)
+    public function __construct(DocumentManager $dm, ClassMetadataInterface $class)
     {
+        assert($class instanceof ClassMetadata);
         $this->dm    = $dm;
         $this->class = $class;
     }
@@ -317,7 +320,9 @@ class Expr
     public static function convertExpression($expression)
     {
         if (is_array($expression)) {
-            return array_map(['static', 'convertExpression'], $expression);
+            return array_map(static function ($expression) {
+                return static::convertExpression($expression);
+            }, $expression);
         } elseif ($expression instanceof self) {
             return $expression->getExpression();
         }
@@ -481,7 +486,7 @@ class Expr
     public function field(string $fieldName) : self
     {
         $fieldName          = $this->getDocumentPersister()->prepareFieldName($fieldName);
-        $this->currentField = (string) $fieldName;
+        $this->currentField = $fieldName;
 
         return $this;
     }
@@ -1571,7 +1576,7 @@ class Expr
      * If there is a current field, the operator will be set on it; otherwise,
      * the operator is set at the top level of the query.
      *
-     * @param array|self[]|self $expression
+     * @param array|self $expression
      */
     private function operator(string $operator, $expression) : self
     {

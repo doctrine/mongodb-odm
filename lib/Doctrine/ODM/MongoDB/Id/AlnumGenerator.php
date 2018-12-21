@@ -72,7 +72,7 @@ class AlnumGenerator extends IncrementGenerator
 
         $out = '';
         do {
-            $out = $index[bcmod($id, $base)] . $out;
+            $out = $index[(int) bcmod($id, $base)] . $out;
             $id  = bcdiv($id, $base);
         } while (bccomp($id, '0') === 1);
 

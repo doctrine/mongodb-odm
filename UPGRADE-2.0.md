@@ -30,6 +30,10 @@
 * The `--depth` option in the `odm:query` command was dropped without
   replacement.
 
+## Aggregation builder
+* The `debug` method in `Doctrine\ODM\MongoDB\Aggregation\Stage\Match` was dropped
+  without replacement.
+
 ## Configuration
 
 * The `setDefaultRepositoryClassName` and `getDefaultRepositoryClassName` methods

@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
+use LogicException;
 use function array_map;
 use function is_array;
 use function is_string;
@@ -50,7 +51,7 @@ class GraphLookup extends Stage
     /** @var ClassMetadata */
     private $class;
 
-    /** @var ClassMetadata */
+    /** @var ClassMetadata|null */
     private $targetClass;
 
     /**
@@ -300,6 +301,10 @@ class GraphLookup extends Stage
 
     private function getReferencedFieldName(string $fieldName, array $mapping) : string
     {
+        if (! $this->targetClass) {
+            throw new LogicException('Cannot use getReferencedFieldName when no target mapping was given.');
+        }
+
         if (! $mapping['isOwningSide']) {
             if (isset($mapping['repositoryMethod']) || ! isset($mapping['mappedBy'])) {
                 throw MappingException::repositoryMethodLookupNotAllowed($this->class->name, $fieldName);

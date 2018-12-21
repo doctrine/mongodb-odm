@@ -17,6 +17,7 @@ use ReflectionMethod;
 use const E_USER_DEPRECATED;
 use function array_merge;
 use function array_replace;
+use function assert;
 use function constant;
 use function get_class;
 use function is_array;
@@ -44,7 +45,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class) : void
     {
-        /** @var ClassMetadata $class */
+        assert($class instanceof ClassMetadata);
         $reflClass = $class->getReflectionClass();
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
@@ -65,7 +66,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $this->addIndex($class, $annot);
             }
             if ($annot instanceof ODM\Indexes) {
-                foreach (is_array($annot->value) ? $annot->value : [$annot->value] as $index) {
+                // Setting the type to mixed is a workaround until https://github.com/doctrine/annotations/pull/209 is released.
+                /** @var mixed $value */
+                $value = $annot->value;
+                foreach (is_array($value) ? $value : [$value] as $index) {
                     $this->addIndex($class, $index);
                 }
             } elseif ($annot instanceof ODM\InheritanceType) {
@@ -73,7 +77,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\DiscriminatorField) {
                 $class->setDiscriminatorField($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
-                $class->setDiscriminatorMap($annot->value);
+                /** @var array $value */
+                $value = $annot->value;
+                $class->setDiscriminatorMap($value);
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
                 $class->setDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
@@ -81,7 +87,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
                 $class->setDefaultDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ReadPreference) {
-                $class->setReadPreference($annot->value, $annot->tags);
+                $class->setReadPreference($annot->value, $annot->tags ?? []);
             }
         }
 
@@ -150,7 +156,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $indexes[] = $annot;
                 }
                 if ($annot instanceof ODM\Indexes) {
-                    foreach (is_array($annot->value) ? $annot->value : [$annot->value] as $index) {
+                    // Setting the type to mixed is a workaround until https://github.com/doctrine/annotations/pull/209 is released.
+                    /** @var mixed $value */
+                    $value = $annot->value;
+                    foreach (is_array($value) ? $value : [$value] as $index) {
                         $indexes[] = $index;
                     }
                 } elseif ($annot instanceof ODM\AlsoLoad) {
@@ -264,7 +273,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * Factory method for the Annotation Driver
      *
-     * @param array|string $paths
+     * @param string[]|string $paths
      */
     public static function create($paths = [], ?Reader $reader = null) : AnnotationDriver
     {

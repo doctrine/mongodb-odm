@@ -15,8 +15,11 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\Collection;
+use MongoDB\DeleteResult;
 use MongoDB\Driver\Cursor;
+use MongoDB\InsertOneResult;
 use MongoDB\Operation\FindOneAndUpdate;
+use MongoDB\UpdateResult;
 use UnexpectedValueException;
 use function array_combine;
 use function array_filter;
@@ -26,6 +29,7 @@ use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_values;
+use function assert;
 use function is_array;
 use function is_callable;
 
@@ -105,7 +109,7 @@ class Query implements IteratorAggregate
      */
     private $query;
 
-    /** @var Iterator */
+    /** @var Iterator|null */
     private $iterator;
 
     /**
@@ -174,7 +178,7 @@ class Query implements IteratorAggregate
     /**
      * Execute the query and returns the results.
      *
-     * @return Iterator|int|string|array
+     * @return Iterator|UpdateResult|InsertOneResult|DeleteResult|array|object|int|null
      *
      * @throws MongoDBException
      */
@@ -184,10 +188,6 @@ class Query implements IteratorAggregate
 
         if (! $this->hydrate) {
             return $results;
-        }
-
-        if ($results instanceof Cursor) {
-            $results = $this->makeIterator($results);
         }
 
         $uow = $this->dm->getUnitOfWork();
@@ -254,7 +254,11 @@ class Query implements IteratorAggregate
         }
 
         if ($this->iterator === null) {
-            $this->iterator = $this->execute();
+            $result = $this->execute();
+            if (! $result instanceof Iterator) {
+                throw new UnexpectedValueException('Iterator was not returned for query type: ' . $this->query['type']);
+            }
+            $this->iterator = $result;
         }
 
         return $this->iterator;
@@ -315,7 +319,7 @@ class Query implements IteratorAggregate
      */
     public function setRefresh(bool $refresh) : void
     {
-        $this->unitOfWorkHints[self::HINT_REFRESH] = (bool) $refresh;
+        $this->unitOfWorkHints[self::HINT_REFRESH] = $refresh;
     }
 
     /**
@@ -344,7 +348,7 @@ class Query implements IteratorAggregate
 
     private function makeIterator(Cursor $cursor) : Iterator
     {
-        if ($this->hydrate && $this->class) {
+        if ($this->hydrate) {
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->class, $this->unitOfWorkHints);
         }
 
@@ -369,7 +373,7 @@ class Query implements IteratorAggregate
             return $options;
         }
 
-        return array_combine(
+        $options = array_combine(
             array_map(
                 static function ($key) use ($rename) {
                     return $rename[$key] ?? $key;
@@ -378,6 +382,11 @@ class Query implements IteratorAggregate
             ),
             array_values($options)
         );
+
+        // Necessary because of https://github.com/phpstan/phpstan/issues/1580
+        assert($options !== false);
+
+        return $options;
     }
 
     /**
@@ -389,7 +398,7 @@ class Query implements IteratorAggregate
      * on the driver's write concern. Queries and some mapReduce commands will
      * return an Iterator.
      *
-     * @return Iterator|string|int|array
+     * @return Iterator|UpdateResult|InsertOneResult|DeleteResult|array|object|int|null
      */
     public function runQuery()
     {
@@ -466,6 +475,9 @@ class Query implements IteratorAggregate
                     $query['query'],
                     array_merge($options, $this->getQueryOptions('hint', 'limit', 'skip', 'readPreference'))
                 );
+
+            default:
+                throw new InvalidArgumentException('Invalid query type: ' . $this->query['type']);
         }
     }
 }

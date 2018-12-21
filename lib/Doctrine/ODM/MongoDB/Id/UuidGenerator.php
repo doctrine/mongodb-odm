@@ -117,7 +117,7 @@ class UuidGenerator extends AbstractIdGenerator
 
         // Convert Namespace UUID to bits
         for ($i = 0; $i < strlen($nhex); $i += 2) {
-            $nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
+            $nstr .= chr((int) hexdec($nhex[$i] . $nhex[$i + 1]));
         }
 
         // Calculate hash value
