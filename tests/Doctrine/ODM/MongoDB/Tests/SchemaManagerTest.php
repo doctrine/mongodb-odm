@@ -30,8 +30,10 @@ use Documents\SimpleReferenceUser;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
+use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use MongoDB\Model\IndexInfoIteratorIterator;
+use PHPUnit\Framework\Constraint\ArraySubset;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use function in_array;
@@ -115,11 +117,45 @@ class SchemaManagerTest extends TestCase
         $this->dm->schemaManager = $this->schemaManager;
     }
 
-    public function testEnsureIndexes()
+    public static function getWriteOptions() : array
+    {
+        $writeConcern = new WriteConcern(1, 500, true);
+
+        return [
+            'noWriteOption' => [
+                'expectedWriteOptions' => [],
+                'maxTimeMs' => null,
+                'writeConcern' => null,
+            ],
+            'onlyMaxTimeMs' => [
+                'expectedWriteOptions' => ['maxTimeMs' => 1000],
+                'maxTimeMs' => 1000,
+                'writeConcern' => null,
+            ],
+            'onlyWriteConcern' => [
+                'expectedWriteOptions' => ['writeConcern' => $writeConcern],
+                'maxTimeMs' => null,
+                'writeConcern' => $writeConcern,
+            ],
+            'maxTimeMsAndWriteConern' => [
+                'expectedWriteOptions' => ['maxTimeMs' => 1000, 'writeConcern' => $writeConcern],
+                'maxTimeMs' => 1000,
+                'writeConcern' => $writeConcern,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testEnsureIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentCollections as $class => $collection) {
             if (in_array($class, $this->indexedClasses)) {
-                $collection->expects($this->once())->method('createIndex');
+                $collection
+                    ->expects($this->once())
+                    ->method('createIndex')
+                    ->with($this->anything(), new ArraySubset($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('createIndex');
             }
@@ -133,7 +169,7 @@ class SchemaManagerTest extends TestCase
             $bucket->getFilesCollection()
                 ->expects($this->once())
                 ->method('createIndex')
-                ->with(['filename' => 1, 'uploadDate' => 1]);
+                ->with(['filename' => 1, 'uploadDate' => 1], new ArraySubset($expectedWriteOptions));
 
             $bucket->getChunksCollection()
                 ->expects($this->any())
@@ -142,26 +178,35 @@ class SchemaManagerTest extends TestCase
             $bucket->getChunksCollection()
                 ->expects($this->once())
                 ->method('createIndex')
-                ->with(['files_id' => 1, 'n' => 1], ['unique' => true]);
+                ->with(['files_id' => 1, 'n' => 1], new ArraySubset(['unique' => true] + $expectedWriteOptions));
         }
 
-        $this->schemaManager->ensureIndexes();
+        $this->schemaManager->ensureIndexes($maxTimeMs, $writeConcern);
     }
 
-    public function testEnsureDocumentIndexes()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testEnsureDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentCollections as $class => $collection) {
             if ($class === CmsArticle::class) {
-                $collection->expects($this->once())->method('createIndex');
+                $collection
+                    ->expects($this->once())
+                    ->method('createIndex')
+                    ->with($this->anything(), new ArraySubset($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('createIndex');
             }
         }
 
-        $this->schemaManager->ensureDocumentIndexes(CmsArticle::class);
+        $this->schemaManager->ensureDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testEnsureDocumentIndexesForGridFSFile()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testEnsureDocumentIndexesForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentCollections as $class => $collection) {
             $collection->expects($this->never())->method('createIndex');
@@ -176,7 +221,7 @@ class SchemaManagerTest extends TestCase
                 $bucket->getFilesCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['filename' => 1, 'uploadDate' => 1]);
+                    ->with(['filename' => 1, 'uploadDate' => 1], new ArraySubset($expectedWriteOptions));
 
                 $bucket->getChunksCollection()
                     ->expects($this->any())
@@ -185,175 +230,223 @@ class SchemaManagerTest extends TestCase
                 $bucket->getChunksCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['files_id' => 1, 'n' => 1], ['unique' => true]);
+                    ->with(['files_id' => 1, 'n' => 1], new ArraySubset(['unique' => true] + $expectedWriteOptions));
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('createIndex');
                 $bucket->getChunksCollection()->expects($this->never())->method('createIndex');
             }
         }
 
-        $this->schemaManager->ensureDocumentIndexes(File::class);
+        $this->schemaManager->ensureDocumentIndexes(File::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testEnsureDocumentIndexesWithTwoLevelInheritance()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testEnsureDocumentIndexesWithTwoLevelInheritance(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $collection = $this->documentCollections[CmsProduct::class];
-        $collection->expects($this->once())->method('createIndex');
-
-        $this->schemaManager->ensureDocumentIndexes(CmsProduct::class);
-    }
-
-    public function testEnsureDocumentIndexesWithTimeout()
-    {
-        $collection = $this->documentCollections[CmsArticle::class];
-        $collection->expects($this->once())
+        $collection
+            ->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), $this->callback(static function ($o) {
-                return isset($o['timeout']) && $o['timeout'] === 10000;
-            }));
+            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
 
-        $this->schemaManager->ensureDocumentIndexes(CmsArticle::class, 10000);
+        $this->schemaManager->ensureDocumentIndexes(CmsProduct::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testUpdateDocumentIndexesShouldCreateMappedIndexes()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testUpdateDocumentIndexesShouldCreateMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $collection = $this->documentCollections[CmsArticle::class];
-        $collection->expects($this->once())
+        $collection
+            ->expects($this->once())
             ->method('listIndexes')
             ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator([]))));
-        $collection->expects($this->once())
-            ->method('createIndex');
-        $collection->expects($this->never())
-            ->method('dropIndex');
+        $collection
+            ->expects($this->once())
+            ->method('createIndex')
+            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+        $collection
+            ->expects($this->never())
+            ->method('dropIndex')
+            ->with(new ArraySubset($expectedWriteOptions));
 
-        $this->schemaManager->updateDocumentIndexes(CmsArticle::class);
+        $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $collection = $this->documentCollections[CmsArticle::class];
-        $indexes    = [[
-            'v' => 1,
-            'key' => ['topic' => -1],
-            'name' => 'topic_-1',
-        ],
+        $indexes    = [
+            [
+                'v' => 1,
+                'key' => ['topic' => -1],
+                'name' => 'topic_-1',
+            ],
         ];
-        $collection->expects($this->once())
+
+        $collection
+            ->expects($this->once())
             ->method('listIndexes')
             ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator($indexes))));
-        $collection->expects($this->once())
-            ->method('createIndex');
-        $collection->expects($this->once())
-            ->method('dropIndex');
+        $collection
+            ->expects($this->once())
+            ->method('createIndex')
+            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+        $collection
+            ->expects($this->once())
+            ->method('dropIndex')
+            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
 
-        $this->schemaManager->updateDocumentIndexes(CmsArticle::class);
+        $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testDeleteIndexes()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testDeleteIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentCollections as $class => $collection) {
             if (in_array($class, $this->indexedClasses)) {
-                $collection->expects($this->once())->method('dropIndexes');
+                $collection
+                    ->expects($this->once())
+                    ->method('dropIndexes')
+                    ->with(new ArraySubset($expectedWriteOptions));
             } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses)) {
                 $collection->expects($this->never())->method('dropIndexes');
             }
         }
 
-        $this->schemaManager->deleteIndexes();
+        $this->schemaManager->deleteIndexes($maxTimeMs, $writeConcern);
     }
 
-    public function testDeleteDocumentIndexes()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testDeleteDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentCollections as $class => $collection) {
             if ($class === CmsArticle::class) {
-                $collection->expects($this->once())->method('dropIndexes');
+                $collection
+                    ->expects($this->once())
+                    ->method('dropIndexes')
+                    ->with(new ArraySubset($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('dropIndexes');
             }
         }
 
-        $this->schemaManager->deleteDocumentIndexes(CmsArticle::class);
+        $this->schemaManager->deleteDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testCreateDocumentCollection()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testCreateDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $cm                   = $this->classMetadatas[CmsArticle::class];
         $cm->collectionCapped = true;
         $cm->collectionSize   = 1048576;
         $cm->collectionMax    = 32;
 
+        $options = [
+            'capped' => true,
+            'size' => 1048576,
+            'max' => 32,
+        ];
+
         $database = $this->documentDatabases[CmsArticle::class];
         $database->expects($this->once())
             ->method('createCollection')
             ->with(
                 'CmsArticle',
-                [
-                    'capped' => true,
-                    'size' => 1048576,
-                    'max' => 32,
-                ]
+                new ArraySubset($options + $expectedWriteOptions)
             );
 
-        $this->schemaManager->createDocumentCollection(CmsArticle::class);
+        $this->schemaManager->createDocumentCollection(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testCreateDocumentCollectionForFile()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testCreateDocumentCollectionForFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $database = $this->documentDatabases[File::class];
-        $database->expects($this->at(0))
+        $database
+            ->expects($this->at(0))
             ->method('createCollection')
-            ->with('fs.files');
+            ->with('fs.files', new ArraySubset($expectedWriteOptions));
         $database->expects($this->at(1))
             ->method('createCollection')
-            ->with('fs.chunks');
+            ->with('fs.chunks', new ArraySubset($expectedWriteOptions));
 
-        $this->schemaManager->createDocumentCollection(File::class);
+        $this->schemaManager->createDocumentCollection(File::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testCreateCollections()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentDatabases as $class => $database) {
             if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses)) {
-                $database->expects($this->once())->method('createCollection');
+                $database
+                    ->expects($this->once())
+                    ->method('createCollection')
+                    ->with($this->anything(), new ArraySubset($expectedWriteOptions));
             } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses)) {
                 $database->expects($this->never())->method('createCollection');
             }
         }
 
-        $this->schemaManager->createCollections();
+        $this->schemaManager->createCollections($maxTimeMs, $writeConcern);
     }
 
-    public function testDropCollections()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testDropCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentCollections as $class => $collection) {
             if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses)) {
                 $collection->expects($this->once())
                     ->method('drop')
-                    ->with();
+                    ->with(new ArraySubset($expectedWriteOptions));
             } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses)) {
                 $collection->expects($this->never())->method('drop');
             }
         }
 
-        $this->schemaManager->dropCollections();
+        $this->schemaManager->dropCollections($maxTimeMs, $writeConcern);
     }
 
-    public function testDropDocumentCollection()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testDropDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentCollections as $class => $collection) {
             if ($class === CmsArticle::class) {
                 $collection->expects($this->once())
                     ->method('drop')
-                    ->with();
+                    ->with(new ArraySubset($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('drop');
             }
         }
 
-        $this->schemaManager->dropDocumentCollection(CmsArticle::class);
+        $this->schemaManager->dropDocumentCollection(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testDropDocumentCollectionForGridFSFile()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testDropDocumentCollectionForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentCollections as $class => $collection) {
             $collection->expects($this->never())->method('drop');
@@ -363,43 +456,57 @@ class SchemaManagerTest extends TestCase
             if ($class === File::class) {
                 $bucket->getFilesCollection()
                     ->expects($this->once())
-                    ->method('drop');
+                    ->method('drop')
+                    ->with(new ArraySubset($expectedWriteOptions));
                 $bucket->getChunksCollection()
                     ->expects($this->once())
-                    ->method('drop');
+                    ->method('drop')
+                    ->with(new ArraySubset($expectedWriteOptions));
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('drop');
                 $bucket->getChunksCollection()->expects($this->never())->method('drop');
             }
         }
 
-        $this->schemaManager->dropDocumentCollection(File::class);
+        $this->schemaManager->dropDocumentCollection(File::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testDropDocumentDatabase()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testDropDocumentDatabase(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentDatabases as $class => $database) {
             if ($class === CmsArticle::class) {
-                $database->expects($this->once())->method('drop');
+                $database
+                    ->expects($this->once())
+                    ->method('drop')
+                    ->with(new ArraySubset($expectedWriteOptions));
             } else {
                 $database->expects($this->never())->method('drop');
             }
         }
 
-        $this->dm->getSchemaManager()->dropDocumentDatabase(CmsArticle::class);
+        $this->dm->getSchemaManager()->dropDocumentDatabase(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    public function testDropDatabases()
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testDropDatabases(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentDatabases as $class => $database) {
             if (in_array($class, $this->indexedClasses + $this->someNonIndexedClasses)) {
-                $database->expects($this->once())->method('drop');
+                $database
+                    ->expects($this->once())
+                    ->method('drop')
+                    ->with(new ArraySubset($expectedWriteOptions));
             } elseif (in_array($class, $this->someMappedSuperclassAndEmbeddedClasses)) {
                 $database->expects($this->never())->method('drop');
             }
         }
 
-        $this->schemaManager->dropDatabases();
+        $this->schemaManager->dropDatabases($maxTimeMs, $writeConcern);
     }
 
     /**
@@ -470,27 +577,6 @@ class SchemaManagerTest extends TestCase
                 'expected' => true,
                 'mongoIndex' => ['unique' => true],
                 'documentIndex' => ['options' => ['unique' => true]],
-            ],
-            // DropDups option
-            'dropDupsWithoutUniqueInMongoIndex' => [
-                'expected' => true,
-                'mongoIndex' => ['dropDups' => true],
-                'documentIndex' => [],
-            ],
-            'dropDupsWithoutUniqueInDocumentIndex' => [
-                'expected' => true,
-                'mongoIndex' => [],
-                'documentIndex' => ['options' => ['dropDups' => true]],
-            ],
-            'dropDupsOnlyInMongoIndex' => [
-                'expected' => true,
-                'mongoIndex' => ['unique' => true, 'dropDups' => true],
-                'documentIndex' => ['options' => ['unique' => true]],
-            ],
-            'dropDupsOnlyInDocumentIndex' => [
-                'expected' => false,
-                'mongoIndex' => ['unique' => true],
-                'documentIndex' => ['options' => ['unique' => true, 'dropDups' => true]],
             ],
             // bits option
             'bitsOnlyInMongoIndex' => [

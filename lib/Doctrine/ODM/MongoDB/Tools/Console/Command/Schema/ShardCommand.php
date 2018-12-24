@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\SchemaManager;
+use MongoDB\Driver\WriteConcern;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -49,12 +50,12 @@ class ShardCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, string $document)
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null)
     {
         $sm->ensureDocumentSharding($document);
     }
 
-    protected function processIndex(SchemaManager $sm)
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null)
     {
         $sm->ensureSharding();
     }
@@ -62,7 +63,7 @@ class ShardCommand extends AbstractCommand
     /**
      * @throws BadMethodCallException
      */
-    protected function processDocumentCollection(SchemaManager $sm, string $document)
+    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a document collection');
     }
@@ -70,7 +71,7 @@ class ShardCommand extends AbstractCommand
     /**
      * @throws BadMethodCallException
      */
-    protected function processCollection(SchemaManager $sm)
+    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a collection');
     }
@@ -78,7 +79,7 @@ class ShardCommand extends AbstractCommand
     /**
      * @throws BadMethodCallException
      */
-    protected function processDocumentDb(SchemaManager $sm, string $document)
+    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a document database');
     }
@@ -86,7 +87,7 @@ class ShardCommand extends AbstractCommand
     /**
      * @throws BadMethodCallException
      */
-    protected function processDb(SchemaManager $sm)
+    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a database');
     }

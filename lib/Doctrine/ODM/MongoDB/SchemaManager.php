@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use InvalidArgumentException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
+use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
 use function array_filter;
 use function array_unique;
@@ -41,7 +42,7 @@ class SchemaManager
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory.
      */
-    public function ensureIndexes(?int $timeout = null) : void
+    public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -49,7 +50,7 @@ class SchemaManager
                 continue;
             }
 
-            $this->ensureDocumentIndexes($class->name, $timeout);
+            $this->ensureDocumentIndexes($class->name, $maxTimeMs, $writeConcern);
         }
     }
 
@@ -59,7 +60,7 @@ class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      */
-    public function updateIndexes(?int $timeout = null) : void
+    public function updateIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -67,7 +68,7 @@ class SchemaManager
                 continue;
             }
 
-            $this->updateDocumentIndexes($class->name, $timeout);
+            $this->updateDocumentIndexes($class->name, $maxTimeMs, $writeConcern);
         }
     }
 
@@ -79,7 +80,7 @@ class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function updateDocumentIndexes(string $documentName, ?int $timeout = null) : void
+    public function updateDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
 
@@ -115,10 +116,10 @@ class SchemaManager
                 continue;
             }
 
-            $collection->dropIndex($mongoIndex['name']);
+            $collection->dropIndex($mongoIndex['name'], $this->getWriteOptions($maxTimeMs, $writeConcern));
         }
 
-        $this->ensureDocumentIndexes($documentName, $timeout);
+        $this->ensureDocumentIndexes($documentName, $maxTimeMs, $writeConcern);
     }
 
     public function getDocumentIndexes(string $documentName) : array
@@ -219,7 +220,7 @@ class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function ensureDocumentIndexes(string $documentName, ?int $timeoutMs = null) : void
+    public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -227,7 +228,7 @@ class SchemaManager
         }
 
         if ($class->isFile) {
-            $this->ensureGridFSIndexes($class);
+            $this->ensureGridFSIndexes($class, $maxTimeMs, $writeConcern);
         }
 
         $indexes = $this->getDocumentIndexes($documentName);
@@ -237,14 +238,7 @@ class SchemaManager
 
         $collection = $this->dm->getDocumentCollection($class->name);
         foreach ($indexes as $index) {
-            $keys    = $index['keys'];
-            $options = $index['options'];
-
-            if (! isset($options['timeout']) && isset($timeoutMs)) {
-                $options['timeout'] = $timeoutMs;
-            }
-
-            $collection->createIndex($keys, $options);
+            $collection->createIndex($index['keys'], $this->getWriteOptions($maxTimeMs, $writeConcern, $index['options']));
         }
     }
 
@@ -252,7 +246,7 @@ class SchemaManager
      * Delete indexes for all documents that can be loaded with the
      * metadata factory.
      */
-    public function deleteIndexes() : void
+    public function deleteIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -260,7 +254,7 @@ class SchemaManager
                 continue;
             }
 
-            $this->deleteDocumentIndexes($class->name);
+            $this->deleteDocumentIndexes($class->name, $maxTimeMs, $writeConcern);
         }
     }
 
@@ -269,27 +263,27 @@ class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function deleteDocumentIndexes(string $documentName) : void
+    public function deleteDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
-        $this->dm->getDocumentCollection($documentName)->dropIndexes();
+        $this->dm->getDocumentCollection($documentName)->dropIndexes($this->getWriteOptions($maxTimeMs, $writeConcern));
     }
 
     /**
      * Create all the mapped document collections in the metadata factory.
      */
-    public function createCollections() : void
+    public function createCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
-            $this->createDocumentCollection($class->name);
+            $this->createDocumentCollection($class->name, $maxTimeMs, $writeConcern);
         }
     }
 
@@ -298,7 +292,7 @@ class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function createDocumentCollection(string $documentName) : void
+    public function createDocumentCollection(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
 
@@ -307,26 +301,30 @@ class SchemaManager
         }
 
         if ($class->isFile) {
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getBucketName() . '.files');
-            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getBucketName() . '.chunks');
+            $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
+
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getBucketName() . '.files', $options);
+            $this->dm->getDocumentDatabase($documentName)->createCollection($class->getBucketName() . '.chunks', $options);
 
             return;
         }
 
+        $options = [
+            'capped' => $class->getCollectionCapped(),
+            'size' => $class->getCollectionSize(),
+            'max' => $class->getCollectionMax(),
+        ];
+
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
-            [
-                'capped' => $class->getCollectionCapped(),
-                'size' => $class->getCollectionSize(),
-                'max' => $class->getCollectionMax(),
-            ]
+            $this->getWriteOptions($maxTimeMs, $writeConcern, $options)
         );
     }
 
     /**
      * Drop all the mapped document collections in the metadata factory.
      */
-    public function dropCollections() : void
+    public function dropCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -334,7 +332,7 @@ class SchemaManager
                 continue;
             }
 
-            $this->dropDocumentCollection($class->name);
+            $this->dropDocumentCollection($class->name, $maxTimeMs, $writeConcern);
         }
     }
 
@@ -343,26 +341,28 @@ class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function dropDocumentCollection(string $documentName) : void
+    public function dropDocumentCollection(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
-        $this->dm->getDocumentCollection($documentName)->drop();
+        $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
+
+        $this->dm->getDocumentCollection($documentName)->drop($options);
 
         if (! $class->isFile) {
             return;
         }
 
-        $this->dm->getDocumentBucket($documentName)->getChunksCollection()->drop();
+        $this->dm->getDocumentBucket($documentName)->getChunksCollection()->drop($options);
     }
 
     /**
      * Drop all the mapped document databases in the metadata factory.
      */
-    public function dropDatabases() : void
+    public function dropDatabases(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -370,7 +370,7 @@ class SchemaManager
                 continue;
             }
 
-            $this->dropDocumentDatabase($class->name);
+            $this->dropDocumentDatabase($class->name, $maxTimeMs, $writeConcern);
         }
     }
 
@@ -379,14 +379,14 @@ class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function dropDocumentDatabase(string $documentName) : void
+    public function dropDocumentDatabase(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new InvalidArgumentException('Cannot drop document database for mapped super classes, embedded documents or query result documents.');
         }
 
-        $this->dm->getDocumentDatabase($documentName)->drop();
+        $this->dm->getDocumentDatabase($documentName)->drop($this->getWriteOptions($maxTimeMs, $writeConcern));
     }
 
     /**
@@ -397,15 +397,11 @@ class SchemaManager
      *
      *   (a) Key/direction pairs differ or are not in the same order
      *   (b) Sparse or unique options differ
-     *   (c) Mongo index is unique without dropDups and mapped index is unique
-     *       with dropDups
-     *   (d) Geospatial options differ (bits, max, min)
-     *   (e) The partialFilterExpression differs
+     *   (c) Geospatial options differ (bits, max, min)
+     *   (d) The partialFilterExpression differs
      *
-     * Regarding (c), the inverse case is not a reason to delete and
-     * recreate the index, since dropDups only affects creation of
-     * the unique index. Additionally, the background option is only
-     * relevant to index creation and is not considered.
+     * The background option is only relevant to index creation and is not
+     * considered.
      *
      * @param array|IndexInfo $mongoIndex Mongo index data.
      */
@@ -422,11 +418,6 @@ class SchemaManager
         }
 
         if (empty($mongoIndex['unique']) xor empty($documentIndexOptions['unique'])) {
-            return false;
-        }
-
-        if (! empty($mongoIndex['unique']) && empty($mongoIndex['dropDups']) &&
-            ! empty($documentIndexOptions['unique']) && ! empty($documentIndexOptions['dropDups'])) {
             return false;
         }
 
@@ -609,13 +600,13 @@ class SchemaManager
         )->toArray()[0];
     }
 
-    private function ensureGridFSIndexes(ClassMetadata $class) : void
+    private function ensureGridFSIndexes(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
-        $this->ensureChunksIndex($class);
-        $this->ensureFilesIndex($class);
+        $this->ensureChunksIndex($class, $maxTimeMs, $writeConcern);
+        $this->ensureFilesIndex($class, $maxTimeMs, $writeConcern);
     }
 
-    private function ensureChunksIndex(ClassMetadata $class) : void
+    private function ensureChunksIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $chunksCollection = $this->dm->getDocumentBucket($class->getName())->getChunksCollection();
         foreach ($chunksCollection->listIndexes() as $index) {
@@ -624,10 +615,13 @@ class SchemaManager
             }
         }
 
-        $chunksCollection->createIndex(self::GRIDFS_FILE_COLLECTION_INDEX, ['unique' => true]);
+        $chunksCollection->createIndex(
+            self::GRIDFS_FILE_COLLECTION_INDEX,
+            $this->getWriteOptions($maxTimeMs, $writeConcern, ['unique' => true])
+        );
     }
 
-    private function ensureFilesIndex(ClassMetadata $class) : void
+    private function ensureFilesIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $filesCollection = $this->dm->getDocumentCollection($class->getName());
         foreach ($filesCollection->listIndexes() as $index) {
@@ -636,7 +630,7 @@ class SchemaManager
             }
         }
 
-        $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX);
+        $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX, $this->getWriteOptions($maxTimeMs, $writeConcern));
     }
 
     private function collectionIsSharded(string $documentName) : bool
@@ -651,5 +645,20 @@ class SchemaManager
 
         $stats = $database->command(['collstats' => $class->getCollection()])->toArray()[0];
         return (bool) ($stats['sharded'] ?? false);
+    }
+
+    private function getWriteOptions(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, array $options = []) : array
+    {
+        unset($options['maxTimeMs'], $options['writeConcern']);
+
+        if ($maxTimeMs !== null) {
+            $options['maxTimeMs'] = $maxTimeMs;
+        }
+
+        if ($writeConcern !== null) {
+            $options['writeConcern'] = $writeConcern;
+        }
+
+        return $options;
     }
 }

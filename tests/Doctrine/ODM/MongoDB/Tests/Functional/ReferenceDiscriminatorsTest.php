@@ -165,7 +165,7 @@ abstract class ActivityStreamItem
 
 /**
  * @ODM\MappedSuperclass
- * @ODM\UniqueIndex(keys={"groupId"="asc", "action.$id"="asc"}, options={"unique"="true", "dropDups"="true"})
+ * @ODM\UniqueIndex(keys={"groupId"="asc", "action.$id"="asc"}, options={"unique"=true})
  */
 abstract class GroupActivityStreamItem extends ActivityStreamItem
 {
@@ -196,7 +196,7 @@ class GroupMembersActivityStreamItem extends GroupActivityStreamItem
 
 /**
  * @ODM\MappedSuperclass
- * @ODM\UniqueIndex(keys={"userId"="asc", "action.$id"="asc"}, options={"unique"="true", "dropDups"="true"})
+ * @ODM\UniqueIndex(keys={"userId"="asc", "action.$id"="asc"}, options={"unique"=true})
  */
 abstract class UserActivityStreamItem extends ActivityStreamItem
 {
