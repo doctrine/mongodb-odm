@@ -574,6 +574,7 @@ trait PersistentCollectionTrait
      */
     public function __sleep()
     {
+        $this->initialize();
         return ['coll', 'initialized'];
     }
 

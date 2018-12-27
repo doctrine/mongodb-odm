@@ -11,8 +11,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Documents\Phonenumber;
 use Documents\User;
 use stdClass;
+use function count;
 use function serialize;
 use function unserialize;
 
@@ -76,6 +78,29 @@ class PersistentCollectionTest extends BaseTest
         $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('phonebooks'));
         $unserialized->setDocumentManager($this->dm);
         $this->assertInstanceOf(ClassMetadata::class, $unserialized->getTypeClass());
+    }
+
+    public function testRawDataInitializationBeforeSerialization() : void
+    {
+        $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
+        $mongoData  = [
+            ['phonenumber' => 'phonenumber1'],
+            ['phonenumber' => 'phonenumber2'],
+        ];
+        $collection->setInitialized(false);
+        $collection->setMongoData($mongoData);
+
+        $collection->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('phonenumbers'));
+
+        $serialized = serialize($collection);
+        /** @var PersistentCollection $unserialized */
+        $unserialized = unserialize($serialized);
+
+        /** @var Phonenumber[] $phonenumbers */
+        $phonenumbers = $unserialized->toArray();
+        $this->assertEquals(2, count($phonenumbers));
+        self::assertEquals($mongoData[0]['phonenumber'], $phonenumbers[0]->getPhonenumber());
+        self::assertEquals($mongoData[1]['phonenumber'], $phonenumbers[1]->getPhonenumber());
     }
 
     /**
