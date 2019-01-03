@@ -12,6 +12,7 @@ use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
 use function array_filter;
+use function array_merge;
 use function array_unique;
 use function assert;
 use function iterator_count;
@@ -593,11 +594,13 @@ class SchemaManager
         $adminDb  = $this->dm->getClient()->selectDatabase('admin');
 
         return $adminDb->command(
-            [
-                'shardCollection' => $dbName . '.' . $class->getCollection(),
-                'key'             => $shardKey['keys'],
-            ],
-            $this->getWriteOptions(null, $writeConcern)
+            array_merge(
+                [
+                    'shardCollection' => $dbName . '.' . $class->getCollection(),
+                    'key'             => $shardKey['keys'],
+                ],
+                $this->getWriteOptions(null, $writeConcern)
+            )
         )->toArray()[0];
     }
 
