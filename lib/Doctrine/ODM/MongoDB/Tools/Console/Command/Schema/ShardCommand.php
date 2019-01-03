@@ -36,10 +36,10 @@ class ShardCommand extends AbstractCommand
 
         try {
             if (is_string($class)) {
-                $this->processDocumentIndex($sm, $class);
+                $this->processDocumentIndex($sm, $class, null, $this->getWriteConcernFromInput($input));
                 $output->writeln(sprintf('Enabled sharding for <info>%s</info>', $class));
             } else {
-                $this->processIndex($sm);
+                $this->processIndex($sm, null, $this->getWriteConcernFromInput($input));
                 $output->writeln('Enabled sharding for <info>all classes</info>');
             }
         } catch (Throwable $e) {
@@ -52,12 +52,12 @@ class ShardCommand extends AbstractCommand
 
     protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null)
     {
-        $sm->ensureDocumentSharding($document);
+        $sm->ensureDocumentSharding($document, $writeConcern);
     }
 
     protected function processIndex(SchemaManager $sm, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null)
     {
-        $sm->ensureSharding();
+        $sm->ensureSharding($writeConcern);
     }
 
     /**
