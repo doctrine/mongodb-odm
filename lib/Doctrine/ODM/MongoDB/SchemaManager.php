@@ -526,7 +526,7 @@ class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function ensureSharding() : void
+    public function ensureSharding(?WriteConcern $writeConcern = null) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -534,7 +534,7 @@ class SchemaManager
                 continue;
             }
 
-            $this->ensureDocumentSharding($class->name);
+            $this->ensureDocumentSharding($class->name, $writeConcern);
         }
     }
 
@@ -543,7 +543,7 @@ class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function ensureDocumentSharding(string $documentName) : void
+    public function ensureDocumentSharding(string $documentName, ?WriteConcern $writeConcern = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if (! $class->isSharded()) {
@@ -557,7 +557,7 @@ class SchemaManager
         $this->enableShardingForDbByDocumentName($documentName);
 
         try {
-            $this->runShardCollectionCommand($documentName);
+            $this->runShardCollectionCommand($documentName, $writeConcern);
         } catch (RuntimeException $e) {
             throw MongoDBException::failedToEnsureDocumentSharding($documentName, $e->getMessage());
         }
@@ -585,7 +585,7 @@ class SchemaManager
         }
     }
 
-    private function runShardCollectionCommand(string $documentName) : array
+    private function runShardCollectionCommand(string $documentName, ?WriteConcern $writeConcern = null) : array
     {
         $class    = $this->dm->getClassMetadata($documentName);
         $dbName   = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
@@ -596,7 +596,8 @@ class SchemaManager
             [
                 'shardCollection' => $dbName . '.' . $class->getCollection(),
                 'key'             => $shardKey['keys'],
-            ]
+            ],
+            $this->getWriteOptions(null, $writeConcern)
         )->toArray()[0];
     }
 
