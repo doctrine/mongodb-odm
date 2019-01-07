@@ -26,6 +26,9 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
@@ -41,6 +44,8 @@ class YamlDriver extends FileDriver
      */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
+        @trigger_error(sprintf('The "%s" class is deprecated and will be removed in 2.0. Please switch to XML or annotation mapping.', self::class), E_USER_DEPRECATED);
+
         parent::__construct($locator, $fileExtension);
     }
 

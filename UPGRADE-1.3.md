@@ -1,0 +1,11 @@
+# UPGRADE FROM 1.2 TO 1.3
+
+## Mapping changes
+
+### Yaml driver deprecated
+
+The yaml mapping driver has been deprecated and will be removed in 2.0. Please 
+switch to using annotations or XML mapping files. The following classes have
+been deprecated:
+ * `Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver`
+ * `Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedYamlDriver`
