@@ -24,6 +24,8 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use InvalidArgumentException;
+use const E_USER_DEPRECATED;
+use function trigger_error;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -255,7 +257,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * READ-ONLY: The namespace the document class is contained in.
      *
      * @var string
-     * @todo Not really needed. Usage could be localized.
+     * @deprecated Will be removed in 2.0. Use fully qualified class names instead
      */
     public $namespace;
 
@@ -623,6 +625,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         }
 
         if ($repositoryClassName && strpos($repositoryClassName, '\\') === false && strlen($this->namespace)) {
+            @trigger_error(sprintf('Class "%s" relies on same-namespace resolution for its repository class. This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $this->name), E_USER_DEPRECATED);
+
             $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
         }
 
@@ -786,6 +790,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         foreach ($map as $value => $className) {
             if (strpos($className, '\\') === false && strlen($this->namespace)) {
+                @trigger_error(sprintf('Class "%s" relies on same-namespace resolution in its discriminator map for value "%s". This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $this->name, $value), E_USER_DEPRECATED);
+
                 $className = $this->namespace . '\\' . $className;
             }
             $this->discriminatorMap[$value] = $className;
@@ -1116,9 +1122,12 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      * The namespace this Document class belongs to.
      *
      * @return string $namespace The namespace name.
+     * @deprecated will be removed in 2.0
      */
     public function getNamespace()
     {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in 2.0.', __METHOD__), E_USER_DEPRECATED);
+
         return $this->namespace;
     }
 
@@ -1324,10 +1333,15 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
             throw MappingException::discriminatorFieldConflict($this->name, $this->discriminatorField);
         }
         if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
+            @trigger_error(sprintf('Field "%s" in class "%s" relies on same-namespace resolution for the target document. This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $mapping['name'], $this->name), E_USER_DEPRECATED);
+
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
+
         if (isset($mapping['collectionClass'])) {
             if (strpos($mapping['collectionClass'], '\\') === false && strlen($this->namespace)) {
+                @trigger_error(sprintf('Field "%s" in class "%s" relies on same-namespace resolution for the collection class. This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $mapping['name'], $this->name), E_USER_DEPRECATED);
+
                 $mapping['collectionClass'] = $this->namespace . '\\' . $mapping['collectionClass'];
             }
             $mapping['collectionClass'] = ltrim($mapping['collectionClass'], '\\');
@@ -1342,6 +1356,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         if (isset($mapping['discriminatorMap'])) {
             foreach ($mapping['discriminatorMap'] as $key => $class) {
                 if (strpos($class, '\\') === false && strlen($this->namespace)) {
+                    @trigger_error(sprintf('Field "%s" in class "%s" relies on same-namespace resolution in its discriminator map for value "%s". This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $mapping['name'], $this->name, $key), E_USER_DEPRECATED);
+
                     $mapping['discriminatorMap'][$key] = $this->namespace . '\\' . $class;
                 }
             }
@@ -2008,6 +2024,8 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     {
         foreach ($subclasses as $subclass) {
             if (strpos($subclass, '\\') === false && strlen($this->namespace)) {
+                @trigger_error(sprintf('Subclass "%s" in class "%s" relies on same-namespace resolution. This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $subclass, $this->name), E_USER_DEPRECATED);
+
                 $this->subClasses[] = $this->namespace . '\\' . $subclass;
             } else {
                 $this->subClasses[] = $subclass;
