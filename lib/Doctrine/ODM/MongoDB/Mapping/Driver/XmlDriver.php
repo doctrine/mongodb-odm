@@ -24,6 +24,10 @@ use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use SimpleXMLElement;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -48,7 +52,7 @@ class XmlDriver extends FileDriver
     public function loadMetadataForClass($className, ClassMetadata $class)
     {
         /* @var $class ClassMetadataInfo */
-        /* @var $xmlRoot \SimpleXMLElement */
+        /* @var $xmlRoot SimpleXMLElement */
         $xmlRoot = $this->getElement($className);
         if ( ! $xmlRoot) {
             return;
@@ -135,6 +139,37 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'read-preference'})) {
             $class->setReadPreference(...$this->transformReadPreference($xmlRoot->{'read-preference'}));
         }
+
+        if (isset($xmlRoot->id)) {
+            $field   = $xmlRoot->id;
+            $mapping = [
+                'id' => true,
+                'fieldName' => 'id',
+            ];
+
+            /** @var SimpleXMLElement $attributes */
+            $attributes = $field->attributes();
+            foreach ($attributes as $key => $value) {
+                $mapping[$key] = (string) $value;
+            }
+
+            if (isset($mapping['strategy'])) {
+                $mapping['options'] = [];
+                if (isset($field->{'generator-option'})) {
+                    foreach ($field->{'generator-option'} as $generatorOptions) {
+                        $attributesGenerator = iterator_to_array($generatorOptions->attributes());
+                        if (!isset($attributesGenerator['name']) || !isset($attributesGenerator['value'])) {
+                            continue;
+                        }
+
+                        $mapping['options'][(string)$attributesGenerator['name']] = (string)$attributesGenerator['value'];
+                    }
+                }
+            }
+
+            $this->addFieldMapping($class, $mapping);
+        }
+
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
                 $mapping = array();
@@ -146,13 +181,21 @@ class XmlDriver extends FileDriver
                         $mapping[$key] = ('true' === $mapping[$key]);
                     }
                 }
-                if (isset($mapping['id']) && $mapping['id'] === true && isset($mapping['strategy'])) {
-                    $mapping['options'] = array();
-                    if (isset($field->{'id-generator-option'})) {
-                        foreach ($field->{'id-generator-option'} as $generatorOptions) {
-                            $attributesGenerator = iterator_to_array($generatorOptions->attributes());
-                            if (isset($attributesGenerator['name']) && isset($attributesGenerator['value'])) {
-                                $mapping['options'][(string) $attributesGenerator['name']] = (string) $attributesGenerator['value'];
+
+
+                if (isset($mapping['id']) && $mapping['id'] === true) {
+                    @trigger_error(sprintf('Using the "id" attribute to denote identifiers in the XML mapping for class "%s" is deprecated and will be removed in 2.0. Please map your identifiers using the "id" element.', $class->getName()), E_USER_DEPRECATED);
+
+                    if (isset($mapping['strategy'])) {
+                        $mapping['options'] = array();
+                        if (isset($field->{'id-generator-option'})) {
+                            foreach ($field->{'id-generator-option'} as $generatorOptions) {
+                                $attributesGenerator = iterator_to_array($generatorOptions->attributes());
+                                if (!isset($attributesGenerator['name']) || !isset($attributesGenerator['value'])) {
+                                    continue;
+                                }
+
+                                $mapping['options'][(string)$attributesGenerator['name']] = (string)$attributesGenerator['value'];
                             }
                         }
                     }
@@ -355,7 +398,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addIndex(ClassMetadataInfo $class, \SimpleXmlElement $xmlIndex)
+    private function addIndex(ClassMetadataInfo $class, SimpleXmlElement $xmlIndex)
     {
         $attributes = $xmlIndex->attributes();
 
@@ -428,7 +471,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function getPartialFilterExpression(\SimpleXMLElement $fields)
+    private function getPartialFilterExpression(SimpleXMLElement $fields)
     {
         $partialFilterExpression = [];
         foreach ($fields as $field) {
@@ -463,7 +506,7 @@ class XmlDriver extends FileDriver
         return $partialFilterExpression;
     }
 
-    private function setShardKey(ClassMetadataInfo $class, \SimpleXmlElement $xmlShardkey)
+    private function setShardKey(ClassMetadataInfo $class, SimpleXmlElement $xmlShardkey)
     {
         $attributes = $xmlShardkey->attributes();
 
@@ -503,10 +546,9 @@ class XmlDriver extends FileDriver
      *
      * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
      *
-     * @param \SimpleXMLElement $xmlReadPreference
      * @return array
      */
-    private function transformReadPreference($xmlReadPreference)
+    private function transformReadPreference(SimpleXMLElement $xmlReadPreference)
     {
         $tags = null;
         if (isset($xmlReadPreference->{'tag-set'})) {

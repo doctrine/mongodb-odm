@@ -480,7 +480,7 @@ make it to the database and cause performance problems.
                             http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
         
             <document name="Documents\Place" require-indexes="true">
-                <field fieldName="id" id="true" />
+                <id />
                 <field fieldName="city" type="string" />
                 <indexes>
                     <index>

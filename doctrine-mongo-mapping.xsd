@@ -37,6 +37,7 @@
 
   <xs:complexType name="document">
     <xs:sequence>
+      <xs:element name="id" type="odm:id" minOccurs="0" maxOccurs="1"/>
       <xs:element name="field" type="odm:field" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="embed-one" type="odm:embed-one" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded"/>
@@ -74,9 +75,11 @@
   </xs:complexType>
 
   <xs:complexType name="field">
+    <!-- deprecated -->
     <xs:sequence>
       <xs:element name="id-generator-option" type="odm:id-generator-option" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
+    <!-- deprecated -->
     <xs:attribute name="id" type="xs:boolean" default="false" />
     <xs:attribute name="name" type="xs:NMTOKEN" />
     <xs:attribute name="type" type="xs:NMTOKEN" />
@@ -100,6 +103,15 @@
     <xs:attribute name="safe" type="xs:boolean" />
     <xs:attribute name="sparse" type="xs:boolean" />
     <xs:attribute name="unique" type="xs:boolean" />
+  </xs:complexType>
+
+  <xs:complexType name="id">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="generator-option" type="odm:id-generator-option" minOccurs="0" maxOccurs="unbounded" />
+    </xs:choice>
+    <xs:attribute name="type" type="xs:NMTOKEN" />
+    <xs:attribute name="strategy" type="xs:NMTOKEN" default="auto" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" default="id" />
   </xs:complexType>
 
   <xs:complexType name="id-generator-option">
