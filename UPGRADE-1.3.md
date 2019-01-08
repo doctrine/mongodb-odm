@@ -42,3 +42,9 @@ The `Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo` class has been deprecated
 in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
 2.0.
 
+### XML mappings
+
+ * The `writeConcern` attribute in document mappings has been deprecated and
+   will be dropped in 2.0. Use `write-concern` instead.
+ * The `fieldName` attribute in field mappings has been deprecated and will be
+   dropped in 2.0. Use `field-name` instead.

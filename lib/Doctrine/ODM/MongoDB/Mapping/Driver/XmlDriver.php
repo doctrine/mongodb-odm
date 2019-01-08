@@ -91,9 +91,14 @@ class XmlDriver extends FileDriver
                 $class->setCollection((string) $xmlRoot['collection']);
             }
         }
-        if (isset($xmlRoot['writeConcern'])) {
+
+        if (isset($xmlRoot['write-concern'])) {
+            $class->setWriteConcern((string) $xmlRoot['write-concern']);
+        } elseif (isset($xmlRoot['writeConcern'])) {
+            @trigger_error(sprintf('The "writeConcern" attribute in the mapping file for class "%s" is deprecated and will be dropped in 2.0. Please use "write-concern" instead.', $class->getName()), E_USER_DEPRECATED);
             $class->setWriteConcern((string) $xmlRoot['writeConcern']);
         }
+
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
             $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType));
@@ -206,6 +211,19 @@ class XmlDriver extends FileDriver
                     $mapping['notSaved'] = ('true' === (string) $attributes['not-saved']);
                 }
 
+                if (isset($attributes['field-name'])) {
+                    $mapping['fieldName'] = (string) $attributes['field-name'];
+                } elseif (isset($attributes['fieldName'])) {
+                    @trigger_error(
+                        sprintf(
+                            'Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated. Use the "field-name" attribute instead.',
+                            isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'],
+                            $class->getName()
+                        ),
+                        E_USER_DEPRECATED
+                    );
+                }
+
                 if (isset($attributes['also-load'])) {
                     $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
                 } elseif (isset($attributes['version'])) {
@@ -303,9 +321,18 @@ class XmlDriver extends FileDriver
             'name'            => (string) $attributes['field'],
             'strategy'        => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
         );
-        if (isset($attributes['fieldName'])) {
+
+        if (isset($attributes['field-name'])) {
+            $mapping['fieldName'] = (string) $attributes['field-name'];
+        } elseif (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
+
+            @trigger_error(
+                sprintf('Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated. Use the "field-name" attribute instead.', $mapping['name'], $class->getName()),
+                E_USER_DEPRECATED
+            );
         }
+
         if (isset($embed->{'discriminator-field'})) {
             $attr = $embed->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
@@ -355,9 +382,17 @@ class XmlDriver extends FileDriver
             'prime'            => [],
         );
 
-        if (isset($attributes['fieldName'])) {
+        if (isset($attributes['field-name'])) {
+            $mapping['fieldName'] = (string) $attributes['field-name'];
+        } elseif (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
+
+            @trigger_error(
+                sprintf('Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated. Use the "field-name" attribute instead.', $mapping['name'], $class->getName()),
+                E_USER_DEPRECATED
+            );
         }
+
         if (isset($reference->{'discriminator-field'})) {
             $attr = $reference->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
