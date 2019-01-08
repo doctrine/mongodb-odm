@@ -24,6 +24,8 @@ class Article
     /** @ODM\Field(type="collection") */
     private $tags = array();
 
+    private $user;
+
     public function getId()
     {
         return $this->id;

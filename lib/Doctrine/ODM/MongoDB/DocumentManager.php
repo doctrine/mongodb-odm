@@ -23,7 +23,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\MongoDB\Connection;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
@@ -556,7 +556,7 @@ class DocumentManager implements ObjectManager
      */
     public function getReference($documentName, $identifier)
     {
-        /* @var $class \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo */
+        /* @var $class \Doctrine\ODM\MongoDB\Mapping\ClassMetadata */
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
         // Check identity map first, if its already in there just return it.
@@ -697,8 +697,8 @@ class DocumentManager implements ObjectManager
 
         $storeAs = isset($referenceMapping['storeAs']) ? $referenceMapping['storeAs'] : null;
         switch ($storeAs) {
-            case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                if ($class->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+            case ClassMetadata::REFERENCE_STORE_AS_ID:
+                if ($class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION) {
                     throw MappingException::simpleReferenceMustNotTargetDiscriminatedDocument($referenceMapping['targetDocument']);
                 }
 
@@ -706,18 +706,18 @@ class DocumentManager implements ObjectManager
                 break;
 
 
-            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+            case ClassMetadata::REFERENCE_STORE_AS_REF:
                 $reference = ['id' => $class->getDatabaseIdentifierValue($id)];
                 break;
 
-            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
+            case ClassMetadata::REFERENCE_STORE_AS_DB_REF:
                 $reference = [
                     '$ref' => $class->getCollection(),
                     '$id'  => $class->getDatabaseIdentifierValue($id),
                 ];
                 break;
 
-            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+            case ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB:
                 $reference = [
                     '$ref' => $class->getCollection(),
                     '$id'  => $class->getDatabaseIdentifierValue($id),
@@ -779,7 +779,7 @@ class DocumentManager implements ObjectManager
         @trigger_error('The ' . __METHOD__ . ' method has been deprecated and will be removed in ODM 2.0. Use createReference() instead.', E_USER_DEPRECATED);
 
         if (!isset($referenceMapping['storeAs'])) {
-            $referenceMapping['storeAs'] = ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF;
+            $referenceMapping['storeAs'] = ClassMetadata::REFERENCE_STORE_AS_DB_REF;
         }
 
         return $this->createReference($document, $referenceMapping);

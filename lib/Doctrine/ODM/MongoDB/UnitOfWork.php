@@ -1894,7 +1894,7 @@ class UnitOfWork implements PropertyChangedListener
                         } elseif ( ! $assoc2['isCascadeMerge']) {
                             if ($this->getDocumentState($other) === self::STATE_DETACHED) {
                                 $targetDocument = isset($assoc2['targetDocument']) ? $assoc2['targetDocument'] : get_class($other);
-                                /* @var $targetClass \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo */
+                                /* @var $targetClass ClassMetadata */
                                 $targetClass = $this->dm->getClassMetadata($targetDocument);
                                 $relatedId = $targetClass->getIdentifierObject($other);
 

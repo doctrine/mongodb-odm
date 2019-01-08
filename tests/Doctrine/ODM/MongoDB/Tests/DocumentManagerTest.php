@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
 use Documents\CmsPhonenumber;
@@ -141,21 +141,21 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testGetDocumentCollectionAppliesClassMetadataSlaveOkay()
     {
-        $cm1 = new ClassMetadataInfo('a');
+        $cm1 = new ClassMetadata(TestClassA::class);
         $cm1->collection = 'a';
 
-        $cm2 = new ClassMetadataInfo('b');
+        $cm2 = new ClassMetadata(TestClassB::class);
         $cm2->collection = 'b';
         $cm2->slaveOkay = true;
 
-        $cm3 = new ClassMetadataInfo('c');
+        $cm3 = new ClassMetadata(TestClassC::class);
         $cm3->collection = 'c';
         $cm3->slaveOkay = false;
 
         $map = array(
-            array('a', $cm1),
-            array('b', $cm2),
-            array('c', $cm3),
+            array(TestClassA::class, $cm1),
+            array(TestClassB::class, $cm2),
+            array(TestClassC::class, $cm3),
         );
 
         $metadataFactory = $this->getMockClassMetadataFactory();
@@ -180,14 +180,14 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $dm = new DocumentManagerMock();
         $dm->metadataFactory = $metadataFactory;
         $dm->documentCollections = array(
-            'a' => $coll1,
-            'b' => $coll2,
-            'c' => $coll3,
+            TestClassA::class => $coll1,
+            TestClassB::class => $coll2,
+            TestClassC::class => $coll3,
         );
 
-        $dm->getDocumentCollection('a');
-        $dm->getDocumentCollection('b');
-        $dm->getDocumentCollection('c');
+        $dm->getDocumentCollection(TestClassA::class);
+        $dm->getDocumentCollection(TestClassB::class);
+        $dm->getDocumentCollection(TestClassC::class);
     }
 
     /**
@@ -197,7 +197,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     public function testCannotCreateDbRefWithoutId()
     {
         $d = new \Documents\User();
-        $this->dm->createReference($d, ['storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF]);
+        $this->dm->createReference($d, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF]);
     }
 
     public function testCreateDbRefWithNonNullEmptyId()
@@ -206,7 +206,7 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $phonenumber->phonenumber = 0;
         $this->dm->persist($phonenumber);
 
-        $dbRef = $this->dm->createReference($phonenumber, ['storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, 'targetDocument' => CmsPhonenumber::class]);
+        $dbRef = $this->dm->createReference($phonenumber, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'targetDocument' => CmsPhonenumber::class]);
 
         $this->assertSame(array('$ref' => 'CmsPhonenumber', '$id' => 0), $dbRef);
     }
@@ -259,6 +259,18 @@ class DocumentManagerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         return $this->createMock('Doctrine\MongoDB\Collection');
     }
+}
+
+class TestClassA
+{
+}
+
+class TestClassB
+{
+}
+
+class TestClassC
+{
 }
 
 /** @ODM\Document */

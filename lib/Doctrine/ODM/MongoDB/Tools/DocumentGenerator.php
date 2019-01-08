@@ -20,14 +20,14 @@
 namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\Common\Inflector\Inflector;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
- * Generic class used to generate PHP5 document classes from ClassMetadataInfo instances
+ * Generic class used to generate PHP5 document classes from ClassMetadata instances
  *
  *     [php]
- *     $classes = $dm->getClassMetadataInfoFactory()->getAllMetadata();
+ *     $classes = $dm->getClassMetadataFactory()->getAllMetadata();
  *
  *     $generator = new \Doctrine\ODM\MongoDB\Tools\DocumentGenerator();
  *     $generator->setGenerateAnnotations(true);
@@ -48,7 +48,7 @@ class DocumentGenerator
     /** The extension to use for written php files */
     private $extension = '.php';
 
-    /** Whether or not the current ClassMetadataInfo instance is new or old */
+    /** Whether or not the current ClassMetadata instance is new or old */
     private $isNew = true;
 
     private $staticReflection = array();
@@ -149,7 +149,7 @@ public function <methodName>()
 ';
 
     /**
-     * Generate and write document classes for the given array of ClassMetadataInfo instances
+     * Generate and write document classes for the given array of ClassMetadata instances
      *
      * @param array $metadatas
      * @param string $outputDirectory
@@ -163,14 +163,14 @@ public function <methodName>()
     }
 
     /**
-     * Generated and write document class to disk for the given ClassMetadataInfo instance
+     * Generated and write document class to disk for the given ClassMetadata instance
      *
-     * @param ClassMetadataInfo $metadata
+     * @param ClassMetadata $metadata
      * @param string $outputDirectory
      * @throws \RuntimeException
      * @return void
      */
-    public function writeDocumentClass(ClassMetadataInfo $metadata, $outputDirectory)
+    public function writeDocumentClass(ClassMetadata $metadata, $outputDirectory)
     {
         $path = $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->extension;
         $dir = dirname($path);
@@ -204,12 +204,12 @@ public function <methodName>()
     }
 
     /**
-     * Generate a PHP5 Doctrine 2 document class from the given ClassMetadataInfo instance
+     * Generate a PHP5 Doctrine 2 document class from the given ClassMetadata instance
      *
-     * @param ClassMetadataInfo $metadata
+     * @param ClassMetadata $metadata
      * @return string $code
      */
-    public function generateDocumentClass(ClassMetadataInfo $metadata)
+    public function generateDocumentClass(ClassMetadata $metadata)
     {
         $placeHolders = array(
             '<namespace>',
@@ -232,13 +232,13 @@ public function <methodName>()
     }
 
     /**
-     * Generate the updated code for the given ClassMetadataInfo and document at path
+     * Generate the updated code for the given ClassMetadata and document at path
      *
-     * @param ClassMetadataInfo $metadata
+     * @param ClassMetadata $metadata
      * @param string $path
      * @return string $code;
      */
-    public function generateUpdatedDocumentClass(ClassMetadataInfo $metadata, $path)
+    public function generateUpdatedDocumentClass(ClassMetadata $metadata, $path)
     {
         $currentCode = file_get_contents($path);
 
@@ -337,20 +337,20 @@ public function <methodName>()
         $this->backupExisting = $bool;
     }
 
-    private function generateDocumentNamespace(ClassMetadataInfo $metadata)
+    private function generateDocumentNamespace(ClassMetadata $metadata)
     {
         if ($this->hasNamespace($metadata)) {
             return 'namespace ' . $this->getNamespace($metadata) . ';';
         }
     }
 
-    private function generateDocumentClassName(ClassMetadataInfo $metadata)
+    private function generateDocumentClassName(ClassMetadata $metadata)
     {
         return 'class ' . $this->getClassName($metadata) .
             ($this->extendsClass() ? ' extends ' . $this->getClassToExtendName() : null);
     }
 
-    private function generateDocumentBody(ClassMetadataInfo $metadata)
+    private function generateDocumentBody(ClassMetadata $metadata)
     {
         $fieldMappingProperties = $this->generateDocumentFieldMappingProperties($metadata);
         $associationMappingProperties = $this->generateDocumentAssociationMappingProperties($metadata);
@@ -380,7 +380,7 @@ public function <methodName>()
         return implode("\n", $code);
     }
 
-    private function generateDocumentConstructor(ClassMetadataInfo $metadata)
+    private function generateDocumentConstructor(ClassMetadata $metadata)
     {
         if ($this->hasMethod('__construct', $metadata)) {
             return '';
@@ -388,7 +388,7 @@ public function <methodName>()
 
         $collections = array();
         foreach ($metadata->fieldMappings AS $mapping) {
-            if ($mapping['type'] === ClassMetadataInfo::MANY) {
+            if ($mapping['type'] === ClassMetadata::MANY) {
                 $collections[] = '$this->' . $mapping['fieldName'] . ' = new \Doctrine\Common\Collections\ArrayCollection();';
             }
         }
@@ -436,7 +436,7 @@ public function <methodName>()
         }
     }
 
-    private function hasProperty($property, ClassMetadataInfo $metadata)
+    private function hasProperty($property, ClassMetadata $metadata)
     {
         if ($this->extendsClass() || class_exists($metadata->name)) {
             // don't generate property if its already on the base class.
@@ -459,7 +459,7 @@ public function <methodName>()
         );
     }
 
-    private function hasMethod($method, ClassMetadataInfo $metadata)
+    private function hasMethod($method, ClassMetadata $metadata)
     {
         if ($this->extendsClass() || class_exists($metadata->name)) {
             // don't generate method if its already on the base class.
@@ -482,7 +482,7 @@ public function <methodName>()
         );
     }
 
-    private function hasNamespace(ClassMetadataInfo $metadata)
+    private function hasNamespace(ClassMetadata $metadata)
     {
         return strpos($metadata->name, '\\') ? true : false;
     }
@@ -504,23 +504,23 @@ public function <methodName>()
         return '\\' . $refl->getName();
     }
 
-    private function getClassName(ClassMetadataInfo $metadata)
+    private function getClassName(ClassMetadata $metadata)
     {
         return ($pos = strrpos($metadata->name, '\\'))
             ? substr($metadata->name, $pos + 1, strlen($metadata->name)) : $metadata->name;
     }
 
-    private function getNamespace(ClassMetadataInfo $metadata)
+    private function getNamespace(ClassMetadata $metadata)
     {
         return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
     }
 
     /**
-     * @param ClassMetadataInfo $metadata
+     * @param ClassMetadata $metadata
      *
      * @return array
      */
-    protected function getTraits(ClassMetadataInfo $metadata)
+    protected function getTraits(ClassMetadata $metadata)
     {
         if ($metadata->reflClass !== null || class_exists($metadata->name)) {
             $reflClass = $metadata->reflClass === null ? new \ReflectionClass($metadata->name) : $metadata->reflClass;
@@ -541,7 +541,7 @@ public function <methodName>()
         }
     }
 
-    private function generateDocumentDocBlock(ClassMetadataInfo $metadata)
+    private function generateDocumentDocBlock(ClassMetadata $metadata)
     {
         $lines = array();
         $lines[] = '/**';
@@ -619,23 +619,23 @@ public function <methodName>()
         return implode("\n", $lines);
     }
 
-    private function generateInheritanceAnnotation(ClassMetadataInfo $metadata)
+    private function generateInheritanceAnnotation(ClassMetadata $metadata)
     {
-        if ($metadata->inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+        if ($metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
             return '@ODM\\InheritanceType("' . $this->getInheritanceTypeString($metadata->inheritanceType) . '")';
         }
     }
 
-    private function generateDiscriminatorFieldAnnotation(ClassMetadataInfo $metadata)
+    private function generateDiscriminatorFieldAnnotation(ClassMetadata $metadata)
     {
-        if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+        if ($metadata->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION) {
             return '@ODM\\DiscriminatorField(name="' . $metadata->discriminatorField . '")';
         }
     }
 
-    private function generateDiscriminatorMapAnnotation(ClassMetadataInfo $metadata)
+    private function generateDiscriminatorMapAnnotation(ClassMetadata $metadata)
     {
-        if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+        if ($metadata->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION) {
             $inheritanceClassMap = array();
 
             foreach ($metadata->discriminatorMap as $type => $class) {
@@ -646,25 +646,25 @@ public function <methodName>()
         }
     }
 
-    private function generateDefaultDiscriminatorValueAnnotation(ClassMetadataInfo $metadata)
+    private function generateDefaultDiscriminatorValueAnnotation(ClassMetadata $metadata)
     {
-        if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION && isset($metadata->defaultDiscriminatorValue)) {
+        if ($metadata->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION && isset($metadata->defaultDiscriminatorValue)) {
             return '@ODM\\DefaultDiscriminatorValue("' . $metadata->defaultDiscriminatorValue . '")';
         }
     }
 
-    private function generateChangeTrackingPolicyAnnotation(ClassMetadataInfo $metadata)
+    private function generateChangeTrackingPolicyAnnotation(ClassMetadata $metadata)
     {
         return '@ODM\\ChangeTrackingPolicy("' . $this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . '")';
     }
 
-    private function generateDocumentStubMethods(ClassMetadataInfo $metadata)
+    private function generateDocumentStubMethods(ClassMetadata $metadata)
     {
         $methods = array();
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
             if (isset($fieldMapping['id'])) {
-                if ($metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE) {
+                if ($metadata->generatorType == ClassMetadata::GENERATOR_TYPE_NONE) {
                     if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
                         $methods[] = $code;
                     }
@@ -679,7 +679,7 @@ public function <methodName>()
                 if ($code = $code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], $fieldMapping['type'])) {
                     $methods[] = $code;
                 }
-            } elseif ($fieldMapping['type'] === ClassMetadataInfo::ONE) {
+            } elseif ($fieldMapping['type'] === ClassMetadata::ONE) {
                 $nullable = $this->isAssociationNullable($fieldMapping) ? 'null' : null;
                 if ($code = $this->generateDocumentStubMethod($metadata, 'set', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null, $nullable)) {
                     $methods[] = $code;
@@ -687,7 +687,7 @@ public function <methodName>()
                 if ($code = $this->generateDocumentStubMethod($metadata, 'get', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
                     $methods[] = $code;
                 }
-            } elseif ($fieldMapping['type'] === ClassMetadataInfo::MANY) {
+            } elseif ($fieldMapping['type'] === ClassMetadata::MANY) {
                 if ($code = $this->generateDocumentStubMethod($metadata, 'add', $fieldMapping['fieldName'], isset($fieldMapping['targetDocument']) ? $fieldMapping['targetDocument'] : null)) {
                     $methods[] = $code;
                 }
@@ -713,7 +713,7 @@ public function <methodName>()
         return isset($fieldMapping['nullable']) && $fieldMapping['nullable'];
     }
 
-    private function generateDocumentLifecycleCallbackMethods(ClassMetadataInfo $metadata)
+    private function generateDocumentLifecycleCallbackMethods(ClassMetadata $metadata)
     {
         if (empty($metadata->lifecycleCallbacks)) {
             return '';
@@ -732,7 +732,7 @@ public function <methodName>()
         return implode("\n\n", $methods);
     }
 
-    private function generateDocumentAssociationMappingProperties(ClassMetadataInfo $metadata)
+    private function generateDocumentAssociationMappingProperties(ClassMetadata $metadata)
     {
         $lines = array();
 
@@ -747,13 +747,13 @@ public function <methodName>()
 
             $lines[] = $this->generateAssociationMappingPropertyDocBlock($fieldMapping);
             $lines[] = $this->spaces . 'protected $' . $fieldMapping['fieldName']
-                . ($fieldMapping['type'] === ClassMetadataInfo::MANY ? ' = array()' : null) . ";\n";
+                . ($fieldMapping['type'] === ClassMetadata::MANY ? ' = array()' : null) . ";\n";
         }
 
         return implode("\n", $lines);
     }
 
-    private function generateDocumentFieldMappingProperties(ClassMetadataInfo $metadata)
+    private function generateDocumentFieldMappingProperties(ClassMetadata $metadata)
     {
         $lines = array();
 
@@ -774,7 +774,7 @@ public function <methodName>()
         return implode("\n", $lines);
     }
 
-    private function generateDocumentStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null, $defaultValue = null)
+    private function generateDocumentStubMethod(ClassMetadata $metadata, $type, $fieldName, $typeHint = null, $defaultValue = null)
     {
         // Add/remove methods should use the singular form of the field name
         $formattedFieldName = in_array($type, array('add', 'remove'))
@@ -815,7 +815,7 @@ public function <methodName>()
         return $this->prefixCodeWithSpaces($method);
     }
 
-    private function generateLifecycleCallbackMethod($name, $methodName, ClassMetadataInfo $metadata)
+    private function generateLifecycleCallbackMethod($name, $methodName, ClassMetadata $metadata)
     {
         if ($this->hasMethod($methodName, $metadata)) {
             return;
@@ -846,16 +846,16 @@ public function <methodName>()
 
             $type = null;
             switch ($fieldMapping['association']) {
-                case ClassMetadataInfo::EMBED_ONE:
+                case ClassMetadata::EMBED_ONE:
                     $type = 'EmbedOne';
                     break;
-                case ClassMetadataInfo::EMBED_MANY:
+                case ClassMetadata::EMBED_MANY:
                     $type = 'EmbedMany';
                     break;
-                case ClassMetadataInfo::REFERENCE_ONE:
+                case ClassMetadata::REFERENCE_ONE:
                     $type = 'ReferenceOne';
                     break;
-                case ClassMetadataInfo::REFERENCE_MANY:
+                case ClassMetadata::REFERENCE_MANY:
                     $type = 'ReferenceMany';
                     break;
             }
@@ -885,19 +885,19 @@ public function <methodName>()
         return implode("\n", $lines);
     }
 
-    private function generateFieldMappingPropertyDocBlock(array $fieldMapping, ClassMetadataInfo $metadata)
+    private function generateFieldMappingPropertyDocBlock(array $fieldMapping, ClassMetadata $metadata)
     {
         $lines = array();
         $lines[] = $this->spaces . '/**';
         if (isset($fieldMapping['id']) && $fieldMapping['id']) {
-            $fieldMapping['strategy'] = isset($fieldMapping['strategy']) ? $fieldMapping['strategy'] : ClassMetadataInfo::GENERATOR_TYPE_AUTO;
-            if ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_AUTO) {
+            $fieldMapping['strategy'] = isset($fieldMapping['strategy']) ? $fieldMapping['strategy'] : ClassMetadata::GENERATOR_TYPE_AUTO;
+            if ($fieldMapping['strategy'] === ClassMetadata::GENERATOR_TYPE_AUTO) {
                 $lines[] = $this->spaces . ' * @var MongoId $' . $fieldMapping['fieldName'];
-            } elseif ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_INCREMENT) {
+            } elseif ($fieldMapping['strategy'] === ClassMetadata::GENERATOR_TYPE_INCREMENT) {
                 $lines[] = $this->spaces . ' * @var integer $' . $fieldMapping['fieldName'];
-            } elseif ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_UUID) {
+            } elseif ($fieldMapping['strategy'] === ClassMetadata::GENERATOR_TYPE_UUID) {
                 $lines[] = $this->spaces . ' * @var string $' . $fieldMapping['fieldName'];
-            } elseif ($fieldMapping['strategy'] === ClassMetadataInfo::GENERATOR_TYPE_NONE) {
+            } elseif ($fieldMapping['strategy'] === ClassMetadata::GENERATOR_TYPE_NONE) {
                 $lines[] = $this->spaces . ' * @var $' . $fieldMapping['fieldName'];
             } else {
                 $lines[] = $this->spaces . ' * @var $' . $fieldMapping['fieldName'];
@@ -961,13 +961,13 @@ public function <methodName>()
     private function getInheritanceTypeString($type)
     {
         switch ($type) {
-            case ClassMetadataInfo::INHERITANCE_TYPE_NONE:
+            case ClassMetadata::INHERITANCE_TYPE_NONE:
                 return 'NONE';
 
-            case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_COLLECTION:
+            case ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION:
                 return 'SINGLE_COLLECTION';
 
-            case ClassMetadataInfo::INHERITANCE_TYPE_COLLECTION_PER_CLASS:
+            case ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS:
                 return 'COLLECTION_PER_CLASS';
 
             default:
@@ -978,13 +978,13 @@ public function <methodName>()
     private function getChangeTrackingPolicyString($policy)
     {
         switch ($policy) {
-            case ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT:
+            case ClassMetadata::CHANGETRACKING_DEFERRED_IMPLICIT:
                 return 'DEFERRED_IMPLICIT';
 
-            case ClassMetadataInfo::CHANGETRACKING_DEFERRED_EXPLICIT:
+            case ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT:
                 return 'DEFERRED_EXPLICIT';
 
-            case ClassMetadataInfo::CHANGETRACKING_NOTIFY:
+            case ClassMetadata::CHANGETRACKING_NOTIFY:
                 return 'NOTIFY';
 
             default:
@@ -995,22 +995,22 @@ public function <methodName>()
     private function getIdGeneratorTypeString($type)
     {
         switch ($type) {
-            case ClassMetadataInfo::GENERATOR_TYPE_AUTO:
+            case ClassMetadata::GENERATOR_TYPE_AUTO:
                 return 'AUTO';
 
-            case ClassMetadataInfo::GENERATOR_TYPE_INCREMENT:
+            case ClassMetadata::GENERATOR_TYPE_INCREMENT:
                 return 'INCREMENT';
 
-            case ClassMetadataInfo::GENERATOR_TYPE_UUID:
+            case ClassMetadata::GENERATOR_TYPE_UUID:
                 return 'UUID';
 
-            case ClassMetadataInfo::GENERATOR_TYPE_ALNUM:
+            case ClassMetadata::GENERATOR_TYPE_ALNUM:
                 return 'ALNUM';
 
-            case ClassMetadataInfo::GENERATOR_TYPE_CUSTOM:
+            case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 return 'CUSTOM';
 
-            case ClassMetadataInfo::GENERATOR_TYPE_NONE:
+            case ClassMetadata::GENERATOR_TYPE_NONE:
                 return 'NONE';
 
             default:

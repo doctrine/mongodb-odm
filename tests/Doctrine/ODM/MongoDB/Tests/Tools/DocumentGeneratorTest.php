@@ -3,7 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
 use Doctrine\ODM\MongoDB\Tools\DocumentGenerator;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -39,7 +39,9 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function generateBookDocumentFixture()
     {
-        $metadata = new ClassMetadataInfo($this->namespace . '\DocumentGeneratorBook');
+        $metadata = new ClassMetadata(DocumentGeneratorBook::class);
+        $metadata->name = $this->namespace . '\\DocumentGeneratorBook';
+        $metadata->rootDocumentName = $this->namespace . '\\DocumentGeneratorBook';
         $metadata->namespace = $this->namespace;
         $metadata->customRepositoryClassName = $this->namespace  . '\DocumentGeneratorBookRepository';
 
@@ -47,18 +49,18 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $metadata->mapField(array('fieldName' => 'name', 'type' => 'string'));
         $metadata->mapField(array('fieldName' => 'status', 'type' => 'string'));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
-        $metadata->mapOneReference(array('fieldName' => 'author', 'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorAuthor'));
+        $metadata->mapOneReference(array('fieldName' => 'author', 'targetDocument' => DocumentGeneratorAuthor::class));
         $metadata->mapManyReference(array(
             'fieldName' => 'comments',
-            'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorComment'
+            'targetDocument' => DocumentGeneratorComment::class
         ));
         $metadata->mapManyReference(array(
                 'fieldName' => 'searches',
-                'targetDocument' => 'Doctrine\ODM\MongoDB\Tests\Tools\DocumentGeneratorSearch'
+                'targetDocument' => DocumentGeneratorSearch::class
         ));
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
 
         $this->generator->writeDocumentClass($metadata, $this->tmpDir);
 
@@ -66,7 +68,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @param  ClassMetadataInfo $metadata
+     * @param  ClassMetadata $metadata
      * @return DocumentGeneratorBook
      */
     public function newInstance($metadata)
@@ -163,7 +165,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $book = $this->newInstance($metadata);
 
-        $cm = new \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo($metadata->name);
+        $cm = new \Doctrine\ODM\MongoDB\Mapping\ClassMetadata($metadata->name);
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
         $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -181,7 +183,7 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $book = $this->newInstance($metadata);
 
-        $cm = new \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo($metadata->name);
+        $cm = new \Doctrine\ODM\MongoDB\Mapping\ClassMetadata($metadata->name);
         $reader = new \Doctrine\Common\Annotations\AnnotationReader();
         $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader);
         $driver->loadMetadataForClass($cm->name, $cm);
@@ -296,5 +298,15 @@ class DocumentGeneratorTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 }
 
 class DocumentGeneratorAuthor {}
+class DocumentGeneratorBook
+{
+    public $id;
+    public $name;
+    public $status;
+    public $author;
+    public $comments;
+    public $searches;
+    public $test;
+}
 class DocumentGeneratorComment {}
 class DocumentGeneratorSearch {}

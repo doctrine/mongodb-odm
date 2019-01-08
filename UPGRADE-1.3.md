@@ -35,3 +35,10 @@ class User
     private $groups;
 }
 ```
+
+### `ClassMetadataInfo` class deprecated
+
+The `Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo` class has been deprecated
+in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
+2.0.
+

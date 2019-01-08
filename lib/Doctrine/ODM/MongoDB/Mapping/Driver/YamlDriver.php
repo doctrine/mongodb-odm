@@ -23,7 +23,6 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 use const E_USER_DEPRECATED;
@@ -54,7 +53,7 @@ class YamlDriver extends FileDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $class)
     {
-        /* @var $class ClassMetadataInfo */
+        /* @var $class MappingClassMetadata */
         $element = $this->getElement($className);
         if ( ! $element) {
             return;
@@ -178,7 +177,7 @@ class YamlDriver extends FileDriver
         }
     }
 
-    private function addFieldMapping(ClassMetadataInfo $class, $mapping)
+    private function addFieldMapping(MappingClassMetadata $class, $mapping)
     {
         if (isset($mapping['name'])) {
             $name = $mapping['name'];
@@ -257,9 +256,9 @@ class YamlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function addMappingFromEmbed(ClassMetadataInfo $class, $fieldName, $embed, $type)
+    private function addMappingFromEmbed(MappingClassMetadata $class, $fieldName, $embed, $type)
     {
-        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type == 'one' ? MappingClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'type'            => $type,
             'embedded'        => true,
@@ -283,16 +282,16 @@ class YamlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addMappingFromReference(ClassMetadataInfo $class, $fieldName, $reference, $type)
+    private function addMappingFromReference(MappingClassMetadata $class, $fieldName, $reference, $type)
     {
-        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type == 'one' ? MappingClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'cascade'          => isset($reference['cascade']) ? $reference['cascade'] : [],
             'orphanRemoval'    => isset($reference['orphanRemoval']) ? $reference['orphanRemoval'] : false,
             'type'             => $type,
             'reference'        => true,
             'simple'           => isset($reference['simple']) ? (boolean) $reference['simple'] : false, // deprecated
-            'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs'          => isset($reference['storeAs']) ? (string) $reference['storeAs'] : MappingClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'targetDocument'   => isset($reference['targetDocument']) ? $reference['targetDocument'] : null,
             'collectionClass'  => isset($reference['collectionClass']) ? $reference['collectionClass'] : null,
             'fieldName'        => $fieldName,
@@ -372,7 +371,7 @@ class YamlDriver extends FileDriver
         }
     }
 
-    private function setShardKey(ClassMetadataInfo $class, array $shardKey)
+    private function setShardKey(MappingClassMetadata $class, array $shardKey)
     {
         $keys = $shardKey['keys'];
         $options = array();
