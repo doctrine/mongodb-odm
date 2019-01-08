@@ -37,7 +37,7 @@
   </xs:complexType>
 
   <xs:complexType name="gridfs-file">
-    <xs:sequence>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="id" type="odm:id" minOccurs="0" maxOccurs="1"/>
 
       <xs:element name="length" type="odm:gridfs-length-field" minOccurs="0" maxOccurs="1" />
@@ -50,7 +50,7 @@
       <xs:element name="indexes" type="odm:indexes" minOccurs="0"/>
       <xs:element name="shard-key" type="odm:shard-key" minOccurs="0"/>
       <xs:element name="read-preference" type="odm:read-preference" minOccurs="0" maxOccurs="1"/>
-    </xs:sequence>
+    </xs:choice>
 
     <xs:attribute name="name" type="xs:string" />
     <xs:attribute name="db" type="xs:NMTOKEN" />
@@ -152,11 +152,11 @@
   </xs:complexType>
 
   <xs:complexType name="gridfs-metadata-field">
-    <xs:sequence>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0"/>
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0"/>
       <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0"/>
-    </xs:sequence>
+    </xs:choice>
 
     <xs:attribute name="target-document" type="xs:string" use="required" />
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
