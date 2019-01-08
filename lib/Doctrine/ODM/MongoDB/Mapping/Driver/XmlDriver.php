@@ -23,8 +23,10 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use DOMDocument;
 use SimpleXMLElement;
 use const E_USER_DEPRECATED;
+use function libxml_use_internal_errors;
 use function sprintf;
 use function trigger_error;
 
@@ -569,6 +571,9 @@ class XmlDriver extends FileDriver
     protected function loadMappingFile($file)
     {
         $result = array();
+
+        $this->validateSchema($file);
+
         $xmlElement = simplexml_load_file($file);
 
         foreach (array('document', 'embedded-document', 'mapped-superclass', 'query-result-document') as $type) {
@@ -581,5 +586,23 @@ class XmlDriver extends FileDriver
         }
 
         return $result;
+    }
+
+    private function validateSchema($filename)
+    {
+        $document = new DOMDocument();
+        $document->load($filename);
+
+        $previousUseErrors = libxml_use_internal_errors(true);
+
+        try {
+            if (@$document->schemaValidate(__DIR__ . '/../../../../../../doctrine-mongo-mapping.xsd')) {
+                return;
+            }
+        } finally {
+            libxml_use_internal_errors($previousUseErrors);
+        }
+
+        @trigger_error(sprintf('The mapping file "%s" does not follow the mapping schema. Loading invalid files is deprecated and will no longer work in 2.0', $filename), E_USER_DEPRECATED);
     }
 }
