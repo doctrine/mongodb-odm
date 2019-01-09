@@ -113,7 +113,7 @@ look like this:
             <length />
             <chunk-size />
             <upload-date />
-            <filename fieldName="name" />
+            <filename field-name="name" />
 
             <metadata target-document="Documents\ImageMetadata" />
         </gridfs-file>

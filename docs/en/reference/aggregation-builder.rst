@@ -152,8 +152,8 @@ they can't be persisted to the database.
                           xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                           http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
             <query-result-document name="Documents\UserPurchases">
-                <field fieldName="numPurchases" type="int" />
-                <field fieldName="amount" type="float" />
+                <field field-name="numPurchases" type="int" />
+                <field field-name="amount" type="float" />
                 <reference-one field="user" target-document="Documents\User" name="_id" />
             </query-result-document>
         </doctrine-mongo-mapping>

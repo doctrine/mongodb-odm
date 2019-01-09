@@ -56,7 +56,7 @@
     <xs:attribute name="db" type="xs:NMTOKEN" />
     <xs:attribute name="bucket-name" type="xs:NMTOKEN" default="fs" />
     <xs:attribute name="repository-class" type="xs:string" />
-    <xs:attribute name="writeConcern" type="xs:string" />
+    <xs:attribute name="write-concern" type="xs:string" />
     <xs:attribute name="inheritance-type" type="odm:inheritance-type" />
     <xs:attribute name="change-tracking-policy" type="odm:change-tracking-policy" />
     <xs:attribute name="chunk-size-bytes" type="xs:positiveInteger" />
@@ -140,19 +140,19 @@
   </xs:complexType>
 
   <xs:complexType name="gridfs-length-field">
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" default="length" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" default="length" />
   </xs:complexType>
 
   <xs:complexType name="gridfs-chunk-size-field">
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" default="chunkSize" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" default="chunkSize" />
   </xs:complexType>
 
   <xs:complexType name="gridfs-upload-date-field">
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" default="uploadDate" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" default="uploadDate" />
   </xs:complexType>
 
   <xs:complexType name="gridfs-filename-field">
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" default="filename" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" default="filename" />
   </xs:complexType>
 
   <xs:complexType name="gridfs-metadata-field">
@@ -163,7 +163,7 @@
     </xs:choice>
 
     <xs:attribute name="target-document" type="xs:string" use="required" />
-    <xs:attribute name="fieldName" type="xs:NMTOKEN" />
+    <xs:attribute name="field-name" type="xs:NMTOKEN" />
   </xs:complexType>
 
   <xs:complexType name="embed-one">

@@ -7,10 +7,10 @@
 
     <gridfs-file name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverFile" chunk-size-bytes="12345">
         <id />
-        <length fieldName="size" />
+        <length field-name="size" />
         <chunk-size />
         <upload-date />
-        <filename fieldName="name" />
+        <filename field-name="name" />
 
         <metadata target-document="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverFileMetadata" />
     </gridfs-file>
