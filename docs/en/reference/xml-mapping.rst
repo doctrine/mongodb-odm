@@ -161,7 +161,7 @@ This is only compatible with the ``int`` field type.
 .. code-block:: xml
 
     <doctrine-mongo-mapping>
-        <field fieldName="lock" lock="true" type="int" />
+        <field field-name="lock" lock="true" type="int" />
     </doctrine-mongo-mapping>
 
 .. _xml_reference_version:
@@ -175,7 +175,7 @@ This is only compatible with ``int`` and ``date`` field types.
 .. code-block:: xml
 
     <doctrine-mongo-mapping>
-        <field fieldName="version" version="true" type="int" />
+        <field field-name="version" version="true" type="int" />
     </doctrine-mongo-mapping>
 
 By default, Doctrine ODM updates :ref:`embed-many <embed_many>` and

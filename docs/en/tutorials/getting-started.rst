@@ -115,9 +115,9 @@ You can provide your mapping information in Annotations or XML:
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\User">
                 <id />
-                <field fieldName="name" type="string" />
-                <field fieldName="email" type="string" />
-                <reference-many fieldName="posts" targetDocument="Documents\BlogPost">
+                <field field-name="name" type="string" />
+                <field field-name="email" type="string" />
+                <reference-many field-name="posts" targetDocument="Documents\BlogPost">
                     <cascade>
                         <all/>
                     </cascade>
@@ -132,9 +132,9 @@ You can provide your mapping information in Annotations or XML:
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\BlogPost">
                 <id />
-                <field fieldName="title" type="string" />
-                <field fieldName="body" type="string" />
-                <field fieldName="createdAt" type="date" />
+                <field field-name="title" type="string" />
+                <field field-name="body" type="string" />
+                <field field-name="createdAt" type="date" />
           </document>
         </doctrine-mongo-mapping>
 

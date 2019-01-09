@@ -93,7 +93,7 @@ Unique Index
 
     .. code-block:: xml
 
-        <field fieldName="username" index="true" unique="true" order="asc" />
+        <field field-name="username" index="true" unique="true" order="asc" />
 
 For your convenience you can quickly specify a unique index with
 ``@UniqueIndex``:
@@ -118,7 +118,7 @@ For your convenience you can quickly specify a unique index with
 
     .. code-block:: xml
 
-        <field fieldName="username" unique="true" order="asc" />
+        <field field-name="username" unique="true" order="asc" />
 
 If you want to specify an index that consists of multiple fields
 you can specify them on the class doc block:

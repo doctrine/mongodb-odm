@@ -149,7 +149,7 @@ omit the ``targetDocument`` option:
 
     .. code-block:: xml
 
-        <field fieldName="favorites" />
+        <field field-name="favorites" />
 
 Now the ``$favorites`` property can store a reference to any type of document!
 The class name will be automatically stored in a field named
@@ -187,7 +187,7 @@ The name of the field within the DBRef object can be customized via the
 
     .. code-block:: xml
 
-        <reference-many fieldName="favorites">
+        <reference-many field-name="favorites">
             <discriminator-field name="type" />
         </reference-many>
 
@@ -220,7 +220,7 @@ in each `DBRef`_ object:
 
     .. code-block:: xml
 
-        <reference-many fieldName="favorites">
+        <reference-many field-name="favorites">
             <discriminator-map>
                 <discriminator-mapping value="album" class="Documents\Album" />
                 <discriminator-mapping value="song" class="Documents\Song" />
@@ -257,7 +257,7 @@ a certain class, you can optionally specify a default discriminator value:
 
     .. code-block:: xml
 
-        <reference-many fieldName="favorites">
+        <reference-many field-name="favorites">
             <discriminator-map>
                 <discriminator-mapping value="album" class="Documents\Album" />
                 <discriminator-mapping value="song" class="Documents\Song" />

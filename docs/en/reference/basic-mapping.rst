@@ -381,7 +381,7 @@ Example:
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\User">
                 <id />
-                <field fieldName="username" type="string" />
+                <field field-name="username" type="string" />
           </document>
         </doctrine-mongo-mapping>
 
@@ -404,7 +404,7 @@ as follows:
 
     .. code-block:: xml
 
-        <field fieldName="name" name="db_name" />
+        <field field-name="name" name="db_name" />
 
 Custom Mapping Types
 --------------------
@@ -503,7 +503,7 @@ type in your mapping like this:
 
     .. code-block:: xml
 
-        <field fieldName="field" type="mytype" />
+        <field field-name="field" type="mytype" />
 
 Multiple Document Types in a Collection
 ---------------------------------------

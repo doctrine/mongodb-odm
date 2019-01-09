@@ -48,7 +48,7 @@ the ``@Document`` annotation:
                           http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
             <document name="Documents\Category" collection="collname" capped-collection="true" capped-collection-size="100000" capped-collection-max="1000">
                 <id />
-                <field fieldName="name" type="string" />
+                <field field-name="name" type="string" />
             </document>
         </doctrine-mongo-mapping>
 

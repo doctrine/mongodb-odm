@@ -134,9 +134,9 @@ Now map the same class to the Doctrine MongoDB ODM:
                                   http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <document name="Documents\BlogPost" repository-class="Doctrine\Blog\ODM\MongoDB\BlogPostRepository">
-                <field fieldName="id" type="id" />
-                <field fieldName="name" type="string" />
-                <field fieldName="email" type="text" />
+                <field field-name="id" type="id" />
+                <field field-name="name" type="string" />
+                <field field-name="email" type="text" />
             </document>
         </doctrine-mongo-mapping>
 
