@@ -628,8 +628,8 @@ class XmlDriver extends FileDriver
                 continue;
             }
 
-            if (isset($xmlRoot->{$name}->attributes()['fieldName'])) {
-                $mapping['fieldName'] = (string) $xmlRoot->{$name}->attributes()['fieldName'];
+            if (isset($xmlRoot->{$name}->attributes()['field-name'])) {
+                $mapping['fieldName'] = (string) $xmlRoot->{$name}->attributes()['field-name'];
             }
 
             $this->addFieldMapping($class, $mapping);
