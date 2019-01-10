@@ -2,7 +2,7 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Expr;
 
 class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
@@ -206,7 +206,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('targetDocument' => 'Foo', 'name' => 'foo', 'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
+            ->will($this->returnValue(array('targetDocument' => 'Foo', 'name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);
@@ -239,7 +239,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('name' => 'foo', 'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
+            ->will($this->returnValue(array('name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB)));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);
@@ -272,7 +272,7 @@ class ExprTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->will($this->returnValue($expected));
         $class->expects($this->once())
             ->method('getFieldMapping')
-            ->will($this->returnValue(array('storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, 'name' => 'foo')));
+            ->will($this->returnValue(array('storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'name' => 'foo')));
 
         $expr = new Expr($dm);
         $expr->setClassMetadata($class);

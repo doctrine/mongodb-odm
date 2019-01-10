@@ -3,7 +3,6 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use TestDocuments\PrimedCollectionDocument;
 use PHPUnit\Framework\TestCase;
 
@@ -63,7 +62,7 @@ abstract class AbstractDriverTest extends TestCase
             'nullable' => false,
             'unique' => true,
             'sparse' => true,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['username']);
 
         $this->assertEquals(array(
@@ -85,7 +84,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['createdAt']);
 
         $this->assertEquals(array(
@@ -100,7 +99,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['tags']);
 
         $this->assertEquals(array(
@@ -119,7 +118,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['address']);
 
         $this->assertEquals(array(
@@ -138,7 +137,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
         ), $classMetadata->fieldMappings['phonenumbers']);
 
         $this->assertEquals(array(
@@ -147,7 +146,7 @@ abstract class AbstractDriverTest extends TestCase
             'name' => 'profile',
             'type' => 'one',
             'reference' => true,
-            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_ID,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_ID,
             'simple' => true,
             'targetDocument' => 'Documents\Profile',
             'collectionClass' => null,
@@ -160,7 +159,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
             'inversedBy' => null,
             'mappedBy' => null,
             'repositoryMethod' => null,
@@ -176,7 +175,7 @@ abstract class AbstractDriverTest extends TestCase
             'name' => 'account',
             'type' => 'one',
             'reference' => true,
-            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'simple' => false,
             'targetDocument' => 'Documents\Account',
             'collectionClass' => null,
@@ -189,7 +188,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
             'inversedBy' => null,
             'mappedBy' => null,
             'repositoryMethod' => null,
@@ -205,7 +204,7 @@ abstract class AbstractDriverTest extends TestCase
             'name' => 'groups',
             'type' => 'many',
             'reference' => true,
-            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'simple' => false,
             'targetDocument' => 'Documents\Group',
             'collectionClass' => null,
@@ -218,7 +217,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
             'inversedBy' => null,
             'mappedBy' => null,
             'repositoryMethod' => null,
@@ -258,7 +257,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['name']);
 
         $classMetadata = new ClassMetadata('TestDocuments\QueryResultDocument');
@@ -276,7 +275,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['name']);
 
         $this->assertEquals(array(
@@ -291,7 +290,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_SET,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ), $classMetadata->fieldMappings['count']);
     }
 
@@ -343,7 +342,7 @@ abstract class AbstractDriverTest extends TestCase
             'name' => 'references',
             'type' => 'many',
             'reference' => true,
-            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'simple' => false,
             'targetDocument' => PrimedCollectionDocument::class,
             'collectionClass' => null,
@@ -356,7 +355,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => false,
             'isOwningSide' => true,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
             'inversedBy' => null,
             'mappedBy' => null,
             'repositoryMethod' => null,
@@ -372,7 +371,7 @@ abstract class AbstractDriverTest extends TestCase
             'name' => 'inverseMappedBy',
             'type' => 'many',
             'reference' => true,
-            'storeAs' => ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'simple' => false,
             'targetDocument' => PrimedCollectionDocument::class,
             'collectionClass' => null,
@@ -385,7 +384,7 @@ abstract class AbstractDriverTest extends TestCase
             'isInverseSide' => true,
             'isOwningSide' => false,
             'nullable' => false,
-            'strategy' => ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
             'inversedBy' => null,
             'mappedBy' => 'references',
             'repositoryMethod' => null,

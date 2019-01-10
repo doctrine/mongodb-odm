@@ -23,7 +23,12 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use DOMDocument;
+use SimpleXMLElement;
+use const E_USER_DEPRECATED;
+use function libxml_use_internal_errors;
+use function sprintf;
+use function trigger_error;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -47,8 +52,8 @@ class XmlDriver extends FileDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $class)
     {
-        /* @var $class ClassMetadataInfo */
-        /* @var $xmlRoot \SimpleXMLElement */
+        /* @var $class MappingClassMetadata */
+        /* @var $xmlRoot SimpleXMLElement */
         $xmlRoot = $this->getElement($className);
         if ( ! $xmlRoot) {
             return;
@@ -86,9 +91,14 @@ class XmlDriver extends FileDriver
                 $class->setCollection((string) $xmlRoot['collection']);
             }
         }
-        if (isset($xmlRoot['writeConcern'])) {
+
+        if (isset($xmlRoot['write-concern'])) {
+            $class->setWriteConcern((string) $xmlRoot['write-concern']);
+        } elseif (isset($xmlRoot['writeConcern'])) {
+            @trigger_error(sprintf('The "writeConcern" attribute in the mapping file for class "%s" is deprecated and will be dropped in 2.0. Please use "write-concern" instead.', $class->getName()), E_USER_DEPRECATED);
             $class->setWriteConcern((string) $xmlRoot['writeConcern']);
         }
+
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
             $class->setInheritanceType(constant(MappingClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType));
@@ -135,6 +145,37 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'read-preference'})) {
             $class->setReadPreference(...$this->transformReadPreference($xmlRoot->{'read-preference'}));
         }
+
+        if (isset($xmlRoot->id)) {
+            $field   = $xmlRoot->id;
+            $mapping = [
+                'id' => true,
+                'fieldName' => 'id',
+            ];
+
+            /** @var SimpleXMLElement $attributes */
+            $attributes = $field->attributes();
+            foreach ($attributes as $key => $value) {
+                $mapping[$key] = (string) $value;
+            }
+
+            if (isset($mapping['strategy'])) {
+                $mapping['options'] = [];
+                if (isset($field->{'generator-option'})) {
+                    foreach ($field->{'generator-option'} as $generatorOptions) {
+                        $attributesGenerator = iterator_to_array($generatorOptions->attributes());
+                        if (!isset($attributesGenerator['name']) || !isset($attributesGenerator['value'])) {
+                            continue;
+                        }
+
+                        $mapping['options'][(string)$attributesGenerator['name']] = (string)$attributesGenerator['value'];
+                    }
+                }
+            }
+
+            $this->addFieldMapping($class, $mapping);
+        }
+
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $field) {
                 $mapping = array();
@@ -146,13 +187,21 @@ class XmlDriver extends FileDriver
                         $mapping[$key] = ('true' === $mapping[$key]);
                     }
                 }
-                if (isset($mapping['id']) && $mapping['id'] === true && isset($mapping['strategy'])) {
-                    $mapping['options'] = array();
-                    if (isset($field->{'id-generator-option'})) {
-                        foreach ($field->{'id-generator-option'} as $generatorOptions) {
-                            $attributesGenerator = iterator_to_array($generatorOptions->attributes());
-                            if (isset($attributesGenerator['name']) && isset($attributesGenerator['value'])) {
-                                $mapping['options'][(string) $attributesGenerator['name']] = (string) $attributesGenerator['value'];
+
+
+                if (isset($mapping['id']) && $mapping['id'] === true) {
+                    @trigger_error(sprintf('Using the "id" attribute to denote identifiers in the XML mapping for class "%s" is deprecated and will be removed in 2.0. Please map your identifiers using the "id" element.', $class->getName()), E_USER_DEPRECATED);
+
+                    if (isset($mapping['strategy'])) {
+                        $mapping['options'] = array();
+                        if (isset($field->{'id-generator-option'})) {
+                            foreach ($field->{'id-generator-option'} as $generatorOptions) {
+                                $attributesGenerator = iterator_to_array($generatorOptions->attributes());
+                                if (!isset($attributesGenerator['name']) || !isset($attributesGenerator['value'])) {
+                                    continue;
+                                }
+
+                                $mapping['options'][(string)$attributesGenerator['name']] = (string)$attributesGenerator['value'];
                             }
                         }
                     }
@@ -160,6 +209,19 @@ class XmlDriver extends FileDriver
 
                 if (isset($attributes['not-saved'])) {
                     $mapping['notSaved'] = ('true' === (string) $attributes['not-saved']);
+                }
+
+                if (isset($attributes['field-name'])) {
+                    $mapping['fieldName'] = (string) $attributes['field-name'];
+                } elseif (isset($attributes['fieldName'])) {
+                    @trigger_error(
+                        sprintf(
+                            'Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated. Use the "field-name" attribute instead.',
+                            isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'],
+                            $class->getName()
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 }
 
                 if (isset($attributes['also-load'])) {
@@ -205,7 +267,7 @@ class XmlDriver extends FileDriver
         }
     }
 
-    private function addFieldMapping(ClassMetadataInfo $class, $mapping)
+    private function addFieldMapping(MappingClassMetadata $class, $mapping)
     {
         if (isset($mapping['name'])) {
             $name = $mapping['name'];
@@ -247,10 +309,10 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function addEmbedMapping(ClassMetadataInfo $class, $embed, $type)
+    private function addEmbedMapping(MappingClassMetadata $class, $embed, $type)
     {
         $attributes = $embed->attributes();
-        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type == 'one' ? MappingClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'type'            => $type,
             'embedded'        => true,
@@ -259,9 +321,18 @@ class XmlDriver extends FileDriver
             'name'            => (string) $attributes['field'],
             'strategy'        => isset($attributes['strategy']) ? (string) $attributes['strategy'] : $defaultStrategy,
         );
-        if (isset($attributes['fieldName'])) {
+
+        if (isset($attributes['field-name'])) {
+            $mapping['fieldName'] = (string) $attributes['field-name'];
+        } elseif (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
+
+            @trigger_error(
+                sprintf('Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated. Use the "field-name" attribute instead.', $mapping['name'], $class->getName()),
+                E_USER_DEPRECATED
+            );
         }
+
         if (isset($embed->{'discriminator-field'})) {
             $attr = $embed->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
@@ -284,21 +355,21 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addReferenceMapping(ClassMetadataInfo $class, $reference, $type)
+    private function addReferenceMapping(MappingClassMetadata $class, $reference, $type)
     {
         $cascade = array_keys((array) $reference->cascade);
         if (1 === count($cascade)) {
             $cascade = current($cascade) ?: next($cascade);
         }
         $attributes = $reference->attributes();
-        $defaultStrategy = $type == 'one' ? ClassMetadataInfo::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type == 'one' ? MappingClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping = array(
             'cascade'          => $cascade,
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ('true' === (string) $attributes['orphan-removal']) : false,
             'type'             => $type,
             'reference'        => true,
             'simple'           => isset($attributes['simple']) ? ('true' === (string) $attributes['simple']) : false, // deprecated
-            'storeAs'          => isset($attributes['store-as']) ? (string) $attributes['store-as'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB,
+            'storeAs'          => isset($attributes['store-as']) ? (string) $attributes['store-as'] : MappingClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB,
             'targetDocument'   => isset($attributes['target-document']) ? (string) $attributes['target-document'] : null,
             'collectionClass'  => isset($attributes['collection-class']) ? (string) $attributes['collection-class'] : null,
             'name'             => (string) $attributes['field'],
@@ -311,9 +382,17 @@ class XmlDriver extends FileDriver
             'prime'            => [],
         );
 
-        if (isset($attributes['fieldName'])) {
+        if (isset($attributes['field-name'])) {
+            $mapping['fieldName'] = (string) $attributes['field-name'];
+        } elseif (isset($attributes['fieldName'])) {
             $mapping['fieldName'] = (string) $attributes['fieldName'];
+
+            @trigger_error(
+                sprintf('Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated. Use the "field-name" attribute instead.', $mapping['name'], $class->getName()),
+                E_USER_DEPRECATED
+            );
         }
+
         if (isset($reference->{'discriminator-field'})) {
             $attr = $reference->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
@@ -355,7 +434,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addIndex(ClassMetadataInfo $class, \SimpleXmlElement $xmlIndex)
+    private function addIndex(MappingClassMetadata $class, SimpleXmlElement $xmlIndex)
     {
         $attributes = $xmlIndex->attributes();
 
@@ -428,7 +507,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function getPartialFilterExpression(\SimpleXMLElement $fields)
+    private function getPartialFilterExpression(SimpleXMLElement $fields)
     {
         $partialFilterExpression = [];
         foreach ($fields as $field) {
@@ -463,7 +542,7 @@ class XmlDriver extends FileDriver
         return $partialFilterExpression;
     }
 
-    private function setShardKey(ClassMetadataInfo $class, \SimpleXmlElement $xmlShardkey)
+    private function setShardKey(MappingClassMetadata $class, SimpleXmlElement $xmlShardkey)
     {
         $attributes = $xmlShardkey->attributes();
 
@@ -503,10 +582,9 @@ class XmlDriver extends FileDriver
      *
      * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
      *
-     * @param \SimpleXMLElement $xmlReadPreference
      * @return array
      */
-    private function transformReadPreference($xmlReadPreference)
+    private function transformReadPreference(SimpleXMLElement $xmlReadPreference)
     {
         $tags = null;
         if (isset($xmlReadPreference->{'tag-set'})) {
@@ -528,6 +606,9 @@ class XmlDriver extends FileDriver
     protected function loadMappingFile($file)
     {
         $result = array();
+
+        $this->validateSchema($file);
+
         $xmlElement = simplexml_load_file($file);
 
         foreach (array('document', 'embedded-document', 'mapped-superclass', 'query-result-document') as $type) {
@@ -540,5 +621,23 @@ class XmlDriver extends FileDriver
         }
 
         return $result;
+    }
+
+    private function validateSchema($filename)
+    {
+        $document = new DOMDocument();
+        $document->load($filename);
+
+        $previousUseErrors = libxml_use_internal_errors(true);
+
+        try {
+            if (@$document->schemaValidate(__DIR__ . '/../../../../../../doctrine-mongo-mapping.xsd')) {
+                return;
+            }
+        } finally {
+            libxml_use_internal_errors($previousUseErrors);
+        }
+
+        @trigger_error(sprintf('The mapping file "%s" does not follow the mapping schema. Loading invalid files is deprecated and will no longer work in 2.0', $filename), E_USER_DEPRECATED);
     }
 }

@@ -19,7 +19,6 @@
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;

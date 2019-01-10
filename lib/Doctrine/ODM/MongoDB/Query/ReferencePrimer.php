@@ -21,7 +21,6 @@ namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Proxy\Proxy;
@@ -126,7 +125,7 @@ class ReferencePrimer
         /* Simple reference require a target document class so we can construct
          * the priming query.
          */
-        if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID && empty($mapping['targetDocument'])) {
+        if ($mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID && empty($mapping['targetDocument'])) {
             throw new \LogicException(sprintf('Field "%s" is a simple reference without a target document class in class "%s"', $fieldName, $class->name));
         }
 
@@ -255,15 +254,15 @@ class ReferencePrimer
     {
         $mapping = $persistentCollection->getMapping();
 
-        if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
+        if ($mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID) {
             $className = $mapping['targetDocument'];
             $class = $this->dm->getClassMetadata($className);
         }
 
         foreach ($persistentCollection->getMongoData() as $reference) {
-            $id = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
+            $id = ClassMetadata::getReferenceId($reference, $mapping['storeAs']);
 
-            if ($mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
+            if ($mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID) {
                 $className = $this->uow->getClassNameForAssociation($mapping, $reference);
                 $class = $this->dm->getClassMetadata($className);
             }

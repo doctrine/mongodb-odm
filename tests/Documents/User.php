@@ -86,6 +86,8 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="Documents\ReferenceUser", mappedBy="referencedUsers") */
     protected $embeddedReferenceManyInverse;
 
+    protected $articles = array();
+
     /** @ODM\Field(type="collection") */
     private $logs = array();
 

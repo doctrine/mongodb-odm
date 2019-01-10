@@ -25,7 +25,6 @@ use Doctrine\MongoDB\CursorInterface;
 use Doctrine\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
@@ -736,7 +735,7 @@ class DocumentPersister
 
         foreach ($collection->getMongoData() as $key => $reference) {
             $className = $this->uow->getClassNameForAssociation($mapping, $reference);
-            $mongoId = ClassMetadataInfo::getReferenceId($reference, $mapping['storeAs']);
+            $mongoId = ClassMetadata::getReferenceId($reference, $mapping['storeAs']);
             $id = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($mongoId);
 
             // create a reference to the class and id
@@ -818,7 +817,7 @@ class DocumentPersister
         $ownerClass = $this->dm->getClassMetadata(get_class($owner));
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping = isset($targetClass->fieldMappings[$mapping['mappedBy']]) ? $targetClass->fieldMappings[$mapping['mappedBy']] : array();
-        $mappedByFieldName = ClassMetadataInfo::getReferenceFieldName(isset($mappedByMapping['storeAs']) ? $mappedByMapping['storeAs'] : ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF, $mapping['mappedBy']);
+        $mappedByFieldName = ClassMetadata::getReferenceFieldName(isset($mappedByMapping['storeAs']) ? $mappedByMapping['storeAs'] : ClassMetadata::REFERENCE_STORE_AS_DB_REF, $mapping['mappedBy']);
 
         $criteria = $this->cm->merge(
             array($mappedByFieldName => $ownerClass->getIdentifierObject($owner)),
@@ -1050,7 +1049,7 @@ class DocumentPersister
     {
         $class = isset($class) ? $class : $this->class;
 
-        // @todo Consider inlining calls to ClassMetadataInfo methods
+        // @todo Consider inlining calls to ClassMetadata methods
 
         // Process all non-identifier fields by translating field names
         if ($class->hasField($fieldName) && ! $class->isIdentifier($fieldName)) {
@@ -1078,7 +1077,7 @@ class DocumentPersister
             // No further preparation unless we're dealing with a simple reference
             // We can't have expressions in empty() with PHP < 5.5, so store it in a variable
             $arrayValue = (array) $value;
-            if (empty($mapping['reference']) || $mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID || empty($arrayValue)) {
+            if (empty($mapping['reference']) || $mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID || empty($arrayValue)) {
                 return [[$fieldName, $value]];
             }
 
@@ -1190,8 +1189,8 @@ class DocumentPersister
         $objectPropertyIsId = $targetClass->isIdentifier($objectProperty);
 
         // Prepare DBRef identifiers or the mapped field's property path
-        $fieldName = ($objectPropertyIsId && ! empty($mapping['reference']) && $mapping['storeAs'] !== ClassMetadataInfo::REFERENCE_STORE_AS_ID)
-            ? ClassMetadataInfo::getReferenceFieldName($mapping['storeAs'], $e[0])
+        $fieldName = ($objectPropertyIsId && ! empty($mapping['reference']) && $mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID)
+            ? ClassMetadata::getReferenceFieldName($mapping['storeAs'], $e[0])
             : $e[0] . '.' . $objectPropertyPrefix . $targetMapping['name'];
 
         // Process targetDocument identifier fields
@@ -1226,7 +1225,7 @@ class DocumentPersister
                 $fieldNames = $this->prepareQueryElement($nextObjectProperty, $value, $nextTargetClass, $prepareValue);
             } else {
                 // No recursive processing for references as most probably somebody is querying DBRef or alike
-                if ($nextObjectProperty[0] !== '$' && in_array($targetMapping['storeAs'], [ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB, ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF])) {
+                if ($nextObjectProperty[0] !== '$' && in_array($targetMapping['storeAs'], [ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB, ClassMetadata::REFERENCE_STORE_AS_DB_REF])) {
                     $nextObjectProperty = '$' . $nextObjectProperty;
                 }
                 $fieldNames = [[$nextObjectProperty, $value]];
@@ -1446,20 +1445,20 @@ class DocumentPersister
     private function prepareReference($fieldName, $value, array $mapping, $inNewObj)
     {
         $reference = $this->dm->createReference($value, $mapping);
-        if ($inNewObj || $mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_ID) {
+        if ($inNewObj || $mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID) {
             return [[$fieldName, $reference]];
         }
 
         switch ($mapping['storeAs']) {
-            case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
+            case ClassMetadata::REFERENCE_STORE_AS_REF:
                 $keys = ['id' => true];
                 break;
 
-            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF:
-            case ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB:
+            case ClassMetadata::REFERENCE_STORE_AS_DB_REF:
+            case ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB:
                 $keys = ['$ref' => true, '$id' => true, '$db' => true];
 
-            if ($mapping['storeAs'] === ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF) {
+            if ($mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_DB_REF) {
                     unset($keys['$db']);
                 }
 

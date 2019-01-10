@@ -215,7 +215,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return new ClassMetadata($className);
     }
 
-    private function completeIdGeneratorMapping(ClassMetadataInfo $class)
+    private function completeIdGeneratorMapping(ClassMetadata $class)
     {
         $idGenOptions = $class->generatorOptions;
         switch ($class->generatorType) {

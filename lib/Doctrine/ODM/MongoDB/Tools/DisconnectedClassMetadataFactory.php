@@ -20,7 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * The DisconnectedClassMetadataFactory is used to create ClassMetadata objects
@@ -37,7 +37,7 @@ class DisconnectedClassMetadataFactory extends ClassMetadataFactory
      */
     protected function newClassMetadataInstance($className)
     {
-        $metadata = new ClassMetadataInfo($className);
+        $metadata = new ClassMetadata($className);
         if (strpos($className, "\\") !== false) {
             $metadata->namespace = strrev(substr( strrev($className), strpos(strrev($className), "\\")+1 ));
         } else {

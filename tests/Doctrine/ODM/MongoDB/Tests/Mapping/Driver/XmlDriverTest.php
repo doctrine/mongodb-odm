@@ -2,9 +2,10 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
-use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
+use TestDocuments\UserCustomIdGenerator;
+use TestDocuments\UserCustomIdGeneratorWithIdField;
 
 class XmlDriverTest extends AbstractDriverTest
 {
@@ -13,10 +14,19 @@ class XmlDriverTest extends AbstractDriverTest
         $this->driver = new XmlDriver(__DIR__ . '/fixtures/xml');
     }
 
-    public function testDriverShouldReturnOptionsForCustomIdGenerator()
+    public static function getCustomIdGeneratorClasses()
     {
-        $classMetadata = new ClassMetadata('TestDocuments\UserCustomIdGenerator');
-        $this->driver->loadMetadataForClass('TestDocuments\UserCustomIdGenerator', $classMetadata);
+        yield 'legacy-id-attribute' => [UserCustomIdGenerator::class];
+        yield 'id-element' => [UserCustomIdGeneratorWithIdField::class];
+    }
+
+    /**
+     * @dataProvider getCustomIdGeneratorClasses
+     */
+    public function testDriverShouldReturnOptionsForCustomIdGenerator($className)
+    {
+        $classMetadata = new ClassMetadata($className);
+        $this->driver->loadMetadataForClass($className, $classMetadata);
         $this->assertEquals(array(
             'fieldName' => 'id',
             'strategy' => 'custom',
@@ -47,11 +57,11 @@ class XmlDriverTest extends AbstractDriverTest
         $this->assertFalse($classMetadata->slaveOkay);
 
         $profileMapping = $classMetadata->fieldMappings['profile'];
-        $this->assertSame(ClassMetadataInfo::REFERENCE_STORE_AS_ID, $profileMapping['storeAs']);
+        $this->assertSame(ClassMetadata::REFERENCE_STORE_AS_ID, $profileMapping['storeAs']);
         $this->assertTrue($profileMapping['orphanRemoval']);
 
         $profileMapping = $classMetadata->fieldMappings['groups'];
-        $this->assertSame(ClassMetadataInfo::REFERENCE_STORE_AS_DB_REF_WITH_DB, $profileMapping['storeAs']);
+        $this->assertSame(ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB, $profileMapping['storeAs']);
         $this->assertFalse($profileMapping['orphanRemoval']);
         $this->assertSame(0, $profileMapping['limit']);
         $this->assertSame(2, $profileMapping['skip']);
@@ -82,6 +92,11 @@ class XmlDriverTest extends AbstractDriverTest
 namespace TestDocuments;
 
 class UserCustomIdGenerator
+{
+    protected $id;
+}
+
+class UserCustomIdGeneratorWithIdField
 {
     protected $id;
 }

@@ -110,7 +110,7 @@ of several common elements:
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
     
         <document name="Documents\User" db="documents" collection="users">
-            <field fieldName="id" id="true" />
+            <id />
             <field fieldName="username" name="login" type="string" />
             <field fieldName="email" type="string" unique="true" order="desc" />
             <field fieldName="createdAt" type="date" />

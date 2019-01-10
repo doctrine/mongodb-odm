@@ -21,7 +21,7 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -104,17 +104,17 @@ class CollectionPersister
         }
 
         switch ($mapping['strategy']) {
-            case ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET:
-            case ClassMetadataInfo::STORAGE_STRATEGY_ATOMIC_SET_ARRAY:
+            case ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET:
+            case ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY:
                 throw new \UnexpectedValueException($mapping['strategy'] . ' update collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
 
-            case ClassMetadataInfo::STORAGE_STRATEGY_SET:
-            case ClassMetadataInfo::STORAGE_STRATEGY_SET_ARRAY:
+            case ClassMetadata::STORAGE_STRATEGY_SET:
+            case ClassMetadata::STORAGE_STRATEGY_SET_ARRAY:
                 $this->setCollection($coll, $options);
                 break;
 
-            case ClassMetadataInfo::STORAGE_STRATEGY_ADD_TO_SET:
-            case ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL:
+            case ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET:
+            case ClassMetadata::STORAGE_STRATEGY_PUSH_ALL:
                 $coll->initialize();
                 $this->deleteElements($coll, $options);
                 $this->insertElements($coll, $options);
@@ -202,11 +202,11 @@ class CollectionPersister
         $mapping = $coll->getMapping();
 
         switch ($mapping['strategy']) {
-            case ClassMetadataInfo::STORAGE_STRATEGY_PUSH_ALL:
+            case ClassMetadata::STORAGE_STRATEGY_PUSH_ALL:
                 $operator = 'push';
                 break;
 
-            case ClassMetadataInfo::STORAGE_STRATEGY_ADD_TO_SET:
+            case ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET:
                 $operator = 'addToSet';
                 break;
 

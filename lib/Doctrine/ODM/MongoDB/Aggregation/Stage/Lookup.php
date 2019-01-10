@@ -24,7 +24,6 @@ use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
@@ -111,9 +110,9 @@ class Lookup extends BaseStage\Lookup
 
         if ($referenceMapping['isOwningSide']) {
             switch ($referenceMapping['storeAs']) {
-                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($referenceMapping['storeAs'], $referenceMapping['name']);
+                case ClassMetadata::REFERENCE_STORE_AS_ID:
+                case ClassMetadata::REFERENCE_STORE_AS_REF:
+                    $referencedFieldName = ClassMetadata::getReferenceFieldName($referenceMapping['storeAs'], $referenceMapping['name']);
                     break;
 
                 default:
@@ -130,9 +129,9 @@ class Lookup extends BaseStage\Lookup
 
             $mappedByMapping = $this->targetClass->getFieldMapping($referenceMapping['mappedBy']);
             switch ($mappedByMapping['storeAs']) {
-                case ClassMetadataInfo::REFERENCE_STORE_AS_ID:
-                case ClassMetadataInfo::REFERENCE_STORE_AS_REF:
-                    $referencedFieldName = ClassMetadataInfo::getReferenceFieldName($mappedByMapping['storeAs'], $mappedByMapping['name']);
+                case ClassMetadata::REFERENCE_STORE_AS_ID:
+                case ClassMetadata::REFERENCE_STORE_AS_REF:
+                    $referencedFieldName = ClassMetadata::getReferenceFieldName($mappedByMapping['storeAs'], $mappedByMapping['name']);
                     break;
 
                 default:

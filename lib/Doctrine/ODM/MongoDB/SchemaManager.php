@@ -21,7 +21,6 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 
 class SchemaManager
 {
@@ -193,7 +192,7 @@ class SchemaManager
                     $newKeys = array();
                     foreach ($index['keys'] as $key => $v) {
                         if ($key == $fieldMapping['name']) {
-                            $key = ClassMetadataInfo::getReferenceFieldName($fieldMapping['storeAs'], $key);
+                            $key = ClassMetadata::getReferenceFieldName($fieldMapping['storeAs'], $key);
                         }
                         $newKeys[$key] = $v;
                     }
@@ -689,7 +688,7 @@ class SchemaManager
                 $fieldName = $mapping['name'];
 
                 if ($class->isSingleValuedReference($key)) {
-                    $fieldName = ClassMetadataInfo::getReferenceFieldName($mapping['storeAs'], $fieldName);
+                    $fieldName = ClassMetadata::getReferenceFieldName($mapping['storeAs'], $fieldName);
                 }
             } else {
                 $fieldName = $key;

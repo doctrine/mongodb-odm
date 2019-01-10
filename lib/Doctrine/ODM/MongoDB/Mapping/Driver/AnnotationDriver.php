@@ -27,7 +27,6 @@ use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnot
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 
 /**
@@ -65,7 +64,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $class)
     {
-        /** @var $class ClassMetadataInfo */
+        /** @var $class MappingClassMetadata */
         $reflClass = $class->getReflectionClass();
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
@@ -258,7 +257,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
     }
 
-    private function addIndex(ClassMetadataInfo $class, $index, array $keys = array())
+    private function addIndex(MappingClassMetadata $class, $index, array $keys = array())
     {
         $keys = array_merge($keys, $index->keys);
         $options = array();
@@ -276,12 +275,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     * @param ClassMetadataInfo $class
-     * @param ODM\ShardKey      $shardKey
+     * @param MappingClassMetadata $class
+     * @param ODM\ShardKey         $shardKey
      *
      * @throws MappingException
      */
-    private function setShardKey(ClassMetadataInfo $class, ODM\ShardKey $shardKey)
+    private function setShardKey(MappingClassMetadata $class, ODM\ShardKey $shardKey)
     {
         $options = array();
         $allowed = array('unique', 'numInitialChunks');
