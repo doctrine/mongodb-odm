@@ -48,3 +48,10 @@ in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
    will be dropped in 2.0. Use `write-concern` instead.
  * The `fieldName` attribute in field mappings has been deprecated and will be
    dropped in 2.0. Use `field-name` instead.
+   
+### Full discriminator maps required
+
+When using a discriminator map on a reference or embedded relationship,
+persisting or loading a class that is not in the map is deprecated and will
+cause an exception in 2.0. The discriminator map must contain all possible
+classes that can be referenced or be omitted completely.
