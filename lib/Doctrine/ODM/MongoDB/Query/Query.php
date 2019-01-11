@@ -27,6 +27,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
@@ -104,6 +107,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null, $readOnly = false)
     {
         $primers = array_filter($primers);
+
+        if (isset($query['eagerCursor'])) {
+            @trigger_error(sprintf('The "eagerCursor" option for "%s" is deprecated and will be removed in 2.0.', self::class), E_USER_DEPRECATED);
+        }
 
         if ( ! empty($primers)) {
             $query['eagerCursor'] = true;

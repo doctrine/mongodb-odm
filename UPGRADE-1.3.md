@@ -55,3 +55,11 @@ When using a discriminator map on a reference or embedded relationship,
 persisting or loading a class that is not in the map is deprecated and will
 cause an exception in 2.0. The discriminator map must contain all possible
 classes that can be referenced or be omitted completely.
+
+## Queries
+
+ * The `eagerCursor` method in `Doctrine\ODM\MongoDB\Query\Builder` was
+   deprecated and will be dropped in 2.0. This functionality is no longer
+   available.
+ * The `eager` option in `Doctrine\ODM\MongoDB\Query\Query` was deprecated and
+   will be dropped in 2.0. This functionality is no longer available.
