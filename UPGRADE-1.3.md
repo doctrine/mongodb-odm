@@ -91,3 +91,5 @@ set.
  * The `timeout` option in the `odm:schema:create` and `odm:schema:update`
    commands was deprecated and will be dropped in 2.0. Use the `maxTimeMs`
    option instead.
+ * The `indexOptions` argument in the `ensureSharding` and
+   `ensureDocumentSharding` methods was deprecated and will be dropped in 2.0.

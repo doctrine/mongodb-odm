@@ -21,6 +21,9 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 class SchemaManager
 {
@@ -591,6 +594,10 @@ class SchemaManager
      */
     public function ensureSharding(array $indexOptions = array())
     {
+        if (! empty($indexOptions)) {
+            @trigger_error(sprintf('The "indexOptions" argument in "%s" is deprecated and will be removed in 2.0.', __METHOD__), E_USER_DEPRECATED);
+        }
+
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || !$class->isSharded()) {
                 continue;
@@ -610,6 +617,10 @@ class SchemaManager
      */
     public function ensureDocumentSharding($documentName, array $indexOptions = array())
     {
+        if (! empty($indexOptions)) {
+            @trigger_error(sprintf('The "indexOptions" argument in "%s" is deprecated and will be removed in 2.0.', __METHOD__), E_USER_DEPRECATED);
+        }
+
         $class = $this->dm->getClassMetadata($documentName);
         if ( ! $class->isSharded()) {
             return;
