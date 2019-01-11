@@ -47,6 +47,9 @@ in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
  * The `@NotSaved` annotation was deprecated and will be dropped in 2.0. Use the
    `notSaved` option on the `@Field`, `@ReferenceOne`, `@ReferenceMany`,
    `@EmbedOne` or `@EmbedMany` annotations instead.
+ * Using more than one class-level document annotation (e.g. `@Document`,
+   `@MappedSuperclass`) is deprecated and will throw an exception in 2.0.
+   Classes should only be annotated with a single document annotation.
 
 ### XML mappings
 
