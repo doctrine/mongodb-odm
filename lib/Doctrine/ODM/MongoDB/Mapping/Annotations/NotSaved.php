@@ -23,8 +23,19 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
  * Specifies that a field will not be written to the database
  *
  * @Annotation
+ * @deprecated This class will be removed in ODM 2.0. Use `@ODM\Field(notSaved=true)` instead.
  */
 final class NotSaved extends AbstractField
 {
     public $notSaved = true;
+
+    public function isDeprecated()
+    {
+        return true;
+    }
+
+    public function getDeprecationMessage()
+    {
+        return sprintf('%s will be removed in ODM 2.0. Use `@ODM\Field(notSaved="true")` instead.', get_class($this));
+    }
 }

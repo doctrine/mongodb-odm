@@ -220,15 +220,15 @@ class AlsoLoadDocument
     public $foo;
 
     /**
-     * @ODM\NotSaved
+     * @ODM\Field(notSaved=true)
      * @ODM\AlsoLoad({"zip", "bar"})
      */
     public $baz;
 
-    /** @ODM\NotSaved */
+    /** @ODM\Field(notSaved=true) */
     public $bar;
 
-    /** @ODM\NotSaved */
+    /** @ODM\Field(notSaved=true) */
     public $zip;
 
     /**
@@ -237,10 +237,10 @@ class AlsoLoadDocument
      */
     public $zap = 'zap';
 
-    /** @ODM\NotSaved */
+    /** @ODM\Field(notSaved=true) */
     public $name;
 
-    /** @ODM\NotSaved */
+    /** @ODM\Field(notSaved=true) */
     public $fullName;
 
     /** @ODM\Field(type="string") */
@@ -255,13 +255,13 @@ class AlsoLoadDocument
      */
     public $test = 'test';
 
-    /** @ODM\NotSaved */
+    /** @ODM\Field(notSaved=true) */
     public $testNew;
 
-    /** @ODM\NotSaved */
+    /** @ODM\Field(notSaved=true) */
     public $testOld;
 
-    /** @ODM\NotSaved */
+    /** @ODM\Field(notSaved=true) */
     public $testOlder;
 
     /** @ODM\AlsoLoad({"name", "fullName"}) */

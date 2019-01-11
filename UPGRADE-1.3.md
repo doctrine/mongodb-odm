@@ -42,6 +42,12 @@ The `Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo` class has been deprecated
 in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
 2.0.
 
+### Annotation mappings
+
+ * The `@NotSaved` annotation was deprecated and will be dropped in 2.0. Use the
+   `notSaved` option on the `@Field`, `@ReferenceOne`, `@ReferenceMany`,
+   `@EmbedOne` or `@EmbedMany` annotations instead.
+
 ### XML mappings
 
  * The `writeConcern` attribute in document mappings has been deprecated and

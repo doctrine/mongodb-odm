@@ -456,6 +456,9 @@ Optional attributes:
 -
     collectionClass - A |FQCN| of class that implements ``Collection`` interface
     and is used to hold documents. Doctrine's ``ArrayCollection`` is used by default.
+-
+    ``notSaved`` - The property is loaded if it exists in the database; however,
+    ODM will not save the property value back to the database.
 
 .. code-block:: php
 
@@ -507,6 +510,9 @@ Optional attributes:
 -
     defaultDiscriminatorValue - A default value for discriminatorField if no value
     has been set in the embedded document.
+-
+    ``notSaved`` - The property is loaded if it exists in the database; however,
+    ODM will not save the property value back to the database.
 
 .. code-block:: php
 
@@ -600,6 +606,9 @@ Optional attributes:
    nullable - By default, ODM will ``$unset`` fields in MongoDB if the PHP value
    is null. Specify true for this option to force ODM to store a null value in
    the database instead of unsetting the field.
+-
+   ``notSaved`` - The property is loaded if it exists in the database; however,
+   ODM will not save the property value back to the database.
 
 Examples:
 
@@ -642,11 +651,11 @@ persisted, ODM will convert it to GridFSFile object automatically.
     private $file;
 
 Additional fields can be mapped in GridFS documents like any other, but metadata
-fields set by the driver (e.g. ``length``) should be mapped with `@NotSaved`_ so
-as not to inadvertently overwrite them. Some metadata fields, such as
-``filename`` may be modified and do not require `@NotSaved`_. In the following
-example, we also add a custom field to refer to the corresponding User document
-that created the file.
+fields set by the driver (e.g. ``length``) should be mapped with the
+``NotSaved`` option so as not to inadvertently overwrite them. Some metadata
+fields, such as ``filename`` may be modified and do not require ``NotSaved``. In
+the following example, we also add a custom field to refer to the corresponding
+User document that created the file.
 
 .. code-block:: php
 
@@ -655,13 +664,13 @@ that created the file.
     /** @Field(type="string") */
     private $filename;
 
-    /** @NotSaved(type="int") */
+    /** @Field(type="int", notSaved=true) */
     private $length;
 
-    /** @NotSaved(type="string") */
+    /** @Field(type="string", notSaved=true) */
     private $md5;
 
-    /** @NotSaved(type="date") */
+    /** @Field(type="date", notSaved=true) */
     private $uploadDate;
 
     /** @ReferenceOne(targetDocument="Documents\User") */
@@ -977,8 +986,22 @@ MongoDB; however, ODM will not save the property value back to the database.
 
     <?php
 
-    /** @NotSaved */
+    /**
+     * Legacy notation
+     * @NotSaved
+     */
+    public $legacyField;
+
+    /**
+     * ODM 2.0 compatible notation
+     * @Field(notSaved=true)
+     */
     public $field;
+
+.. note::
+
+    This annotation is deprecated. Use the `@Field`_ annotation with the
+    ``notSaved`` option instead.
 
 @PostLoad
 ---------
@@ -1292,6 +1315,9 @@ Optional attributes:
     prime - A list of references contained in the target document that will be
     initialized when the collection is loaded. Only allowed for inverse
     references.
+-
+    ``notSaved`` - The property is loaded if it exists in the database; however,
+    ODM will not save the property value back to the database.
 
 .. code-block:: php
 
@@ -1357,6 +1383,9 @@ Optional attributes:
     limit - Limit for the query that loads the reference.
 -
     skip - Skip for the query that loads the reference.
+-
+    ``notSaved`` - The property is loaded if it exists in the database; however,
+    ODM will not save the property value back to the database.
 
 .. code-block:: php
 

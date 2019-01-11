@@ -642,7 +642,7 @@ document with a text index:
             /** @Field(type="string") */
             public $description;
 
-            /** @Field(type="float") @NotSaved */
+            /** @Field(type="float", notSaved=true) */
             public $score;
         }
 
