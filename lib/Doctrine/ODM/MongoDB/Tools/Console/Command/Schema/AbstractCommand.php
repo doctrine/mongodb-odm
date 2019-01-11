@@ -21,6 +21,8 @@ namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 abstract class AbstractCommand extends Command
 {
@@ -62,5 +64,35 @@ abstract class AbstractCommand extends Command
     protected function getMetadataFactory()
     {
         return $this->getDocumentManager()->getMetadataFactory();
+    }
+
+    protected function addTimeoutOptions()
+    {
+        $this
+            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged commands. This option is deprecated and will be dropped in 2.0. Use the maxTimeMs option instead.')
+            ->addOption('maxTimeMs', null, InputOption::VALUE_REQUIRED, 'An optional maxTimeMs that will be used for all schema operations.');
+
+        return $this;
+    }
+
+    /**
+     * Returns the appropriate timeout value
+     *
+     * @return int|null
+     */
+    protected function getTimeout(InputInterface $input)
+    {
+        $maxTimeMs = $input->getOption('maxTimeMs');
+        $timeout = $input->getOption('timeout');
+
+        if (isset($maxTimeMs)) {
+            return (int) $maxTimeMs;
+        } elseif (! isset($timeout)) {
+            return null;
+        }
+
+        @trigger_error(sprintf('The "timeout" option for command "%s" is deprecated and will be removed in 2.0. Use the maxTimeMs option instead.', static::class), E_USER_DEPRECATED);
+
+        return (int) $timeout;
     }
 }

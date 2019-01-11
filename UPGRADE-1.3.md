@@ -79,3 +79,9 @@ set.
    available.
  * The `eager` option in `Doctrine\ODM\MongoDB\Query\Query` was deprecated and
    will be dropped in 2.0. This functionality is no longer available.
+   
+## Schema manager
+
+ * The `timeout` option in the `odm:schema:create` and `odm:schema:update`
+   commands was deprecated and will be dropped in 2.0. Use the `maxTimeMs`
+   option instead.
