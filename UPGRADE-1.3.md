@@ -62,6 +62,13 @@ persisting or loading a class that is not in the map is deprecated and will
 cause an exception in 2.0. The discriminator map must contain all possible
 classes that can be referenced or be omitted completely.
 
+### Duplicate field names in mappings
+
+Mapping two fields with the same name in the database is deprecated and will
+cause an exception in 2.0. It is possible to have multiple fields with the same
+name in the database as long as all but one of them have the `notSaved` option
+set.
+
 ## Queries
 
  * The `eagerCursor` method in `Doctrine\ODM\MongoDB\Query\Builder` was

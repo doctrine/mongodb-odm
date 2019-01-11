@@ -26,7 +26,10 @@ use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
+use const E_USER_DEPRECATED;
 use function class_exists;
+use function sprintf;
+use function trigger_error;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -1523,6 +1526,7 @@ class ClassMetadata implements BaseClassMetadata
         }
 
         $this->applyStorageStrategy($mapping);
+        $this->checkDuplicateMapping($mapping);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         if (isset($mapping['association'])) {
@@ -2387,6 +2391,42 @@ class ClassMetadata implements BaseClassMetadata
     public function newInstance()
     {
         return $this->instantiator->instantiate($this->name);
+    }
+
+    private function checkDuplicateMapping(array $mapping)
+    {
+        if (! empty($mapping['notSaved'])) {
+            return;
+        }
+
+        foreach ($this->fieldMappings as $fieldName => $otherMapping) {
+            // Ignore fields with the same name - we can safely override their mapping
+            if ($mapping['fieldName'] === $fieldName) {
+                continue;
+            }
+
+            // Ignore fields with a different name in the database
+            if ($mapping['name'] !== $otherMapping['name']) {
+                continue;
+            }
+
+            // If the other field is not saved, ignore it as well
+            if (! empty($otherMapping['notSaved'])) {
+                continue;
+            }
+
+
+            @trigger_error(
+                sprintf(
+                    'Field "%s" in class "%s" is mapped to field "%s" in the database, but that name is already in use by field "%s". This is deprecated and will cause an exception in 2.0.',
+                    $mapping['fieldName'],
+                    $this->getName(),
+                    $mapping['name'],
+                    $fieldName
+                ),
+                E_USER_DEPRECATED
+            );
+        }
     }
 }
 
