@@ -49,7 +49,8 @@ You can customize the index with some additional options:
    too long.
 - 
    **dropDups** - If a unique index is being created and duplicate
-   values exist, drop all but one duplicate value.
+   values exist, drop all but one duplicate value. This option is deprecated and
+   will be dropped without replacement in 2.0.
 - 
    **background** - Create indexes in the background while other
    operations are taking place. By default, index creation happens

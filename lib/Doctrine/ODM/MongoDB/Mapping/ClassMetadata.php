@@ -889,6 +889,10 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function addIndex($keys, array $options = array())
     {
+        if (isset($options['dropDups'])) {
+            @trigger_error(sprintf('Ths "dropDups" option on indexes is deprecated and will be dropped in 2.0. Remove the "dropDups" options in class "%s".', $this->getName()), E_USER_DEPRECATED);
+        }
+
         $this->indexes[] = array(
             'keys' => array_map(function($value) {
                 if ($value == 1 || $value == -1) {

@@ -50,6 +50,9 @@ in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
  * Using more than one class-level document annotation (e.g. `@Document`,
    `@MappedSuperclass`) is deprecated and will throw an exception in 2.0.
    Classes should only be annotated with a single document annotation.
+ * The `dropDups` option on the `@Index` annotation was deprecated and will be 
+   dropped without replacement in 2.0. This functionality is no longer
+   available.
 
 ### XML mappings
 
@@ -57,6 +60,9 @@ in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
    will be dropped in 2.0. Use `write-concern` instead.
  * The `fieldName` attribute in field mappings has been deprecated and will be
    dropped in 2.0. Use `field-name` instead.
+ * The `drop-dups` attribute in the `index` element was deprecated and will be
+   dropped without replacement in 2.0. This functionality is no longer
+   available.
    
 ### Full discriminator maps required
 
