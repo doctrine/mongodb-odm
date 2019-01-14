@@ -20,8 +20,10 @@
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Hydrator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * Query builder for ODM.
@@ -177,6 +179,8 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     public function eagerCursor($bool = true)
     {
+        @trigger_error(sprintf('Ths "%s" method is deprecated and will be removed in 2.0.', __METHOD__), E_USER_DEPRECATED);
+
         if ( ! $bool && ! empty($this->primers)) {
             throw new \BadMethodCallException("Can't set eagerCursor to false when using reference primers");
         }

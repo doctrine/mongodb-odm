@@ -28,6 +28,10 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as MappingClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use ReflectionClass;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -57,6 +61,18 @@ class AnnotationDriver extends AbstractAnnotationDriver
             E_USER_DEPRECATED
         );
         AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
+    }
+
+    public function isTransient($className)
+    {
+        $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
+
+        foreach ($classAnnotations as $annot) {
+            if ($annot instanceof ODM\AbstractDocument) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -121,8 +137,19 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         }
 
-        if ( ! $documentAnnots) {
-            throw MappingException::classIsNotAValidDocument($className);
+        switch (count($documentAnnots)) {
+            case 0:
+                throw MappingException::classIsNotAValidDocument($className);
+
+            case 1:
+                // Everything is good
+                break;
+
+            default:
+                @trigger_error(
+                    sprintf('Class "%s" uses more than one document annotation. This is deprecated and will cause an exception in 2.0.', $className),
+                    E_USER_DEPRECATED
+                );
         }
 
         // find the winning document annotation

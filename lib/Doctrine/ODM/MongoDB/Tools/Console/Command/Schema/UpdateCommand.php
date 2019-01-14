@@ -33,7 +33,7 @@ class UpdateCommand extends AbstractCommand
         $this
             ->setName('odm:schema:update')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
-            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
+            ->addTimeoutOptions()
             ->setDescription('Update indexes for your documents')
         ;
     }
@@ -47,8 +47,7 @@ class UpdateCommand extends AbstractCommand
     {
         $class = $input->getOption('class');
 
-        $timeout = $input->getOption('timeout');
-        $this->timeout = isset($timeout) ? (int) $timeout : null;
+        $this->timeout = $this->getTimeout($input);
 
         $sm = $this->getSchemaManager();
         $isErrored = false;

@@ -19,13 +19,13 @@ class File
     /** @ODM\Field(type="string") */
     private $filename;
 
-    /** @ODM\NotSaved(type="int") */
+    /** @ODM\Field(type="int", notSaved=true) */
     private $length;
 
-    /** @ODM\NotSaved(type="string") */
+    /** @ODM\Field(type="string", notSaved=true) */
     private $md5;
 
-    /** @ODM\NotSaved(type="date") */
+    /** @ODM\Field(type="date", notSaved=true) */
     private $uploadDate;
 
     public function getId()

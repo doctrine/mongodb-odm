@@ -29,6 +29,9 @@ abstract class AbstractField extends Annotation
     public $options = array();
     public $strategy;
 
+    /** @var bool */
+    public $notSaved = false;
+
     /**
      * Gets deprecation message. The method *WILL* be removed in 2.0.
      *

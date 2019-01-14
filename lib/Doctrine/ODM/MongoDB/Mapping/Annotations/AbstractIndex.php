@@ -25,6 +25,7 @@ abstract class AbstractIndex extends Annotation
 {
     public $keys = array();
     public $name;
+    /** @deprecated  */
     public $dropDups;
     public $background;
     public $safe;

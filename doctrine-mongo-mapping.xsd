@@ -377,6 +377,7 @@
       <xs:element name="partial-filter-expression" type="odm:partial-filter-expression" minOccurs="0" maxOccurs="1"/>
     </xs:choice>
     <xs:attribute name="name" type="xs:NMTOKEN"/>
+    <!-- deprecated -->
     <xs:attribute name="drop-dups" type="xs:boolean"/>
     <xs:attribute name="background" type="xs:boolean"/>
     <xs:attribute name="safe" type="xs:boolean"/>

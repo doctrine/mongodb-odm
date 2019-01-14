@@ -42,9 +42,54 @@ The `Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo` class has been deprecated
 in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
 2.0.
 
+### Annotation mappings
+
+ * The `@NotSaved` annotation was deprecated and will be dropped in 2.0. Use the
+   `notSaved` option on the `@Field`, `@ReferenceOne`, `@ReferenceMany`,
+   `@EmbedOne` or `@EmbedMany` annotations instead.
+ * Using more than one class-level document annotation (e.g. `@Document`,
+   `@MappedSuperclass`) is deprecated and will throw an exception in 2.0.
+   Classes should only be annotated with a single document annotation.
+ * The `dropDups` option on the `@Index` annotation was deprecated and will be 
+   dropped without replacement in 2.0. This functionality is no longer
+   available.
+
 ### XML mappings
 
  * The `writeConcern` attribute in document mappings has been deprecated and
    will be dropped in 2.0. Use `write-concern` instead.
  * The `fieldName` attribute in field mappings has been deprecated and will be
    dropped in 2.0. Use `field-name` instead.
+ * The `drop-dups` attribute in the `index` element was deprecated and will be
+   dropped without replacement in 2.0. This functionality is no longer
+   available.
+   
+### Full discriminator maps required
+
+When using a discriminator map on a reference or embedded relationship,
+persisting or loading a class that is not in the map is deprecated and will
+cause an exception in 2.0. The discriminator map must contain all possible
+classes that can be referenced or be omitted completely.
+
+### Duplicate field names in mappings
+
+Mapping two fields with the same name in the database is deprecated and will
+cause an exception in 2.0. It is possible to have multiple fields with the same
+name in the database as long as all but one of them have the `notSaved` option
+set.
+
+## Queries
+
+ * The `eagerCursor` method in `Doctrine\ODM\MongoDB\Query\Builder` was
+   deprecated and will be dropped in 2.0. This functionality is no longer
+   available.
+ * The `eager` option in `Doctrine\ODM\MongoDB\Query\Query` was deprecated and
+   will be dropped in 2.0. This functionality is no longer available.
+   
+## Schema manager
+
+ * The `timeout` option in the `odm:schema:create` and `odm:schema:update`
+   commands was deprecated and will be dropped in 2.0. Use the `maxTimeMs`
+   option instead.
+ * The `indexOptions` argument in the `ensureSharding` and
+   `ensureDocumentSharding` methods was deprecated and will be dropped in 2.0.

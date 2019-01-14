@@ -29,6 +29,9 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Proxy\ProxyFactory;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -729,39 +732,70 @@ class DocumentManager implements ObjectManager
                 throw new \InvalidArgumentException("Reference type {$storeAs} is invalid.");
         }
 
-        /* If the class has a discriminator (field and value), use it. A child
-         * class that is not defined in the discriminator map may only have a
-         * discriminator field and no value, so default to the full class name.
-         */
-        if (isset($class->discriminatorField)) {
-            $reference[$class->discriminatorField] = isset($class->discriminatorValue)
-                ? $class->discriminatorValue
-                : $class->name;
+        return $reference + $this->getDiscriminatorData($referenceMapping, $class);
+    }
+
+    /**
+     * Build discriminator portion of reference for specified reference mapping and class metadata.
+     *
+     * @param array         $referenceMapping Mappings of reference for which discriminator data is created.
+     * @param ClassMetadata $class            Metadata of reference document class.
+     *
+     * @return array with next structure [{discriminator field} => {discriminator value}]
+     *
+     * @throws MappingException When discriminator map is present and reference class in not registered in it.
+     */
+    private function getDiscriminatorData(array $referenceMapping, ClassMetadata $class)
+    {
+        $discriminatorField = null;
+        $discriminatorValue = null;
+        $discriminatorData  = [];
+
+        if (isset($referenceMapping['discriminatorField'])) {
+            $discriminatorField = $referenceMapping['discriminatorField'];
+            if (isset($referenceMapping['discriminatorMap'])) {
+                $pos = array_search($class->name, $referenceMapping['discriminatorMap']);
+                if ($pos !== false) {
+                    $discriminatorValue = $pos;
+                }
+            } else {
+                $discriminatorValue = $class->name;
+            }
+        } else {
+            $discriminatorField = $class->discriminatorField;
+            $discriminatorValue = isset($class->discriminatorValue) ? $class->discriminatorValue : $class->name;
         }
 
-        /* Add a discriminator value if the referenced document is not mapped
-         * explicitly to a targetDocument class.
-         */
-        if (! isset($referenceMapping['targetDocument'])) {
-            $discriminatorField = $referenceMapping['discriminatorField'];
-            $discriminatorValue = isset($referenceMapping['discriminatorMap'])
-                ? array_search($class->name, $referenceMapping['discriminatorMap'])
-                : $class->name;
-
-            /* If the discriminator value was not found in the map, use the full
-             * class name. In the future, it may be preferable to throw an
-             * exception here (perhaps based on some strictness option).
-             *
-             * @see PersistenceBuilder::prepareEmbeddedDocumentValue()
-             */
-            if ($discriminatorValue === false) {
+        if ($discriminatorField !== null) {
+            if ($discriminatorValue === null) {
+                @trigger_error(sprintf('Document class "%s" is unlisted in the discriminator map for reference "%s". This is deprecated and will throw an exception in 2.0.', $class->name, $referenceMapping['name']), E_USER_DEPRECATED);
                 $discriminatorValue = $class->name;
             }
 
-            $reference[$discriminatorField] = $discriminatorValue;
+            $discriminatorData = [$discriminatorField => $discriminatorValue];
+        } elseif (! isset($referenceMapping['targetDocument'])) {
+            $discriminatorField = $referenceMapping['discriminatorField'];
+
+            $discriminatorMap = null;
+            if (isset($referenceMapping['discriminatorMap'])) {
+                $discriminatorMap = $referenceMapping['discriminatorMap'];
+            }
+
+            if ($discriminatorMap === null) {
+                $discriminatorValue = $class->name;
+            } else {
+                $discriminatorValue = array_search($class->name, $discriminatorMap);
+
+                if ($discriminatorValue === false) {
+                    @trigger_error(sprintf('Document class "%s" is unlisted in the discriminator map for reference "%s". This is deprecated and will throw an exception in 2.0.', $class->name, $referenceMapping['name']), E_USER_DEPRECATED);
+                    $discriminatorValue = $class->name;
+                }
+            }
+
+            $discriminatorData = [$discriminatorField => $discriminatorValue];
         }
 
-        return $reference;
+        return $discriminatorData;
     }
 
     /**

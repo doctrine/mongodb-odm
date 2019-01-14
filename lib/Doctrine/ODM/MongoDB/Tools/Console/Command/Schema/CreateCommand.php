@@ -36,7 +36,7 @@ class CreateCommand extends AbstractCommand
         $this
             ->setName('odm:schema:create')
             ->addOption('class', 'c', InputOption::VALUE_REQUIRED, 'Document class to process (default: all classes)')
-            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
+            ->addTimeoutOptions()
             ->addOption(self::DB, null, InputOption::VALUE_NONE, 'Create databases')
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Create collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Create indexes')
@@ -61,8 +61,7 @@ class CreateCommand extends AbstractCommand
 
         $class = $input->getOption('class');
 
-        $timeout = $input->getOption('timeout');
-        $this->timeout = isset($timeout) ? (int) $timeout : null;
+        $this->timeout = $this->getTimeout($input);
 
         $sm = $this->getSchemaManager();
         $isErrored = false;
