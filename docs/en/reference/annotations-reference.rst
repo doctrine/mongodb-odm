@@ -212,9 +212,8 @@ Optional attributes:
     interface and is used to hold documents. Doctrine's ``ArrayCollection`` is
     used by default.
 -
-    ``notSaved`` - ``false`` by default. If set to ``true``, the property is
-    loaded from the database if it exists there. Upon writing data back to the
-    database, the data from this field is not updated at all.
+    ``notSaved`` - The property is loaded if it exists in the database; however,
+    ODM will not save the property value back to the database.
 
 .. code-block:: php
 
