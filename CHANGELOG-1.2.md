@@ -3,6 +3,16 @@ CHANGELOG for 1.2.x
 
 This changelog references the relevant changes done in 1.2 patch versions.
 
+1.2.6 (2019-01-15)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.2.6 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.2.6).
+
+* [1930](https://github.com/doctrine/mongodb-odm/pull/1930) fixes a wrong type hint in metadata.
+* [1929](https://github.com/doctrine/mongodb-odm/pull/1929) fixes serialization of uninitialized persistent collections.
+* [1919](https://github.com/doctrine/mongodb-odm/pull/1919) fixes a few misplaced deprecation comments in the XSD.
+
 1.2.5 (2018-07-20)
 ------------------
 
