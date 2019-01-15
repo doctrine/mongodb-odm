@@ -307,7 +307,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * READ-ONLY: The Id generator type used by the class.
      *
-     * @var string
+     * @var int
      */
     public $generatorType = self::GENERATOR_TYPE_AUTO;
 
@@ -1943,7 +1943,7 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
     /**
      * Sets the type of Id generator to use for the mapped class.
      *
-     * @param string $generatorType Generator type.
+     * @param int $generatorType Generator type.
      */
     public function setIdGeneratorType($generatorType)
     {
