@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\User;
+use MongoDB\BSON\ObjectId;
 use stdClass;
 use function serialize;
 use function unserialize;
@@ -76,6 +77,54 @@ class PersistentCollectionTest extends BaseTest
         $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('phonebooks'));
         $unserialized->setDocumentManager($this->dm);
         $this->assertInstanceOf(ClassMetadata::class, $unserialized->getTypeClass());
+    }
+
+    public function testMongoDataIsPreservedDuringSerialization()
+    {
+        $mongoData = [
+            [
+                '$ref' => 'group',
+                '$id' => new ObjectId(),
+            ],
+            [
+                '$ref' => 'group',
+                '$id' => new ObjectId(),
+            ],
+        ];
+
+        $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
+        $collection->setMongoData($mongoData);
+
+        $serialized = serialize($collection);
+        /** @var PersistentCollection $unserialized */
+        $unserialized = unserialize($serialized);
+
+        $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('groups'));
+        $unserialized->setDocumentManager($this->dm);
+
+        $this->assertCount(2, $unserialized->getMongoData());
+    }
+
+    public function testSnapshotIsPreservedDuringSerialization()
+    {
+        $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
+        $collection->add(new stdClass());
+        $collection->takeSnapshot();
+
+        $this->assertCount(1, $collection->getSnapshot());
+        $this->assertFalse($collection->isDirty());
+        $this->assertCount(1, $collection->unwrap());
+
+        $serialized = serialize($collection);
+        /** @var PersistentCollection $unserialized */
+        $unserialized = unserialize($serialized);
+
+        $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('groups'));
+        $unserialized->setDocumentManager($this->dm);
+
+        $this->assertCount(1, $unserialized->getSnapshot());
+        $this->assertFalse($unserialized->isDirty());
+        $this->assertCount(1, $unserialized->unwrap());
     }
 
     /**
