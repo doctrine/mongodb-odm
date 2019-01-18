@@ -34,6 +34,9 @@ use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -128,9 +131,8 @@ class UnitOfWork implements PropertyChangedListener
      * policy of DEFERRED_EXPLICIT.
      *
      * @var array
-     * @todo rename: scheduledForSynchronization
      */
-    private $scheduledForDirtyCheck = array();
+    private $scheduledForSynchronization = array();
 
     /**
      * A list of all pending document insertions.
@@ -454,17 +456,17 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             // Clear up
-            $this->documentInsertions =
-            $this->documentUpserts =
-            $this->documentUpdates =
-            $this->documentDeletions =
-            $this->documentChangeSets =
-            $this->collectionUpdates =
-            $this->collectionDeletions =
-            $this->visitedCollections =
-            $this->scheduledForDirtyCheck =
-            $this->orphanRemovals =
-            $this->hasScheduledCollections = array();
+            $this->documentInsertions          =
+            $this->documentUpserts             =
+            $this->documentUpdates             =
+            $this->documentDeletions           =
+            $this->documentChangeSets          =
+            $this->collectionUpdates           =
+            $this->collectionDeletions         =
+            $this->visitedCollections          =
+            $this->scheduledForSynchronization =
+            $this->orphanRemovals              =
+            $this->hasScheduledCollections     = array();
         } finally {
             $this->commitsInProgress--;
         }
@@ -900,8 +902,8 @@ class UnitOfWork implements PropertyChangedListener
                     $documentsToProcess = $documents;
                     break;
 
-                case (isset($this->scheduledForDirtyCheck[$className])):
-                    $documentsToProcess = $this->scheduledForDirtyCheck[$className];
+                case isset($this->scheduledForSynchronization[$className]):
+                    $documentsToProcess = $this->scheduledForSynchronization[$className];
                     break;
 
                 default:
@@ -1362,7 +1364,7 @@ class UnitOfWork implements PropertyChangedListener
     public function isScheduledForDirtyCheck($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-        return isset($this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)]);
+        return isset($this->scheduledForSynchronization[$class->name][spl_object_hash($document)]);
     }
 
     /**
@@ -1596,13 +1598,26 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Schedules a document for dirty-checking at commit-time.
      *
+     * @deprecated Deprecated in favor of scheduleForSynchronization
+     *
      * @param object $document The document to schedule for dirty-checking.
-     * @todo Rename: scheduleForSynchronization
      */
     public function scheduleForDirtyCheck($document)
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
-        $this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)] = $document;
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in 2.0. Use "scheduleForSynchronization" instead.', __METHOD__), E_USER_DEPRECATED);
+
+        $this->scheduleForSynchronization($document);
+    }
+
+    /**
+     * Schedules a document for dirty-checking at commit-time.
+     *
+     * @param object $document The document to schedule for dirty-checking.
+     */
+    public function scheduleForSynchronization($document)
+    {
+        $class                                                                  = $this->dm->getClassMetadata(get_class($document));
+        $this->scheduledForSynchronization[$class->name][spl_object_hash($document)] = $document;
     }
 
     /**
@@ -1703,7 +1718,7 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_MANAGED:
                 // Nothing to do, except if policy is "deferred explicit"
                 if ($class->isChangeTrackingDeferredExplicit()) {
-                    $this->scheduleForDirtyCheck($document);
+                    $this->scheduleForSynchronization($document);
                 }
                 break;
             case self::STATE_NEW:
@@ -1944,7 +1959,7 @@ class UnitOfWork implements PropertyChangedListener
                                 $managedCol->setDirty(true);
 
                                 if ($assoc2['isOwningSide'] && $class->isChangeTrackingNotify()) {
-                                    $this->scheduleForDirtyCheck($managedCopy);
+                                    $this->scheduleForSynchronization($managedCopy);
                                 }
                             }
                         }
@@ -1958,7 +1973,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($class->isChangeTrackingDeferredExplicit()) {
-                $this->scheduleForDirtyCheck($document);
+                $this->scheduleForSynchronization($document);
             }
         }
 
@@ -2305,22 +2320,22 @@ class UnitOfWork implements PropertyChangedListener
     public function clear($documentName = null)
     {
         if ($documentName === null) {
-            $this->identityMap =
-            $this->documentIdentifiers =
-            $this->originalDocumentData =
-            $this->documentChangeSets =
-            $this->documentStates =
-            $this->scheduledForDirtyCheck =
-            $this->documentInsertions =
-            $this->documentUpserts =
-            $this->documentUpdates =
-            $this->documentDeletions =
-            $this->collectionUpdates =
-            $this->collectionDeletions =
-            $this->parentAssociations =
-            $this->embeddedDocumentsRegistry =
-            $this->orphanRemovals =
-            $this->hasScheduledCollections = array();
+            $this->identityMap                 =
+            $this->documentIdentifiers         =
+            $this->originalDocumentData        =
+            $this->documentChangeSets          =
+            $this->documentStates              =
+            $this->scheduledForSynchronization =
+            $this->documentInsertions          =
+            $this->documentUpserts             =
+            $this->documentUpdates             =
+            $this->documentDeletions           =
+            $this->collectionUpdates           =
+            $this->collectionDeletions         =
+            $this->parentAssociations          =
+            $this->embeddedDocumentsRegistry   =
+            $this->orphanRemovals              =
+            $this->hasScheduledCollections     = array();
         } else {
             $visited = array();
             foreach ($this->identityMap as $className => $documents) {
@@ -2675,7 +2690,7 @@ class UnitOfWork implements PropertyChangedListener
 
             unset($data[$class->discriminatorField]);
         }
-        
+
         if (! empty($hints[Query::HINT_READ_ONLY])) {
             $document = $class->newInstance();
             $this->hydratorFactory->hydrate($document, $data, $hints);
@@ -2887,10 +2902,12 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Update changeset and mark document for synchronization
-        $this->documentChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
-        if ( ! isset($this->scheduledForDirtyCheck[$class->name][$oid])) {
-            $this->scheduleForDirtyCheck($document);
+        $this->documentChangeSets[$oid][$propertyName] = [$oldValue, $newValue];
+        if (isset($this->scheduledForSynchronization[$class->name][$oid])) {
+            return;
         }
+
+        $this->scheduleForSynchronization($document);
     }
 
     /**

@@ -181,9 +181,11 @@ trait PersistentCollectionTrait
 
         $this->isDirty = true;
 
-        if ($this->needsSchedulingForDirtyCheck()) {
-            $this->uow->scheduleForDirtyCheck($this->owner);
+        if (! $this->needsSchedulingForDirtyCheck() || $this->owner === null) {
+            return;
         }
+
+        $this->uow->scheduleForSynchronization($this->owner);
     }
 
     /** {@inheritdoc} */
