@@ -129,9 +129,8 @@ class UnitOfWork implements PropertyChangedListener
      * policy of DEFERRED_EXPLICIT.
      *
      * @var array
-     * @todo rename: scheduledForSynchronization
      */
-    private $scheduledForDirtyCheck = [];
+    private $scheduledForSynchronization = [];
 
     /**
      * A list of all pending document insertions.
@@ -418,17 +417,17 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             // Clear up
-            $this->documentInsertions      =
-            $this->documentUpserts         =
-            $this->documentUpdates         =
-            $this->documentDeletions       =
-            $this->documentChangeSets      =
-            $this->collectionUpdates       =
-            $this->collectionDeletions     =
-            $this->visitedCollections      =
-            $this->scheduledForDirtyCheck  =
-            $this->orphanRemovals          =
-            $this->hasScheduledCollections = [];
+            $this->documentInsertions          =
+            $this->documentUpserts             =
+            $this->documentUpdates             =
+            $this->documentDeletions           =
+            $this->documentChangeSets          =
+            $this->collectionUpdates           =
+            $this->collectionDeletions         =
+            $this->visitedCollections          =
+            $this->scheduledForSynchronization =
+            $this->orphanRemovals              =
+            $this->hasScheduledCollections     = [];
         } finally {
             $this->commitsInProgress--;
         }
@@ -816,8 +815,8 @@ class UnitOfWork implements PropertyChangedListener
                     $documentsToProcess = $documents;
                     break;
 
-                case isset($this->scheduledForDirtyCheck[$className]):
-                    $documentsToProcess = $this->scheduledForDirtyCheck[$className];
+                case isset($this->scheduledForSynchronization[$className]):
+                    $documentsToProcess = $this->scheduledForSynchronization[$className];
                     break;
 
                 default:
@@ -1249,10 +1248,13 @@ class UnitOfWork implements PropertyChangedListener
         return isset($this->documentUpdates[spl_object_hash($document)]);
     }
 
+    /**
+     * Checks whether a document is registered to be checked in the unit of work.
+     */
     public function isScheduledForDirtyCheck(object $document) : bool
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-        return isset($this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)]);
+        return isset($this->scheduledForSynchronization[$class->name][spl_object_hash($document)]);
     }
 
     /**
@@ -1474,13 +1476,11 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Schedules a document for dirty-checking at commit-time.
-     *
-     * @todo Rename: scheduleForSynchronization
      */
-    public function scheduleForDirtyCheck(object $document) : void
+    public function scheduleForSynchronization(object $document) : void
     {
-        $class                                                                  = $this->dm->getClassMetadata(get_class($document));
-        $this->scheduledForDirtyCheck[$class->name][spl_object_hash($document)] = $document;
+        $class                                                                       = $this->dm->getClassMetadata(get_class($document));
+        $this->scheduledForSynchronization[$class->name][spl_object_hash($document)] = $document;
     }
 
     /**
@@ -1568,7 +1568,7 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_MANAGED:
                 // Nothing to do, except if policy is "deferred explicit"
                 if ($class->isChangeTrackingDeferredExplicit()) {
-                    $this->scheduleForDirtyCheck($document);
+                    $this->scheduleForSynchronization($document);
                 }
                 break;
             case self::STATE_NEW:
@@ -1800,7 +1800,7 @@ class UnitOfWork implements PropertyChangedListener
                                 $managedCol->setDirty(true);
 
                                 if ($assoc2['isOwningSide'] && $class->isChangeTrackingNotify()) {
-                                    $this->scheduleForDirtyCheck($managedCopy);
+                                    $this->scheduleForSynchronization($managedCopy);
                                 }
                             }
                         }
@@ -1816,7 +1816,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($class->isChangeTrackingDeferredExplicit()) {
-                $this->scheduleForDirtyCheck($document);
+                $this->scheduleForSynchronization($document);
             }
         }
 
@@ -2146,22 +2146,22 @@ class UnitOfWork implements PropertyChangedListener
     public function clear(?string $documentName = null) : void
     {
         if ($documentName === null) {
-            $this->identityMap               =
-            $this->documentIdentifiers       =
-            $this->originalDocumentData      =
-            $this->documentChangeSets        =
-            $this->documentStates            =
-            $this->scheduledForDirtyCheck    =
-            $this->documentInsertions        =
-            $this->documentUpserts           =
-            $this->documentUpdates           =
-            $this->documentDeletions         =
-            $this->collectionUpdates         =
-            $this->collectionDeletions       =
-            $this->parentAssociations        =
-            $this->embeddedDocumentsRegistry =
-            $this->orphanRemovals            =
-            $this->hasScheduledCollections   = [];
+            $this->identityMap                 =
+            $this->documentIdentifiers         =
+            $this->originalDocumentData        =
+            $this->documentChangeSets          =
+            $this->documentStates              =
+            $this->scheduledForSynchronization =
+            $this->documentInsertions          =
+            $this->documentUpserts             =
+            $this->documentUpdates             =
+            $this->documentDeletions           =
+            $this->collectionUpdates           =
+            $this->collectionDeletions         =
+            $this->parentAssociations          =
+            $this->embeddedDocumentsRegistry   =
+            $this->orphanRemovals              =
+            $this->hasScheduledCollections     = [];
         } else {
             $visited = [];
             foreach ($this->identityMap as $className => $documents) {
@@ -2698,11 +2698,11 @@ class UnitOfWork implements PropertyChangedListener
 
         // Update changeset and mark document for synchronization
         $this->documentChangeSets[$oid][$propertyName] = [$oldValue, $newValue];
-        if (isset($this->scheduledForDirtyCheck[$class->name][$oid])) {
+        if (isset($this->scheduledForSynchronization[$class->name][$oid])) {
             return;
         }
 
-        $this->scheduleForDirtyCheck($document);
+        $this->scheduleForSynchronization($document);
     }
 
     /**
