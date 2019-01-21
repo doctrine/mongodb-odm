@@ -175,7 +175,7 @@ trait PersistentCollectionTrait
             return;
         }
 
-        $this->uow->scheduleForDirtyCheck($this->owner);
+        $this->uow->scheduleForSynchronization($this->owner);
     }
 
     /** {@inheritdoc} */
