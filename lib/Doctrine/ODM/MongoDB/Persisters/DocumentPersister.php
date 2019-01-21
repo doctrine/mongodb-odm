@@ -1013,9 +1013,7 @@ class DocumentPersister
             }
 
             // No further preparation unless we're dealing with a simple reference
-            // We can't have expressions in empty() with PHP < 5.5, so store it in a variable
-            $arrayValue = (array) $value;
-            if (empty($mapping['reference']) || $mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID || empty($arrayValue)) {
+            if (empty($mapping['reference']) || $mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID || empty((array) $value)) {
                 return [[$fieldName, $value]];
             }
 
