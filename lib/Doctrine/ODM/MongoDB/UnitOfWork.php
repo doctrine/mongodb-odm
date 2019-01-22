@@ -1361,7 +1361,28 @@ class UnitOfWork implements PropertyChangedListener
         return isset($this->documentUpdates[spl_object_hash($document)]);
     }
 
+    /**
+     * Checks whether a document is registered to be checked in the unit of work.
+     *
+     * @deprecated Deprecated in favor of isScheduledForSynchronization
+     *
+     * @param object $document
+     * @return bool
+     */
     public function isScheduledForDirtyCheck($document)
+    {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in 2.0. Use isScheduledForSynchronization instead.', __METHOD__), E_USER_DEPRECATED);
+
+        return $this->isScheduledForSynchronization($document);
+    }
+
+    /**
+     * Checks whether a document is registered to be checked in the unit of work.
+     *
+     * @param object $document
+     * @return bool
+     */
+    public function isScheduledForSynchronization($document)
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         return isset($this->scheduledForSynchronization[$class->name][spl_object_hash($document)]);
