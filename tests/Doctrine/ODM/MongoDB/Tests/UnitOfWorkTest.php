@@ -220,14 +220,14 @@ class UnitOfWorkTest extends BaseTest
 
         $this->assertCount(1, $persister->getUpserts());
         $this->assertTrue($this->uow->isInIdentityMap($entity));
-        $this->assertFalse($this->uow->isScheduledForDirtyCheck($entity));
+        $this->assertFalse($this->uow->isScheduledForSynchronization($entity));
 
         $persister->reset();
 
         $entity->setData('newdata');
         $entity->setTransient('newtransientvalue');
 
-        $this->assertTrue($this->uow->isScheduledForDirtyCheck($entity));
+        $this->assertTrue($this->uow->isScheduledForSynchronization($entity));
         $this->assertEquals(['data' => ['thedata', 'newdata']], $this->uow->getDocumentChangeSet($entity));
 
         $item = new NotifyChangedRelatedItem();
@@ -240,7 +240,7 @@ class UnitOfWorkTest extends BaseTest
 
         $this->assertCount(1, $itemPersister->getUpserts());
         $this->assertTrue($this->uow->isInIdentityMap($item));
-        $this->assertFalse($this->uow->isScheduledForDirtyCheck($item));
+        $this->assertFalse($this->uow->isScheduledForSynchronization($item));
 
         $persister->reset();
         $itemPersister->reset();
