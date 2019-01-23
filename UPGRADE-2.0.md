@@ -270,3 +270,6 @@ ocramius. If you are checking for proxies, the following changed:
   exception. This would usually happen if you flushed the document manager from
   within a lifecycle event handler. Since data integrity can't be guaranteed, it
   is no longer allowed to nest flushes to the database.
+* The `isScheduledForDirtyCheck` and `scheduleForDirtyCheck` methods have been
+  renamed to `isScheduledForSynchronization` and `scheduleForSynchronization`,
+  respectively.

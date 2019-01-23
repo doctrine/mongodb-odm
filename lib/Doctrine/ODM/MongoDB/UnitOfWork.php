@@ -1251,7 +1251,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Checks whether a document is registered to be checked in the unit of work.
      */
-    public function isScheduledForDirtyCheck(object $document) : bool
+    public function isScheduledForSynchronization(object $document) : bool
     {
         $class = $this->dm->getClassMetadata(get_class($document));
         return isset($this->scheduledForSynchronization[$class->name][spl_object_hash($document)]);

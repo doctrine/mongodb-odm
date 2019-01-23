@@ -198,7 +198,7 @@ CODE;
     public function {$method->name}($parametersString){$this->getMethodReturnType($method)}
     {
         \$this->initialize();
-        if (\$this->needsSchedulingForDirtyCheck()) {
+        if (\$this->needsSchedulingForSynchronization()) {
             \$this->changed();
         }
         return \$this->coll->{$method->name}($callParamsString);
