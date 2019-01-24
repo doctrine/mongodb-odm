@@ -16,6 +16,7 @@ use function array_filter;
 use function assert;
 use function count;
 use function file_exists;
+use function is_array;
 use function is_dir;
 use function is_string;
 use function is_writable;
@@ -56,7 +57,7 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $filter = $input->getOption('filter');
-        assert(is_string($filter));
+        assert(is_array($filter));
 
         /** @var DocumentManager $dm */
         $dm = $this->getHelper('documentManager')->getDocumentManager();

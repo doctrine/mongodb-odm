@@ -13,8 +13,8 @@ use const PHP_EOL;
 use function assert;
 use function count;
 use function file_exists;
+use function is_array;
 use function is_dir;
-use function is_string;
 use function is_writable;
 use function mkdir;
 use function realpath;
@@ -58,7 +58,7 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $filter = $input->getOption('filter');
-        assert(is_string($filter));
+        assert(is_array($filter));
 
         $dm = $this->getHelper('documentManager')->getDocumentManager();
 
