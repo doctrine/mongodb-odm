@@ -181,9 +181,11 @@ trait PersistentCollectionTrait
 
         $this->isDirty = true;
 
-        if ($this->needsSchedulingForDirtyCheck()) {
-            $this->uow->scheduleForDirtyCheck($this->owner);
+        if (! $this->needsSchedulingForSynchronization() || $this->owner === null) {
+            return;
         }
+
+        $this->uow->scheduleForSynchronization($this->owner);
     }
 
     /** {@inheritdoc} */
@@ -777,7 +779,7 @@ trait PersistentCollectionTrait
      *
      * @return bool
      */
-    private function needsSchedulingForDirtyCheck()
+    private function needsSchedulingForSynchronization()
     {
         return $this->owner && $this->dm && ! empty($this->mapping['isOwningSide'])
             && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify();
