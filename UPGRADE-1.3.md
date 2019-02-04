@@ -78,6 +78,18 @@ cause an exception in 2.0. It is possible to have multiple fields with the same
 name in the database as long as all but one of them have the `notSaved` option
 set.
 
+## Proxies
+
+ * The usage of proxies from Doctrine Common was deprecated and will be replaced
+   with `ocramius/proxy-manager` in 2.0.
+ * Using the `AUTOGENERATE_ALWAYS` and `AUTOGENERATE_NEVER` strategies is
+   deprecated and will be dropped in 2.0. Use `AUTOGENERATE_FILE_NOT_EXISTS` and
+   `AUTOGENERATE_EVAL` instead.
+ * The `Doctrine\ODM\MongoDB\Proxy\ProxyFactory` class was deprecated and will
+   be dropped in 2.0.
+ * The `Doctrine\ODM\MongoDB\Proxy\Proxy` interface was deprecated and will be
+   dropped in 2.0.
+
 ## Queries
 
  * The `eagerCursor` method in `Doctrine\ODM\MongoDB\Query\Builder` was

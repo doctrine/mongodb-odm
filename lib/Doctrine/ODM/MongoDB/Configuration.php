@@ -228,17 +228,25 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      * Sets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
      *
-     * @param boolean|int $bool Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
+     * @param boolean|int $autoGenerateProxyClasses Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
      */
-    public function setAutoGenerateProxyClasses($bool)
+    public function setAutoGenerateProxyClasses($autoGenerateProxyClasses)
     {
-        if (is_bool($bool)) {
+        if (is_bool($autoGenerateProxyClasses)) {
             @trigger_error(
                 sprintf('Passing boolean value to %s is deprecated, please use constants of %s instead.', __METHOD__, AbstractProxyFactory::class),
                 E_USER_DEPRECATED
             );
         }
-        $this->attributes['autoGenerateProxyClasses'] = $bool;
+
+        if ($autoGenerateProxyClasses === AbstractProxyFactory::AUTOGENERATE_ALWAYS || $autoGenerateProxyClasses === AbstractProxyFactory::AUTOGENERATE_NEVER) {
+            @trigger_error(
+                sprintf('The "AUTOGENERATE_ALWAYS" and "AUTOGENERATE_NEVER" strategies for proxy generation are deprecated and will be dropped in 2.0. Please use "AUTOGENERATE_FILE_NOT_EXISTS" and "AUTOGENERATE_EVAL".'),
+                E_USER_DEPRECATED
+            );
+        }
+
+        $this->attributes['autoGenerateProxyClasses'] = $autoGenerateProxyClasses;
     }
 
     /**

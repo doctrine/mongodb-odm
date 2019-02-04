@@ -25,5 +25,6 @@ use Doctrine\Common\Proxy\Proxy as BaseProxy;
  * Document Proxy interface.
  *
  * @since       1.0
+ * @deprecated The proxy interface is deprecated and will be removed in 2.0.
  */
 interface Proxy extends BaseProxy {}
