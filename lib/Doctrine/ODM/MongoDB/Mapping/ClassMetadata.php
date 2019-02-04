@@ -219,6 +219,8 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY: The field that stores a file reference and indicates the
      * document is a file and should be stored on the MongoGridFS.
+     *
+     * @deprecated Will be dropped in 2.0. Please read the upgrade notes for GridFS.
      */
     public $file;
 
@@ -1274,6 +1276,8 @@ class ClassMetadata implements BaseClassMetadata
      * Returns TRUE if this Document is a file to be stored on the MongoGridFS FALSE otherwise.
      *
      * @return boolean
+     *
+     * @deprecated Will be dropped in 2.0. Please read the upgrade notes for GridFS.
      */
     public function isFile()
     {
@@ -1284,6 +1288,8 @@ class ClassMetadata implements BaseClassMetadata
      * Returns the file field name.
      *
      * @return string $file The file field name.
+     *
+     * @deprecated Will be dropped in 2.0. Please read the upgrade notes for GridFS.
      */
     public function getFile()
     {
@@ -1294,6 +1300,8 @@ class ClassMetadata implements BaseClassMetadata
      * Set the field name that stores the grid file.
      *
      * @param string $file
+     *
+     * @deprecated Will be dropped in 2.0. Please read the upgrade notes for GridFS.
      */
     public function setFile($file)
     {
@@ -1406,6 +1414,7 @@ class ClassMetadata implements BaseClassMetadata
             $mapping['strategy'] = self::STORAGE_STRATEGY_INCREMENT;
         }
         if (isset($mapping['file']) && $mapping['file'] === true) {
+            @trigger_error(sprintf('The field "%s" for class "%s" is mapped as file. This is deprecated and will not be possible in 2.0. Please read the upgrade notes for GridFS.', $mapping['fieldName'], $this->getName()), E_USER_DEPRECATED);
             $this->file = $mapping['fieldName'];
             $mapping['name'] = 'file';
         }
@@ -1598,9 +1607,13 @@ class ClassMetadata implements BaseClassMetadata
      * Map a MongoGridFSFile.
      *
      * @param array $mapping The mapping information.
+     *
+     * @deprecated Will be dropped in 2.0. Please read the upgrade notes for GridFS.
      */
     public function mapFile(array $mapping)
     {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in 2.0. Please read the upgrade notes for GridFS.', __METHOD__), E_USER_DEPRECATED);
+
         $mapping['file'] = true;
         $mapping['type'] = 'file';
         $this->mapField($mapping);

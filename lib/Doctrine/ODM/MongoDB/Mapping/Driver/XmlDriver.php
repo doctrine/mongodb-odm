@@ -188,6 +188,9 @@ class XmlDriver extends FileDriver
                     }
                 }
 
+                if (! empty($mapping['file'])) {
+                    @trigger_error('The "file" attribute to map GridFS files is deprecated and will be removed in 2.0. Please read the upgrade notes for GridFS.', E_USER_DEPRECATED);
+                }
 
                 if (isset($mapping['id']) && $mapping['id'] === true) {
                     @trigger_error(sprintf('Using the "id" attribute to denote identifiers in the XML mapping for class "%s" is deprecated and will be removed in 2.0. Please map your identifiers using the "id" element.', $class->getName()), E_USER_DEPRECATED);
