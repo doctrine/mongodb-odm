@@ -27,6 +27,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use UnexpectedValueException;
+use const E_USER_DEPRECATED;
 use function array_diff_key;
 use function array_fill_keys;
 use function array_flip;
@@ -40,8 +41,9 @@ use function end;
 use function get_class;
 use function implode;
 use function sort;
-use function spl_object_hash;
+use function sprintf;
 use function strpos;
+use function trigger_error;
 
 /**
  * The CollectionPersister is responsible for persisting collections of embedded
@@ -118,9 +120,13 @@ class CollectionPersister
      *
      * @param PersistentCollectionInterface $coll
      * @param array $options
+     *
+     * @deprecated This method will be replaced with the deleteAll method
      */
     public function delete(PersistentCollectionInterface $coll, array $options)
     {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be changed to the signature of deleteAll in 2.0.', __METHOD__), E_USER_DEPRECATED);
+
         $mapping = $coll->getMapping();
         if ($mapping['isInverseSide']) {
             return; // ignore inverse side
@@ -139,9 +145,13 @@ class CollectionPersister
      *
      * @param PersistentCollectionInterface $coll
      * @param array $options
+     *
+     * @deprecated This method will be replaced with the updateAll method
      */
     public function update(PersistentCollectionInterface $coll, array $options)
     {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be changed to the signature of updateAll in 2.0.', __METHOD__), E_USER_DEPRECATED);
+
         $mapping = $coll->getMapping();
 
         if ($mapping['isInverseSide']) {
