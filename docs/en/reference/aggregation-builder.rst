@@ -495,6 +495,9 @@ pipeline stages. Take the following relationship for example:
         ->lookup('items')
             ->alias('items');
 
+In MongoDB 3.2, the resulting array will be empty for a one-to-many relationship,
+you need to unwind your field at first and use a group stage afterwards.
+
 The resulting array will contain all matched item documents in an array. This has
 to be considered when looking up one-to-one relationships:
 
@@ -524,6 +527,10 @@ to be considered when looking up one-to-one relationships:
 MongoDB will always return an array, even if the lookup only returned a single
 document. Thus, when looking up one-to-one references the result must be flattened
 using the ``$unwind`` operator.
+
+Looking up  a reference nested in an embedded document (like ``->lookup('embedDoc.refDocs')``)
+is not supported. You'll need to make your lookup as if your Reference was not mapped
+See below for more.
 
 .. note::
 
