@@ -19,6 +19,8 @@
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use function sprintf;
+
 /**
  * Maps a field as GridFS file and instructs ODM to store the entire document in
  * a GridFS collection.
@@ -29,4 +31,14 @@ final class File extends AbstractField
 {
     public $type = 'file';
     public $file = true;
+
+    public function getDeprecationMessage()
+    {
+        return sprintf('The "%s" annotation is deprecated and will be removed in 2.0. Please read the upgrade notes for GridFS.', self::class);
+    }
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

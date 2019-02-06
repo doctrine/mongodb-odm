@@ -90,6 +90,7 @@
     <xs:attribute name="fieldName" type="xs:NMTOKEN" />
     <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="embed" type="xs:boolean" />
+    <!-- deprecated -->
     <xs:attribute name="file" type="xs:boolean" />
     <xs:attribute name="distance" type="xs:boolean" />
     <xs:attribute name="reference" type="xs:boolean" />

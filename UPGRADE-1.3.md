@@ -1,5 +1,13 @@
 # UPGRADE FROM 1.2 TO 1.3
 
+## GridFS
+
+GridFS support will be rewritten for 2.0 and was deprecated in its current form.
+A forward compatible layer cannot be provided due to differences in the
+underlying API.
+ * The `Doctrine\ODM\MongoDB\Mapping\Annotations\File` annotation was deprecated
+   and will be changed to a class-level annotation in 2.0.
+
 ## Mapping changes
 
 ### Yaml driver deprecated

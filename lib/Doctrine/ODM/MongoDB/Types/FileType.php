@@ -23,6 +23,7 @@ namespace Doctrine\ODM\MongoDB\Types;
  * The File type.
  *
  * @since       1.0
+ * @deprecated Will be dropped in 2.0. Please read the upgrade notes for GridFS.
  */
 class FileType extends Type
 {
