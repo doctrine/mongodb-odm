@@ -37,6 +37,7 @@ use ReflectionProperty;
  * This factory is used to create proxy objects for documents at runtime.
  *
  * @since       1.0
+ * @deprecated The proxy factory is deprecated and will be removed in 2.0.
  */
 class ProxyFactory extends AbstractProxyFactory
 {
