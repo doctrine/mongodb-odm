@@ -1355,16 +1355,28 @@ class DocumentPersister
     private function handleCollections($document, $options)
     {
         // Collection deletions (deletions of complete collections)
+        $collections = [];
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
-            if ($this->uow->isCollectionScheduledForDeletion($coll)) {
-                $this->cp->delete($coll, $options);
+            if (! $this->uow->isCollectionScheduledForDeletion($coll)) {
+                continue;
             }
+
+            $collections[] = $coll;
+        }
+        if (! empty($collections)) {
+            $this->cp->deleteAll($document, $collections, $options);
         }
         // Collection updates (deleteRows, updateRows, insertRows)
+        $collections = [];
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
-            if ($this->uow->isCollectionScheduledForUpdate($coll)) {
-                $this->cp->update($coll, $options);
+            if (! $this->uow->isCollectionScheduledForUpdate($coll)) {
+                continue;
             }
+
+            $collections[] = $coll;
+        }
+        if (! empty($collections)) {
+            $this->cp->updateAll($document, $collections, $options);
         }
         // Take new snapshots from visited collections
         foreach ($this->uow->getVisitedCollections($document) as $coll) {

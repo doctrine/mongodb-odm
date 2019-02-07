@@ -86,6 +86,13 @@ cause an exception in 2.0. It is possible to have multiple fields with the same
 name in the database as long as all but one of them have the `notSaved` option
 set.
 
+## Persisters
+
+ * The `delete` and `update` methods in
+   `Doctrine\ODM\MongoDB\Persisters\CollectionPersister` are deprecated. Use
+   `deleteAll` and `updateAll` instead. The method signatures will be adapted
+   to match those of `deleteAll` and `updateAll` in 2.0.
+
 ## Proxies
 
  * The usage of proxies from Doctrine Common was deprecated and will be replaced
