@@ -28,7 +28,11 @@ jobs:
       env: SERVER_VERSION="3.2" KEY_ID="EA312927" DRIVER_VERSION="1.5.0"
       install:
         - composer update --prefer-lowest
-        
+
+    # Test against the upcoming PHP version
+    - stage: Test
+      php: 7.4snapshot
+
     # Run tests with coverage
     - stage: Code Quality
       php: 7.2
@@ -72,3 +76,6 @@ install:
 
 script:
   - vendor/bin/phpunit
+
+allow_fialures:
+  - php: 7.4snapshot
