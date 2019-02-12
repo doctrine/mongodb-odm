@@ -28,8 +28,8 @@ instead of mapping them with `field`.
 
 With same-namespace resolution, the metadata driver would look for a class of
 that name in the same namespace if the given class name didn't contain a
-namespace separator (`\`). This has been deprecated and will be dropped instead.
-Use fully qualified class names or the `::class` constant instead:
+namespace separator (`\`). This has been deprecated and will be dropped. Use
+fully qualified class names or the `::class` constant instead:
 
 ```php
 /**
@@ -43,6 +43,10 @@ class User
     private $groups;
 }
 ```
+
+This affects the `repositoryClass` attribute in documents, `targetDocument` in
+references and embedded relationships as well as class names in discriminator
+maps.
 
 ### `ClassMetadataInfo` class deprecated
 
