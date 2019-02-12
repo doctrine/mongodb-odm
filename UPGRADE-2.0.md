@@ -192,6 +192,30 @@ or annotations. To migrate away from YAML mappings, first update to MongoDB ODM
   without replacement. You should register a class loader in the
   `AnnotationRegistry` instead.
 
+### Same-namespace resolution dropped
+
+With same-namespace resolution, the metadata driver would look for a class of
+that name in the same namespace if the given class name didn't contain a
+namespace separator (`\`). This is no longer supported, use fully qualified
+class names or the `::class` constant instead:
+
+```php
+/**
+ * @ODM\Document(repositoryClass=UserRepository::class)
+ */
+class User
+{
+    /**
+     * @ODM\ReferenceMany(targetDocument=Group::class)
+     */
+    private $groups;
+}
+```
+
+This affects the `repositoryClass` attribute in documents, `targetDocument` in
+references and embedded relationships as well as class names in discriminator
+maps.
+
 ## Proxy objects
 
 The proxy implementation no longer relies on Doctrine proxies but rather
