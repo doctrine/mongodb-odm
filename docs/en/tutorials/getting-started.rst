@@ -165,6 +165,8 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
 
     $dm = DocumentManager::create(null, $config);
 
+    spl_autoload_register($config->getProxyManagerConfiguration()->getProxyAutoloader());
+
 Usage
 -----
 
