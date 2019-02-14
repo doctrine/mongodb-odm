@@ -850,8 +850,7 @@ class Builder
     /**
      * Set the limit for the query.
      *
-     * This is only relevant for find queries and geoNear and mapReduce
-     * commands.
+     * This is only relevant for find queries and count commands.
      *
      * @see Query::prepareCursor()
      */
