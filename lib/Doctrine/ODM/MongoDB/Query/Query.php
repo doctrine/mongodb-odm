@@ -50,11 +50,6 @@ class Query implements IteratorAggregate
     public const TYPE_DISTINCT        = 9;
     public const TYPE_COUNT           = 11;
 
-    /**
-     * @deprecated 1.1 Will be removed for 2.0
-     */
-    public const TYPE_GEO_LOCATION = 10;
-
     public const HINT_REFRESH = 1;
     // 2 was used for HINT_SLAVE_OKAY, which was removed in 2.0
     public const HINT_READ_PREFERENCE = 3;
