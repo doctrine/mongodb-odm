@@ -406,6 +406,15 @@ their mapping.
     $config->setHydratorNamespace('Hydrators');
     $config->setDefaultDB('doctrine_odm');
 
+    spl_autoload_register($config->getProxyManagerConfiguration()->getProxyAutoloader());
+
+.. note::
+
+    The last call to ``spl_autoload_regiter`` is necessary to autoload generated
+    proxy classes. Without this, the proxy library would re-generate proxy
+    classes for every request. See the `tuning for production`_ chapter in
+    ProxyManager's documentation.
+
 The easiest way to define mappings for our document classes is with annotations.
 We'll need to specify an annotation driver in our configuration (with one or
 more paths) and register the annotations for the driver:
@@ -496,3 +505,4 @@ please create separate clients for your application and ODM.
 .. _MongoDB: https://www.mongodb.com/
 .. _10gen: http://www.10gen.com
 .. _Composer: http://getcomposer.org/
+.. _tuning for production: https://ocramius.github.io/ProxyManager/docs/tuning-for-production.html
