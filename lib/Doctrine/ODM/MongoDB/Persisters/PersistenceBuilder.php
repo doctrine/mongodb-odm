@@ -21,6 +21,8 @@ use function get_class;
  * PersistenceBuilder builds the queries used by the persisters to update and insert
  * documents when a DocumentManager is flushed. It uses the changeset information in the
  * UnitOfWork to build queries using atomic operators like $set, $unset, etc.
+ *
+ * @internal
  */
 class PersistenceBuilder
 {

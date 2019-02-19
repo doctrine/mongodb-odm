@@ -38,6 +38,8 @@ use function strpos;
  * removed, CollectionPersister::update() will be called, which may set the
  * entire collection or delete/insert individual elements, depending on the
  * mapping strategy.
+ *
+ * @internal
  */
 class CollectionPersister
 {
