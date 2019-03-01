@@ -12,7 +12,7 @@ env:
     - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017"
     - KEY_SERVER="hkp://keyserver.ubuntu.com:80"
     - MONGO_REPO_URI="https://repo.mongodb.org/apt/ubuntu"
-    - MONGO_REPO_TYPE="precise/mongodb-org/"
+    - MONGO_REPO_TYPE="xenial/mongodb-org/"
     - SOURCES_LOC="/etc/apt/sources.list.d/mongodb.list"
     - DRIVER_VERSION="stable"
   matrix:
