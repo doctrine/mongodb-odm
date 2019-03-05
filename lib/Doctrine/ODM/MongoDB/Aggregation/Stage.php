@@ -36,6 +36,21 @@ abstract class Stage
     }
 
     /**
+     * Adds new fields to documents. $addFields outputs documents that contain
+     * all existing fields from the input documents and newly added fields.
+     *
+     * The $addFields stage is equivalent to a $project stage that explicitly
+     * specifies all existing fields in the input documents and adds the new
+     * fields.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/
+     */
+    public function addFields() : Stage\AddFields
+    {
+        return $this->builder->addFields();
+    }
+
+    /**
      * Categorizes incoming documents into groups, called buckets, based on a
      * specified expression and bucket boundaries.
      *
