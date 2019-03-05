@@ -25,13 +25,25 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('featureFull')->references($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureFull.$id' => new \MongoId($f->id) ], $q1['query']);
+        $this->assertEquals(
+            [
+                'featureFull.$id' => new \MongoId($f->id),
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
+            ],
+            $q1['query']
+        );
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featureSimple')->references($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureSimple' => new \MongoId($f->id) ], $q2['query']);
+        $this->assertEquals(
+            [
+                'featureSimple' => new \MongoId($f->id),
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
+            ],
+            $q2['query']
+        );
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featurePartial')->references($f)
@@ -41,6 +53,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             [
                 'featurePartial.$id' => new \MongoId($f->id),
                 'featurePartial.$ref' => 'Feature',
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
             $q3['query']
         );
@@ -83,13 +96,27 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('featureFullMany')->includesReferenceTo($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureFullMany' => [ '$elemMatch' => [ '$id' => new \MongoId($f->id) ] ] ], $q1['query']);
+        $this->assertEquals(
+            [
+                'featureFullMany' => [
+                    '$elemMatch' => ['$id' => new \MongoId($f->id)],
+                ],
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
+            ],
+            $q1['query']
+        );
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featureSimpleMany')->includesReferenceTo($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureSimpleMany' => new \MongoId($f->id) ], $q2['query']);
+        $this->assertEquals(
+            [
+                'featureSimpleMany' => new \MongoId($f->id),
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
+            ],
+            $q2['query']
+        );
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featurePartialMany')->includesReferenceTo($f)
@@ -101,8 +128,9 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     '$elemMatch' => [
                         '$id' => new \MongoId($f->id),
                         '$ref' => 'Feature',
-                    ]
-                ]
+                    ],
+                ],
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
             $q3['query']
         );
