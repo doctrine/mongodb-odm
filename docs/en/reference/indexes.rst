@@ -335,6 +335,15 @@ Also, for your convenience you can create the indexes for your mapped documents 
     unless you specify a discriminator map for the :ref:`embed-one <embed_one>`
     or :ref:`embed-many <embed_many>` relationship.
 
+.. note::
+
+    If the ``name`` option is specified on an index in an embedded document, it
+    will be prefixed with the embedded field path before creating the index.
+    This is necessary to avoid index name conflict when the same document is
+    embedded multiple times in a single collection. Prefixing of the index name
+    can cause errors due to excessive index name length. In this case, try
+    shortening the index name or embedded field path.
+
 Geospatial Indexing
 -------------------
 
