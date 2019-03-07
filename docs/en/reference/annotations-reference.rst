@@ -803,7 +803,8 @@ Optional attributes:
     respectively. Special index types (e.g. "2dsphere") should be specified as
     strings. This is required when `@Index`_ is used at the class level.
 -
-    options - Options for creating the index
+    options - Options for creating the index. Options are documented in the
+    :ref:`indexes chapter <indees>`.
 
 The ``keys`` and ``options`` attributes correspond to the arguments for
 `MongoCollection::createIndex() <http://php.net/manual/en/mongocollection.createindex.php>`_.
@@ -835,6 +836,15 @@ If you are creating a single-field index, you can simply specify an `@Index`_ or
 
     /** @Field(type="string") @UniqueIndex */
     private $username;
+
+.. note::
+
+    If the ``name`` option is specified on an index in an embedded document, it
+    will be prefixed with the embedded field path before creating the index.
+    This is necessary to avoid index name conflict when the same document is
+    embedded multiple times in a single collection. Prefixing of the index name
+    can cause errors due to excessive index name length. In this case, try
+    shortening the index name or embedded field path.
 
 @Indexes
 --------

@@ -175,6 +175,7 @@ class SchemaManager
                 } else {
                     continue;
                 }
+
                 foreach ($possibleEmbeds as $embed) {
                     if (isset($embeddedDocumentIndexes[$embed])) {
                         $embeddedIndexes = $embeddedDocumentIndexes[$embed];
@@ -182,11 +183,17 @@ class SchemaManager
                         $embeddedIndexes = $this->doGetDocumentIndexes($embed, $visited);
                         $embeddedDocumentIndexes[$embed] = $embeddedIndexes;
                     }
+
                     foreach ($embeddedIndexes as $embeddedIndex) {
                         foreach ($embeddedIndex['keys'] as $key => $value) {
                             $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
                             unset($embeddedIndex['keys'][$key]);
                         }
+
+                        if (isset($embeddedIndex['options']['name'])) {
+                            $embeddedIndex['options']['name'] = sprintf('%s_%s', $fieldMapping['name'], $embeddedIndex['options']['name']);
+                        }
+
                         $indexes[] = $embeddedIndex;
                     }
                 }
@@ -197,12 +204,15 @@ class SchemaManager
                         if ($key == $fieldMapping['name']) {
                             $key = ClassMetadata::getReferenceFieldName($fieldMapping['storeAs'], $key);
                         }
+
                         $newKeys[$key] = $v;
                     }
+
                     $indexes[$idx]['keys'] = $newKeys;
                 }
             }
         }
+
         return $indexes;
     }
 
