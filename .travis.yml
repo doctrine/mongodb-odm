@@ -1,33 +1,44 @@
-dist: trusty
+dist: xenial
 sudo: required
 language: php
 
 php:
-  - 5.6
   - 7.0
   - 7.1
   - 7.2
+  - 7.3
 
 env:
   global:
     - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017"
     - KEY_SERVER="hkp://keyserver.ubuntu.com:80"
     - MONGO_REPO_URI="https://repo.mongodb.org/apt/ubuntu"
-    - MONGO_REPO_TYPE="trusty/mongodb-org/"
+    - MONGO_REPO_TYPE="xenial/mongodb-org/"
     - SOURCES_LOC="/etc/apt/sources.list.d/mongodb.list"
     - DRIVER_VERSION="stable"
     - ADAPTER_VERSION="^1.0.0"
-    - SERVER_VERSION="3.4"
-    - KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
+    - SERVER_VERSION="4.0"
+    - KEY_ID="9DA31620334BD75D9DCB49F368818C72E52529D4"
 
-matrix:
+jobs:
+  allow_failures:
+    - php: 7.4snapshot
+
   include:
-    - php: 5.6
-      env: DRIVER_VERSION="1.6.7" COMPOSER_FLAGS="--prefer-lowest" SERVER_VERSION="3.2" KEY_ID="EA312927"
-    - php: 7.2
+    # Test against lowest dependencies, including driver and server versions
+    - stage: Test
+      dist: trusty
+      php: 5.6
+      env: DRIVER_VERSION="1.6.7" COMPOSER_FLAGS="--prefer-lowest" MONGO_REPO_TYPE="trusty/mongodb-org/" SERVER_VERSION="3.4" KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
+
+    # Test against MongoDB 3.6
+    - stage: Test
+      php: 7.3
       env: SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
-    - php: 7.3
-      env: SERVER_VERSION="4.0" KEY_ID="9DA31620334BD75D9DCB49F368818C72E52529D4"
+
+    # Test against the upcoming PHP version
+    - stage: Test
+      php: 7.4snapshot
 
 before_install:
   - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
