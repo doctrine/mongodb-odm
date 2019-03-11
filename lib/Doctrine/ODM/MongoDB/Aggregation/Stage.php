@@ -323,4 +323,14 @@ abstract class Stage
     {
         return $this->builder->unwind($fieldName);
     }
+
+    /**
+     * Allows adding an arbitrary stage to the pipeline
+     *
+     * @return Stage The method returns the stage given as an argument
+     */
+    public function addStage(Stage $stage) : Stage
+    {
+        return $this->builder->addStage($stage);
+    }
 }
