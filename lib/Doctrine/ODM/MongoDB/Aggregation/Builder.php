@@ -20,6 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use Doctrine\MongoDB\Aggregation\Builder as BaseBuilder;
+use Doctrine\MongoDB\Aggregation\Stage;
 use Doctrine\MongoDB\Aggregation\Stage\GeoNear;
 use Doctrine\MongoDB\CommandCursor as BaseCommandCursor;
 use Doctrine\ODM\MongoDB\CommandCursor;
@@ -222,6 +223,17 @@ class Builder extends BaseBuilder
         }
 
         return $pipeline;
+    }
+
+    /**
+     * Extend visibility of parent's method to public
+     *
+     * @param Stage $stage
+     * @return Stage
+     */
+    public function addStage(Stage $stage)
+    {
+        return parent::addStage($stage);
     }
 
     /**
