@@ -13,7 +13,7 @@ env:
     - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017"
     - KEY_SERVER="hkp://keyserver.ubuntu.com:80"
     - MONGO_REPO_URI="https://repo.mongodb.org/apt/ubuntu"
-    - MONGO_REPO_TYPE="precise/mongodb-org/"
+    - MONGO_REPO_TYPE="trusty/mongodb-org/"
     - SOURCES_LOC="/etc/apt/sources.list.d/mongodb.list"
     - DRIVER_VERSION="stable"
     - ADAPTER_VERSION="^1.0.0"
@@ -26,6 +26,8 @@ matrix:
       env: DRIVER_VERSION="1.6.7" COMPOSER_FLAGS="--prefer-lowest" SERVER_VERSION="3.2" KEY_ID="EA312927"
     - php: 7.2
       env: SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
+    - php: 7.3
+      env: SERVER_VERSION="4.0" KEY_ID="9DA31620334BD75D9DCB49F368818C72E52529D4"
 
 before_install:
   - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
