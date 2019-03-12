@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
+use function in_array;
 use function sprintf;
 
 class SchemaManager
@@ -650,9 +651,10 @@ class SchemaManager
             }
         } while (! $done && $try < 2);
 
-        // Starting with MongoDB 3.2, this command returns code 20 when a collection is already sharded.
-        // For older MongoDB versions, check the error message
-        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 20) || $result['errmsg'] == 'already sharded') {
+        // For MongoDB 3.2 and newer, this command returns code 20 when a collection is already sharded.
+        // For MongoDB 4.0 and newer, this command returns code 23 when a collection is already sharded.
+        // For older MongoDB versions, we check the error message
+        if ($result['ok'] == 1 || (isset($result['code']) && in_array($result['code'], [20, 23])) || $result['errmsg'] == 'already sharded') {
             return;
         }
 

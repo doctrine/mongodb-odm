@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @ODM\Document(collection="sharded.one")
+ * @ODM\Index(keys={"k"="asc"})
  * @ODM\ShardKey(keys={"k"="asc"})
  */
 class ShardedOne
