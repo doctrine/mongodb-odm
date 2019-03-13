@@ -784,10 +784,6 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
      */
     public function setDiscriminatorMap(array $map)
     {
-        $this->subClasses = [];
-        $this->discriminatorMap = [];
-        $this->discriminatorValue = null;
-
         foreach ($map as $value => $className) {
             if (strpos($className, '\\') === false && strlen($this->namespace)) {
                 $className = $this->namespace . '\\' . $className;
