@@ -724,8 +724,11 @@ In ODM the distinction is done by explicitly calling ``updateMany()`` method of 
         ->execute();
 
 .. note::
-    ``updateMany()`` and  ``updateOne()`` methods were introduced in version 1.2. If you're
-    using one of previous version you need to use ``update()`` combined with ``multiple(true)``.
+
+    The ``multiple()`` and ``update()`` methods were deprecated in version 1.2.
+    Please use ``updateOne()`` and ``updateMany()`` instead of ``update()`` with
+    ``multiple()``. ``update()`` and ``multiple()`` will be removed in version
+    2.0.
 
 Modifier Operations
 -------------------

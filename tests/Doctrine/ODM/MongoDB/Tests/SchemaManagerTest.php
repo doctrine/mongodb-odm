@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentManagerMock;
+use Documents\Sharded\ShardedOne;
 use PHPUnit\Framework\TestCase;
 
 class SchemaManagerTest extends TestCase
@@ -18,6 +19,7 @@ class SchemaManagerTest extends TestCase
         \Documents\CmsProduct::class,
         \Documents\Comment::class,
         \Documents\SimpleReferenceUser::class,
+        ShardedOne::class,
     );
 
     private $someNonIndexedClasses = array(

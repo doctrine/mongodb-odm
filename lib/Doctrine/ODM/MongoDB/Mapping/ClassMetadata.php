@@ -803,10 +803,6 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setDiscriminatorMap(array $map)
     {
-        $this->subClasses = [];
-        $this->discriminatorMap = [];
-        $this->discriminatorValue = null;
-
         foreach ($map as $value => $className) {
             if (strpos($className, '\\') === false && strlen($this->namespace)) {
                 @trigger_error(sprintf('Class "%s" relies on same-namespace resolution in its discriminator map for value "%s". This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $this->name, $value), E_USER_DEPRECATED);

@@ -22,11 +22,22 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use const E_USER_DEPRECATED;
+use function in_array;
 use function sprintf;
 use function trigger_error;
 
 class SchemaManager
 {
+    /**
+     * @internal For internal use only. This constant will be private in 2.0.
+     */
+    const MONGODB_ERROR_ILLEGAL_OPERATION = 20;
+
+    /**
+     * @internal For internal use only. This constant will be private in 2.0.
+     */
+    const MONGODB_ERROR_ALREADY_INITIALIZED = 23;
+
     /**
      * @var DocumentManager
      */
@@ -659,9 +670,10 @@ class SchemaManager
             }
         } while (! $done && $try < 2);
 
-        // Starting with MongoDB 3.2, this command returns code 20 when a collection is already sharded.
-        // For older MongoDB versions, check the error message
-        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 20) || $result['errmsg'] == 'already sharded') {
+        // For MongoDB 3.2 and newer, this command returns code 20 when a collection is already sharded.
+        // For MongoDB 4.0 and newer, this command returns code 23 when a collection is already sharded.
+        // For older MongoDB versions, we check the error message
+        if ($result['ok'] == 1 || (isset($result['code']) && in_array($result['code'], [self::MONGODB_ERROR_ILLEGAL_OPERATION, self::MONGODB_ERROR_ALREADY_INITIALIZED])) || $result['errmsg'] == 'already sharded') {
             return;
         }
 
@@ -683,7 +695,7 @@ class SchemaManager
 
         // Error code is only available with MongoDB 3.2. MongoDB 3.0 only returns a message
         // Thus, check code if it exists and fall back on error message
-        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == 23) || $result['errmsg'] == 'already enabled') {
+        if ($result['ok'] == 1 || (isset($result['code']) && $result['code'] == self::MONGODB_ERROR_ALREADY_INITIALIZED) || $result['errmsg'] == 'already enabled') {
             return;
         }
 

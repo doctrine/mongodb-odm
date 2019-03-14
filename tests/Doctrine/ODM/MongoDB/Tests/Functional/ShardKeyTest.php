@@ -7,6 +7,9 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\QueryLogger;
 use Documents\Sharded\ShardedOne;
 
+/**
+ * @group sharding
+ */
 class ShardKeyTest extends BaseTest
 {
     /**
