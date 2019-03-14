@@ -11,6 +11,9 @@ use MongoDB\BSON\ObjectId;
 use function end;
 use function get_class;
 
+/**
+ * @group sharding
+ */
 class ShardKeyTest extends BaseTest
 {
     /** @var CommandLogger */

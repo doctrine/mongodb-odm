@@ -18,6 +18,7 @@ use function assert;
 use function iterator_count;
 use function iterator_to_array;
 use function ksort;
+use function sprintf;
 
 class SchemaManager
 {
@@ -164,6 +165,10 @@ class SchemaManager
                         foreach ($embeddedIndex['keys'] as $key => $value) {
                             $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
                             unset($embeddedIndex['keys'][$key]);
+                        }
+
+                        if (isset($embeddedIndex['options']['name'])) {
+                            $embeddedIndex['options']['name'] = sprintf('%s_%s', $fieldMapping['name'], $embeddedIndex['options']['name']);
                         }
 
                         $indexes[] = $embeddedIndex;
