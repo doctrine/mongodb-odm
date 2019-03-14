@@ -5,6 +5,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+/**
+ * @group sharding
+ */
 class EnsureShardingTest extends BaseTest
 {
     public function setUp()
@@ -35,6 +38,7 @@ class EnsureShardingTest extends BaseTest
         $doc = array('title' => 'hey', 'k' => 'hi');
         $collection->insert($doc);
 
+        $this->dm->getSchemaManager()->ensureDocumentIndexes($class);
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $indexes = $collection->getIndexInfo();
@@ -68,6 +72,7 @@ class EnsureShardingTest extends BaseTest
         $this->dm->flush();
 
         $class = \Documents\Sharded\ShardedOne::class;
+        $this->dm->getSchemaManager()->ensureDocumentIndexes($class);
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
