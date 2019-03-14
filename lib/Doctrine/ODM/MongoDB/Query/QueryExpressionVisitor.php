@@ -13,6 +13,8 @@ use RuntimeException;
 
 /**
  * Converts Collection expressions to query expressions.
+ *
+ * @internal
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {

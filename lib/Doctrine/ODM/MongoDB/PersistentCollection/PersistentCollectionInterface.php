@@ -71,14 +71,12 @@ interface PersistentCollectionInterface extends Collection
     public function setDirty($dirty);
 
     /**
-     * INTERNAL:
      * Sets the collection's owning entity together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
      */
     public function setOwner(object $document, array $mapping);
 
     /**
-     * INTERNAL:
      * Tells this collection to take a snapshot of its current state reindexing
      * itself numerically if using save strategy that is enforcing BSON array.
      * Reindexing is safe as snapshot is taken only after synchronizing collection
@@ -87,14 +85,12 @@ interface PersistentCollectionInterface extends Collection
     public function takeSnapshot();
 
     /**
-     * INTERNAL:
      * Clears the internal snapshot information and sets isDirty to true if the collection
      * has elements.
      */
     public function clearSnapshot();
 
     /**
-     * INTERNAL:
      * Returns the last snapshot of the elements in the collection.
      *
      * @return array The last snapshot of the elements.
@@ -102,37 +98,30 @@ interface PersistentCollectionInterface extends Collection
     public function getSnapshot();
 
     /**
-     * INTERNAL:
-     * getDeleteDiff
-     *
      * @return array
      */
     public function getDeleteDiff();
 
     /**
-     * INTERNAL: get objects that were removed, unlike getDeleteDiff this doesn't care about indices.
+     * Get objects that were removed, unlike getDeleteDiff this doesn't care about indices.
      *
      * @return array
      */
     public function getDeletedDocuments();
 
     /**
-     * INTERNAL:
-     * getInsertDiff
-     *
      * @return array
      */
     public function getInsertDiff();
 
     /**
-     * INTERNAL: get objects that were added, unlike getInsertDiff this doesn't care about indices.
+     * Get objects that were added, unlike getInsertDiff this doesn't care about indices.
      *
      * @return array
      */
     public function getInsertedDocuments();
 
     /**
-     * INTERNAL:
      * Gets the collection owner.
      */
     public function getOwner() : ?object;

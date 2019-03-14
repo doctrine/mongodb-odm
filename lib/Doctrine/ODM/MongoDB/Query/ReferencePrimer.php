@@ -37,6 +37,8 @@ use function sprintf;
  *
  * Priming can only be used for the owning side side of a relationship, since
  * the referenced identifiers are not immediately available on an inverse side.
+ *
+ * @internal
  */
 class ReferencePrimer
 {

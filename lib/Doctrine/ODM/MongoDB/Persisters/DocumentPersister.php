@@ -62,6 +62,8 @@ use function strtolower;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
+ *
+ * @internal
  */
 class DocumentPersister
 {

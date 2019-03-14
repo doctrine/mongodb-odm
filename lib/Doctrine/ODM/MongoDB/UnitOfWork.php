@@ -275,6 +275,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Factory for returning new PersistenceBuilder instances used for preparing data into
      * queries for insert persistence.
+     *
+     * @internal
      */
     public function getPersistenceBuilder() : PersistenceBuilder
     {
@@ -286,6 +288,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Sets the parent association for a given embedded document.
+     *
+     * @internal
      */
     public function setParentAssociation(object $document, array $mapping, ?object $parent, string $propertyPath) : void
     {
@@ -335,6 +339,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Set the document persister instance to use for the given document name
+     *
+     * @internal
      */
     public function setDocumentPersister(string $documentName, Persisters\DocumentPersister $persister) : void
     {
@@ -513,8 +519,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Sets the changeset for a document.
+     *
+     * @internal
      */
     public function setDocumentChangeSet(object $document, array $changeset) : void
     {
@@ -523,6 +530,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Get a documents actual data, flattening all the objects to arrays.
+     *
+     * @internal
      *
      * @return array
      */
@@ -957,7 +966,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Computes the changeset of an individual document, independently of the
      * computeChangeSets() routine that is used at the beginning of a UnitOfWork#commit().
      *
@@ -966,8 +974,6 @@ class UnitOfWork implements PropertyChangedListener
      * whereby changes detected in this method prevail.
      *
      * @throws InvalidArgumentException If the passed document is not MANAGED.
-     *
-     * @ignore
      */
     public function recomputeSingleDocumentChangeSet(ClassMetadata $class, object $document) : void
     {
@@ -1144,6 +1150,8 @@ class UnitOfWork implements PropertyChangedListener
      * If the document already has an identifier, it will be added to the
      * identity map.
      *
+     * @internal
+     *
      * @throws InvalidArgumentException
      */
     public function scheduleForInsert(ClassMetadata $class, object $document) : void
@@ -1172,6 +1180,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Schedules a document for upsert into the database and adds it to the
      * identity map
+     *
+     * @internal
      *
      * @throws InvalidArgumentException
      */
@@ -1216,6 +1226,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Schedules a document for being updated.
      *
+     * @internal
+     *
      * @throws InvalidArgumentException
      */
     public function scheduleForUpdate(object $document) : void
@@ -1258,8 +1270,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Schedules a document for deletion.
+     *
+     * @internal
      */
     public function scheduleForDelete(object $document) : void
     {
@@ -1301,6 +1314,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether a document is scheduled for insertion, update or deletion.
+     *
+     * @internal
      */
     public function isDocumentScheduled(object $document) : bool
     {
@@ -1312,14 +1327,13 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Registers a document in the identity map.
      *
      * Note that documents in a hierarchy are registered with the class name of
      * the root document. Identifiers are serialized before being used as array
      * keys to allow differentiation of equal, but not identical, values.
      *
-     * @ignore
+     * @internal
      */
     public function addToIdentityMap(object $document) : bool
     {
@@ -1400,13 +1414,12 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Removes a document from the identity map. This effectively detaches the
      * document from the persistence management of Doctrine.
      *
-     * @throws InvalidArgumentException
+     * @internal
      *
-     * @ignore
+     * @throws InvalidArgumentException
      */
     public function removeFromIdentityMap(object $document) : bool
     {
@@ -1430,14 +1443,13 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Gets a document in the identity map by its identifier hash.
+     *
+     * @internal
      *
      * @param mixed $id Document identifier
      *
      * @throws InvalidArgumentException If the class does not have an identifier.
-     *
-     * @ignore
      */
     public function getById($id, ClassMetadata $class) : object
     {
@@ -1451,17 +1463,16 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Tries to get a document by its identifier hash. If no document is found
      * for the given hash, FALSE is returned.
+     *
+     * @internal
      *
      * @param mixed $id Document identifier
      *
      * @return mixed The found document or FALSE.
      *
      * @throws InvalidArgumentException If the class does not have an identifier.
-     *
-     * @ignore
      */
     public function tryGetById($id, ClassMetadata $class)
     {
@@ -1476,6 +1487,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Schedules a document for dirty-checking at commit-time.
+     *
+     * @internal
      */
     public function scheduleForSynchronization(object $document) : void
     {
@@ -1485,6 +1498,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether a document is registered in the identity map.
+     *
+     * @internal
      */
     public function isInIdentityMap(object $document) : bool
     {
@@ -1515,10 +1530,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Checks whether an identifier exists in the identity map.
      *
-     * @ignore
+     * @internal
      */
     public function containsId($id, string $rootClassName) : bool
     {
@@ -1527,6 +1541,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Persists a document as part of the current unit of work.
+     *
+     * @internal
      *
      * @throws MongoDBException If trying to persist MappedSuperclass.
      * @throws InvalidArgumentException If there is something wrong with document's identifier.
@@ -1600,6 +1616,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Deletes a document as part of the current unit of work.
+     *
+     * @internal
      */
     public function remove(object $document)
     {
@@ -1650,6 +1668,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Merges the state of the given detached document into this UnitOfWork.
+     *
+     * @internal
      */
     public function merge(object $document) : object
     {
@@ -1846,6 +1866,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Detaches a document from the persistence management. It's persistence will
      * no longer be managed by Doctrine.
+     *
+     * @internal
      */
     public function detach(object $document) : void
     {
@@ -1894,6 +1916,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Refreshes the state of the given document from the database, overwriting
      * any local, unpersisted changes.
+     *
+     * @internal
      *
      * @throws InvalidArgumentException If the document is not MANAGED.
      */
@@ -2098,6 +2122,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Acquire a lock on the given document.
      *
+     * @internal
+     *
      * @throws LockException
      * @throws InvalidArgumentException
      */
@@ -2129,6 +2155,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Releases a lock on the given document.
      *
+     * @internal
+     *
      * @throws InvalidArgumentException
      */
     public function unlock(object $document) : void
@@ -2142,6 +2170,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Clears the UnitOfWork.
+     *
+     * @internal
      */
     public function clear(?string $documentName = null) : void
     {
@@ -2183,12 +2213,11 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Schedules an embedded document for removal. The remove() operation will be
      * invoked on that document at the beginning of the next commit of this
      * UnitOfWork.
      *
-     * @ignore
+     * @internal
      */
     public function scheduleOrphanRemoval(object $document) : void
     {
@@ -2196,10 +2225,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Unschedules an embedded or referenced object for removal.
      *
-     * @ignore
+     * @internal
      */
     public function unscheduleOrphanRemoval(object $document) : void
     {
@@ -2236,8 +2264,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Schedules a complete collection for removal when this UnitOfWork commits.
+     *
+     * @internal
      */
     public function scheduleCollectionDeletion(PersistentCollectionInterface $coll) : void
     {
@@ -2253,6 +2282,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether a PersistentCollection is scheduled for deletion.
+     *
+     * @internal
      */
     public function isCollectionScheduledForDeletion(PersistentCollectionInterface $coll) : bool
     {
@@ -2260,8 +2291,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Unschedules a collection from being deleted when this UnitOfWork commits.
+     *
+     * @internal
      */
     public function unscheduleCollectionDeletion(PersistentCollectionInterface $coll) : void
     {
@@ -2280,8 +2312,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Schedules a collection for update when this UnitOfWork commits.
+     *
+     * @internal
      */
     public function scheduleCollectionUpdate(PersistentCollectionInterface $coll) : void
     {
@@ -2302,8 +2335,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Unschedules a collection from being updated when this UnitOfWork commits.
+     *
+     * @internal
      */
     public function unscheduleCollectionUpdate(PersistentCollectionInterface $coll) : void
     {
@@ -2323,6 +2357,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Checks whether a PersistentCollection is scheduled for update.
+     *
+     * @internal
      */
     public function isCollectionScheduledForUpdate(PersistentCollectionInterface $coll) : bool
     {
@@ -2330,9 +2366,10 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Gets PersistentCollections that have been visited during computing change
      * set of $document
+     *
+     * @internal
      *
      * @return PersistentCollectionInterface[]
      */
@@ -2344,8 +2381,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Gets PersistentCollections that are scheduled to update and related to $document
+     *
+     * @internal
      *
      * @return PersistentCollectionInterface[]
      */
@@ -2359,6 +2397,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Checks whether the document is related to a PersistentCollection
      * scheduled for update or deletion.
+     *
+     * @internal
      */
     public function hasScheduledCollections(object $document) : bool
     {
@@ -2437,6 +2477,8 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the class name for an association (embed or reference) with respect
      * to any discriminator value.
      *
+     * @internal
+     *
      * @param array|null $data
      */
     public function getClassNameForAssociation(array $mapping, $data) : string
@@ -2471,12 +2513,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Creates a document. Used for reconstitution of documents during hydration.
      *
-     * @internal Highly performance-sensitive method.
-     *
-     * @ignore
+     * @internal
      */
     public function getOrCreateDocument(string $className, array $data, array &$hints = [], ?object $document = null) : object
     {
@@ -2554,6 +2593,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Initializes (loads) an uninitialized persistent collection of a document.
+     *
+     * @internal
      */
     public function loadCollection(PersistentCollectionInterface $collection) : void
     {
@@ -2567,6 +2608,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the identity map of the UnitOfWork.
+     *
+     * @internal
      */
     public function getIdentityMap() : array
     {
@@ -2586,6 +2629,9 @@ class UnitOfWork implements PropertyChangedListener
         return $this->originalDocumentData[$oid] ?? [];
     }
 
+    /**
+     * @internal
+     */
     public function setOriginalDocumentData(object $document, array $data) : void
     {
         $oid                              = spl_object_hash($document);
@@ -2594,12 +2640,11 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Sets a property value of the original data array of a document.
      *
-     * @param mixed $value
+     * @internal
      *
-     * @ignore
+     * @param mixed $value
      */
     public function setOriginalDocumentProperty(string $oid, string $property, $value) : void
     {
@@ -2619,6 +2664,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Checks whether the UnitOfWork has any pending insertions.
      *
+     * @internal
+     *
      * @return bool TRUE if this UnitOfWork has pending insertions, FALSE otherwise.
      */
     public function hasPendingInsertions() : bool
@@ -2629,6 +2676,8 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Calculates the size of the UnitOfWork. The size of the UnitOfWork is the
      * number of documents in the identity map.
+     *
+     * @internal
      */
     public function size() : int
     {
@@ -2640,7 +2689,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Registers a document as managed.
      *
      * TODO: This method assumes that $id is a valid PHP identifier for the
@@ -2649,6 +2697,8 @@ class UnitOfWork implements PropertyChangedListener
      * document identifiers map will become inconsistent with the identity map.
      * In the future, we may want to round-trip $id through a PHP and database
      * conversion and throw an exception if it's inconsistent.
+     *
+     * @internal
      *
      * @param mixed $id The identifier values.
      */
@@ -2669,8 +2719,9 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * INTERNAL:
      * Clears the property changeset of the document with the given OID.
+     *
+     * @internal
      */
     public function clearDocumentChangeSet(string $oid)
     {
@@ -2739,6 +2790,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Get the currently scheduled complete collection deletions
+     *
+     * @internal
      */
     public function getScheduledCollectionDeletions() : array
     {
@@ -2747,6 +2800,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the currently scheduled collection inserts, updates and deletes.
+     *
+     * @internal
      */
     public function getScheduledCollectionUpdates() : array
     {
@@ -2755,6 +2810,8 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Helper method to initialize a lazy loading proxy or persistent collection.
+     *
+     * @internal
      */
     public function initializeObject(object $obj) : void
     {

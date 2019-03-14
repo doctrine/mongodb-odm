@@ -30,6 +30,8 @@ use function ucfirst;
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a document database.
+ *
+ * @internal
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {

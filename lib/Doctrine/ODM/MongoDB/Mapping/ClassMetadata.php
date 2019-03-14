@@ -573,8 +573,9 @@ class ClassMetadata implements BaseClassMetadata
     }
 
     /**
-     * INTERNAL:
      * Sets the mapped identifier field of this class.
+     *
+     * @internal
      */
     public function setIdentifier(?string $identifier) : void
     {
@@ -1249,9 +1250,10 @@ class ClassMetadata implements BaseClassMetadata
     }
 
     /**
-     * INTERNAL:
      * Adds a field mapping without completing/validating it.
      * This is mainly used to add inherited field mappings to derived classes.
+     *
+     * @internal
      */
     public function addInheritedFieldMapping(array $fieldMapping) : void
     {
@@ -1265,9 +1267,10 @@ class ClassMetadata implements BaseClassMetadata
     }
 
     /**
-     * INTERNAL:
      * Adds an association mapping without completing/validating it.
      * This is mainly used to add inherited association mappings to derived classes.
+     *
+     * @internal
      *
      * @throws MappingException
      */

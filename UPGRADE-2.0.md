@@ -297,3 +297,13 @@ ocramius. If you are checking for proxies, the following changed:
 * The `isScheduledForDirtyCheck` and `scheduleForDirtyCheck` methods have been
   renamed to `isScheduledForSynchronization` and `scheduleForSynchronization`,
   respectively.
+
+## Internal classes and methods
+
+Number of public methods and classes saw an `@internal` annotation added. This
+marks places which are considered private to ODM but can not become ones due to
+language limitations. Those methods can still be used (at your own risk) however
+the backward compatibility promise for them is relaxed: we reserve the right to
+change internal method's signatures and/or remove them altogether in *minor*
+releases. Should such change be made, a note shall be included in the `UPGRADE.md`
+file describing changes contained in the release.

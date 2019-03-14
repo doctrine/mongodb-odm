@@ -107,6 +107,8 @@ class HydratorFactory
 
     /**
      * Sets the UnitOfWork instance.
+     *
+     * @internal
      */
     public function setUnitOfWork(UnitOfWork $uow) : void
     {

@@ -8,6 +8,9 @@ use ProxyManager\FileLocator\FileLocator as BaseFileLocator;
 use function mkdir;
 use function realpath;
 
+/**
+ * @internal
+ */
 final class FileLocator extends BaseFileLocator
 {
     public function __construct(string $proxiesDirectory)
