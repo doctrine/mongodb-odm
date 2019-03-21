@@ -878,7 +878,11 @@ class DocumentPersister
         $sortFields = [];
 
         foreach ($fields as $key => $value) {
-            $sortFields[$this->prepareFieldName($key)] = $this->getSortDirection($value);
+            if (is_array($value)) {
+                $sortFields[$this->prepareFieldName($key)] = $value;
+            } else {
+                $sortFields[$this->prepareFieldName($key)] = $this->getSortDirection($value);
+            }
         }
 
         return $sortFields;
