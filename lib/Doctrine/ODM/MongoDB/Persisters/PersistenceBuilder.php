@@ -13,12 +13,9 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
 use UnexpectedValueException;
-use const E_USER_DEPRECATED;
 use function array_search;
 use function array_values;
 use function get_class;
-use function sprintf;
-use function trigger_error;
 
 /**
  * PersistenceBuilder builds the queries used by the persisters to update and insert
@@ -26,10 +23,8 @@ use function trigger_error;
  * UnitOfWork to build queries using atomic operators like $set, $unset, etc.
  *
  * @internal
- *
- * @final
  */
-class PersistenceBuilder
+final class PersistenceBuilder
 {
     /**
      * The DocumentManager instance.
@@ -50,9 +45,6 @@ class PersistenceBuilder
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
-        if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
-        }
         $this->dm  = $dm;
         $this->uow = $uow;
     }

@@ -25,7 +25,6 @@ use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use ProxyManager\Proxy\GhostObjectInterface;
 use UnexpectedValueException;
-use const E_USER_DEPRECATED;
 use function array_filter;
 use function count;
 use function get_class;
@@ -37,16 +36,13 @@ use function preg_match;
 use function serialize;
 use function spl_object_hash;
 use function sprintf;
-use function trigger_error;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
- *
- * @final
  */
-class UnitOfWork implements PropertyChangedListener
+final class UnitOfWork implements PropertyChangedListener
 {
     /**
      * A document is in MANAGED state when its persistence is managed by a DocumentManager.
@@ -270,9 +266,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function __construct(DocumentManager $dm, EventManager $evm, HydratorFactory $hydratorFactory)
     {
-        if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
-        }
         $this->dm                    = $dm;
         $this->evm                   = $evm;
         $this->hydratorFactory       = $hydratorFactory;

@@ -21,7 +21,7 @@ use function count;
 /**
  * This factory is used to create proxy objects for documents at runtime.
  */
-class StaticProxyFactory implements ProxyFactory
+final class StaticProxyFactory implements ProxyFactory
 {
     /** @var UnitOfWork The UnitOfWork this factory is bound to. */
     private $uow;

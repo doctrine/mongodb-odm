@@ -21,13 +21,10 @@ use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use ReflectionException;
-use const E_USER_DEPRECATED;
 use function assert;
 use function get_class;
 use function get_class_methods;
 use function in_array;
-use function sprintf;
-use function trigger_error;
 use function ucfirst;
 
 /**
@@ -36,10 +33,8 @@ use function ucfirst;
  * to a document database.
  *
  * @internal
- *
- * @final
  */
-class ClassMetadataFactory extends AbstractClassMetadataFactory
+final class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
     /** @var string */
     protected $cacheSalt = '$MONGODBODMCLASSMETADATA';
@@ -55,15 +50,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /** @var EventManager The event manager instance */
     private $evm;
-
-    public function __construct()
-    {
-        if (self::class === static::class) {
-            return;
-        }
-
-        @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
-    }
 
     public function setDocumentManager(DocumentManager $dm) : void
     {

@@ -34,7 +34,6 @@ use MongoDB\Driver\Exception\WriteException;
 use MongoDB\GridFS\Bucket;
 use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
-use const E_USER_DEPRECATED;
 use function array_combine;
 use function array_fill;
 use function array_intersect_key;
@@ -60,16 +59,13 @@ use function spl_object_hash;
 use function sprintf;
 use function strpos;
 use function strtolower;
-use function trigger_error;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
  *
  * @internal
- *
- * @final
  */
-class DocumentPersister
+final class DocumentPersister
 {
     /** @var PersistenceBuilder */
     private $pb;
@@ -120,9 +116,6 @@ class DocumentPersister
         ClassMetadata $class,
         ?CriteriaMerger $cm = null
     ) {
-        if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
-        }
         $this->pb              = $pb;
         $this->dm              = $dm;
         $this->cm              = $cm ?: new CriteriaMerger();

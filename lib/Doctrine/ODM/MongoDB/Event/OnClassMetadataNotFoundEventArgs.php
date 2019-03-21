@@ -6,19 +6,14 @@ namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use const E_USER_DEPRECATED;
-use function sprintf;
-use function trigger_error;
 
 /**
  * Class that holds event arguments for a `onClassMetadataNotFound` event.
  *
  * This object is mutable by design, allowing callbacks having access to it to set the
  * found metadata in it, and therefore "cancelling" a `onClassMetadataNotFound` event
- *
- * @final
  */
-class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
+final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
     /** @var string */
     private $className;
@@ -28,9 +23,6 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 
     public function __construct(string $className, DocumentManager $dm)
     {
-        if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
-        }
         $this->className = $className;
 
         parent::__construct($dm);
