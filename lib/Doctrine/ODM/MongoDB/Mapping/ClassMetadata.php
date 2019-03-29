@@ -1737,7 +1737,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * {@inheritDoc}
      */
-    public function getAssociationTargetClass($assocName) : string
+    public function getAssociationTargetClass($assocName) : ?string
     {
         if (! isset($this->associationMappings[$assocName])) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");

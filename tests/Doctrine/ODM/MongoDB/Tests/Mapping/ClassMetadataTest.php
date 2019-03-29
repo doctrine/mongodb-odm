@@ -138,6 +138,19 @@ class ClassMetadataTest extends BaseTest
         $this->assertInternalType('array', $assoc);
     }
 
+    public function testGetAssociationTargetClassWithoutTargetDocument()
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->mapManyEmbedded(
+            [
+                'fieldName' => 'groups',
+                'targetDocument' => null,
+            ]
+        );
+
+        $this->assertNull($cm->getAssociationTargetClass('groups'));
+    }
+
     /**
      * @group DDC-115
      */
