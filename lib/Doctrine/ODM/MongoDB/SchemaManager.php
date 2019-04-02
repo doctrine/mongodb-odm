@@ -55,7 +55,7 @@ final class SchemaManager
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory.
      */
-    public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -63,7 +63,7 @@ final class SchemaManager
                 continue;
             }
 
-            $this->ensureDocumentIndexes($class->name, $maxTimeMs, $writeConcern);
+            $this->ensureDocumentIndexes($class->name, $maxTimeMs, $writeConcern, $background);
         }
     }
 
@@ -237,7 +237,7 @@ final class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -245,7 +245,7 @@ final class SchemaManager
         }
 
         if ($class->isFile) {
-            $this->ensureGridFSIndexes($class, $maxTimeMs, $writeConcern);
+            $this->ensureGridFSIndexes($class, $maxTimeMs, $writeConcern, $background);
         }
 
         $indexes = $this->getDocumentIndexes($documentName);
@@ -255,7 +255,7 @@ final class SchemaManager
 
         $collection = $this->dm->getDocumentCollection($class->name);
         foreach ($indexes as $index) {
-            $collection->createIndex($index['keys'], $this->getWriteOptions($maxTimeMs, $writeConcern, $index['options']));
+            $collection->createIndex($index['keys'], $this->getWriteOptions($maxTimeMs, $writeConcern, $index['options'] + ['background' => $background]));
         }
     }
 
@@ -649,13 +649,13 @@ final class SchemaManager
         )->toArray()[0];
     }
 
-    private function ensureGridFSIndexes(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    private function ensureGridFSIndexes(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
     {
-        $this->ensureChunksIndex($class, $maxTimeMs, $writeConcern);
-        $this->ensureFilesIndex($class, $maxTimeMs, $writeConcern);
+        $this->ensureChunksIndex($class, $maxTimeMs, $writeConcern, $background);
+        $this->ensureFilesIndex($class, $maxTimeMs, $writeConcern, $background);
     }
 
-    private function ensureChunksIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    private function ensureChunksIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
     {
         $chunksCollection = $this->dm->getDocumentBucket($class->getName())->getChunksCollection();
         foreach ($chunksCollection->listIndexes() as $index) {
@@ -666,11 +666,11 @@ final class SchemaManager
 
         $chunksCollection->createIndex(
             self::GRIDFS_FILE_COLLECTION_INDEX,
-            $this->getWriteOptions($maxTimeMs, $writeConcern, ['unique' => true])
+            $this->getWriteOptions($maxTimeMs, $writeConcern, ['unique' => true, 'background' => $background])
         );
     }
 
-    private function ensureFilesIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    private function ensureFilesIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
     {
         $filesCollection = $this->dm->getDocumentCollection($class->getName());
         foreach ($filesCollection->listIndexes() as $index) {
@@ -679,7 +679,7 @@ final class SchemaManager
             }
         }
 
-        $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX, $this->getWriteOptions($maxTimeMs, $writeConcern));
+        $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX, $this->getWriteOptions($maxTimeMs, $writeConcern, ['background' => $background]));
     }
 
     private function collectionIsSharded(string $documentName) : bool
