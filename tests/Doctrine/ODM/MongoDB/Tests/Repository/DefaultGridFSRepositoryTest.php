@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Repos;
 
 use DateTime;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\UploadOptions;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\File;
 use Documents\FileMetadata;
+use Documents\FileWithoutMetadata;
 use Documents\User;
 use function fclose;
 use function filesize;
@@ -17,6 +19,7 @@ use function fopen;
 use function fseek;
 use function fstat;
 use function fwrite;
+use function sprintf;
 use function tmpfile;
 
 class DefaultGridFSRepositoryTest extends BaseTest
@@ -64,8 +67,15 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     public function testUploadFromStreamStoresFile() : void
     {
+        $owner = new User();
+        $this->dm->persist($owner);
+        $this->dm->flush();
+
         $uploadOptions           = new UploadOptions();
         $uploadOptions->metadata = new FileMetadata();
+
+        $uploadOptions->metadata->setOwner($owner);
+        $uploadOptions->metadata->getEmbedOne()->name = 'Foo';
 
         $fileResource = fopen(__FILE__, 'r');
 
@@ -88,6 +98,8 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame(12345, $file->getChunkSize());
         self::assertEquals(new DateTime(), $file->getUploadDate(), '', 1);
         self::assertInstanceOf(FileMetadata::class, $file->getMetadata());
+        self::assertInstanceOf(User::class, $file->getMetadata()->getOwner());
+        self::assertSame('Foo', $file->getMetadata()->getEmbedOne()->name);
 
         $stream = tmpfile();
         $this->getRepository()->downloadToStream($file->getId(), $stream);
@@ -209,9 +221,28 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame(0, $bucket->getChunksCollection()->count());
     }
 
-    private function getRepository() : GridFSRepository
+    public function testUploadMetadataForFileWithoutMetadata()
     {
-        return $this->dm->getRepository(File::class);
+        $uploadOptions           = new UploadOptions();
+        $uploadOptions->metadata = new FileMetadata();
+
+        $uploadOptions->metadata->getEmbedOne()->name = 'Foo';
+
+        $fileResource = fopen(__FILE__, 'r');
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(sprintf("No mapping found for field by DB name 'metadata' in class '%s'.", FileWithoutMetadata::class));
+
+        try {
+            $this->getRepository(FileWithoutMetadata::class)->uploadFromStream('somefile.txt', $fileResource, $uploadOptions);
+        } finally {
+            fclose($fileResource);
+        }
+    }
+
+    private function getRepository($className = File::class) : GridFSRepository
+    {
+        return $this->dm->getRepository($className);
     }
 
     private function uploadFile($filename, ?UploadOptions $uploadOptions = null) : File
