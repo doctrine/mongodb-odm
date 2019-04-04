@@ -77,7 +77,9 @@ class StaticProxyFactory implements ProxyFactory
                     static function () {
                         // empty closure, serves its purpose, for now
                     },
-                    $this->skippedFieldsFqns($metadata)
+                    [
+                        'skippedProperties' => $this->skippedFieldsFqns($metadata),
+                    ]
                 );
         }
 
