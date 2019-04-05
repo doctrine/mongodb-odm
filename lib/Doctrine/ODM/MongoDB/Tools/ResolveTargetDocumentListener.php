@@ -2,7 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tools;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
+use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
@@ -10,12 +12,22 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  *
  * Mechanism to overwrite document interfaces or classes specified as association targets.
  */
-class ResolveTargetDocumentListener
+class ResolveTargetDocumentListener implements EventSubscriber
 {
     /**
      * @var array
      */
     private $resolveTargetDocuments = array();
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSubscribedEvents()
+    {
+        return [
+            Events::loadClassMetadata,
+        ];
+    }
 
     /**
      * Add a target-document class name to resolve to a new class name.
