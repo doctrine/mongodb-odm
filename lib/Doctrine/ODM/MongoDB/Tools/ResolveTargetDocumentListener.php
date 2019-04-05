@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tools;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
+use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
@@ -26,6 +27,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
     {
         return [
             Events::loadClassMetadata,
+            Events::onClassMetadataNotFound,
         ];
     }
 
@@ -41,6 +43,26 @@ class ResolveTargetDocumentListener implements EventSubscriber
     {
         $mapping['targetDocument'] = ltrim($newDocument, "\\");
         $this->resolveTargetDocuments[ltrim($originalDocument, "\\")] = $mapping;
+    }
+
+    /**
+     * @param OnClassMetadataNotFoundEventArgs $args
+     *
+     * @internal this is an event callback, and should not be called directly
+     *
+     * @return void
+     */
+    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
+    {
+        if (! array_key_exists($args->getClassName(), $this->resolveTargetDocuments)) {
+            return;
+        }
+
+        $args->setFoundMetadata(
+            $args
+                ->getObjectManager()
+                ->getClassMetadata($this->resolveTargetDocuments[$args->getClassName()]['targetDocument'])
+        );
     }
 
     /**
