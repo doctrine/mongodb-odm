@@ -25,6 +25,7 @@ use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
+use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Id\AbstractIdGenerator;
 use Doctrine\ODM\MongoDB\Id\AlnumGenerator;
@@ -84,6 +85,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->driver = $this->config->getMetadataDriverImpl();
         $this->evm = $this->dm->getEventManager();
         $this->initialized = true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function onNotFoundMetadata($className)
+    {
+        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
+            return null;
+        }
+
+        $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->dm);
+
+        $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
+
+        return $eventArgs->getFoundMetadata();
     }
 
     /**
