@@ -18,7 +18,7 @@ final class FileLocator extends BaseFileLocator
         $absolutePath = realpath($proxiesDirectory);
 
         if ($absolutePath === false) {
-            mkdir($proxiesDirectory, 0755, true);
+            mkdir($proxiesDirectory, 0775, true);
         }
 
         parent::__construct($proxiesDirectory);
