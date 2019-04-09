@@ -251,6 +251,10 @@ ocramius. If you are checking for proxies, the following changed:
 * Running `geoNear` commands through the `geoNear` helper in the query builder
   is no longer supported. Please refactor your queries to use the aggregation
   framework and `$geoNear` pipeline operator.
+* Running `group` and `mapReduce` commands through the query builder is no
+  longer supported. Please either refactor your queries to use the aggregation
+  framework or use the MongoDB library (`mongodb/mongodb`) to execute these
+  commands.
 * The `Doctrine\ODM\MongoDB\Query\FieldExtractor` class was dropped entirely.
 * The `getIterator` method in `Doctrine\ODM\MongoDB\Query\Query` returns an
   iterator of type `Doctrine\ODM\MongoDB\Iterator\Iterator` instead of a MongoDB

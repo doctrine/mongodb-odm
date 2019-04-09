@@ -18,8 +18,6 @@ The ``Query`` object supports several types of queries
 - INSERT
 - UPDATE
 - REMOVE
-- GROUP
-- MAP_REDUCE
 - DISTINCT_FIELD
 - GEO_LOCATION
 
@@ -329,47 +327,6 @@ in the order you call the method:
     <?php
 
     $query->sort('featured', 'desc');
-
-Map Reduce
-~~~~~~~~~~
-
-You can also run map reduced find queries using the ``Query``
-object:
-
-.. code-block:: php
-
-    <?php
-
-    $qb = $this->dm->createQueryBuilder(Event::class)
-        ->field('type')->equals('sale')
-        ->map('function() { emit(this.userId, 1); }')
-        ->reduce("function(k, vals) {
-            var sum = 0;
-            for (var i in vals) {
-                sum += vals[i];
-            }
-            return sum;
-        }");
-    $query = $qb->getQuery();
-    $results = $query->execute();
-
-.. note::
-
-    When you specify a ``map()`` and ``reduce()`` operation
-    the results will not be hydrated and the raw results from the map
-    reduce operation will be returned.
-
-If you just want to reduce the results using a javascript function
-you can just call the ``where()`` method:
-
-.. code-block:: php
-
-    <?php
-
-    $qb = $dm->createQueryBuilder(User::class)
-        ->where("function() { return this.type == 'admin'; }");
-
-You can read more about the `$where operator <https://docs.mongodb.com/manual/reference/operator/query/where/>`_ in the Mongo docs.
 
 Conditional Operators
 ~~~~~~~~~~~~~~~~~~~~~
@@ -923,38 +880,3 @@ Here is an example where we remove users who have never logged in:
         ->field('num_logins')->equals(0)
         ->getQuery()
         ->execute();
-
-Group Queries
--------------
-
-.. note::
-
-    Due to deprecation of ``group`` command in MongoDB 3.4 the ODM
-    also deprecates its usage through Query Builder in 1.2. Please
-    use :ref:`$group stage <aggregation_builder_group>` of the
-    Aggregation Builder instead.
-
-The last type of supported query is a group query. It performs an
-operation similar to SQL's GROUP BY command.
-
-.. code-block:: php
-
-    <?php
-
-    $result = $this->dm->createQueryBuilder(\Documents\User::class)
-        ->group([], ['count' => 0])
-        ->reduce('function (obj, prev) { prev.count++; }')
-        ->field('a')->gt(1)
-        ->getQuery()
-        ->execute();
-
-This is the same as if we were to do the group with the raw PHP
-code:
-
-.. code-block:: php
-
-    <?php
-
-    $reduce = 'function (obj, prev) { prev.count++; }';
-    $condition = ['a' => ['$gt' => 1]];
-    $result = $collection->group([], ['count' => 0], $reduce, $condition);
