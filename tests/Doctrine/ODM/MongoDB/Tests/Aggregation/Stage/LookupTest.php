@@ -192,7 +192,7 @@ class LookupTest extends BaseTest
 
     public function testLookupStageReferenceManyWithoutUnwindMongoDB32()
     {
-        $this->skipOnMongoDB34('$lookup tests without unwind will not work on MongoDB 3.4.0');
+        $this->skipOnMongoDB34('$lookup tests without unwind will not work on MongoDB 3.4.0+');
 
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
