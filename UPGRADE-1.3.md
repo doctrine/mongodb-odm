@@ -118,6 +118,9 @@ set.
    will be dropped in 2.0. This functionality is no longer available.
  * The `geoNear`, `group`, and `mapReduce` query types were deprecated and will
    be dropped in 2.0. Use aggregation pipeline features instead.
+ * The following methods in `Doctrine\ODM\MongoDB\Query\Builder` were deprecated
+   and will be dropped in 2.0: `mapReduce`, `map`, `reduce`, `finalize`, `out`,
+   `mapReduceOptions`, `distanceMultiplier`, `geoNear`, `spherical`.
 
 ## Schema manager
 
