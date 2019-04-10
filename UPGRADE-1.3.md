@@ -116,7 +116,9 @@ set.
    available.
  * The `eager` option in `Doctrine\ODM\MongoDB\Query\Query` was deprecated and
    will be dropped in 2.0. This functionality is no longer available.
-   
+ * The `geoNear`, `group`, and `mapReduce` query types were deprecated and will
+   be dropped in 2.0. Use aggregation pipeline features instead.
+
 ## Schema manager
 
  * The `timeout` option in the `odm:schema:create` and `odm:schema:update`
