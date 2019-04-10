@@ -28,6 +28,7 @@ use Doctrine\ODM\MongoDB\EagerCursor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use const E_USER_DEPRECATED;
+use function in_array;
 use function sprintf;
 use function trigger_error;
 
@@ -118,6 +119,28 @@ class Query extends \Doctrine\MongoDB\Query\Query
 
         if ( ! empty($query['eagerCursor'])) {
             $query['useIdentifierKeys'] = false;
+        }
+
+        if (in_array($query['type'], [self::TYPE_GEO_LOCATION, self::TYPE_GEO_NEAR, self::TYPE_GROUP, self::TYPE_MAP_REDUCE])) {
+            switch ($query['type']) {
+                case self::TYPE_GEO_LOCATION:
+                    $queryName = 'geoLocation';
+                    break;
+
+                case self::TYPE_GEO_NEAR:
+                    $queryName = 'geoNear';
+                    break;
+
+                case self::TYPE_GROUP:
+                    $queryName = 'group';
+                    break;
+
+                case self::TYPE_MAP_REDUCE:
+                    $queryName = 'mapReduce';
+                    break;
+            }
+
+            @trigger_error(sprintf('The "%s" query type is deprecated and will be removed in ODM 2.0.', $queryName), E_USER_DEPRECATED);
         }
 
         parent::__construct($collection, $query, $options);
