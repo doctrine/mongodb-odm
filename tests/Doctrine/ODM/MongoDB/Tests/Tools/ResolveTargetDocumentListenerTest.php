@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -18,11 +19,17 @@ class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\Base
      */
     protected $listener;
 
+    /**
+     * @var ClassMetadataFactory
+     */
+    private $factory;
+
     public function setUp()
     {
         parent::setUp();
 
          $this->listener = new ResolveTargetDocumentListener();
+        $this->factory = $this->dm->getMetadataFactory();
     }
 
     public function testResolveTargetDocumentListenerCanResolveTargetDocument()
@@ -50,6 +57,17 @@ class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\Base
         $this->assertSame('Doctrine\ODM\MongoDB\Tests\Tools\TargetDocument', $meta['refMany']['targetDocument']);
         $this->assertSame('Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetDocument', $meta['embedOne']['targetDocument']);
         $this->assertSame('Doctrine\ODM\MongoDB\Tests\Tools\TargetDocument', $meta['embedMany']['targetDocument']);
+    }
+
+    public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByInterfaceName()
+    {
+        $this->listener->addResolveTargetDocument(ResolveTargetInterface::class, ResolveTargetDocument::class, []);
+
+        $this->dm->getEventManager()->addEventSubscriber($this->listener);
+
+        $cm = $this->factory->getMetadataFor(ResolveTargetInterface::class);
+
+        $this->assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
     }
 }
 
