@@ -21,6 +21,9 @@ env:
     - SERVER_VERSION="4.0" KEY_ID="9DA31620334BD75D9DCB49F368818C72E52529D4"
 
 jobs:
+  allow_failures:
+    - php: 7.4snapshot
+
   include:
     # Test against lowest dependencies, including driver and server versions
     - stage: Test
@@ -32,6 +35,10 @@ jobs:
     # Test against the upcoming PHP version
     - stage: Test
       php: 7.4snapshot
+      addons:
+        apt:
+          packages:
+            - libonig-dev
 
     # Run tests with coverage
     - stage: Code Quality
@@ -76,6 +83,3 @@ install:
 
 script:
   - vendor/bin/phpunit
-
-allow_fialures:
-  - php: 7.4snapshot
