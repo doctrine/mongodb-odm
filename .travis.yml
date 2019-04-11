@@ -39,6 +39,10 @@ jobs:
     # Test against the upcoming PHP version
     - stage: Test
       php: 7.4snapshot
+      addons:
+        apt:
+          packages:
+            - libonig-dev
 
 before_install:
   - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
