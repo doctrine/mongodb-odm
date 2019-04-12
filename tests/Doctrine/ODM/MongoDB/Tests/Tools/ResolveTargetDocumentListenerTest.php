@@ -3,9 +3,9 @@
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -69,6 +69,17 @@ class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\Base
 
         $this->assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
     }
+
+    public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByAbstractClassName()
+    {
+        $this->listener->addResolveTargetDocument(AbstractResolveTarget::class, ResolveTargetDocument::class, []);
+
+        $this->dm->getEventManager()->addEventSubscriber($this->listener);
+
+        $cm = $this->factory->getMetadataFor(AbstractResolveTarget::class);
+
+        $this->assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
+    }
 }
 
 interface ResolveTargetInterface
@@ -80,10 +91,15 @@ interface TargetInterface extends ResolveTargetInterface
 {
 }
 
+abstract class AbstractResolveTarget implements ResolveTargetInterface
+{
+
+}
+
 /**
  * @ODM\Document
  */
-class ResolveTargetDocument implements ResolveTargetInterface
+class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTargetInterface
 {
     /**
      * @ODM\Id
