@@ -3,6 +3,8 @@
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
+use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
@@ -63,6 +65,20 @@ class ClassMetadataFactoryTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertTrue($h1);
     }
 
+    public function testMetadataNotFoundTriggersEventAndReturnsFallbackMetadata()
+    {
+        $customMetadata = new ClassMetadata(TestDocument1::class);
+
+        $listener = new MetadataNotFoundListener();
+        $listener->addFallbackMetadata(TestDocument1::class, $customMetadata);
+
+        $dm = $this->createTestDocumentManager();
+        $dm->getEventManager()->addEventListener(Events::onClassMetadataNotFound, $listener);
+
+        $metadata = $dm->getClassMetadata(TestDocument1::class);
+        self::assertSame($customMetadata, $metadata);
+    }
+
     protected function getMockDocumentManager($driver)
     {
         $config = new Configuration();
@@ -102,6 +118,28 @@ class ClassMetadataFactoryTestSubject extends \Doctrine\ODM\MongoDB\Mapping\Clas
     public function getRequestedClasses()
     {
         return $this->_requestedClasses;
+    }
+}
+
+class MetadataNotFoundListener
+{
+    /**
+     * @var ClassMetadata[]
+     */
+    private $metadata = [];
+
+    public function addFallbackMetadata($className, ClassMetadata $classMetadata)
+    {
+        $this->metadata[$className] = $classMetadata;
+    }
+
+    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $eventArgs)
+    {
+        if (! isset($this->metadata[$eventArgs->getClassName()])) {
+            return;
+        }
+
+        $eventArgs->setFoundMetadata($this->metadata[$eventArgs->getClassName()]);
     }
 }
 

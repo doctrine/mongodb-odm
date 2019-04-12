@@ -126,6 +126,12 @@ final class Events
     const loadClassMetadata = 'loadClassMetadata';
 
     /**
+     * The onClassMetadataNotFound event occurs whenever loading metadata for a class
+     * failed.
+     */
+    const onClassMetadataNotFound = 'onClassMetadataNotFound';
+
+    /**
      * The preFlush event occurs when the DocumentManager#flush() operation is invoked,
      * but before any changes to managed documents have been calculated. This event is
      * always raised right after DocumentManager#flush() call.
