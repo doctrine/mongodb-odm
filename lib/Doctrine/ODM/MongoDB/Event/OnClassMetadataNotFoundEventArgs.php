@@ -10,6 +10,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  *
  * This object is mutable by design, allowing callbacks having access to it to set the
  * found metadata in it, and therefore "cancelling" a `onClassMetadataNotFound` event
+ *
+ * @final
  */
 class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
@@ -29,6 +31,9 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
      */
     public function __construct($className, DocumentManager $dm)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->className = (string) $className;
 
         parent::__construct($dm);

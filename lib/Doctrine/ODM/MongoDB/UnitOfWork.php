@@ -43,6 +43,7 @@ use function trigger_error;
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
  *
+ * @final
  * @since       1.0
  */
 class UnitOfWork implements PropertyChangedListener
@@ -276,6 +277,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function __construct(DocumentManager $dm, EventManager $evm, HydratorFactory $hydratorFactory)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->dm = $dm;
         $this->evm = $evm;
         $this->hydratorFactory = $hydratorFactory;

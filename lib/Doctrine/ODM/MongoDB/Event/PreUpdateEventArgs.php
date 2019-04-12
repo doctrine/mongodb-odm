@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 /**
  * Class that holds event arguments for a preUpdate event.
  *
+ * @final
  * @since 1.0
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
@@ -42,6 +43,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      */
     public function __construct($document, DocumentManager $dm, array $changeSet)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         parent::__construct($document, $dm);
         $this->documentChangeSet = $changeSet;
     }

@@ -28,6 +28,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
  *
+ * @final
  * @since 1.0
  */
 class PersistentCollection implements PersistentCollectionInterface
@@ -41,6 +42,9 @@ class PersistentCollection implements PersistentCollectionInterface
      */
     public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->coll = $coll;
         $this->dm = $dm;
         $this->uow = $uow;

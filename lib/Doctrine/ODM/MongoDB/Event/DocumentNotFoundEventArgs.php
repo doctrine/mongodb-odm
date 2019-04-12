@@ -26,6 +26,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 /**
  * Provides event arguments for the documentNotFound event.
  *
+ * @final
  * @since 1.1
  */
 class DocumentNotFoundEventArgs extends LifecycleEventArgs
@@ -49,6 +50,9 @@ class DocumentNotFoundEventArgs extends LifecycleEventArgs
      */
     public function __construct($document, DocumentManager $dm, $identifier)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         parent::__construct($document, $dm);
         $this->identifier = $identifier;
     }

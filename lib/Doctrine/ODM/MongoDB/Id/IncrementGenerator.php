@@ -32,6 +32,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  * collection. If not specified it defaults to the name of the collection for the
  * document.
  *
+ * @final
  * @since       1.0
  */
 class IncrementGenerator extends AbstractIdGenerator
@@ -39,6 +40,13 @@ class IncrementGenerator extends AbstractIdGenerator
     protected $collection = null;
     protected $key = null;
     protected $startingId = 1;
+
+    public function __construct()
+    {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+    }
 
     public function setCollection($collection)
     {

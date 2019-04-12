@@ -24,6 +24,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * Collection class for all the query filters.
+ *
+ * @final
  */
 class FilterCollection
 {
@@ -56,6 +58,9 @@ class FilterCollection
      */
     public function __construct(DocumentManager $dm, CriteriaMerger $cm = null)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->dm = $dm;
         $this->cm = $cm ?: new CriteriaMerger();
 

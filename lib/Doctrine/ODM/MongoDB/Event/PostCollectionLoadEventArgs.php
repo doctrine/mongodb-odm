@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 /**
  * Class that holds arguments for postCollectionLoad event.
  *
+ * @final
  * @since 1.1
  */
 class PostCollectionLoadEventArgs extends ManagerEventArgs
@@ -23,6 +24,9 @@ class PostCollectionLoadEventArgs extends ManagerEventArgs
      */
     public function __construct(PersistentCollectionInterface $collection, DocumentManager $dm)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         parent::__construct($dm);
         $this->collection = $collection;
     }

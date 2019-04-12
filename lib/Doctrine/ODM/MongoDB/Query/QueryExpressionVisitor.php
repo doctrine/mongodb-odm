@@ -27,6 +27,7 @@ use Doctrine\Common\Collections\Expr\Value;
 /**
  * Converts Collection expressions to query expressions.
  *
+ * @final
  * @since  1.0
  */
 class QueryExpressionVisitor extends ExpressionVisitor
@@ -71,6 +72,9 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     public function __construct(Builder $builder)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->builder = $builder;
     }
 

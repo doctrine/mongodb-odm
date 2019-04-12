@@ -26,6 +26,9 @@ use function in_array;
 use function sprintf;
 use function trigger_error;
 
+/**
+ * @final
+ */
 class SchemaManager
 {
     /**
@@ -55,6 +58,9 @@ class SchemaManager
      */
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->dm = $dm;
         $this->metadataFactory = $cmf;
     }
