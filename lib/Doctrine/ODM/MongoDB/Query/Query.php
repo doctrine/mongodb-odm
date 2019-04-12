@@ -32,6 +32,9 @@ use function array_values;
 use function assert;
 use function is_array;
 use function is_callable;
+use function is_string;
+use function key;
+use function reset;
 
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
@@ -410,7 +413,9 @@ class Query implements IteratorAggregate
                 $queryOptions                   = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
                 $queryOptions['returnDocument'] = $this->query['new'] ?? false ? FindOneAndUpdate::RETURN_DOCUMENT_AFTER : FindOneAndUpdate::RETURN_DOCUMENT_BEFORE;
 
-                return $this->collection->findOneAndUpdate(
+                $operation = $this->isFirstKeyUpdateOperator() ? 'findOneAndUpdate' : 'findOneAndReplace';
+
+                return $this->collection->{$operation}(
                     $this->query['query'],
                     $this->query['newObj'],
                     array_merge($options, $queryOptions)
@@ -429,7 +434,19 @@ class Query implements IteratorAggregate
                 return $this->collection->insertOne($this->query['newObj'], $options);
 
             case self::TYPE_UPDATE:
-                if ($this->query['multiple'] ?? false) {
+                $multiple = $this->query['multiple'] ?? false;
+
+                if ($this->isFirstKeyUpdateOperator()) {
+                    $operation = 'updateOne';
+                } else {
+                    if ($multiple) {
+                        throw new InvalidArgumentException('Combining the "multiple" option without using an update operator as first operation in a query is not supported.');
+                    }
+
+                    $operation = 'replaceOne';
+                }
+
+                if ($multiple) {
                     return $this->collection->updateMany(
                         $this->query['query'],
                         $this->query['newObj'],
@@ -437,7 +454,7 @@ class Query implements IteratorAggregate
                     );
                 }
 
-                return $this->collection->updateOne(
+                return $this->collection->{$operation}(
                     $this->query['query'],
                     $this->query['newObj'],
                     array_merge($options, $this->getQueryOptions('upsert'))
@@ -468,5 +485,13 @@ class Query implements IteratorAggregate
             default:
                 throw new InvalidArgumentException('Invalid query type: ' . $this->query['type']);
         }
+    }
+
+    private function isFirstKeyUpdateOperator() : bool
+    {
+        reset($this->query['newObj']);
+        $firstKey = key($this->query['newObj']);
+
+        return is_string($firstKey) && $firstKey[0] === '$';
     }
 }
