@@ -489,31 +489,6 @@ class Builder
     }
 
     /**
-     * Set the "finalize" option for a mapReduce or group command.
-     *
-     * @param string|Javascript $finalize
-     *
-     * @throws BadMethodCallException If the query is not a mapReduce or group command.
-     */
-    public function finalize($finalize) : self
-    {
-        switch ($this->query['type']) {
-            case Query::TYPE_MAP_REDUCE:
-                $this->query['mapReduce']['options']['finalize'] = $finalize;
-                break;
-
-            case Query::TYPE_GROUP:
-                $this->query['group']['options']['finalize'] = $finalize;
-                break;
-
-            default:
-                throw new BadMethodCallException('mapReduce(), map() or group() must be called before finalize()');
-        }
-
-        return $this;
-    }
-
-    /**
      * Change the query type to find and optionally set and change the class being queried.
      */
     public function find(?string $documentName = null) : self
@@ -661,10 +636,6 @@ class Builder
      */
     public function getQuery(array $options = []) : Query
     {
-        if ($this->query['type'] === Query::TYPE_MAP_REDUCE) {
-            $this->hydrate = false;
-        }
-
         $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
 
         $query = $this->query;
@@ -850,8 +821,7 @@ class Builder
     /**
      * Set the limit for the query.
      *
-     * This is only relevant for find queries and geoNear and mapReduce
-     * commands.
+     * This is only relevant for find queries and count commands.
      *
      * @see Query::prepareCursor()
      */
@@ -886,69 +856,6 @@ class Builder
     public function lte($value) : self
     {
         $this->expr->lte($value);
-        return $this;
-    }
-
-    /**
-     * Change the query type to a mapReduce command.
-     *
-     * The "reduce" option is not specified when calling this method; it must
-     * be set with the {@link Builder::reduce()} method.
-     *
-     * The "out" option defaults to inline, like {@link Builder::mapReduce()}.
-     *
-     * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
-     *
-     * @param string|Javascript $map
-     */
-    public function map($map) : self
-    {
-        $this->query['type']      = Query::TYPE_MAP_REDUCE;
-        $this->query['mapReduce'] = [
-            'map' => $map,
-            'reduce' => null,
-            'out' => ['inline' => true],
-            'options' => [],
-        ];
-        return $this;
-    }
-
-    /**
-     * Change the query type to a mapReduce command.
-     *
-     * @see http://docs.mongodb.org/manual/reference/command/mapReduce/
-     *
-     * @param string|Javascript $map
-     * @param string|Javascript $reduce
-     * @param array|string      $out
-     * @param array             $options
-     *
-     * @return $this
-     */
-    public function mapReduce($map, $reduce, $out = ['inline' => true], array $options = []) : self
-    {
-        $this->query['type']      = Query::TYPE_MAP_REDUCE;
-        $this->query['mapReduce'] = [
-            'map' => $map,
-            'reduce' => $reduce,
-            'out' => $out,
-            'options' => $options,
-        ];
-        return $this;
-    }
-
-    /**
-     * Set additional options for a mapReduce command.
-     *
-     * @throws BadMethodCallException If the query is not a mapReduce command.
-     */
-    public function mapReduceOptions(array $options) : self
-    {
-        if ($this->query['type'] !== Query::TYPE_MAP_REDUCE) {
-            throw new BadMethodCallException('This method requires a mapReduce command (call map() or mapReduce() first)');
-        }
-
-        $this->query['mapReduce']['options'] = $options;
         return $this;
     }
 
@@ -1103,23 +1010,6 @@ class Builder
     }
 
     /**
-     * Set the "out" option for a mapReduce command.
-     *
-     * @param array|string $out
-     *
-     * @throws BadMethodCallException If the query is not a mapReduce command.
-     */
-    public function out($out) : self
-    {
-        if ($this->query['type'] !== Query::TYPE_MAP_REDUCE) {
-            throw new BadMethodCallException('This method requires a mapReduce command (call map() or mapReduce() first)');
-        }
-
-        $this->query['mapReduce']['out'] = $out;
-        return $this;
-    }
-
-    /**
      * Remove the first element from the current array field.
      *
      * @see Expr::popFirst()
@@ -1250,31 +1140,6 @@ class Builder
     public function readOnly(bool $bool = true) : self
     {
         $this->readOnly = $bool;
-        return $this;
-    }
-
-    /**
-     * Set the "reduce" option for a mapReduce or group command.
-     *
-     * @param string|Javascript $reduce
-     *
-     * @throws BadMethodCallException If the query is not a mapReduce or group command.
-     */
-    public function reduce($reduce) : self
-    {
-        switch ($this->query['type']) {
-            case Query::TYPE_MAP_REDUCE:
-                $this->query['mapReduce']['reduce'] = $reduce;
-                break;
-
-            case Query::TYPE_GROUP:
-                $this->query['group']['reduce'] = $reduce;
-                break;
-
-            default:
-                throw new BadMethodCallException('mapReduce(), map() or group() must be called before reduce()');
-        }
-
         return $this;
     }
 

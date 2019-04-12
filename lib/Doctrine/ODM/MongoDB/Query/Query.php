@@ -45,15 +45,8 @@ class Query implements IteratorAggregate
     public const TYPE_INSERT          = 4;
     public const TYPE_UPDATE          = 5;
     public const TYPE_REMOVE          = 6;
-    public const TYPE_GROUP           = 7;
-    public const TYPE_MAP_REDUCE      = 8;
     public const TYPE_DISTINCT        = 9;
     public const TYPE_COUNT           = 11;
-
-    /**
-     * @deprecated 1.1 Will be removed for 2.0
-     */
-    public const TYPE_GEO_LOCATION = 10;
 
     public const HINT_REFRESH = 1;
     // 2 was used for HINT_SLAVE_OKAY, which was removed in 2.0
@@ -130,8 +123,6 @@ class Query implements IteratorAggregate
             case self::TYPE_INSERT:
             case self::TYPE_UPDATE:
             case self::TYPE_REMOVE:
-            case self::TYPE_GROUP:
-            case self::TYPE_MAP_REDUCE:
             case self::TYPE_DISTINCT:
             case self::TYPE_COUNT:
                 break;
@@ -244,8 +235,6 @@ class Query implements IteratorAggregate
     {
         switch ($this->query['type']) {
             case self::TYPE_FIND:
-            case self::TYPE_GROUP:
-            case self::TYPE_MAP_REDUCE:
             case self::TYPE_DISTINCT:
                 break;
 
