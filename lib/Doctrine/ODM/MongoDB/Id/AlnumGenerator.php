@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use const E_USER_DEPRECATED;
 use const STR_PAD_LEFT;
 use function bccomp;
 use function bcdiv;
 use function bcmod;
 use function is_numeric;
+use function sprintf;
 use function str_pad;
 use function strlen;
+use function trigger_error;
 
 /**
  * AlnumGenerator is responsible for generating cased alpha-numeric unique identifiers.
@@ -24,6 +27,8 @@ use function strlen;
  * (with only 6 chars you will have more than 56 billion unique id's, 15 billion in 'awkward safe mode')
  *
  * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
+ *
+ * @final
  */
 class AlnumGenerator extends IncrementGenerator
 {
@@ -38,6 +43,15 @@ class AlnumGenerator extends IncrementGenerator
 
     /** @var string */
     protected $awkwardSafeChars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
+
+    public function __construct()
+    {
+        if (self::class === static::class) {
+            return;
+        }
+
+        @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+    }
 
     /**
      * Set padding on generated id

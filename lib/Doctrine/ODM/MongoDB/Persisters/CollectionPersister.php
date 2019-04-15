@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use LogicException;
 use UnexpectedValueException;
+use const E_USER_DEPRECATED;
 use function array_diff_key;
 use function array_fill_keys;
 use function array_flip;
@@ -27,7 +28,9 @@ use function end;
 use function get_class;
 use function implode;
 use function sort;
+use function sprintf;
 use function strpos;
+use function trigger_error;
 
 /**
  * The CollectionPersister is responsible for persisting collections of embedded
@@ -40,6 +43,8 @@ use function strpos;
  * mapping strategy.
  *
  * @internal
+ *
+ * @final
  */
 class CollectionPersister
 {
@@ -54,6 +59,9 @@ class CollectionPersister
 
     public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->dm  = $dm;
         $this->pb  = $pb;
         $this->uow = $uow;

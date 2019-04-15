@@ -6,13 +6,25 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Throwable;
+use const E_USER_DEPRECATED;
 use function sprintf;
+use function trigger_error;
 
 /**
  * MongoDB ODM PersistentCollection Exception.
+ *
+ * @final
  */
 class PersistentCollectionException extends MongoDBException
 {
+    public function __construct($message = '', $code = 0, ?Throwable $previous = null)
+    {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+        parent::__construct($message, $code, $previous);
+    }
+
     public static function directoryNotWritable() : self
     {
         return new self('Your PersistentCollection directory must be writable.');

@@ -5,16 +5,30 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Utility;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use const E_USER_DEPRECATED;
 use function in_array;
+use function sprintf;
+use function trigger_error;
 
 /**
  * Utility class used to unify checks on how collection strategies should behave.
  *
  * @internal
+ *
+ * @final
  */
 class CollectionHelper
 {
     public const DEFAULT_STRATEGY = ClassMetadata::STORAGE_STRATEGY_PUSH_ALL;
+
+    public function __construct()
+    {
+        if (self::class === static::class) {
+            return;
+        }
+
+        @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+    }
 
     /**
      * Returns whether update query must be included in query updating owning document.

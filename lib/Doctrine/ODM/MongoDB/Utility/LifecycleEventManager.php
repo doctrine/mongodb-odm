@@ -14,10 +14,15 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use const E_USER_DEPRECATED;
 use function get_class;
+use function sprintf;
+use function trigger_error;
 
 /**
  * @internal
+ *
+ * @final
  */
 class LifecycleEventManager
 {
@@ -32,6 +37,9 @@ class LifecycleEventManager
 
     public function __construct(DocumentManager $dm, UnitOfWork $uow, EventManager $evm)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->dm  = $dm;
         $this->evm = $evm;
         $this->uow = $uow;

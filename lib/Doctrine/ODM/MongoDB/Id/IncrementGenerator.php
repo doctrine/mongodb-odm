@@ -6,7 +6,10 @@ namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MongoDB\Operation\FindOneAndUpdate;
+use const E_USER_DEPRECATED;
 use function get_class;
+use function sprintf;
+use function trigger_error;
 
 /**
  * IncrementGenerator is responsible for generating auto increment identifiers. It uses
@@ -18,6 +21,8 @@ use function get_class;
  * The 'key' property determines the document ID used to store the id values in the
  * collection. If not specified it defaults to the name of the collection for the
  * document.
+ *
+ * @final
  */
 class IncrementGenerator extends AbstractIdGenerator
 {
@@ -29,6 +34,15 @@ class IncrementGenerator extends AbstractIdGenerator
 
     /** @var int */
     protected $startingId = 1;
+
+    public function __construct()
+    {
+        if (self::class === static::class) {
+            return;
+        }
+
+        @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+    }
 
     /**
      * @param string $collection

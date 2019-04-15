@@ -9,13 +9,26 @@ use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractDocument;
 use ReflectionException;
 use ReflectionObject;
+use Throwable;
+use const E_USER_DEPRECATED;
 use function sprintf;
+use function trigger_error;
 
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM
+ *
+ * @final
  */
 class MappingException extends BaseMappingException
 {
+    public function __construct($message = '', $code = 0, ?Throwable $previous = null)
+    {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+        parent::__construct($message, $code, $previous);
+    }
+
     public static function typeExists(string $name) : self
     {
         return new self(sprintf('Type %s already exists.', $name));

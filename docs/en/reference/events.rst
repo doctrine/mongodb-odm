@@ -168,6 +168,12 @@ the life-time of their registered documents.
    mapping metadata for a class has been loaded from a mapping source
    (annotations/xml).
 -
+   onClassMetadataNotFound - Loading class metadata for a particular
+   requested class name failed. Manipulating the given event args instance
+   allows providing fallback metadata even when no actual metadata exists
+   or could be found. This event is not a lifecycle callback. Support for this
+   event was added in MongoDB ODM 1.3.
+-
    preFlush - The preFlush event occurs before the change-sets of all
    managed documents are computed. This both a lifecycle call back and
    and listener.

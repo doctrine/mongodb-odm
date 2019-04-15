@@ -11,6 +11,7 @@ use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
+use const E_USER_DEPRECATED;
 use function array_filter;
 use function array_merge;
 use function array_unique;
@@ -19,7 +20,11 @@ use function iterator_count;
 use function iterator_to_array;
 use function ksort;
 use function sprintf;
+use function trigger_error;
 
+/**
+ * @final
+ */
 class SchemaManager
 {
     private const GRIDFS_FILE_COLLECTION_INDEX = ['files_id' => 1, 'n' => 1];
@@ -36,6 +41,9 @@ class SchemaManager
 
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->dm              = $dm;
         $this->metadataFactory = $cmf;
     }
