@@ -7,10 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use stdClass;
@@ -21,15 +19,13 @@ class PersistentCollectionTest extends BaseTest
 {
     public function testSlice()
     {
-         [$start, $limit] = [0, 25];
-        $collection       = $this->getMockCollection();
+        [$start, $limit] = [0, 25];
+        $collection      = $this->getMockCollection();
         $collection->expects($this->once())
             ->method('slice')
             ->with($start, $limit)
             ->will($this->returnValue(true));
-        $dm          = $this->getMockDocumentManager();
-        $uow         = $this->getMockUnitOfWork();
-        $pCollection = new PersistentCollection($collection, $dm, $uow);
+        $pCollection = new PersistentCollection($collection, $this->dm, $this->uow);
         $pCollection->slice($start, $limit);
     }
 
@@ -39,7 +35,7 @@ class PersistentCollectionTest extends BaseTest
      */
     public function testExceptionForGetTypeClassWithoutDocumentManager()
     {
-        $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
         $owner      = new stdClass();
 
         $serialized = serialize($collection);
@@ -56,7 +52,7 @@ class PersistentCollectionTest extends BaseTest
      */
     public function testExceptionForGetTypeClassWithoutMapping()
     {
-        $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
         $serialized = serialize($collection);
         /** @var PersistentCollection $unserialized */
@@ -135,7 +131,7 @@ class PersistentCollectionTest extends BaseTest
      */
     public function testGetDeletedDocuments($expected, $snapshot, Closure $callback)
     {
-        $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
         foreach ($snapshot as $item) {
             $collection->add($item);
@@ -208,7 +204,7 @@ class PersistentCollectionTest extends BaseTest
      */
     public function testGetInsertedDocuments($expected, $snapshot, Closure $callback)
     {
-        $collection = new PersistentCollection(new ArrayCollection(), $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
         foreach ($snapshot as $item) {
             $collection->add($item);
@@ -263,7 +259,7 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('offsetExists')->willReturn(false);
-        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $this->assertArrayNotHasKey(0, $pcoll);
     }
 
@@ -271,7 +267,7 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('offsetGet')->willReturn(2);
-        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $this->assertSame(2, $pcoll[0]);
     }
 
@@ -279,7 +275,7 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('offsetUnset');
-        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         unset($pcoll[0]);
         $this->assertTrue($pcoll->isDirty());
     }
@@ -288,7 +284,7 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('remove')->willReturn(2);
-        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll->remove(0);
         $this->assertTrue($pcoll->isDirty());
     }
@@ -297,7 +293,7 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->exactly(2))->method('offsetSet');
-        $pcoll    = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll    = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll[]  = 1;
         $pcoll[1] = 2;
         $collection->expects($this->once())->method('add');
@@ -310,7 +306,7 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('isEmpty')->willReturn(true);
-        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll->setInitialized(true);
         $this->assertTrue($pcoll->isEmpty());
     }
@@ -320,25 +316,9 @@ class PersistentCollectionTest extends BaseTest
         $collection = $this->getMockCollection();
         $collection->expects($this->never())->method('isEmpty');
         $collection->expects($this->once())->method('count')->willReturn(0);
-        $pcoll = new PersistentCollection($collection, $this->getMockDocumentManager(), $this->getMockUnitOfWork());
+        $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll->setInitialized(false);
         $this->assertTrue($pcoll->isEmpty());
-    }
-
-    /**
-     * @return DocumentManager
-     */
-    private function getMockDocumentManager()
-    {
-        return $this->createMock(DocumentManager::class);
-    }
-
-    /**
-     * @return UnitOfWork
-     */
-    private function getMockUnitOfWork()
-    {
-        return $this->createMock(UnitOfWork::class);
     }
 
     /**

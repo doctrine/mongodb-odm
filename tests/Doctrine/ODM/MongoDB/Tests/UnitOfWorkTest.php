@@ -7,11 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Closure;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -34,7 +31,6 @@ use Throwable;
 use function get_class;
 use function spl_object_hash;
 use function sprintf;
-use function ucfirst;
 
 class UnitOfWorkTest extends BaseTest
 {
@@ -80,7 +76,6 @@ class UnitOfWorkTest extends BaseTest
 
     public function testScheduleForEmbeddedUpsert()
     {
-        $class    = $this->dm->getClassMetadata(ForumUser::class);
         $test     = new EmbeddedUpsertDocument();
         $test->id = (string) new ObjectId();
         $this->assertFalse($this->uow->isScheduledForInsert($test));
@@ -288,10 +283,7 @@ class UnitOfWorkTest extends BaseTest
      */
     public function testThrowsOnPersistOfMappedSuperclass()
     {
-        $documentManager = $this->getDocumentManager();
-        $documentManager->setClassMetadata(Address::class, $this->getClassMetadata(Address::class, 'MappedSuperclass'));
-        $unitOfWork = $this->getUnitOfWork($documentManager);
-        $unitOfWork->persist(new Address());
+        $this->uow->persist(new MappedSuperclass());
     }
 
     public function testParentAssociations()
@@ -301,13 +293,11 @@ class UnitOfWorkTest extends BaseTest
         $c = new ParentAssociationTest('c');
         $d = new ParentAssociationTest('c');
 
-        $documentManager = $this->getDocumentManager();
-        $unitOfWork      = $this->getUnitOfWork($documentManager);
-        $unitOfWork->setParentAssociation($b, ['name' => 'b'], $a, 'b');
-        $unitOfWork->setParentAssociation($c, ['name' => 'c'], $b, 'b.c');
-        $unitOfWork->setParentAssociation($d, ['name' => 'd'], $c, 'b.c.d');
+        $this->uow->setParentAssociation($b, ['name' => 'b'], $a, 'b');
+        $this->uow->setParentAssociation($c, ['name' => 'c'], $b, 'b.c');
+        $this->uow->setParentAssociation($d, ['name' => 'd'], $c, 'b.c.d');
 
-        $this->assertEquals([['name' => 'd'], $c, 'b.c.d'], $unitOfWork->getParentAssociation($d));
+        $this->assertEquals([['name' => 'd'], $c, 'b.c.d'], $this->uow->getParentAssociation($d));
     }
 
     /**
@@ -407,11 +397,6 @@ class UnitOfWorkTest extends BaseTest
      */
     public function testScheduleForUpdateWithArrays($origData, $updateData, $shouldInUpdate)
     {
-        $pb        = $this->getMockPersistenceBuilder();
-        $class     = $this->dm->getClassMetadata(ArrayTest::class);
-        $persister = $this->getMockDocumentPersister($pb, $class);
-        $this->uow->setDocumentPersister(ArrayTest::class, $persister);
-
         $arrayTest = new ArrayTest($origData);
         $this->uow->persist($arrayTest);
         $this->uow->computeChangeSets();
@@ -642,22 +627,15 @@ class UnitOfWorkTest extends BaseTest
 
     public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap()
     {
-        $dm  = $this->getMockDocumentManager();
-        $uow = new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory());
-
         $mapping = ['targetDocument' => User::class];
         $data    = ['type' => 'forum_user'];
 
         $userClassMetadata                     = new ClassMetadata(ForumUser::class);
         $userClassMetadata->discriminatorField = 'type';
         $userClassMetadata->discriminatorMap   = ['forum_user' => ForumUser::class];
+        $this->dm->getMetadataFactory()->setMetadataFor(User::class, $userClassMetadata);
 
-        $dm->expects($this->once())
-            ->method('getClassMetadata')
-            ->with(User::class)
-            ->will($this->returnValue($userClassMetadata));
-
-        $this->assertEquals(ForumUser::class, $uow->getClassNameForAssociation($mapping, $data));
+        $this->assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
     }
 
     public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData()
@@ -707,57 +685,14 @@ class UnitOfWorkTest extends BaseTest
         $this->assertAttributeSame(0, 'commitsInProgress', $this->dm->getUnitOfWork());
     }
 
-
-    protected function getDocumentManager()
-    {
-        return new \Stubs\DocumentManager();
-    }
-
-    protected function getUnitOfWork(DocumentManager $dm)
-    {
-        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory());
-    }
-
-    /**
-     * Gets mock HydratorFactory instance
-     *
-     * @return HydratorFactory
-     */
-    private function getMockHydratorFactory()
-    {
-        return $this->createMock(HydratorFactory::class);
-    }
-
-    /**
-     * Gets mock EventManager instance
-     *
-     * @return EventManager
-     */
-    private function getMockEventManager()
-    {
-        return $this->createMock(EventManager::class);
-    }
-
     private function getMockPersistenceBuilder()
     {
         return $this->createMock(PersistenceBuilder::class);
     }
 
-    private function getMockDocumentManager()
-    {
-        return $this->createMock(DocumentManager::class);
-    }
-
     private function getMockDocumentPersister(PersistenceBuilder $pb, ClassMetadata $class)
     {
         return new DocumentPersisterMock($pb, $this->dm, $this->uow, $this->dm->getHydratorFactory(), $class);
-    }
-
-    protected function getClassMetadata($class, $flag)
-    {
-        $classMetadata                          = new ClassMetadata($class);
-        $classMetadata->{'is' . ucfirst($flag)} = true;
-        return $classMetadata;
     }
 }
 
@@ -942,4 +877,11 @@ class PersistRemovedEmbeddedDocument
 
     /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class) */
     public $embedded;
+}
+
+/** @ODM\MappedSuperclass */
+class MappedSuperclass
+{
+    /** @ODM\Id */
+    public $id;
 }
