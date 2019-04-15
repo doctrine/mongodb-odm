@@ -1,5 +1,31 @@
 # UPGRADE FROM 1.2 TO 1.3
 
+## Events
+
+### `onClassMetadataNotFound` event added
+
+The default ClassMetadataFactory now triggers an `onClassMetadataNotFound` event
+when no metadata was found for a given class. The event args contain information
+about the loaded class and can store a metadata object which can be used to load
+custom metadata when none was found.
+
+### `ResolveTargetDocumentListener` is now an event subscriber
+
+The `Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener` class now
+implements the `EventSubscriber` interface. You can still register it as a
+listener as was necessary previously, but in order to use new functionality you
+have to register it as an event subscriber.
+
+### `ResolveTargetDocumentListener` resolves class names on document load
+
+The `Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener` class not only
+resolves class names when looking up the `targetDoccumet` of an association in
+a document, but it also uses the new `onClassMetadataNotFound` event to resolve
+class names and trigger a secondary metadata load cycle if no metadata was found
+for the original class name. To use this functionality, either register an event
+listener for the `onClassMetadataNotFound` event or register the entire class as
+an event subscriber.
+
 ## GridFS
 
 GridFS support will be rewritten for 2.0 and was deprecated in its current form.

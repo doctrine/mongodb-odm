@@ -3,8 +3,9 @@
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 
 class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -18,11 +19,17 @@ class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\Base
      */
     protected $listener;
 
+    /**
+     * @var ClassMetadataFactory
+     */
+    private $factory;
+
     public function setUp()
     {
         parent::setUp();
 
          $this->listener = new ResolveTargetDocumentListener();
+        $this->factory = $this->dm->getMetadataFactory();
     }
 
     public function testResolveTargetDocumentListenerCanResolveTargetDocument()
@@ -51,6 +58,28 @@ class ResolveTargetDocumentListenerTest extends \Doctrine\ODM\MongoDB\Tests\Base
         $this->assertSame('Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetDocument', $meta['embedOne']['targetDocument']);
         $this->assertSame('Doctrine\ODM\MongoDB\Tests\Tools\TargetDocument', $meta['embedMany']['targetDocument']);
     }
+
+    public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByInterfaceName()
+    {
+        $this->listener->addResolveTargetDocument(ResolveTargetInterface::class, ResolveTargetDocument::class, []);
+
+        $this->dm->getEventManager()->addEventSubscriber($this->listener);
+
+        $cm = $this->factory->getMetadataFor(ResolveTargetInterface::class);
+
+        $this->assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
+    }
+
+    public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByAbstractClassName()
+    {
+        $this->listener->addResolveTargetDocument(AbstractResolveTarget::class, ResolveTargetDocument::class, []);
+
+        $this->dm->getEventManager()->addEventSubscriber($this->listener);
+
+        $cm = $this->factory->getMetadataFor(AbstractResolveTarget::class);
+
+        $this->assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
+    }
 }
 
 interface ResolveTargetInterface
@@ -62,10 +91,15 @@ interface TargetInterface extends ResolveTargetInterface
 {
 }
 
+abstract class AbstractResolveTarget implements ResolveTargetInterface
+{
+
+}
+
 /**
  * @ODM\Document
  */
-class ResolveTargetDocument implements ResolveTargetInterface
+class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTargetInterface
 {
     /**
      * @ODM\Id

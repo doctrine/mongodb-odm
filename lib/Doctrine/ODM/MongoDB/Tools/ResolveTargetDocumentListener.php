@@ -2,7 +2,10 @@
 
 namespace Doctrine\ODM\MongoDB\Tools;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
+use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
+use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
@@ -10,12 +13,23 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  *
  * Mechanism to overwrite document interfaces or classes specified as association targets.
  */
-class ResolveTargetDocumentListener
+class ResolveTargetDocumentListener implements EventSubscriber
 {
     /**
      * @var array
      */
     private $resolveTargetDocuments = array();
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSubscribedEvents()
+    {
+        return [
+            Events::loadClassMetadata,
+            Events::onClassMetadataNotFound,
+        ];
+    }
 
     /**
      * Add a target-document class name to resolve to a new class name.
@@ -29,6 +43,26 @@ class ResolveTargetDocumentListener
     {
         $mapping['targetDocument'] = ltrim($newDocument, "\\");
         $this->resolveTargetDocuments[ltrim($originalDocument, "\\")] = $mapping;
+    }
+
+    /**
+     * @param OnClassMetadataNotFoundEventArgs $args
+     *
+     * @internal this is an event callback, and should not be called directly
+     *
+     * @return void
+     */
+    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
+    {
+        if (! array_key_exists($args->getClassName(), $this->resolveTargetDocuments)) {
+            return;
+        }
+
+        $args->setFoundMetadata(
+            $args
+                ->getObjectManager()
+                ->getClassMetadata($this->resolveTargetDocuments[$args->getClassName()]['targetDocument'])
+        );
     }
 
     /**
