@@ -418,7 +418,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         }
 
         if ( ! empty($query['select'])) {
-            $query['select'] = $documentPersister->prepareSortOrProjection($query['select']);
+            $query['select'] = $documentPersister->prepareProjection($query['select']);
             if ($this->hydrate && $this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION
                 && ! isset($query['select'][$this->class->discriminatorField])) {
                 $includeMode = 0 < count(array_filter($query['select'], function($mode) { return $mode == 1; }));
@@ -429,7 +429,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
         }
 
         if (isset($query['sort'])) {
-            $query['sort'] = $documentPersister->prepareSortOrProjection($query['sort']);
+            $query['sort'] = $documentPersister->prepareSort($query['sort']);
         }
 
         if ($this->class->slaveOkay) {

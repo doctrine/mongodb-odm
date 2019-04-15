@@ -596,7 +596,7 @@ class Cursor implements CursorInterface, Iterator
     {
         $fields = $this->unitOfWork
             ->getDocumentPersister($this->class->name)
-            ->prepareSortOrProjection($fields);
+            ->prepareSort($fields);
 
         $this->baseCursor->sort($fields);
         return $this;

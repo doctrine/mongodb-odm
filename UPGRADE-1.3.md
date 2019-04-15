@@ -8,6 +8,12 @@
    typehint an ODM specific iterator, use the new
    `Doctrine\ODM\MongoDB\Iterator\Iterator` interface.
 
+## Document Persister
+
+ * The `Doctrine\ODM\MongoDB\Persisters\DocumentPersister::prepareSortOrProjection`
+   method was deprecated and will be dropped in 2.0. Use `prepareSort` or
+   `prepareProjection` accordingly.
+
 ## Events
 
 ### `onClassMetadataNotFound` event added
