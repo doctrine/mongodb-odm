@@ -15,9 +15,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Id\AbstractIdGenerator;
 use Doctrine\ODM\MongoDB\Id\AlnumGenerator;
 use Doctrine\ODM\MongoDB\Id\AutoGenerator;
+use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use ReflectionException;
@@ -295,7 +295,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 $customGenerator = new $idGenOptions['class']();
                 unset($idGenOptions['class']);
-                if (! $customGenerator instanceof AbstractIdGenerator) {
+                if (! $customGenerator instanceof IdGenerator) {
                     throw MappingException::classIsNotAValidGenerator(get_class($customGenerator));
                 }
 
