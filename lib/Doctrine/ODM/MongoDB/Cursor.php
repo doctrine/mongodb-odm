@@ -23,6 +23,7 @@ use Doctrine\MongoDB\Collection;
 use Doctrine\MongoDB\Connection;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\MongoDB\EagerCursor as BaseEagerCursor;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
@@ -37,8 +38,9 @@ use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
  * For compatibility, this class also extends Doctrine\MongoDB\Cursor.
  *
  * @since  1.0
+ * @deprecated This class is deprecated and will be removed in 2.0. You should typehint against the {@see Iterator} interface instead.
  */
-class Cursor implements CursorInterface
+class Cursor implements CursorInterface, Iterator
 {
     /**
      * The Doctrine\MongoDB\Cursor instance being wrapped.

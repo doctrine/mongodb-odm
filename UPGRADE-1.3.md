@@ -1,5 +1,13 @@
 # UPGRADE FROM 1.2 TO 1.3
 
+## Cursors
+
+ * The `Doctrine\ODM\MongoDB\Cursor`, `Doctrine\ODM\MongoDB\CommandCursor`, and
+   `Doctrine\ODM\MongoDB\EagerCursor` classes have been deprecated and will be
+   removed in 2.0. Their functionality will be covered by basic iterators. To
+   typehint an ODM specific iterator, use the new
+   `Doctrine\ODM\MongoDB\Iterator\Iterator` interface.
+
 ## Events
 
 ### `onClassMetadataNotFound` event added

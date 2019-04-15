@@ -29,6 +29,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  *
  * @since  1.1
  * @author alcaeus <alcaeus@alcaeus.org>
+ * @deprecated This class is deprecated and will be removed in 2.0. You should typehint against the {@see Iterator} interface instead.
  */
 class CommandCursor implements Iterator
 {
