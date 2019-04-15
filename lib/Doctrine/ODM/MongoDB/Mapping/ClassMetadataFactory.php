@@ -38,6 +38,7 @@ use Doctrine\ODM\MongoDB\Id\UuidGenerator;
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a document database.
  *
+ * @final
  * @since       1.0
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
@@ -55,6 +56,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /** @var \Doctrine\Common\EventManager The event manager instance */
     private $evm;
+
+    public function __construct()
+    {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+    }
 
     /**
      * Sets the DocumentManager instance for this class.

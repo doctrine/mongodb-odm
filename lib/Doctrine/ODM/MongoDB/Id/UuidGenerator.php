@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 /**
  * Generates UUIDs.
  *
+ * @final
  * @since       1.0
  */
 class UuidGenerator extends AbstractIdGenerator
@@ -34,6 +35,13 @@ class UuidGenerator extends AbstractIdGenerator
      * @var string
      */
     protected $salt = null;
+
+    public function __construct()
+    {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+    }
 
     /**
      * Used to set the salt that will be applied to each id

@@ -30,6 +30,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
  * documents when a DocumentManager is flushed. It uses the changeset information in the
  * UnitOfWork to build queries using atomic operators like $set, $unset, etc.
  *
+ * @final
  * @since       1.0
  */
 class PersistenceBuilder
@@ -56,6 +57,9 @@ class PersistenceBuilder
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->dm = $dm;
         $this->uow = $uow;
     }

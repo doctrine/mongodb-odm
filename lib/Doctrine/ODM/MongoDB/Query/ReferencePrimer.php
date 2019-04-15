@@ -36,6 +36,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
  * Priming can only be used for the owning side side of a relationship, since
  * the referenced identifiers are not immediately available on an inverse side.
  *
+ * @final
  * @since  1.0
  */
 class ReferencePrimer
@@ -69,6 +70,10 @@ class ReferencePrimer
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+
         $this->dm = $dm;
         $this->uow = $uow;
 

@@ -42,6 +42,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 /**
  * The DocumentPersister is responsible for persisting documents.
  *
+ * @final
  * @since       1.0
  */
 class DocumentPersister
@@ -136,6 +137,9 @@ class DocumentPersister
         ClassMetadata $class,
         CriteriaMerger $cm = null
     ) {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->pb = $pb;
         $this->dm = $dm;
         $this->evm = $evm;

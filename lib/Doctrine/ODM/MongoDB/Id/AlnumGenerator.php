@@ -33,6 +33,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  *
  * The character set used for ID generation can be explicitly set with the "chars" option (e.g. base36, etc.)
  *
+ * @final
  * @since       1.0
  */
 class AlnumGenerator extends IncrementGenerator
@@ -45,6 +46,13 @@ class AlnumGenerator extends IncrementGenerator
     protected $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
     protected $awkwardSafeChars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
+
+    public function __construct()
+    {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+    }
 
     /**
      * Set padding on generated id

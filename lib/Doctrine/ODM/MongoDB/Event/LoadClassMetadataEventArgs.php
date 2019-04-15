@@ -20,14 +20,25 @@
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClassMetadataEventArgs;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\ObjectManager;
 
 /**
  * Class that holds event arguments for a loadMetadata event.
  *
+ * @final
  * @since 1.0
  */
 class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
+    public function __construct(ClassMetadata $classMetadata, ObjectManager $objectManager)
+    {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+        parent::__construct($classMetadata, $objectManager);
+    }
+
     /**
      * Retrieves the associated DocumentManager.
      *

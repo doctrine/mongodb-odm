@@ -31,6 +31,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 /**
+ * @final
  * @internal
  * @since 1.1
  */
@@ -58,6 +59,9 @@ class LifecycleEventManager
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, EventManager $evm)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->dm = $dm;
         $this->evm = $evm;
         $this->uow = $uow;

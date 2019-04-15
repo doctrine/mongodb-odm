@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB;
 /**
  * Contains all MongoDB ODM LockModes
  *
+ * @final
  * @since       1.0
  */
 class LockMode

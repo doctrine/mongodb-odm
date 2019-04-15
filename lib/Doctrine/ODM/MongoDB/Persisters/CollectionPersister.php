@@ -55,6 +55,7 @@ use function trigger_error;
  * entire collection or delete/insert individual elements, depending on the
  * mapping strategy.
  *
+ * @final
  * @since       1.0
  */
 class CollectionPersister
@@ -78,6 +79,9 @@ class CollectionPersister
      */
     public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->dm = $dm;
         $this->pb = $pb;
         $this->uow = $uow;

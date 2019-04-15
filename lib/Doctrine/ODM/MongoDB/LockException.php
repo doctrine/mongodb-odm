@@ -22,6 +22,7 @@ namespace Doctrine\ODM\MongoDB;
 /**
  * LockException
  *
+ * @final
  * @since 1.0
  */
 class LockException extends MongoDBException
@@ -30,6 +31,9 @@ class LockException extends MongoDBException
 
     public function __construct($msg, $document = null)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         parent::__construct($msg);
         $this->document = $document;
     }

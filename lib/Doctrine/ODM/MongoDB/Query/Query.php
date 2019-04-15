@@ -36,6 +36,7 @@ use function trigger_error;
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
  * and to hydrate the raw arrays of data to Doctrine document objects.
  *
+ * @final
  * @since       1.0
  */
 class Query extends \Doctrine\MongoDB\Query\Query
@@ -107,6 +108,10 @@ class Query extends \Doctrine\MongoDB\Query\Query
      */
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null, $readOnly = false)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+
         $primers = array_filter($primers);
 
         if (isset($query['eagerCursor'])) {

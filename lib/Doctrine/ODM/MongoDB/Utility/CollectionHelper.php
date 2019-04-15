@@ -24,11 +24,19 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * Utility class used to unify checks on how collection strategies should behave.
  *
  * @since   1.0
+ * @final
  * @internal
  */
 class CollectionHelper
 {
     const DEFAULT_STRATEGY = ClassMetadata::STORAGE_STRATEGY_PUSH_ALL;
+
+    public function __construct()
+    {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
+    }
 
     /**
      * Returns whether update query must be included in query updating owning document.
