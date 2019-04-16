@@ -23,6 +23,9 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\MongoDB\Aggregation\Expr as BaseExpr;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Types\Type;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -64,9 +67,15 @@ class Expr extends BaseExpr
     /**
      * @param mixed|self $expression
      * @return mixed
+     *
+     * @internal This method will be private in MongoDB ODM 2.0.
      */
     protected function ensureArray($expression)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The "%s" method will be private in MongoDB ODM 2.0. You should not rely on calling this method.', __METHOD__), E_USER_DEPRECATED);
+        }
+
         // Convert field names in expressions
         if (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));

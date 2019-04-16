@@ -23,8 +23,20 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
  * Use this field to store distance information for geoNear queries
  *
  * @Annotation
+ *
+ * @deprecated This annotation was deprecated in MongoDB ODM 1.3 and will be removed in 2.0.
  */
 final class Distance extends AbstractField
 {
     public $distance = true;
+
+    public function getDeprecationMessage()
+    {
+        return sprintf('The "%s" annotation class was deprecated in MongoDB ODM 1.3 and will be removed in 2.0. GeoNear queries will no longer be supported, use the aggregation pipeline instead.', __CLASS__);
+    }
+
+    public function isDeprecated()
+    {
+        return true;
+    }
 }

@@ -55,6 +55,27 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     protected $currentField;
 
     /**
+     * @inheritdoc
+     *
+     * @internal This field will be private in MongoDB ODM 2.0.
+     */
+    protected $collection;
+
+    /**
+     * @inheritdoc
+     *
+     * @internal This field will be private in MongoDB ODM 2.0.
+     */
+    protected $query = ['type' => Query::TYPE_FIND];
+
+    /**
+     * @inheritdoc
+     *
+     * @internal This field will be private in MongoDB ODM 2.0.
+     */
+    protected $expr;
+
+    /**
      * Whether or not to hydrate the data to documents.
      *
      * @var boolean
@@ -646,4 +667,89 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
 
         return parent::spherical($spherical);
     }
+
+    /**
+     * @inheritdoc
+     * @deprecated Deprecated in version 1.3 - use Aggregation Pipeline instead
+     */
+    public function maxDistance($maxDistance)
+    {
+        @trigger_error(
+            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
+        return parent::maxDistance($maxDistance);
+    }
+
+    /**
+     * @inheritdoc
+     * @deprecated Deprecated in version 1.3 - use Aggregation Pipeline instead
+     */
+    public function minDistance($minDistance)
+    {
+        @trigger_error(
+            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
+        return parent::minDistance($minDistance);
+    }
+
+    /**
+     * @inheritdoc
+     * @deprecated Deprecated in version 1.3 - use Aggregation Pipeline instead
+     */
+    public function withinBox($x1, $y1, $x2, $y2)
+    {
+        @trigger_error(
+            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
+        return parent::withinBox($x1, $y1, $x2, $y2);
+    }
+
+    /**
+     * @inheritdoc
+     * @deprecated Deprecated in version 1.3 - use Aggregation Pipeline instead
+     */
+    public function withinCenter($x, $y, $radius)
+    {
+        @trigger_error(
+            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
+        return parent::withinCenter($x, $y, $radius);
+    }
+
+    /**
+     * @inheritdoc
+     * @deprecated Deprecated in version 1.3 - use Aggregation Pipeline instead
+     */
+    public function withinCenterSphere($x, $y, $radius)
+    {
+        @trigger_error(
+            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
+        return parent::withinCenterSphere($x, $y, $radius);
+    }
+
+    /**
+     * @inheritdoc
+     * @deprecated Deprecated in version 1.3 - use Aggregation Pipeline instead
+     */
+    public function withinPolygon()
+    {
+        @trigger_error(
+            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
+        return parent::withinPolygon(...func_get_args());
+    }
+
 }

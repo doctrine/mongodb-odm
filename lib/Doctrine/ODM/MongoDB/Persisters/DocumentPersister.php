@@ -38,6 +38,7 @@ use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use const E_USER_DEPRECATED;
 
 /**
  * The DocumentPersister is responsible for persisting documents.

@@ -45,8 +45,11 @@ class Query extends \Doctrine\MongoDB\Query\Query
     /** @deprecated */
     const HINT_SLAVE_OKAY = 2;
     const HINT_READ_PREFERENCE = 3;
+    /** @deprecated */
     const HINT_READ_PREFERENCE_TAGS = 4;
     const HINT_READ_ONLY = 5;
+    /** @deprecated */
+    const TYPE_GEO_NEAR = 10;
 
     /**
      * The DocumentManager instance.
@@ -359,6 +362,8 @@ class Query extends \Doctrine\MongoDB\Query\Query
      * @see \Doctrine\MongoDB\Cursor::prepareCursor()
      * @param BaseCursor $cursor
      * @return CursorInterface
+     *
+     * @deprecated This method will be removed in MongoDB ODM 2.0.
      */
     protected function prepareCursor(BaseCursor $cursor)
     {
@@ -387,5 +392,33 @@ class Query extends \Doctrine\MongoDB\Query\Query
     private function isIndexRequired()
     {
         return $this->requireIndexes !== null ? $this->requireIndexes : $this->class->requireIndexes;
+    }
+
+    /**
+     * @inheritdoc
+     * @deprecated Deprecated in version 1.3. Countable iterators will be removed in 2.0. Run separate queries instead
+     */
+    public function count($foundOnly = false)
+    {
+        @trigger_error(
+            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please run separate count queries instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
+        return parent::count($foundOnly);
+    }
+
+    /**
+     * @inheritdoc
+     * @deprecated Deprecated in version 1.3. Use getIterator instead.
+     */
+    public function iterate()
+    {
+        @trigger_error(
+            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use "%s::getIterator()" instead.', __METHOD__, __CLASS__),
+            E_USER_DEPRECATED
+        );
+
+        return parent::iterate();
     }
 }

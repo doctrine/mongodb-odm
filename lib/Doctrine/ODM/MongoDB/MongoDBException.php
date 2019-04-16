@@ -19,6 +19,10 @@
 
 namespace Doctrine\ODM\MongoDB;
 
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
+
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM
  *
@@ -31,9 +35,16 @@ class MongoDBException extends \Exception
      * @param string $fieldName
      * @param string $method
      * @return MongoDBException
+     *
+     * @deprecated This method was deprecated in 1.3 and will be dropped in ODM 2.0.
      */
     public static function invalidFindByCall($documentName, $fieldName, $method)
     {
+        @trigger_error(
+            sprintf('The "%s" method is deprecated in MongoDB ODM 1.3 and will be removed in 2.0. Magic findBy methods will no longer be supported.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
         return new self(sprintf('Invalid find by call %s::$fieldName (%s)', $documentName, $fieldName, $method));
     }
 
@@ -74,9 +85,16 @@ class MongoDBException extends \Exception
     /**
      * @param string $methodName
      * @return MongoDBException
+     *
+     * @deprecated This method was deprecated in 1.3 and will be dropped in ODM 2.0.
      */
     public static function findByRequiresParameter($methodName)
     {
+        @trigger_error(
+            sprintf('The "%s" method is deprecated in MongoDB ODM 1.3 and will be removed in 2.0. Magic findBy methods will no longer be supported.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
         return new self("You need to pass a parameter to '".$methodName."'");
     }
 
@@ -107,6 +125,11 @@ class MongoDBException extends \Exception
      */
     public static function queryNotIndexed($className, $unindexedFields)
     {
+        @trigger_error(
+            sprintf('The "%s" method is deprecated in MongoDB ODM 1.2 and will be removed in 2.0. The requireIndexes functionality will no longer be supported.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
         return new self(sprintf('Cannot execute unindexed queries on %s. Unindexed fields: %s',
             $className,
             implode(', ', $unindexedFields)

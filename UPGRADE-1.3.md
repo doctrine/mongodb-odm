@@ -1,5 +1,34 @@
 # UPGRADE FROM 1.2 TO 1.3
 
+## Aggregation builder
+
+ * The `debug`, `maxDistance` and `minDistance` methods in
+   `Doctrine\ODM\MongoDB\Aggregation\Stage\Match` have been deprecated and will
+   be removed in 2.0.
+ * The `Doctrine\ODM\MongoDB\Aggregation\Expr::ensureArray` method will be
+   private in 2.0.
+ * The `Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket::convertExpression` method
+   will be private in 2.0.
+ * The `Doctrine\ODM\MongoDB\Aggregation\Stage\BucketAuto::convertExpression`
+   method will be private in 2.0.
+ * The following methods in `Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup`
+   will be private in 2.0: `convertExpression`, `convertTargetFieldName`.
+ * The `Doctrine\ODM\MongoDB\Aggregation\Stage\ReplaceRoot::convertExpression`
+   method will be private in 2.0.
+
+## Configuration
+
+ * The following methods in `Doctrine\ODM\MongoDB\Configuration` have been
+   deprecated and will be removed in MongoDB ODM 2.0: `getLoggerCallable`,
+   `getMongoCmd`, `getRetryConnect`, `getRetryQuery`, `setLoggerCallable`,
+   `setMongoCmd`, `setRetryConnect`, `setRetryQuery`.
+ * The `attributes` property will be private in MongoDB ODM 2.0 - if you are
+   extending the configuration class you should no longer rely on it.
+ * The `getDefaultRepositoryClassName` and `setDefaultRepositoryClassName`
+   methods in `Doctrine\ODM\MongoDB\Configuration` have been deprecated in favor
+   of `getDefaultDocumentRepositoryClassName` and
+   `setDefaultDocumentRepositoryClassName`, respectively.
+
 ## Cursors
 
  * The `Doctrine\ODM\MongoDB\Cursor`, `Doctrine\ODM\MongoDB\CommandCursor`, and
@@ -7,6 +36,26 @@
    removed in 2.0. Their functionality will be covered by basic iterators. To
    typehint an ODM specific iterator, use the new
    `Doctrine\ODM\MongoDB\Iterator\Iterator` interface.
+
+## Document Class Generation
+
+Functionality regarding generation of document and repository classes was
+deprecated and will be dropped in 2.0. The following classes related to this
+functionality have been deprecated:
+ * `Doctrine\ODM\MongoDB\Query\FieldExtractor`
+ * `Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateDocumentsCommand`
+ * `Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateRepositoriesCommand`
+ * `Doctrine\ODM\MongoDB\Tools\DisconnectedClassMetadataFactory`
+ * `Doctrine\ODM\MongoDB\Tools\DocumentGenerator`
+ * `Doctrine\ODM\MongoDB\Tools\DocumentRepositoryGenerator`
+
+## Document Manager
+
+ * The `Doctrine\ODM\MongoDB\DocumentManager::createDBRef` method was deprecated
+   in favor of `createReference`. It will be dropped in 2.0.
+ * The `Doctrine\ODM\MongoDB\DocumentManager::getConnection` method was
+   deprecated and will be dropped in 2.0. The replacement, `getClient` will
+   return a `MongoDB\Client` instance, but is not available in 1.x.
 
 ## Document Persister
 
@@ -94,6 +143,16 @@ The `Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo` class has been deprecated
 in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
 2.0.
 
+### Obsolete features deprecated
+
+ * The following methods in `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` were
+   deprecated and will be removed in 2.0: `getDistance`, `getFile`,
+   `getNamespace`, `isFile`, `mapFile`, `setDistance`, `setFile`,
+   `setRequireIndexes`, `setSlaveOkay`.
+ * The following properties `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` were
+   deprecated and will be removed in 2.0: `distance`, `file`, `namespace`,
+   `requireIndexes`, `slaveOkay`.
+
 ### Annotation mappings
 
  * The `@NotSaved` annotation was deprecated and will be dropped in 2.0. Use the
@@ -105,6 +164,10 @@ in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
  * The `dropDups` option on the `@Index` annotation was deprecated and will be 
    dropped without replacement in 2.0. This functionality is no longer
    available.
+ * The `simple` option on the `@ReferenceOne` and `@ReferenceMany` annotations
+   was deprecated and will be dropped in 2.0. Use `storeAs="id"` instead.
+ * The `@Distance` annotation was deprecated and will be dropped in 2.0. GeoNear
+   queries will no longer be supported, use the aggregation pipeline instead.
 
 ### XML mappings
 
@@ -115,7 +178,7 @@ in favor of `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` and will be dropped in
  * The `drop-dups` attribute in the `index` element was deprecated and will be
    dropped without replacement in 2.0. This functionality is no longer
    available.
-   
+
 ### Full discriminator maps required
 
 When using a discriminator map on a reference or embedded relationship,
@@ -161,6 +224,31 @@ set.
  * The following methods in `Doctrine\ODM\MongoDB\Query\Builder` were deprecated
    and will be dropped in 2.0: `mapReduce`, `map`, `reduce`, `finalize`, `out`,
    `mapReduceOptions`, `distanceMultiplier`, `geoNear`, `spherical`.
+ * The following properties in `Doctrine\ODM\MongoDB\Query\Builder` will be
+   private in MongoDB ODM 2.0: `collection`, `expr`, `query`.
+ * The following properties in `Doctrine\ODM\MongoDB\Query\Expr` will be private
+   in MongoDB ODM 2.0: `currentField`, `newObj`, `query`.
+ * The `addManyToSet` and `pushAll` methods in
+   `Doctrine\ODM\MongoDB\Query\Builder` and `Doctrine\ODM\MongoDB\Query\Expr`
+   were deprecated and will be removed in 2.0. Use `each` in combination with
+   `addToSet` and `push` respectively.
+ * The following methods from `Doctrine\ODM\MongoDB\Query\Builder` and
+   `Doctrine\ODM\MongoDB\Query\Expr` were deprecated and will be removed in 2.0:
+   `maxDistance`, `minDistance`, `withinBox`, `withinCenter`,
+   `withinCenterSphere`, `withinPolygon`.
+ * The `Doctrine\MongoDB\Query\Query::count` method was deprecated and will be
+   removed in MongoDB ODM 2.0. Iterators will not be countable in 2.0. Users
+   should run separate count queries instead.
+ * The `Doctrine\MongoDB\Query\Query::iterate` method was deprecated and will be
+   removed in MongoDB ODM 2.0. Use `Doctrine\MongoDB\Query\Query::getIterator`
+   instead.
+ * The following properties in `Doctrine\ODM\MongoDB\Query\Query` will be
+   private in MongoDB ODM 2.0: `iterator`, `options`, `query`.
+ * The following constants in `Doctrine\ODM\MongoDB\Query\Query` will be removed
+   in MongoDB ODM 2.0: `HINT_READ_PREFERENCE_TAGS`, `HINT_SLAVE_OKAY`,
+   `TYPE_GEO_NEAR`.
+ * The `Doctrine\ODM\MongoDB\Query\Query::prepareCursor` method will be removed
+   in MongoDB ODM 2.0. You should wrap the returned cursor instead.
 
 ## Schema manager
 
@@ -169,3 +257,17 @@ set.
    option instead.
  * The `indexOptions` argument in the `ensureSharding` and
    `ensureDocumentSharding` methods was deprecated and will be dropped in 2.0.
+
+## Types
+
+ * The following classes in the `Doctrine\ODM\MongoDB\Types` namespace were
+   deprecated and will be removed in 2.0: `FileType`, `IncrementType`.
+ * The `FILE` and `INCREMENT` constants in `Doctrine\ODM\MongoDB\Types\Type`
+   were deprecated and will be removed in 2.0.
+
+## UnitOfWork
+
+ * The `isScheduledForDirtyCheck` and `scheduleForDirtyCheck` methods in
+   `Doctrine\ODM\MongoDB\UnitOfWork` have been deprecated and will be dropped in
+   2.0. Use `isScheduledForSynchronization` and `scheduleForSynchronization`
+   instead.

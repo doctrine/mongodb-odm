@@ -20,6 +20,9 @@
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -46,5 +49,41 @@ class Match extends BaseStage\Match
         $this->query->includesReferenceTo($document);
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @deprecated This method is deprecated and will be removed in MongoDB ODM 2.0.
+     */
+    public function debug($name = null)
+    {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+
+        return parent::debug($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @deprecated This method is deprecated and will be removed in MongoDB ODM 2.0.
+     */
+    public function maxDistance($maxDistance)
+    {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+
+        return parent::maxDistance($maxDistance);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @deprecated This method is deprecated and will be removed in MongoDB ODM 2.0.
+     */
+    public function minDistance($minDistance)
+    {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+
+        return parent::minDistance($minDistance);
     }
 }
