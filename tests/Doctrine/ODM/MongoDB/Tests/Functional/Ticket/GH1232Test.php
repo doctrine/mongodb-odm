@@ -3,8 +3,8 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 class GH1232Test extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {

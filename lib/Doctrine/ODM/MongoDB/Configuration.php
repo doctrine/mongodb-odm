@@ -31,6 +31,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerat
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository as NewDocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 
 /**
@@ -587,7 +588,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         return isset($this->attributes['defaultDocumentRepositoryClassName'])
             ? $this->attributes['defaultDocumentRepositoryClassName']
-            : DocumentRepository::class;
+            : NewDocumentRepository::class;
     }
 
     /**

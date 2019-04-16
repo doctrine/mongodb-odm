@@ -250,6 +250,11 @@ set.
  * The `Doctrine\ODM\MongoDB\Query\Query::prepareCursor` method will be removed
    in MongoDB ODM 2.0. You should wrap the returned cursor instead.
 
+## Repositories
+ * The `Doctrine\ODM\MongoDB\DocumentRepository` class was deprecated in favor
+   of `Doctrine\ODM\MongoDB\Repository\DocumentRepository` and will be dropped
+   in 2.0.
+
 ## Schema manager
 
  * The `timeout` option in the `odm:schema:create` and `odm:schema:update`

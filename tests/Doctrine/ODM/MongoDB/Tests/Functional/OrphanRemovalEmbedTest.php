@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 /**
  * Test the orphan removal on embedded documents that contain references with cascade operations.
@@ -137,7 +138,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentRepository
+     * @return DocumentRepository
      */
     private function getUserRepository()
     {
@@ -145,7 +146,7 @@ class OrphanRemovalEmbedTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentRepository
+     * @return DocumentRepository
      */
     private function getAddressRepository()
     {
