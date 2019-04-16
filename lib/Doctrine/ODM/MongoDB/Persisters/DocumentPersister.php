@@ -79,7 +79,7 @@ final class DocumentPersister
     /** @var ClassMetadata */
     private $class;
 
-    /** @var Collection */
+    /** @var Collection|null */
     private $collection;
 
     /** @var Bucket|null */
@@ -122,8 +122,13 @@ final class DocumentPersister
         $this->uow             = $uow;
         $this->hydratorFactory = $hydratorFactory;
         $this->class           = $class;
-        $this->collection      = $dm->getDocumentCollection($class->name);
         $this->cp              = $this->uow->getCollectionPersister();
+
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            return;
+        }
+
+        $this->collection      = $dm->getDocumentCollection($class->name);
 
         if (! $class->isFile) {
             return;
@@ -220,6 +225,7 @@ final class DocumentPersister
 
         if ($inserts) {
             try {
+                assert($this->collection instanceof Collection);
                 $this->collection->insertMany($inserts, $options);
             } catch (DriverException $e) {
                 $this->queuedInserts = [];
@@ -323,6 +329,7 @@ final class DocumentPersister
         }
 
         try {
+            assert($this->collection instanceof Collection);
             $this->collection->updateOne($criteria, $data, $options);
             return;
         } catch (WriteException $e) {
@@ -331,6 +338,7 @@ final class DocumentPersister
             }
         }
 
+        assert($this->collection instanceof Collection);
         $this->collection->updateOne($criteria, ['$set' => new stdClass()], $options);
     }
 
@@ -386,6 +394,7 @@ final class DocumentPersister
 
             $options = $this->getWriteOptions($options);
 
+            assert($this->collection instanceof Collection);
             $result = $this->collection->updateOne($query, $update, $options);
 
             if (($this->class->isVersioned || $this->class->isLockable) && $result->getModifiedCount() !== 1) {
@@ -422,6 +431,7 @@ final class DocumentPersister
 
         $options = $this->getWriteOptions($options);
 
+        assert($this->collection instanceof Collection);
         $result = $this->collection->deleteOne($query, $options);
 
         if (($this->class->isVersioned || $this->class->isLockable) && ! $result->getDeletedCount()) {
@@ -434,6 +444,7 @@ final class DocumentPersister
      */
     public function refresh(object $document) : void
     {
+        assert($this->collection instanceof Collection);
         $query = $this->getQueryForDocument($document);
         $data  = $this->collection->findOne($query);
         if ($data === null) {
@@ -471,6 +482,7 @@ final class DocumentPersister
         if ($sort !== null) {
             $options['sort'] = $this->prepareSort($sort);
         }
+        assert($this->collection instanceof Collection);
         $result = $this->collection->findOne($criteria, $options);
         $result = $result !== null ? (array) $result : null;
 
@@ -510,6 +522,7 @@ final class DocumentPersister
             $options['skip'] = $skip;
         }
 
+        assert($this->collection instanceof Collection);
         $baseCursor = $this->collection->find($criteria, $options);
         return $this->wrapCursor($baseCursor);
     }
@@ -566,6 +579,7 @@ final class DocumentPersister
     public function exists(object $document) : bool
     {
         $id = $this->class->getIdentifierObject($document);
+        assert($this->collection instanceof Collection);
         return (bool) $this->collection->findOne(['_id' => $id], ['_id']);
     }
 
@@ -577,6 +591,7 @@ final class DocumentPersister
         $id          = $this->uow->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+        assert($this->collection instanceof Collection);
         $this->collection->updateOne($criteria, ['$set' => [$lockMapping['name'] => $lockMode]]);
         $this->class->reflFields[$this->class->lockField]->setValue($document, $lockMode);
     }
@@ -589,6 +604,7 @@ final class DocumentPersister
         $id          = $this->uow->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+        assert($this->collection instanceof Collection);
         $this->collection->updateOne($criteria, ['$unset' => [$lockMapping['name'] => true]]);
         $this->class->reflFields[$this->class->lockField]->setValue($document, null);
     }
