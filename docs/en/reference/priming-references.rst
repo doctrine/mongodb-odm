@@ -138,18 +138,21 @@ As an example, we can look at the default callable, which is found in the
 
     <?php
 
-    function(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
+    function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) : void {
+        if ($class->identifier === null) {
+            return;
+        }
+
         $qb = $dm->createQueryBuilder($class->name)
             ->field($class->identifier)->in($ids);
 
-        if ( ! empty($hints[Query::HINT_READ_PREFERENCE])) {
-            $qb->setReadPreference(
-                $hints[Query::HINT_READ_PREFERENCE],
-                $hints[Query::HINT_READ_PREFERENCE_TAGS]
-            );
+        if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE]);
         }
 
-        $qb->getQuery()->toArray();
+        $iterator = $qb->getQuery()->execute();
+        assert($iterator instanceof Iterator);
+        $iterator->toArray();
     };
 
 Firstly, the callable is passed the ``DocumentManager`` of the main query. This
