@@ -92,6 +92,12 @@ class User extends BaseDocument
     /** @ODM\Field(type="collection") */
     private $logs = [];
 
+    /** @var @ODM\ReferenceOne(storeAs="dbRefWithDb") */
+    protected $referenceToAnything;
+
+    /** @var @ODM\ReferenceOne(storeAs="dbRef") */
+    protected $referenceToAnythingWithoutDb;
+
     public function __construct()
     {
         $this->phonebooks      = new ArrayCollection();

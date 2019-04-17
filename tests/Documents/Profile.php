@@ -21,6 +21,11 @@ class Profile
     /** @ODM\ReferenceOne(targetDocument=File::class, cascade={"all"}) */
     private $image;
 
+    public function setProfileId($profileId)
+    {
+        $this->profileId = $profileId;
+    }
+
     public function getProfileId()
     {
         return $this->profileId;

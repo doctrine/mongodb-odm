@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use Doctrine\ODM\MongoDB\UnitOfWork;
+use Documents\Profile;
 use Documents\User;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
-use stdClass;
 
 class ExprTest extends BaseTest
 {
@@ -195,125 +191,57 @@ class ExprTest extends BaseTest
 
     public function testReferencesUsesMinimalKeys()
     {
-        $dm                = $this->createMock(DocumentManager::class);
-        $uow               = $this->createMock(UnitOfWork::class);
-        $documentPersister = $this->createMock(DocumentPersister::class);
-        $class             = $this->createMock(ClassMetadata::class);
-        $class->name       = '';
+        $profile = new Profile();
+        $profile->setProfileId(new ObjectId());
+        $this->dm->persist($profile);
 
-        $expected = ['foo.$id' => '1234'];
+        $expr = $this->createExpr();
+        $expr->field('profile')->references($profile);
 
-        $dm
-            ->expects($this->once())
-            ->method('createReference')
-            ->will($this->returnValue(['$ref' => 'coll', '$id' => '1234', '$db' => 'db']));
-        $dm
-            ->expects($this->once())
-            ->method('getUnitOfWork')
-            ->will($this->returnValue($uow));
-
-        $uow
-            ->expects($this->once())
-            ->method('getDocumentPersister')
-            ->will($this->returnValue($documentPersister));
-
-        $documentPersister
-            ->expects($this->once())
-            ->method('prepareQueryOrNewObj')
-            ->with($expected)
-            ->will($this->returnValue($expected));
-
-        $class
-            ->expects($this->once())
-            ->method('getFieldMapping')
-            ->will($this->returnValue(['targetDocument' => 'Foo', 'name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB]));
-
-        $expr = $this->createExpr($dm, $class);
-        $expr->field('bar')->references(new stdClass());
-
-        $this->assertEquals($expected, $expr->getQuery(), '->references() uses just $id if a targetDocument is set');
+        $this->assertEquals(
+            ['profile.$id' => $profile->getProfileId()],
+            $expr->getQuery(),
+            '->references() uses just $id if a targetDocument is set'
+        );
     }
 
     public function testReferencesUsesAllKeys()
     {
-        $dm                = $this->createMock(DocumentManager::class);
-        $uow               = $this->createMock(UnitOfWork::class);
-        $documentPersister = $this->createMock(DocumentPersister::class);
-        $class             = $this->createMock(ClassMetadata::class);
-        $class->name       = '';
+        $profile = new Profile();
+        $profile->setProfileId(new ObjectId());
+        $this->dm->persist($profile);
 
-        $expected = ['foo.$ref' => 'coll', 'foo.$id' => '1234', 'foo.$db' => 'db'];
+        $expr = $this->createExpr();
+        $expr->field('referenceToAnything')->references($profile);
 
-        $dm
-            ->expects($this->once())
-            ->method('createReference')
-            ->will($this->returnValue(['$ref' => 'coll', '$id' => '1234', '$db' => 'db']));
-        $dm
-            ->expects($this->once())
-            ->method('getUnitOfWork')
-            ->will($this->returnValue($uow));
-
-        $uow
-            ->expects($this->once())
-            ->method('getDocumentPersister')
-            ->will($this->returnValue($documentPersister));
-
-        $documentPersister
-            ->expects($this->once())
-            ->method('prepareQueryOrNewObj')
-            ->with($expected)
-            ->will($this->returnValue($expected));
-
-        $class
-            ->expects($this->once())
-            ->method('getFieldMapping')
-            ->will($this->returnValue(['name' => 'foo', 'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB]));
-
-        $expr = $this->createExpr($dm, $class);
-        $expr->field('bar')->references(new stdClass());
-
-        $this->assertEquals($expected, $expr->getQuery(), '->references() uses all keys if no targetDocument is set');
+        $this->assertEquals(
+            [
+                'referenceToAnything.$id' => $profile->getProfileId(),
+                'referenceToAnything.$db' => 'doctrine_odm_tests',
+                'referenceToAnything.$ref' => 'Profile',
+            ],
+            $expr->getQuery(),
+            '->references() uses all keys if no targetDocument is set'
+        );
     }
 
     public function testReferencesUsesSomeKeys()
     {
-        $dm                = $this->createMock(DocumentManager::class);
-        $uow               = $this->createMock(UnitOfWork::class);
-        $documentPersister = $this->createMock(DocumentPersister::class);
-        $class             = $this->createMock(ClassMetadata::class);
-        $class->name       = '';
+        $profile = new Profile();
+        $profile->setProfileId(new ObjectId());
+        $this->dm->persist($profile);
 
-        $expected = ['foo.$ref' => 'coll', 'foo.$id' => '1234'];
+        $expr = $this->createExpr();
+        $expr->field('referenceToAnythingWithoutDb')->references($profile);
 
-        $dm
-            ->expects($this->once())
-            ->method('createReference')
-            ->will($this->returnValue(['$ref' => 'coll', '$id' => '1234']));
-        $dm
-            ->expects($this->once())
-            ->method('getUnitOfWork')
-            ->will($this->returnValue($uow));
-
-        $uow
-            ->expects($this->once())
-            ->method('getDocumentPersister')
-            ->will($this->returnValue($documentPersister));
-
-        $documentPersister
-            ->expects($this->once())
-            ->method('prepareQueryOrNewObj')
-            ->with($expected)
-            ->will($this->returnValue($expected));
-
-        $class
-            ->expects($this->once())
-            ->method('getFieldMapping')
-            ->will($this->returnValue(['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'name' => 'foo']));
-
-        $expr = $this->createExpr($dm, $class);
-        $expr->field('bar')->references(new stdClass());
-
-        $this->assertEquals($expected, $expr->getQuery(), '->references() uses some keys if storeAs=dbRef is set');
+        $this->assertEquals(
+            [
+                'referenceToAnythingWithoutDb.$id' => $profile->getProfileId(),
+                'referenceToAnythingWithoutDb.$ref' => 'Profile',
+            ],
+            $expr->getQuery(),
+            '->references() uses some keys if storeAs=dbRef is set'
+        );
     }
 
     public function testAddToSetWithValue()
@@ -759,35 +687,10 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$nin' => ['value1', 'value2']], $expr->getQuery());
     }
 
-    private function createExpr(?DocumentManager $dm = null, ?ClassMetadata $class = null) : Expr
+    private function createExpr() : Expr
     {
-        if (! $dm) {
-            $dm                = $this->createMock(DocumentManager::class);
-            $uow               = $this->createMock(UnitOfWork::class);
-            $documentPersister = $this->createMock(DocumentPersister::class);
-
-            $dm
-                ->expects($this->any())
-                ->method('getUnitOfWork')
-                ->will($this->returnValue($uow));
-
-            $uow
-                ->expects($this->any())
-                ->method('getDocumentPersister')
-                ->will($this->returnValue($documentPersister));
-
-            $documentPersister
-                ->expects($this->any())
-                ->method('prepareQueryOrNewObj')
-                ->will($this->returnArgument(0));
-        }
-
-        if (! $class) {
-            $class = new ClassMetadata(User::class);
-        }
-
-        $expr = new Expr($dm);
-        $expr->setClassMetadata($class);
+        $expr = new Expr($this->dm);
+        $expr->setClassMetadata($this->dm->getClassMetadata(User::class));
 
         return $expr;
     }

@@ -128,7 +128,7 @@ final class DocumentPersister
             return;
         }
 
-        $this->collection      = $dm->getDocumentCollection($class->name);
+        $this->collection = $dm->getDocumentCollection($class->name);
 
         if (! $class->isFile) {
             return;
@@ -973,7 +973,7 @@ final class DocumentPersister
 
         foreach ($query as $key => $value) {
             // Recursively prepare logical query clauses
-            if (in_array($key, ['$and', '$or', '$nor']) && is_array($value)) {
+            if (in_array($key, ['$and', '$or', '$nor'], true) && is_array($value)) {
                 foreach ($value as $k2 => $v2) {
                     $preparedQuery[$key][$k2] = $this->prepareQueryOrNewObj($v2, $isNewObj);
                 }
