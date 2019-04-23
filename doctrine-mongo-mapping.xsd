@@ -319,7 +319,7 @@
   </xs:simpleType>
 
   <xs:complexType name="discriminator-mapping">
-    <xs:attribute name="value" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="value" type="xs:string" use="required" />
     <xs:attribute name="class" type="xs:string" use="required" />
   </xs:complexType>
 
@@ -334,7 +334,7 @@
   </xs:complexType>
 
   <xs:complexType name="default-discriminator-value">
-    <xs:attribute name="value" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="value" type="xs:string" use="required" />
   </xs:complexType>
 
   <xs:simpleType name="lifecycle-callback-type">

@@ -10,11 +10,16 @@ use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Value;
 use MongoDB\BSON\Regex;
 use RuntimeException;
+use const E_USER_DEPRECATED;
+use function sprintf;
+use function trigger_error;
 
 /**
  * Converts Collection expressions to query expressions.
  *
  * @internal
+ *
+ * @final
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {
@@ -50,6 +55,9 @@ class QueryExpressionVisitor extends ExpressionVisitor
 
     public function __construct(Builder $builder)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         $this->builder = $builder;
     }
 

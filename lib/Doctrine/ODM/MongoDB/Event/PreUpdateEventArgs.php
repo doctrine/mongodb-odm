@@ -6,11 +6,15 @@ namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
+use const E_USER_DEPRECATED;
 use function get_class;
 use function sprintf;
+use function trigger_error;
 
 /**
  * Class that holds event arguments for a preUpdate event.
+ *
+ * @final
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
@@ -19,6 +23,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
 
     public function __construct(object $document, DocumentManager $dm, array $changeSet)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+        }
         parent::__construct($document, $dm);
         $this->documentChangeSet = $changeSet;
     }

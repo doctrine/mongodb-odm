@@ -12,6 +12,7 @@ use Documents\IndirectlyReferencedUser;
 use Documents\Phonenumber;
 use Documents\ReferenceUser;
 use Documents\User;
+use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
@@ -493,5 +494,52 @@ class QueryTest extends BaseTest
 
         $this->dm->refresh($article);
         $this->assertSame([1, 2], $article->getTags());
+    }
+
+    /**
+     * Checks that the query class runs a ReplaceOne operation internally
+     *
+     * @doesNotPerformAssertions
+     */
+    public function testReplaceDocumentRunsReplaceOperation() : void
+    {
+        $this->dm->createQueryBuilder(Article::class)
+            ->updateOne()
+            ->field('id')
+            ->equals('foo')
+            ->setNewObj(['value' => 'bar'])
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Checks that the query class runs a ReplaceOne operation internally
+     */
+    public function testReplaceMultipleCausesException() : void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Combining the "multiple" option without using an update operator as first operation in a query is not supported.');
+
+        $this->dm->createQueryBuilder(Article::class)
+            ->updateMany()
+            ->field('id')
+            ->equals('foo')
+            ->setNewObj(['value' => 'bar'])
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testFindAndReplaceDocumentRunsFindAndReplaceOperation() : void
+    {
+        $this->dm->createQueryBuilder(Article::class)
+            ->findAndUpdate()
+            ->field('id')
+            ->equals('foo')
+            ->setNewObj(['value' => 'bar'])
+            ->getQuery()
+            ->execute();
     }
 }

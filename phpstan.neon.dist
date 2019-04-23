@@ -8,3 +8,6 @@ parameters:
     - '#^PHPDoc tag @throws with type MongoDB\\Driver\\Exception\\Exception is not subtype of Throwable$#'
     # See https://github.com/phpstan/phpstan/pull/1730
     - '#^Parameter \#1 $wstring of class MongoDB\\Driver\\WriteConcern constructor expects string, int|string given\.$#'
+    # Temporary ignore since @final is respected
+    - "#^Strict comparison using !== between '.*ODM.*' and '.*ODM.*' will always evaluate to false.$#"
+    - '#^Doctrine\\ODM\\MongoDB\\Id\\AlnumGenerator::__construct\(\) does not call parent constructor from Doctrine\\ODM\\MongoDB\\Id\\IncrementGenerator\.$#'

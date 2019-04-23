@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
+use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Id\AbstractIdGenerator;
 use Doctrine\ODM\MongoDB\Id\AlnumGenerator;
@@ -20,10 +21,13 @@ use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use ReflectionException;
+use const E_USER_DEPRECATED;
 use function assert;
 use function get_class;
 use function get_class_methods;
 use function in_array;
+use function sprintf;
+use function trigger_error;
 use function ucfirst;
 
 /**
@@ -32,6 +36,8 @@ use function ucfirst;
  * to a document database.
  *
  * @internal
+ *
+ * @final
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -49,6 +55,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /** @var EventManager The event manager instance */
     private $evm;
+
+    public function __construct()
+    {
+        if (self::class === static::class) {
+            return;
+        }
+
+        @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+    }
 
     public function setDocumentManager(DocumentManager $dm) : void
     {
@@ -79,6 +94,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->driver      = $driver;
         $this->evm         = $this->dm->getEventManager();
         $this->initialized = true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function onNotFoundMetadata($className)
+    {
+        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
+            return null;
+        }
+
+        $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->dm);
+
+        $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
+
+        return $eventArgs->getFoundMetadata();
     }
 
     /**

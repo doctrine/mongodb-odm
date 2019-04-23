@@ -10,7 +10,8 @@ Doctrine MongoDB ODM includes a utility called
 inside Doctrine and rewriting ``targetDocument`` parameters in your metadata
 mapping at runtime. This allows your bundle to use an interface or abstract
 class in its mappings while still allowing the mapping to resolve to a concrete
-document class at runtime.
+document class at runtime. It will also rewrite class names when no mapping
+metadata has been found for the original class name.
 
 This functionality allows you to define relationships between different
 documents without creating hard dependencies.
@@ -126,7 +127,7 @@ you cannot be guaranteed that the targetDocument resolution will occur reliably:
     );
 
     // Add the ResolveTargetDocumentListener
-    $evm->addEventListener(\Doctrine\ODM\MongoDB\Events::loadClassMetadata, $rtdl);
+    $evm->addEventSubscriber($rtdl);
 
     // Create the document manager as you normally would
     $dm = \Doctrine\ODM\MongoDB\DocumentManager::create(null, $config, $evm);

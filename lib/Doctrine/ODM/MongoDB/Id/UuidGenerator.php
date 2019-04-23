@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use const E_USER_DEPRECATED;
 use function chr;
 use function hexdec;
 use function mt_rand;
@@ -16,9 +17,12 @@ use function sprintf;
 use function str_replace;
 use function strlen;
 use function substr;
+use function trigger_error;
 
 /**
  * Generates UUIDs.
+ *
+ * @final
  */
 class UuidGenerator extends AbstractIdGenerator
 {
@@ -28,6 +32,15 @@ class UuidGenerator extends AbstractIdGenerator
      * @var string
      */
     protected $salt = null;
+
+    public function __construct()
+    {
+        if (self::class === static::class) {
+            return;
+        }
+
+        @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+    }
 
     /**
      * Used to set the salt that will be applied to each id
