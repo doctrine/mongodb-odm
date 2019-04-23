@@ -655,6 +655,21 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function geoWithinPolygon()
+    {
+        if (func_num_args() < 3) {
+            @trigger_error(
+                sprintf('Calling "%s" with fewer than 3 arguments was deprecated in MongoDB ODM 1.3 and will require at least 3 arguments in 2.0.', __METHOD__),
+                E_USER_DEPRECATED
+            );
+        }
+
+        return parent::geoWithinPolygon(...func_get_args());
+    }
+
+    /**
      * @inheritdoc
      * @deprecated Deprecated in version 1.3 - use Aggregation Pipeline instead
      */

@@ -22,6 +22,8 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\MongoDB\Aggregation\Stage as BaseStage;
 use const E_USER_DEPRECATED;
 use function sprintf;
+use function func_get_args;
+use function func_num_args;
 use function trigger_error;
 
 /**
@@ -61,6 +63,18 @@ class Match extends BaseStage\Match
         @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return parent::debug($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function geoWithinPolygon()
+    {
+        if (func_num_args() < 3) {
+            @trigger_error(sprintf('Calling "%s" with fewer than 3 arguments was deprecated in MongoDB ODM 1.3 and will require at least 3 arguments in 2.0.', __METHOD__), E_USER_DEPRECATED);
+        }
+
+        return parent::geoWithinPolygon(...func_get_args());
     }
 
     /**

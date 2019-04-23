@@ -15,6 +15,9 @@
    will be private in 2.0: `convertExpression`, `convertTargetFieldName`.
  * The `Doctrine\ODM\MongoDB\Aggregation\Stage\ReplaceRoot::convertExpression`
    method will be private in 2.0.
+ * Calling `Doctrine\MongoDB\Aggregation\Stage\Match::geoWithinPolygon` with
+   fewer than 3 arguments was deprecated and will cause errors in 2.0. A polygon
+   must have at least 3 edges to be considered valid.
 
 ## Configuration
 
@@ -249,6 +252,10 @@ set.
    `TYPE_GEO_NEAR`.
  * The `Doctrine\ODM\MongoDB\Query\Query::prepareCursor` method will be removed
    in MongoDB ODM 2.0. You should wrap the returned cursor instead.
+ * Calling `Doctrine\MongoDB\Query\Builder::geoWithinPolygon` and
+   `Doctrine\MongoDB\Query\Expr::geoWithinPolygon` with fewer than 3 arguments
+   was deprecated and will cause errors in 2.0. A polygon must have at least 3
+   edges to be considered valid.
 
 ## Repositories
  * The `Doctrine\ODM\MongoDB\DocumentRepository` class was deprecated in favor
