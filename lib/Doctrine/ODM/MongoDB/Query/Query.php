@@ -401,7 +401,7 @@ class Query implements IteratorAggregate
      *
      * @return Iterator|UpdateResult|InsertOneResult|DeleteResult|array|object|int|null
      */
-    public function runQuery()
+    private function runQuery()
     {
         $options = $this->options;
 
