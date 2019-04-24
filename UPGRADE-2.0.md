@@ -311,3 +311,44 @@ the backward compatibility promise for them is relaxed: we reserve the right to
 change internal method's signatures and/or remove them altogether in *minor*
 releases. Should such change be made, a note shall be included in the `UPGRADE.md`
 file describing changes contained in the release.
+
+## Final classes
+
+Following classes have been made `final`:
+
+ * `Doctrine\ODM\MongoDB\DocumentNotFoundException`
+ * `Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs`
+ * `Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs`
+ * `Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs`
+ * `Doctrine\ODM\MongoDB\Event\OnClearEventArgs`
+ * `Doctrine\ODM\MongoDB\Event\OnFlushEventArgs`
+ * `Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs`
+ * `Doctrine\ODM\MongoDB\Event\PostFlushEventArgs`
+ * `Doctrine\ODM\MongoDB\Event\PreFlushEventArgs`
+ * `Doctrine\ODM\MongoDB\Event\PreLoadEventArgs`
+ * `Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs`
+ * `Doctrine\ODM\MongoDB\Hydrator\HydratorException`
+ * `Doctrine\ODM\MongoDB\Hydrator\HydratorFactory`
+ * `Doctrine\ODM\MongoDB\Id\AlnumGenerator`
+ * `Doctrine\ODM\MongoDB\Id\AutoGenerator`
+ * `Doctrine\ODM\MongoDB\Id\IncrementGenerator`
+ * `Doctrine\ODM\MongoDB\Id\UuidGenerator`
+ * `Doctrine\ODM\MongoDB\LockException`
+ * `Doctrine\ODM\MongoDB\LockMode`
+ * `Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory`
+ * `Doctrine\ODM\MongoDB\Mapping\MappingException`
+ * `Doctrine\ODM\MongoDB\PersistentCollection`
+ * `Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionException`
+ * `Doctrine\ODM\MongoDB\Persisters\CollectionPersister`
+ * `Doctrine\ODM\MongoDB\Persisters\DocumentPersister`
+ * `Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder`
+ * `Doctrine\ODM\MongoDB\Proxy\Factory\StaticProxyFactory`
+ * `Doctrine\ODM\MongoDB\Query\CriteriaMerger`
+ * `Doctrine\ODM\MongoDB\Query\FilterCollection`
+ * `Doctrine\ODM\MongoDB\Query\Query`
+ * `Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor`
+ * `Doctrine\ODM\MongoDB\Query\ReferencePrimer`
+ * `Doctrine\ODM\MongoDB\SchemaManager`
+ * `Doctrine\ODM\MongoDB\UnitOfWork`
+ * `Doctrine\ODM\MongoDB\Utility\CollectionHelper`
+ * `Doctrine\ODM\MongoDB\Utility\LifecycleEventManager`
