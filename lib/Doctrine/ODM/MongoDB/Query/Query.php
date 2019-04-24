@@ -16,10 +16,10 @@ use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\Collection;
 use MongoDB\DeleteResult;
-use MongoDB\Driver\Cursor;
 use MongoDB\InsertOneResult;
 use MongoDB\Operation\FindOneAndUpdate;
 use MongoDB\UpdateResult;
+use Traversable;
 use UnexpectedValueException;
 use const E_USER_DEPRECATED;
 use function array_combine;
@@ -347,7 +347,15 @@ class Query implements IteratorAggregate
         );
     }
 
-    private function makeIterator(Cursor $cursor) : Iterator
+    /**
+     * Decorate the cursor with caching, hydration, and priming behavior.
+     *
+     * Note: while this method could strictly take a MongoDB\Driver\Cursor, we
+     * accept Traversable for testing purposes since Cursor cannot be mocked.
+     * HydratingIterator and CachingIterator both expect a Traversable so this
+     * should not have any adverse effects.
+     */
+    private function makeIterator(Traversable $cursor) : Iterator
     {
         if ($this->hydrate) {
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->class, $this->unitOfWorkHints);
@@ -412,7 +420,7 @@ class Query implements IteratorAggregate
 
                 $cursor = $this->collection->find(
                     $this->query['query'],
-                    $queryOptions
+                    array_merge($options, $queryOptions)
                 );
 
                 return $this->makeIterator($cursor);
