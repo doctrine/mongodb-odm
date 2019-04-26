@@ -27,16 +27,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * initialization.
  *
  * @since  1.0
- * @deprecated Deprecated in favor of using Cursor; will be removed in 2.0
+ * @deprecated This class is deprecated and will be removed in 2.0. You should typehint against the {@see Iterator} interface instead.
  */
 class EagerCursor extends Cursor
 {
-    public function __construct(CursorInterface $baseCursor, UnitOfWork $unitOfWork, ClassMetadata $class)
-    {
-        @trigger_error(
-            sprintf('%s is deprecated - use %s instead.', __CLASS__, Cursor::class),
-            E_USER_DEPRECATED
-        );
-        parent::__construct($baseCursor, $unitOfWork, $class);
-    }
 }

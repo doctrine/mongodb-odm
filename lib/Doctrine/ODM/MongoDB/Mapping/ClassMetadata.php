@@ -1312,9 +1312,13 @@ class ClassMetadata implements BaseClassMetadata
      * Returns the distance field name.
      *
      * @return string $distance The distance field name.
+     *
+     * @deprecated Deprecated in 1.3 and will be dropped in 2.0.
      */
     public function getDistance()
     {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+
         return $this->distance;
     }
 
@@ -1322,9 +1326,13 @@ class ClassMetadata implements BaseClassMetadata
      * Set the field name that stores the distance.
      *
      * @param string $distance
+     *
+     * @deprecated Deprecated in 1.3 and will be dropped in 2.0.
      */
     public function setDistance($distance)
     {
+        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+
         $this->distance = $distance;
     }
 

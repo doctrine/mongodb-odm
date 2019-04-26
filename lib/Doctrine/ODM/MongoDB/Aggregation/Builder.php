@@ -186,7 +186,7 @@ class Builder extends BaseBuilder
     public function sort($fieldName, $order = null)
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
-        return parent::sort($this->getDocumentPersister()->prepareSortOrProjection($fields));
+        return parent::sort($this->getDocumentPersister()->prepareSort($fields));
     }
 
     /**

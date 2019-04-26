@@ -3,6 +3,7 @@
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 class OrphanRemovalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
@@ -276,7 +277,7 @@ class OrphanRemovalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentRepository
+     * @return DocumentRepository
      */
     private function getUserRepository()
     {
@@ -284,7 +285,7 @@ class OrphanRemovalTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\DocumentRepository
+     * @return DocumentRepository
      */
     private function getProfileRepository()
     {

@@ -47,6 +47,10 @@ class BucketAuto extends BaseStage\BucketAuto
 
     protected function convertExpression($expression)
     {
+        if (self::class !== static::class) {
+            @trigger_error(sprintf('The "%s" method will be private in MongoDB ODM 2.0. You should not rely on calling this method.', __METHOD__), E_USER_DEPRECATED);
+        }
+
         if (is_array($expression)) {
             return array_map([$this, 'convertExpression'], $expression);
         } elseif (is_string($expression) && substr($expression, 0, 1) === '$') {

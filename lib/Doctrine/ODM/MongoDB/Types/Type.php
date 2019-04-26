@@ -48,9 +48,11 @@ abstract class Type
     const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
     const BINDATAMD5 = 'bin_md5';
     const BINDATACUSTOM = 'bin_custom';
+    /** @deprecated This type was deprecated in MongoDB ODM 1.3 and will be removed in 2.0. */
     const FILE = 'file';
     const HASH = 'hash';
     const COLLECTION = 'collection';
+    /** @deprecated This type was deprecated in MongoDB ODM 1.3 and will be removed in 2.0. */
     const INCREMENT = 'increment';
     const OBJECTID = 'object_id';
     const RAW = 'raw';
