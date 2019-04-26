@@ -15,7 +15,6 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use ProxyManager\Proxy\GhostObjectInterface;
 use const DIRECTORY_SEPARATOR;
-use const E_USER_DEPRECATED;
 use function array_key_exists;
 use function chmod;
 use function class_exists;
@@ -31,16 +30,13 @@ use function rtrim;
 use function sprintf;
 use function str_replace;
 use function substr;
-use function trigger_error;
 use function uniqid;
 
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
  * type based on document's ClassMetadata
- *
- * @final
  */
-class HydratorFactory
+final class HydratorFactory
 {
     /**
      * The DocumentManager this factory is bound to.
@@ -96,9 +92,6 @@ class HydratorFactory
      */
     public function __construct(DocumentManager $dm, EventManager $evm, ?string $hydratorDir, ?string $hydratorNs, int $autoGenerate)
     {
-        if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
-        }
         if (! $hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();
         }

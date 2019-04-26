@@ -34,7 +34,6 @@ use MongoDB\Driver\Exception\WriteException;
 use MongoDB\GridFS\Bucket;
 use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
-use const E_USER_DEPRECATED;
 use function array_combine;
 use function array_fill;
 use function array_intersect_key;
@@ -60,16 +59,13 @@ use function spl_object_hash;
 use function sprintf;
 use function strpos;
 use function strtolower;
-use function trigger_error;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
  *
  * @internal
- *
- * @final
  */
-class DocumentPersister
+final class DocumentPersister
 {
     /** @var PersistenceBuilder */
     private $pb;
@@ -83,7 +79,7 @@ class DocumentPersister
     /** @var ClassMetadata */
     private $class;
 
-    /** @var Collection */
+    /** @var Collection|null */
     private $collection;
 
     /** @var Bucket|null */
@@ -120,17 +116,19 @@ class DocumentPersister
         ClassMetadata $class,
         ?CriteriaMerger $cm = null
     ) {
-        if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
-        }
         $this->pb              = $pb;
         $this->dm              = $dm;
         $this->cm              = $cm ?: new CriteriaMerger();
         $this->uow             = $uow;
         $this->hydratorFactory = $hydratorFactory;
         $this->class           = $class;
-        $this->collection      = $dm->getDocumentCollection($class->name);
         $this->cp              = $this->uow->getCollectionPersister();
+
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            return;
+        }
+
+        $this->collection = $dm->getDocumentCollection($class->name);
 
         if (! $class->isFile) {
             return;
@@ -227,6 +225,7 @@ class DocumentPersister
 
         if ($inserts) {
             try {
+                assert($this->collection instanceof Collection);
                 $this->collection->insertMany($inserts, $options);
             } catch (DriverException $e) {
                 $this->queuedInserts = [];
@@ -330,6 +329,7 @@ class DocumentPersister
         }
 
         try {
+            assert($this->collection instanceof Collection);
             $this->collection->updateOne($criteria, $data, $options);
             return;
         } catch (WriteException $e) {
@@ -338,6 +338,7 @@ class DocumentPersister
             }
         }
 
+        assert($this->collection instanceof Collection);
         $this->collection->updateOne($criteria, ['$set' => new stdClass()], $options);
     }
 
@@ -393,6 +394,7 @@ class DocumentPersister
 
             $options = $this->getWriteOptions($options);
 
+            assert($this->collection instanceof Collection);
             $result = $this->collection->updateOne($query, $update, $options);
 
             if (($this->class->isVersioned || $this->class->isLockable) && $result->getModifiedCount() !== 1) {
@@ -429,6 +431,7 @@ class DocumentPersister
 
         $options = $this->getWriteOptions($options);
 
+        assert($this->collection instanceof Collection);
         $result = $this->collection->deleteOne($query, $options);
 
         if (($this->class->isVersioned || $this->class->isLockable) && ! $result->getDeletedCount()) {
@@ -441,6 +444,7 @@ class DocumentPersister
      */
     public function refresh(object $document) : void
     {
+        assert($this->collection instanceof Collection);
         $query = $this->getQueryForDocument($document);
         $data  = $this->collection->findOne($query);
         if ($data === null) {
@@ -478,6 +482,7 @@ class DocumentPersister
         if ($sort !== null) {
             $options['sort'] = $this->prepareSort($sort);
         }
+        assert($this->collection instanceof Collection);
         $result = $this->collection->findOne($criteria, $options);
         $result = $result !== null ? (array) $result : null;
 
@@ -517,6 +522,7 @@ class DocumentPersister
             $options['skip'] = $skip;
         }
 
+        assert($this->collection instanceof Collection);
         $baseCursor = $this->collection->find($criteria, $options);
         return $this->wrapCursor($baseCursor);
     }
@@ -573,6 +579,7 @@ class DocumentPersister
     public function exists(object $document) : bool
     {
         $id = $this->class->getIdentifierObject($document);
+        assert($this->collection instanceof Collection);
         return (bool) $this->collection->findOne(['_id' => $id], ['_id']);
     }
 
@@ -584,6 +591,7 @@ class DocumentPersister
         $id          = $this->uow->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+        assert($this->collection instanceof Collection);
         $this->collection->updateOne($criteria, ['$set' => [$lockMapping['name'] => $lockMode]]);
         $this->class->reflFields[$this->class->lockField]->setValue($document, $lockMode);
     }
@@ -596,6 +604,7 @@ class DocumentPersister
         $id          = $this->uow->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
+        assert($this->collection instanceof Collection);
         $this->collection->updateOne($criteria, ['$unset' => [$lockMapping['name'] => true]]);
         $this->class->reflFields[$this->class->lockField]->setValue($document, null);
     }
@@ -964,7 +973,7 @@ class DocumentPersister
 
         foreach ($query as $key => $value) {
             // Recursively prepare logical query clauses
-            if (in_array($key, ['$and', '$or', '$nor']) && is_array($value)) {
+            if (in_array($key, ['$and', '$or', '$nor'], true) && is_array($value)) {
                 foreach ($value as $k2 => $v2) {
                     $preparedQuery[$key][$k2] = $this->prepareQueryOrNewObj($v2, $isNewObj);
                 }

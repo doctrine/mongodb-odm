@@ -14,7 +14,6 @@ use InvalidArgumentException;
 use LogicException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Traversable;
-use const E_USER_DEPRECATED;
 use function array_push;
 use function array_shift;
 use function array_values;
@@ -28,7 +27,6 @@ use function is_callable;
 use function is_object;
 use function serialize;
 use function sprintf;
-use function trigger_error;
 
 /**
  * The ReferencePrimer is responsible for priming reference relationships.
@@ -41,10 +39,8 @@ use function trigger_error;
  * the referenced identifiers are not immediately available on an inverse side.
  *
  * @internal
- *
- * @final
  */
-class ReferencePrimer
+final class ReferencePrimer
 {
     /**
      * The default primer Closure.
@@ -69,10 +65,6 @@ class ReferencePrimer
 
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
-        if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
-        }
-
         $this->dm  = $dm;
         $this->uow = $uow;
 

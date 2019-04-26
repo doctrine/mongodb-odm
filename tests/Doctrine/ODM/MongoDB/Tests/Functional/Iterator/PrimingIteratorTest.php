@@ -5,45 +5,62 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 
 use ArrayIterator;
+use Closure;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Documents\Profile;
+use Documents\ProfileNotify;
 use Documents\User;
 use Iterator;
 use MongoDB\BSON\ObjectId;
-use function is_array;
 
 final class PrimingIteratorTest extends BaseTest
 {
+    private $callbackCalls = [];
+
     public function testPrimerIsCalledOnceForEveryField()
     {
-        $primer   = $this->createMock(ReferencePrimer::class);
+        $primer   = new ReferencePrimer($this->dm, $this->uow);
         $class    = $this->dm->getClassMetadata(User::class);
-        $iterator = new PrimingIterator($this->getIterator(), $class, $primer, ['user' => true, 'hits' => true]);
-
-        $primer
-            ->expects($this->at(0))
-            ->method('primeReferences')
-            ->with($class, $iterator, 'user');
-        $primer
-            ->expects($this->at(1))
-            ->method('primeReferences')
-            ->with($class, $iterator, 'hits');
+        $iterator = new PrimingIterator($this->getIterator(), $class, $primer, [
+            'profile' => $this->createPrimerCallback(),
+            'profileNotify' => $this->createPrimerCallback(),
+        ]);
 
         $this->assertCount(3, $iterator->toArray());
         $this->assertCount(3, $iterator->toArray());
+
+        $this->assertSame([Profile::class, ProfileNotify::class], $this->callbackCalls);
     }
 
-    private function getIterator($items = null) : Iterator
+    private function createPrimerCallback() : Closure
     {
-        if (! is_array($items)) {
-            $items = [
-                ['_id' => new ObjectId(), 'username' => 'foo', 'hits' => 1],
-                ['_id' => new ObjectId(), 'username' => 'bar', 'hits' => 2],
-                ['_id' => new ObjectId(), 'username' => 'baz', 'hits' => 3],
-            ];
-        }
+        return function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
+            $this->callbackCalls[] = $class->name;
+        };
+    }
+
+    private function getIterator() : Iterator
+    {
+        $items = [
+            $this->createUserForPriming(),
+            $this->createUserForPriming(),
+            $this->createUserForPriming(),
+        ];
 
         return new ArrayIterator($items);
+    }
+
+    private function createUserForPriming() : User
+    {
+        $user = new User();
+        $user->setId(new ObjectId());
+        $user->setProfile($this->dm->getReference(Profile::class, new ObjectId()));
+        $user->setProfileNotify($this->dm->getReference(ProfileNotify::class, new ObjectId()));
+
+        return $user;
     }
 }

@@ -21,7 +21,6 @@ use MongoDB\InsertOneResult;
 use MongoDB\Operation\FindOneAndUpdate;
 use MongoDB\UpdateResult;
 use UnexpectedValueException;
-use const E_USER_DEPRECATED;
 use function array_combine;
 use function array_filter;
 use function array_flip;
@@ -36,16 +35,12 @@ use function is_callable;
 use function is_string;
 use function key;
 use function reset;
-use function sprintf;
-use function trigger_error;
 
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
  * and to hydrate the raw arrays of data to Doctrine document objects.
- *
- * @final
  */
-class Query implements IteratorAggregate
+final class Query implements IteratorAggregate
 {
     public const TYPE_FIND            = 1;
     public const TYPE_FIND_AND_UPDATE = 2;
@@ -122,10 +117,6 @@ class Query implements IteratorAggregate
 
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false)
     {
-        if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
-        }
-
         $primers = array_filter($primers);
 
         switch ($query['type']) {

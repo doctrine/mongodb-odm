@@ -7,21 +7,15 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Closure;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Tests\Mocks\DocumentPersisterMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ExceptionThrowingListenerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\Address;
-use Documents\CmsPhonenumber;
 use Documents\File;
 use Documents\FileWithoutMetadata;
 use Documents\ForumAvatar;
@@ -34,7 +28,6 @@ use Throwable;
 use function get_class;
 use function spl_object_hash;
 use function sprintf;
-use function ucfirst;
 
 class UnitOfWorkTest extends BaseTest
 {
@@ -80,7 +73,6 @@ class UnitOfWorkTest extends BaseTest
 
     public function testScheduleForEmbeddedUpsert()
     {
-        $class    = $this->dm->getClassMetadata(ForumUser::class);
         $test     = new EmbeddedUpsertDocument();
         $test->id = (string) new ObjectId();
         $this->assertFalse($this->uow->isScheduledForInsert($test));
@@ -123,175 +115,12 @@ class UnitOfWorkTest extends BaseTest
         $this->assertFalse($this->uow->isScheduledForDelete($user));
     }
 
-    public function testSavingSingleDocumentWithIdentityFieldForcesInsert()
-    {
-        // Setup fake persister and id generator for identity generation
-        $pb            = $this->getMockPersistenceBuilder();
-        $class         = $this->dm->getClassMetadata(ForumUser::class);
-        $userPersister = $this->getMockDocumentPersister($pb, $class);
-        $this->uow->setDocumentPersister(ForumUser::class, $userPersister);
-
-        // Test
-        $user           = new ForumUser();
-        $user->username = 'romanb';
-        $this->uow->persist($user);
-
-        // Check
-        $this->assertCount(0, $userPersister->getInserts());
-        $this->assertCount(0, $userPersister->getUpdates());
-        $this->assertCount(0, $userPersister->getDeletes());
-        $this->assertTrue($this->uow->isInIdentityMap($user));
-        // should no longer be scheduled for insert
-        $this->assertTrue($this->uow->isScheduledForInsert($user));
-
-        // Now lets check whether a subsequent commit() does anything
-        $userPersister->reset();
-
-        // Test
-        $this->uow->commit();
-
-        // Check.
-        $this->assertCount(1, $userPersister->getInserts());
-        $this->assertCount(0, $userPersister->getUpdates());
-        $this->assertCount(0, $userPersister->getDeletes());
-
-        // should have an id
-        $this->assertNotNull($user->id);
-    }
-
-    /**
-     * Tests a scenario where a save() operation is cascaded from a ForumUser
-     * to its associated ForumAvatar, both entities using IDENTITY id generation.
-     */
-    public function testCascadedIdentityColumnInsert()
-    {
-        // Setup fake persister and id generator for identity generation
-        //ForumUser
-        $pb            = $this->getMockPersistenceBuilder();
-        $class         = $this->dm->getClassMetadata(ForumUser::class);
-        $userPersister = $this->getMockDocumentPersister($pb, $class);
-        $this->uow->setDocumentPersister(ForumUser::class, $userPersister);
-
-        // ForumAvatar
-        $pb              = $this->getMockPersistenceBuilder();
-        $class           = $this->dm->getClassMetadata(ForumAvatar::class);
-        $avatarPersister = $this->getMockDocumentPersister($pb, $class);
-        $this->uow->setDocumentPersister(ForumAvatar::class, $avatarPersister);
-
-        // Test
-        $user           = new ForumUser();
-        $user->username = 'romanb';
-        $avatar         = new ForumAvatar();
-        $user->avatar   = $avatar;
-        $this->uow->persist($user); // save cascaded to avatar
-
-        $this->uow->commit();
-
-        $this->assertNotNull($user->id);
-        $this->assertNotNull($avatar->id);
-
-        $this->assertCount(1, $userPersister->getInserts());
-        $this->assertCount(0, $userPersister->getUpdates());
-        $this->assertCount(0, $userPersister->getDeletes());
-
-        $this->assertCount(1, $avatarPersister->getInserts());
-        $this->assertCount(0, $avatarPersister->getUpdates());
-        $this->assertCount(0, $avatarPersister->getDeletes());
-    }
-
-    public function testChangeTrackingNotify()
-    {
-        $pb = $this->getMockPersistenceBuilder();
-
-        $class     = $this->dm->getClassMetadata(NotifyChangedDocument::class);
-        $persister = $this->getMockDocumentPersister($pb, $class);
-        $this->uow->setDocumentPersister($class->name, $persister);
-
-        $class         = $this->dm->getClassMetadata(NotifyChangedRelatedItem::class);
-        $itemPersister = $this->getMockDocumentPersister($pb, $class);
-        $this->uow->setDocumentPersister($class->name, $itemPersister);
-
-        $entity = new NotifyChangedDocument();
-        $entity->setId(1);
-        $entity->setData('thedata');
-
-        $this->uow->persist($entity);
-        $this->uow->commit();
-
-        $this->assertCount(1, $persister->getUpserts());
-        $this->assertTrue($this->uow->isInIdentityMap($entity));
-        $this->assertFalse($this->uow->isScheduledForSynchronization($entity));
-
-        $persister->reset();
-
-        $entity->setData('newdata');
-        $entity->setTransient('newtransientvalue');
-
-        $this->assertTrue($this->uow->isScheduledForSynchronization($entity));
-        $this->assertEquals(['data' => ['thedata', 'newdata']], $this->uow->getDocumentChangeSet($entity));
-
-        $item = new NotifyChangedRelatedItem();
-        $item->setId(1);
-        $entity->getItems()->add($item);
-        $item->setOwner($entity);
-
-        $this->uow->persist($item);
-        $this->uow->commit();
-
-        $this->assertCount(1, $itemPersister->getUpserts());
-        $this->assertTrue($this->uow->isInIdentityMap($item));
-        $this->assertFalse($this->uow->isScheduledForSynchronization($item));
-
-        $persister->reset();
-        $itemPersister->reset();
-
-        $entity->getItems()->removeElement($item);
-        $item->setOwner(null);
-
-        $this->assertTrue($entity->getItems()->isDirty());
-
-        $this->uow->commit();
-
-        $updates = $itemPersister->getUpdates();
-
-        $this->assertCount(1, $updates);
-        $this->assertSame($updates[0], $item);
-    }
-
-    public function testGetDocumentStateWithAssignedIdentity()
-    {
-        $pb        = $this->getMockPersistenceBuilder();
-        $class     = $this->dm->getClassMetadata(CmsPhonenumber::class);
-        $persister = $this->getMockDocumentPersister($pb, $class);
-        $this->uow->setDocumentPersister(CmsPhonenumber::class, $persister);
-
-        $ph              = new CmsPhonenumber();
-        $ph->phonenumber = '12345';
-
-        $this->assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($ph));
-        $this->assertTrue($persister->isExistsCalled());
-
-        $persister->reset();
-
-        // if the document is already managed the exists() check should be skipped
-        $this->uow->registerManaged($ph, '12345', []);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($ph));
-        $this->assertFalse($persister->isExistsCalled());
-        $ph2              = new CmsPhonenumber();
-        $ph2->phonenumber = '12345';
-        $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->uow->getDocumentState($ph2));
-        $this->assertFalse($persister->isExistsCalled());
-    }
-
     /**
      * @expectedException Doctrine\ODM\MongoDB\MongoDBException
      */
     public function testThrowsOnPersistOfMappedSuperclass()
     {
-        $documentManager = $this->getDocumentManager();
-        $documentManager->setClassMetadata(Address::class, $this->getClassMetadata(Address::class, 'MappedSuperclass'));
-        $unitOfWork = $this->getUnitOfWork($documentManager);
-        $unitOfWork->persist(new Address());
+        $this->uow->persist(new MappedSuperclass());
     }
 
     public function testParentAssociations()
@@ -301,13 +130,11 @@ class UnitOfWorkTest extends BaseTest
         $c = new ParentAssociationTest('c');
         $d = new ParentAssociationTest('c');
 
-        $documentManager = $this->getDocumentManager();
-        $unitOfWork      = $this->getUnitOfWork($documentManager);
-        $unitOfWork->setParentAssociation($b, ['name' => 'b'], $a, 'b');
-        $unitOfWork->setParentAssociation($c, ['name' => 'c'], $b, 'b.c');
-        $unitOfWork->setParentAssociation($d, ['name' => 'd'], $c, 'b.c.d');
+        $this->uow->setParentAssociation($b, ['name' => 'b'], $a, 'b');
+        $this->uow->setParentAssociation($c, ['name' => 'c'], $b, 'b.c');
+        $this->uow->setParentAssociation($d, ['name' => 'd'], $c, 'b.c.d');
 
-        $this->assertEquals([['name' => 'd'], $c, 'b.c.d'], $unitOfWork->getParentAssociation($d));
+        $this->assertEquals([['name' => 'd'], $c, 'b.c.d'], $this->uow->getParentAssociation($d));
     }
 
     /**
@@ -407,11 +234,6 @@ class UnitOfWorkTest extends BaseTest
      */
     public function testScheduleForUpdateWithArrays($origData, $updateData, $shouldInUpdate)
     {
-        $pb        = $this->getMockPersistenceBuilder();
-        $class     = $this->dm->getClassMetadata(ArrayTest::class);
-        $persister = $this->getMockDocumentPersister($pb, $class);
-        $this->uow->setDocumentPersister(ArrayTest::class, $persister);
-
         $arrayTest = new ArrayTest($origData);
         $this->uow->persist($arrayTest);
         $this->uow->computeChangeSets();
@@ -642,22 +464,15 @@ class UnitOfWorkTest extends BaseTest
 
     public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap()
     {
-        $dm  = $this->getMockDocumentManager();
-        $uow = new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory());
-
         $mapping = ['targetDocument' => User::class];
         $data    = ['type' => 'forum_user'];
 
         $userClassMetadata                     = new ClassMetadata(ForumUser::class);
         $userClassMetadata->discriminatorField = 'type';
         $userClassMetadata->discriminatorMap   = ['forum_user' => ForumUser::class];
+        $this->dm->getMetadataFactory()->setMetadataFor(User::class, $userClassMetadata);
 
-        $dm->expects($this->once())
-            ->method('getClassMetadata')
-            ->with(User::class)
-            ->will($this->returnValue($userClassMetadata));
-
-        $this->assertEquals(ForumUser::class, $uow->getClassNameForAssociation($mapping, $data));
+        $this->assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
     }
 
     public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData()
@@ -705,59 +520,6 @@ class UnitOfWorkTest extends BaseTest
 
         $this->dm->flush();
         $this->assertAttributeSame(0, 'commitsInProgress', $this->dm->getUnitOfWork());
-    }
-
-
-    protected function getDocumentManager()
-    {
-        return new \Stubs\DocumentManager();
-    }
-
-    protected function getUnitOfWork(DocumentManager $dm)
-    {
-        return new UnitOfWork($dm, $this->getMockEventManager(), $this->getMockHydratorFactory());
-    }
-
-    /**
-     * Gets mock HydratorFactory instance
-     *
-     * @return HydratorFactory
-     */
-    private function getMockHydratorFactory()
-    {
-        return $this->createMock(HydratorFactory::class);
-    }
-
-    /**
-     * Gets mock EventManager instance
-     *
-     * @return EventManager
-     */
-    private function getMockEventManager()
-    {
-        return $this->createMock(EventManager::class);
-    }
-
-    private function getMockPersistenceBuilder()
-    {
-        return $this->createMock(PersistenceBuilder::class);
-    }
-
-    private function getMockDocumentManager()
-    {
-        return $this->createMock(DocumentManager::class);
-    }
-
-    private function getMockDocumentPersister(PersistenceBuilder $pb, ClassMetadata $class)
-    {
-        return new DocumentPersisterMock($pb, $this->dm, $this->uow, $this->dm->getHydratorFactory(), $class);
-    }
-
-    protected function getClassMetadata($class, $flag)
-    {
-        $classMetadata                          = new ClassMetadata($class);
-        $classMetadata->{'is' . ucfirst($flag)} = true;
-        return $classMetadata;
     }
 }
 
@@ -942,4 +704,11 @@ class PersistRemovedEmbeddedDocument
 
     /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class) */
     public $embedded;
+}
+
+/** @ODM\MappedSuperclass */
+class MappedSuperclass
+{
+    /** @ODM\Id */
+    public $id;
 }
