@@ -15,6 +15,7 @@ use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
+use Traversable;
 use const DOCTRINE_MONGODB_DATABASE;
 use function array_keys;
 
@@ -455,42 +456,64 @@ class QueryTest extends BaseTest
         $query->execute();
     }
 
-    public function testCountWithOptions()
+    public function testCountOptionInheritance()
     {
-        $collection = $this->getMockCollection();
+        $nearest            = new ReadPreference('nearest');
+        $secondaryPreferred = new ReadPreference('secondaryPreferred');
 
-        $collection->expects($this->at(0))
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
             ->method('count')
-            ->with(['foo' => 'bar'], ['skip' => 5])
+            ->with(['foo' => 'bar'], ['maxTimeMS' => 100, 'skip' => 5, 'readPreference' => $nearest])
             ->will($this->returnValue(100));
 
         $queryArray = [
             'type' => Query::TYPE_COUNT,
             'query' => ['foo' => 'bar'],
             'skip' => 5,
+            'readPreference' => $nearest,
         ];
 
-        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+        $options = [
+            'maxTimeMS' => 100,
+            'readPreference' => $secondaryPreferred,
+        ];
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, $options);
 
         $this->assertSame(100, $query->execute());
     }
 
-    public function testReadPreference()
+    public function testFindOptionInheritance()
     {
-        $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+        $nearest            = new ReadPreference('nearest');
+        $secondaryPreferred = new ReadPreference('secondaryPreferred');
+
+        $cursor = $this->createMock(Traversable::class);
 
         $collection = $this->getMockCollection();
         $collection->expects($this->once())
-            ->method('count')
-            ->with(['foo' => 'bar'], ['readPreference' => $readPreference])
-            ->will($this->returnValue(0));
+            ->method('find')
+            ->with(['foo' => 'bar'], ['maxTimeMS' => 100, 'skip' => 5, 'readPreference' => $nearest])
+            ->will($this->returnValue($cursor));
 
-        $queryQrray = [
-            'type' => Query::TYPE_COUNT,
+        $queryArray = [
+            'type' => Query::TYPE_FIND,
             'query' => ['foo' => 'bar'],
+            'skip' => 5,
+            'readPreference' => $nearest,
         ];
-        $query      = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryQrray, ['readPreference' => $readPreference]);
-        $query->execute();
+
+        $options = [
+            'maxTimeMS' => 100,
+            'readPreference' => $secondaryPreferred,
+        ];
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, $options);
+
+        /* Do not expect the same object returned by Collection::find(), since
+         * Query::makeIterator() wraps the return value with CachingIterator. */
+        $this->assertInstanceOf(Traversable::class, $query->execute());
     }
 
     private function getMockCollection()
