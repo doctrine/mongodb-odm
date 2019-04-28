@@ -114,9 +114,17 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            $insertData[$class->discriminatorField] = isset($class->discriminatorValue)
-                ? $class->discriminatorValue
-                : $class->name;
+            $discriminatorValue = $class->discriminatorValue;
+
+            if ($discriminatorValue === null) {
+                if (! empty($class->discriminatorMap)) {
+                    @trigger_error(sprintf('Document class "%s" is unlisted in the discriminator map of its inheritance chain. This is deprecated and will throw an exception in doctrine/mongodb-odm 2.0.', $class->name), E_USER_DEPRECATED);
+                }
+
+                $discriminatorValue = $class->name;
+            }
+
+            $insertData[$class->discriminatorField] = $discriminatorValue;
         }
 
         return $insertData;
@@ -293,9 +301,17 @@ class PersistenceBuilder
 
         // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            $updateData['$set'][$class->discriminatorField] = isset($class->discriminatorValue)
-                ? $class->discriminatorValue
-                : $class->name;
+            $discriminatorValue = $class->discriminatorValue;
+
+            if ($discriminatorValue === null) {
+                if (! empty($class->discriminatorMap)) {
+                    @trigger_error(sprintf('Document class "%s" is unlisted in the discriminator map of its inheritance chain. This is deprecated and will throw an exception in doctrine/mongodb-odm 2.0.', $class->name), E_USER_DEPRECATED);
+                }
+
+                $discriminatorValue = $class->name;
+            }
+
+            $updateData['$set'][$class->discriminatorField] = $discriminatorValue;
         }
 
         return $updateData;
@@ -416,9 +432,17 @@ class PersistenceBuilder
          * discriminator field and no value, so default to the full class name.
          */
         if (isset($class->discriminatorField)) {
-            $embeddedDocumentValue[$class->discriminatorField] = isset($class->discriminatorValue)
-                ? $class->discriminatorValue
-                : $class->name;
+            $discriminatorValue = $class->discriminatorValue;
+
+            if ($discriminatorValue === null) {
+                if (! empty($class->discriminatorMap)) {
+                    @trigger_error(sprintf('Document class "%s" is unlisted in the discriminator map of its inheritance chain. This is deprecated and will throw an exception in doctrine/mongodb-odm 2.0.', $class->name), E_USER_DEPRECATED);
+                }
+
+                $discriminatorValue = $class->name;
+            }
+
+            $embeddedDocumentValue[$class->discriminatorField] = $discriminatorValue;
         }
 
         // Ensure empty embedded documents are stored as BSON objects
