@@ -503,7 +503,12 @@ class Builder
         return $stage;
     }
 
-    protected function addStage(Stage $stage) : Stage
+    /**
+     * Allows adding an arbitrary stage to the pipeline
+     *
+     * @return Stage The method returns the stage given as an argument
+     */
+    public function addStage(Stage $stage) : Stage
     {
         $this->stages[] = $stage;
 
