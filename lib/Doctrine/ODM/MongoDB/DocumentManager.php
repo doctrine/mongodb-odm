@@ -799,7 +799,7 @@ class DocumentManager implements ObjectManager
      */
     public function createDBRef($document, array $referenceMapping = null)
     {
-        @trigger_error('The ' . __METHOD__ . ' method has been deprecated and will be removed in ODM 2.0. Use createReference() instead.', E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method has been deprecated and will be removed in doctrine/mongodb-odm 2.0. Use createReference() instead.', __METHOD__), E_USER_DEPRECATED);
 
         if (!isset($referenceMapping['storeAs'])) {
             $referenceMapping['storeAs'] = ClassMetadata::REFERENCE_STORE_AS_DB_REF;

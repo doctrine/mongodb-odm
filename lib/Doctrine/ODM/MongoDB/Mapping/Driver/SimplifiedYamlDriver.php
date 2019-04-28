@@ -38,7 +38,7 @@ class SimplifiedYamlDriver extends YamlDriver
      */
     public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
-        @trigger_error(sprintf('The "%s" class is deprecated and will be removed in 2.0. Please switch to XML or annotation mapping.', self::class), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" class is deprecated and will be removed in doctrine/mongodb-odm 2.0. Please switch to XML or annotation mapping.', self::class), E_USER_DEPRECATED);
 
         $locator = new SymfonyFileLocator((array) $prefixes, $fileExtension);
         parent::__construct($locator, $fileExtension);

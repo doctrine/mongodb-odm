@@ -34,7 +34,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
     {
         if (get_class($this) !== DefaultRepositoryFactory::class) {
             @trigger_error(
-                sprintf('The %s class extends %s which will be final in ODM 2.0. You should extend %s instead.', __CLASS__,  DefaultRepositoryFactory::class, AbstractRepositoryFactory::class),
+                sprintf('The "%s" class extends "%s" which will be final in doctrine/mongodb-odm 2.0. You should extend "%s" instead.', __CLASS__,  DefaultRepositoryFactory::class, AbstractRepositoryFactory::class),
                 E_USER_DEPRECATED
             );
         }

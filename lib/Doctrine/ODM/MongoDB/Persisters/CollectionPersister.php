@@ -80,7 +80,7 @@ class CollectionPersister
     public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {
         if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in doctrine/mongodb-odm 2.0.', static::class, self::class), E_USER_DEPRECATED);
         }
         $this->dm = $dm;
         $this->pb = $pb;
@@ -129,7 +129,7 @@ class CollectionPersister
      */
     public function delete(PersistentCollectionInterface $coll, array $options)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be changed to the signature of deleteAll in 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be changed to the signature of deleteAll in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         $mapping = $coll->getMapping();
         if ($mapping['isInverseSide']) {
@@ -154,7 +154,7 @@ class CollectionPersister
      */
     public function update(PersistentCollectionInterface $coll, array $options)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be changed to the signature of updateAll in 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be changed to the signature of updateAll in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         $mapping = $coll->getMapping();
 

@@ -41,7 +41,7 @@ class MongoDBException extends \Exception
     public static function invalidFindByCall($documentName, $fieldName, $method)
     {
         @trigger_error(
-            sprintf('The "%s" method is deprecated in MongoDB ODM 1.3 and will be removed in 2.0. Magic findBy methods will no longer be supported.', __METHOD__),
+            sprintf('The "%s" method is deprecated in doctrine/mongodb-odm 1.3 and will be removed in 2.0. Magic findBy methods will no longer be supported.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -91,7 +91,7 @@ class MongoDBException extends \Exception
     public static function findByRequiresParameter($methodName)
     {
         @trigger_error(
-            sprintf('The "%s" method is deprecated in MongoDB ODM 1.3 and will be removed in 2.0. Magic findBy methods will no longer be supported.', __METHOD__),
+            sprintf('The "%s" method is deprecated in doctrine/mongodb-odm 1.3 and will be removed in 2.0. Magic findBy methods will no longer be supported.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -126,7 +126,7 @@ class MongoDBException extends \Exception
     public static function queryNotIndexed($className, $unindexedFields)
     {
         @trigger_error(
-            sprintf('The "%s" method is deprecated in MongoDB ODM 1.2 and will be removed in 2.0. The requireIndexes functionality will no longer be supported.', __METHOD__),
+            sprintf('The "%s" method is deprecated in doctrine/mongodb-odm 1.2 and will be removed in 2.0. The requireIndexes functionality will no longer be supported.', __METHOD__),
             E_USER_DEPRECATED
         );
 

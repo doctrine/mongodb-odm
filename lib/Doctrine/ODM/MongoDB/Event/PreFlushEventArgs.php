@@ -32,7 +32,7 @@ class PreFlushEventArgs extends ManagerEventArgs
     public function __construct(ObjectManager $objectManager)
     {
         if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in doctrine/mongodb-odm 2.0.', static::class, self::class), E_USER_DEPRECATED);
         }
         parent::__construct($objectManager);
     }

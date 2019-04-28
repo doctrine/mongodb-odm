@@ -18,7 +18,7 @@
  */
 
 @trigger_error(
-    sprintf('Loading annotations with %s is deprecated - register class loader through AnnotationRegistry::registerLoader instead.', __FILE__),
+    sprintf('Loading annotations with "%s" is deprecated and will be removed in doctrine/mongodb-odm 2.0. Register class loader through AnnotationRegistry::registerLoader instead.', __FILE__),
     E_USER_DEPRECATED
 );
 

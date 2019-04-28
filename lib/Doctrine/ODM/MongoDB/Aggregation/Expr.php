@@ -73,7 +73,7 @@ class Expr extends BaseExpr
     protected function ensureArray($expression)
     {
         if (self::class !== static::class) {
-            @trigger_error(sprintf('The "%s" method will be private in MongoDB ODM 2.0. You should not rely on calling this method.', __METHOD__), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "%s" method will be private in doctrine/mongodb-odm 2.0. You should not rely on calling this method.', __METHOD__), E_USER_DEPRECATED);
         }
 
         // Convert field names in expressions

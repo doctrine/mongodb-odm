@@ -60,7 +60,7 @@ class Match extends BaseStage\Match
      */
     public function debug($name = null)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return parent::debug($name);
     }
@@ -71,7 +71,7 @@ class Match extends BaseStage\Match
     public function geoWithinPolygon()
     {
         if (func_num_args() < 3) {
-            @trigger_error(sprintf('Calling "%s" with fewer than 3 arguments was deprecated in MongoDB ODM 1.3 and will require at least 3 arguments in 2.0.', __METHOD__), E_USER_DEPRECATED);
+            @trigger_error(sprintf('Calling "%s" with fewer than 3 arguments was deprecated in doctrine/mongodb-odm 1.3 and will require at least 3 arguments in 2.0.', __METHOD__), E_USER_DEPRECATED);
         }
 
         return parent::geoWithinPolygon(...func_get_args());
@@ -84,7 +84,7 @@ class Match extends BaseStage\Match
      */
     public function maxDistance($maxDistance)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return parent::maxDistance($maxDistance);
     }
@@ -96,7 +96,7 @@ class Match extends BaseStage\Match
      */
     public function minDistance($minDistance)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return parent::minDistance($minDistance);
     }

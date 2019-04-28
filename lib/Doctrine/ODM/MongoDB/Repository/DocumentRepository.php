@@ -221,7 +221,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     public function __call($method, $arguments)
     {
         @trigger_error(
-            'Using magic findBy and findOneBy calls was deprecated in version 1.2 and will be removed altogether in 2.0.',
+            'Using magic "findBy" and "findOneBy" calls was deprecated in doctrine/mongodb-odm 1.2 and will be removed altogether in 2.0.',
             E_USER_DEPRECATED
         );
         if (strpos($method, 'findBy') === 0) {

@@ -25,7 +25,7 @@ use function sprintf;
 use function trigger_error;
 
 if (! class_exists(ClassMetadata::class, false)) {
-    @trigger_error(sprintf('The "%s" class is deprecated and will be removed in 2.0. Use "%s" instead.', ClassMetadataInfo::class, ClassMetadata::class), E_USER_DEPRECATED);
+    @trigger_error(sprintf('The "%s" class is deprecated and will be removed in doctrine/mongodb-odm 2.0. Use "%s" instead.', ClassMetadataInfo::class, ClassMetadata::class), E_USER_DEPRECATED);
 }
 
 class_alias(ClassMetadata::class, ClassMetadataInfo::class);

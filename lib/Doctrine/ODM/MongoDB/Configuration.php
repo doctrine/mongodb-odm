@@ -247,14 +247,14 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         if (is_bool($autoGenerateProxyClasses)) {
             @trigger_error(
-                sprintf('Passing boolean value to %s is deprecated, please use constants of %s instead.', __METHOD__, AbstractProxyFactory::class),
+                sprintf('Passing boolean value to "%s" is deprecated, please use constants of "%s" instead.', __METHOD__, AbstractProxyFactory::class),
                 E_USER_DEPRECATED
             );
         }
 
         if ($autoGenerateProxyClasses === AbstractProxyFactory::AUTOGENERATE_ALWAYS || $autoGenerateProxyClasses === AbstractProxyFactory::AUTOGENERATE_NEVER) {
             @trigger_error(
-                sprintf('The "AUTOGENERATE_ALWAYS" and "AUTOGENERATE_NEVER" strategies for proxy generation are deprecated and will be dropped in 2.0. Please use "AUTOGENERATE_FILE_NOT_EXISTS" and "AUTOGENERATE_EVAL".'),
+                sprintf('The "AUTOGENERATE_ALWAYS" and "AUTOGENERATE_NEVER" strategies for proxy generation are deprecated and will be dropped in doctrine/mongodb-odm 2.0. Please use "AUTOGENERATE_FILE_NOT_EXISTS" and "AUTOGENERATE_EVAL".'),
                 E_USER_DEPRECATED
             );
         }
@@ -326,7 +326,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     {
         if (is_bool($bool)) {
             @trigger_error(
-                sprintf('Passing boolean value to %s is deprecated, please use AUTOGENERATE_* constants of %s instead.', __METHOD__, self::class),
+                sprintf('Passing boolean value to "%s" is deprecated, please use "AUTOGENERATE_*" constants of "%s" instead.', __METHOD__, self::class),
                 E_USER_DEPRECATED
             );
         }
@@ -545,7 +545,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function setDefaultRepositoryClassName($className)
     {
         @trigger_error(
-            sprintf('"%s" was deprecated in MongoDB ODM 1.2 and will be removed in 2.0. Please use "%s::setDefaultDocumentRepositoryClassName" instead.', __METHOD__, __CLASS__),
+            sprintf('"%s" was deprecated in doctrine/mongodb-odm 1.2 and will be removed in 2.0. Please use "%s::setDefaultDocumentRepositoryClassName" instead.', __METHOD__, __CLASS__),
             E_USER_DEPRECATED
         );
         $this->setDefaultDocumentRepositoryClassName($className);
@@ -561,7 +561,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
     public function getDefaultRepositoryClassName()
     {
         @trigger_error(
-            sprintf('"%s" was deprecated in MongoDB ODM 1.2 and will be removed in 2.0. Please use "%s::getDefaultDocumentRepositoryClassName" instead.', __METHOD__, __CLASS__),
+            sprintf('"%s" was deprecated in doctrine/mongodb-odm 1.2 and will be removed in 2.0. Please use "%s::getDefaultDocumentRepositoryClassName" instead.', __METHOD__, __CLASS__),
             E_USER_DEPRECATED
         );
         return $this->getDefaultDocumentRepositoryClassName();
@@ -669,7 +669,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getLoggerCallable()
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return parent::getLoggerCallable();
     }
@@ -681,7 +681,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function setLoggerCallable($loggerCallable)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         parent::setLoggerCallable($loggerCallable);
     }
@@ -693,7 +693,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getMongoCmd()
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return parent::getMongoCmd();
     }
@@ -705,7 +705,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function setMongoCmd($cmd)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         parent::setMongoCmd($cmd);
     }
@@ -717,7 +717,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getRetryConnect()
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return parent::getRetryConnect();
     }
@@ -729,7 +729,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function setRetryConnect($retryConnect)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         parent::setRetryConnect($retryConnect);
     }
@@ -741,7 +741,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function getRetryQuery()
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return parent::getRetryQuery();
     }
@@ -753,7 +753,7 @@ class Configuration extends \Doctrine\MongoDB\Configuration
      */
     public function setRetryQuery($retryQuery)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         parent::setRetryQuery($retryQuery);
     }

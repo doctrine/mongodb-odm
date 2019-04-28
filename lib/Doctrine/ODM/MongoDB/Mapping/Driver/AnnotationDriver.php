@@ -57,7 +57,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     public static function registerAnnotationClasses()
     {
         @trigger_error(
-            sprintf('%s is deprecated - register class loader through AnnotationRegistry::registerLoader instead.', __METHOD__),
+            sprintf('The "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0. Register class loader through AnnotationRegistry::registerLoader instead.', __METHOD__),
             E_USER_DEPRECATED
         );
         AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
@@ -112,13 +112,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $class->setDiscriminatorField($annot->value);
                 } elseif (isset($annot->name)) {
                     @trigger_error(
-                        sprintf('Specifying discriminator\'s name through "name" is deprecated - use @DiscriminatorField("%s") instead', $annot->name),
+                        sprintf('Specifying discriminator\'s name through "name" is deprecated and will be removed in doctrine/mongodb-odm 2.0. Use @DiscriminatorField("%s") instead', $annot->name),
                         E_USER_DEPRECATED
                     );
                     $class->setDiscriminatorField($annot->name);
                 } elseif (isset($annot->fieldName)) {
                     @trigger_error(
-                        sprintf('Specifying discriminator\'s name through "name" is deprecated - use @DiscriminatorField("%s") instead', $annot->fieldName),
+                        sprintf('Specifying discriminator\'s name through "name" is deprecated and will be removed in doctrine/mongodb-odm 2.0. Use @DiscriminatorField("%s") instead', $annot->fieldName),
                         E_USER_DEPRECATED
                     );
                     $class->setDiscriminatorField($annot->fieldName);
@@ -147,7 +147,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             default:
                 @trigger_error(
-                    sprintf('Class "%s" uses more than one document annotation. This is deprecated and will cause an exception in 2.0.', $className),
+                    sprintf('Class "%s" uses more than one document annotation. This is deprecated and will cause an exception in doctrine/mongodb-odm 2.0.', $className),
                     E_USER_DEPRECATED
                 );
         }
