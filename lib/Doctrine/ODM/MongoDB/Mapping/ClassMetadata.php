@@ -640,7 +640,7 @@ class ClassMetadata implements BaseClassMetadata
         }
 
         if ($repositoryClassName && strpos($repositoryClassName, '\\') === false && strlen($this->namespace)) {
-            @trigger_error(sprintf('Class "%s" relies on same-namespace resolution for its repository class. This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $this->name), E_USER_DEPRECATED);
+            @trigger_error(sprintf('Class "%s" relies on same-namespace resolution for its repository class. This is deprecated and will be dropped in doctrine/mongodb-odm 2.0. Please use a FQCN instead.', $this->name), E_USER_DEPRECATED);
 
             $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
         }
@@ -805,7 +805,7 @@ class ClassMetadata implements BaseClassMetadata
     {
         foreach ($map as $value => $className) {
             if (strpos($className, '\\') === false && strlen($this->namespace)) {
-                @trigger_error(sprintf('Class "%s" relies on same-namespace resolution in its discriminator map for value "%s". This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $this->name, $value), E_USER_DEPRECATED);
+                @trigger_error(sprintf('Class "%s" relies on same-namespace resolution in its discriminator map for value "%s". This is deprecated and will be dropped in doctrine/mongodb-odm 2.0. Please use a FQCN instead.', $this->name, $value), E_USER_DEPRECATED);
 
                 $className = $this->namespace . '\\' . $className;
             }
@@ -872,7 +872,7 @@ class ClassMetadata implements BaseClassMetadata
     {
         if ($slaveOkay) {
             @trigger_error(
-                sprintf('%s was deprecated in version 1.2 and will be removed in 2.0.', __METHOD__),
+                sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 1.2 and will be removed in 2.0.', __METHOD__),
                 E_USER_DEPRECATED
             );
         }
@@ -892,7 +892,7 @@ class ClassMetadata implements BaseClassMetadata
     public function addIndex($keys, array $options = array())
     {
         if (isset($options['dropDups'])) {
-            @trigger_error(sprintf('Ths "dropDups" option on indexes is deprecated and will be dropped in 2.0. Remove the "dropDups" options in class "%s".', $this->getName()), E_USER_DEPRECATED);
+            @trigger_error(sprintf('Ths "dropDups" option on indexes is deprecated and will be dropped in doctrine/mongodb-odm 2.0. Remove the "dropDups" option in class "%s".', $this->getName()), E_USER_DEPRECATED);
         }
 
         $this->indexes[] = array(
@@ -925,7 +925,7 @@ class ClassMetadata implements BaseClassMetadata
     {
         if ($requireIndexes) {
             @trigger_error(
-                'requireIndexes was deprecated in version 1.2 and will be removed altogether in 2.0.',
+                'requireIndexes was deprecated in doctrine/mongodb-odm 1.2 and will be removed altogether in 2.0.',
                 E_USER_DEPRECATED
             );
         }
@@ -1145,7 +1145,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function getNamespace()
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return $this->namespace;
     }
@@ -1317,7 +1317,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function getDistance()
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         return $this->distance;
     }
@@ -1331,7 +1331,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setDistance($distance)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in MongoDB ODM 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         $this->distance = $distance;
     }
@@ -1363,14 +1363,14 @@ class ClassMetadata implements BaseClassMetadata
             throw MappingException::discriminatorFieldConflict($this->name, $this->discriminatorField);
         }
         if (isset($mapping['targetDocument']) && strpos($mapping['targetDocument'], '\\') === false && strlen($this->namespace)) {
-            @trigger_error(sprintf('Field "%s" in class "%s" relies on same-namespace resolution for the target document. This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $mapping['name'], $this->name), E_USER_DEPRECATED);
+            @trigger_error(sprintf('Field "%s" in class "%s" relies on same-namespace resolution for the target document. This is deprecated and will be dropped in doctrine/mongodb-odm 2.0. Please use a FQCN instead.', $mapping['name'], $this->name), E_USER_DEPRECATED);
 
             $mapping['targetDocument'] = $this->namespace . '\\' . $mapping['targetDocument'];
         }
 
         if (isset($mapping['collectionClass'])) {
             if (strpos($mapping['collectionClass'], '\\') === false && strlen($this->namespace)) {
-                @trigger_error(sprintf('Field "%s" in class "%s" relies on same-namespace resolution for the collection class. This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $mapping['name'], $this->name), E_USER_DEPRECATED);
+                @trigger_error(sprintf('Field "%s" in class "%s" relies on same-namespace resolution for the collection class. This is deprecated and will be dropped in doctrine/mongodb-odm 2.0. Please use a FQCN instead.', $mapping['name'], $this->name), E_USER_DEPRECATED);
 
                 $mapping['collectionClass'] = $this->namespace . '\\' . $mapping['collectionClass'];
             }
@@ -1386,7 +1386,7 @@ class ClassMetadata implements BaseClassMetadata
         if (isset($mapping['discriminatorMap'])) {
             foreach ($mapping['discriminatorMap'] as $key => $class) {
                 if (strpos($class, '\\') === false && strlen($this->namespace)) {
-                    @trigger_error(sprintf('Field "%s" in class "%s" relies on same-namespace resolution in its discriminator map for value "%s". This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $mapping['name'], $this->name, $key), E_USER_DEPRECATED);
+                    @trigger_error(sprintf('Field "%s" in class "%s" relies on same-namespace resolution in its discriminator map for value "%s". This is deprecated and will be dropped in doctrine/mongodb-odm 2.0. Please use a FQCN instead.', $mapping['name'], $this->name, $key), E_USER_DEPRECATED);
 
                     $mapping['discriminatorMap'][$key] = $this->namespace . '\\' . $class;
                 }
@@ -1422,7 +1422,7 @@ class ClassMetadata implements BaseClassMetadata
             $mapping['strategy'] = self::STORAGE_STRATEGY_INCREMENT;
         }
         if (isset($mapping['file']) && $mapping['file'] === true) {
-            @trigger_error(sprintf('The field "%s" for class "%s" is mapped as file. This is deprecated and will not be possible in 2.0. Please read the upgrade notes for GridFS.', $mapping['fieldName'], $this->getName()), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The field "%s" for class "%s" is mapped as file. This is deprecated and will not be possible in doctrine/mongodb-odm 2.0. Please read the upgrade notes for GridFS.', $mapping['fieldName'], $this->getName()), E_USER_DEPRECATED);
             $this->file = $mapping['fieldName'];
             $mapping['name'] = 'file';
         }
@@ -1457,7 +1457,7 @@ class ClassMetadata implements BaseClassMetadata
         // Synchronize the "simple" and "storeAs" mapping information for backwards compatibility
         if (isset($mapping['simple']) && ($mapping['simple'] === true || $mapping['simple'] === 'true')) {
             $mapping['storeAs'] = static::REFERENCE_STORE_AS_ID;
-            @trigger_error('"simple" attribute of a reference is deprecated - use storeAs="id" instead.', E_USER_DEPRECATED);
+            @trigger_error('"simple" attribute of a reference is deprecated and will be removed in doctrine/mongodb-odm 2.0. Use storeAs="id" instead.', E_USER_DEPRECATED);
         }
         // Provide the correct value for the "simple" field for backwards compatibility
         if (isset($mapping['storeAs'])) {
@@ -1484,7 +1484,7 @@ class ClassMetadata implements BaseClassMetadata
         if (isset($mapping['repositoryMethod']) && ! (empty($mapping['skip']) && empty($mapping['limit']) && empty($mapping['sort']))) {
             @trigger_error(
                 sprintf(
-                    "Combining 'repositoryMethod' with skip, limit or sort (used on '%s' in class '%s') was deprecated in 1.3 and will be removed in 2.0. Please include those in the repository method itself.",
+                    "Combining 'repositoryMethod' with skip, limit or sort (used on '%s' in class '%s') was deprecated in doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please include those in the repository method itself.",
                     $mapping['fieldName'],
                     $this->name
                 ),
@@ -1620,7 +1620,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function mapFile(array $mapping)
     {
-        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in 2.0. Please read the upgrade notes for GridFS.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" method is deprecated and will be dropped in doctrine/mongodb-odm 2.0. Please read the upgrade notes for GridFS.', __METHOD__), E_USER_DEPRECATED);
 
         $mapping['file'] = true;
         $mapping['type'] = 'file';
@@ -2064,7 +2064,7 @@ class ClassMetadata implements BaseClassMetadata
     {
         foreach ($subclasses as $subclass) {
             if (strpos($subclass, '\\') === false && strlen($this->namespace)) {
-                @trigger_error(sprintf('Subclass "%s" in class "%s" relies on same-namespace resolution. This is deprecated and will be dropped in 2.0. Please use a FQCN instead.', $subclass, $this->name), E_USER_DEPRECATED);
+                @trigger_error(sprintf('Subclass "%s" in class "%s" relies on same-namespace resolution. This is deprecated and will be dropped in doctrine/mongodb-odm 2.0. Please use a FQCN instead.', $subclass, $this->name), E_USER_DEPRECATED);
 
                 $this->subClasses[] = $this->namespace . '\\' . $subclass;
             } else {
@@ -2443,7 +2443,7 @@ class ClassMetadata implements BaseClassMetadata
 
             @trigger_error(
                 sprintf(
-                    'Field "%s" in class "%s" is mapped to field "%s" in the database, but that name is already in use by field "%s". This is deprecated and will cause an exception in 2.0.',
+                    'Field "%s" in class "%s" is mapped to field "%s" in the database, but that name is already in use by field "%s". This is deprecated and will cause an exception in doctrine/mongodb-odm 2.0.',
                     $mapping['fieldName'],
                     $this->getName(),
                     $mapping['name'],

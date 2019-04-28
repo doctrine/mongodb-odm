@@ -9,7 +9,7 @@ use function sprintf;
 use function trigger_error;
 
 if (! class_exists(BaseDocumentRepository::class, false)) {
-    @trigger_error(sprintf('The "%s" class is deprecated and will be removed in 2.0. Use "%s" instead.', DocumentRepository::class, BaseDocumentRepository::class), E_USER_DEPRECATED);
+    @trigger_error(sprintf('The "%s" class is deprecated and will be removed in doctrine/mongodb-odm 2.0. Use "%s" instead.', DocumentRepository::class, BaseDocumentRepository::class), E_USER_DEPRECATED);
 }
 
 class_alias(BaseDocumentRepository::class, DocumentRepository::class);

@@ -139,7 +139,7 @@ class DocumentPersister
         CriteriaMerger $cm = null
     ) {
         if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in doctrine/mongodb-odm 2.0.', static::class, self::class), E_USER_DEPRECATED);
         }
         $this->pb = $pb;
         $this->dm = $dm;
@@ -928,7 +928,7 @@ class DocumentPersister
     public function prepareSortOrProjection(array $fields)
     {
         @trigger_error(
-            sprintf('The "%s" method was deprecated in MongoDB ODM 1.3 and will be dropped in 2.0. Use "prepareSort" or "prepareProjection" accordingly.', __METHOD__),
+            sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 1.3 and will be dropped in 2.0. Use "prepareSort" or "prepareProjection" accordingly.', __METHOD__),
             E_USER_DEPRECATED
         );
 

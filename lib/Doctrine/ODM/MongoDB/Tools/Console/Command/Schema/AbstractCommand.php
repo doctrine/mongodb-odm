@@ -91,7 +91,7 @@ abstract class AbstractCommand extends Command
             return null;
         }
 
-        @trigger_error(sprintf('The "timeout" option for command "%s" is deprecated and will be removed in 2.0. Use the maxTimeMs option instead.', static::class), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "timeout" option for command "%s" is deprecated and will be removed in doctrine/mongodb-odm 2.0. Use the maxTimeMs option instead.', static::class), E_USER_DEPRECATED);
 
         return (int) $timeout;
     }

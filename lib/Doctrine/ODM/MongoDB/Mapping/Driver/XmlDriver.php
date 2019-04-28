@@ -95,7 +95,7 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot['write-concern'])) {
             $class->setWriteConcern((string) $xmlRoot['write-concern']);
         } elseif (isset($xmlRoot['writeConcern'])) {
-            @trigger_error(sprintf('The "writeConcern" attribute in the mapping file for class "%s" is deprecated and will be dropped in 2.0. Please use "write-concern" instead.', $class->getName()), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "writeConcern" attribute in the mapping file for class "%s" is deprecated and will be dropped in doctrine/mongodb-odm 2.0. Please use "write-concern" instead.', $class->getName()), E_USER_DEPRECATED);
             $class->setWriteConcern((string) $xmlRoot['writeConcern']);
         }
 
@@ -189,11 +189,11 @@ class XmlDriver extends FileDriver
                 }
 
                 if (! empty($mapping['file'])) {
-                    @trigger_error('The "file" attribute to map GridFS files is deprecated and will be removed in 2.0. Please read the upgrade notes for GridFS.', E_USER_DEPRECATED);
+                    @trigger_error('The "file" attribute to map GridFS files is deprecated and will be removed in doctrine/mongodb-odm 2.0. Please read the upgrade notes for GridFS.', E_USER_DEPRECATED);
                 }
 
                 if (isset($mapping['id']) && $mapping['id'] === true) {
-                    @trigger_error(sprintf('Using the "id" attribute to denote identifiers in the XML mapping for class "%s" is deprecated and will be removed in 2.0. Please map your identifiers using the "id" element.', $class->getName()), E_USER_DEPRECATED);
+                    @trigger_error(sprintf('Using the "id" attribute to denote identifiers in the XML mapping for class "%s" is deprecated and will be removed in doctrine/mongodb-odm 2.0. Please map your identifiers using the "id" element.', $class->getName()), E_USER_DEPRECATED);
 
                     if (isset($mapping['strategy'])) {
                         $mapping['options'] = array();
@@ -219,7 +219,7 @@ class XmlDriver extends FileDriver
                 } elseif (isset($attributes['fieldName'])) {
                     @trigger_error(
                         sprintf(
-                            'Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated. Use the "field-name" attribute instead.',
+                            'Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated and will be removed in doctrine/mongodb-odm 2.0. Use the "field-name" attribute instead.',
                             isset($mapping['name']) ? $mapping['name'] : $mapping['fieldName'],
                             $class->getName()
                         ),
@@ -331,7 +331,7 @@ class XmlDriver extends FileDriver
             $mapping['fieldName'] = (string) $attributes['fieldName'];
 
             @trigger_error(
-                sprintf('Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated. Use the "field-name" attribute instead.', $mapping['name'], $class->getName()),
+                sprintf('Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated and will be removed in doctrine/mongodb-odm 2.0. Use the "field-name" attribute instead.', $mapping['name'], $class->getName()),
                 E_USER_DEPRECATED
             );
         }
@@ -391,7 +391,7 @@ class XmlDriver extends FileDriver
             $mapping['fieldName'] = (string) $attributes['fieldName'];
 
             @trigger_error(
-                sprintf('Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated. Use the "field-name" attribute instead.', $mapping['name'], $class->getName()),
+                sprintf('Field "%s" in class "%s" is mapped using a "fieldName" attribute which is deprecated and will be removed in doctrine/mongodb-odm 2.0. Use the "field-name" attribute instead.', $mapping['name'], $class->getName()),
                 E_USER_DEPRECATED
             );
         }
@@ -641,6 +641,6 @@ class XmlDriver extends FileDriver
             libxml_use_internal_errors($previousUseErrors);
         }
 
-        @trigger_error(sprintf('The mapping file "%s" does not follow the mapping schema. Loading invalid files is deprecated and will no longer work in 2.0', $filename), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The mapping file "%s" does not follow the mapping schema. Loading invalid files is deprecated and will no longer work in doctrine/mongodb-odm 2.0', $filename), E_USER_DEPRECATED);
     }
 }

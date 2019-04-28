@@ -559,7 +559,7 @@ class Cursor implements CursorInterface, Iterator
         $ok = (boolean) $ok;
         if ($ok) {
             @trigger_error(
-                sprintf('%s was deprecated in version 1.2 - use setReadPreference on the query instead.', __METHOD__),
+                sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 1.2 and will be removed in 2.0. Use setReadPreference on the query instead.', __METHOD__),
                 E_USER_DEPRECATED
             );
         }

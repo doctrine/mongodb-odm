@@ -43,7 +43,7 @@ class YamlDriver extends FileDriver
      */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
-        @trigger_error(sprintf('The "%s" class is deprecated and will be removed in 2.0. Please switch to XML or annotation mapping.', self::class), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s" class is deprecated and will be removed in doctrine/mongodb-odm 2.0. Please switch to XML or annotation mapping.', self::class), E_USER_DEPRECATED);
 
         parent::__construct($locator, $fileExtension);
     }

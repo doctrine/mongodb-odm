@@ -136,7 +136,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function requireIndexes($requireIndexes = true)
     {
         @trigger_error(
-            'requireIndexes was deprecated in version 1.2 and will be removed altogether in 2.0.',
+            'requireIndexes was deprecated in doctrine/mongodb-odm 1.2 and will be removed altogether in 2.0.',
             E_USER_DEPRECATED
         );
         $this->requireIndexes = $requireIndexes;
@@ -200,7 +200,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
      */
     public function eagerCursor($bool = true)
     {
-        @trigger_error(sprintf('Ths "%s" method is deprecated and will be removed in 2.0.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('Ths "%s" method is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
 
         if ( ! $bool && ! empty($this->primers)) {
             throw new \BadMethodCallException("Can't set eagerCursor to false when using reference primers");
@@ -299,7 +299,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function update($documentName = null)
     {
         @trigger_error(
-            sprintf('%s was deprecated in version 1.2 - use updateOne or updateMany instead.', __METHOD__),
+            sprintf('%s was deprecated in doctrine/mongodb-odm 1.2 - use updateOne or updateMany instead.', __METHOD__),
             E_USER_DEPRECATED
         );
         $this->setDocumentName($documentName);
@@ -383,7 +383,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function group($keys, array $initial, $reduce = null, array $options = [])
     {
         @trigger_error(
-            sprintf('%s was deprecated in version 1.2 - use Aggregation Builder\'s group stage instead.', __METHOD__),
+            sprintf('%s was deprecated in doctrine/mongodb-odm 1.2 and will be removed in 2.0. Use Aggregation Builder\'s group stage instead.', __METHOD__),
             E_USER_DEPRECATED
         );
         return parent::group($keys, $initial, $reduce, $options);
@@ -398,7 +398,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     {
         if ($bool) {
             @trigger_error(
-                sprintf('%s was deprecated in version 1.2 - use setReadPreference instead.', __METHOD__),
+                sprintf('%s was deprecated in doctrine/mongodb-odm 1.2 and will be removed in 2.0. Use setReadPreference instead.', __METHOD__),
                 E_USER_DEPRECATED
             );
         }
@@ -549,7 +549,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function mapReduce($map, $reduce, $out = ['inline' => true], array $options = [])
     {
         @trigger_error(
-            'Support for mapReduce queries was deprecated in MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.',
+            'Support for mapReduce queries was deprecated in doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.',
             E_USER_DEPRECATED
         );
 
@@ -563,7 +563,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function map($map)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -577,7 +577,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function reduce($reduce)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -591,7 +591,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function finalize($finalize)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -605,7 +605,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function out($out)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -619,7 +619,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function mapReduceOptions(array $options)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -633,7 +633,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function distanceMultiplier($distanceMultiplier)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -647,7 +647,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function geoNear($x, $y = null)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -661,7 +661,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     {
         if (func_num_args() < 3) {
             @trigger_error(
-                sprintf('Calling "%s" with fewer than 3 arguments was deprecated in MongoDB ODM 1.3 and will require at least 3 arguments in 2.0.', __METHOD__),
+                sprintf('Calling "%s" with fewer than 3 arguments was deprecated in doctrine/mongodb-odm 1.3 and will require at least 3 arguments in 2.0.', __METHOD__),
                 E_USER_DEPRECATED
             );
         }
@@ -676,7 +676,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function spherical($spherical = true)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -690,7 +690,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function maxDistance($maxDistance)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -704,7 +704,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function minDistance($minDistance)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -718,7 +718,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function withinBox($x1, $y1, $x2, $y2)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -732,7 +732,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function withinCenter($x, $y, $radius)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -746,7 +746,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function withinCenterSphere($x, $y, $radius)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -760,7 +760,7 @@ class Builder extends \Doctrine\MongoDB\Query\Builder
     public function withinPolygon()
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 

@@ -59,7 +59,7 @@ class SchemaManager
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
         if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in doctrine/mongodb-odm 2.0.', static::class, self::class), E_USER_DEPRECATED);
         }
         $this->dm = $dm;
         $this->metadataFactory = $cmf;
@@ -436,7 +436,7 @@ class SchemaManager
     public function createDatabases()
     {
         @trigger_error(
-            sprintf('%s was deprecated in version 1.2 - databases are created automatically by MongoDB (>= 3.0).', __METHOD__),
+            sprintf('The method "%s" was deprecated in doctrine/mongodb-odm 1.2 and will be removed in 2.0. Databases are created automatically by MongoDB (>= 3.0).', __METHOD__),
             E_USER_DEPRECATED
         );
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
@@ -458,7 +458,7 @@ class SchemaManager
     public function createDocumentDatabase($documentName)
     {
         @trigger_error(
-            sprintf('%s was deprecated in version 1.2 - databases are created automatically by MongoDB (>= 3.0).', __METHOD__),
+            sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 1.2 and will be removed in 2.0. Databases are created automatically by MongoDB (>= 3.0).', __METHOD__),
             E_USER_DEPRECATED
         );
         $class = $this->dm->getClassMetadata($documentName);
@@ -622,7 +622,7 @@ class SchemaManager
     public function ensureSharding(array $indexOptions = array())
     {
         if (! empty($indexOptions)) {
-            @trigger_error(sprintf('The "indexOptions" argument in "%s" is deprecated and will be removed in 2.0.', __METHOD__), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "indexOptions" argument in "%s" is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
         }
 
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
@@ -645,7 +645,7 @@ class SchemaManager
     public function ensureDocumentSharding($documentName, array $indexOptions = array())
     {
         if (! empty($indexOptions)) {
-            @trigger_error(sprintf('The "indexOptions" argument in "%s" is deprecated and will be removed in 2.0.', __METHOD__), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "indexOptions" argument in "%s" is deprecated and will be removed in doctrine/mongodb-odm 2.0.', __METHOD__), E_USER_DEPRECATED);
         }
 
         $class = $this->dm->getClassMetadata($documentName);

@@ -128,7 +128,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 $this->query[$mapping['name'] . '.' . $key] = $reference[$key];
             }
         } else {
-            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in ODM 2.0.', E_USER_DEPRECATED);
+            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in doctrine/mongodb-odm 2.0.', E_USER_DEPRECATED);
 
             $this->query = $this->dm->createDBRef($document);
         }
@@ -180,7 +180,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
                 $this->query[$mapping['name']]['$elemMatch'][$key] = $reference[$key];
             }
         } else {
-            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in ODM 2.0.', E_USER_DEPRECATED);
+            @trigger_error('Calling ' . __METHOD__ . ' without a current field set will no longer be possible in doctrine/mongodb-odm 2.0.', E_USER_DEPRECATED);
 
             $this->query['$elemMatch'] = $this->dm->createDBRef($document);
         }
@@ -252,7 +252,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     {
         if (func_num_args() < 3) {
             @trigger_error(
-                sprintf('Calling "%s" with fewer than 3 arguments was deprecated in MongoDB ODM 1.3 and will require at least 3 arguments in 2.0.', __METHOD__),
+                sprintf('Calling "%s" with fewer than 3 arguments was deprecated in doctrine/mongodb-odm 1.3 and will require at least 3 arguments in 2.0.', __METHOD__),
                 E_USER_DEPRECATED
             );
         }
@@ -267,7 +267,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     public function maxDistance($maxDistance)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -281,7 +281,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     public function minDistance($minDistance)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -295,7 +295,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     public function withinBox($x1, $y1, $x2, $y2)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -309,7 +309,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     public function withinCenter($x, $y, $radius)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -323,7 +323,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     public function withinCenterSphere($x, $y, $radius)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -337,7 +337,7 @@ class Expr extends \Doctrine\MongoDB\Query\Expr
     public function withinPolygon()
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use the aggregation pipeline instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 

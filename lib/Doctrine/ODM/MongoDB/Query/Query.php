@@ -112,13 +112,13 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = array(), array $options = array(), $hydrate = true, $refresh = false, array $primers = array(), $requireIndexes = null, $readOnly = false)
     {
         if (self::class !== static::class) {
-            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in MongoDB ODM 2.0.', static::class, self::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The class "%s" extends "%s" which will be final in doctrine/mongodb-odm 2.0.', static::class, self::class), E_USER_DEPRECATED);
         }
 
         $primers = array_filter($primers);
 
         if (isset($query['eagerCursor'])) {
-            @trigger_error(sprintf('The "eagerCursor" option for "%s" is deprecated and will be removed in 2.0.', self::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "eagerCursor" option for "%s" is deprecated and will be removed in doctrine/mongodb-odm 2.0.', self::class), E_USER_DEPRECATED);
         }
 
         if ( ! empty($primers)) {
@@ -148,7 +148,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
                     break;
             }
 
-            @trigger_error(sprintf('The "%s" query type is deprecated and will be removed in ODM 2.0.', $queryName), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "%s" query type is deprecated and will be removed in ODM doctrine/mongodb-odm 2.0.', $queryName), E_USER_DEPRECATED);
         }
 
         parent::__construct($collection, $query, $options);
@@ -237,7 +237,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function getFieldsInQuery()
     {
         @trigger_error(
-            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __METHOD__),
+            sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 1.2 and will be removed altogether in 2.0.', __METHOD__),
             E_USER_DEPRECATED
         );
         $query = isset($this->query['query']) ? $this->query['query'] : array();
@@ -257,7 +257,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function isIndexed()
     {
         @trigger_error(
-            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __METHOD__),
+            sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 1.2 and will be removed altogether in 2.0.', __METHOD__),
             E_USER_DEPRECATED
         );
         $fields = $this->getFieldsInQuery();
@@ -279,7 +279,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function getUnindexedFields()
     {
         @trigger_error(
-            sprintf('%s was deprecated in version 1.2 and will be removed altogether in 2.0.', __METHOD__),
+            sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 1.2 and will be removed altogether in 2.0.', __METHOD__),
             E_USER_DEPRECATED
         );
         $unindexedFields = array();
@@ -401,7 +401,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function count($foundOnly = false)
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please run separate count queries instead.', __METHOD__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please run separate count queries instead.', __METHOD__),
             E_USER_DEPRECATED
         );
 
@@ -415,7 +415,7 @@ class Query extends \Doctrine\MongoDB\Query\Query
     public function iterate()
     {
         @trigger_error(
-            sprintf('The %s method is deprecated since MongoDB ODM 1.3 and will be removed in 2.0. Please use "%s::getIterator()" instead.', __METHOD__, __CLASS__),
+            sprintf('The %s method is deprecated since doctrine/mongodb-odm 1.3 and will be removed in 2.0. Please use "%s::getIterator()" instead.', __METHOD__, __CLASS__),
             E_USER_DEPRECATED
         );
 
