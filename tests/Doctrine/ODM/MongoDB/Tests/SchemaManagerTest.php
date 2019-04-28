@@ -23,6 +23,7 @@ use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
+use MongoDB\Model\IndexInfo;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\Constraint\ArraySubset;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -121,10 +122,28 @@ class SchemaManagerTest extends BaseTest
         ];
     }
 
+    public static function getIndexCreationWriteOptions() : array
+    {
+        $originalOptionsWithBackground = array_map(static function (array $arguments) : array {
+            $arguments['expectedWriteOptions']['background'] = false;
+
+            return $arguments;
+        }, self::getWriteOptions());
+
+        return $originalOptionsWithBackground + [
+            'backgroundOptionSet' => [
+                'expectedWriteOptions' => ['background' => true],
+                'maxTimeMs' => null,
+                'writeConcern' => null,
+                'background' => true,
+            ],
+        ];
+    }
+
     /**
-     * @dataProvider getWriteOptions
+     * @dataProvider getIndexCreationWriteOptions
      */
-    public function testEnsureIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    public function testEnsureIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
         $indexedCollections = array_map(
             function (string $fqcn) {
@@ -163,13 +182,13 @@ class SchemaManagerTest extends BaseTest
                 ->with(['files_id' => 1, 'n' => 1], new ArraySubset(['unique' => true] + $expectedWriteOptions));
         }
 
-        $this->schemaManager->ensureIndexes($maxTimeMs, $writeConcern);
+        $this->schemaManager->ensureIndexes($maxTimeMs, $writeConcern, $background);
     }
 
     /**
-     * @dataProvider getWriteOptions
+     * @dataProvider getIndexCreationWriteOptions
      */
-    public function testEnsureDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    public function testEnsureDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
         $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
         foreach ($this->documentCollections as $collectionName => $collection) {
@@ -183,13 +202,13 @@ class SchemaManagerTest extends BaseTest
             }
         }
 
-        $this->schemaManager->ensureDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
+        $this->schemaManager->ensureDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern, $background);
     }
 
     /**
-     * @dataProvider getWriteOptions
+     * @dataProvider getIndexCreationWriteOptions
      */
-    public function testEnsureDocumentIndexesForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    public function testEnsureDocumentIndexesForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
         foreach ($this->documentCollections as $class => $collection) {
             $collection->expects($this->never())->method('createIndex');
@@ -221,13 +240,13 @@ class SchemaManagerTest extends BaseTest
             }
         }
 
-        $this->schemaManager->ensureDocumentIndexes(File::class, $maxTimeMs, $writeConcern);
+        $this->schemaManager->ensureDocumentIndexes(File::class, $maxTimeMs, $writeConcern, $background);
     }
 
     /**
-     * @dataProvider getWriteOptions
+     * @dataProvider getIndexCreationWriteOptions
      */
-    public function testEnsureDocumentIndexesWithTwoLevelInheritance(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    public function testEnsureDocumentIndexesWithTwoLevelInheritance(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
         $collectionName = $this->dm->getClassMetadata(CmsProduct::class)->getCollection();
         $collection     = $this->documentCollections[$collectionName];
@@ -236,7 +255,7 @@ class SchemaManagerTest extends BaseTest
             ->method('createIndex')
             ->with($this->anything(), new ArraySubset($expectedWriteOptions));
 
-        $this->schemaManager->ensureDocumentIndexes(CmsProduct::class, $maxTimeMs, $writeConcern);
+        $this->schemaManager->ensureDocumentIndexes(CmsProduct::class, $maxTimeMs, $writeConcern, $background);
     }
 
     /**
@@ -500,7 +519,7 @@ class SchemaManagerTest extends BaseTest
         $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
-        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
+        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
     }
 
     public function dataIsMongoIndexEquivalentToDocumentIndex()
@@ -648,6 +667,12 @@ class SchemaManagerTest extends BaseTest
                 'mongoIndex' => [],
                 'documentIndex' => ['keys' => ['foo' => 'text', 'bar' => 'text']],
             ],
+            // geoHaystack index options
+            'geoHaystackOptionsDifferent' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['bucketSize' => 16]],
+            ],
         ];
     }
 
@@ -671,7 +696,7 @@ class SchemaManagerTest extends BaseTest
         $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
-        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
+        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
     }
 
     public function dataIsMongoTextIndexEquivalentToDocumentIndex()

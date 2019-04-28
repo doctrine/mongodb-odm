@@ -32,6 +32,7 @@ class CreateCommand extends AbstractCommand
             ->addOption('class', 'c', InputOption::VALUE_REQUIRED, 'Document class to process (default: all classes)')
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Create collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Create indexes')
+            ->addOption('background', null, InputOption::VALUE_NONE, sprintf('Create indexes in background (requires "%s" option)', self::INDEX))
             ->setDescription('Create databases, collections and indexes for your documents');
     }
 
@@ -44,7 +45,8 @@ class CreateCommand extends AbstractCommand
         // Default to the full creation order if no options were specified
         $create = empty($create) ? $this->createOrder : $create;
 
-        $class = $input->getOption('class');
+        $class      = $input->getOption('class');
+        $background = (bool) $input->getOption('background');
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
@@ -52,9 +54,9 @@ class CreateCommand extends AbstractCommand
         foreach ($create as $option) {
             try {
                 if (isset($class)) {
-                    $this->{'processDocument' . ucfirst($option)}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
+                    $this->{'processDocument' . ucfirst($option)}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input), $background);
                 } else {
-                    $this->{'process' . ucfirst($option)}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
+                    $this->{'process' . ucfirst($option)}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input), $background);
                 }
                 $output->writeln(sprintf(
                     'Created <comment>%s%s</comment> for <info>%s</info>',
@@ -91,14 +93,14 @@ class CreateCommand extends AbstractCommand
         throw new BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
-        $sm->ensureDocumentIndexes($document, $maxTimeMs, $writeConcern);
+        $sm->ensureDocumentIndexes($document, $maxTimeMs, $writeConcern, $background);
     }
 
-    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
-        $sm->ensureIndexes($maxTimeMs, $writeConcern);
+        $sm->ensureIndexes($maxTimeMs, $writeConcern, $background);
     }
 
     protected function processDocumentProxy(SchemaManager $sm, string $document)
