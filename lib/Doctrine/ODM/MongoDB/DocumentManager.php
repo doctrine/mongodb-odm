@@ -760,47 +760,41 @@ class DocumentManager implements ObjectManager
     {
         $discriminatorField = null;
         $discriminatorValue = null;
-        $discriminatorData  = [];
+        $discriminatorMap   = null;
+
         if (isset($referenceMapping['discriminatorField'])) {
             $discriminatorField = $referenceMapping['discriminatorField'];
+
             if (isset($referenceMapping['discriminatorMap'])) {
-                $pos = array_search($class->name, $referenceMapping['discriminatorMap']);
+                $discriminatorMap = $referenceMapping['discriminatorMap'];
+            }
+        } else {
+            $discriminatorField = $class->discriminatorField;
+            $discriminatorValue = $class->discriminatorValue;
+            $discriminatorMap   = $class->discriminatorMap;
+        }
+
+        if ($discriminatorField === null) {
+            return [];
+        }
+
+        if ($discriminatorValue === null) {
+            if (! empty($discriminatorMap)) {
+                $pos = array_search($class->name, $discriminatorMap);
+
                 if ($pos !== false) {
                     $discriminatorValue = $pos;
                 }
             } else {
                 $discriminatorValue = $class->name;
             }
-        } else {
-            $discriminatorField = $class->discriminatorField;
-            $discriminatorValue = $class->discriminatorValue;
         }
 
-        if ($discriminatorField !== null) {
-            if ($discriminatorValue === null) {
-                throw MappingException::unlistedClassInDiscriminatorMap($class->name);
-            }
-            $discriminatorData = [$discriminatorField => $discriminatorValue];
-        } elseif (! isset($referenceMapping['targetDocument'])) {
-            $discriminatorField = $referenceMapping['discriminatorField'];
-
-            $discriminatorMap = null;
-            if (isset($referenceMapping['discriminatorMap'])) {
-                $discriminatorMap = $referenceMapping['discriminatorMap'];
-            }
-            if ($discriminatorMap === null) {
-                $discriminatorValue = $class->name;
-            } else {
-                $discriminatorValue = array_search($class->name, $discriminatorMap);
-
-                if ($discriminatorValue === false) {
-                    throw MappingException::unlistedClassInDiscriminatorMap($class->name);
-                }
-            }
-            $discriminatorData = [$discriminatorField => $discriminatorValue];
+        if ($discriminatorValue === null) {
+            throw MappingException::unlistedClassInDiscriminatorMap($class->name);
         }
 
-        return $discriminatorData;
+        return [$discriminatorField => $discriminatorValue];
     }
 
     /**

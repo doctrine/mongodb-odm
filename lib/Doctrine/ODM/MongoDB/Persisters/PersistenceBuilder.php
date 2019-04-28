@@ -99,13 +99,17 @@ final class PersistenceBuilder
 
         // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            if ($class->discriminatorValue === null) {
+            $discriminatorValue = $class->discriminatorValue;
+
+            if ($discriminatorValue === null) {
                 if (! empty($class->discriminatorMap)) {
                     throw MappingException::unlistedClassInDiscriminatorMap($class->name);
                 }
-                $class->discriminatorValue = $class->name;
+
+                $discriminatorValue = $class->name;
             }
-            $insertData[$class->discriminatorField] = $class->discriminatorValue;
+
+            $insertData[$class->discriminatorField] = $discriminatorValue;
         }
 
         return $insertData;
@@ -286,13 +290,17 @@ final class PersistenceBuilder
 
         // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            if ($class->discriminatorValue === null) {
+            $discriminatorValue = $class->discriminatorValue;
+
+            if ($discriminatorValue === null) {
                 if (! empty($class->discriminatorMap)) {
                     throw MappingException::unlistedClassInDiscriminatorMap($class->name);
                 }
-                $class->discriminatorValue = $class->name;
+
+                $discriminatorValue = $class->name;
             }
-            $updateData['$set'][$class->discriminatorField] = $class->discriminatorValue;
+
+            $updateData['$set'][$class->discriminatorField] = $discriminatorValue;
         }
 
         return $updateData;
@@ -412,13 +420,17 @@ final class PersistenceBuilder
          * discriminator field and no value, so default to the full class name.
          */
         if (isset($class->discriminatorField)) {
-            if ($class->discriminatorValue === null) {
+            $discriminatorValue = $class->discriminatorValue;
+
+            if ($discriminatorValue === null) {
                 if (! empty($class->discriminatorMap)) {
                     throw MappingException::unlistedClassInDiscriminatorMap($class->name);
                 }
-                $class->discriminatorValue = $class->name;
+
+                $discriminatorValue = $class->name;
             }
-            $embeddedDocumentValue[$class->discriminatorField] =  $class->discriminatorValue;
+
+            $embeddedDocumentValue[$class->discriminatorField] = $discriminatorValue;
         }
 
         // Ensure empty embedded documents are stored as BSON objects
