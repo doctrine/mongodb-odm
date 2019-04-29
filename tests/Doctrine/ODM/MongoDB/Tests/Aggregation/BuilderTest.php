@@ -2,6 +2,9 @@
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
+use Documents\Project;
+use stdClass;
+
 class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
     public function testAggregationBuilder()
@@ -181,6 +184,15 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $result = $builder->execute();
         $this->assertCount(0, $result);
+    }
+
+    public function testBuilderWithIndexStatsStageDoesNotApplyFilters()
+    {
+        $builder = $this->dm
+            ->createAggregationBuilder(Project::class)
+            ->indexStats();
+
+        $this->assertSame('$indexStats', array_keys($builder->getPipeline()[0])[0]);
     }
 
     private function insertTestData()

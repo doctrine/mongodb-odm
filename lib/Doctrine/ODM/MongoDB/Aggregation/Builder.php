@@ -21,6 +21,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use Doctrine\MongoDB\Aggregation\Builder as BaseBuilder;
 use Doctrine\MongoDB\Aggregation\Stage\GeoNear;
+use Doctrine\MongoDB\Aggregation\Stage\IndexStats;
 use Doctrine\MongoDB\CommandCursor as BaseCommandCursor;
 use Doctrine\ODM\MongoDB\CommandCursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -214,6 +215,12 @@ class Builder extends BaseBuilder
 
         if ($this->getStage(0) instanceof GeoNear) {
             $pipeline[0]['$geoNear']['query'] = $this->applyFilters($pipeline[0]['$geoNear']['query']);
+        } elseif ($this->getStage(0) instanceof IndexStats) {
+            // Don't apply any filters when using an IndexStats stage: since it
+            // needs to be the first pipeline stage, prepending a match stage
+            // with discriminator information will not work
+
+            return $pipeline;
         } else {
             $matchStage = $this->applyFilters([]);
             if ($matchStage !== []) {
