@@ -47,7 +47,9 @@ First define the mapping for the ORM:
 
         namespace Documents\Blog;
 
-        /** @Entity(repositoryClass="Documents\Blog\Repository\ORM\BlogPostRepository") */
+        use Documents\Blog\Repository\ORM\BlogPostRepository;
+
+        /** @Entity(repositoryClass=BlogPostRepository::class) */
         class BlogPost
         {
             /** @Id @Column(type="integer") */
@@ -123,7 +125,9 @@ Now map the same class to the Doctrine MongoDB ODM:
 
         namespace Documents\Blog;
 
-        /** @Document(repositoryClass="Documents\Blog\Repository\ODM\BlogPostRepository") */
+        use Documents\Blog\Repository\ODM\BlogPostRepository;
+
+        /** @Document(repositoryClass=BlogPostRepository::class) */
         class BlogPost
         {
             /** @Id */
@@ -147,7 +151,7 @@ Now map the same class to the Doctrine MongoDB ODM:
                                   http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <document name="Documents\Blog\BlogPost" repository-class="Documents\Blog\Repository\ODM\BlogPostRepository">
-                <field fieldName="id" type="id" />
+                <field fieldName="id" id="true" strategy="INCREMENT" type="int" />
                 <field fieldName="name" type="string" />
                 <field fieldName="email" type="text" />
             </document>
