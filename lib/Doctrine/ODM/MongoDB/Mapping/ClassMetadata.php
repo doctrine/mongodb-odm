@@ -784,6 +784,10 @@ class ClassMetadata implements BaseClassMetadata
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
         }
 
+        $this->subClasses         = [];
+        $this->discriminatorMap   = [];
+        $this->discriminatorValue = null;
+
         foreach ($map as $value => $className) {
             $this->discriminatorMap[$value] = $className;
             if ($this->name === $className) {

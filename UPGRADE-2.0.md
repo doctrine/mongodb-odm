@@ -17,7 +17,7 @@
   use ODM 2.0 directly.
 * `doctrine/mongodb` is no longer used by ODM. If you've been relying on its
   functionality, please update accordingly. Most utility classes from 
-  `doctrine/mongodb` have been merged into their ODM counterparts. Classes 
+  `doctrine/mongodb` have been merged into their ODM counterparts. Classes
   handling connections to MongoDB servers are being replaced by the MongoDB 
   library (`mongodb/mongodb`).
 * The constructor signature of `Doctrine\ODM\MongoDB\DocumentManager` as well as
@@ -261,6 +261,9 @@ ocramius. If you are checking for proxies, the following changed:
   cursor.
 * The `eagerCursor` helper in `Doctrine\ODM\MongoDB\Query\Builder` and its logic
   have been removed entirely without replacement.
+* Querying for a mapped superclass in a complex inheritance chain will now only
+  return children of that specific class instead of all classes in the
+  inheritance tree.
 
 ## Schema manager
 

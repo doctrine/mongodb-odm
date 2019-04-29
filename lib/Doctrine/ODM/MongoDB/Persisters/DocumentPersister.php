@@ -124,7 +124,7 @@ final class DocumentPersister
         $this->class           = $class;
         $this->cp              = $this->uow->getCollectionPersister();
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+        if ($class->isEmbeddedDocument || $class->isQueryResultDocument) {
             return;
         }
 
@@ -918,22 +918,31 @@ final class DocumentPersister
     /**
      * Adds discriminator criteria to an already-prepared query.
      *
+     * If the class we're querying has a discriminator field set, we add all
+     * possible discriminator values to the query. The list of possible
+     * discriminator values is based on the discriminatorValue of the class
+     * itself as well as those of all its subclasses.
+     *
      * This method should be used once for query criteria and not be used for
      * nested expressions. It should be called before
      * {@link DocumentPerister::addFilterToPreparedQuery()}.
      */
     public function addDiscriminatorToPreparedQuery(array $preparedQuery) : array
     {
-        /* If the class has a discriminator field, which is not already in the
-         * criteria, inject it now. The field/values need no preparation.
-         */
-        if ($this->class->hasDiscriminator() && ! isset($preparedQuery[$this->class->discriminatorField])) {
-            $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
-            if (count($discriminatorValues) === 1) {
-                $preparedQuery[$this->class->discriminatorField] = $discriminatorValues[0];
-            } else {
-                $preparedQuery[$this->class->discriminatorField] = ['$in' => $discriminatorValues];
-            }
+        if (isset($preparedQuery[$this->class->discriminatorField]) || $this->class->discriminatorField === null) {
+            return $preparedQuery;
+        }
+
+        $discriminatorValues = $this->getClassDiscriminatorValues($this->class);
+
+        if ($discriminatorValues === []) {
+            return $preparedQuery;
+        }
+
+        if (count($discriminatorValues) === 1) {
+            $preparedQuery[$this->class->discriminatorField] = $discriminatorValues[0];
+        } else {
+            $preparedQuery[$this->class->discriminatorField] = ['$in' => $discriminatorValues];
         }
 
         return $preparedQuery;
@@ -1281,11 +1290,16 @@ final class DocumentPersister
     }
 
     /**
-     * Gets the array of discriminator values for the given ClassMetadata
+     * Returns the list of discriminator values for the given ClassMetadata
      */
     private function getClassDiscriminatorValues(ClassMetadata $metadata) : array
     {
-        $discriminatorValues = [$metadata->discriminatorValue];
+        $discriminatorValues = [];
+
+        if ($metadata->discriminatorValue !== null) {
+            $discriminatorValues[] = $metadata->discriminatorValue;
+        }
+
         foreach ($metadata->subClasses as $className) {
             $key = array_search($className, $metadata->discriminatorMap);
             if (! $key) {
