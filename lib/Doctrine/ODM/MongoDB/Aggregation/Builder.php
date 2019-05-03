@@ -233,6 +233,12 @@ class Builder
 
         if ($this->getStage(0) instanceof Stage\GeoNear) {
             $pipeline[0]['$geoNear']['query'] = $this->applyFilters($pipeline[0]['$geoNear']['query']);
+        } elseif ($this->getStage(0) instanceof Stage\IndexStats) {
+            // Don't apply any filters when using an IndexStats stage: since it
+            // needs to be the first pipeline stage, prepending a match stage
+            // with discriminator information will not work
+
+            return $pipeline;
         } else {
             $matchExpression = $this->applyFilters([]);
             if ($matchExpression !== []) {

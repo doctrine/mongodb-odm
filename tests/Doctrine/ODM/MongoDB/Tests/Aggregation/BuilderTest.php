@@ -13,8 +13,10 @@ use Documents\BlogPost;
 use Documents\BlogTagAggregation;
 use Documents\CmsComment;
 use Documents\GuestServer;
+use Documents\Project;
 use Documents\Tag;
 use MongoDB\BSON\UTCDateTime;
+use function array_keys;
 
 class BuilderTest extends BaseTest
 {
@@ -341,6 +343,15 @@ class BuilderTest extends BaseTest
 
         $result = $builder->execute()->toArray();
         $this->assertCount(0, $result);
+    }
+
+    public function testBuilderWithIndexStatsStageDoesNotApplyFilters()
+    {
+        $builder = $this->dm
+            ->createAggregationBuilder(Project::class)
+            ->indexStats();
+
+        $this->assertSame('$indexStats', array_keys($builder->getPipeline()[0])[0]);
     }
 
     private function insertTestData()
