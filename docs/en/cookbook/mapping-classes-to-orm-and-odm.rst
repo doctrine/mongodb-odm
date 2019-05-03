@@ -1,15 +1,15 @@
 Mapping Classes to the ORM and ODM
 ==================================
 
-Because of the non intrusive design of Doctrine it is possible for you to have plain PHP classes
-that are mapped to both a relational database with the Doctrine2 Object Relational Mapper and
-MongoDB with the Doctrine MongoDB Object Document Mapper, or any other persistence layer that
+Because of the non-intrusive design of Doctrine, it is possible for you to have plain PHP classes
+that are mapped to both a relational database (with the Doctrine2 Object Relational Mapper) and
+MongoDB (with the Doctrine MongoDB Object Document Mapper), or any other persistence layer that
 implements the Doctrine Common `persistence`_ interfaces.
 
 Test Subject
 ------------
 
-For this cookbook entry we need to define a class that can be persisted to both MySQL and MongoDB.
+For this cookbook entry, we need to define a class that can be persisted to both MySQL and MongoDB.
 We'll use a ``BlogPost`` as you may want to write some generic blogging functionality that has support
 for multiple Doctrine persistence layers:
 
@@ -17,8 +17,8 @@ for multiple Doctrine persistence layers:
 
     <?php
 
-    namespace Doctrine\Blog;
-    
+    namespace Documents\Blog;
+
     class BlogPost
     {
         private $id;
@@ -45,9 +45,11 @@ First define the mapping for the ORM:
 
         <?php
 
-        namespace Doctrine\Blog;
+        namespace Documents\Blog;
 
-        /** @Entity(repositoryClass="Doctrine\Blog\ORM\BlogPostRepository") */
+        use Documents\Blog\Repository\ORM\BlogPostRepository;
+
+        /** @Entity(repositoryClass=BlogPostRepository::class) */
         class BlogPost
         {
             /** @Id @Column(type="integer") */
@@ -70,7 +72,7 @@ First define the mapping for the ORM:
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                   http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-            <entity name="Documents\BlogPost" repository-class="Doctrine\Blog\ORM\BlogPostRepository">
+            <entity name="Documents\Blog\BlogPost" repository-class="Documents\Blog\Repository\ORM\BlogPostRepository">
                 <id name="id" type="integer" />
                 <field name="name" type="string" />
                 <field name="email" type="text" />
@@ -79,8 +81,8 @@ First define the mapping for the ORM:
 
     .. code-block:: yaml
 
-        Documents\BlogPost:
-          repositoryClass: Doctrine\Blog\ORM\BlogPostRepository
+        Documents\Blog\BlogPost:
+          repositoryClass: Documents\Blog\ORM\BlogPostRepository
           id:
             id:
               type: integer
@@ -90,13 +92,13 @@ First define the mapping for the ORM:
             body:
               type: text
 
-Now you are able to persist the ``Documents\BlogPost`` with an instance of ``EntityManager``:
+Now you are able to persist the ``Documents\Blog\BlogPost`` with an instance of ``EntityManager``:
 
 .. code-block:: php
 
     <?php
 
-    $blogPost = new BlogPost()
+    $blogPost = new BlogPost();
     $blogPost->setTitle('test');
 
     $em->persist($blogPost);
@@ -108,7 +110,7 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $em->getRepository('Documents\BlogPost')->findOneByTitle('test');
+    $blogPost = $em->getRepository(BlogPost::class)->findOneBy(array('title' => 'test'));
 
 MongoDB ODM
 ~~~~~~~~~~~
@@ -121,9 +123,11 @@ Now map the same class to the Doctrine MongoDB ODM:
 
         <?php
 
-        namespace Documents;
+        namespace Documents\Blog;
 
-        /** @Document(repositoryClass="Doctrine\Blog\ODM\MongoDB\BlogPostRepository") */
+        use Documents\Blog\Repository\ODM\BlogPostRepository;
+
+        /** @Document(repositoryClass=BlogPostRepository::class) */
         class BlogPost
         {
             /** @Id */
@@ -146,8 +150,8 @@ Now map the same class to the Doctrine MongoDB ODM:
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                   http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-            <document name="Documents\BlogPost" repository-class="Doctrine\Blog\ODM\MongoDB\BlogPostRepository">
-                <field fieldName="id" type="id" />
+            <document name="Documents\Blog\BlogPost" repository-class="Documents\Blog\Repository\ODM\BlogPostRepository">
+                <field fieldName="id" id="true" strategy="INCREMENT" type="int" />
                 <field fieldName="name" type="string" />
                 <field fieldName="email" type="text" />
             </document>
@@ -156,7 +160,7 @@ Now map the same class to the Doctrine MongoDB ODM:
     .. code-block:: yaml
 
         Documents\BlogPost:
-          repositoryClass: Doctrine\Blog\ODM\MongoDB\BlogPostRepository
+          repositoryClass: Documents\Blog\ODM\MongoDB\BlogPostRepository
           fields:
             id:
               type: id
@@ -171,7 +175,7 @@ Now the same class is able to be persisted in the same way using an instance of 
 
     <?php
 
-    $blogPost = new BlogPost()
+    $blogPost = new BlogPost();
     $blogPost->setTitle('test');
 
     $dm->persist($blogPost);
@@ -183,22 +187,39 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $dm->getRepository('Documents\BlogPost')->findOneByTitle('test');
+    $blogPost = $dm->getRepository(BlogPost::class)->findOneBy(array('title' => 'test'));
 
 Repository Classes
 ------------------
 
-You can implement the same repository interface for the ORM and MongoDB ODM easily:
+You can implement the same repository interface for the ORM and MongoDB ODM easily, e.g. by creating ``BlogPostRepositoryInterface``:
+
+.. code-block:: php
+
+    <?php
+    // An Interface to ensure ORM and ODM Repository classes have the same methods implemented
+
+    namespace Documents\Blog\Repository;
+
+    use Documents\Blog\BlogPost;
+
+    interface BlogPostRepositoryInterface
+    {
+        public function findPostById(int $id): ?BlogPost;
+    }
+
+Define repository methods required by the interface for the ORM:
 
 .. code-block:: php
 
     <?php
 
-    namespace Doctrine\Blog\ORM;
+    namespace Documents\Blog\Repository\ORM;
 
+    use Documents\Blog\Repository\BlogPostRepositoryInterface;
     use Doctrine\ORM\EntityRepository;
 
-    class BlogPostRepository extends EntityRepository
+    class BlogPostRepository extends EntityRepository implements BlogPostRepositoryInterface
     {
         public function findPostById($id)
         {
@@ -212,11 +233,12 @@ Now define the same repository methods for the MongoDB ODM:
 
     <?php
 
-    namespace Doctrine\Blog\ODM\MongoDB;
+    namespace Documents\Blog\Repository\ODM;
 
+    use Documents\Blog\Repository\BlogPostRepositoryInterface;
     use Doctrine\ODM\MongoDB\DocumentRepository;
 
-    class BlogPostRepository extends DocumentRepository
+    class BlogPostRepository extends DocumentRepository implements BlogPostRepositoryInterface
     {
         public function findPostById($id)
         {
