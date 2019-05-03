@@ -39,13 +39,25 @@ class BuilderTest extends BaseTest
             ->field('featureFull')->references($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureFull.$id' => new ObjectId($f->id) ], $q1['query']);
+        $this->assertEquals(
+            [
+                'featureFull.$id' => new ObjectId($f->id),
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
+            ],
+            $q1['query']
+        );
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featureSimple')->references($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureSimple' => new ObjectId($f->id) ], $q2['query']);
+        $this->assertEquals(
+            [
+                'featureSimple' => new ObjectId($f->id),
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
+            ],
+            $q2['query']
+        );
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featurePartial')->references($f)
@@ -55,6 +67,7 @@ class BuilderTest extends BaseTest
             [
                 'featurePartial.$id' => new ObjectId($f->id),
                 'featurePartial.$ref' => 'Feature',
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
             $q3['query']
         );
@@ -97,13 +110,27 @@ class BuilderTest extends BaseTest
             ->field('featureFullMany')->includesReferenceTo($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureFullMany' => [ '$elemMatch' => [ '$id' => new ObjectId($f->id) ] ] ], $q1['query']);
+        $this->assertEquals(
+            [
+                'featureFullMany' => [
+                    '$elemMatch' => ['$id' => new ObjectId($f->id)],
+                ],
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
+            ],
+            $q1['query']
+        );
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featureSimpleMany')->includesReferenceTo($f)
             ->getQuery()->debug();
 
-        $this->assertEquals([ 'featureSimpleMany' => new ObjectId($f->id) ], $q2['query']);
+        $this->assertEquals(
+            [
+                'featureSimpleMany' => new ObjectId($f->id),
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
+            ],
+            $q2['query']
+        );
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
             ->field('featurePartialMany')->includesReferenceTo($f)
@@ -117,6 +144,7 @@ class BuilderTest extends BaseTest
                         '$ref' => 'Feature',
                     ],
                 ],
+                'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
             $q3['query']
         );
