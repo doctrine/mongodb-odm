@@ -136,7 +136,7 @@ For your convenience you can quickly specify a unique index with
         fields:
           username:
             unique: true
-            order: true
+            order: asc
 
 If you want to specify an index that consists of multiple fields
 you can specify them on the class doc block:
@@ -191,10 +191,8 @@ you can specify them on the class doc block:
               options:
                 unique: true
               keys:
-                accountId:
-                  order: asc
-                username:
-                  order: asc
+                accountId: asc
+                username: asc
 
 To specify multiple indexes you must use the ``@Indexes``
 annotation:
@@ -249,12 +247,10 @@ annotation:
           indexes:
             accountId:
               keys:
-                accountId:
-                  order: asc
+                accountId: asc
             username:
               keys:
-                username:
-                  order: asc
+                username: asc
 
 Embedded Indexes
 ----------------
