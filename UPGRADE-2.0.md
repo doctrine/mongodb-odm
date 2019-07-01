@@ -264,6 +264,7 @@ ocramius. If you are checking for proxies, the following changed:
 * Querying for a mapped superclass in a complex inheritance chain will now only
   return children of that specific class instead of all classes in the
   inheritance tree.
+* The `MongoRegex` class has been deprecated, use and transform your regular expression to use `MongoDB\BSON\Regex`.
 
 ## Schema manager
 
