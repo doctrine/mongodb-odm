@@ -74,22 +74,27 @@ class GH921User
     {
         $this->posts = new ArrayCollection();
     }
+
     public function getId()
     {
         return $this->id;
     }
+
     public function getName()
     {
         return $this->name;
     }
+
     public function setName($name)
     {
         $this->name = $name;
     }
+
     public function addPost(GH921Post $post)
     {
         $this->posts[] = $post;
     }
+
     public function getPosts()
     {
         return $this->posts;
@@ -109,10 +114,12 @@ class GH921Post
     {
         return $this->id;
     }
+
     public function getName()
     {
         return $this->name;
     }
+
     public function setName($name)
     {
         $this->name = $name;

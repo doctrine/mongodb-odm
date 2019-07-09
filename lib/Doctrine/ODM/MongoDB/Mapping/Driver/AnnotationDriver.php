@@ -37,6 +37,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 return false;
             }
         }
+
         return true;
     }
 
@@ -280,6 +281,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if ($reader === null) {
             $reader = new AnnotationReader();
         }
+
         return new self($reader, $paths);
     }
 }

@@ -37,6 +37,7 @@ class MODM47A
     {
         $this->b = $c;
     }
+
     public function getId()
     {
         return $this->id;

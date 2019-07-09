@@ -46,6 +46,7 @@ class StockItem
     public function setName($name)
     {
         $this->name = (string) $name;
+
         return $this;
     }
 
@@ -67,6 +68,7 @@ class StockItem
     public function setInventory($inventory)
     {
         $this->inventory = (int) $inventory;
+
         return $this;
     }
 

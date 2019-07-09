@@ -30,6 +30,7 @@ class BucketOutput extends AbstractOutput
     public function groupBy($expression)
     {
         assert($this->bucket instanceof Stage\Bucket);
+
         return $this->bucket->groupBy($expression);
     }
 
@@ -49,6 +50,7 @@ class BucketOutput extends AbstractOutput
     public function boundaries(...$boundaries)
     {
         assert($this->bucket instanceof Stage\Bucket);
+
         return $this->bucket->boundaries(...$boundaries);
     }
 
@@ -64,6 +66,7 @@ class BucketOutput extends AbstractOutput
     public function defaultBucket($default)
     {
         assert($this->bucket instanceof Stage\Bucket);
+
         return $this->bucket->defaultBucket($default);
     }
 }

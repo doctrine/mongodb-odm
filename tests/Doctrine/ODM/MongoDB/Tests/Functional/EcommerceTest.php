@@ -90,6 +90,7 @@ class EcommerceTest extends BaseTest
             ->getQuery()
             ->execute();
         $products->valid() ?: $products->next();
+
         return $products->current();
     }
 }

@@ -18,6 +18,7 @@ class CollectionType extends Type
         if ($value !== null && ! is_array($value)) {
             throw MongoDBException::invalidValueForType('Collection', ['array', 'null'], $value);
         }
+
         return $value !== null ? array_values($value) : null;
     }
 

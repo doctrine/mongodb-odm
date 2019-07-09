@@ -84,7 +84,9 @@ EOT
             throw new InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif (! is_writable($destPath)) {
+        }
+
+        if (! is_writable($destPath)) {
             throw new InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );

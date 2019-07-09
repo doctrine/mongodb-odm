@@ -20,6 +20,7 @@ class MODM83Test extends BaseTest
             Events::postUpdate,
         ];
         $evm->addEventListener($events, $this->listener);
+
         return $this->dm;
     }
 
@@ -55,6 +56,7 @@ class MODM83Test extends BaseTest
 class MODM83EventListener
 {
     public $called = [];
+
     public function __call($method, $args)
     {
         $document                = $args[0]->getDocument();

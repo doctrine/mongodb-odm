@@ -180,6 +180,7 @@ class Expr
 
         $this->requiresCurrentField();
         $this->newObj['$addToSet'][$this->currentField] = $valueOrExpression;
+
         return $this;
     }
 
@@ -203,6 +204,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$bit'][$this->currentField][$operator] = $value;
+
         return $this;
     }
 
@@ -240,6 +242,7 @@ class Expr
     public function bitsAllClear($value) : self
     {
         $this->requiresCurrentField();
+
         return $this->operator('$bitsAllClear', $value);
     }
 
@@ -255,6 +258,7 @@ class Expr
     public function bitsAllSet($value) : self
     {
         $this->requiresCurrentField();
+
         return $this->operator('$bitsAllSet', $value);
     }
 
@@ -270,6 +274,7 @@ class Expr
     public function bitsAnyClear($value) : self
     {
         $this->requiresCurrentField();
+
         return $this->operator('$bitsAnyClear', $value);
     }
 
@@ -285,6 +290,7 @@ class Expr
     public function bitsAnySet($value) : self
     {
         $this->requiresCurrentField();
+
         return $this->operator('$bitsAnySet', $value);
     }
 
@@ -335,6 +341,7 @@ class Expr
     public function comment(string $comment) : self
     {
         $this->query['$comment'] = $comment;
+
         return $this;
     }
 
@@ -354,6 +361,7 @@ class Expr
 
         $this->requiresCurrentField();
         $this->newObj['$currentDate'][$this->currentField]['$type'] = $type;
+
         return $this;
     }
 
@@ -422,6 +430,7 @@ class Expr
         } else {
             $this->query = $value;
         }
+
         return $this;
     }
 
@@ -444,6 +453,7 @@ class Expr
     public function field(string $field) : self
     {
         $this->currentField = $field;
+
         return $this;
     }
 
@@ -644,6 +654,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$inc'][$this->currentField] = $value;
+
         return $this;
     }
 
@@ -661,9 +672,8 @@ class Expr
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
                 $this->query[$mapping['name']] = $reference;
-                return $this;
-                break;
 
+                return $this;
             case ClassMetadata::REFERENCE_STORE_AS_REF:
                 $keys = ['id' => true];
                 break;
@@ -751,6 +761,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$max'][$this->currentField] = $value;
+
         return $this;
     }
 
@@ -766,6 +777,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$min'][$this->currentField] = $value;
+
         return $this;
     }
 
@@ -797,6 +809,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$mul'][$this->currentField] = $value;
+
         return $this;
     }
 
@@ -906,6 +919,7 @@ class Expr
         } else {
             $this->query[$operator] = $value;
         }
+
         return $this;
     }
 
@@ -919,6 +933,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$pop'][$this->currentField] = -1;
+
         return $this;
     }
 
@@ -932,6 +947,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$pop'][$this->currentField] = 1;
+
         return $this;
     }
 
@@ -965,6 +981,7 @@ class Expr
 
         $this->requiresCurrentField();
         $this->newObj['$pull'][$this->currentField] = $valueOrExpression;
+
         return $this;
     }
 
@@ -979,6 +996,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$pullAll'][$this->currentField] = $values;
+
         return $this;
     }
 
@@ -1012,6 +1030,7 @@ class Expr
 
         $this->requiresCurrentField();
         $this->newObj['$push'][$this->currentField] = $valueOrExpression;
+
         return $this;
     }
 
@@ -1045,9 +1064,8 @@ class Expr
         switch ($storeAs) {
             case ClassMetadata::REFERENCE_STORE_AS_ID:
                 $this->query[$mapping['name']] = $reference;
-                return $this;
-                break;
 
+                return $this;
             case ClassMetadata::REFERENCE_STORE_AS_REF:
                 $keys = ['id' => true];
                 break;
@@ -1086,6 +1104,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$rename'][$this->currentField] = $name;
+
         return $this;
     }
 
@@ -1108,11 +1127,13 @@ class Expr
 
         if ($atomic) {
             $this->newObj['$set'][$this->currentField] = $value;
+
             return $this;
         }
 
         if (strpos($this->currentField, '.') === false) {
             $this->newObj[$this->currentField] = $value;
+
             return $this;
         }
 
@@ -1142,6 +1163,7 @@ class Expr
     public function setNewObj(array $newObj) : self
     {
         $this->newObj = $newObj;
+
         return $this;
     }
 
@@ -1175,6 +1197,7 @@ class Expr
     public function setQuery(array $query) : self
     {
         $this->query = $query;
+
         return $this;
     }
 
@@ -1238,6 +1261,7 @@ class Expr
     public function text(string $search) : self
     {
         $this->query['$text'] = ['$search' => $search];
+
         return $this;
     }
 
@@ -1266,6 +1290,7 @@ class Expr
     {
         $this->requiresCurrentField();
         $this->newObj['$unset'][$this->currentField] = 1;
+
         return $this;
     }
 
@@ -1280,6 +1305,7 @@ class Expr
     public function where($javascript) : self
     {
         $this->query['$where'] = $javascript;
+
         return $this;
     }
 

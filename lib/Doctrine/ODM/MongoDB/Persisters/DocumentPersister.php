@@ -331,6 +331,7 @@ final class DocumentPersister
         try {
             assert($this->collection instanceof Collection);
             $this->collection->updateOne($criteria, $data, $options);
+
             return;
         } catch (WriteException $e) {
             if (empty($retry) || strpos($e->getMessage(), 'Mod on _id not allowed') === false) {
@@ -399,7 +400,9 @@ final class DocumentPersister
 
             if (($this->class->isVersioned || $this->class->isLockable) && $result->getModifiedCount() !== 1) {
                 throw LockException::lockFailed($document);
-            } elseif ($this->class->isVersioned) {
+            }
+
+            if ($this->class->isVersioned) {
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             }
         }
@@ -524,6 +527,7 @@ final class DocumentPersister
 
         assert($this->collection instanceof Collection);
         $baseCursor = $this->collection->find($criteria, $options);
+
         return $this->wrapCursor($baseCursor);
     }
 
@@ -580,6 +584,7 @@ final class DocumentPersister
     {
         $id = $this->class->getIdentifierObject($document);
         assert($this->collection instanceof Collection);
+
         return (bool) $this->collection->findOne(['_id' => $id], ['_id']);
     }
 
@@ -877,7 +882,6 @@ final class DocumentPersister
         switch (strtolower((string) $sort)) {
             case 'desc':
                 return -1;
-
             case 'asc':
                 return 1;
         }
@@ -1382,6 +1386,7 @@ final class DocumentPersister
         $id = $this->class->getDatabaseIdentifierValue($id);
 
         $shardKeyQueryPart = $this->getShardKeyQuery($document);
+
         return array_merge(['_id' => $id], $shardKeyQueryPart);
     }
 

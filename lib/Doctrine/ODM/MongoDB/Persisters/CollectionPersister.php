@@ -423,6 +423,7 @@ final class CollectionPersister
         if ($propertyPath) {
             $path = $propertyPath . '.' . $path;
         }
+
         return [$path, $parent];
     }
 

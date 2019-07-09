@@ -17,6 +17,7 @@ class KeyType extends Type
         if ($value === null) {
             return null;
         }
+
         return $value ? new MaxKey() : new MinKey();
     }
 
@@ -25,6 +26,7 @@ class KeyType extends Type
         if ($value === null) {
             return null;
         }
+
         return $value instanceof MaxKey ? 1 : 0;
     }
 }

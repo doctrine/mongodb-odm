@@ -19,6 +19,7 @@ class ObjectIdType extends Type
         if (! $value instanceof ObjectId) {
             $value = new ObjectId($value);
         }
+
         return $value;
     }
 

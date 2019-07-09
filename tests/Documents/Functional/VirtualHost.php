@@ -28,6 +28,7 @@ class VirtualHost
         if (! $this->vhostDirective) {
             $this->vhostDirective = new VirtualHostDirective('VirtualHost', '*:80');
         }
+
         return $this->vhostDirective;
     }
 

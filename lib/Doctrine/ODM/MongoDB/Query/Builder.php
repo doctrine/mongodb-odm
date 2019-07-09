@@ -139,6 +139,7 @@ class Builder
     public function addAnd($expression, ...$expressions) : self
     {
         $this->expr->addAnd(...func_get_args());
+
         return $this;
     }
 
@@ -156,6 +157,7 @@ class Builder
     public function addNor($expression, ...$expressions) : self
     {
         $this->expr->addNor(...func_get_args());
+
         return $this;
     }
 
@@ -173,6 +175,7 @@ class Builder
     public function addOr($expression, ...$expressions) : self
     {
         $this->expr->addOr(...func_get_args());
+
         return $this;
     }
 
@@ -196,6 +199,7 @@ class Builder
     public function addToSet($valueOrExpression) : self
     {
         $this->expr->addToSet($valueOrExpression);
+
         return $this;
     }
 
@@ -208,6 +212,7 @@ class Builder
     public function all(array $values) : self
     {
         $this->expr->all($values);
+
         return $this;
     }
 
@@ -222,6 +227,7 @@ class Builder
     public function bitAnd(int $value) : self
     {
         $this->expr->bitAnd($value);
+
         return $this;
     }
 
@@ -234,6 +240,7 @@ class Builder
     public function bitOr(int $value) : self
     {
         $this->expr->bitOr($value);
+
         return $this;
     }
 
@@ -249,6 +256,7 @@ class Builder
     public function bitsAllClear($value) : self
     {
         $this->expr->bitsAllClear($value);
+
         return $this;
     }
 
@@ -264,6 +272,7 @@ class Builder
     public function bitsAllSet($value) : self
     {
         $this->expr->bitsAllSet($value);
+
         return $this;
     }
 
@@ -279,6 +288,7 @@ class Builder
     public function bitsAnyClear($value) : self
     {
         $this->expr->bitsAnyClear($value);
+
         return $this;
     }
 
@@ -294,6 +304,7 @@ class Builder
     public function bitsAnySet($value) : self
     {
         $this->expr->bitsAnySet($value);
+
         return $this;
     }
 
@@ -306,6 +317,7 @@ class Builder
     public function bitXor(int $value) : self
     {
         $this->expr->bitXor($value);
+
         return $this;
     }
 
@@ -323,6 +335,7 @@ class Builder
     public function caseSensitive(bool $caseSensitive) : self
     {
         $this->expr->caseSensitive($caseSensitive);
+
         return $this;
     }
 
@@ -335,6 +348,7 @@ class Builder
     public function comment(string $comment) : self
     {
         $this->expr->comment($comment);
+
         return $this;
     }
 
@@ -344,6 +358,7 @@ class Builder
     public function count() : self
     {
         $this->query['type'] = Query::TYPE_COUNT;
+
         return $this;
     }
 
@@ -356,6 +371,7 @@ class Builder
     public function currentDate(string $type = 'date') : self
     {
         $this->expr->currentDate($type);
+
         return $this;
     }
 
@@ -387,6 +403,7 @@ class Builder
     public function diacriticSensitive(bool $diacriticSensitive) : self
     {
         $this->expr->diacriticSensitive($diacriticSensitive);
+
         return $this;
     }
 
@@ -399,6 +416,7 @@ class Builder
     {
         $this->query['type']     = Query::TYPE_DISTINCT;
         $this->query['distinct'] = $field;
+
         return $this;
     }
 
@@ -415,6 +433,7 @@ class Builder
     public function elemMatch($expression) : self
     {
         $this->expr->elemMatch($expression);
+
         return $this;
     }
 
@@ -428,6 +447,7 @@ class Builder
     public function equals($value) : self
     {
         $this->expr->equals($value);
+
         return $this;
     }
 
@@ -463,6 +483,7 @@ class Builder
     public function exists(bool $bool) : self
     {
         $this->expr->exists($bool);
+
         return $this;
     }
 
@@ -529,6 +550,7 @@ class Builder
     public function geoIntersects($geometry) : self
     {
         $this->expr->geoIntersects($geometry);
+
         return $this;
     }
 
@@ -546,6 +568,7 @@ class Builder
     public function geoWithin($geometry) : self
     {
         $this->expr->geoWithin($geometry);
+
         return $this;
     }
 
@@ -564,6 +587,7 @@ class Builder
     public function geoWithinBox(float $x1, float $y1, float $x2, float $y2) : self
     {
         $this->expr->geoWithinBox($x1, $y1, $x2, $y2);
+
         return $this;
     }
 
@@ -579,6 +603,7 @@ class Builder
     public function geoWithinCenter(float $x, float $y, float $radius) : self
     {
         $this->expr->geoWithinCenter($x, $y, $radius);
+
         return $this;
     }
 
@@ -593,6 +618,7 @@ class Builder
     public function geoWithinCenterSphere(float $x, float $y, float $radius) : self
     {
         $this->expr->geoWithinCenterSphere($x, $y, $radius);
+
         return $this;
     }
 
@@ -618,6 +644,7 @@ class Builder
     public function geoWithinPolygon($point1, $point2, $point3, ...$points) : self
     {
         $this->expr->geoWithinPolygon(...func_get_args());
+
         return $this;
     }
 
@@ -719,6 +746,7 @@ class Builder
     public function gt($value) : self
     {
         $this->expr->gt($value);
+
         return $this;
     }
 
@@ -733,6 +761,7 @@ class Builder
     public function gte($value) : self
     {
         $this->expr->gte($value);
+
         return $this;
     }
 
@@ -744,12 +773,14 @@ class Builder
     public function hint($index) : self
     {
         $this->query['hint'] = $index;
+
         return $this;
     }
 
     public function hydrate(bool $bool = true) : self
     {
         $this->hydrate = $bool;
+
         return $this;
     }
 
@@ -759,6 +790,7 @@ class Builder
     public function immortal(bool $bool = true) : self
     {
         $this->query['immortal'] = $bool;
+
         return $this;
     }
 
@@ -771,6 +803,7 @@ class Builder
     public function in(array $values) : self
     {
         $this->expr->in($values);
+
         return $this;
     }
 
@@ -787,12 +820,14 @@ class Builder
     public function inc($value) : self
     {
         $this->expr->inc($value);
+
         return $this;
     }
 
     public function includesReferenceTo(object $document) : self
     {
         $this->expr->includesReferenceTo($document);
+
         return $this;
     }
 
@@ -815,6 +850,7 @@ class Builder
     public function language(string $language) : self
     {
         $this->expr->language($language);
+
         return $this;
     }
 
@@ -828,6 +864,7 @@ class Builder
     public function limit(int $limit) : self
     {
         $this->query['limit'] = $limit;
+
         return $this;
     }
 
@@ -842,6 +879,7 @@ class Builder
     public function lt($value) : self
     {
         $this->expr->lt($value);
+
         return $this;
     }
 
@@ -856,6 +894,7 @@ class Builder
     public function lte($value) : self
     {
         $this->expr->lte($value);
+
         return $this;
     }
 
@@ -870,6 +909,7 @@ class Builder
     public function max($value) : self
     {
         $this->expr->max($value);
+
         return $this;
     }
 
@@ -879,6 +919,7 @@ class Builder
     public function maxTimeMS(int $ms) : self
     {
         $this->query['maxTimeMS'] = $ms;
+
         return $this;
     }
 
@@ -893,6 +934,7 @@ class Builder
     public function min($value) : self
     {
         $this->expr->min($value);
+
         return $this;
     }
 
@@ -908,6 +950,7 @@ class Builder
     public function mod($divisor, $remainder = 0) : self
     {
         $this->expr->mod($divisor, $remainder);
+
         return $this;
     }
 
@@ -924,6 +967,7 @@ class Builder
     public function mul($value) : self
     {
         $this->expr->mul($value);
+
         return $this;
     }
 
@@ -943,6 +987,7 @@ class Builder
     public function near($x, $y = null) : self
     {
         $this->expr->near($x, $y);
+
         return $this;
     }
 
@@ -962,6 +1007,7 @@ class Builder
     public function nearSphere($x, $y = null) : self
     {
         $this->expr->nearSphere($x, $y);
+
         return $this;
     }
 
@@ -978,6 +1024,7 @@ class Builder
     public function not($expression) : self
     {
         $this->expr->not($expression);
+
         return $this;
     }
 
@@ -992,6 +1039,7 @@ class Builder
     public function notEqual($value) : self
     {
         $this->expr->notEqual($value);
+
         return $this;
     }
 
@@ -1006,6 +1054,7 @@ class Builder
     public function notIn(array $values) : self
     {
         $this->expr->notIn($values);
+
         return $this;
     }
 
@@ -1018,6 +1067,7 @@ class Builder
     public function popFirst() : self
     {
         $this->expr->popFirst();
+
         return $this;
     }
 
@@ -1030,6 +1080,7 @@ class Builder
     public function popLast() : self
     {
         $this->expr->popLast();
+
         return $this;
     }
 
@@ -1064,6 +1115,7 @@ class Builder
         }
 
         $this->primers[$this->currentField] = $primer;
+
         return $this;
     }
 
@@ -1079,6 +1131,7 @@ class Builder
     public function pull($valueOrExpression) : self
     {
         $this->expr->pull($valueOrExpression);
+
         return $this;
     }
 
@@ -1092,6 +1145,7 @@ class Builder
     public function pullAll(array $values) : self
     {
         $this->expr->pullAll($values);
+
         return $this;
     }
 
@@ -1117,6 +1171,7 @@ class Builder
     public function push($valueOrExpression) : self
     {
         $this->expr->push($valueOrExpression);
+
         return $this;
     }
 
@@ -1134,24 +1189,28 @@ class Builder
     public function range($start, $end) : self
     {
         $this->expr->range($start, $end);
+
         return $this;
     }
 
     public function readOnly(bool $bool = true) : self
     {
         $this->readOnly = $bool;
+
         return $this;
     }
 
     public function references(object $document) : self
     {
         $this->expr->references($document);
+
         return $this;
     }
 
     public function refresh(bool $bool = true) : self
     {
         $this->refresh = $bool;
+
         return $this;
     }
 
@@ -1172,6 +1231,7 @@ class Builder
     public function rename(string $name) : self
     {
         $this->expr->rename($name);
+
         return $this;
     }
 
@@ -1217,6 +1277,7 @@ class Builder
             $expression = $expression->getQuery();
         }
         $this->query['select'][$fieldName] = ['$elemMatch' => $expression];
+
         return $this;
     }
 
@@ -1228,6 +1289,7 @@ class Builder
     public function selectMeta(string $fieldName, string $metaDataKeyword) : self
     {
         $this->query['select'][$fieldName] = ['$meta' => $metaDataKeyword];
+
         return $this;
     }
 
@@ -1247,6 +1309,7 @@ class Builder
             $slice = [$slice, $limit];
         }
         $this->query['select'][$fieldName] = ['$slice' => $slice];
+
         return $this;
     }
 
@@ -1265,6 +1328,7 @@ class Builder
     public function set($value, bool $atomic = true) : self
     {
         $this->expr->set($value, $atomic && $this->query['type'] !== Query::TYPE_INSERT);
+
         return $this;
     }
 
@@ -1276,6 +1340,7 @@ class Builder
     public function setNewObj(array $newObj) : self
     {
         $this->expr->setNewObj($newObj);
+
         return $this;
     }
 
@@ -1296,6 +1361,7 @@ class Builder
     public function setOnInsert($value) : self
     {
         $this->expr->setOnInsert($value);
+
         return $this;
     }
 
@@ -1309,6 +1375,7 @@ class Builder
     public function setReadPreference(ReadPreference $readPreference) : self
     {
         $this->query['readPreference'] = $readPreference;
+
         return $this;
     }
 
@@ -1320,6 +1387,7 @@ class Builder
     public function setQueryArray(array $query) : self
     {
         $this->expr->setQuery($query);
+
         return $this;
     }
 
@@ -1332,6 +1400,7 @@ class Builder
     public function size(int $size) : self
     {
         $this->expr->size($size);
+
         return $this;
     }
 
@@ -1346,6 +1415,7 @@ class Builder
     public function skip(int $skip) : self
     {
         $this->query['skip'] = $skip;
+
         return $this;
     }
 
@@ -1355,6 +1425,7 @@ class Builder
     public function snapshot(bool $bool = true) : self
     {
         $this->query['snapshot'] = $bool;
+
         return $this;
     }
 
@@ -1421,6 +1492,7 @@ class Builder
     public function text(string $search) : self
     {
         $this->expr->text($search);
+
         return $this;
     }
 
@@ -1435,6 +1507,7 @@ class Builder
     public function type($type) : self
     {
         $this->expr->type($type);
+
         return $this;
     }
 
@@ -1449,6 +1522,7 @@ class Builder
     public function unsetField() : self
     {
         $this->expr->unsetField();
+
         return $this;
     }
 
@@ -1476,6 +1550,7 @@ class Builder
     public function upsert(bool $bool = true) : self
     {
         $this->query['upsert'] = $bool;
+
         return $this;
     }
 
@@ -1490,6 +1565,7 @@ class Builder
     public function where($javascript) : self
     {
         $this->expr->where($javascript);
+
         return $this;
     }
 
@@ -1513,6 +1589,7 @@ class Builder
         if (count($collections) > 1) {
             throw new InvalidArgumentException('Documents involved are not all mapped to the same database collection.');
         }
+
         return $discriminatorValues;
     }
 

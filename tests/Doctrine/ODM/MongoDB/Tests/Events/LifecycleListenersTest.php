@@ -31,6 +31,7 @@ class LifecycleListenersTest extends BaseTest
             Events::postRemove,
         ];
         $evm->addEventListener($events, $this->listener);
+
         return $this->dm;
     }
 

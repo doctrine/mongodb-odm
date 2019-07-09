@@ -17,6 +17,7 @@ class HashType extends Type
         if ($value !== null && ! is_array($value)) {
             throw MongoDBException::invalidValueForType('Hash', ['array', 'null'], $value);
         }
+
         return $value !== null ? (object) $value : null;
     }
 

@@ -25,6 +25,7 @@ class BucketAutoOutput extends AbstractOutput
     public function groupBy($expression) : Stage\BucketAuto
     {
         assert($this->bucket instanceof Stage\BucketAuto);
+
         return $this->bucket->groupBy($expression);
     }
 
@@ -34,6 +35,7 @@ class BucketAutoOutput extends AbstractOutput
     public function buckets(int $buckets) : Stage\BucketAuto
     {
         assert($this->bucket instanceof Stage\BucketAuto);
+
         return $this->bucket->buckets($buckets);
     }
 
@@ -45,6 +47,7 @@ class BucketAutoOutput extends AbstractOutput
     public function granularity(string $granularity) : Stage\BucketAuto
     {
         assert($this->bucket instanceof Stage\BucketAuto);
+
         return $this->bucket->granularity($granularity);
     }
 }

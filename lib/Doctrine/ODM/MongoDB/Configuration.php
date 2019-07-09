@@ -339,6 +339,7 @@ class Configuration
         if (! isset($this->attributes['classMetadataFactoryName'])) {
             $this->attributes['classMetadataFactoryName'] = ClassMetadataFactory::class;
         }
+
         return $this->attributes['classMetadataFactoryName'];
     }
 
@@ -435,6 +436,7 @@ class Configuration
         if (! isset($this->attributes['persistentCollectionFactory'])) {
             $this->attributes['persistentCollectionFactory'] = new DefaultPersistentCollectionFactory();
         }
+
         return $this->attributes['persistentCollectionFactory'];
     }
 
@@ -459,6 +461,7 @@ class Configuration
                 $this->getPersistentCollectionNamespace()
             );
         }
+
         return $this->attributes['persistentCollectionGenerator'];
     }
 

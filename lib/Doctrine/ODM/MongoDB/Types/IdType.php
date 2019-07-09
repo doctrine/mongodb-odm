@@ -24,6 +24,7 @@ class IdType extends Type
                 $value = new ObjectId();
             }
         }
+
         return $value;
     }
 

@@ -323,7 +323,9 @@ class Expr
             return array_map(static function ($expression) {
                 return static::convertExpression($expression);
             }, $expression);
-        } elseif ($expression instanceof self) {
+        }
+
+        if ($expression instanceof self) {
             return $expression->getExpression();
         }
 
@@ -1545,7 +1547,6 @@ class Expr
         return $this->operator('$zip', $args);
     }
 
-
     /**
      * @param mixed|self $expression
      *
@@ -1555,9 +1556,13 @@ class Expr
     {
         if (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
-        } elseif (is_array($expression)) {
+        }
+
+        if (is_array($expression)) {
             return array_map([$this, 'ensureArray'], $expression);
-        } elseif ($expression instanceof self) {
+        }
+
+        if ($expression instanceof self) {
             return $expression->getExpression();
         }
 

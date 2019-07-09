@@ -17,6 +17,7 @@ class ManagerEventArgs extends BaseManagerEventArgs
     {
         $dm = $this->getObjectManager();
         assert($dm instanceof DocumentManager);
+
         return $dm;
     }
 }

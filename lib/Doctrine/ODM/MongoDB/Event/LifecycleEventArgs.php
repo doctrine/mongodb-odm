@@ -23,6 +23,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
     {
         $dm = $this->getObjectManager();
         assert($dm instanceof DocumentManager);
+
         return $dm;
     }
 }

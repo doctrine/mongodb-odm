@@ -865,6 +865,7 @@ class ClassMetadata implements BaseClassMetadata
                         return -1;
                     }
                 }
+
                 return $value;
             }, $keys),
             'options' => $options,
@@ -884,7 +885,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function hasIndexes() : bool
     {
-        return $this->indexes ? true : false;
+        return $this->indexes !== [];
     }
 
     /**
@@ -911,7 +912,7 @@ class ClassMetadata implements BaseClassMetadata
                 throw MappingException::noMultiKeyShardKeys($this->getName(), $field);
             }
 
-            if ($this->fieldMappings[$field]['strategy'] !== static::STORAGE_STRATEGY_SET) {
+            if ($this->fieldMappings[$field]['strategy'] !== self::STORAGE_STRATEGY_SET) {
                 throw MappingException::onlySetStrategyAllowedInShardKey($this->getName(), $field);
             }
         }
@@ -931,6 +932,7 @@ class ClassMetadata implements BaseClassMetadata
                         return -1;
                     }
                 }
+
                 return $value;
             }, $keys),
             'options' => $options,
@@ -947,7 +949,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function isSharded() : bool
     {
-        return $this->shardKey ? true : false;
+        return $this->shardKey !== [];
     }
 
     /**
@@ -1161,7 +1163,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function isMappedToCollection() : bool
     {
-        return $this->collection ? true : false;
+        return $this->collection !== '' && $this->collection !== null;
     }
 
     /**
@@ -1389,6 +1391,7 @@ class ClassMetadata implements BaseClassMetadata
     public function getPHPIdentifierValue($id)
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
+
         return Type::getType($idType)->convertToPHPValue($id);
     }
 
@@ -1402,6 +1405,7 @@ class ClassMetadata implements BaseClassMetadata
     public function getDatabaseIdentifierValue($id)
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
+
         return Type::getType($idType)->convertToDatabaseValue($id);
     }
 
@@ -1490,6 +1494,7 @@ class ClassMetadata implements BaseClassMetadata
         if (! isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
+
         return $this->fieldMappings[$fieldName];
     }
 
@@ -1529,6 +1534,7 @@ class ClassMetadata implements BaseClassMetadata
     public function isNullable(string $fieldName) : bool
     {
         $mapping = $this->getFieldMapping($fieldName);
+
         return isset($mapping['nullable']) && $mapping['nullable'] === true;
     }
 

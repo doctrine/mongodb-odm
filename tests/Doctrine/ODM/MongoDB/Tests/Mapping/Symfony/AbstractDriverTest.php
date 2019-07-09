@@ -86,5 +86,6 @@ abstract class AbstractDriverTest extends TestCase
     }
 
     abstract protected function getFileExtension();
+
     abstract protected function getDriver(array $paths = []);
 }

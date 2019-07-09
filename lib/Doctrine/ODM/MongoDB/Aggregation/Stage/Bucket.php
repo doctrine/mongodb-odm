@@ -31,6 +31,7 @@ class Bucket extends AbstractBucket
     public function boundaries(...$boundaries) : self
     {
         $this->boundaries = $boundaries;
+
         return $this;
     }
 
@@ -44,6 +45,7 @@ class Bucket extends AbstractBucket
     public function defaultBucket($default) : self
     {
         $this->default = $default;
+
         return $this;
     }
 
@@ -59,6 +61,7 @@ class Bucket extends AbstractBucket
         }
 
         assert($this->output instanceof Bucket\BucketOutput);
+
         return $this->output;
     }
 

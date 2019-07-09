@@ -180,6 +180,7 @@ class Hierarchy
                 return $child;
             }
         }
+
         return null;
     }
 
@@ -189,6 +190,7 @@ class Hierarchy
             $child = new Hierarchy($child);
         }
         $this->children[] = $child;
+
         return $child;
     }
 
@@ -233,6 +235,7 @@ class BaseCategory
                 return $child;
             }
         }
+
         return null;
     }
 
@@ -242,6 +245,7 @@ class BaseCategory
             $child = new ChildCategory($child);
         }
         $this->children[] = $child;
+
         return $child;
     }
 

@@ -104,6 +104,7 @@ class FilterTest extends BaseTest
         }
 
         sort($usernames);
+
         return $usernames;
     }
 
@@ -129,6 +130,7 @@ class FilterTest extends BaseTest
             $usernames[] = $user->getUsername();
         }
         sort($usernames);
+
         return $usernames;
     }
 
@@ -174,6 +176,7 @@ class FilterTest extends BaseTest
             $usernames[] = $user->getUsername();
         }
         sort($usernames);
+
         return $usernames;
     }
 
@@ -203,6 +206,7 @@ class FilterTest extends BaseTest
             }
         }
         sort($groupnames);
+
         return $groupnames;
     }
 
@@ -265,6 +269,7 @@ class FilterTest extends BaseTest
         }
 
         sort($usernames);
+
         return $usernames;
     }
 
@@ -292,6 +297,7 @@ class FilterTest extends BaseTest
             $usernames[] = $user->getUsername();
         }
         sort($usernames);
+
         return $usernames;
     }
 

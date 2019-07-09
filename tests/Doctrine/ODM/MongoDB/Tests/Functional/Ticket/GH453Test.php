@@ -182,18 +182,22 @@ class GH453Test extends BaseTest
 
         $colPush->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
+
             return true;
         });
         $colSet->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
+
             return true;
         });
         $colSetArray->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
+
             return true;
         });
         $colAddToSet->forAll(static function ($k, $v) use ($dm) {
             $dm->persist($v);
+
             return true;
         });
 
