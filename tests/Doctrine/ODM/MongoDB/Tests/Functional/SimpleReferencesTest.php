@@ -18,7 +18,7 @@ class SimpleReferencesTest extends BaseTest
     private $user;
     private $test;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

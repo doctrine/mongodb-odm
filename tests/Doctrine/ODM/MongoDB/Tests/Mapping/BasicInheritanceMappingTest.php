@@ -15,7 +15,7 @@ class BasicInheritanceMappingTest extends BaseTest
 {
     private $factory;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $this->factory = new ClassMetadataFactory();

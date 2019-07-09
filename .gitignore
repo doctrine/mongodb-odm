@@ -8,4 +8,5 @@ phpunit.xml
 composer.lock
 vendor/
 .phpcs-cache
+.phpunit.result.cache
 phpcs.xml

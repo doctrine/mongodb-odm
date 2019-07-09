@@ -19,7 +19,7 @@ class DocumentPersisterTest extends BaseTest
     /** @var DocumentPersister */
     private $documentPersister;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

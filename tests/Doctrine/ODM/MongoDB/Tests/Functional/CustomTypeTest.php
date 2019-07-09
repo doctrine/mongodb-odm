@@ -16,7 +16,7 @@ use function is_array;
 
 class CustomTypeTest extends BaseTest
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         Type::addType('date_collection', DateCollectionType::class);
     }

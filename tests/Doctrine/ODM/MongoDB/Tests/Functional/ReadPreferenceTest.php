@@ -14,7 +14,7 @@ use MongoDB\Driver\ReadPreference;
 
 class ReadPreferenceTest extends BaseTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

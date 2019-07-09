@@ -13,7 +13,7 @@ use function iterator_to_array;
 
 class GH593Test extends BaseTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

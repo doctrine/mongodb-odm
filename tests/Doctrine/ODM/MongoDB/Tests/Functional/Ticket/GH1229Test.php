@@ -21,7 +21,7 @@ class GH1229Test extends BaseTest
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

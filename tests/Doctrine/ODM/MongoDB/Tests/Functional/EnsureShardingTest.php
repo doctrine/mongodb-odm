@@ -16,7 +16,7 @@ use function iterator_to_array;
  */
 class EnsureShardingTest extends BaseTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

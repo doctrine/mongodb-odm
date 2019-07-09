@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
     }
