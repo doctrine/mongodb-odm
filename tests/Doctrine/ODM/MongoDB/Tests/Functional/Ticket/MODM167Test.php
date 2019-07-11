@@ -12,14 +12,13 @@ use function get_class;
 
 class MODM167Test extends BaseTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
         $this->listener = new MODM167EventListener();
         $evm            = $this->dm->getEventManager();
         $evm->addEventListener(Events::onFlush, $this->listener);
-        return $this->dm;
     }
 
     public function testDetatchNewDocumentDuringOnFlush()

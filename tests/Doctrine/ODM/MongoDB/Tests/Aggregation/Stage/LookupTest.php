@@ -14,7 +14,7 @@ use Documents\User;
 
 class LookupTest extends BaseTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');

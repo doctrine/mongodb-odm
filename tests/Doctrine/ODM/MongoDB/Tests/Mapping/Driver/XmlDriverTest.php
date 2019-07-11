@@ -14,7 +14,7 @@ use TestDocuments\UserNonStringOptions;
 
 class XmlDriverTest extends AbstractDriverTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->driver = new XmlDriver(__DIR__ . '/fixtures/xml');
     }

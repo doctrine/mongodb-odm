@@ -13,7 +13,7 @@ use Documents\Ecommerce\StockItem;
 
 class EcommerceTest extends BaseTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

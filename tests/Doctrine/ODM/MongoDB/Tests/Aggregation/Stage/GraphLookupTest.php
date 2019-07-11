@@ -24,7 +24,7 @@ class GraphLookupTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $this->requireMongoDB34('$graphLookup tests require at least MongoDB 3.4.0');

@@ -23,7 +23,7 @@ use function strtotime;
 
 class QueryTest extends BaseTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

@@ -55,7 +55,7 @@ class SchemaManagerTest extends BaseTest
     /** @var SchemaManager */
     private $schemaManager;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -89,7 +89,7 @@ class SchemaManagerTest extends BaseTest
         $this->schemaManager = $this->dm->getSchemaManager();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         // do not call parent, client here is mocked and there's nothing to tidy up in the database
     }

@@ -14,7 +14,7 @@ class PersistentCollectionCloneTest extends BaseTest
     private $user1;
     private $user2;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 

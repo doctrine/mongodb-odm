@@ -28,13 +28,13 @@ abstract class BaseTest extends TestCase
     /** @var UnitOfWork */
     protected $uow;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->dm  = $this->createTestDocumentManager();
         $this->uow = $this->dm->getUnitOfWork();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         if (! $this->dm) {
             return;

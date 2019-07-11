@@ -16,7 +16,7 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
     /** @var DefaultPersistentCollectionGenerator */
     private $generator;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $this->generator = new DefaultPersistentCollectionGenerator(
