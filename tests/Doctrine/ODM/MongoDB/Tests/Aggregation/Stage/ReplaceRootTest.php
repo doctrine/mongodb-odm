@@ -20,7 +20,9 @@ class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(
             ['$replaceRoot' => [
-                'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
+                'newRoot' => (object) [
+                    'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
+                ],
             ]],
             $stage->getExpression()
         );
@@ -41,7 +43,9 @@ class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(
             ['$replaceRoot' => [
-                'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
+                'newRoot' => (object) [
+                    'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
+                ],
             ]],
             $stage->getExpression()
         );
@@ -58,7 +62,9 @@ class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
         $this->assertEquals(
             ['$replaceRoot' => [
-                'someField' => ['$concat' => ['$ip', 'foo']],
+                'newRoot' => (object) [
+                    'someField' => ['$concat' => ['$ip', 'foo']],
+                ],
             ]],
             $stage->getExpression()
         );
@@ -72,7 +78,9 @@ class ReplaceRootTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->replaceRoot('$authorIp');
 
         $this->assertEquals(
-            ['$replaceRoot' => '$ip'],
+            [
+                '$replaceRoot' => ['newRoot' => '$ip'],
+            ],
             $stage->getExpression()
         );
     }
