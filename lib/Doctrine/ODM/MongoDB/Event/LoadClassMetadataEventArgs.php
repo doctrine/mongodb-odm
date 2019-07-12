@@ -17,6 +17,7 @@ final class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
     {
         $dm = $this->getObjectManager();
         assert($dm instanceof DocumentManager);
+
         return $dm;
     }
 }

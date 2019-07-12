@@ -903,6 +903,7 @@ class ParentAssociationTestA
     public $name;
     /** @ODM\EmbedOne */
     public $child;
+
     public function __construct($name)
     {
         $this->name = $name;
@@ -916,6 +917,7 @@ class ParentAssociationTestB
     public $name;
     /** @ODM\EmbedMany */
     public $children = [];
+
     public function __construct($name)
     {
         $this->name = $name;
@@ -927,6 +929,7 @@ class ParentAssociationTestC
 {
     /** @ODM\Field(type="string") */
     public $name;
+
     public function __construct($name)
     {
         $this->name = $name;

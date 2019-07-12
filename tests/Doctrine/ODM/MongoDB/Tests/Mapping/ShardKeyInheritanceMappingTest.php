@@ -21,7 +21,6 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $this->factory->setConfiguration($this->dm->getConfiguration());
     }
 
-
     public function testShardKeyFromMappedSuperclass()
     {
         $class = $this->factory->getMetadataFor(ShardedSubclass::class);

@@ -20,6 +20,7 @@ class LifecycleCallbacksTest extends BaseTest
         $user->profile->name = $fullName;
         $this->dm->persist($user);
         $this->dm->flush();
+
         return $user;
     }
 

@@ -20,7 +20,6 @@ class VirtualHostDirective
     /** @ODM\EmbedMany(targetDocument=Documents\Functional\VirtualHostDirective::class) */
     protected $directives;
 
-
     public function __construct($name = '', $value = '')
     {
         $this->name  = $name;
@@ -71,6 +70,7 @@ class VirtualHostDirective
         if (! $this->directives) {
             $this->directives = new ArrayCollection([]);
         }
+
         return $this->directives;
     }
 
@@ -100,9 +100,9 @@ class VirtualHostDirective
                 return $d;
             }
         }
+
         return null;
     }
-
 
     public function getDirective($name)
     {

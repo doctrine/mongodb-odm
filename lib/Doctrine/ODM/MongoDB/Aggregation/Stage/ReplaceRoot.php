@@ -49,7 +49,9 @@ class ReplaceRoot extends Operator
     {
         if (is_array($expression)) {
             return array_map([$this, 'convertExpression'], $expression);
-        } elseif (is_string($expression) && substr($expression, 0, 1) === '$') {
+        }
+
+        if (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
         }
 

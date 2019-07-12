@@ -140,6 +140,7 @@ abstract class Type
             $className                = self::$typesMap[$type];
             self::$typeObjects[$type] = new $className();
         }
+
         return self::$typeObjects[$type];
     }
 
@@ -167,6 +168,7 @@ abstract class Type
                     return self::getType('int');
             }
         }
+
         return null;
     }
 
@@ -176,6 +178,7 @@ abstract class Type
         if ($type !== null) {
             return $type->convertToDatabaseValue($value);
         }
+
         return $value;
     }
 

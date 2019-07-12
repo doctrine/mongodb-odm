@@ -69,6 +69,7 @@ class Option
         if ($object === true) {
             return $this->money;
         }
+
         return $this->money->getAmount();
     }
 

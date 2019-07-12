@@ -108,7 +108,6 @@ class CachingIteratorTest extends TestCase
         $this->assertSame([1, 2, 3], $iterator->toArray());
     }
 
-
     private function getTraversable($items)
     {
         foreach ($items as $item) {

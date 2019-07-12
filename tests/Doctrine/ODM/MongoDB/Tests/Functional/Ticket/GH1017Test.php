@@ -35,6 +35,7 @@ class GH1017Test extends BaseTest
                     $this->uow->getDocumentState($owner->embedded),
                     'A newly created object should be treated as NEW by UOW'
                 );
+
                 return;
             }
 

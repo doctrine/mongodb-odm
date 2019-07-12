@@ -510,6 +510,7 @@ class DocumentManager implements ObjectManager
             throw new InvalidArgumentException(gettype($document));
         }
         $this->errorIfClosed();
+
         return $this->unitOfWork->merge($document);
     }
 
@@ -678,6 +679,7 @@ class DocumentManager implements ObjectManager
         if (! is_object($document)) {
             throw new InvalidArgumentException(gettype($document));
         }
+
         return $this->unitOfWork->isScheduledForInsert($document) ||
             $this->unitOfWork->isInIdentityMap($document) &&
             ! $this->unitOfWork->isScheduledForDelete($document);
@@ -718,8 +720,6 @@ class DocumentManager implements ObjectManager
                 }
 
                 return $class->getDatabaseIdentifierValue($id);
-                break;
-
             case ClassMetadata::REFERENCE_STORE_AS_REF:
                 $reference = ['id' => $class->getDatabaseIdentifierValue($id)];
                 break;

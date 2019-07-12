@@ -93,12 +93,14 @@ class GraphLookup extends Stage
         // No targetClass mapping - simply use field name as is
         if (! $this->targetClass) {
             $this->connectFromField = $connectFromField;
+
             return $this;
         }
 
         // connectFromField doesn't have to be a reference - in this case, just convert the field name
         if (! $this->targetClass->hasReference($connectFromField)) {
             $this->connectFromField = $this->convertTargetFieldName($connectFromField);
+
             return $this;
         }
 
@@ -109,6 +111,7 @@ class GraphLookup extends Stage
         }
 
         $this->connectFromField = $this->getReferencedFieldName($connectFromField, $referenceMapping);
+
         return $this;
     }
 
@@ -119,6 +122,7 @@ class GraphLookup extends Stage
     public function connectToField(string $connectToField) : self
     {
         $this->connectToField = $this->convertTargetFieldName($connectToField);
+
         return $this;
     }
 
@@ -159,6 +163,7 @@ class GraphLookup extends Stage
             $this->targetClass = $this->dm->getClassMetadata($from);
         } catch (BaseMappingException $e) {
             $this->from = $from;
+
             return $this;
         }
 
@@ -167,6 +172,7 @@ class GraphLookup extends Stage
         }
 
         $this->from = $this->targetClass->getCollection();
+
         return $this;
     }
 
@@ -274,7 +280,9 @@ class GraphLookup extends Stage
     {
         if (is_array($expression)) {
             return array_map([$this, 'convertExpression'], $expression);
-        } elseif (is_string($expression) && substr($expression, 0, 1) === '$') {
+        }
+
+        if (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister($this->class)->prepareFieldName(substr($expression, 1));
         }
 
@@ -317,8 +325,6 @@ class GraphLookup extends Stage
             case ClassMetadata::REFERENCE_STORE_AS_ID:
             case ClassMetadata::REFERENCE_STORE_AS_REF:
                 return ClassMetadata::getReferenceFieldName($mapping['storeAs'], $mapping['name']);
-                break;
-
             default:
                 throw MappingException::cannotLookupDbRefReference($this->class->name, $fieldName);
         }

@@ -192,6 +192,7 @@ trait PersistentCollectionTrait
             // if initialized let's check with last known snapshot
             return $this->coll->toArray() !== $this->snapshot;
         }
+
         return false;
     }
 
@@ -226,7 +227,7 @@ trait PersistentCollectionTrait
     public function clearSnapshot()
     {
         $this->snapshot = [];
-        $this->isDirty  = $this->coll->count() ? true : false;
+        $this->isDirty  = $this->coll->count() !== 0;
     }
 
     /** {@inheritdoc} */
@@ -253,8 +254,10 @@ trait PersistentCollectionTrait
         $compare = static function ($a, $b) {
             $compareA = is_object($a) ? spl_object_hash($a) : $a;
             $compareb = is_object($b) ? spl_object_hash($b) : $b;
+
             return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
         };
+
         return array_values(array_udiff(
             $this->snapshot,
             $this->coll->toArray(),
@@ -280,8 +283,10 @@ trait PersistentCollectionTrait
         $compare = static function ($a, $b) {
             $compareA = is_object($a) ? spl_object_hash($a) : $a;
             $compareb = is_object($b) ? spl_object_hash($b) : $b;
+
             return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
         };
+
         return array_values(array_udiff(
             $this->coll->toArray(),
             $this->snapshot,
@@ -335,6 +340,7 @@ trait PersistentCollectionTrait
     public function first()
     {
         $this->initialize();
+
         return $this->coll->first();
     }
 
@@ -342,6 +348,7 @@ trait PersistentCollectionTrait
     public function last()
     {
         $this->initialize();
+
         return $this->coll->last();
     }
 
@@ -376,6 +383,7 @@ trait PersistentCollectionTrait
     public function containsKey($key)
     {
         $this->initialize();
+
         return $this->coll->containsKey($key);
     }
 
@@ -385,6 +393,7 @@ trait PersistentCollectionTrait
     public function contains($element)
     {
         $this->initialize();
+
         return $this->coll->contains($element);
     }
 
@@ -394,6 +403,7 @@ trait PersistentCollectionTrait
     public function exists(Closure $p)
     {
         $this->initialize();
+
         return $this->coll->exists($p);
     }
 
@@ -403,6 +413,7 @@ trait PersistentCollectionTrait
     public function indexOf($element)
     {
         $this->initialize();
+
         return $this->coll->indexOf($element);
     }
 
@@ -412,6 +423,7 @@ trait PersistentCollectionTrait
     public function get($key)
     {
         $this->initialize();
+
         return $this->coll->get($key);
     }
 
@@ -421,6 +433,7 @@ trait PersistentCollectionTrait
     public function getKeys()
     {
         $this->initialize();
+
         return $this->coll->getKeys();
     }
 
@@ -430,6 +443,7 @@ trait PersistentCollectionTrait
     public function getValues()
     {
         $this->initialize();
+
         return $this->coll->getValues();
     }
 
@@ -474,6 +488,7 @@ trait PersistentCollectionTrait
     public function getIterator()
     {
         $this->initialize();
+
         return $this->coll->getIterator();
     }
 
@@ -483,6 +498,7 @@ trait PersistentCollectionTrait
     public function map(Closure $func)
     {
         $this->initialize();
+
         return $this->coll->map($func);
     }
 
@@ -492,6 +508,7 @@ trait PersistentCollectionTrait
     public function filter(Closure $p)
     {
         $this->initialize();
+
         return $this->coll->filter($p);
     }
 
@@ -501,6 +518,7 @@ trait PersistentCollectionTrait
     public function forAll(Closure $p)
     {
         $this->initialize();
+
         return $this->coll->forAll($p);
     }
 
@@ -510,6 +528,7 @@ trait PersistentCollectionTrait
     public function partition(Closure $p)
     {
         $this->initialize();
+
         return $this->coll->partition($p);
     }
 
@@ -519,6 +538,7 @@ trait PersistentCollectionTrait
     public function toArray()
     {
         $this->initialize();
+
         return $this->coll->toArray();
     }
 
@@ -562,6 +582,7 @@ trait PersistentCollectionTrait
     public function slice($offset, $length = null)
     {
         $this->initialize();
+
         return $this->coll->slice($offset, $length);
     }
 
@@ -585,6 +606,7 @@ trait PersistentCollectionTrait
     public function offsetExists($offset)
     {
         $this->initialize();
+
         return $this->coll->offsetExists($offset);
     }
 
@@ -594,6 +616,7 @@ trait PersistentCollectionTrait
     public function offsetGet($offset)
     {
         $this->initialize();
+
         return $this->coll->offsetGet($offset);
     }
 
@@ -763,11 +786,7 @@ trait PersistentCollectionTrait
             return true;
         }
 
-        if (isset($this->mapping['reference']) && $this->mapping['isOwningSide'] && $this->mapping['orphanRemoval']) {
-            return true;
-        }
-
-        return false;
+        return isset($this->mapping['reference']) && $this->mapping['isOwningSide'] && $this->mapping['orphanRemoval'];
     }
 
     /**

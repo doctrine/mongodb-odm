@@ -37,10 +37,12 @@ class MODM45A
     {
         return $this->id;
     }
+
     public function getB()
     {
         return $this->b;
     }
+
     public function setB($b)
     {
         $this->b = $b;
@@ -57,6 +59,7 @@ class MODM45B
     {
         $this->val = $val;
     }
+
     public function getVal()
     {
         return $this->val;

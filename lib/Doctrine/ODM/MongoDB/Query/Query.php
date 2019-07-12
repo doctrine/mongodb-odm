@@ -273,6 +273,7 @@ final class Query implements IteratorAggregate
     {
         $clonedQuery                 = clone $this;
         $clonedQuery->query['limit'] = 1;
+
         return $clonedQuery->getIterator()->current() ?: null;
     }
 
@@ -415,7 +416,6 @@ final class Query implements IteratorAggregate
                 );
 
                 return $this->makeIterator($cursor);
-
             case self::TYPE_FIND_AND_UPDATE:
                 $queryOptions                   = $this->getQueryOptions('select', 'sort', 'upsert');
                 $queryOptions                   = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
@@ -428,7 +428,6 @@ final class Query implements IteratorAggregate
                     $this->query['newObj'],
                     array_merge($options, $queryOptions)
                 );
-
             case self::TYPE_FIND_AND_REMOVE:
                 $queryOptions = $this->getQueryOptions('select', 'sort');
                 $queryOptions = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
@@ -437,10 +436,8 @@ final class Query implements IteratorAggregate
                     $this->query['query'],
                     array_merge($options, $queryOptions)
                 );
-
             case self::TYPE_INSERT:
                 return $this->collection->insertOne($this->query['newObj'], $options);
-
             case self::TYPE_UPDATE:
                 $multiple = $this->query['multiple'] ?? false;
 
@@ -467,10 +464,8 @@ final class Query implements IteratorAggregate
                     $this->query['newObj'],
                     array_merge($options, $this->getQueryOptions('upsert'))
                 );
-
             case self::TYPE_REMOVE:
                 return $this->collection->deleteMany($this->query['query'], $options);
-
             case self::TYPE_DISTINCT:
                 $collection = $this->collection;
                 $query      = $this->query;
@@ -480,7 +475,6 @@ final class Query implements IteratorAggregate
                     $query['query'],
                     array_merge($options, $this->getQueryOptions('readPreference'))
                 );
-
             case self::TYPE_COUNT:
                 $collection = $this->collection;
                 $query      = $this->query;
@@ -489,7 +483,6 @@ final class Query implements IteratorAggregate
                     $query['query'],
                     array_merge($options, $this->getQueryOptions('hint', 'limit', 'skip', 'readPreference'))
                 );
-
             default:
                 throw new InvalidArgumentException('Invalid query type: ' . $this->query['type']);
         }

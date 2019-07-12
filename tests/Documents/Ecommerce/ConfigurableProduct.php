@@ -50,6 +50,7 @@ class ConfigurableProduct
             throw new InvalidArgumentException('Product name cannot be empty');
         }
         $this->name = $name;
+
         return $this;
     }
 
@@ -96,6 +97,7 @@ class ConfigurableProduct
             $index = array_search($option, $this->options);
         }
         unset($this->options[$index]);
+
         return $this;
     }
 
@@ -111,6 +113,7 @@ class ConfigurableProduct
             throw new InvalidArgumentException('specified option: ' . $name . ' doesn\'t exist');
         }
         $this->selectedOption = $option;
+
         return $this;
     }
 
@@ -121,6 +124,7 @@ class ConfigurableProduct
                 return $option;
             }
         }
+
         return null;
     }
 

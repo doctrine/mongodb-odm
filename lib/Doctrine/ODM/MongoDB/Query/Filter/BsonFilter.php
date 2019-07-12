@@ -39,6 +39,7 @@ abstract class BsonFilter
     final public function setParameter(string $name, $value) : self
     {
         $this->parameters[$name] = $value;
+
         return $this;
     }
 
@@ -56,6 +57,7 @@ abstract class BsonFilter
         if (! array_key_exists($name, $this->parameters)) {
             throw new InvalidArgumentException("Filter parameter '" . $name . "' is not set.");
         }
+
         return $this->parameters[$name];
     }
 

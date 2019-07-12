@@ -100,8 +100,10 @@ class CmsUser
             $ph = $this->phonenumbers[$index];
             unset($this->phonenumbers[$index]);
             $ph->user = null;
+
             return true;
         }
+
         return false;
     }
 

@@ -616,7 +616,9 @@ trait AggregationOperatorsProviderTrait
     {
         if (is_array($args)) {
             return $args;
-        } elseif ($args instanceof Closure) {
+        }
+
+        if ($args instanceof Closure) {
             return $args($this->createExpr());
         }
 

@@ -45,8 +45,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     protected $class;
 
     /**
-     * Initializes this instance with the specified document manager, unit of work and
-     * class metadata.
+     * Initializes this instance with the specified document manager, unit of work and class metadata.
      *
      * @param DocumentManager $dm            The DocumentManager to use.
      * @param UnitOfWork      $uow           The UnitOfWork to use.
@@ -220,6 +219,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         // @TODO: wrap around a specialized Collection for efficient count on large collections
         $iterator = $queryBuilder->getQuery()->execute();
         assert($iterator instanceof Iterator);
+
         return new ArrayCollection($iterator->toArray());
     }
 

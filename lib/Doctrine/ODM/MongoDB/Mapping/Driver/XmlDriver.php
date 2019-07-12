@@ -561,6 +561,7 @@ class XmlDriver extends FileDriver
                 $tags[] = $set;
             }
         }
+
         return [(string) $xmlReadPreference['mode'], $tags];
     }
 

@@ -46,10 +46,12 @@ class Out extends Stage
             $class = $this->dm->getClassMetadata($collection);
         } catch (BaseMappingException $e) {
             $this->collection = $collection;
+
             return $this;
         }
 
         $this->fromDocument($class);
+
         return $this;
     }
 

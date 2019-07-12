@@ -118,7 +118,6 @@ class CollectionPersisterTest extends BaseTest
         $this->assertFalse(isset($check['categories']), 'Test that the nested categories field was deleted');
     }
 
-
     public function testDeleteRows() : void
     {
         $user = $this->getTestUser('jwage');
@@ -226,6 +225,7 @@ class CollectionPersisterTest extends BaseTest
 
         $this->dm->persist($user);
         $this->dm->flush();
+
         return $user;
     }
 
@@ -233,6 +233,7 @@ class CollectionPersisterTest extends BaseTest
     {
         $uow = $this->dm->getUnitOfWork();
         $pb  = new PersistenceBuilder($this->dm, $uow);
+
         return new CollectionPersister($this->dm, $pb, $uow);
     }
 

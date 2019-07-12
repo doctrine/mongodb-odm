@@ -82,6 +82,7 @@ class MongoDBException extends Exception
         } else {
             $gotType = 'scalar';
         }
+
         return new self(sprintf('%s type requires value of type %s, %s given', $type, $expected, $gotType));
     }
 

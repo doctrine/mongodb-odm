@@ -220,6 +220,7 @@ final class PersistenceBuilder
             }
             // @ReferenceMany is handled by CollectionPersister
         }
+
         return $updateData;
     }
 

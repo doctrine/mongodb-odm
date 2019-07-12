@@ -24,6 +24,7 @@ class BucketAuto extends AbstractBucket
     public function buckets(int $buckets) : self
     {
         $this->buckets = $buckets;
+
         return $this;
     }
 
@@ -35,6 +36,7 @@ class BucketAuto extends AbstractBucket
     public function granularity(string $granularity) : self
     {
         $this->granularity = $granularity;
+
         return $this;
     }
 
@@ -50,6 +52,7 @@ class BucketAuto extends AbstractBucket
         }
 
         assert($this->output instanceof Bucket\BucketAutoOutput);
+
         return $this->output;
     }
 

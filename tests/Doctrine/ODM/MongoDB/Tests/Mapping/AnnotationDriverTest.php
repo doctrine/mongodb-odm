@@ -233,12 +233,14 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $annotationDriver = $this->_loadDriver();
         $annotationDriver->addPaths([__DIR__ . '/../../../../../Documents']);
+
         return $annotationDriver;
     }
 
     protected function _loadDriver()
     {
         $reader = new AnnotationReader();
+
         return new AnnotationDriver($reader);
     }
 }

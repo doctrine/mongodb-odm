@@ -30,6 +30,7 @@ class TimestampType extends Type
     private function extractSeconds(Timestamp $timestamp) : int
     {
             $parts = explode(':', substr((string) $timestamp, 1, -1));
+
             return (int) $parts[1];
     }
 }

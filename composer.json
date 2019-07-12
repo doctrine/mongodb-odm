@@ -36,7 +36,7 @@
         "symfony/var-dumper": "^3.4|^4.1"
     },
     "require-dev": {
-        "doctrine/coding-standard": "^5.0",
+        "doctrine/coding-standard": "^6.0",
         "jmikola/geojson": "^1.0",
         "phpstan/phpstan": "^0.10.3",
         "phpunit/phpunit": "^8.2"

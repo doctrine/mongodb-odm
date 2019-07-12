@@ -29,6 +29,7 @@ class MetadataFilter extends FilterIterator implements Countable
     public static function filter(array $metadatas, $filter) : array
     {
         $metadatas = new MetadataFilter(new ArrayIterator($metadatas), $filter);
+
         return iterator_to_array($metadatas);
     }
 
@@ -58,6 +59,7 @@ class MetadataFilter extends FilterIterator implements Countable
                 return true;
             }
         }
+
         return false;
     }
 

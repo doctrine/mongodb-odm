@@ -83,6 +83,7 @@ class Lookup extends Stage
             $this->targetClass = $this->dm->getClassMetadata($from);
         } catch (BaseMappingException $e) {
             $this->from = $from;
+
             return $this;
         }
 
@@ -91,6 +92,7 @@ class Lookup extends Stage
         }
 
         $this->from = $this->targetClass->getCollection();
+
         return $this;
     }
 
@@ -120,6 +122,7 @@ class Lookup extends Stage
     public function localField(string $localField) : self
     {
         $this->localField = $this->prepareFieldName($localField, $this->class);
+
         return $this;
     }
 
@@ -134,6 +137,7 @@ class Lookup extends Stage
     public function foreignField(string $foreignField) : self
     {
         $this->foreignField = $this->prepareFieldName($foreignField, $this->targetClass);
+
         return $this;
     }
 

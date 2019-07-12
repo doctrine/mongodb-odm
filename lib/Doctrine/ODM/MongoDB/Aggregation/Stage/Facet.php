@@ -39,6 +39,7 @@ class Facet extends Stage
     public function field(string $field) : self
     {
         $this->field = $field;
+
         return $this;
     }
 
@@ -62,6 +63,7 @@ class Facet extends Stage
         }
 
         $this->pipelines[$this->field] = $builder;
+
         return $this;
     }
 }

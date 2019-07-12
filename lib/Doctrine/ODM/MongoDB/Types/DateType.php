@@ -41,7 +41,9 @@ class DateType extends Type
 
         if ($value instanceof DateTimeInterface) {
             return $value;
-        } elseif ($value instanceof UTCDateTime) {
+        }
+
+        if ($value instanceof UTCDateTime) {
             $datetime = $value->toDateTime();
             $datetime->setTimezone(new DateTimeZone(date_default_timezone_get()));
         } elseif (is_numeric($value)) {
