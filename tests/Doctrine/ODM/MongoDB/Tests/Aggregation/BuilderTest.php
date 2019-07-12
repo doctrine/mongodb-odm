@@ -70,7 +70,11 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ],
             [
                 '$replaceRoot' => [
-                    'isToday' => ['$eq' => ['$createdAt', new \MongoDate($dateTime->format('U'), $dateTime->format('u'))]],
+                    'newRoot' => (object) [
+                        'isToday' => [
+                            '$eq' => ['$createdAt', new \MongoDate($dateTime->format('U'), $dateTime->format('u'))]
+                        ],
+                    ],
                 ]
             ]
         ];
@@ -105,7 +109,7 @@ class BuilderTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                 '$sort' => ['ip' => 1],
             ],
             [
-                '$replaceRoot' => '$ip',
+                '$replaceRoot' => ['newRoot' => '$ip'],
             ]
         ];
 
