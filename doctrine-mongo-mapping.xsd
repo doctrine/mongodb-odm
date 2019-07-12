@@ -362,7 +362,7 @@
   </xs:complexType>
 
   <xs:complexType name="index-key">
-    <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="order" type="xs:NMTOKEN" default="asc" />
   </xs:complexType>
 
