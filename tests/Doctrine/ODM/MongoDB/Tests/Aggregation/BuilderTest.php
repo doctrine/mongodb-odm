@@ -233,7 +233,11 @@ class BuilderTest extends BaseTest
             ],
             [
                 '$replaceRoot' => [
-                    'isToday' => ['$eq' => ['$createdAt', new UTCDateTime((int) $dateTime->format('Uv'))]],
+                    'newRoot' => (object) [
+                        'isToday' => [
+                            '$eq' => ['$createdAt', new UTCDateTime((int) $dateTime->format('Uv'))],
+                        ],
+                    ],
                 ],
             ],
         ];
@@ -265,7 +269,7 @@ class BuilderTest extends BaseTest
             [
                 '$sort' => ['ip' => 1],
             ],
-            ['$replaceRoot' => '$ip'],
+            ['$replaceRoot' => ['newRoot' => '$ip']],
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());

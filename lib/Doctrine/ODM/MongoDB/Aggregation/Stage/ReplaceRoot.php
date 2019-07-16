@@ -40,8 +40,12 @@ class ReplaceRoot extends Operator
      */
     public function getExpression() : array
     {
+        $expression = $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression();
+
         return [
-            '$replaceRoot' => $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression(),
+            '$replaceRoot' => [
+                'newRoot' => is_array($expression) ? (object) $expression : $expression,
+            ],
         ];
     }
 
