@@ -258,6 +258,26 @@ specifies all existing fields in the input documents and adds the new fields.
             ->field('purchaseYear')
             ->year('$purchaseDate');
 
+You can also pass expressions as arrays:
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->addFields()
+            ->field('purchaseYear')
+            ->expression(['$year' => '$purchaseDate'])
+            ->field('multiply')
+            ->expression(['$multiply' => ['$price', 2 ] ]);
+
+This allows usage of any expression operators introduced by MongoDB, even
+if Doctrine ODM does not yet wrap it with convenience methods.
+
+You can see all available expression operators at MongoDB documentation 
+`here <https://docs.mongodb.com/manual/reference/operator/aggregation/>`_.
+
 $bucket
 ~~~~~~~
 
