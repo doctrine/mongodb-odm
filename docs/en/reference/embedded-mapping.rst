@@ -70,15 +70,21 @@ Embed many documents:
 
         <?php
 
+        use Doctrine\Common\Collections\ArrayCollection;
+
         /** @Document */
         class User
         {
             // ...
 
             /** @EmbedMany(targetDocument="Phonenumber") */
-            private $phonenumbers = array();
+            private $phonenumbers;
 
             // ...
+            public function __construct()
+            {
+                $this->phonenumbers = new ArrayCollection();
+            }
         }
 
         /** @EmbeddedDocument */
@@ -124,15 +130,21 @@ you can simply omit the ``targetDocument`` option:
 
         <?php
 
+        use Doctrine\Common\Collections\ArrayCollection;
+
         /** @Document */
         class User
         {
             // ..
 
             /** @EmbedMany */
-            private $tasks = array();
+            private $tasks;
 
             // ...
+            public function __construct()
+            {
+                $this->tasks = new ArrayCollection();
+            }
         }
 
     .. code-block:: xml
@@ -155,6 +167,8 @@ the embedded document. The field name can be customized with the
 
         <?php
 
+        use Doctrine\Common\Collections\ArrayCollection;
+
         /** @Document */
         class User
         {
@@ -163,9 +177,13 @@ the embedded document. The field name can be customized with the
             /**
              * @EmbedMany(discriminatorField="type")
              */
-            private $tasks = array();
+            private $tasks;
 
             // ...
+            public function __construct() 
+            {
+                $this->tasks = new ArrayCollection();
+            }
         }
 
     .. code-block:: xml
@@ -189,6 +207,8 @@ in each embedded document:
 
         <?php
 
+        use Doctrine\Common\Collections\ArrayCollection;
+
         /** @Document */
         class User
         {
@@ -202,9 +222,13 @@ in each embedded document:
              *   }
              * )
              */
-            private $tasks = array();
+            private $tasks;
 
             // ...
+            public function __construct()
+            {
+                $this->tasks = new ArrayCollection();
+            }
         }
 
     .. code-block:: xml
