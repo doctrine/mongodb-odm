@@ -1,42 +1,134 @@
 {
-  "configsvrs": [
-    {
-      "dbpath": "$DBPATH/db27117",
-      "logpath": "$LOGPATH/configsvr27117.log",
-      "port": 27117
-    }
-  ],
-  "id": "shard_cluster_1",
+  "configsvrs": [ {
+    "members" : [
+      {
+        "procParams": {
+          "dbpath": "$DBPATH/db27117",
+          "logpath": "$DBPATH/db27117.log",
+          "ipv6": true,
+          "journal": true,
+          "logappend": true,
+          "port": 27117,
+          "bind_ip_all": true
+        }
+      },
+      {
+        "procParams": {
+          "dbpath": "$DBPATH/db27118",
+          "logpath": "$DBPATH/db442711891.log",
+          "ipv6": true,
+          "journal": true,
+          "logappend": true,
+          "port": 27118,
+          "bind_ip_all": true
+        }
+      },
+      {
+        "procParams": {
+          "dbpath": "$DBPATH/db27119",
+          "logpath": "$DBPATH/db27119.log",
+          "ipv6": true,
+          "journal": true,
+          "logappend": true,
+          "port": 27119,
+          "bind_ip_all": true
+        }
+      }
+    ]
+  } ],
+  "id": "cluster_rs",
   "shards": [
     {
-      "id": "sh01",
+      "id": "cluster-rs-sh01",
       "shardParams": {
-        "procParams": {
-          "dbpath": "$DBPATH/db27217",
-          "logpath": "$LOGPATH/sh01.log",
-          "port": 27217
-        }
+        "id": "sh01-rs",
+        "members": [
+          {
+            "procParams": {
+              "dbpath": "$DBPATH/db27217",
+              "logpath": "$DBPATH/db27217.log",
+              "ipv6": true,
+              "journal": true,
+              "logappend": true,
+              "port": 27217,
+              "bind_ip_all": true,
+              "setParameter":  {
+                "periodicNoopIntervalSecs":  1,
+                "writePeriodicNoops":  true
+              }
+            }
+          },
+          {
+            "procParams": {
+              "dbpath": "$DBPATH/db27218",
+              "logpath": "$DBPATH/db27218.log",
+              "ipv6": true,
+              "journal": true,
+              "logappend": true,
+              "port": 27218,
+              "bind_ip_all": true,
+              "setParameter":  {
+                "periodicNoopIntervalSecs":  1,
+                "writePeriodicNoops":  true
+              }
+            }
+          }
+        ]
       }
     },
     {
-      "id": "sh02",
+      "id": "cluster-rs-sh02",
       "shardParams": {
-        "procParams": {
-          "dbpath": "$DBPATH/db27218",
-          "logpath": "$LOGPATH/sh02.log",
-          "port": 27218
-        }
+        "id": "sh02-rs",
+        "members": [
+          {
+            "procParams": {
+              "dbpath": "$DBPATH/db27317",
+              "logpath": "$DBPATH/db27317.log",
+              "ipv6": true,
+              "journal": true,
+              "logappend": true,
+              "port": 27317,
+              "bind_ip_all": true,
+              "setParameter":  {
+                "periodicNoopIntervalSecs":  1,
+                "writePeriodicNoops":  true
+              }
+            }
+          },
+          {
+            "procParams": {
+              "dbpath": "$DBPATH/db27318",
+              "logpath": "$DBPATH/db27318.log",
+              "ipv6": true,
+              "journal": true,
+              "logappend": true,
+              "port": 27318,
+              "bind_ip_all": true,
+              "setParameter":  {
+                "periodicNoopIntervalSecs":  1,
+                "writePeriodicNoops":  true
+              }
+            }
+          }
+        ]
       }
     }
   ],
   "routers": [
     {
-      "logpath": "$LOGPATH/router27017.log",
-      "port": 27017
+      "logpath": "$DBPATH/db27017.log",
+      "ipv6": true,
+      "logappend": true,
+      "port": 27017,
+      "bind_ip_all": true
     },
     {
-      "logpath": "$LOGPATH/router27018.log",
-      "port": 27018
+      "logpath": "$DBPATH/db27018.log",
+      "ipv6": true,
+      "logappend": true,
+      "port": 27018,
+      "bind_ip_all": true
     }
   ]
 }
