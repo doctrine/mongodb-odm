@@ -25,14 +25,8 @@ jobs:
   include:
     # Test against lowest dependencies, including driver and server versions
     - stage: Test
-      dist: trusty
       php: 5.6
-      env: DRIVER_VERSION="1.6.7" COMPOSER_FLAGS="--prefer-lowest" MONGO_REPO_TYPE="trusty/mongodb-org/" SERVER_VERSION="3.4" KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
-
-    # Test against MongoDB 3.6
-    - stage: Test
-      php: 7.3
-      env: SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
+      env: DRIVER_VERSION="1.6.7" COMPOSER_FLAGS="--prefer-lowest" SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
 
     # Test against MongoDB 4.0
     - stage: Test
