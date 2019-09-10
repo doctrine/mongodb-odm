@@ -49,7 +49,7 @@ trait PersistentCollectionTrait
     private $owner;
 
     /**
-     * @var array
+     * @var array|null
      */
     private $mapping;
 
@@ -221,7 +221,7 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function takeSnapshot()
     {
-        if (CollectionHelper::isList($this->mapping['strategy'])) {
+        if ($this->mapping !== null && CollectionHelper::isList($this->mapping['strategy'])) {
             $array = $this->coll->toArray();
             $this->coll->clear();
             foreach ($array as $document) {
@@ -444,7 +444,7 @@ trait PersistentCollectionTrait
         $count = $this->coll->count();
 
         // If this collection is inversed and not initialized, add the count returned from the database
-        if ($this->mapping['isInverseSide'] && ! $this->initialized) {
+        if ($this->mapping !== null && $this->mapping['isInverseSide'] && ! $this->initialized) {
             $documentPersister = $this->uow->getDocumentPersister(get_class($this->owner));
             $count += empty($this->mapping['repositoryMethod'])
                 ? $documentPersister->createReferenceManyInverseSideQuery($this)->count(true)
