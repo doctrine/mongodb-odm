@@ -10,7 +10,7 @@ php:
 
 env:
   global:
-    - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017"
+    - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017/?retryWrites=false"
     - KEY_SERVER="hkp://keyserver.ubuntu.com:80"
     - MONGO_REPO_URI="https://repo.mongodb.org/apt/ubuntu"
     - MONGO_REPO_TYPE="xenial/mongodb-org/"
@@ -29,7 +29,7 @@ jobs:
     - stage: Test
       dist: trusty
       php: 5.6
-      env: DRIVER_VERSION="1.6.7" COMPOSER_FLAGS="--prefer-lowest" MONGO_REPO_TYPE="trusty/mongodb-org/" SERVER_VERSION="3.4" KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
+      env: DRIVER_VERSION="1.6.7" COMPOSER_FLAGS="--prefer-lowest" MONGO_REPO_TYPE="trusty/mongodb-org/" SERVER_VERSION="3.4" KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6" DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017"
 
     # Test against MongoDB 3.6
     - stage: Test
