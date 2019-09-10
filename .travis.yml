@@ -10,7 +10,7 @@ php:
 
 env:
   global:
-    - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017"
+    - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017/?retryWrites=false"
     - KEY_SERVER="hkp://keyserver.ubuntu.com:80"
     - MONGO_REPO_URI="https://repo.mongodb.org/apt/ubuntu"
     - MONGO_REPO_TYPE="trusty/mongodb-org/"
