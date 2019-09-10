@@ -25,7 +25,7 @@
         "doctrine/mongodb": "^1.6.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7.21|^6.4",
+        "phpunit/phpunit": "^5.7.21|^7.5",
         "symfony/yaml": "~2.3|~3.0|^4.0"
     },
     "suggest": {
