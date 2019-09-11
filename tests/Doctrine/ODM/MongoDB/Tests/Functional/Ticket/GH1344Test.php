@@ -22,14 +22,27 @@ class GH1344Test extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes(GH1344Main::class);
     }
 
-    public function testGeneratingIndexesWithTooLongIndexNameThrowsException()
+    public function testGeneratingIndexesWithTooLongIndexNameThrowsExceptionBeforeMongoDB42()
     {
+        $this->skipOnMongoDB42('Index name restrictions were removed in MongoDB 4.2.');
+
         // Ensure that at least the beginning of the index name is contained in
         // the exception message. This can vary between driver/server versions.
         $this->expectException(CommandException::class);
-        $this->expectExceptionMessageRegExp('#GH1344TooLongIndexName.\$embedded1_this_is_a_really_long_name_that#');
+        $this->expectExceptionMessageRegExp('#GH1344LongIndexName.\$embedded1_this_is_a_really_long_name_that#');
 
-        $this->dm->getSchemaManager()->ensureDocumentIndexes(GH1344TooLongIndexName::class);
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(GH1344LongIndexName::class);
+    }
+
+    public function testGeneratingIndexesWithLongIndexNameDoesNotThrowExceptionAfterMongoDB42()
+    {
+        $this->requireMongoDB42('Index name length is limited before MongoDB 4.2.');
+
+        $indexes = $this->dm->getSchemaManager()->getDocumentIndexes(GH1344LongIndexName::class);
+        self::assertCount(1, $indexes);
+        self::assertSame('embedded1_this_is_a_really_long_name_that_will_cause_problems_for_whoever_tries_to_use_it_whether_in_an_embedded_field_or_not', $indexes[0]['options']['name']);
+
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(GH1344LongIndexName::class);
     }
 }
 
@@ -70,12 +83,12 @@ class GH1344EmbeddedNested
 }
 
 /** @ODM\Document */
-class GH1344TooLongIndexName
+class GH1344LongIndexName
 {
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1344TooLongIndexNameEmbedded::class) */
+    /** @ODM\EmbedOne(targetDocument=GH1344LongIndexNameEmbedded::class) */
     public $embedded1;
 }
 
@@ -83,7 +96,7 @@ class GH1344TooLongIndexName
  * @ODM\EmbeddedDocument
  * @ODM\Index(keys={"property"="asc"}, name="this_is_a_really_long_name_that_will_cause_problems_for_whoever_tries_to_use_it_whether_in_an_embedded_field_or_not")
  */
-class GH1344TooLongIndexNameEmbedded
+class GH1344LongIndexNameEmbedded
 {
     /** @ODM\Field */
     public $property;
