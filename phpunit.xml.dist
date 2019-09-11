@@ -7,7 +7,6 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          stopOnFailure="false"
-         syntaxCheck="false"
          bootstrap="tests/bootstrap.php"
 >
     <testsuites>
@@ -31,5 +30,8 @@
     <php>
         <const name="DOCTRINE_MONGODB_SERVER" value="mongodb://localhost:27017" />
         <const name="DOCTRINE_MONGODB_DATABASE" value="doctrine_odm_tests" />
+
+        <ini name="mongo.native_long" value="false" />
+        <ini name="mongo.long_as_object" value="true" />
     </php>
 </phpunit>
