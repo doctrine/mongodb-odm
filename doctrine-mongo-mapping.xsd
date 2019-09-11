@@ -104,7 +104,7 @@
   <xs:complexType name="field">
     <xs:attribute name="name" type="xs:NMTOKEN" />
     <xs:attribute name="type" type="xs:NMTOKEN" />
-    <xs:attribute name="strategy" type="xs:NMTOKEN" default="set" />
+    <xs:attribute name="strategy" type="odm:storage-strategy" default="set" />
     <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="embed" type="xs:boolean" />
     <xs:attribute name="reference" type="xs:boolean" />
@@ -192,11 +192,23 @@
     <xs:attribute name="collection-class" type="xs:string" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field-name" type="xs:NMTOKEN" />
-    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
+    <xs:attribute name="strategy" type="odm:storage-strategy" default="pushAll" />
     <xs:attribute name="not-saved" type="xs:boolean" />
     <xs:attribute name="nullable" type="xs:boolean" />
     <xs:attribute name="also-load" type="xs:NMTOKEN" />
   </xs:complexType>
+
+  <xs:simpleType name="storage-strategy">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="addToSet"/>
+      <xs:enumeration value="pushAll"/>
+      <xs:enumeration value="increment"/>
+      <xs:enumeration value="set"/>
+      <xs:enumeration value="setArray"/>
+      <xs:enumeration value="atomicSet"/>
+      <xs:enumeration value="atomicSetArray"/>
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:simpleType name="reference-store-as">
     <xs:restriction base="xs:token">
@@ -246,7 +258,7 @@
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field-name" type="xs:NMTOKEN" />
     <xs:attribute name="store-as" type="odm:reference-store-as" default="dbRefWithDb" />
-    <xs:attribute name="strategy" type="xs:NMTOKEN" default="pushAll" />
+    <xs:attribute name="strategy" type="odm:storage-strategy" default="pushAll" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="repository-method" type="xs:NMTOKEN" />

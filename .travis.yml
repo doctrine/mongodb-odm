@@ -6,39 +6,29 @@ language: php
 php:
   - 7.2
   - 7.3
+  - 7.4snapshot
 
 env:
   global:
-    - DOCTRINE_MONGODB_SERVER="mongodb://localhost:27017"
+    - DEPLOYMENT=SHARDED_CLUSTER_RS
     - KEY_SERVER="hkp://keyserver.ubuntu.com:80"
     - MONGO_REPO_URI="https://repo.mongodb.org/apt/ubuntu"
     - MONGO_REPO_TYPE="xenial/mongodb-org/"
     - SOURCES_LOC="/etc/apt/sources.list.d/mongodb.list"
     - DRIVER_VERSION="stable"
   matrix:
-    - SERVER_VERSION="3.4" KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6"
     - SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
     - SERVER_VERSION="4.0" KEY_ID="9DA31620334BD75D9DCB49F368818C72E52529D4"
+    - SERVER_VERSION="4.2" KEY_ID="E162F504A20CDF15827F718D4B7C549A058F8B6B"
 
 jobs:
-  allow_failures:
-    - php: 7.4snapshot
-
   include:
     # Test against lowest dependencies, including driver and server versions
     - stage: Test
       php: 7.2
-      env: SERVER_VERSION="3.4" KEY_ID="0C49F3730359A14518585931BC711F9BA15703C6" DRIVER_VERSION="1.5.0"
+      env: SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5" DRIVER_VERSION="1.5.0"
       install:
         - composer update --prefer-lowest
-
-    # Test against the upcoming PHP version
-    - stage: Test
-      php: 7.4snapshot
-      addons:
-        apt:
-          packages:
-            - libonig-dev
 
     # Run tests with coverage
     - stage: Code Quality
@@ -77,10 +67,13 @@ before_install:
   - sudo mongo-orchestration start
   - curl -XPUT http://localhost:8889/v1/sharded_clusters/myCluster --data @tests/sharded.json
   - pecl install -f mongodb-${DRIVER_VERSION}
+  - .travis/setup_mo.sh
   - composer self-update
 
 install:
   - composer update
 
 script:
+  - export DOCTRINE_MONGODB_SERVER=`cat /tmp/uri.txt`
+  - echo $DOCTRINE_MONGODB_SERVER
   - vendor/bin/phpunit
