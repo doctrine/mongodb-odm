@@ -17,7 +17,6 @@ class LookupTest extends BaseTest
     public function setUp() : void
     {
         parent::setUp();
-        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
         $this->insertTestData();
     }
 
@@ -190,38 +189,8 @@ class LookupTest extends BaseTest
         $this->assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
-    public function testLookupStageReferenceManyWithoutUnwindMongoDB32()
-    {
-        $this->skipOnMongoDB34('$lookup tests without unwind will not work on MongoDB 3.4.0+');
-
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
-        $builder
-            ->lookup('users')
-                ->alias('users');
-
-        $expectedPipeline = [
-            [
-                '$lookup' => [
-                    'from' => 'users',
-                    'localField' => 'users',
-                    'foreignField' => '_id',
-                    'as' => 'users',
-                ],
-            ],
-        ];
-
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
-
-        $result = $builder->execute()->toArray();
-
-        $this->assertCount(1, $result);
-        $this->assertCount(0, $result[0]['users']);
-    }
-
     public function testLookupStageReferenceManyWithoutUnwindMongoDB34()
     {
-        $this->requireMongoDB34('$lookup tests with unwind require at least MongoDB 3.4.0');
-
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
             ->lookup('users')
