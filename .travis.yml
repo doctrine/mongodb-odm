@@ -40,6 +40,13 @@ jobs:
       script:
         - ./vendor/bin/phpunit --group=sharding --coverage-clover=coverage.clover
 
+    # Test on replica sets
+    - stage: Test
+      php: 7.3
+      env: DEPLOYMENT=REPLICASET
+      script:
+        - ./vendor/bin/phpunit --coverage-clover=coverage.clover
+
 before_install:
   - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
   - echo "deb ${MONGO_REPO_URI} ${MONGO_REPO_TYPE}${SERVER_VERSION} multiverse" | sudo tee ${SOURCES_LOC}
