@@ -126,18 +126,13 @@ abstract class BaseTest extends TestCase
         $this->markTestSkipped($message);
     }
 
-    protected function requireMongoDB32($message)
+    protected function skipOnMongoDB42($message)
     {
-        $this->requireVersion($this->getServerVersion(), '3.2.0', '<', $message);
+        $this->requireVersion($this->getServerVersion(), '4.2.0', '>=', $message);
     }
 
-    protected function skipOnMongoDB34($message)
+    protected function requireMongoDB42($message)
     {
-        $this->requireVersion($this->getServerVersion(), '3.4.0', '>=', $message);
-    }
-
-    protected function requireMongoDB34($message)
-    {
-        $this->requireVersion($this->getServerVersion(), '3.4.0', '<', $message);
+        $this->requireVersion($this->getServerVersion(), '4.2.0', '<', $message);
     }
 }

@@ -216,8 +216,6 @@ class IndexesTest extends BaseTest
 
     public function testPartialIndexCreation()
     {
-        $this->requireMongoDB32('This test is not applicable to server versions < 3.2.0');
-
         $className = PartialIndexOnDocumentTest::class;
         $this->dm->getSchemaManager()->ensureDocumentIndexes($className);
 
