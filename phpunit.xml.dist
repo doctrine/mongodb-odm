@@ -31,6 +31,8 @@
         <const name="DOCTRINE_MONGODB_SERVER" value="mongodb://localhost:27017" />
         <const name="DOCTRINE_MONGODB_DATABASE" value="doctrine_odm_tests" />
 
+        <!-- These two ini settings prevent errors with command cursors due to
+             the cursor ID being in an unsupported format on newer servers. -->
         <ini name="mongo.native_long" value="false" />
         <ini name="mongo.long_as_object" value="true" />
     </php>

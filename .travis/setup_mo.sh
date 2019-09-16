@@ -2,6 +2,8 @@
 
 echo Loading MO for $DEPLOYMENT
 
+mongo-orchestration --version
+
 if [[ -z $TRAVIS_BUILD_DIR ]]; then
     export TRAVIS_BUILD_DIR=`pwd`;
 fi
