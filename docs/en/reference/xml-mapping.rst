@@ -85,11 +85,11 @@ Configuration of this client works a little bit different:
 .. code-block:: php
 
     <?php
-    $namespaces = array(
-        'MyProject\Documents' => '/path/to/files1',
-        'OtherProject\Documents' => '/path/to/files2'
+    $prefixes = array(
+        '/path/to/files1' => 'MyProject\Documents',
+        '/path/to/files2' => 'OtherProject\Documents'
     );
-    $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedXmlDriver($namespaces);
+    $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedXmlDriver($prefixes);
     $driver->setGlobalBasename('global'); // global.mongodb-odm.xml
 
 Example
