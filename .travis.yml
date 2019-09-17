@@ -34,14 +34,28 @@ jobs:
       php: 7.3
       env: DEPLOYMENT=SHARDED_CLUSTER_RS
       script:
-        - ./vendor/bin/phpunit --group=sharding --coverage-clover=coverage.clover
+        - ./vendor/bin/phpunit --group=sharding
 
     # Test on replica sets
     - stage: Test
       php: 7.3
       env: DEPLOYMENT=REPLICASET
+
+    # Run tests with coverage
+    - stage: Code Quality
+      php: 7.2
+      env: DEPLOYMENT=SHARDED_CLUSTER_RS
+      before_script:
+        - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
+        - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
+        - vendor/bin/phpunit --dump-xdebug-filter xdebug-filter.php
       script:
-        - ./vendor/bin/phpunit --coverage-clover=coverage.clover
+        - export DOCTRINE_MONGODB_SERVER=`cat /tmp/uri.txt`
+        - echo $DOCTRINE_MONGODB_SERVER
+        - vendor/bin/phpunit --prepend xdebug-filter.php --coverage-clover=coverage.clover
+      after_script:
+        - wget https://scrutinizer-ci.com/ocular.phar
+        - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
     # Performance tests
     - stage: Performance
@@ -51,6 +65,9 @@ jobs:
     - stage: Performance
       php: 7.3
       script: vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate
+
+before_install:
+  - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
 
 install:
   - .travis/setup_mongodb.sh
@@ -66,8 +83,4 @@ install:
   - echo $DOCTRINE_MONGODB_SERVER
 
 script:
-  - ./vendor/bin/phpunit --coverage-clover=coverage.clover
-
-after_script:
-    - wget https://scrutinizer-ci.com/ocular.phar
-    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - ./vendor/bin/phpunit
