@@ -56,8 +56,6 @@ install:
   - .travis/setup_mongodb.sh
   - sudo pip install mongo-orchestration
   - sudo mongo-orchestration start
-
-before_script:
   - .travis/setup_mo.sh
   - composer self-update
   - if [[ ${TRAVIS_PHP_VERSION:0:2} == "5." ]]; then yes '' | pecl -q install -f mongo-${DRIVER_VERSION}; fi
