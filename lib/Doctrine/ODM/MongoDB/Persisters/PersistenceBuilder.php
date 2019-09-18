@@ -410,17 +410,15 @@ class PersistenceBuilder
          */
         if ( ! isset($embeddedMapping['targetDocument'])) {
             $discriminatorField = $embeddedMapping['discriminatorField'];
-            $discriminatorValue = isset($embeddedMapping['discriminatorMap'])
-                ? array_search($class->name, $embeddedMapping['discriminatorMap'])
-                : $class->name;
+            if (! empty($embeddedMapping['discriminatorMap'])) {
+                $discriminatorValue = array_search($class->name, $embeddedMapping['discriminatorMap']);
 
-            /* If the discriminator value was not found in the map, use the full
-             * class name. In the future, it may be preferable to throw an
-             * exception here (perhaps based on some strictness option).
-             *
-             * @see DocumentManager::createDBRef()
-             */
-            if ($discriminatorValue === false) {
+                if ($discriminatorValue === false) {
+                    @trigger_error(sprintf('Document class "%s" is unlisted in the discriminator map for embedded field "%s". This is deprecated and will throw an exception in doctrine/mongodb-odm 2.0.', $class->name, $mapping['name']), E_USER_DEPRECATED);
+
+                    $discriminatorValue = $class->name;
+                }
+            } else {
                 $discriminatorValue = $class->name;
             }
 
