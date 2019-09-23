@@ -7,13 +7,12 @@ namespace Doctrine\ODM\MongoDB\APM;
 use Countable;
 use MongoDB\Driver\Monitoring\CommandFailedEvent;
 use MongoDB\Driver\Monitoring\CommandStartedEvent;
-use MongoDB\Driver\Monitoring\CommandSubscriber;
 use MongoDB\Driver\Monitoring\CommandSucceededEvent;
 use function count;
 use function MongoDB\Driver\Monitoring\addSubscriber;
 use function MongoDB\Driver\Monitoring\removeSubscriber;
 
-final class CommandLogger implements Countable, CommandSubscriber
+final class CommandLogger implements Countable, CommandLoggerInterface
 {
     /** @var Command[] */
     private $commands = [];
