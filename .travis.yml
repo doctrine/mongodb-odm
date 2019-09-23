@@ -43,6 +43,15 @@ jobs:
       script:
         - ./vendor/bin/phpunit --coverage-clover=coverage.clover
 
+    # Performance tests
+    - stage: Performance
+      php: 5.6
+      script: vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate
+
+    - stage: Performance
+      php: 7.3
+      script: vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate
+
 install:
   - .travis/setup_mongodb.sh
   - sudo pip install mongo-orchestration

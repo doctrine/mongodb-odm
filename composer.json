@@ -25,6 +25,7 @@
         "doctrine/mongodb": "^1.6.4"
     },
     "require-dev": {
+        "phpbench/phpbench": "^0.13.0",
         "phpunit/phpunit": "^5.7.21|^7.5",
         "symfony/yaml": "~2.3|~3.0|^4.0"
     },
@@ -34,6 +35,14 @@
     },
     "autoload": {
         "psr-0": { "Doctrine\\ODM\\MongoDB": "lib/" }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Doctrine\\ODM\\MongoDB\\Benchmark\\": "benchmark",
+            "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Doctrine/ODM/MongoDB/Tests",
+            "Documents\\": "tests/Documents",
+            "Stubs\\": "tests/Stubs"
+        }
     },
     "extra": {
         "branch-alias": {
