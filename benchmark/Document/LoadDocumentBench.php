@@ -14,6 +14,7 @@ use Documents\User;
 use MongoDB\BSON\ObjectId;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 use PhpBench\Benchmark\Metadata\Annotations\Warmup;
+use function assert;
 
 /**
  * @BeforeMethods({"init"}, extend=true)
