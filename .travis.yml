@@ -10,30 +10,42 @@ php:
 
 env:
   global:
-    - DEPLOYMENT=SHARDED_CLUSTER_RS
-    - KEY_SERVER="hkp://keyserver.ubuntu.com:80"
-    - MONGO_REPO_URI="https://repo.mongodb.org/apt/ubuntu"
-    - MONGO_REPO_TYPE="xenial/mongodb-org/"
-    - SOURCES_LOC="/etc/apt/sources.list.d/mongodb.list"
+    - DEPLOYMENT=STANDALONE
     - DRIVER_VERSION="stable"
+    - ADAPTER_VERSION="^1.0.0"
+    - SERVER_DISTRO=ubuntu1604
+    - SERVER_VERSION=4.2.0
   matrix:
-    - SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
-    - SERVER_VERSION="4.0" KEY_ID="9DA31620334BD75D9DCB49F368818C72E52529D4"
-    - SERVER_VERSION="4.2" KEY_ID="E162F504A20CDF15827F718D4B7C549A058F8B6B"
+    - SERVER_VERSION="3.0.15"
+    - SERVER_VERSION="3.2.22"
+    - SERVER_VERSION="3.4.23"
+    - SERVER_VERSION="3.6.14"
+    - SERVER_VERSION="4.0.12"
+    - SERVER_VERSION="4.2.0"
 
 jobs:
   include:
     # Test against lowest dependencies, including driver and server versions
     - stage: Test
       php: 7.2
-      env: SERVER_VERSION="3.6" KEY_ID="2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5" DRIVER_VERSION="1.5.0"
-      install:
-        - composer update --prefer-lowest
+      env: DRIVER_VERSION="1.5.0" COMPOSER_FLAGS="--prefer-lowest" SERVER_VERSION="3.0.15"
+
+    # Test sharded cluster functionality
+    - stage: Test
+      php: 7.3
+      env: DEPLOYMENT=SHARDED_CLUSTER_RS
+      script:
+        - ./vendor/bin/phpunit --group=sharding
+
+    # Test on replica sets
+    - stage: Test
+      php: 7.3
+      env: DEPLOYMENT=REPLICASET
 
     # Run tests with coverage
     - stage: Code Quality
       php: 7.2
-      env: SERVER_VERSION="4.0" KEY_ID="9DA31620334BD75D9DCB49F368818C72E52529D4"
+      env: DEPLOYMENT=SHARDED_CLUSTER_RS
       before_script:
         - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
         - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
@@ -46,36 +58,35 @@ jobs:
         - wget https://scrutinizer-ci.com/ocular.phar
         - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
+    # Check coding standards
     - stage: Code Quality
       php: 7.2
-      env: SERVER_VERSION="4.0" KEY_ID="9DA31620334BD75D9DCB49F368818C72E52529D4"
       script:
         - vendor/bin/phpstan analyse
 
     - stage: Code Quality
       php: 7.2
-      env: SERVER_VERSION="4.0" KEY_ID="9DA31620334BD75D9DCB49F368818C72E52529D4"
       script:
         - vendor/bin/phpcs
 
+    # Performance tests
+    - stage: Performance
+      php: 7.3
+      script: vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate
+
 before_install:
   - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
-  - sudo apt-key adv --keyserver ${KEY_SERVER} --recv ${KEY_ID}
-  - echo "deb ${MONGO_REPO_URI} ${MONGO_REPO_TYPE}${SERVER_VERSION} multiverse" | sudo tee ${SOURCES_LOC}
-  - sudo apt-get update -qq
-  - sudo apt-get --allow-unauthenticated install mongodb-org
-  - if nc -z localhost 27017; then sudo service mongod stop; fi
-  - sudo pip install mongo-orchestration
-  - sudo mongo-orchestration start
-  - curl -XPUT http://localhost:8889/v1/sharded_clusters/myCluster --data @tests/sharded.json
-  - pecl install -f mongodb-${DRIVER_VERSION}
-  - .travis/setup_mo.sh
-  - composer self-update
 
 install:
-  - composer update
-
-script:
+  - .travis/setup_mongodb.sh
+  - sudo pip install mongo-orchestration
+  - sudo mongo-orchestration start
+  - .travis/setup_mo.sh
+  - composer self-update
+  - pecl install -f mongodb-${DRIVER_VERSION}
+  - composer update ${COMPOSER_FLAGS}
   - export DOCTRINE_MONGODB_SERVER=`cat /tmp/uri.txt`
   - echo $DOCTRINE_MONGODB_SERVER
-  - vendor/bin/phpunit
+
+script:
+  - ./vendor/bin/phpunit

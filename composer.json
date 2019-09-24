@@ -38,6 +38,7 @@
     "require-dev": {
         "doctrine/coding-standard": "^6.0",
         "jmikola/geojson": "^1.0",
+        "phpbench/phpbench": "^0.13.0",
         "phpstan/phpstan": "^0.10.3",
         "phpunit/phpunit": "^8.2"
     },
@@ -46,6 +47,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Doctrine\\ODM\\MongoDB\\Benchmark\\": "benchmark",
             "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Doctrine/ODM/MongoDB/Tests",
             "Documents\\": "tests/Documents",
             "Stubs\\": "tests/Stubs"

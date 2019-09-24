@@ -9,6 +9,7 @@
     <!-- Ignore warnings and show progress of the run -->
     <arg value="np"/>
 
+    <file>benchmark</file>
     <file>lib</file>
     <file>tests</file>
     <file>tools</file>
