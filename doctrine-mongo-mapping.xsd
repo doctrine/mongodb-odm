@@ -447,7 +447,7 @@
 
   <xs:complexType name="read-preference-tag-set">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="tag" type="read-preference-tag" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="tag" type="odm:read-preference-tag" minOccurs="0" maxOccurs="unbounded" />
     </xs:choice>
   </xs:complexType>
 
