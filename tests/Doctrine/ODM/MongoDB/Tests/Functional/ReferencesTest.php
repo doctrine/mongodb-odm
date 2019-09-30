@@ -272,7 +272,7 @@ class ReferencesTest extends BaseTest
 
     public function testManyReferenceWithAddToSetStrategy()
     {
-        $user                         = new User();
+        $user = new User();
         $user->addUniqueGroup($group1 = new Group('Group 1'));
         $user->addUniqueGroup($group1);
         $user->addUniqueGroup(new Group('Group 2'));

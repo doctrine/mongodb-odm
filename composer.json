@@ -40,7 +40,8 @@
         "jmikola/geojson": "^1.0",
         "phpbench/phpbench": "^0.13.0",
         "phpstan/phpstan": "^0.10.3",
-        "phpunit/phpunit": "^8.2"
+        "phpunit/phpunit": "^8.2",
+        "squizlabs/php_codesniffer": "^3.5"
     },
     "autoload": {
         "psr-4": { "Doctrine\\ODM\\MongoDB\\": "lib/Doctrine/ODM/MongoDB" }

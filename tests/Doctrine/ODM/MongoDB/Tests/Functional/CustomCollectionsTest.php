@@ -125,7 +125,7 @@ class CustomCollectionsTest extends BaseTest
 
     public function testModifyingCollectionByCustomMethod()
     {
-        $d                = new DocumentWithCustomCollection();
+        $d = new DocumentWithCustomCollection();
         $d->coll->add($e1 = new EmbeddedDocumentInCustomCollection('#1', true));
         $d->coll->add($e2 = new EmbeddedDocumentInCustomCollection('#2', false));
         $this->dm->persist($d);

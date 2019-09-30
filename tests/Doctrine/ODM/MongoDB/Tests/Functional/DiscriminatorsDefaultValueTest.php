@@ -23,7 +23,7 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
         $this->dm->persist($firstChildWithoutDiscriminator  = new ChildDocumentWithoutDiscriminator('firstWithoutDiscriminator'));
         $this->dm->persist($secondChildWithoutDiscriminator = new ChildDocumentWithoutDiscriminator('firstWithoutDiscriminator'));
 
-        $children                                      = [$firstChildWithoutDiscriminator, $secondChildWithoutDiscriminator];
+        $children = [$firstChildWithoutDiscriminator, $secondChildWithoutDiscriminator];
         $this->dm->persist($parentWithoutDiscriminator = new ParentDocumentWithoutDiscriminator($children));
 
         $this->dm->flush();
@@ -49,7 +49,7 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
         $this->dm->persist($firstChildWithDiscriminator  = new ChildDocumentWithDiscriminatorComplex('firstWithDiscriminator', 'veryComplex'));
         $this->dm->persist($secondChildWithDiscriminator = new ChildDocumentWithDiscriminatorSimple('secondWithDiscriminator'));
 
-        $children                                   = [$firstChildWithDiscriminator, $secondChildWithDiscriminator];
+        $children = [$firstChildWithDiscriminator, $secondChildWithDiscriminator];
         $this->dm->persist($parentWithDiscriminator = new ParentDocumentWithDiscriminator($children));
 
         $this->dm->flush();

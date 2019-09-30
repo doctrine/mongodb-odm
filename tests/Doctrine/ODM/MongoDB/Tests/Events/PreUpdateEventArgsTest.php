@@ -36,7 +36,7 @@ class PreUpdateEventArgsTest extends BaseTest
         $listener = new CollectionsAreInChangeSetListener($this);
         $this->dm->getEventManager()->addEventListener(Events::preUpdate, $listener);
 
-        $book                         = new Book();
+        $book = new Book();
         $book->chapters->add($chapter = new Chapter('A'));
         $chapter->pages->add(new Page(1));
         $chapter->pages->add(new Page(2));
