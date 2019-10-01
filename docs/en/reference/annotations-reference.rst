@@ -530,7 +530,7 @@ Optional attributes:
     :ref:`indexes chapter <indees>`.
 
 The ``keys`` and ``options`` attributes correspond to the arguments for
-`MongoCollection::createIndex() <http://php.net/manual/en/mongocollection.createindex.php>`_.
+`MongoDB\Collection::createIndex() <https://docs.mongodb.com/php-library/current/reference/method/MongoDBCollection-createIndex/>`_.
 ODM allows mapped field names (i.e. PHP property names) to be used when defining
 ``keys``.
 
@@ -1113,6 +1113,6 @@ versioned parent document.
 .. _BSON specification: http://bsonspec.org/spec.html
 .. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs
 .. _geoNear command: https://docs.mongodb.com/manual/reference/command/geoNear/
-.. _MongoDB\BSON\ObjectId: https://secure.php.net/manual/en/class.mongodb-bson-objectid.php
+.. _MongoDB\BSON\ObjectId: https://www.php.net/manual/en/class.mongodb-bson-objectid.php
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>

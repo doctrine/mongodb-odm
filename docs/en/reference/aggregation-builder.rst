@@ -50,7 +50,7 @@ builder object:
             ->sum('$amount');
 
 Just like the query builder, the aggregation builder takes care of converting
-``DateTime`` objects into ``MongoDate`` objects.
+``DateTime`` objects into ``MongoDB\Driver\BSON\UTCDateTime`` objects.
 
 Nesting expressions
 ~~~~~~~~~~~~~~~~~~~

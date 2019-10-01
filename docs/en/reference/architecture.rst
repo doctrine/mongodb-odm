@@ -20,7 +20,7 @@ be any regular PHP class observing the following restrictions:
 -  A document class must not implement ``__wakeup`` or
    :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
    Also consider implementing
-   `Serializable <http://de3.php.net/manual/en/class.serializable.php>`_
+   `Serializable <https://www.php.net/manual/en/class.serializable.php>`_
    instead.
 -  Any two document classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped
