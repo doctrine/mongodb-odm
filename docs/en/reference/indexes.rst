@@ -48,7 +48,7 @@ You can customize the index with some additional options:
 -
    **safe** - You can specify a boolean value for checking if the
    index creation succeeded. The driver will throw a
-   MongoCursorException if index creation failed.
+   ``MongoDB\Driver\Exception\CommandException`` if index creation failed.
 -
    **expireAfterSeconds** - If you specify this option then the associated
    document will be automatically removed when the provided time (in seconds)

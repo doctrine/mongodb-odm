@@ -26,7 +26,7 @@
        reference/inheritance-mapping
        reference/embedded-mapping
        reference/trees
-       reference/storing-files-with-mongogridfs
+       reference/storing-files-with-gridfs
        reference/xml-mapping
        reference/annotations-reference
        reference/metadata-drivers

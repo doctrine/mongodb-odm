@@ -12,10 +12,10 @@ Features Overview
 -  Map one or many referenced documents.
 -  Create references between documents in different databases.
 -  Map documents with Annotations, XML or plain old PHP code.
--  Documents can be stored on the `MongoGridFS <http://www.php.net/MongoGridFS>`_.
+-  Documents can be stored in GridFS buckets.
 -  Collection per class(concrete) and single collection inheritance supported.
 -  Map your Doctrine 2 ORM Entities to the ODM and use mixed data stores.
--  Inserts are performed using `MongoCollection::batchInsert() <http://us.php.net/manual/en/mongocollection.batchinsert.php>`_
+-  Inserts are performed using `MongoDB\Collection::insertMany() <https://docs.mongodb.com/php-library/current/reference/method/MongoDBCollection-insertMany/>`_
 -  Updates are performed using atomic operators.
 
 Here is a quick example of some PHP object documents that demonstrates a few of the features:
@@ -208,7 +208,7 @@ The above would insert the following:
 
                 [name] => Manager
                 [salary] => 100000
-                [started] => MongoDate Object
+                [started] => MongoDB\Driver\BSON\UTCDateTime Object
                     (
                         [sec] => 1275265048
                         [usec] => 0
@@ -239,7 +239,7 @@ The above would insert the following:
 
                 [name] => Employee
                 [salary] => 50000
-                [started] => MongoDate Object
+                [started] => MongoDB\Driver\BSON\UTCDateTime Object
                     (
                         [sec] => 1275265048
                         [usec] => 0

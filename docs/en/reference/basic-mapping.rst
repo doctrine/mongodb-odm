@@ -160,7 +160,7 @@ Here is a quick overview of the built-in mapping types:
 -  ``string``
 -  ``timestamp``
 
-You can read more about the available MongoDB types on `php.net <http://us.php.net/manual/en/mongo.types.php>`_.
+You can read more about the available MongoDB types on `php.net <https://www.php.net/manual/en/book.bson.php>`_.
 
 .. note::
 
