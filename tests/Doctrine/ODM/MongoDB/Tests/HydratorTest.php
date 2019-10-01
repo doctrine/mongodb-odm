@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use DateTime;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Query\Query;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -64,6 +66,92 @@ class HydratorTest extends BaseTest
         $this->assertFalse($this->uow->isInIdentityMap($user));
         $this->assertFalse($this->uow->isInIdentityMap($user->embedOne));
         $this->assertFalse($this->uow->isInIdentityMap($user->embedMany[0]));
+    }
+
+    public function testEmbedOneWithWrongType()
+    {
+        $user = new HydrationClosureUser();
+
+        $this->expectException(HydratorException::class);
+        $this->expectExceptionMessage('Expected association for field "embedOne" in document of type "' . HydrationClosureUser::class . '" to be of type "array", "string" received.');
+
+        $this->dm->getHydratorFactory()->hydrate($user, [
+            '_id' => 1,
+            'embedOne' => 'jon',
+        ]);
+    }
+
+    public function testEmbedManyWithWrongType()
+    {
+        $user = new HydrationClosureUser();
+
+        $this->expectException(HydratorException::class);
+        $this->expectExceptionMessage('Expected association for field "embedMany" in document of type "' . HydrationClosureUser::class . '" to be of type "array", "string" received.');
+
+        $this->dm->getHydratorFactory()->hydrate($user, [
+            '_id' => 1,
+            'embedMany' => 'jon',
+        ]);
+    }
+
+    public function testEmbedManyWithWrongElementType()
+    {
+        $user = new HydrationClosureUser();
+
+        $this->dm->getHydratorFactory()->hydrate($user, [
+            '_id' => 1,
+            'embedMany' => ['jon'],
+        ]);
+
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->embedMany);
+
+        $this->expectException(HydratorException::class);
+        $this->expectExceptionMessage('Expected association item with key "0" for field "embedMany" in document of type "' . HydrationClosureUser::class . '" to be of type "array", "string" received.');
+
+        $user->embedMany->initialize();
+    }
+
+    public function testReferenceOneWithWrongType()
+    {
+        $user = new HydrationClosureUser();
+
+        $this->expectException(HydratorException::class);
+        $this->expectExceptionMessage('Expected association for field "referenceOne" in document of type "' . HydrationClosureUser::class . '" to be of type "array", "string" received.');
+
+        $this->dm->getHydratorFactory()->hydrate($user, [
+            '_id' => 1,
+            'referenceOne' => 'jon',
+        ]);
+    }
+
+    public function testReferenceManyWithWrongType()
+    {
+        $user = new HydrationClosureUser();
+
+        $this->expectException(HydratorException::class);
+        $this->expectExceptionMessage('Expected association for field "referenceMany" in document of type "' . HydrationClosureUser::class . '" to be of type "array", "string" received.');
+
+        $this->dm->getHydratorFactory()->hydrate($user, [
+            '_id' => 1,
+            'referenceMany' => 'jon',
+        ]);
+    }
+
+    public function testReferenceManyWithWrongElementType()
+    {
+        $user = new HydrationClosureUser();
+
+        $this->dm->getHydratorFactory()->hydrate($user, [
+            '_id' => 1,
+            'referenceMany' => ['jon'],
+        ]);
+
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->referenceMany);
+
+        $this->expectException(HydratorException::class);
+        $this->expectExceptionMessage('Expected association item with key "0" for field "referenceMany" in document of type "' . HydrationClosureUser::class . '" to be of type "array", "string" received.');
+
+        $user->referenceMany->initialize();
     }
 }
 

@@ -245,6 +245,11 @@ EOF
         /** @ReferenceOne */
         if (isset(\$data['%1\$s'])) {
             \$reference = \$data['%1\$s'];
+
+            if (\$this->class->fieldMappings['%2\$s']['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID && ! is_array(\$reference)) {
+                throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$reference));
+            }
+
             \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$reference);
             \$identifier = ClassMetadata::getReferenceId(\$reference, \$this->class->fieldMappings['%2\$s']['storeAs']);
             \$targetMetadata = \$this->dm->getClassMetadata(\$className);
@@ -257,7 +262,8 @@ EOF
 EOF
                     ,
                     $mapping['name'],
-                    $mapping['fieldName']
+                    $mapping['fieldName'],
+                    $class->getName()
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isInverseSide']) {
                 if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
@@ -305,6 +311,11 @@ EOF
 
         /** @Many */
         \$mongoData = isset(\$data['%1\$s']) ? \$data['%1\$s'] : null;
+
+        if (\$mongoData !== null && ! is_array(\$mongoData)) {
+            throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$mongoData));
+        }
+
         \$return = \$this->dm->getConfiguration()->getPersistentCollectionFactory()->create(\$this->dm, \$this->class->fieldMappings['%2\$s']);
         \$return->setHints(\$hints);
         \$return->setOwner(\$document, \$this->class->fieldMappings['%2\$s']);
@@ -318,7 +329,8 @@ EOF
 EOF
                     ,
                     $mapping['name'],
-                    $mapping['fieldName']
+                    $mapping['fieldName'],
+                    $class->getName()
                 );
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 $code .= sprintf(
@@ -327,6 +339,11 @@ EOF
         /** @EmbedOne */
         if (isset(\$data['%1\$s'])) {
             \$embeddedDocument = \$data['%1\$s'];
+
+            if (! is_array(\$embeddedDocument)) {
+                throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$embeddedDocument));
+            }
+        
             \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$embeddedDocument);
             \$embeddedMetadata = \$this->dm->getClassMetadata(\$className);
             \$return = \$embeddedMetadata->newInstance();
@@ -347,7 +364,8 @@ EOF
 EOF
                     ,
                     $mapping['name'],
-                    $mapping['fieldName']
+                    $mapping['fieldName'],
+                    $class->getName()
                 );
             }
         }
@@ -360,6 +378,7 @@ EOF
 namespace $namespace;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorInterface;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\UnitOfWork;
