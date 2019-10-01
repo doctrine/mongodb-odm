@@ -2,13 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Proxy;
+namespace Doctrine\ODM\MongoDB\Proxy\Resolver;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use ProxyManager\Inflector\ClassNameInflectorInterface;
-use function get_class;
 
-final class ClassNameResolver
+/**
+ * @internal
+ */
+final class ProxyManagerClassNameResolver implements ClassNameResolver
 {
     /** @var Configuration */
     private $configuration;
@@ -24,14 +26,6 @@ final class ClassNameResolver
     public function getRealClass(string $class) : string
     {
         return $this->getClassNameInflector()->getUserClassName($class);
-    }
-
-    /**
-     * Gets the real class name of an object (even if its a proxy).
-     */
-    public function getClass(object $object) : string
-    {
-        return $this->getRealClass(get_class($object));
     }
 
     private function getClassNameInflector() : ClassNameInflectorInterface

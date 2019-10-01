@@ -231,8 +231,13 @@ ocramius. If you are checking for proxies, the following changed:
   resolver from the document manager:
   ```php
   $dm->getClassNameResolver()->getRealClass($className);
-  $dm->getClassNameResolver()->getClass($object);
   ```
+* The return value of the `getClassNameResolver` method was updated in
+  2.0.0. The previously returned
+  `Doctrine\ODM\MongoDB\Proxy\ClassNameResolver` class was dropped in favour of
+  the `Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver` interface. This
+  BC break was necessary to mitigate a performance regression. The `getClass`
+  method was dropped from the interface as it wasn't being used.
 
 ## Repository
 
