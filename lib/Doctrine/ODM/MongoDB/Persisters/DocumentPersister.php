@@ -8,6 +8,7 @@ use BadMethodCallException;
 use DateTime;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
@@ -48,6 +49,7 @@ use function count;
 use function explode;
 use function get_class;
 use function get_object_vars;
+use function gettype;
 use function implode;
 use function in_array;
 use function is_array;
@@ -664,14 +666,23 @@ final class DocumentPersister
         $embeddedDocuments = $collection->getMongoData();
         $mapping           = $collection->getMapping();
         $owner             = $collection->getOwner();
+
         if (! $embeddedDocuments) {
             return;
+        }
+
+        if ($owner === null) {
+            throw PersistentCollectionException::ownerRequiredToLoadCollection();
         }
 
         foreach ($embeddedDocuments as $key => $embeddedDocument) {
             $className              = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
             $embeddedMetadata       = $this->dm->getClassMetadata($className);
             $embeddedDocumentObject = $embeddedMetadata->newInstance();
+
+            if (! is_array($embeddedDocument)) {
+                throw HydratorException::associationItemTypeMismatch(get_class($owner), $mapping['name'], $key, 'array', gettype($embeddedDocument));
+            }
 
             $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
@@ -693,12 +704,22 @@ final class DocumentPersister
     {
         $hints      = $collection->getHints();
         $mapping    = $collection->getMapping();
+        $owner      = $collection->getOwner();
         $groupedIds = [];
+
+        if ($owner === null) {
+            throw PersistentCollectionException::ownerRequiredToLoadCollection();
+        }
 
         $sorted = isset($mapping['sort']) && $mapping['sort'];
 
         foreach ($collection->getMongoData() as $key => $reference) {
-            $className  = $this->uow->getClassNameForAssociation($mapping, $reference);
+            $className = $this->uow->getClassNameForAssociation($mapping, $reference);
+
+            if ($mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID && ! is_array($reference)) {
+                throw HydratorException::associationItemTypeMismatch(get_class($owner), $mapping['name'], $key, 'array', gettype($reference));
+            }
+
             $identifier = ClassMetadata::getReferenceId($reference, $mapping['storeAs']);
             $id         = $this->dm->getClassMetadata($className)->getPHPIdentifierValue($identifier);
 
