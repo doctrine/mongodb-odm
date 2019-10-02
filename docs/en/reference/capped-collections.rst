@@ -74,3 +74,13 @@ You can drop the collection too if it already exists:
     <?php
 
     $documentManager->getSchemaManager()->dropDocumentCollection(Category::class);
+
+Use the ``odm:schema:create`` command to create the database schema:
+
+.. code-block:: console
+
+    $ php mongodb.php odm:schema:create
+
+It must not exist when the command is invoked. It is not possible to convert an existing collection to a capped one using Doctrine. It is, however, possible to convert it by calling a `direct Mongo command`_.
+
+.. _`direct Mongo command`: https://docs.mongodb.com/manual/core/capped-collections/#convert-a-collection-to-capped
