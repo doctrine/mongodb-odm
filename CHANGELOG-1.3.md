@@ -3,6 +3,23 @@ CHANGELOG for 1.3.x
 
 This changelog references the relevant changes done in 1.3 patch versions.
 
+1.3.2 (2019-10-02)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.3.2 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.3.2).
+
+ - [2065: Add command example to create a capped collection](https://github.com/doctrine/mongodb-odm/pull/2065) thanks to @melkamar
+ - [2061: Flipped key/value for SimplifiedXmlDriver example](https://github.com/doctrine/mongodb-odm/pull/2061) thanks to @olvlvl
+
+1.3.1 (2019-09-26)
+------------------
+
+All issues and pull requests in this release may be found under the
+[1.3.1 milestone](https://github.com/doctrine/mongodb-odm/issues?q=milestone%3A1.3.1).
+
+ - [2068: fix an error in the XML schema](https://github.com/doctrine/mongodb-odm/pull/2068) thanks to @rieschl
+
 1.3.0 (2019-09-24)
 ------------------
 
