@@ -1,6 +1,13 @@
 CHANGELOG for 2.0.x
 ===================
 
+2.0.0 (2019-10-02)
+------------------
+
+ - [2074: Remove references to legacy documentation](https://github.com/doctrine/mongodb-odm/pull/2074) thanks to @alcaeus and @malarzm
+ - [2073: Throw hydrator exceptions when encountering invalid types](https://github.com/doctrine/mongodb-odm/pull/2073) thanks to @alcaeus
+ - BC BREAK: [2069: Class name resolver performance optimisation](https://github.com/doctrine/mongodb-odm/pull/2069) thanks to @alcaeus
+
 2.0.0-RC2 (2019-09-24)
 ----------------------
 
