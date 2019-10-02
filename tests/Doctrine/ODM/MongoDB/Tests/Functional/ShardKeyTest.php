@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Sharded\ShardedOne;
 use MongoDB\BSON\ObjectId;
@@ -109,9 +110,6 @@ class ShardKeyTest extends BaseTest
         $this->assertEquals($o->key, $command->filter->k);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
-     */
     public function testUpdateWithShardKeyChangeException()
     {
         $o = new ShardedOne();
@@ -119,12 +117,10 @@ class ShardKeyTest extends BaseTest
         $this->dm->flush();
 
         $o->key = 'testing2';
+        $this->expectException(MongoDBException::class);
         $this->dm->flush();
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
-     */
     public function testUpdateWithUpsertTrue()
     {
         $o = new ShardedOne();
@@ -132,6 +128,7 @@ class ShardKeyTest extends BaseTest
         $this->dm->flush();
 
         $o->key = 'testing2';
+        $this->expectException(MongoDBException::class);
         $this->dm->flush(['upsert' => true]);
     }
 }

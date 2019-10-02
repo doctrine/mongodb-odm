@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
@@ -31,14 +32,15 @@ class CustomCollectionsTest extends BaseTest
         $this->assertSame(MyDocumentsCollection::class, $cm->fieldMappings['inverseRefMany']['collectionClass']);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage stdClass used as custom collection class for stdClass::assoc has to implement Doctrine\Common\Collections\Collection interface.
-     */
     public function testCollectionClassHasToImplementCommonInterface()
     {
         $cm = new ClassMetadata('stdClass');
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'stdClass used as custom collection class for stdClass::assoc has to implement ' .
+            'Doctrine\Common\Collections\Collection interface.'
+        );
         $cm->mapField([
             'fieldName' => 'assoc',
             'reference' => true,

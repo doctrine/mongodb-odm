@@ -7,7 +7,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use InvalidArgumentException;
 use function key;
 use function strcmp;
 use function usort;
@@ -131,10 +133,10 @@ abstract class AbstractMappingDriverTest extends BaseTest
      * @param ClassMetadata $class
      *
      * @depends testDocumentCollectionNameAndInheritance
-     * @expectedException \InvalidArgumentException
      */
     public function testGetAssociationTargetClassThrowsExceptionWhenEmpty($class)
     {
+        $this->expectException(InvalidArgumentException::class);
         $class->getAssociationTargetClass('invalid_association');
     }
 
@@ -442,12 +444,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
         ], $class->getFieldMapping('metadata'), true);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Field "bar" in class "Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverDuplicateDatabaseName" is mapped to field "baz" in the database, but that name is already in use by field "foo".
-     */
     public function testDuplicateDatabaseNameInMappingCauseErrors()
     {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Field "bar" in class "Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverDuplicateDatabaseName" ' .
+            'is mapped to field "baz" in the database, but that name is already in use by field "foo".'
+        );
         $this->loadMetadata(AbstractMappingDriverDuplicateDatabaseName::class);
     }
 

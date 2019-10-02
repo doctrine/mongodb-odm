@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
@@ -332,24 +333,26 @@ class IdTest extends BaseTest
         ];
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\CustomIdUser uses NONE identifier generation strategy but no identifier was provided when persisting.
-     */
     public function testStrategyNoneAndNoIdThrowsException()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Doctrine\ODM\MongoDB\Tests\Functional\CustomIdUser uses NONE identifier generation strategy but ' .
+            'no identifier was provided when persisting.'
+        );
         $this->dm->persist(new CustomIdUser('Maciej'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy but provided identifier is not a valid ObjectId.
-     */
     public function testStrategyAutoWithNotValidIdThrowsException()
     {
         $this->createIdTestClass('id', 'auto');
         $user     = new TestIdTypesIdAutoUser();
         $user->id = 1;
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy ' .
+            'but provided identifier is not a valid ObjectId.'
+        );
         $this->dm->persist($user);
     }
 

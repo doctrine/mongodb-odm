@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -12,6 +13,7 @@ use Documents\Phonenumber;
 use Documents\Project;
 use Documents\SubProject;
 use Documents\User;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
@@ -404,17 +406,14 @@ class QueryTest extends BaseTest
         $this->assertFalse($this->uow->isInIdentityMap($readOnly->pet));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testConstructorShouldThrowExceptionForInvalidType()
     {
+        $this->expectException(InvalidArgumentException::class);
         new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
     }
 
     /**
      * @dataProvider provideQueryTypesThatDoNotReturnAnIterator
-     * @expectedException BadMethodCallException
      */
     public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator($type, $method)
     {
@@ -423,6 +422,7 @@ class QueryTest extends BaseTest
 
         $query = new Query($this->dm, new ClassMetadata(User::class), $collection, ['type' => $type], []);
 
+        $this->expectException(BadMethodCallException::class);
         $query->getIterator();
     }
 
