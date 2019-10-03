@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Sharded\ShardedUser;
 use Documents\SimpleReferenceUser;
@@ -37,17 +38,12 @@ class OutTest extends BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Cannot use class 'Documents\Sharded\ShardedUser' as collection for out stage.
-     */
     public function testOutStageWithShardedClassName()
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
-        $builder
-            ->out(ShardedUser::class);
-
-        $builder->getPipeline();
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Cannot use class \'Documents\Sharded\ShardedUser\' as collection for out stage.');
+        $builder->out(ShardedUser::class);
     }
 
     public function testSubsequentOutStagesAreOverwritten()

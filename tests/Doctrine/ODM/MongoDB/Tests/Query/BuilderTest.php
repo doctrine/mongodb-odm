@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -14,6 +15,7 @@ use Documents\Feature;
 use Documents\User;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
+use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\ReadPreference;
@@ -21,11 +23,9 @@ use ReflectionProperty;
 
 class BuilderTest extends BaseTest
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testPrimeRequiresBooleanOrCallable()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->dm->createQueryBuilder(User::class)
             ->field('groups')->prime(1);
     }
@@ -73,29 +73,31 @@ class BuilderTest extends BaseTest
         );
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage No mapping found for field 'nope' in class 'Doctrine\ODM\MongoDB\Tests\Query\ParentClass' nor its descendants.
-     */
     public function testReferencesThrowsSpecializedExceptionForDiscriminatedDocuments()
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'No mapping found for field \'nope\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ParentClass\' nor ' .
+            'its descendants.'
+        );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('nope')->references($f)
             ->getQuery();
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Reference mapping for field 'conflict' in class 'Doctrine\ODM\MongoDB\Tests\Query\ChildA' conflicts with one mapped in class 'Doctrine\ODM\MongoDB\Tests\Query\ChildB'.
-     */
     public function testReferencesThrowsSpecializedExceptionForConflictingMappings()
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Reference mapping for field \'conflict\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildA\' ' .
+            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.'
+        );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('conflict')->references($f)
             ->getQuery();
@@ -150,29 +152,31 @@ class BuilderTest extends BaseTest
         );
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage No mapping found for field 'nope' in class 'Doctrine\ODM\MongoDB\Tests\Query\ParentClass' nor its descendants.
-     */
     public function testIncludesReferenceToThrowsSpecializedExceptionForDiscriminatedDocuments()
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'No mapping found for field \'nope\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ParentClass\' nor ' .
+            'its descendants.'
+        );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('nope')->includesReferenceTo($f)
             ->getQuery();
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Reference mapping for field 'conflictMany' in class 'Doctrine\ODM\MongoDB\Tests\Query\ChildA' conflicts with one mapped in class 'Doctrine\ODM\MongoDB\Tests\Query\ChildB'.
-     */
     public function testIncludesReferenceToThrowsSpecializedExceptionForConflictingMappings()
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Reference mapping for field \'conflictMany\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildA\' ' .
+            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.'
+        );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('conflictMany')->includesReferenceTo($f)
             ->getQuery();
@@ -742,11 +746,9 @@ class BuilderTest extends BaseTest
         ];
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testCurrentDateInvalidType()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->getTestQueryBuilder()
             ->updateOne()
             ->field('lastUpdated')->currentDate('notADate');

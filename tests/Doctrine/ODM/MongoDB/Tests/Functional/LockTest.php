@@ -386,9 +386,6 @@ class LockTest extends BaseTest
         $this->dm->getClassMetadata(InvalidVersionDocument::class);
     }
 
-    /**
-     * @expectedException Doctrine\ODM\MongoDB\LockException
-     */
     public function testUpdatingCollectionRespectsVersionNumber()
     {
         $d = new LockInt('test');
@@ -404,12 +401,10 @@ class LockTest extends BaseTest
 
         $d->issues->add(new Issue('oops', 'version mismatch'));
         $this->uow->scheduleCollectionUpdate($d->issues);
+        $this->expectException(LockException::class);
         $this->uow->getCollectionPersister()->update($d, [$d->issues], []);
     }
 
-    /**
-     * @expectedException Doctrine\ODM\MongoDB\LockException
-     */
     public function testDeletingCollectionRespectsVersionNumber()
     {
         $d = new LockInt('test');
@@ -423,6 +418,7 @@ class LockTest extends BaseTest
             ['$set' => ['version' => 2]]
         );
 
+        $this->expectException(LockException::class);
         $this->uow->getCollectionPersister()->delete($d, [$d->issues], []);
     }
 }

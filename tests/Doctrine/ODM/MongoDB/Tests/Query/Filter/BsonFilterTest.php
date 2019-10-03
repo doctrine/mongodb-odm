@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Query\Filter;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use InvalidArgumentException;
 
 class BsonFilterTest extends BaseTest
 {
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testGetParameterInvalidArgument()
     {
         $filter = new Filter($this->dm);
+        $this->expectException(InvalidArgumentException::class);
         $filter->getParameter('doesnotexist');
     }
 

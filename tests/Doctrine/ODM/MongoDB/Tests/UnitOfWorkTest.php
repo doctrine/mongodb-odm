@@ -115,11 +115,9 @@ class UnitOfWorkTest extends BaseTest
         $this->assertFalse($this->uow->isScheduledForDelete($user));
     }
 
-    /**
-     * @expectedException Doctrine\ODM\MongoDB\MongoDBException
-     */
     public function testThrowsOnPersistOfMappedSuperclass()
     {
+        $this->expectException(MongoDBException::class);
         $this->uow->persist(new MappedSuperclass());
     }
 

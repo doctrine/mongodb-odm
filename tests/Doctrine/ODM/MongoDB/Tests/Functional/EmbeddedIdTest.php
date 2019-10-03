@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 
 class EmbeddedIdTest extends BaseTest
@@ -30,27 +31,29 @@ class EmbeddedIdTest extends BaseTest
         $this->assertEquals($id, $test->id);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\DefaultIdStrategyNoneEmbeddedDocument uses NONE identifier generation strategy but no identifier was provided when persisting.
-     */
     public function testEmbedOneDocumentWithMissingIdentifier()
     {
         $user           = new EmbeddedStrategyNoneIdTestUser();
         $user->embedOne = new DefaultIdStrategyNoneEmbeddedDocument();
 
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Doctrine\ODM\MongoDB\Tests\Functional\DefaultIdStrategyNoneEmbeddedDocument uses NONE identifier ' .
+            'generation strategy but no identifier was provided when persisting.'
+        );
         $this->dm->persist($user);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Doctrine\ODM\MongoDB\Tests\Functional\DefaultIdStrategyNoneEmbeddedDocument uses NONE identifier generation strategy but no identifier was provided when persisting.
-     */
     public function testEmbedManyDocumentWithMissingIdentifier()
     {
         $user              = new EmbeddedStrategyNoneIdTestUser();
         $user->embedMany[] = new DefaultIdStrategyNoneEmbeddedDocument();
 
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Doctrine\ODM\MongoDB\Tests\Functional\DefaultIdStrategyNoneEmbeddedDocument uses NONE identifier ' .
+            'generation strategy but no identifier was provided when persisting.'
+        );
         $this->dm->persist($user);
     }
 }

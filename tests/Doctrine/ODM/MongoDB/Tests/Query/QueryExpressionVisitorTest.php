@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Bars\Bar;
 use MongoDB\BSON\Regex;
+use RuntimeException;
 
 class QueryExpressionVisitorTest extends BaseTest
 {
@@ -55,12 +56,10 @@ class QueryExpressionVisitorTest extends BaseTest
         ];
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testWalkComparisonShouldThrowExceptionForUnsupportedOperator()
     {
         $comparison = new Comparison('field', 'invalidOp', new Value('value'));
+        $this->expectException(RuntimeException::class);
         $this->visitor->dispatch($comparison);
     }
 
@@ -88,13 +87,11 @@ class QueryExpressionVisitorTest extends BaseTest
         $this->assertEquals($expectedQuery, $expr->getQuery());
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testWalkCompositeExpressionShouldThrowExceptionForUnsupportedComposite()
     {
         $compositeExpr = new CompositeExpression('invalidComposite', []);
-        $expr          = $this->visitor->dispatch($compositeExpr);
+        $this->expectException(RuntimeException::class);
+        $this->visitor->dispatch($compositeExpr);
     }
 
     public function testWalkValue()

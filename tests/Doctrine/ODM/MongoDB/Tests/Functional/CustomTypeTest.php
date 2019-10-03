@@ -36,15 +36,13 @@ class CustomTypeTest extends BaseTest
         $this->assertContainsOnly('DateTime', $country->nationalHolidays);
     }
 
-    /**
-     * @expectedException Doctrine\ODM\MongoDB\Tests\Functional\CustomTypeException
-     */
     public function testConvertToDatabaseValueExpectsArray()
     {
         $country                   = new Country();
         $country->nationalHolidays = new DateTime();
 
         $this->dm->persist($country);
+        $this->expectException(CustomTypeException::class);
         $this->dm->flush();
     }
 }

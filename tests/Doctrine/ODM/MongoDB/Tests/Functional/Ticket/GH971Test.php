@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use InvalidArgumentException;
 
 class GH971Test extends BaseTest
 {
@@ -39,12 +40,13 @@ class GH971Test extends BaseTest
         $this->assertCount(1, $results);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Upsert query that is to be performed on discriminated document does not have single discriminator. Either not use base class or set 'type' field manually.
-     */
     public function testUpsertThrowsExceptionWithIndecisiveDiscriminator()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Upsert query that is to be performed on discriminated document does not have single discriminator. ' .
+            'Either not use base class or set \'type\' field manually.'
+        );
         $this->dm->createQueryBuilder(Bicycle::class)
             ->findAndUpdate()
             ->upsert(true)

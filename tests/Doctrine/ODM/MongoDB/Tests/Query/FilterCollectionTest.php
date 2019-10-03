@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Query;
 use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
+use InvalidArgumentException;
 
 class FilterCollectionTest extends BaseTest
 {
@@ -48,12 +49,10 @@ class FilterCollectionTest extends BaseTest
         $this->assertTrue($filterCollection->isEnabled('testFilter'));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testGetFilterInvalidArgument()
     {
         $filterCollection = $this->dm->getFilterCollection();
+        $this->expectException(InvalidArgumentException::class);
         $filterCollection->getFilter('testFilter');
     }
 

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class ShardKeyInheritanceMappingTest extends BaseTest
@@ -37,11 +38,9 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     */
     public function testShardKeySingleCollectionInheritanceOverriding()
     {
+        $this->expectException(MappingException::class);
         $this->factory->getMetadataFor(ShardedSingleCollInheritance3::class);
     }
 

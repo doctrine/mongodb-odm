@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Closure;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -351,10 +352,6 @@ class ReferencesTest extends BaseTest
         $this->assertEquals('Group 1', $groups[1]->getName());
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
-     * @expectedExceptionMessage The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier {"identifier":2} could not be found.
-     */
     public function testDocumentNotFoundExceptionWithArrayId()
     {
         $test                   = new DocumentWithArrayReference();
@@ -378,13 +375,14 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
+        $this->expectException(DocumentNotFoundException::class);
+        $this->expectExceptionMessage(
+            'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier ' .
+            '{"identifier":2} could not be found.'
+        );
         $test->referenceOne->initializeProxy();
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
-     * @expectedExceptionMessage The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.
-     */
     public function testDocumentNotFoundExceptionWithObjectId()
     {
         $profile = new Profile();
@@ -409,13 +407,13 @@ class ReferencesTest extends BaseTest
 
         $user    = $this->dm->find(get_class($user), $user->getId());
         $profile = $user->getProfile();
+        $this->expectException(DocumentNotFoundException::class);
+        $this->expectExceptionMessage(
+            'The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.'
+        );
         $profile->initializeProxy();
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\DocumentNotFoundException
-     * @expectedExceptionMessage The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier "testbindata" could not be found.
-     */
     public function testDocumentNotFoundExceptionWithMongoBinDataId()
     {
         $test                   = new DocumentWithMongoBinDataReference();
@@ -439,6 +437,11 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
+        $this->expectException(DocumentNotFoundException::class);
+        $this->expectExceptionMessage(
+            'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier ' .
+            '"testbindata" could not be found.'
+        );
         $test->referenceOne->initializeProxy();
     }
 

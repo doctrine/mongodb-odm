@@ -8,6 +8,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Types\Type;
+use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -71,11 +72,11 @@ class DateTypeTest extends TestCase
 
     /**
      * @dataProvider provideInvalidDateValues
-     * @expectedException InvalidArgumentException
      */
     public function testConvertToDatabaseValueWithInvalidValues($value)
     {
         $type = Type::getType(Type::DATE);
+        $this->expectException(InvalidArgumentException::class);
         $type->convertToDatabaseValue($value);
     }
 
@@ -142,9 +143,6 @@ class DateTypeTest extends TestCase
         ];
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function test32bit1900Date()
     {
         if (PHP_INT_SIZE !== 4) {
@@ -152,6 +150,7 @@ class DateTypeTest extends TestCase
         }
 
         $type = Type::getType(Type::DATE);
+        $this->expectException(InvalidArgumentException::class);
         $type->convertToDatabaseValue('1900-01-01');
     }
 

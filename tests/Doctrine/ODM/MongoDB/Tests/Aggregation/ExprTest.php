@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use LogicException;
 
 class ExprTest extends BaseTest
 {
@@ -68,9 +69,6 @@ class ExprTest extends BaseTest
         );
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testExpressionWithoutField()
     {
         $nestedExpr = $this->createExpr();
@@ -82,6 +80,7 @@ class ExprTest extends BaseTest
 
         $expr = $this->createExpr();
 
+        $this->expectException(LogicException::class);
         $expr->expression($nestedExpr);
     }
 

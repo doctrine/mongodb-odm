@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
@@ -27,8 +28,10 @@ use Documents\CustomRepository\Document;
 use Documents\CustomRepository\Repository;
 use Documents\Tournament\ParticipantSolo;
 use Documents\User;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
+use RuntimeException;
 use stdClass;
 use function get_class;
 
@@ -130,10 +133,10 @@ class DocumentManagerTest extends BaseTest
      * @param string $methodName
      *
      * @dataProvider dataMethodsAffectedByNoObjectArguments
-     * @expectedException \InvalidArgumentException
      */
     public function testThrowsExceptionOnNonObjectValues($methodName)
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->dm->$methodName(null);
     }
 
@@ -166,13 +169,14 @@ class DocumentManagerTest extends BaseTest
         }
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Cannot create a DBRef for class Documents\User without an identifier. Have you forgotten to persist/merge the document first?
-     */
     public function testCannotCreateDbRefWithoutId()
     {
         $d = new User();
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(
+            'Cannot create a DBRef for class Documents\User without an identifier. ' .
+            'Have you forgotten to persist/merge the document first?'
+        );
         $this->dm->createReference($d, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF]);
     }
 
@@ -187,16 +191,17 @@ class DocumentManagerTest extends BaseTest
         $this->assertSame(['$ref' => 'CmsPhonenumber', '$id' => 0], $dbRef);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Identifier reference must not target document using Single Collection Inheritance, Documents\Tournament\Participant targeted.
-     */
     public function testDisriminatedSimpleReferenceFails()
     {
         $d = new WrongSimpleRefDocument();
         $r = new ParticipantSolo('Maciej');
         $this->dm->persist($r);
         $class = $this->dm->getClassMetadata(get_class($d));
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Identifier reference must not target document using Single Collection Inheritance, ' .
+            'Documents\Tournament\Participant targeted.'
+        );
         $this->dm->createReference($r, $class->associationMappings['ref']);
     }
 

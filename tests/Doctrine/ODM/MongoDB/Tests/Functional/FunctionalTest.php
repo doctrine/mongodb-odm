@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
@@ -44,6 +45,7 @@ use Documents\User;
 use Documents\UserUpsert;
 use Documents\UserUpsertChild;
 use Documents\UserUpsertIdStrategyNone;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 
 class FunctionalTest extends BaseTest
@@ -516,9 +518,6 @@ class FunctionalTest extends BaseTest
         $this->assertFalse(isset($notSaved['notSaved']));
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
-     */
     public function testTypeClassMissing()
     {
         $project = new Project('Test Project');
@@ -542,6 +541,7 @@ class FunctionalTest extends BaseTest
 
         /** @var PersistentCollection $collection */
         $collection = $test->getFavorites();
+        $this->expectException(MongoDBException::class);
         $collection->getTypeClass();
     }
 
@@ -710,12 +710,10 @@ class FunctionalTest extends BaseTest
         $this->assertCount(2, $test);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNotSameCollectionThrowsException()
     {
-        $test = $this->dm->createQueryBuilder([
+        $this->expectException(InvalidArgumentException::class);
+        $this->dm->createQueryBuilder([
             User::class,
             Profile::class,
         ])->getQuery()->execute();

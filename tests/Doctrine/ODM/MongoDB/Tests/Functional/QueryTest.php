@@ -235,13 +235,11 @@ class QueryTest extends BaseTest
         $this->assertCount(4, $users);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testRemoveQuery()
     {
         $this->dm->remove($this->user);
 
+        $this->expectException(InvalidArgumentException::class);
         // should invoke exception because $this->user doesn't exist anymore
         $this->dm->refresh($this->user);
     }

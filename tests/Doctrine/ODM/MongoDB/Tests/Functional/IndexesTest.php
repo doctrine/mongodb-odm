@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use MongoDB\Driver\Exception\BulkWriteException;
 
 class IndexesTest extends BaseTest
 {
@@ -169,48 +170,38 @@ class IndexesTest extends BaseTest
         $this->assertEquals('test', $indexes[0]['options']['name']);
     }
 
-    /**
-     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error
-     */
     public function testUniqueIndexOnField()
     {
+        $this->expectException(BulkWriteException::class);
+        $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(UniqueOnFieldTest::class);
     }
 
-    /**
-     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error
-     */
     public function testUniqueIndexOnDocument()
     {
+        $this->expectException(BulkWriteException::class);
+        $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(UniqueOnDocumentTest::class);
     }
 
-    /**
-     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error
-     */
     public function testIndexesOnDocument()
     {
+        $this->expectException(BulkWriteException::class);
+        $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(IndexesOnDocumentTest::class);
     }
 
-    /**
-     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error
-     */
     public function testMultipleFieldsUniqueIndexOnDocument()
     {
+        $this->expectException(BulkWriteException::class);
+        $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(MultipleFieldsUniqueIndexTest::class);
     }
 
-    /**
-     * @expectedException \MongoDB\Driver\Exception\BulkWriteException
-     * @expectedExceptionMessage duplicate key error
-     */
     public function testMultipleFieldIndexes()
     {
+        $this->expectException(BulkWriteException::class);
+        $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(MultipleFieldIndexes::class);
     }
 

@@ -8,6 +8,7 @@ use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
@@ -29,10 +30,6 @@ class PersistentCollectionTest extends BaseTest
         $pCollection->slice($start, $limit);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
-     * @expectedExceptionMessage No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager method.
-     */
     public function testExceptionForGetTypeClassWithoutDocumentManager()
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
@@ -43,13 +40,14 @@ class PersistentCollectionTest extends BaseTest
         $unserialized = unserialize($serialized);
 
         $unserialized->setOwner($owner, ['targetDocument' => '\stdClass']);
+        $this->expectException(MongoDBException::class);
+        $this->expectExceptionMessage(
+            'No DocumentManager is associated with this PersistentCollection, ' .
+            'please set one using setDocumentManager method.'
+        );
         $unserialized->getTypeClass();
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\MongoDBException
-     * @expectedExceptionMessage No mapping is associated with this PersistentCollection, please set one using setOwner method.
-     */
     public function testExceptionForGetTypeClassWithoutMapping()
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
@@ -59,6 +57,11 @@ class PersistentCollectionTest extends BaseTest
         $unserialized = unserialize($serialized);
 
         $unserialized->setDocumentManager($this->dm);
+        $this->expectException(MongoDBException::class);
+        $this->expectExceptionMessage(
+            'No mapping is associated with this PersistentCollection, ' .
+            'please set one using setOwner method.'
+        );
         $unserialized->getTypeClass();
     }
 

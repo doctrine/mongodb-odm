@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Profile;
@@ -271,12 +272,10 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$text' => ['$search' => 'foo', '$language' => 'en']], $expr->getQuery());
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     */
     public function testLanguageRequiresTextOperator()
     {
         $expr = $this->createExpr();
+        $this->expectException(BadMethodCallException::class);
         $expr->language('en');
     }
 
@@ -299,12 +298,10 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     */
     public function testCaseSensitiveRequiresTextOperator()
     {
         $expr = $this->createExpr();
+        $this->expectException(BadMethodCallException::class);
         $expr->caseSensitive(false);
     }
 
@@ -327,12 +324,10 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     */
     public function testDiacriticSensitiveRequiresTextOperator()
     {
         $expr = $this->createExpr();
+        $this->expectException(BadMethodCallException::class);
         $expr->diacriticSensitive(false);
     }
 

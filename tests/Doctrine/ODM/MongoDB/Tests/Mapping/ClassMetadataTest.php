@@ -19,8 +19,10 @@ use Documents\CmsUser;
 use Documents\SpecialUser;
 use Documents\User;
 use Documents\UserRepository;
+use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
+use ReflectionException;
 use stdClass;
 use function array_merge;
 use function get_class;
@@ -226,12 +228,10 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals('string', $cm->fieldMappings['name']['type']);
     }
 
-    /**
-     * @expectedException \ReflectionException
-     */
     public function testMapNotExistingFieldThrowsException()
     {
         $cm = new ClassMetadata(CmsUser::class);
+        $this->expectException(ReflectionException::class);
         $cm->mapField(['fieldName' => 'namee', 'columnName' => 'name', 'type' => 'string']);
     }
 
@@ -423,13 +423,13 @@ class ClassMetadataTest extends BaseTest
         $this->assertTrue($class->fieldMappings['addresses']['isCascadeDetach']);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Cascade on Doctrine\ODM\MongoDB\Tests\Mapping\EmbedWithCascadeTest::address is not allowed.
-     */
     public function testEmbedWithCascadeThrowsMappingException()
     {
         $class = new ClassMetadata(EmbedWithCascadeTest::class);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Cascade on Doctrine\ODM\MongoDB\Tests\Mapping\EmbedWithCascadeTest::address is not allowed.'
+        );
         $class->mapOneEmbedded([
             'fieldName' => 'address',
             'targetDocument' => Address::class,
@@ -437,10 +437,6 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected document class "Documents\User"; found: "stdClass"
-     */
     public function testInvokeLifecycleCallbacksShouldRequireInstanceOfClass()
     {
         $class    = $this->dm->getClassMetadata(User::class);
@@ -448,6 +444,8 @@ class ClassMetadataTest extends BaseTest
 
         $this->assertInstanceOf('\stdClass', $document);
 
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected document class "Documents\User"; found: "stdClass"');
         $class->invokeLifecycleCallbacks(Events::prePersist, $document);
     }
 
@@ -476,14 +474,12 @@ class ClassMetadataTest extends BaseTest
         $class->invokeLifecycleCallbacks(Events::prePersist, $proxy);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Target document must be specified for identifier reference: stdClass::assoc
-     */
     public function testSimpleReferenceRequiresTargetDocument()
     {
         $cm = new ClassMetadata('stdClass');
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Target document must be specified for identifier reference: stdClass::assoc');
         $cm->mapField([
             'fieldName' => 'assoc',
             'reference' => true,
@@ -492,14 +488,12 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Target document must be specified for identifier reference: stdClass::assoc
-     */
     public function testSimpleAsStringReferenceRequiresTargetDocument()
     {
         $cm = new ClassMetadata('stdClass');
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Target document must be specified for identifier reference: stdClass::assoc');
         $cm->mapField([
             'fieldName' => 'assoc',
             'reference' => true,
@@ -510,13 +504,16 @@ class ClassMetadataTest extends BaseTest
 
     /**
      * @dataProvider provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage 'repositoryMethod' used on 'assoc' in class 'stdClass' can not be combined with skip, limit or sort.
      */
     public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort($prop, $value)
     {
         $cm = new ClassMetadata('stdClass');
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            '\'repositoryMethod\' used on \'assoc\' in class \'stdClass\' can not be combined with skip, ' .
+            'limit or sort.'
+        );
         $cm->mapField([
             'fieldName' => 'assoc',
             'reference' => true,
@@ -534,14 +531,12 @@ class ClassMetadataTest extends BaseTest
         yield ['sort', ['time' => 1]];
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Target document must be specified for identifier reference: stdClass::assoc
-     */
     public function testStoreAsIdReferenceRequiresTargetDocument()
     {
         $cm = new ClassMetadata('stdClass');
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Target document must be specified for identifier reference: stdClass::assoc');
         $cm->mapField([
             'fieldName' => 'assoc',
             'reference' => true,
@@ -550,10 +545,6 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage atomicSet collection strategy can be used only in top level document, used in
-     */
     public function testAtomicCollectionUpdateUsageInEmbeddedDocument()
     {
         $object = new class {
@@ -563,6 +554,8 @@ class ClassMetadataTest extends BaseTest
         $cm                     = new ClassMetadata(get_class($object));
         $cm->isEmbeddedDocument = true;
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('atomicSet collection strategy can be used only in top level document, used in');
         $cm->mapField([
             'fieldName' => 'many',
             'reference' => true,
@@ -590,7 +583,6 @@ class ClassMetadataTest extends BaseTest
 
     /**
      * @dataProvider provideOwningAndInversedRefsNeedTargetDocument
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function testOwningAndInversedRefsNeedTargetDocument($config)
     {
@@ -602,6 +594,7 @@ class ClassMetadataTest extends BaseTest
 
         $cm                     = new ClassMetadata('stdClass');
         $cm->isEmbeddedDocument = true;
+        $this->expectException(MappingException::class);
         $cm->mapField($config);
     }
 
@@ -633,27 +626,26 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals($expected, $cm->associationMappings);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage stdClass::id was declared an identifier and must stay this way.
-     */
     public function testIdFieldsTypeMustNotBeOverridden()
     {
         $cm = new ClassMetadata('stdClass');
         $cm->setIdentifier('id');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('stdClass::id was declared an identifier and must stay this way.');
         $cm->mapField([
             'fieldName' => 'id',
             'type' => 'string',
         ]);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage ReferenceMany's sort can not be used with addToSet and pushAll strategies, pushAll used in stdClass::ref
-     */
     public function testReferenceManySortMustNotBeUsedWithNonSetCollectionStrategy()
     {
         $cm = new ClassMetadata('stdClass');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'ReferenceMany\'s sort can not be used with addToSet and pushAll strategies, ' .
+            'pushAll used in stdClass::ref'
+        );
         $cm->mapField([
             'fieldName' => 'ref',
             'reference' => true,
@@ -684,16 +676,14 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals(['id' => 1], $shardKey['keys']);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Shard key overriding in subclass is forbidden for single collection inheritance
-     */
     public function testSetShardKeyForClassWithSingleCollectionInheritanceWhichAlreadyHasIt()
     {
         $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(['id' => 'asc']);
         $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION;
 
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Shard key overriding in subclass is forbidden for single collection inheritance');
         $cm->setShardKey(['foo' => 'asc']);
     }
 
@@ -723,21 +713,15 @@ class ClassMetadataTest extends BaseTest
         $this->assertTrue($cm->isSharded());
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Embedded document can't have shard key: stdClass
-     */
     public function testEmbeddedDocumentCantHaveShardKey()
     {
         $cm                     = new ClassMetadata('stdClass');
         $cm->isEmbeddedDocument = true;
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Embedded document can\'t have shard key: stdClass');
         $cm->setShardKey(['id' => 'asc']);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage Only fields using the SET strategy can be used in the shard key
-     */
     public function testNoIncrementFieldsAllowedInShardKey()
     {
         $object = new class {
@@ -750,13 +734,11 @@ class ClassMetadataTest extends BaseTest
             'type' => 'int',
             'strategy' => ClassMetadata::STORAGE_STRATEGY_INCREMENT,
         ]);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Only fields using the SET strategy can be used in the shard key');
         $cm->setShardKey(['inc' => 1]);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage No multikey indexes are allowed in the shard key
-     */
     public function testNoCollectionsInShardKey()
     {
         $object = new class {
@@ -768,13 +750,11 @@ class ClassMetadataTest extends BaseTest
             'fieldName' => 'collection',
             'type' => 'collection',
         ]);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('No multikey indexes are allowed in the shard key');
         $cm->setShardKey(['collection' => 1]);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage No multikey indexes are allowed in the shard key
-     */
     public function testNoEmbedManyInShardKey()
     {
         $object = new class {
@@ -783,13 +763,11 @@ class ClassMetadataTest extends BaseTest
 
         $cm = new ClassMetadata(get_class($object));
         $cm->mapManyEmbedded(['fieldName' => 'embedMany']);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('No multikey indexes are allowed in the shard key');
         $cm->setShardKey(['embedMany' => 1]);
     }
 
-    /**
-     * @expectedException \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @expectedExceptionMessage No multikey indexes are allowed in the shard key
-     */
     public function testNoReferenceManyInShardKey()
     {
         $object = new class {
@@ -798,6 +776,8 @@ class ClassMetadataTest extends BaseTest
 
         $cm = new ClassMetadata(get_class($object));
         $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('No multikey indexes are allowed in the shard key');
         $cm->setShardKey(['referenceMany' => 1]);
     }
 

@@ -29,15 +29,13 @@ use Documents\Project;
 use Documents\ReferenceUser;
 use Documents\SimpleReferenceUser;
 use Documents\User;
+use InvalidArgumentException;
 use MongoDB\Driver\ReadPreference;
 use ProxyManager\Proxy\GhostObjectInterface;
 use function func_get_args;
 
 class ReferencePrimerTest extends BaseTest
 {
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testPrimeReferencesShouldRequireReferenceMapping()
     {
         $user = new User();
@@ -46,15 +44,13 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
+        $this->expectException(InvalidArgumentException::class);
         $this->dm->createQueryBuilder(User::class)
             ->field('username')->prime(true)
             ->getQuery()
             ->toArray();
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testPrimeReferencesShouldRequireOwningSideReferenceMapping()
     {
         $user = new User();
@@ -63,6 +59,7 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
+        $this->expectException(InvalidArgumentException::class);
         $this->dm->createQueryBuilder(User::class)
             ->field('simpleReferenceOneInverse')->prime(true)
             ->getQuery()
