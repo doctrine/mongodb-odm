@@ -25,10 +25,10 @@ class GH245Test extends BaseTest
 
         $user = $this->dm->find(get_class($order), $order->id);
 
-        $this->assertInternalType('int', $order->id);
+        $this->assertIsInt($order->id);
 
         $check = $this->dm->getDocumentCollection(get_class($orderLog))->findOne();
-        $this->assertInternalType('int', $check['order']['$id']);
+        $this->assertIsInt($check['order']['$id']);
     }
 }
 

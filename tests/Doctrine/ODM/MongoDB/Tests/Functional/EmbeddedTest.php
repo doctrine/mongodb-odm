@@ -615,7 +615,7 @@ class EmbeddedTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertInternalType('array', $test1Data);
+        $this->assertIsArray($test1Data);
 
         $this->assertArrayHasKey('m_id', $test1Data['embedOne']);
     }

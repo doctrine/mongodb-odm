@@ -55,7 +55,7 @@ class ClassMetadataTest extends BaseTest
         $cm->setCollectionCapped(true);
         $cm->setCollectionMax(1000);
         $cm->setCollectionSize(500);
-        $this->assertInternalType('array', $cm->getFieldMapping('phonenumbers'));
+        $this->assertIsArray($cm->getFieldMapping('phonenumbers'));
         $this->assertCount(1, $cm->fieldMappings);
         $this->assertCount(1, $cm->associationMappings);
 
@@ -71,7 +71,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals(['UserParent'], $cm->parentClasses);
         $this->assertEquals(UserRepository::class, $cm->customRepositoryClassName);
         $this->assertEquals('disc', $cm->discriminatorField);
-        $this->assertInternalType('array', $cm->getFieldMapping('phonenumbers'));
+        $this->assertIsArray($cm->getFieldMapping('phonenumbers'));
         $this->assertCount(1, $cm->fieldMappings);
         $this->assertCount(1, $cm->associationMappings);
         $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $cm->getShardKey());
@@ -137,7 +137,7 @@ class ClassMetadataTest extends BaseTest
         );
 
         $assoc = $cm->fieldMappings['groups'];
-        $this->assertInternalType('array', $assoc);
+        $this->assertIsArray($assoc);
     }
 
     public function testGetAssociationTargetClassWithoutTargetDocument()

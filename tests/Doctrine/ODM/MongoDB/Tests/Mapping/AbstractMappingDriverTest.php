@@ -210,7 +210,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
     public function testOwningOneToOneAssocation($class)
     {
         $this->assertTrue(isset($class->fieldMappings['address']));
-        $this->assertInternalType('array', $class->fieldMappings['address']);
+        $this->assertIsArray($class->fieldMappings['address']);
         // Check cascading
         $this->assertTrue($class->fieldMappings['address']['isCascadeRemove']);
         $this->assertFalse($class->fieldMappings['address']['isCascadePersist']);

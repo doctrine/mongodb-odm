@@ -27,7 +27,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
     public function testOpenUploadStreamReturnsWritableResource() : void
     {
         $uploadStream = $this->getRepository()->openUploadStream('somefile.txt');
-        self::assertInternalType('resource', $uploadStream);
+        self::assertIsResource($uploadStream);
 
         fwrite($uploadStream, 'contents');
         fclose($uploadStream);
@@ -39,7 +39,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame(8, $file->getLength());
         self::assertSame(12345, $file->getChunkSize());
-        self::assertEquals(new DateTime(), $file->getUploadDate(), '', 1);
+        self::assertEqualsWithDelta(new DateTime(), $file->getUploadDate(), 1);
         self::assertNull($file->getMetadata());
     }
 
@@ -49,7 +49,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         $uploadOptions->chunkSizeBytes = 1234;
 
         $uploadStream = $this->getRepository()->openUploadStream('somefile.txt', $uploadOptions);
-        self::assertInternalType('resource', $uploadStream);
+        self::assertIsResource($uploadStream);
 
         fwrite($uploadStream, 'contents');
         fclose($uploadStream);
@@ -61,7 +61,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame(8, $file->getLength());
         self::assertSame(1234, $file->getChunkSize());
-        self::assertEquals(new DateTime(), $file->getUploadDate(), '', 1);
+        self::assertEqualsWithDelta(new DateTime(), $file->getUploadDate(), 1);
         self::assertNull($file->getMetadata());
     }
 
@@ -96,7 +96,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame($expectedSize, $file->getLength());
         self::assertSame(12345, $file->getChunkSize());
-        self::assertEquals(new DateTime(), $file->getUploadDate(), '', 1);
+        self::assertEqualsWithDelta(new DateTime(), $file->getUploadDate(), 1);
         self::assertInstanceOf(FileMetadata::class, $file->getMetadata());
         self::assertInstanceOf(User::class, $file->getMetadata()->getOwner());
         self::assertSame('Foo', $file->getMetadata()->getEmbedOne()->name);
@@ -151,7 +151,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame('somefile.txt', $file->getFilename());
         self::assertSame($expectedSize, $file->getLength());
         self::assertSame(1234, $file->getChunkSize());
-        self::assertEquals(new DateTime(), $file->getUploadDate(), '', 1);
+        self::assertEqualsWithDelta(new DateTime(), $file->getUploadDate(), 1);
         self::assertInstanceOf(FileMetadata::class, $file->getMetadata());
 
         $stream = tmpfile();

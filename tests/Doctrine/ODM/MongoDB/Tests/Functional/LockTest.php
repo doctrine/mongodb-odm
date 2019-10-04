@@ -79,7 +79,7 @@ class LockTest extends BaseTest
             $this->dm->persist($test);
             $this->dm->flush();
 
-            $this->assertInternalType('int', $test->getVersion());
+            $this->assertIsInt($test->getVersion());
             $this->assertEquals($i + 1, $test->getVersion());
         }
     }
