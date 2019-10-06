@@ -41,7 +41,7 @@ class NestedDocumentsTest extends BaseTest
 
         $doc = $this->dm->find(Order::class, $order->id);
         $this->assertInstanceOf(Order::class, $order);
-        $this->assertInternalType('string', $doc->product->id);
+        $this->assertIsString($doc->product->id);
         $this->assertEquals((string) $test['product']['_id'], $doc->product->id);
         $this->assertEquals('Order', $doc->title);
         $this->assertEquals('Product', $doc->product->title);

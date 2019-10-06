@@ -27,7 +27,7 @@ class RepositoriesTest extends BaseTest
     {
         $users = $this->repository->findAll();
 
-        $this->assertInternalType('array', $users);
+        $this->assertIsArray($users);
         $this->assertCount(1, $users);
     }
 
