@@ -18,7 +18,7 @@
        reference/introduction
        reference/architecture
        reference/basic-mapping
-       reference/basic-mapping
+       reference/custom-mapping-types
        reference/reference-mapping
        reference/bidirectional-references
        reference/complex-references

@@ -135,7 +135,7 @@ Doctrine Mapping Types
 ----------------------
 
 A Doctrine Mapping Type defines the mapping between a PHP type and
-an MongoDB type. You can even write your own custom mapping types.
+a MongoDB type. You can even :doc:`write your own custom mapping types <custom-mapping-types>`.
 
 Here is a quick overview of the built-in mapping types:
 
@@ -405,105 +405,6 @@ as follows:
     .. code-block:: xml
 
         <field field-name="name" name="db_name" />
-
-Custom Mapping Types
---------------------
-
-Doctrine allows you to create new mapping types. This can come in
-handy when you're missing a specific mapping type or when you want
-to replace the existing implementation of a mapping type.
-
-In order to create a new mapping type you need to subclass
-``Doctrine\ODM\MongoDB\Types\Type`` and implement/override
-the methods. Here is an example skeleton of such a custom type
-class:
-
-.. code-block:: php
-
-    <?php
-
-    namespace My\Project\Types;
-
-    use Doctrine\ODM\MongoDB\Types\Type;
-    use MongoDB\BSON\UTCDateTime;
-
-    /**
-     * My custom datatype.
-     */
-    class MyType extends Type
-    {
-        public function convertToPHPValue($value): \DateTime
-        {
-            // Note: this function is only called when your custom type is used
-            // as an identifier. For other cases, closureToPHP() will be called.
-            return new \DateTime('@' . $value->sec);
-        }
-
-        public function closureToPHP(): string
-        {
-            // Return the string body of a PHP closure that will receive $value
-            // and store the result of a conversion in a $return variable
-            return '$return = new \DateTime($value);';
-        }
-
-        public function convertToDatabaseValue($value): UTCDateTime
-        {
-            // This is called to convert a PHP value to its Mongo equivalent
-            return new UTCDateTime($value);
-        }
-    }
-
-Restrictions to keep in mind:
-
--
-   If the value of the field is *NULL* the method
-   ``convertToDatabaseValue()`` is not called.
--
-   The ``UnitOfWork`` never passes values to the database convert
-   method that did not change in the request.
-
-When you have implemented the type you still need to let Doctrine
-know about it. This can be achieved through the
-``Doctrine\ODM\MongoDB\Types\Type#registerType($name, $class)``
-method.
-
-Here is an example:
-
-.. code-block:: php
-
-    <?php
-
-    // in bootstrapping code
-
-    // ...
-
-    use Doctrine\ODM\MongoDB\Types\Type;
-
-    // ...
-
-    // Register my type
-    Type::addType('mytype', \My\Project\Types\MyType::class);
-
-As can be seen above, when registering the custom types in the
-configuration you specify a unique name for the mapping type and
-map that to the corresponding |FQCN|. Now you can use your new
-type in your mapping like this:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-
-        class MyPersistentClass
-        {
-            /** @Field(type="mytype") */
-            private $field;
-        }
-
-    .. code-block:: xml
-
-        <field field-name="field" type="mytype" />
 
 Multiple Document Types in a Collection
 ---------------------------------------
