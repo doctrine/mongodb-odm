@@ -135,7 +135,7 @@ Doctrine Mapping Types
 ----------------------
 
 A Doctrine Mapping Type defines the mapping between a PHP type and
-an MongoDB type. You can even :doc:`write your own custom mapping types <custom-mapping-types>`.
+a MongoDB type. You can even :doc:`write your own custom mapping types <custom-mapping-types>`.
 
 Here is a quick overview of the built-in mapping types:
 
