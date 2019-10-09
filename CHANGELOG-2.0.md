@@ -1,6 +1,11 @@
 CHANGELOG for 2.0.x
 ===================
 
+2.0.1 (2019-10-09)
+------------------
+
+ - [2082: Fix wrong initialisation of proxies with public properties](https://github.com/doctrine/mongodb-odm/pull/2082) thanks to @alcaeus and @Frederick888
+
 2.0.0 (2019-10-02)
 ------------------
 

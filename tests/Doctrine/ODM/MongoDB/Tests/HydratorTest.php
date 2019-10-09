@@ -40,12 +40,35 @@ class HydratorTest extends BaseTest
         $this->assertEquals('jon', $user->name);
         $this->assertInstanceOf(DateTime::class, $user->birthdate);
         $this->assertInstanceOf(HydrationClosureReferenceOne::class, $user->referenceOne);
+        $this->assertInstanceOf(GhostObjectInterface::class, $user->referenceOne);
         $this->assertInstanceOf(PersistentCollection::class, $user->referenceMany);
         $this->assertInstanceOf(GhostObjectInterface::class, $user->referenceMany[0]);
         $this->assertInstanceOf(GhostObjectInterface::class, $user->referenceMany[1]);
+        $this->assertInstanceOf(HydrationClosureEmbedOne::class, $user->embedOne);
         $this->assertInstanceOf(PersistentCollection::class, $user->embedMany);
         $this->assertEquals('jon', $user->embedOne->name);
         $this->assertEquals('jon', $user->embedMany[0]->name);
+    }
+
+    public function testHydrateProxyWithMissingAssociations()
+    {
+        $user = $this->dm->getReference(HydrationClosureUser::class, 1);
+        $this->assertInstanceOf(GhostObjectInterface::class, $user);
+
+        $this->dm->getHydratorFactory()->hydrate($user, [
+            '_id' => 1,
+            'title' => null,
+            'name' => 'jon',
+        ]);
+
+        $this->assertEquals(1, $user->id);
+        $this->assertNull($user->title);
+        $this->assertEquals('jon', $user->name);
+        $this->assertNull($user->birthdate);
+        $this->assertNull($user->referenceOne);
+        $this->assertInstanceOf(PersistentCollection::class, $user->referenceMany);
+        $this->assertNull($user->embedOne);
+        $this->assertInstanceOf(PersistentCollection::class, $user->embedMany);
     }
 
     public function testReadOnly()
