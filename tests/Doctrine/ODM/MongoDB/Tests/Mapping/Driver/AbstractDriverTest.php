@@ -95,6 +95,8 @@ abstract class AbstractDriverTest extends TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+            'also-load' => 'createdOn,creation_date',
+            'alsoLoadFields' => ['createdOn', 'creation_date']
         ], $classMetadata->fieldMappings['createdAt']);
 
         $this->assertEquals([

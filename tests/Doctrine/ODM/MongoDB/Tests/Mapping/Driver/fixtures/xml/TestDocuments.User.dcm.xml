@@ -8,7 +8,7 @@
     <document name="TestDocuments\User" db="documents" collection="users">
         <id />
         <field name="username" type="string" unique="true" sparse="true"/>
-        <field name="createdAt" type="date" />
+        <field name="createdAt" type="date" also-load="createdOn,creation_date"/>
         <field name="tags" type="collection" />
         <embed-one target-document="Documents\Address" field="address" />
         <!--<field name="profile" targetDocument="Documents\Profile" reference="true" type="one" cascade="all" />-->
