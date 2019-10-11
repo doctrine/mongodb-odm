@@ -216,7 +216,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($attributes['also-load'])) {
-                    $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
+                    $mapping['alsoLoadFields'] = explode(',', (string) $attributes['also-load']);
                 } elseif (isset($attributes['version'])) {
                     $mapping['version'] = ((string) $attributes['version'] === 'true');
                 } elseif (isset($attributes['lock'])) {
