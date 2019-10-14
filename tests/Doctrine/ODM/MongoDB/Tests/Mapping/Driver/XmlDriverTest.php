@@ -7,6 +7,8 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use TestDocuments\UserCustomIdGenerator;
 use TestDocuments\UserCustomIdGeneratorWithIdField;
 
+require_once 'fixtures/AlsoLoadDocument.php';
+
 class XmlDriverTest extends AbstractDriverTest
 {
     public function setUp()
@@ -86,6 +88,29 @@ class XmlDriverTest extends AbstractDriverTest
                 'options' => [],
             ],
         ], $classMetadata->getIndexes());
+    }
+
+    public function testDriver()
+    {
+        $classMetadata = new ClassMetadata('TestDocuments\AlsoLoadDocument');
+        $this->driver->loadMetadataForClass('TestDocuments\AlsoLoadDocument', $classMetadata);
+
+        $this->assertEquals(array(
+            'fieldName' => 'createdAt',
+            'name' => 'createdAt',
+            'type' => 'date',
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => false,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+            'also-load' => 'createdOn,creation_date',
+            'alsoLoadFields' => array('createdOn', 'creation_date'),
+        ), $classMetadata->fieldMappings['createdAt']);
     }
 }
 
