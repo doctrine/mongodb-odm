@@ -264,6 +264,9 @@ ocramius. If you are checking for proxies, the following changed:
 * The `getIterator` method in `Doctrine\ODM\MongoDB\Query\Query` returns an
   iterator of type `Doctrine\ODM\MongoDB\Iterator\Iterator` instead of a MongoDB
   cursor.
+* The `execute` method in `Doctrine\ODM\MongoDB\Query\Query` now returns an
+  iterator of type `Doctrine\ODM\MongoDB\Iterator\Iterator` for find queries,
+  and a plain array for distinct queries.
 * The `eagerCursor` helper in `Doctrine\ODM\MongoDB\Query\Builder` and its logic
   have been removed entirely without replacement.
 * Querying for a mapped superclass in a complex inheritance chain will now only
