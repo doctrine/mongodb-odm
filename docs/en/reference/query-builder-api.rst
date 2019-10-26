@@ -98,7 +98,7 @@ You can execute a query by getting a ``Query`` through the ``getQuery()`` method
     $qb = $dm->createQueryBuilder(User::class);
     $query = $qb->getQuery();
 
-Now you can ``execute()`` that query and it will return a cursor for you to iterate over the results:
+Now you can ``execute()`` that query and it will return an ``Iterator`` for you to iterate over the results:
 
 .. code-block:: php
 
@@ -193,7 +193,7 @@ method:
         ->getQuery()
         ->execute();
 
-The above would give you an ``ArrayCollection`` of all the distinct user ages!
+The above would give you an array of all the distinct user ages!
 
 .. note::
 
