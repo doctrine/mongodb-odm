@@ -171,7 +171,7 @@ Now create a new `Order` and link it to a `Product` in MySQL:
 Later we can retrieve the entity and lazily load the reference to the document in MongoDB:
 
 .. code-block:: php
-
+ 
     <?php
 
     $order = $em->find('Order', $order->getId());
