@@ -92,9 +92,12 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
             $uploadOptions = new UploadOptions();
         }
 
-        $options = [
-            'chunkSizeBytes' => $uploadOptions->chunkSizeBytes ?: $this->class->getChunkSizeBytes(),
-        ];
+        $chunkSizeBytes = $uploadOptions->chunkSizeBytes ?: $this->class->getChunkSizeBytes();
+        $options        = [];
+
+        if ($chunkSizeBytes !== null) {
+            $options['chunkSizeBytes'] = $chunkSizeBytes;
+        }
 
         if (! is_object($uploadOptions->metadata)) {
             return $options;
