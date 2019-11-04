@@ -120,7 +120,7 @@ or in .yaml
         tags:
             - { name: doctrine.event_listener, connection: default, event: postLoad}
 
-So now we need to define a class named `MyEventSubscriber` and `DocumentManager` as a dependency. It will have a `postLoad()` method that sets the product document reference:
+So now we need to define a class named `MyEventSubscriber` and pass `DocumentManager` as a dependency. It will have a `postLoad()` method that sets the product document reference:
 
 .. code-block:: php
 
