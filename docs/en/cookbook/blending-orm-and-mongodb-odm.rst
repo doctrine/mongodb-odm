@@ -120,12 +120,7 @@ or in .yaml
         tags:
             - { name: doctrine.event_listener, connection: default, event: postLoad}
 
-
-So now we need to define a class named `MyEventSubscriber` and pass a dependency to the `DocumentManager`. 
-It will have a `postLoad()` method that sets the product document reference. 
-
-
-So now we need to define a class named `MyEventSubscriber` and pass a dependency to the `DocumentManager`. It will have a `postLoad()` method that sets the product document reference:
+So now we need to define a class named `MyEventSubscriber` and `DocumentManager` as a dependency. It will have a `postLoad()` method that sets the product document reference:
 
 .. code-block:: php
 
@@ -145,8 +140,8 @@ So now we need to define a class named `MyEventSubscriber` and pass a dependency
         {
             $order = $eventArgs->getEntity();
 
-            if (!($order instanceof Order)) {
-                // fails silently if entity other then Order is loaded
+            if (!$order instanceof Order) {
+                // early return if entity other then Order is loaded
                 return;
             }
 
@@ -163,7 +158,7 @@ So now we need to define a class named `MyEventSubscriber` and pass a dependency
 The `postLoad` method will be invoked after an ORM entity is loaded from the database. This allows us 
 to use the `DocumentManager` to set the `$product` property with a reference to the `Product` document 
 with the product id we previously stored. Please note, that the event subscriber will be called on 
-postLoad of any given entity that is loaded by doctrine. Thus, it is recommended to check for the current 
+postLoad for all entities that are loaded by doctrine. Thus, it is recommended to check for the current 
 entity.  
 
 Working with Products and Orders
