@@ -112,6 +112,19 @@ Now we need to setup an event subscriber that will set the `$product` property o
         array(\Doctrine\ORM\Events::postLoad), new MyEventSubscriber($dm)
     );
 
+or in .yaml
+
+.. code-block:: yaml    
+    
+    App\Listeners\MyEventSubscriber:
+        tags:
+            - { name: doctrine.event_listener, connection: default, event: postLoad}
+
+
+So now we need to define a class named `MyEventSubscriber` and pass a dependency to the `DocumentManager`. 
+It will have a `postLoad()` method that sets the product document reference. 
+
+
 So now we need to define a class named `MyEventSubscriber` and pass a dependency to the `DocumentManager`. It will have a `postLoad()` method that sets the product document reference:
 
 .. code-block:: php
@@ -131,6 +144,12 @@ So now we need to define a class named `MyEventSubscriber` and pass a dependency
         public function postLoad(LifecycleEventArgs $eventArgs)
         {
             $order = $eventArgs->getEntity();
+
+            if (!($order instanceof Order)) {
+                // fails silently if entity other then Order is loaded
+                return;
+            }
+
             $em = $eventArgs->getEntityManager();
             $productReflProp = $em->getClassMetadata('Entities\Order')
                 ->reflClass->getProperty('product');
@@ -141,7 +160,11 @@ So now we need to define a class named `MyEventSubscriber` and pass a dependency
         }
     }
 
-The `postLoad` method will be invoked after an ORM entity is loaded from the database. This allows us to use the `DocumentManager` to set the `$product` property with a reference to the `Product` document with the product id we previously stored.
+The `postLoad` method will be invoked after an ORM entity is loaded from the database. This allows us 
+to use the `DocumentManager` to set the `$product` property with a reference to the `Product` document 
+with the product id we previously stored. Please note, that the event subscriber will be called on 
+postLoad of any given entity that is loaded by doctrine. Thus, it is recommended to check for the current 
+entity.  
 
 Working with Products and Orders
 --------------------------------
