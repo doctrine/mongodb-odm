@@ -1,7 +1,7 @@
 Blending the ORM and MongoDB ODM
 ================================
 
-Since the start of the ``Doctrine MongoDB Object Document Mapper``_ project people have asked how it can be integrated with the ``ORM``_. This article will demonstrates how you can integrate the two transparently, maintaining a clean domain model.
+Since the start of the `Doctrine MongoDB Object Document Mapper`_ project people have asked how it can be integrated with the `ORM`_. This article will demonstrates how you can integrate the two transparently, maintaining a clean domain model.
 
 This example will have a ``Product`` that is stored in MongoDB and the ``Order`` stored in a MySQL database.
 
