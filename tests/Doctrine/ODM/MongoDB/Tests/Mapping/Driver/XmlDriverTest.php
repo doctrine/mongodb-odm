@@ -4,6 +4,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
+use TestDocuments\AlsoLoadDocument;
 use TestDocuments\UserCustomIdGenerator;
 use TestDocuments\UserCustomIdGeneratorWithIdField;
 
@@ -86,6 +87,29 @@ class XmlDriverTest extends AbstractDriverTest
                 'options' => [],
             ],
         ], $classMetadata->getIndexes());
+    }
+
+    public function testAlsoLoadFieldMapping()
+    {
+        $classMetadata = new ClassMetadata(AlsoLoadDocument::class);
+        $this->driver->loadMetadataForClass(AlsoLoadDocument::class, $classMetadata);
+
+        $this->assertEquals(array(
+            'fieldName' => 'createdAt',
+            'name' => 'createdAt',
+            'type' => 'date',
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => false,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+            'also-load' => 'createdOn,creation_date',
+            'alsoLoadFields' => array('createdOn', 'creation_date'),
+        ), $classMetadata->fieldMappings['createdAt']);
     }
 }
 
