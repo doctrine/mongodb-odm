@@ -6,7 +6,7 @@
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="TestDocuments\AlsoLoadDocument" db="documents" collection="users">
-        <field name="id" id="true" />
+        <id />
         <field name="createdAt" type="date" also-load="createdOn,creation_date"/>
     </document>
 </doctrine-mongo-mapping>
