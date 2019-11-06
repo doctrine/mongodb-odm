@@ -20,7 +20,7 @@
             </tag-set>
             <tag-set />
         </read-preference>
-        <id field-name="id" />
+        <id field-name="identifier" />
         <field field-name="version" version="true" type="int" />
         <field field-name="lock" lock="true" type="int" />
         <field field-name="name" name="username" type="string" />

@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Repository\UploadOptions;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\File;
 use Documents\FileMetadata;
+use Documents\FileWithoutChunkSize;
 use Documents\FileWithoutMetadata;
 use Documents\User;
 use function fclose;
@@ -238,6 +239,18 @@ class DefaultGridFSRepositoryTest extends BaseTest
         } finally {
             fclose($fileResource);
         }
+    }
+
+    public function testUploadFileWithoutChunkSize()
+    {
+        /** @var FileWithoutChunkSize $file */
+        $file = $this->getRepository(FileWithoutChunkSize::class)->uploadFromFile(__FILE__);
+
+        $expectedSize = filesize(__FILE__);
+
+        self::assertSame('DefaultGridFSRepositoryTest.php', $file->getFilename());
+        self::assertSame($expectedSize, $file->getLength());
+        self::assertSame(261120, $file->getChunkSize());
     }
 
     private function getRepository($className = File::class) : GridFSRepository
