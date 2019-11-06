@@ -159,6 +159,10 @@ class XmlDriver extends FileDriver
                 $mapping[$key] = (string) $value;
             }
 
+            if (isset($attributes['field-name'])) {
+                $mapping['fieldName'] = (string) $attributes['field-name'];
+            }
+
             if (isset($mapping['strategy'])) {
                 $mapping['options'] = [];
                 if (isset($field->{'generator-option'})) {

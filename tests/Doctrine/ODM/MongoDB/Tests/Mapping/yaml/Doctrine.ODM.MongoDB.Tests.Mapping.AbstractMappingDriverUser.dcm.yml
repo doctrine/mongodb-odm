@@ -17,6 +17,7 @@ Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser:
   fields:
     id:
       type: id
+      fieldName: identifier
       id: true
     version:
       type: int

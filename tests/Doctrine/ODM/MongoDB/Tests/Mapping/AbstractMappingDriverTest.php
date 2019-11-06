@@ -80,7 +80,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
     public function testFieldMappings($class)
     {
         $this->assertCount(14, $class->fieldMappings);
-        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['identifier']));
         $this->assertTrue(isset($class->fieldMappings['version']));
         $this->assertTrue(isset($class->fieldMappings['lock']));
         $this->assertTrue(isset($class->fieldMappings['name']));
@@ -146,7 +146,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\ODM\MongoDB\Tests\Bas
      */
     public function testIdentifier($class)
     {
-        $this->assertEquals('id', $class->identifier);
+        $this->assertEquals('identifier', $class->identifier);
 
         return $class;
     }
@@ -402,7 +402,7 @@ class AbstractMappingDriverUser
     /**
      * @ODM\Id
      */
-    public $id;
+    public $identifier;
 
     /**
      * @ODM\Version
