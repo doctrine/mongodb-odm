@@ -176,6 +176,10 @@ class XmlDriver extends FileDriver
                 $mapping[$key] = (string) $value;
             }
 
+            if (isset($attributes['field-name'])) {
+                $mapping['fieldName'] = (string) $attributes['field-name'];
+            }
+
             if (isset($mapping['strategy'])) {
                 $mapping['options'] = [];
                 if (isset($field->{'generator-option'})) {
@@ -216,7 +220,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($attributes['also-load'])) {
-                    $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
+                    $mapping['alsoLoadFields'] = explode(',', (string) $attributes['also-load']);
                 } elseif (isset($attributes['version'])) {
                     $mapping['version'] = ((string) $attributes['version'] === 'true');
                 } elseif (isset($attributes['lock'])) {

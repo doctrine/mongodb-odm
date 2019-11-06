@@ -17,13 +17,6 @@ use TestDocuments\PrimedCollectionDocument;
 use TestDocuments\QueryResultDocument;
 use TestDocuments\User;
 
-require_once 'fixtures/InvalidPartialFilterDocument.php';
-require_once 'fixtures/PartialFilterDocument.php';
-require_once 'fixtures/PrimedCollectionDocument.php';
-require_once 'fixtures/User.php';
-require_once 'fixtures/EmbeddedDocument.php';
-require_once 'fixtures/QueryResultDocument.php';
-
 abstract class AbstractDriverTest extends TestCase
 {
     protected $driver;

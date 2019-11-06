@@ -51,7 +51,8 @@
             "Doctrine\\ODM\\MongoDB\\Benchmark\\": "benchmark",
             "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Doctrine/ODM/MongoDB/Tests",
             "Documents\\": "tests/Documents",
-            "Stubs\\": "tests/Stubs"
+            "Stubs\\": "tests/Stubs",
+            "TestDocuments\\" :"tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures"
         }
     },
     "config": {

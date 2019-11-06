@@ -112,7 +112,7 @@
     <xs:attribute name="lock" type="xs:boolean" />
     <xs:attribute name="not-saved" type="xs:boolean" />
     <xs:attribute name="nullable" type="xs:boolean" />
-    <xs:attribute name="also-load" type="xs:NMTOKEN" />
+    <xs:attribute name="also-load" type="xs:string" />
 
     <!-- index options -->
     <xs:attribute name="background" type="xs:boolean" />

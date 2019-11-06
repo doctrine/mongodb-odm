@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use TestDocuments\AlsoLoadDocument;
 use TestDocuments\CustomIdGenerator;
 use TestDocuments\InvalidPartialFilterDocument;
 use TestDocuments\UserCustomIdGenerator;
@@ -68,6 +69,29 @@ class XmlDriverTest extends AbstractDriverTest
         $this->expectExceptionMessageRegExp('#The mapping file .+ is invalid#');
 
         $this->driver->loadMetadataForClass(InvalidPartialFilterDocument::class, $classMetadata);
+    }
+
+    public function testAlsoLoadFieldMapping()
+    {
+        $classMetadata = new ClassMetadata(AlsoLoadDocument::class);
+        $this->driver->loadMetadataForClass(AlsoLoadDocument::class, $classMetadata);
+
+        $this->assertEquals([
+            'fieldName' => 'createdAt',
+            'name' => 'createdAt',
+            'type' => 'date',
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => false,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+            'also-load' => 'createdOn,creation_date',
+            'alsoLoadFields' => ['createdOn', 'creation_date'],
+        ], $classMetadata->fieldMappings['createdAt']);
     }
 }
 
