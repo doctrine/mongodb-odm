@@ -1023,10 +1023,15 @@ final class DocumentPersister
             foreach ($preparedQueryElements as [$preparedKey, $preparedValue]) {
                 if (is_array($preparedValue)) {
                     $preparedValue = array_map('\Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $preparedValue);
-                } elseif(isset($this->class->fieldMappings[$key])) {
+                } elseif ($this->class->hasField($key) && ! $this->class->isIdentifier($key)) {
                     $mapping = $this->class->fieldMappings[$key];
-                    $type = Type::getType($mapping['type']);
-                    $preparedValue = $type->convertToDatabaseValue($preparedValue);
+                    if (empty($mapping['reference'])) {
+                        $type = Type::getType($mapping['type']);
+                        $preparedValue = $type->convertToDatabaseValue($preparedValue);
+                    } else {
+                        $preparedValue = Type::convertPHPToDatabaseValue($preparedValue);
+                    }
+
                 } else {
                     $preparedValue = Type::convertPHPToDatabaseValue($preparedValue);
                 }
