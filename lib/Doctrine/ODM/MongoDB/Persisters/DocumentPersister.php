@@ -1022,18 +1022,20 @@ final class DocumentPersister
             $preparedQueryElements = $this->prepareQueryElement((string) $key, $value, null, true, $isNewObj);
             foreach ($preparedQueryElements as [$preparedKey, $preparedValue]) {
                 if (is_array($preparedValue)) {
-                    $preparedValue = array_map('\Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $preparedValue);
-                } elseif ($this->class->hasField($key) && ! $this->class->isIdentifier($key)) {
+                    $preparedQuery[$preparedKey] = array_map('\Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $preparedValue);
+
+                    continue;
+                }
+
+                $preparedValue = Type::convertPHPToDatabaseValue($preparedValue);
+
+                if ($this->class->hasField($key) && !$this->class->isIdentifier($key)) {
                     $mapping = $this->class->fieldMappings[$key];
                     $typeName = $mapping['type'];
-                    if (!in_array($typeName, ['collection', 'hash']) && Type::hasType($typeName)) {
+                    if (Type::hasType($typeName) && !in_array($typeName, ['collection', 'hash'])) {
                         $type = Type::getType($mapping['type']);
                         $preparedValue = $type->convertToDatabaseValue($preparedValue);
-                    } else {
-                        $preparedValue = Type::convertPHPToDatabaseValue($preparedValue);
                     }
-                } else {
-                    $preparedValue = Type::convertPHPToDatabaseValue($preparedValue);
                 }
 
                 $preparedQuery[$preparedKey] = $preparedValue;
