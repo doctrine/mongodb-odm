@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Generator;
 use Iterator;
+use RuntimeException;
 use Traversable;
 
 /**
@@ -17,7 +18,7 @@ use Traversable;
  */
 final class HydratingIterator implements Iterator
 {
-    /** @var Generator */
+    /** @var Generator|null */
     private $iterator;
 
     /** @var UnitOfWork */
@@ -37,6 +38,11 @@ final class HydratingIterator implements Iterator
         $this->unitOfWorkHints = $unitOfWorkHints;
     }
 
+    public function __destruct()
+    {
+        $this->iterator = null;
+    }
+
     /**
      * @see http://php.net/iterator.current
      *
@@ -44,7 +50,7 @@ final class HydratingIterator implements Iterator
      */
     public function current()
     {
-        return $this->hydrate($this->iterator->current());
+        return $this->hydrate($this->getIterator()->current());
     }
 
     /**
@@ -54,7 +60,7 @@ final class HydratingIterator implements Iterator
      */
     public function key()
     {
-        return $this->iterator->key();
+        return $this->getIterator()->key();
     }
 
     /**
@@ -62,7 +68,7 @@ final class HydratingIterator implements Iterator
      */
     public function next() : void
     {
-        $this->iterator->next();
+        $this->getIterator()->next();
     }
 
     /**
@@ -70,7 +76,7 @@ final class HydratingIterator implements Iterator
      */
     public function rewind() : void
     {
-        $this->iterator->rewind();
+        $this->getIterator()->rewind();
     }
 
     /**
@@ -79,6 +85,15 @@ final class HydratingIterator implements Iterator
     public function valid() : bool
     {
         return $this->key() !== null;
+    }
+
+    private function getIterator() : Generator
+    {
+        if ($this->iterator === null) {
+            throw new RuntimeException('Iterator has already been destroyed');
+        }
+
+        return $this->iterator;
     }
 
     private function hydrate($document)

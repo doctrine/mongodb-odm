@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Generator;
+use RuntimeException;
 use Traversable;
 use function current;
 use function key;
@@ -25,7 +26,7 @@ final class CachingIterator implements Iterator
     /** @var array */
     private $items = [];
 
-    /** @var Generator */
+    /** @var Generator|null */
     private $iterator;
 
     /** @var bool */
@@ -45,6 +46,11 @@ final class CachingIterator implements Iterator
     {
         $this->iterator = $this->wrapTraversable($iterator);
         $this->storeCurrentItem();
+    }
+
+    public function __destruct()
+    {
+        $this->iterator = null;
     }
 
     public function toArray() : array
@@ -80,7 +86,7 @@ final class CachingIterator implements Iterator
     public function next() : void
     {
         if (! $this->iteratorExhausted) {
-            $this->iterator->next();
+            $this->getIterator()->next();
             $this->storeCurrentItem();
         }
 
@@ -118,6 +124,17 @@ final class CachingIterator implements Iterator
         while (! $this->iteratorExhausted) {
             $this->next();
         }
+
+        $this->iterator = null;
+    }
+
+    private function getIterator() : Generator
+    {
+        if ($this->iterator === null) {
+            throw new RuntimeException('Iterator has already been destroyed');
+        }
+
+        return $this->iterator;
     }
 
     /**
@@ -125,13 +142,13 @@ final class CachingIterator implements Iterator
      */
     private function storeCurrentItem() : void
     {
-        $key = $this->iterator->key();
+        $key = $this->getIterator()->key();
 
         if ($key === null) {
             return;
         }
 
-        $this->items[$key] = $this->iterator->current();
+        $this->items[$key] = $this->getIterator()->current();
     }
 
     private function wrapTraversable(Traversable $traversable) : Generator
