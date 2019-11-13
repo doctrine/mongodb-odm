@@ -1783,6 +1783,11 @@ final class UnitOfWork implements PropertyChangedListener
                                 $targetClass = $this->dm->getClassMetadata($targetDocument);
                                 $relatedId   = $targetClass->getIdentifierObject($other);
 
+                                $current = $prop->getValue($managedCopy);
+                                if ($current !== null) {
+                                    $this->removeFromIdentityMap($current);
+                                }
+
                                 if ($targetClass->subClasses) {
                                     $other = $this->dm->find($targetClass->name, $relatedId);
                                 } else {
