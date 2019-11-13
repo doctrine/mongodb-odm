@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Documents\CmsArticle;
 use Documents\CmsUser;
 use Documents\CmsPhonenumber;
 use Documents\CmsAddress;
@@ -131,5 +132,29 @@ class DetachedDocumentTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertInstanceOf(Proxy::class, $managedAddress2->user);
         $this->assertNotSame($managedAddress2->user, $detachedAddress2->user);
         $this->assertFalse($managedAddress2->user->__isInitialized());
+    }
+
+    public function testMergeWithReference()
+    {
+        $cmsUser = new CmsUser();
+        $cmsUser->username = 'alcaeus';
+
+        $cmsArticle = new CmsArticle();
+        $cmsArticle->setAuthor($cmsUser);
+
+        $this->dm->persist($cmsUser);
+        $this->dm->persist($cmsArticle);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        /** @var CmsArticle $cmsArticle */
+        $cmsArticle = $this->dm->find(CmsArticle::class, $cmsArticle->id);
+        $this->assertInstanceOf(CmsArticle::class, $cmsArticle);
+        $this->assertSame('alcaeus', $cmsArticle->user->getUsername());
+        $this->dm->clear();
+
+        $cmsArticle = $this->dm->merge($cmsArticle);
+
+        $this->assertSame('alcaeus', $cmsArticle->user->getUsername());
     }
 }
