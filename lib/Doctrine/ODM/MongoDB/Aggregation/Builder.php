@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
@@ -53,6 +54,9 @@ class Builder
 
     /** @var Stage[] */
     private $stages = [];
+
+    /** @var bool */
+    private $rewindable = true;
 
     /**
      * Create a new aggregation builder.
@@ -431,6 +435,16 @@ class Builder
     }
 
     /**
+     * Controls if resulting iterator should be wrapped with CachingIterator.
+     */
+    public function rewindable(bool $rewindable = true) : self
+    {
+        $this->rewindable = $rewindable;
+
+        return $this;
+    }
+
+    /**
      * Randomly selects the specified number of documents from its input.
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/sample/
@@ -550,6 +564,8 @@ class Builder
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $class);
         }
 
-        return new CachingIterator($cursor);
+        $cursor = $this->rewindable ? new CachingIterator($cursor) : new UnrewindableIterator($cursor);
+
+        return $cursor;
     }
 }

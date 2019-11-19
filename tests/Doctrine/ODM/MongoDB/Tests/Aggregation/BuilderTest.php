@@ -7,13 +7,13 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Article;
 use Documents\BlogPost;
 use Documents\BlogTagAggregation;
 use Documents\CmsComment;
 use Documents\GuestServer;
-use Documents\Project;
 use Documents\Tag;
 use MongoDB\BSON\UTCDateTime;
 use function array_keys;
@@ -352,10 +352,21 @@ class BuilderTest extends BaseTest
     public function testBuilderWithIndexStatsStageDoesNotApplyFilters()
     {
         $builder = $this->dm
-            ->createAggregationBuilder(Project::class)
+            ->createAggregationBuilder(BlogPost::class)
             ->indexStats();
 
         $this->assertSame('$indexStats', array_keys($builder->getPipeline()[0])[0]);
+    }
+
+    public function testNonRewindableBuilder()
+    {
+        $builder = $this->dm
+            ->createAggregationBuilder(BlogPost::class)
+            ->match()
+            ->rewindable(false);
+
+        $iterator = $builder->execute();
+        $this->assertInstanceOf(UnrewindableIterator::class, $iterator);
     }
 
     private function insertTestData()

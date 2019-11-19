@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
+use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use InvalidArgumentException;
@@ -84,6 +85,9 @@ final class Query implements IteratorAggregate
      */
     private $primers = [];
 
+    /** @var bool */
+    private $rewindable = true;
+
     /**
      * Hints for UnitOfWork behavior.
      *
@@ -115,7 +119,7 @@ final class Query implements IteratorAggregate
      */
     private $options;
 
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false, bool $rewindable = true)
     {
         $primers = array_filter($primers);
 
@@ -144,6 +148,7 @@ final class Query implements IteratorAggregate
 
         $this->setReadOnly($readOnly);
         $this->setRefresh($refresh);
+        $this->setRewindable($rewindable);
 
         if (! isset($query['readPreference'])) {
             return;
@@ -316,6 +321,14 @@ final class Query implements IteratorAggregate
     }
 
     /**
+     * Set to enable wrapping of resulting Iterator with CachingIterator
+     */
+    public function setRewindable(bool $rewindable = true) : void
+    {
+        $this->rewindable = $rewindable;
+    }
+
+    /**
      * Execute the query and return its results as an array.
      *
      * @see IteratorAggregate::toArray()
@@ -344,8 +357,8 @@ final class Query implements IteratorAggregate
      *
      * Note: while this method could strictly take a MongoDB\Driver\Cursor, we
      * accept Traversable for testing purposes since Cursor cannot be mocked.
-     * HydratingIterator and CachingIterator both expect a Traversable so this
-     * should not have any adverse effects.
+     * HydratingIterator, CachingIterator, and BaseIterator expect a Traversable
+     * so this should not have any adverse effects.
      */
     private function makeIterator(Traversable $cursor) : Iterator
     {
@@ -353,7 +366,7 @@ final class Query implements IteratorAggregate
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->class, $this->unitOfWorkHints);
         }
 
-        $cursor = new CachingIterator($cursor);
+        $cursor = $this->rewindable ? new CachingIterator($cursor) : new UnrewindableIterator($cursor);
 
         if (! empty($this->primers)) {
             $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use ArrayIterator;
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
@@ -14,12 +16,14 @@ use Documents\Project;
 use Documents\SubProject;
 use Documents\User;
 use InvalidArgumentException;
+use LogicException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
 use Traversable;
 use const DOCTRINE_MONGODB_DATABASE;
 use function array_keys;
+use function iterator_to_array;
 
 class QueryTest extends BaseTest
 {
@@ -514,6 +518,33 @@ class QueryTest extends BaseTest
         /* Do not expect the same object returned by Collection::find(), since
          * Query::makeIterator() wraps the return value with CachingIterator. */
         $this->assertInstanceOf(Traversable::class, $query->execute());
+    }
+
+    public function testNonRewindable() : void
+    {
+        $cursor = new ArrayIterator(['foo']);
+
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
+            ->method('find')
+            ->with([], [])
+            ->will($this->returnValue($cursor));
+
+        $queryArray = [
+            'type' => Query::TYPE_FIND,
+            'query' => [],
+        ];
+        $query      = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray);
+        $query->setHydrate(false);
+        $query->setRewindable(false);
+
+        $iterator = $query->execute();
+
+        $this->assertInstanceOf(UnrewindableIterator::class, $iterator);
+        iterator_to_array($iterator);
+
+        $this->expectException(LogicException::class);
+        iterator_to_array($iterator);
     }
 
     private function getMockCollection()
