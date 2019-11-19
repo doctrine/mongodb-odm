@@ -37,6 +37,7 @@ final class SchemaManager
         'default_language',
         'language_override',
         'textIndexVersion',
+        'name',
     ];
 
     /** @var DocumentManager */
