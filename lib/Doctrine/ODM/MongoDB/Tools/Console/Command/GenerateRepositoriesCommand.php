@@ -61,18 +61,18 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
-        
+
         $metadatas = $dm->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
 
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));
 
-        if ( ! file_exists($destPath)) {
+        if (! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif ( ! is_writable($destPath)) {
+        } elseif (! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
@@ -103,5 +103,7 @@ EOT
         } else {
             $output->write('No Metadata Classes to process.' . PHP_EOL);
         }
+
+        return 0;
     }
 }
