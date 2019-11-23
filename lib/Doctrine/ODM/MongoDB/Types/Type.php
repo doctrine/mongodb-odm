@@ -33,6 +33,7 @@ abstract class Type
     public const FLOAT              = 'float';
     public const STRING             = 'string';
     public const DATE               = 'date';
+    public const DATE_IMMUTABLE     = 'date_immutable';
     public const KEY                = 'key';
     public const TIMESTAMP          = 'timestamp';
     public const BINDATA            = 'bin';
@@ -62,6 +63,7 @@ abstract class Type
         self::FLOAT => Types\FloatType::class,
         self::STRING => Types\StringType::class,
         self::DATE => Types\DateType::class,
+        self::DATE_IMMUTABLE => Types\DateImmutableType::class,
         self::KEY => Types\KeyType::class,
         self::TIMESTAMP => Types\TimestampType::class,
         self::BINDATA => Types\BinDataType::class,

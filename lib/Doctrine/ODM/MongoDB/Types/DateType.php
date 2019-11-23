@@ -30,7 +30,7 @@ class DateType extends Type
      * Converts a value to a DateTime.
      * Supports microseconds
      *
-     * @param  mixed $value \DateTimeInterface|\MongoDB\BSON\UTCDateTime|int|float
+     * @param mixed $value \DateTimeInterface|\MongoDB\BSON\UTCDateTime|int|float
      *
      * @throws InvalidArgumentException If $value is invalid.
      */
