@@ -72,5 +72,7 @@ EOT
         } else {
             $output->write('No entries to be deleted.' . PHP_EOL);
         }
+
+        return 0;
     }
 }
