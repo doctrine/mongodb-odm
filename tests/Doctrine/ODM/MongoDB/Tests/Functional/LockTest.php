@@ -84,9 +84,9 @@ class LockTest extends BaseTest
         }
     }
 
-    public function testLockTimestampSetsDefaultValue()
+    public function testLockDateSetsDefaultValue()
     {
-        $test        = new LockTimestamp();
+        $test        = new LockDate();
         $test->title = 'Testing';
 
         $this->assertNull($test->version, 'Pre-Condition');
@@ -106,11 +106,33 @@ class LockTest extends BaseTest
         return $test;
     }
 
-    public function testLockTimestampSetsDefaultValueOnUpsert()
+    public function testLockDateImmutableSetsDefaultValue()
+    {
+        $test        = new LockDateImmutable();
+        $test->title = 'Testing';
+
+        $this->assertNull($test->version, 'Pre-Condition');
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+
+        $date1 = $test->version;
+
+        $this->assertInstanceOf('DateTimeImmutable', $date1);
+
+        $test->title = 'changed';
+        $this->dm->flush();
+
+        $this->assertNotSame($date1, $test->version);
+
+        return $test;
+    }
+
+    public function testLockDateSetsDefaultValueOnUpsert()
     {
         $id = new ObjectId();
 
-        $test        = new LockTimestamp();
+        $test        = new LockDate();
         $test->title = 'Testing';
         $test->id    = $id;
 
@@ -132,9 +154,52 @@ class LockTest extends BaseTest
         return $test;
     }
 
-    public function testLockTimestampThrowsException()
+    public function testLockDateImmutableSetsDefaultValueOnUpsert()
     {
-        $article = new LockTimestamp('Test LockInt');
+        $id = new ObjectId();
+
+        $test        = new LockDateImmutable();
+        $test->title = 'Testing';
+        $test->id    = $id;
+
+        $this->assertNull($test->version, 'Pre-Condition');
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+
+        $date1 = $test->version;
+
+        $this->assertSame($id, $test->id);
+        $this->assertInstanceOf('DateTimeImmutable', $date1);
+
+        $test->title = 'changed';
+        $this->dm->flush();
+
+        $this->assertNotSame($date1, $test->version);
+
+        return $test;
+    }
+
+    public function testLockDateThrowsException()
+    {
+        $article = new LockDate('Test LockInt');
+        $this->dm->persist($article);
+        $this->dm->flush();
+
+        // Manually change the version so the next code will cause an exception
+        $this->dm->getDocumentCollection(get_class($article))->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => new UTCDateTime(time() * 1000 + 600)]]);
+
+        // Now lets change a property and try and save it again
+        $article->title = 'ok';
+
+        $this->expectException(LockException::class);
+
+        $this->dm->flush();
+    }
+
+    public function testLockDateImmutableThrowsException()
+    {
+        $article = new LockDateImmutable('Test LockInt');
         $this->dm->persist($article);
         $this->dm->flush();
 
@@ -382,7 +447,7 @@ class LockTest extends BaseTest
     public function testInvalidVersionDocument()
     {
         $this->expectException(MongoDBException::class);
-        $this->expectExceptionMessage('Invalid version field type string. Version field must be int or date.');
+        $this->expectExceptionMessage('Invalid version field type string. Version field must be int, integer, date or date_immutable.');
         $this->dm->getClassMetadata(InvalidVersionDocument::class);
     }
 
@@ -468,9 +533,16 @@ class LockInt extends AbstractVersionBase
 }
 
 /** @ODM\Document */
-class LockTimestamp extends AbstractVersionBase
+class LockDate extends AbstractVersionBase
 {
     /** @ODM\Version @ODM\Field(type="date") */
+    public $version;
+}
+
+/** @ODM\Document */
+class LockDateImmutable extends AbstractVersionBase
+{
+    /** @ODM\Version @ODM\Field(type="date_immutable") */
     public $version;
 }
 
