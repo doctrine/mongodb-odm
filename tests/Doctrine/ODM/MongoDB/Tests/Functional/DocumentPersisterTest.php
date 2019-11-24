@@ -200,6 +200,29 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
+    /**
+     * @dataProvider provideCustomIds
+     */
+    public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId(string $objectIdString)
+    {
+        $class             = DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
+
+        Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
+
+        $documentWithCustomId = $this->dm->getReference(
+            DocumentPersisterTestDocumentWithCustomId::class,
+            $customId
+        );
+
+        $value    = ['documentWithCustomId' => $documentWithCustomId];
+        $expected = ['documentWithCustomId' => new ObjectId($objectIdString)];
+
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
     public function provideHashIdentifiers()
     {
         return [
@@ -815,6 +838,26 @@ class DocumentPersisterTestDocumentWithCustomId
     public function __construct(DocumentPersisterCustomTypedId $id)
     {
         $this->id = $id;
+    }
+
+    public function getId() : DocumentPersisterCustomTypedId
+    {
+        return $this->id;
+    }
+}
+
+/** @ODM\Document() */
+class DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId
+{
+    /** @ODM\Id() */
+    private $id;
+
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocumentWithCustomId::class, storeAs="id") */
+    private $documentWithCustomId;
+
+    public function __construct(DocumentPersisterTestDocumentWithCustomId $documentWithCustomId)
+    {
+        $this->documentWithCustomId = $documentWithCustomId;
     }
 
     public function getId() : DocumentPersisterCustomTypedId
