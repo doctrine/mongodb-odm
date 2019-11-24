@@ -188,7 +188,7 @@ class DocumentPersisterTest extends BaseTest
 
         $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
 
-        $value = ['_id' => $customId];
+        $value = ['id' => $customId];
         $expected = ['_id' => new ObjectId($objectIdString)];
 
         Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
