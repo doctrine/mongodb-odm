@@ -1030,10 +1030,10 @@ final class DocumentPersister
                 $preparedValue = Type::convertPHPToDatabaseValue($preparedValue);
 
                 if ($this->class->hasField($key)) {
-                    $mapping = $this->class->fieldMappings[$key];
+                    $mapping  = $this->class->fieldMappings[$key];
                     $typeName = $mapping['type'];
-                    if (Type::hasType($typeName) && !in_array($typeName, ['collection', 'hash'])) {
-                        $type = Type::getType($mapping['type']);
+                    if (Type::hasType($typeName) && ! in_array($typeName, ['collection', 'hash'])) {
+                        $type          = Type::getType($mapping['type']);
                         $preparedValue = $type->convertToDatabaseValue($preparedValue);
                     }
                 }

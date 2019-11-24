@@ -10,9 +10,14 @@ use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use ReflectionProperty;
+use function get_class;
+use function gettype;
+use function is_object;
+use function sprintf;
 
 class DocumentPersisterTest extends BaseTest
 {
@@ -188,7 +193,7 @@ class DocumentPersisterTest extends BaseTest
 
         $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
 
-        $value = ['id' => $customId];
+        $value    = ['id' => $customId];
         $expected = ['_id' => new ObjectId($objectIdString)];
 
         Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
@@ -744,19 +749,19 @@ final class DocumentPersisterCustomTypedId
         $this->value = $value;
     }
 
-    public function toString(): string
+    public function toString() : string
     {
         return $this->value;
     }
 
-    public static function fromString(string $value): self
+    public static function fromString(string $value) : self
     {
         return new static($value);
     }
 
-    public static function generate(): self
+    public static function generate() : self
     {
-        return new static((string)(new ObjectId()));
+        return new static((string) (new ObjectId()));
     }
 }
 
@@ -768,7 +773,8 @@ final class DocumentPersisterCustomIdType extends Type
     {
         if ($value instanceof ObjectId) {
             return $value;
-        } elseif ($value instanceof DocumentPersisterCustomTypedId) {
+        }
+        if ($value instanceof DocumentPersisterCustomTypedId) {
             return new ObjectId($value->toString());
         }
 
@@ -779,16 +785,17 @@ final class DocumentPersisterCustomIdType extends Type
     {
         if ($value instanceof DocumentPersisterCustomTypedId) {
             return $value;
-        } elseif ($value instanceof ObjectId) {
-            return DocumentPersisterCustomTypedId::fromString((string)$value);
+        }
+        if ($value instanceof ObjectId) {
+            return DocumentPersisterCustomTypedId::fromString((string) $value);
         }
 
         throw self::createException($value);
     }
 
-    private static function createException($value): \InvalidArgumentException
+    private static function createException($value) : InvalidArgumentException
     {
-        return new \InvalidArgumentException(
+        return new InvalidArgumentException(
             sprintf(
                 'Expected "%s" or "%s", got "%s"',
                 DocumentPersisterCustomTypedId::class,
@@ -810,7 +817,7 @@ class DocumentPersisterTestDocumentWithCustomId
         $this->id = $id;
     }
 
-    public function getId(): DocumentPersisterCustomTypedId
+    public function getId() : DocumentPersisterCustomTypedId
     {
         return $this->id;
     }
