@@ -802,7 +802,7 @@ final class DocumentPersisterCustomIdType extends Type
 /** @ODM\Document() */
 class DocumentPersisterTestDocumentWithCustomId
 {
-    /** @ODM\Field(type="DocumentPersisterCustomId") */
+    /** @ODM\Id(type="DocumentPersisterCustomId") */
     private $id;
 
     public function __construct(DocumentPersisterCustomTypedId $id)
