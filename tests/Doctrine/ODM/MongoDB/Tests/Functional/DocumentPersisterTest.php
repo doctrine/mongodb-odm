@@ -8,6 +8,8 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
+use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use ReflectionProperty;
@@ -176,6 +178,23 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
+    /**
+     * @dataProvider provideCustomIds
+     */
+    public function testPrepareQueryOrNewObjWithCustomTypedId(string $objectIdString)
+    {
+        $class             = DocumentPersisterTestDocumentWithCustomId::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
+
+        $value = ['_id' => $customId];
+        $expected = ['_id' => new ObjectId($objectIdString)];
+
+        Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
+        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
     public function provideHashIdentifiers()
     {
         return [
@@ -221,6 +240,15 @@ class DocumentPersisterTest extends BaseTest
         $expected = ['simpleRef' => ['$not' => ['$in' => [$id]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
+    public function provideCustomIds()
+    {
+        return [
+            ['5ddae21ee54e660d295e7cc1'],
+            ['5ddae21f32ac2d2acd5e7cc2'],
+            ['5ddae220072db34fae5e7cc3'],
+        ];
     }
 
     /**
@@ -705,4 +733,85 @@ class DocumentPersisterWriteConcernAcknowledged
 {
     /** @ODM\Id */
     public $id;
+}
+
+final class DocumentPersisterCustomTypedId
+{
+    private $value;
+
+    private function __construct(string $value)
+    {
+        $this->value = $value;
+    }
+
+    public function toString(): string
+    {
+        return $this->value;
+    }
+
+    public static function fromString(string $value): self
+    {
+        return new static($value);
+    }
+
+    public static function generate(): self
+    {
+        return new static((string)(new ObjectId()));
+    }
+}
+
+final class DocumentPersisterCustomIdType extends Type
+{
+    use ClosureToPHP;
+
+    public function convertToDatabaseValue($value)
+    {
+        if ($value instanceof ObjectId) {
+            return $value;
+        } elseif ($value instanceof DocumentPersisterCustomTypedId) {
+            return new ObjectId($value->toString());
+        }
+
+        throw self::createException($value);
+    }
+
+    public function convertToPHPValue($value)
+    {
+        if ($value instanceof DocumentPersisterCustomTypedId) {
+            return $value;
+        } elseif ($value instanceof ObjectId) {
+            return DocumentPersisterCustomTypedId::fromString((string)$value);
+        }
+
+        throw self::createException($value);
+    }
+
+    private static function createException($value): \InvalidArgumentException
+    {
+        return new \InvalidArgumentException(
+            sprintf(
+                'Expected "%s" or "%s", got "%s"',
+                DocumentPersisterCustomTypedId::class,
+                ObjectId::class,
+                is_object($value) ? get_class($value) : gettype($value)
+            )
+        );
+    }
+}
+
+/** @ODM\Document() */
+class DocumentPersisterTestDocumentWithCustomId
+{
+    /** @ODM\Field(type="DocumentPersisterCustomId") */
+    private $id;
+
+    public function __construct(DocumentPersisterCustomTypedId $id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId(): DocumentPersisterCustomTypedId
+    {
+        return $this->id;
+    }
 }
