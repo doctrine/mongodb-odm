@@ -106,5 +106,7 @@ EOT
         foreach ($qb->getQuery() as $result) {
             Debug::dump($result, $depth);
         }
+
+        return 0;
     }
 }

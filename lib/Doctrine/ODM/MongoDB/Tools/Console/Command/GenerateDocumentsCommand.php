@@ -159,5 +159,7 @@ EOT
         } else {
             $output->writeln('No Metadata Classes to process.');
         }
+
+        return 0;
     }
 }

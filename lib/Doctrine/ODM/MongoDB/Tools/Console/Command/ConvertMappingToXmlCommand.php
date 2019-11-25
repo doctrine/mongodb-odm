@@ -41,7 +41,7 @@ class ConvertMappingToXmlCommand extends Command
 
         if (! count($metadatas)) {
             $output->writeln('No Metadata Classes to process.');
-            return;
+            return 0;
         }
 
         /** @var ClassMetadataInfo $metadata */
@@ -59,6 +59,8 @@ class ConvertMappingToXmlCommand extends Command
         }
 
         $output->writeln(PHP_EOL . sprintf('XML mapping files generated to "<info>%s</info>"', $destPath));
+
+        return 0;
     }
 
     private function inspectDeprecations(ClassMetadataInfo $metadata, OutputInterface $output)
