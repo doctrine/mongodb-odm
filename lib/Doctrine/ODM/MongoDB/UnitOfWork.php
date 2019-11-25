@@ -2047,7 +2047,6 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $document
      * @param array $visited
-     * @internal This method always considers documents with an assigned identifier as DETACHED.
      */
     private function doDetach($document, array &$visited)
     {
@@ -2697,7 +2696,6 @@ class UnitOfWork implements PropertyChangedListener
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
      * @param object $document The document to be hydrated into in case of creation
      * @return object The document instance.
-     * @internal Highly performance-sensitive method.
      */
     public function getOrCreateDocument($className, $data, &$hints = array(), $document = null)
     {

@@ -283,7 +283,6 @@ class DocumentManager implements ObjectManager
      *
      * @param string $className The class name.
      * @return \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
-     * @internal Performance-sensitive method.
      */
     public function getClassMetadata($className)
     {
