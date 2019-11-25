@@ -103,5 +103,7 @@ EOT
         foreach ($qb->getQuery() as $result) {
             $dumper->dump($cloner->cloneVar($result));
         }
+
+        return 0;
     }
 }

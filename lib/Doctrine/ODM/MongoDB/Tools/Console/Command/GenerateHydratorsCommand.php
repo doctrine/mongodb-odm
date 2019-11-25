@@ -105,5 +105,7 @@ EOT
         } else {
             $output->write('No Metadata Classes to process.' . PHP_EOL);
         }
+
+        return 0;
     }
 }
