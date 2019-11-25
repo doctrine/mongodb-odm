@@ -32,8 +32,8 @@
         "doctrine/persistence": "^1.1",
         "mongodb/mongodb": "^1.2.0",
         "ocramius/proxy-manager": "^2.2",
-        "symfony/console": "^3.4|^4.1",
-        "symfony/var-dumper": "^3.4|^4.1"
+        "symfony/console": "^3.4|^4.1|^5.0",
+        "symfony/var-dumper": "^3.4|^4.1|^5.0"
     },
     "require-dev": {
         "doctrine/coding-standard": "^6.0",
