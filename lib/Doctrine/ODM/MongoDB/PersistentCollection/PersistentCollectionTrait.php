@@ -589,9 +589,6 @@ trait PersistentCollectionTrait
     /**
      * Called by PHP when this collection is serialized. Ensures that the
      * internal state of the collection can be reproduced after serialization
-     *
-     * @internal Tried to implement Serializable first but that did not work well
-     *           with circular references. This solution seems simpler and works well.
      */
     public function __sleep()
     {

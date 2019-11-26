@@ -277,8 +277,6 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the metadata for a class.
      *
-     * @internal Performance-sensitive method.
-     *
      * @param string $className The class name.
      */
     public function getClassMetadata($className) : ClassMetadata
