@@ -1891,8 +1891,6 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes a detach operation on the given document.
-     *
-     * @internal This method always considers documents with an assigned identifier as DETACHED.
      */
     private function doDetach(object $document, array &$visited) : void
     {
@@ -2531,8 +2529,6 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Creates a document. Used for reconstitution of documents during hydration.
-     *
-     * @internal
      */
     public function getOrCreateDocument(string $className, array $data, array &$hints = [], ?object $document = null) : object
     {
