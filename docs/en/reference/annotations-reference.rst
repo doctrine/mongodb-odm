@@ -1093,7 +1093,7 @@ Alias of `@Index`_, with the ``unique`` option set by default.
 --------
 
 The annotated instance variable will be used to store version information for :ref:`optimistic locking <transactions_and_concurrency_optimistic_locking>`.
-This is only compatible with ``int`` and ``date`` field types, and cannot be combined with `@Id`_.
+This is only compatible with ``int``, ``date``, and ``date_immutable`` field types, and cannot be combined with `@Id`_.
 
 .. code-block:: php
 

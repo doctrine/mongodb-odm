@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use BadMethodCallException;
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
@@ -211,11 +212,11 @@ final class DocumentPersister
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 $nextVersion    = null;
-                if ($versionMapping['type'] === 'int') {
+                if ($versionMapping['type'] === Type::INT || $versionMapping['type'] === Type::INTEGER) {
                     $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
-                } elseif ($versionMapping['type'] === 'date') {
-                    $nextVersionDateTime = new DateTime();
+                } elseif ($versionMapping['type'] === Type::DATE || $versionMapping['type'] === Type::DATE_IMMUTABLE) {
+                    $nextVersionDateTime = $versionMapping['type'] === Type::DATE ? new DateTime() : new DateTimeImmutable();
                     $nextVersion         = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
                 }
@@ -286,11 +287,11 @@ final class DocumentPersister
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
             $nextVersion    = null;
-            if ($versionMapping['type'] === 'int') {
+            if ($versionMapping['type'] === Type::INT || $versionMapping === Type::INTEGER) {
                 $nextVersion = max(1, (int) $this->class->reflFields[$this->class->versionField]->getValue($document));
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
-            } elseif ($versionMapping['type'] === 'date') {
-                $nextVersionDateTime = new DateTime();
+            } elseif ($versionMapping['type'] === Type::DATE || $versionMapping['type'] === Type::DATE_IMMUTABLE) {
+                $nextVersionDateTime = $versionMapping['type'] === Type::DATE ? new DateTime() : new DateTimeImmutable();
                 $nextVersion         = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
             }
@@ -371,12 +372,12 @@ final class DocumentPersister
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
             $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
-            if ($versionMapping['type'] === 'int') {
+            if ($versionMapping['type'] === Type::INT || $versionMapping['type'] === Type::INTEGER) {
                 $nextVersion                             = $currentVersion + 1;
                 $update['$inc'][$versionMapping['name']] = 1;
                 $query[$versionMapping['name']]          = $currentVersion;
-            } elseif ($versionMapping['type'] === 'date') {
-                $nextVersion                             = new DateTime();
+            } elseif ($versionMapping['type'] === Type::DATE || $versionMapping['type'] === Type::DATE_IMMUTABLE) {
+                $nextVersion                             = $versionMapping['type'] === Type::DATE ? new DateTime() : new DateTimeImmutable();
                 $update['$set'][$versionMapping['name']] = Type::convertPHPToDatabaseValue($nextVersion);
                 $query[$versionMapping['name']]          = Type::convertPHPToDatabaseValue($currentVersion);
             }

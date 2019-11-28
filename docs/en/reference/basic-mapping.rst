@@ -149,6 +149,7 @@ Here is a quick overview of the built-in mapping types:
 -  ``collection``
 -  ``custom_id``
 -  ``date``
+-  ``date_immutable``
 -  ``file``
 -  ``float``
 -  ``hash``
@@ -180,6 +181,7 @@ This list explains some of the less obvious mapping types:
 -  ``bin_uuid``: string to MongoDB\BSON\Binary instance with a "uuid" type
 -  ``collection``: numerically indexed array to MongoDB array
 -  ``date``: DateTime to ``MongoDB\BSON\UTCDateTime``
+-  ``date_immutable``: DateTimeImmutable to ``MongoDB\BSON\UTCDateTime``
 -  ``hash``: associative array to MongoDB object
 -  ``id``: string to ObjectId by default, but other formats are possible
 -  ``timestamp``: string to ``MongoDB\BSON\Timestamp``
