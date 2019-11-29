@@ -150,6 +150,7 @@ Here is a quick overview of the built-in mapping types:
 -  ``custom_id``
 -  ``date``
 -  ``date_immutable``
+-  ``decimal128``
 -  ``file``
 -  ``float``
 -  ``hash``
@@ -182,6 +183,7 @@ This list explains some of the less obvious mapping types:
 -  ``collection``: numerically indexed array to MongoDB array
 -  ``date``: DateTime to ``MongoDB\BSON\UTCDateTime``
 -  ``date_immutable``: DateTimeImmutable to ``MongoDB\BSON\UTCDateTime``
+-  ``decimal128``: string to ``MongoDB\BSON\Decimal128``, requires ``ext-bcmath``
 -  ``hash``: associative array to MongoDB object
 -  ``id``: string to ObjectId by default, but other formats are possible
 -  ``timestamp``: string to ``MongoDB\BSON\Timestamp``

@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\Binary;
+use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Timestamp;
 use MongoDB\BSON\UTCDateTime;
@@ -54,6 +55,7 @@ class TypeTest extends BaseTest
             'collection' => [Type::getType(Type::COLLECTION), ['foo', 'bar']],
             'objectId' => [Type::getType(Type::OBJECTID), '507f1f77bcf86cd799439011'],
             'raw' => [Type::getType(Type::RAW), (object) ['foo' => 'bar']],
+            'decimal128' => [Type::getType(Type::DECIMAL128), '4.20'],
         ];
     }
 
@@ -80,6 +82,7 @@ class TypeTest extends BaseTest
             'binDataMD5' => [Type::getType(Type::BINDATAMD5), new Binary(md5('ODM'), Binary::TYPE_MD5)],
             'binDataCustom' => [Type::getType(Type::BINDATACUSTOM), new Binary('foobarbaz', Binary::TYPE_USER_DEFINED)],
             'objectId' => [Type::getType(Type::OBJECTID), new ObjectId()],
+            'decimal128' => [Type::getType(Type::DECIMAL128), new Decimal128('4.20')],
         ];
     }
 

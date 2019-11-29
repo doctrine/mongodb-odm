@@ -26,6 +26,11 @@ final class MappingException extends BaseMappingException
         return new self(sprintf('Type to be overwritten %s does not exist.', $name));
     }
 
+    public static function typeRequirementsNotFulfilled(string $className, string $fieldName, string $type, string $reason) : self
+    {
+        return new self(sprintf("Can not use '%s' type for field '%s' in class '%s' as its requirements are not met: %s.", $fieldName, $className, $type, $reason));
+    }
+
     public static function mappingNotFound(string $className, string $fieldName) : self
     {
         return new self(sprintf("No mapping found for field '%s' in class '%s'.", $fieldName, $className));

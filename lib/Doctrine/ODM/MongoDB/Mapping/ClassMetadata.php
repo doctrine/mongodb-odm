@@ -25,6 +25,7 @@ use function array_pop;
 use function class_exists;
 use function constant;
 use function count;
+use function extension_loaded;
 use function get_class;
 use function in_array;
 use function is_array;
@@ -1974,6 +1975,7 @@ class ClassMetadata implements BaseClassMetadata
 
         $this->applyStorageStrategy($mapping);
         $this->checkDuplicateMapping($mapping);
+        $this->typeRequirementsAreMet($mapping);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         if (isset($mapping['association'])) {
@@ -2116,6 +2118,13 @@ class ClassMetadata implements BaseClassMetadata
     private function isAllowedGridFSField(string $name) : bool
     {
         return in_array($name, self::ALLOWED_GRIDFS_FIELDS, true);
+    }
+
+    private function typeRequirementsAreMet(array $mapping) : void
+    {
+        if ($mapping['type'] === Type::DECIMAL128 && ! extension_loaded('bcmath')) {
+            throw MappingException::typeRequirementsNotFulfilled($this->name, $mapping['fieldName'], Type::DECIMAL128, 'ext-bcmath is missing');
+        }
     }
 
     private function checkDuplicateMapping(array $mapping) : void
