@@ -1668,7 +1668,7 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function setVersionMapping(array &$mapping) : void
     {
-        if (! in_array($mapping['type'], [Type::INT, Type::INTEGER, Type::DATE, Type::DATE_IMMUTABLE], true)) {
+        if (! in_array($mapping['type'], [Type::INT, Type::INTEGER, Type::DATE, Type::DATE_IMMUTABLE, Type::DECIMAL128], true)) {
             throw LockException::invalidVersionFieldType($mapping['type']);
         }
 
