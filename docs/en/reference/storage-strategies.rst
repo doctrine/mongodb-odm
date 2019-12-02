@@ -19,8 +19,9 @@ increment
 ---------
 
 The ``increment`` strategy does not apply to collections but can be used for
-``int`` and ``float`` fields. When using the ``increment`` strategy, the field
-value will be updated using the `$inc`_ operator.
+``int``, ``float``, and any custom type implementing the ``\Doctrine\ODM\MongoDB\Types\Incrementable``
+interface. When using the ``increment`` strategy, the field value will be
+updated using the `$inc`_ operator.
 
 addToSet
 --------

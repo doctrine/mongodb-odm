@@ -9,6 +9,7 @@ use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\AbstractIdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
@@ -1193,12 +1194,6 @@ class ClassMetadata implements BaseClassMetadata
         }
 
         switch (true) {
-            case $mapping['type'] === 'int':
-            case $mapping['type'] === 'float':
-                $defaultStrategy   = self::STORAGE_STRATEGY_SET;
-                $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
-                break;
-
             case $mapping['type'] === 'many':
                 $defaultStrategy   = CollectionHelper::DEFAULT_STRATEGY;
                 $allowedStrategies = [
@@ -1211,9 +1206,18 @@ class ClassMetadata implements BaseClassMetadata
                 ];
                 break;
 
+            case $mapping['type'] === 'one':
+                $defaultStrategy   = self::STORAGE_STRATEGY_SET;
+                $allowedStrategies = [self::STORAGE_STRATEGY_SET];
+                break;
+
             default:
                 $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET];
+                $type              = Type::getType($mapping['type']);
+                if ($type instanceof Incrementable) {
+                    $allowedStrategies[] = self::STORAGE_STRATEGY_INCREMENT;
+                }
         }
 
         if (! isset($mapping['strategy'])) {
