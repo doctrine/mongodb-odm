@@ -70,6 +70,7 @@ class TypeTest extends BaseTest
         return [
             'id' => [Type::getType(Type::ID), new ObjectId()],
             'date' => [Type::getType(Type::DATE), new UTCDateTime()],
+            'dateImmutable' => [Type::getType(Type::DATE_IMMUTABLE), new UTCDateTime()],
             'timestamp' => [Type::getType(Type::TIMESTAMP), new Timestamp(0, time())],
             'binData' => [Type::getType(Type::BINDATA), new Binary('foobarbaz', Binary::TYPE_GENERIC)],
             'binDataFunc' => [Type::getType(Type::BINDATAFUNC), new Binary('foobarbaz', Binary::TYPE_FUNCTION)],
@@ -91,6 +92,17 @@ class TypeTest extends BaseTest
         $expectedDate->modify($date->format('H:i:s') . '.' . str_pad((string) $cleanMicroseconds, 6, '0', STR_PAD_LEFT));
 
         $type = Type::getType(Type::DATE);
+        $this->assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
+    }
+
+    public function testConvertDateImmutablePreservesMilliseconds()
+    {
+        $date = new DateTimeImmutable();
+
+        $cleanMicroseconds = (int) $date->format('v') * 1000;
+        $expectedDate      = $date->modify($date->format('H:i:s') . '.' . str_pad((string) $cleanMicroseconds, 6, '0', STR_PAD_LEFT));
+
+        $type = Type::getType(Type::DATE_IMMUTABLE);
         $this->assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
     }
 
