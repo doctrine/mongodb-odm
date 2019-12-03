@@ -17,13 +17,9 @@
 
        reference/introduction
        reference/architecture
-<<<<<<< HEAD
-       reference/basic-mapping
-       reference/custom-mapping-types
-=======
        reference/console-commands
        reference/basic-mapping
->>>>>>> 2.0.x
+       reference/custom-mapping-types
        reference/reference-mapping
        reference/bidirectional-references
        reference/complex-references
