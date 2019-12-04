@@ -410,7 +410,7 @@ their mapping.
 
 .. note::
 
-    The last call to ``spl_autoload_regiter`` is necessary to autoload generated
+    The last call to ``spl_autoload_register`` is necessary to autoload generated
     proxy classes. Without this, the proxy library would re-generate proxy
     classes for every request. See the `tuning for production`_ chapter in
     ProxyManager's documentation.
