@@ -172,7 +172,7 @@ class ClassMetadata implements BaseClassMetadata
     public const STORAGE_STRATEGY_ATOMIC_SET_ARRAY = 'atomicSetArray';
     public const STORAGE_STRATEGY_SET_ARRAY        = 'setArray';
 
-    private const ALLOWED_GRIDFS_FIELDS = ['_id', 'chunkSize', 'filename', 'length', 'metadata', 'uploadDate'];
+    private const ALLOWED_GRIDFS_FIELDS = ['_id', 'chunkSize', 'filename', 'length', 'metadata', 'uploadDate', 'md5'];
 
     /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
