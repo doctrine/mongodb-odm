@@ -1021,28 +1021,57 @@ final class DocumentPersister
 
             $preparedQueryElements = $this->prepareQueryElement((string) $key, $value, null, true, $isNewObj);
             foreach ($preparedQueryElements as [$preparedKey, $preparedValue]) {
-                if (is_array($preparedValue)) {
-                    $preparedQuery[$preparedKey] = array_map('\Doctrine\ODM\MongoDB\Types\Type::convertPHPToDatabaseValue', $preparedValue);
-
-                    continue;
-                }
-
-                $preparedValue = Type::convertPHPToDatabaseValue($preparedValue);
-
-                if ($this->class->hasField($key)) {
-                    $mapping  = $this->class->fieldMappings[$key];
-                    $typeName = $mapping['type'];
-                    if (Type::hasType($typeName) && ! in_array($typeName, ['collection', 'hash'])) {
-                        $type          = Type::getType($mapping['type']);
-                        $preparedValue = $type->convertToDatabaseValue($preparedValue);
-                    }
-                }
-
-                $preparedQuery[$preparedKey] = $preparedValue;
+                $preparedQuery[$preparedKey] = $this->convertToDatabaseValue($key, $preparedValue);
             }
         }
 
         return $preparedQuery;
+    }
+
+    /**
+     * Converts a single value to its database representation based on the mapping type
+     *
+     * @param string $fieldName
+     * @param        $value
+     *
+     * @return mixed
+     */
+    private function convertToDatabaseValue($fieldName, $value)
+    {
+        $value = Type::convertPHPToDatabaseValue($value);
+
+        if (! $this->class->hasField($fieldName)) {
+            return $value;
+        }
+
+        $mapping  = $this->class->fieldMappings[$fieldName];
+        $typeName = $mapping['type'];
+
+        if (is_array($value)) {
+            foreach ($value as $k => $v) {
+                $value[$k] = $this->convertToDatabaseValue($fieldName, $v);
+            }
+
+            return $value;
+        }
+
+        if (! empty($mapping['reference']) || ! empty($mapping['embedded'])) {
+            return $value;
+        }
+
+        if (! Type::hasType($typeName)) {
+            throw new InvalidArgumentException(
+                sprintf('Mapping type "%s" does not exist', $typeName)
+            );
+        }
+        if (in_array($typeName, ['collection', 'hash'])) {
+            return $value;
+        }
+
+        $type          = Type::getType($typeName);
+        $value = $type->convertToDatabaseValue($value);
+
+        return $value;
     }
 
     /**
@@ -1259,6 +1288,11 @@ final class DocumentPersister
             // Process query operators whose argument arrays need type conversion
             if (in_array($k, ['$in', '$nin', '$all']) && is_array($v)) {
                 foreach ($v as $k2 => $v2) {
+                    if ($v2 instanceof $class->name) {
+                        $expression[$k][$k2] = $class->getDatabaseIdentifierValue($class->getIdentifierValue($v2));
+
+                        continue;
+                    }
                     $expression[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
                 }
                 continue;
@@ -1270,7 +1304,11 @@ final class DocumentPersister
                 continue;
             }
 
-            $expression[$k] = $class->getDatabaseIdentifierValue($v);
+            if ($v instanceof $class->name) {
+                $expression[$k] = $class->getDatabaseIdentifierValue($class->getIdentifierValue($v));
+            } else {
+                $expression[$k] = $class->getDatabaseIdentifierValue($v);
+            }
         }
 
         return $expression;

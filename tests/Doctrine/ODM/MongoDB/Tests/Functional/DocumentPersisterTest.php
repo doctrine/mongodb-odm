@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Generator;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
@@ -184,43 +185,65 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @dataProvider provideCustomIds
+     * @dataProvider queryProviderForCustomTypeId
+     *
+     * @param array $testCase
      */
-    public function testPrepareQueryOrNewObjWithCustomTypedId(string $objectIdString)
+    public function testPrepareQueryOrNewObjWithCustomTypedId(array $testCase)
     {
         $class             = DocumentPersisterTestDocumentWithCustomId::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
-
-        $value    = ['id' => $customId];
-        $expected = ['_id' => new ObjectId($objectIdString)];
-
         Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+
+        $this->assertEquals(
+            $testCase['expected'],
+            $documentPersister->prepareQueryOrNewObj($testCase['query'])
+        );
     }
 
-    /**
-     * @dataProvider provideCustomIds
-     */
-    public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId(string $objectIdString)
+    public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId()
     {
-        $class             = DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId::class;
-        $documentPersister = $this->uow->getDocumentPersister($class);
-
-        $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
-
         Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
 
+        $objectIdString = (string) new ObjectId();
+        $objectIdString2 = (string) new ObjectId();
+        $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
+        $customId2 = DocumentPersisterCustomTypedId::fromString($objectIdString2);
         $documentWithCustomId = $this->dm->getReference(
             DocumentPersisterTestDocumentWithCustomId::class,
             $customId
         );
+        $documentWithCustomId2 = $this->dm->getReference(
+            DocumentPersisterTestDocumentWithCustomId::class,
+            $customId2
+        );
 
-        $value    = ['documentWithCustomId' => $documentWithCustomId];
-        $expected = ['documentWithCustomId' => new ObjectId($objectIdString)];
+        // We need to have test cases inside this method, since we cannot access `$this->dm` in data provider
+        $testCases = [
+            'Direct comparison' => [
+                'query' => ['documentWithCustomId' => $documentWithCustomId],
+                'expected' => ['documentWithCustomId' => new ObjectId($objectIdString)],
+            ],
+            'Operator with single value' => [
+                'query' => ['documentWithCustomId' => ['$ne' => $documentWithCustomId]],
+                'expected' => ['documentWithCustomId' => ['$ne' => new ObjectId($objectIdString)]],
+            ],
+            'Operator with multiple values' => [
+                'query' => ['documentWithCustomId' => ['$in' => [$documentWithCustomId, $documentWithCustomId2]]],
+                'expected' => ['documentWithCustomId' => ['$in' => [new ObjectId($objectIdString), new ObjectId($objectIdString2)]]],
+            ],
+        ];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        $class             = DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        foreach ($testCases as $testCase) {
+            $this->assertEquals(
+                $testCase['expected'],
+                $documentPersister->prepareQueryOrNewObj($testCase['query'])
+            );
+        }
     }
 
     public function provideHashIdentifiers()
@@ -270,13 +293,27 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
-    public function provideCustomIds()
+    public static function queryProviderForCustomTypeId(): Generator
     {
-        return [
-            ['5ddae21ee54e660d295e7cc1'],
-            ['5ddae21f32ac2d2acd5e7cc2'],
-            ['5ddae220072db34fae5e7cc3'],
-        ];
+        $objectIdString = (string) new ObjectId();
+        $objectIdString2 = (string) new ObjectId();
+        $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
+        $customId2 = DocumentPersisterCustomTypedId::fromString($objectIdString2);
+
+        yield 'Direct comparison' => [[
+            'query' => ['id' => $customId],
+            'expected' => ['_id' => new ObjectId($objectIdString)]
+        ]];
+
+        yield 'Operator with single value' => [[
+            'query' => ['id' => ['$ne' => $customId]],
+            'expected' => ['_id' => ['$ne' => new ObjectId($objectIdString)]]
+        ]];
+
+        yield 'Operator with multiple values' => [[
+            'query' => ['id' => ['$in' => [$customId, $customId2]]],
+            'expected' => ['_id' => ['$in' => [new ObjectId($objectIdString), new ObjectId($objectIdString2)]]]
+        ]];
     }
 
     /**
