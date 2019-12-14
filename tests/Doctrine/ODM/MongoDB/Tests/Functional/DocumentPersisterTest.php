@@ -185,9 +185,9 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @dataProvider queryProviderForCustomTypeId
-     *
      * @param array $testCase
+     *
+     * @dataProvider queryProviderForCustomTypeId
      */
     public function testPrepareQueryOrNewObjWithCustomTypedId(array $testCase)
     {
@@ -206,11 +206,13 @@ class DocumentPersisterTest extends BaseTest
     {
         Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
 
-        $objectIdString = (string) new ObjectId();
+        $objectIdString  = (string) new ObjectId();
         $objectIdString2 = (string) new ObjectId();
-        $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
+
+        $customId  = DocumentPersisterCustomTypedId::fromString($objectIdString);
         $customId2 = DocumentPersisterCustomTypedId::fromString($objectIdString2);
-        $documentWithCustomId = $this->dm->getReference(
+
+        $documentWithCustomId  = $this->dm->getReference(
             DocumentPersisterTestDocumentWithCustomId::class,
             $customId
         );
@@ -293,27 +295,34 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
-    public static function queryProviderForCustomTypeId(): Generator
+    public static function queryProviderForCustomTypeId() : Generator
     {
-        $objectIdString = (string) new ObjectId();
+        $objectIdString  = (string) new ObjectId();
         $objectIdString2 = (string) new ObjectId();
-        $customId = DocumentPersisterCustomTypedId::fromString($objectIdString);
+
+        $customId  = DocumentPersisterCustomTypedId::fromString($objectIdString);
         $customId2 = DocumentPersisterCustomTypedId::fromString($objectIdString2);
 
-        yield 'Direct comparison' => [[
-            'query' => ['id' => $customId],
-            'expected' => ['_id' => new ObjectId($objectIdString)]
-        ]];
+        yield 'Direct comparison' => [
+            [
+                'query' => ['id' => $customId],
+                'expected' => ['_id' => new ObjectId($objectIdString)],
+            ],
+        ];
 
-        yield 'Operator with single value' => [[
-            'query' => ['id' => ['$ne' => $customId]],
-            'expected' => ['_id' => ['$ne' => new ObjectId($objectIdString)]]
-        ]];
+        yield 'Operator with single value' => [
+            [
+                'query' => ['id' => ['$ne' => $customId]],
+                'expected' => ['_id' => ['$ne' => new ObjectId($objectIdString)]],
+            ],
+        ];
 
-        yield 'Operator with multiple values' => [[
-            'query' => ['id' => ['$in' => [$customId, $customId2]]],
-            'expected' => ['_id' => ['$in' => [new ObjectId($objectIdString), new ObjectId($objectIdString2)]]]
-        ]];
+        yield 'Operator with multiple values' => [
+            [
+                'query' => ['id' => ['$in' => [$customId, $customId2]]],
+                'expected' => ['_id' => ['$in' => [new ObjectId($objectIdString), new ObjectId($objectIdString2)]]],
+            ],
+        ];
     }
 
     /**

@@ -1032,7 +1032,7 @@ final class DocumentPersister
      * Converts a single value to its database representation based on the mapping type
      *
      * @param string $fieldName
-     * @param        $value
+     * @param mixed  $value
      *
      * @return mixed
      */
@@ -1068,7 +1068,7 @@ final class DocumentPersister
             return $value;
         }
 
-        $type          = Type::getType($typeName);
+        $type  = Type::getType($typeName);
         $value = $type->convertToDatabaseValue($value);
 
         return $value;
