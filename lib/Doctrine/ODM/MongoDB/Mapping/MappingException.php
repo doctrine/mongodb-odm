@@ -20,7 +20,7 @@
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
-use Throwable;
+use Exception;
 
 /**
  * Class for all exceptions related to the Doctrine MongoDB ODM
@@ -30,7 +30,7 @@ use Throwable;
  */
 class MappingException extends BaseMappingException
 {
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
+    public function __construct($message = "", $code = 0, Exception $previous = null)
     {
         if (self::class !== static::class) {
             @trigger_error(sprintf('The class "%s" extends "%s" which will be final in doctrine/mongodb-odm 2.0.', static::class, self::class), E_USER_DEPRECATED);
