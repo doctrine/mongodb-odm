@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use function key;
 use function strcmp;
@@ -404,6 +405,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
 
         $this->assertTrue($class->isFile);
         $this->assertSame(12345, $class->getChunkSizeBytes());
+        $this->assertNull($class->customRepositoryClassName);
 
         $this->assertArraySubset([
             'name' => '_id',
@@ -440,6 +442,14 @@ abstract class AbstractMappingDriverTest extends BaseTest
             'embedded' => true,
             'targetDocument' => AbstractMappingDriverFileMetadata::class,
         ], $class->getFieldMapping('metadata'), true);
+    }
+
+    public function testGridFSMappingWithCustomRepository()
+    {
+        $class = $this->loadMetadata(AbstractMappingDriverFileWithCustomRepository::class);
+
+        $this->assertTrue($class->isFile);
+        $this->assertSame(AbstractMappingDriverGridFSRepository::class, $class->customRepositoryClassName);
     }
 
     /**
@@ -715,6 +725,19 @@ class AbstractMappingDriverFileMetadata
 {
     /** @ODM\Field */
     public $contentType;
+}
+
+/**
+ * @ODM\File(repositoryClass=AbstractMappingDriverGridFSRepository::class)
+ */
+class AbstractMappingDriverFileWithCustomRepository
+{
+    /** @ODM\Id */
+    public $id;
+}
+
+class AbstractMappingDriverGridFSRepository extends DefaultGridFSRepository
+{
 }
 
 /** @ODM\MappedSuperclass */
