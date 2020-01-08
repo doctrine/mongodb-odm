@@ -100,6 +100,10 @@ class XmlDriver extends FileDriver
             if (isset($xmlRoot['chunk-size-bytes'])) {
                 $class->setChunkSizeBytes((int) $xmlRoot['chunk-size-bytes']);
             }
+
+            if (isset($xmlRoot['repository-class'])) {
+                $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
+            }
         }
 
         if (isset($xmlRoot['db'])) {
