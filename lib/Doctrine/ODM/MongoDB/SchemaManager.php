@@ -30,6 +30,7 @@ final class SchemaManager
     private const CODE_SHARDING_ALREADY_INITIALIZED = 23;
 
     private const ALLOWED_MISSING_INDEX_OPTIONS = [
+        'background',
         'partialFilterExpression',
         'sparse',
         'unique',
