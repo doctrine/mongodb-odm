@@ -4,7 +4,7 @@ Mapping Classes to the ORM and ODM
 Because of the non-intrusive design of Doctrine, it is possible for you to have plain PHP classes
 that are mapped to both a relational database (with the Doctrine2 Object Relational Mapper) and
 MongoDB (with the Doctrine MongoDB Object Document Mapper), or any other persistence layer that
-implements the Doctrine Common `persistence`_ interfaces.
+implements the Doctrine Persistence `persistence`_ interfaces.
 
 Test Subject
 ------------
@@ -226,4 +226,4 @@ PHP objects. The data is transparently injected to the objects for you automatic
 are not forced to extend some base class or shape your domain in any certain way for it to work
 with the Doctrine persistence layers.
 
-.. _persistence: https://github.com/doctrine/common/tree/master/lib/Doctrine/Common/Persistence
+.. _persistence: https://github.com/doctrine/persistence
