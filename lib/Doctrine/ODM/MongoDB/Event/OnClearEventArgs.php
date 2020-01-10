@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\Common\Persistence\Event\OnClearEventArgs as BaseOnClearEventArgs;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\Event\OnClearEventArgs as BaseOnClearEventArgs;
 use function assert;
 
 /**

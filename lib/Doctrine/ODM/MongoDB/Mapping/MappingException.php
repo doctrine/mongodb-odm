@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Persistence\Mapping\MappingException as BaseMappingException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractDocument;
+use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 use ReflectionException;
 use ReflectionObject;
 use function sprintf;

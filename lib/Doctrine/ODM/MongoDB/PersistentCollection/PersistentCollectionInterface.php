@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
  * Interface for persistent collection classes.

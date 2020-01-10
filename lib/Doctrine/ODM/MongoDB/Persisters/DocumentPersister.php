@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use BadMethodCallException;
 use DateTime;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
@@ -26,6 +25,7 @@ use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
