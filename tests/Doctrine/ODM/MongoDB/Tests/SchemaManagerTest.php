@@ -679,6 +679,27 @@ class SchemaManagerTest extends BaseTest
                 'mongoIndex' => ['name' => 'foo_1_bar_1'],
                 'documentIndex' => [],
             ],
+            // background option
+            'backgroundOptionOnlyInMongoIndex' => [
+                'expected' => true,
+                'mongoIndex' => ['background' => false],
+                'documentIndex' => [],
+            ],
+            'backgroundOptionOnlyInDocumentIndex' => [
+                'expected' => true,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['background' => false]],
+            ],
+            'backgroundOptionOnlyInBothIndexesMismatch' => [
+                'expected' => true,
+                'mongoIndex' => ['background' => false],
+                'documentIndex' => ['options' => ['background' => true]],
+            ],
+            'backgroundOptionOnlyInBothIndexesSame' => [
+                'expected' => true,
+                'mongoIndex' => ['background' => true],
+                'documentIndex' => ['options' => ['background' => true]],
+            ],
         ];
     }
 
