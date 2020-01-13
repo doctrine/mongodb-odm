@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use function array_slice;
 use function end;
