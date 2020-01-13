@@ -3,12 +3,12 @@ Blending the ORM and MongoDB ODM
 
 Since the start of the `Doctrine MongoDB Object Document Mapper`_ project people have asked how it can be integrated with the `ORM`_. This article will demonstrates how you can integrate the two transparently, maintaining a clean domain model.
 
-This example will have a `Product` that is stored in MongoDB and the `Order` stored in a MySQL database.
+This example will have a ``Product`` that is stored in MongoDB and the ``Order`` stored in a MySQL database.
 
 Define Product
 --------------
 
-First lets define our `Product` document:
+First lets define our ``Product`` document:
 
 .. code-block:: php
 
@@ -44,7 +44,7 @@ First lets define our `Product` document:
 Define Entity
 -------------
 
-Next create the `Order` entity that has a `$product` and `$productId` property linking it to the `Product` that is stored with MongoDB:
+Next create the ``Order`` entity that has a ``$product`` and ``$productId`` property linking it to the ``Product`` that is stored with MongoDB:
 
 .. code-block:: php
 
@@ -101,7 +101,7 @@ Next create the `Order` entity that has a `$product` and `$productId` property l
 Event Subscriber
 ----------------
 
-Now we need to setup an event subscriber that will set the `$product` property of all `Order` instances to a reference to the document product so it can be lazily loaded when it is accessed the first time. So first register a new event subscriber:
+Now we need to setup an event subscriber that will set the ``$product`` property of all ``Order`` instances to a reference to the document product so it can be lazily loaded when it is accessed the first time. So first register a new event subscriber:
 
 .. code-block:: php
 
@@ -112,7 +112,15 @@ Now we need to setup an event subscriber that will set the `$product` property o
         [\Doctrine\ORM\Events::postLoad], new MyEventSubscriber($dm)
     );
 
-So now we need to define a class named `MyEventSubscriber` and pass a dependency to the `DocumentManager`. It will have a `postLoad()` method that sets the product document reference:
+or in .yaml
+
+.. code-block:: yaml    
+    
+    App\Listeners\MyEventSubscriber:
+        tags:
+            - { name: doctrine.event_listener, connection: default, event: postLoad}
+
+So now we need to define a class named ``MyEventSubscriber`` and pass ``DocumentManager`` as a dependency. It will have a ``postLoad()`` method that sets the product document reference:
 
 .. code-block:: php
 
@@ -131,22 +139,31 @@ So now we need to define a class named `MyEventSubscriber` and pass a dependency
         public function postLoad(LifecycleEventArgs $eventArgs): void
         {
             $order = $eventArgs->getEntity();
+
+            if (!$order instanceof Order) {
+                return;
+            }
+
             $em = $eventArgs->getEntityManager();
-            $productReflProp = $em->getClassMetadata('Entities\Order')
+            $productReflProp = $em->getClassMetadata(Order::class)
                 ->reflClass->getProperty('product');
             $productReflProp->setAccessible(true);
             $productReflProp->setValue(
-                $order, $this->dm->getReference('Documents\Product', $order->getProductId())
+                $order, $this->dm->getReference(Product::class, $order->getProductId())
             );
         }
     }
 
-The `postLoad` method will be invoked after an ORM entity is loaded from the database. This allows us to use the `DocumentManager` to set the `$product` property with a reference to the `Product` document with the product id we previously stored.
+The ``postLoad`` method will be invoked after an ORM entity is loaded from the database. This allows us 
+to use the ``DocumentManager`` to set the ``$product`` property with a reference to the ``Product`` document 
+with the product id we previously stored. Please note, that the event subscriber will be called on 
+postLoad for all entities that are loaded by doctrine. Thus, it is recommended to check for the current 
+entity.  
 
 Working with Products and Orders
 --------------------------------
 
-First create a new `Product`:
+First create a new ``Product``:
 
 .. code-block:: php
 
@@ -157,7 +174,7 @@ First create a new `Product`:
     $dm->persist($product);
     $dm->flush();
 
-Now create a new `Order` and link it to a `Product` in MySQL:
+Now create a new ``Order`` and link it to a ``Product`` in MySQL:
 
 .. code-block:: php
 
@@ -180,7 +197,7 @@ Later we can retrieve the entity and lazily load the reference to the document i
 
     echo "Order Title: " . $product->getTitle();
 
-If you were to print the `$order` you would see that we got back regular PHP objects:
+If you were to print the ``$order`` you would see that we got back regular PHP objects:
 
 .. code-block:: php
 

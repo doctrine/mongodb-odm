@@ -5,10 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -20,11 +16,16 @@ use Doctrine\ODM\MongoDB\Id\AlnumGenerator;
 use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
+use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
+use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionException;
 use function assert;
 use function get_class;
 use function get_class_methods;
 use function in_array;
+use function interface_exists;
 use function ucfirst;
 
 /**
@@ -370,3 +371,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         );
     }
 }
+
+interface_exists(ClassMetadataInterface::class);
+interface_exists(ReflectionService::class);

@@ -6,12 +6,12 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use ReflectionClass;
 use ReflectionMethod;
 use const E_USER_DEPRECATED;
@@ -20,6 +20,7 @@ use function array_replace;
 use function assert;
 use function constant;
 use function get_class;
+use function interface_exists;
 use function is_array;
 use function trigger_error;
 
@@ -44,7 +45,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class) : void
+    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $class) : void
     {
         assert($class instanceof ClassMetadata);
         $reflClass = $class->getReflectionClass();
@@ -285,3 +286,5 @@ class AnnotationDriver extends AbstractAnnotationDriver
         return new self($reader, $paths);
     }
 }
+
+interface_exists(\Doctrine\Persistence\Mapping\ClassMetadata::class);

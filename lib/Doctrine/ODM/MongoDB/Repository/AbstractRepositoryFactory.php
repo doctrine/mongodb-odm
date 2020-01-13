@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Repository;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\Persistence\ObjectRepository;
 use function ltrim;
 use function spl_object_hash;
 

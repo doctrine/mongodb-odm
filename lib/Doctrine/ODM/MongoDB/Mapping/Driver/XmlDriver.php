@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
@@ -21,6 +21,7 @@ use function current;
 use function explode;
 use function implode;
 use function in_array;
+use function interface_exists;
 use function is_numeric;
 use function iterator_to_array;
 use function libxml_clear_errors;
@@ -76,7 +77,7 @@ class XmlDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $class)
+    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $class)
     {
         assert($class instanceof ClassMetadata);
         $xmlRoot = $this->getElement($className);
@@ -99,6 +100,10 @@ class XmlDriver extends FileDriver
 
             if (isset($xmlRoot['chunk-size-bytes'])) {
                 $class->setChunkSizeBytes((int) $xmlRoot['chunk-size-bytes']);
+            }
+
+            if (isset($xmlRoot['repository-class'])) {
+                $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
             }
         }
 
@@ -648,3 +653,5 @@ class XmlDriver extends FileDriver
         $this->addEmbedMapping($class, $xmlRoot->metadata, 'one');
     }
 }
+
+interface_exists(ClassMetadata::class);
