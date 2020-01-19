@@ -1021,7 +1021,11 @@ final class DocumentPersister
 
             $preparedQueryElements = $this->prepareQueryElement((string) $key, $value, null, true, $isNewObj);
             foreach ($preparedQueryElements as [$preparedKey, $preparedValue]) {
-                $preparedQuery[$preparedKey] = $this->convertToDatabaseValue($key, $preparedValue);
+                $preparedValue = Type::convertPHPToDatabaseValue($preparedValue);
+                if ($this->class->hasField($key)) {
+                    $preparedValue = $this->convertToDatabaseValue($key, $preparedValue);
+                }
+                $preparedQuery[$preparedKey] = $preparedValue;
             }
         }
 
@@ -1031,19 +1035,12 @@ final class DocumentPersister
     /**
      * Converts a single value to its database representation based on the mapping type
      *
-     * @param string $fieldName
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return mixed
      */
-    private function convertToDatabaseValue($fieldName, $value)
+    private function convertToDatabaseValue(string $fieldName, $value)
     {
-        $value = Type::convertPHPToDatabaseValue($value);
-
-        if (! $this->class->hasField($fieldName)) {
-            return $value;
-        }
-
         $mapping  = $this->class->fieldMappings[$fieldName];
         $typeName = $mapping['type'];
 
@@ -1289,10 +1286,14 @@ final class DocumentPersister
             if (in_array($k, ['$in', '$nin', '$all']) && is_array($v)) {
                 foreach ($v as $k2 => $v2) {
                     if ($v2 instanceof $class->name) {
+                        // If a value in a query is a target document, e.g. ['referenceField' => $targetDocument],
+                        // retreive id from target document and convert this id using it's type
                         $expression[$k][$k2] = $class->getDatabaseIdentifierValue($class->getIdentifierValue($v2));
 
                         continue;
                     }
+                    // Otherwise if a value in a query is already id, e.g. ['referenceField' => $targetDocumentId],
+                    // just convert id to it's database representation using it's type
                     $expression[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
                 }
                 continue;
