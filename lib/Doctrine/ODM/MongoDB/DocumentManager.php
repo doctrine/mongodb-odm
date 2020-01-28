@@ -531,17 +531,32 @@ class DocumentManager implements ObjectManager
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
      *
-     * @param object $document
+     * @param object|array $documentOrOptions
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
      * @throws \InvalidArgumentException
      */
-    public function flush($document = null, array $options = array())
+    public function flush($documentOrOptions = null, array $options = array())
     {
-        if (null !== $document && ! is_object($document) && ! is_array($document)) {
-            throw new \InvalidArgumentException(gettype($document));
+        if (func_num_args() === 1 && is_array($documentOrOptions) && ! $this->arrayContainsDocuments($documentOrOptions)) {
+            $options = $documentOrOptions;
+            $documentOrOptions = null;
+        }
+        if (null !== $documentOrOptions && ! is_object($documentOrOptions) && ! is_array($documentOrOptions)) {
+            throw new \InvalidArgumentException(gettype($documentOrOptions));
+        }
+        if (!empty($documentOrOptions)) {
+            @trigger_error(
+                'Flushing selected documents has been deprecated and will be removed in doctrine/mongodb-odm 2.0.',
+                E_USER_DEPRECATED
+            );
+        } elseif (func_num_args() === 2) {
+            @trigger_error(
+                sprintf('Flushing selected documents has been deprecated and will be removed in doctrine/mongodb-odm 2.0. You can omit the first argument to %s.', __METHOD__),
+                E_USER_DEPRECATED
+            );
         }
         $this->errorIfClosed();
-        $this->unitOfWork->commit($document, $options);
+        $this->unitOfWork->commit($documentOrOptions, $options);
     }
 
     /**
@@ -841,5 +856,19 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->filterCollection;
+    }
+
+    private function arrayContainsDocuments(array $documentOrOptions)
+    {
+        foreach ($documentOrOptions as $documentPerhaps) {
+            if (! is_object($documentPerhaps)) {
+                return false;
+            }
+            if (! $this->getMetadataFactory()->isTransient(get_class($documentPerhaps))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
