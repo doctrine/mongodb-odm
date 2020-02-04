@@ -4,13 +4,23 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Closure;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
+use Doctrine\ODM\MongoDB\Types\Type;
+use Generator;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use ReflectionProperty;
+use function get_class;
+use function gettype;
+use function is_object;
+use function sprintf;
 
 class DocumentPersisterTest extends BaseTest
 {
@@ -176,6 +186,40 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
+    /**
+     * @dataProvider queryProviderForCustomTypeId
+     */
+    public function testPrepareQueryOrNewObjWithCustomTypedId(array $expected, array $query)
+    {
+        $class             = DocumentPersisterTestDocumentWithCustomId::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
+
+        $this->assertEquals(
+            $expected,
+            $documentPersister->prepareQueryOrNewObj($query)
+        );
+    }
+
+    /**
+     * @dataProvider queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId
+     */
+    public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId(Closure $getTestCase)
+    {
+        Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
+
+        $class             = DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        ['query' => $query, 'expected' => $expected] = $getTestCase($this->dm);
+
+        $this->assertEquals(
+            $expected,
+            $documentPersister->prepareQueryOrNewObj($query)
+        );
+    }
+
     public function provideHashIdentifiers()
     {
         return [
@@ -221,6 +265,84 @@ class DocumentPersisterTest extends BaseTest
         $expected = ['simpleRef' => ['$not' => ['$in' => [$id]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
+    public static function queryProviderForCustomTypeId() : Generator
+    {
+        $objectIdString  = (string) new ObjectId();
+        $objectIdString2 = (string) new ObjectId();
+
+        $customId  = DocumentPersisterCustomTypedId::fromString($objectIdString);
+        $customId2 = DocumentPersisterCustomTypedId::fromString($objectIdString2);
+
+        yield 'Direct comparison' => [
+            'expected' => ['_id' => new ObjectId($objectIdString)],
+            'query' => ['id' => $customId],
+        ];
+
+        yield 'Operator with single value' => [
+            'expected' => ['_id' => ['$ne' => new ObjectId($objectIdString)]],
+            'query' => ['id' => ['$ne' => $customId]],
+        ];
+
+        yield 'Operator with multiple values' => [
+            'expected' => ['_id' => ['$in' => [new ObjectId($objectIdString), new ObjectId($objectIdString2)]]],
+            'query' => ['id' => ['$in' => [$customId, $customId2]]],
+        ];
+    }
+
+    public static function queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId() : Generator
+    {
+        $getReference = static function (DocumentManager $dm) : DocumentPersisterTestDocumentWithCustomId {
+            $objectIdString = (string) new ObjectId();
+            $customId       = DocumentPersisterCustomTypedId::fromString($objectIdString);
+
+            return $dm->getReference(
+                DocumentPersisterTestDocumentWithCustomId::class,
+                $customId
+            );
+        };
+
+        yield 'Direct comparison' => [
+            static function (DocumentManager $dm) use ($getReference) : array {
+                $ref = $getReference($dm);
+
+                return [
+                    'query' => ['documentWithCustomId' => $ref],
+                    'expected' => ['documentWithCustomId' => new ObjectId($ref->getId()->toString())],
+                ];
+            },
+        ];
+
+        yield 'Operator with single value' => [
+            static function (DocumentManager $dm) use ($getReference) : array {
+                $ref = $getReference($dm);
+
+                return [
+                    'query' => ['documentWithCustomId' => ['$ne' => $ref]],
+                    'expected' => ['documentWithCustomId' => ['$ne' => new ObjectId($ref->getId()->toString())]],
+                ];
+            },
+        ];
+
+        yield 'Operator with multiple values' => [
+            static function (DocumentManager $dm) use ($getReference) : array {
+                $ref1 = $getReference($dm);
+                $ref2 = $getReference($dm);
+
+                return [
+                    'query' => ['documentWithCustomId' => ['$in' => [$ref1, $ref2]]],
+                    'expected' => [
+                        'documentWithCustomId' => [
+                            '$in' => [
+                                new ObjectId($ref1->getId()->toString()),
+                                new ObjectId($ref2->getId()->toString()),
+                            ],
+                        ],
+                    ],
+                ];
+            },
+        ];
     }
 
     /**
@@ -705,4 +827,107 @@ class DocumentPersisterWriteConcernAcknowledged
 {
     /** @ODM\Id */
     public $id;
+}
+
+final class DocumentPersisterCustomTypedId
+{
+    private $value;
+
+    private function __construct(string $value)
+    {
+        $this->value = $value;
+    }
+
+    public function toString() : string
+    {
+        return $this->value;
+    }
+
+    public static function fromString(string $value) : self
+    {
+        return new static($value);
+    }
+
+    public static function generate() : self
+    {
+        return new static((string) (new ObjectId()));
+    }
+}
+
+final class DocumentPersisterCustomIdType extends Type
+{
+    use ClosureToPHP;
+
+    public function convertToDatabaseValue($value)
+    {
+        if ($value instanceof ObjectId) {
+            return $value;
+        }
+        if ($value instanceof DocumentPersisterCustomTypedId) {
+            return new ObjectId($value->toString());
+        }
+
+        throw self::createException($value);
+    }
+
+    public function convertToPHPValue($value)
+    {
+        if ($value instanceof DocumentPersisterCustomTypedId) {
+            return $value;
+        }
+        if ($value instanceof ObjectId) {
+            return DocumentPersisterCustomTypedId::fromString((string) $value);
+        }
+
+        throw self::createException($value);
+    }
+
+    private static function createException($value) : InvalidArgumentException
+    {
+        return new InvalidArgumentException(
+            sprintf(
+                'Expected "%s" or "%s", got "%s"',
+                DocumentPersisterCustomTypedId::class,
+                ObjectId::class,
+                is_object($value) ? get_class($value) : gettype($value)
+            )
+        );
+    }
+}
+
+/** @ODM\Document() */
+class DocumentPersisterTestDocumentWithCustomId
+{
+    /** @ODM\Id(strategy="NONE", type="DocumentPersisterCustomId") */
+    private $id;
+
+    public function __construct(DocumentPersisterCustomTypedId $id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId() : DocumentPersisterCustomTypedId
+    {
+        return $this->id;
+    }
+}
+
+/** @ODM\Document() */
+class DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId
+{
+    /** @ODM\Id() */
+    private $id;
+
+    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocumentWithCustomId::class, storeAs="id") */
+    private $documentWithCustomId;
+
+    public function __construct(DocumentPersisterTestDocumentWithCustomId $documentWithCustomId)
+    {
+        $this->documentWithCustomId = $documentWithCustomId;
+    }
+
+    public function getId() : DocumentPersisterCustomTypedId
+    {
+        return $this->id;
+    }
 }
