@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Exception;
+use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use InvalidArgumentException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
@@ -17,6 +17,7 @@ use function array_filter;
 use function array_merge;
 use function array_unique;
 use function assert;
+use function is_string;
 use function iterator_count;
 use function iterator_to_array;
 use function ksort;
@@ -322,7 +323,25 @@ final class SchemaManager
         }
 
         if ($class->isView()) {
-            throw new Exception('Not implemented');
+            $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
+
+            $rootClass = $class->getRootClass();
+            assert(is_string($rootClass));
+
+            $builder    = $this->dm->createAggregationBuilder($rootClass);
+            $repository = $this->dm->getRepository($class->name);
+            assert($repository instanceof ViewRepository);
+            $repository->createViewAggregation($builder);
+
+            $collectionName = $this->dm->getDocumentCollection($rootClass)->getCollectionName();
+            $this->dm->getDocumentDatabase($documentName)
+                ->command([
+                    'create' => $class->collection,
+                    'viewOn' => $collectionName,
+                    'pipeline' => $builder->getPipeline(),
+                ], $options);
+
+            return;
         }
 
         if ($class->isFile) {
@@ -373,10 +392,6 @@ final class SchemaManager
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
-        if ($class->isView()) {
-            throw new Exception('Not implemented');
-        }
-
         $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
 
         $this->dm->getDocumentCollection($documentName)->drop($options);
@@ -413,10 +428,6 @@ final class SchemaManager
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new InvalidArgumentException('Cannot drop document database for mapped super classes, embedded documents or query result documents.');
-        }
-
-        if ($class->isView()) {
-            throw new Exception('Not implemented');
         }
 
         $this->dm->getDocumentDatabase($documentName)->drop($this->getWriteOptions($maxTimeMs, $writeConcern));
