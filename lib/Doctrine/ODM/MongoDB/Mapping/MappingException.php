@@ -245,4 +245,14 @@ final class MappingException extends BaseMappingException
     {
         return new self(sprintf("Class '%s' cannot be discriminated because it is marked as a GridFS file", $className));
     }
+
+    public static function invalidRepositoryClass(string $className, string $repositoryClass, string $expectedRepositoryClass) : self
+    {
+        return new self(sprintf(
+            'Invalid repository class "%s" for mapped class "%s". It must be an instance of "%s".',
+            $repositoryClass,
+            $className,
+            $expectedRepositoryClass
+        ));
+    }
 }

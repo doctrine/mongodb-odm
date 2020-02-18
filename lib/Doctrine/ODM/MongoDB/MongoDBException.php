@@ -143,4 +143,9 @@ class MongoDBException extends Exception
     {
         return new self('Failed to fetch current data of document being refreshed. Was it removed in the meantime?');
     }
+
+    public static function cannotCreateRepository(string $className) : self
+    {
+        return new self(sprintf('Cannot create repository for class "%s".', $className));
+    }
 }
