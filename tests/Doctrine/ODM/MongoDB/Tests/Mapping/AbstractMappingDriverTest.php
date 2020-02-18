@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use InvalidArgumentException;
 use function key;
+use function sprintf;
 use function strcmp;
 use function usort;
 
@@ -477,6 +481,95 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->assertTrue($metadata->hasField('bar'));
         $this->assertTrue($metadata->fieldMappings['bar']['notSaved']);
     }
+
+    public function testViewWithoutRepository()
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Invalid repository class "%s" for mapped class "%s". It must be an instance of "%s".',
+            DocumentRepository::class,
+            AbstractMappingDriverViewWithoutRepository::class,
+            ViewRepository::class
+        ));
+
+        $this->dm->getRepository(AbstractMappingDriverViewWithoutRepository::class);
+    }
+
+    public function testViewWithWrongRepository()
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Invalid repository class "%s" for mapped class "%s". It must be an instance of "%s".',
+            DocumentRepository::class,
+            AbstractMappingDriverViewWithWrongRepository::class,
+            ViewRepository::class
+        ));
+
+        $this->dm->getRepository(AbstractMappingDriverViewWithWrongRepository::class);
+    }
+
+    public function testViewWithoutRootClass()
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Class "%s" mapped as view without must have a root class.',
+            AbstractMappingDriverViewWithoutRootClass::class
+        ));
+
+        $this->dm->getClassMetadata(AbstractMappingDriverViewWithoutRootClass::class);
+    }
+
+    public function testViewWithNonExistingRootClass()
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Root class "%s" for view "%s" could not be found.',
+            'Doctrine\ODM\MongoDB\LolNo',
+            AbstractMappingDriverViewWithNonExistingRootClass::class
+        ));
+
+        $this->dm->getClassMetadata(AbstractMappingDriverViewWithNonExistingRootClass::class);
+    }
+
+    public function testView()
+    {
+        $metadata = $this->dm->getClassMetadata(AbstractMappingDriverView::class);
+
+        $this->assertEquals('user_name', $metadata->getCollection());
+        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $metadata->inheritanceType);
+
+        $this->assertEquals('id', $metadata->identifier);
+
+        $this->assertArraySubset([
+            'fieldName' => 'id',
+            'id' => true,
+            'name' => '_id',
+            'type' => 'id',
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => false,
+        ], $metadata->fieldMappings['id']);
+
+        $this->assertArraySubset([
+            'fieldName' => 'name',
+            'name' => 'name',
+            'type' => 'string',
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => false,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+        ], $metadata->fieldMappings['name']);
+    }
 }
 
 /**
@@ -776,4 +869,78 @@ class AbstractMappingDriverDuplicateDatabaseNameNotSaved extends AbstractMapping
 
     /** @ODM\Field(type="string", name="baz", notSaved=true) */
     public $bar;
+}
+
+/**
+ * @ODM\View(rootClass=AbstractMappingDriverUser::class)
+ */
+class AbstractMappingDriverViewWithoutRepository
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\Field(type="string") */
+    public $name;
+}
+
+/**
+ * @ODM\View(repositoryClass=DocumentRepository::class, rootClass=AbstractMappingDriverUser::class)
+ */
+class AbstractMappingDriverViewWithWrongRepository
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\Field(type="string") */
+    public $name;
+}
+
+/**
+ * @ODM\View(repositoryClass=AbstractMappingDriverViewRepository::class)
+ */
+class AbstractMappingDriverViewWithoutRootClass
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\Field(type="string") */
+    public $name;
+}
+
+/**
+ * @ODM\View(repositoryClass=AbstractMappingDriverViewRepository::class, rootClass="Doctrine\ODM\MongoDB\LolNo")
+ */
+class AbstractMappingDriverViewWithNonExistingRootClass
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\Field(type="string") */
+    public $name;
+}
+
+/**
+ * @ODM\View(
+ *     repositoryClass=AbstractMappingDriverViewRepository::class,
+ *     rootClass=AbstractMappingDriverUser::class,
+ *     view="user_name",
+ * )
+ */
+class AbstractMappingDriverView
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\Field(type="string") */
+    public $name;
+}
+
+class AbstractMappingDriverViewRepository extends DocumentRepository implements ViewRepository
+{
+    public function createViewAggregation(Builder $builder) : void
+    {
+        $builder
+            ->project()
+                ->includeFields(['name']);
+    }
 }
