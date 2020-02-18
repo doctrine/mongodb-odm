@@ -19,12 +19,17 @@ abstract class AbstractMappingDriverTest extends BaseTest
 {
     abstract protected function _loadDriver();
 
+    protected function createMetadataDriverImpl()
+    {
+        return $this->_loadDriver();
+    }
+
     /**
      * @doesNotPerformAssertions
      */
     public function testLoadMapping()
     {
-        return $this->loadMetadata(AbstractMappingDriverUser::class);
+        return $this->dm->getClassMetadata(AbstractMappingDriverUser::class);
     }
 
     /**
@@ -403,7 +408,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
 
     public function testGridFSMapping()
     {
-        $class = $this->loadMetadata(AbstractMappingDriverFile::class);
+        $class = $this->dm->getClassMetadata(AbstractMappingDriverFile::class);
 
         $this->assertTrue($class->isFile);
         $this->assertSame(12345, $class->getChunkSizeBytes());
@@ -448,7 +453,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
 
     public function testGridFSMappingWithCustomRepository()
     {
-        $class = $this->loadMetadata(AbstractMappingDriverFileWithCustomRepository::class);
+        $class = $this->dm->getClassMetadata(AbstractMappingDriverFileWithCustomRepository::class);
 
         $this->assertTrue($class->isFile);
         $this->assertSame(AbstractMappingDriverGridFSRepository::class, $class->customRepositoryClassName);
@@ -461,26 +466,16 @@ abstract class AbstractMappingDriverTest extends BaseTest
             'Field "bar" in class "Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverDuplicateDatabaseName" ' .
             'is mapped to field "baz" in the database, but that name is already in use by field "foo".'
         );
-        $this->loadMetadata(AbstractMappingDriverDuplicateDatabaseName::class);
+        $this->dm->getClassMetadata(AbstractMappingDriverDuplicateDatabaseName::class);
     }
 
     public function testDuplicateDatabaseNameWithNotSavedDoesNotThrowExeption()
     {
-        $metadata = $this->loadMetadata(AbstractMappingDriverDuplicateDatabaseNameNotSaved::class);
+        $metadata = $this->dm->getClassMetadata(AbstractMappingDriverDuplicateDatabaseNameNotSaved::class);
 
         $this->assertTrue($metadata->hasField('foo'));
         $this->assertTrue($metadata->hasField('bar'));
         $this->assertTrue($metadata->fieldMappings['bar']['notSaved']);
-    }
-
-    protected function loadMetadata($className) : ClassMetadata
-    {
-        $mappingDriver = $this->_loadDriver();
-
-        $class = new ClassMetadata($className);
-        $mappingDriver->loadMetadataForClass($className, $class);
-
-        return $class;
     }
 }
 
