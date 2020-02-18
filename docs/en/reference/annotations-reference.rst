@@ -1110,6 +1110,67 @@ encouraged to use the :ref:`atomicSet <atomic_set>` or
 will ensure that collections are updated in the same write operation as the
 versioned parent document.
 
+@View
+-----
+
+Required annotation to mark a PHP class as a view. Views are created from
+aggregation pipelines, which are returned from a special repository method.
+Views can be used like collections for any read operations. Result documents are
+not managed and cannot be referenced using the :ref:`reference-many <reference_many>`
+and :ref:`reference-one <reference_one>` mappings.
+
+Required attributes:
+
+-
+   ``rootClass`` - this is the base collection that the view is created from
+-
+   ``repositoryClass`` - a repository class is required. This repository must
+   implement the ``MongoDB\ODM\MongoDB\Repository\ViewRepository`` interface.
+
+Optional attributes:
+
+-
+   ``db`` - By default, the document manager will use the MongoDB database
+   defined in the configuration, but this option may be used to override the
+   database for a particular document class.
+-
+   ``view`` - By default, the view name is derived from the document's class
+   name, but this option may be used to override that behavior.
+
+.. code-block:: php
+
+    <?php
+
+    /**
+     * @View(
+     *     db="documents",
+     *     rootClass=User::class,
+     *     repositoryClass=UserNameRepository::class,
+     * )
+     */
+    class UserName
+    {
+        //...
+    }
+
+    class UserNameRepository implements \Doctrine\ODM\MongoDB\Repository\ViewRepository
+    {
+        public function createViewAggregation(Builder $builder) : void
+        {
+            $builder->project()
+                ->includeFields(['username']);
+        }
+    }
+
+The ``createViewAggregation`` method can add any aggregation pipeline stage,
+except for the ``$out`` and ``$merge`` stages. The pipeline is created for the
+root class specified in the view mapping.
+
+.. note::
+
+    Views must be created before they can be queried. This can be done using the
+    ``odm:schema:create`` command.
+
 .. _BSON specification: http://bsonspec.org/spec.html
 .. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs
 .. _geoNear command: https://docs.mongodb.com/manual/reference/command/geoNear/
