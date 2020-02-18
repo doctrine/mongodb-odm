@@ -18,6 +18,7 @@ use const E_USER_DEPRECATED;
 use function array_merge;
 use function array_replace;
 use function assert;
+use function class_exists;
 use function constant;
 use function get_class;
 use function interface_exists;
@@ -103,6 +104,16 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $class->isEmbeddedDocument = true;
         } elseif ($documentAnnot instanceof ODM\QueryResultDocument) {
             $class->isQueryResultDocument = true;
+        } elseif ($documentAnnot instanceof ODM\View) {
+            if (! $documentAnnot->rootClass) {
+                throw MappingException::viewWithoutRootClass($className);
+            }
+
+            if (! class_exists($documentAnnot->rootClass)) {
+                throw MappingException::viewRootClassNotFound($className, $documentAnnot->rootClass);
+            }
+
+            $class->markViewOf($documentAnnot->rootClass);
         } elseif ($documentAnnot instanceof ODM\File) {
             $class->isFile = true;
 
@@ -116,6 +127,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
         if (isset($documentAnnot->collection)) {
             $class->setCollection($documentAnnot->collection);
+        }
+        if (isset($documentAnnot->view)) {
+            $class->setCollection($documentAnnot->view);
         }
         // Store bucketName as collection name for GridFS files
         if (isset($documentAnnot->bucketName)) {

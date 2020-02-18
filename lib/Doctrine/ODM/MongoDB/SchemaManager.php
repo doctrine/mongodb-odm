@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Exception;
 use InvalidArgumentException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
@@ -61,7 +62,7 @@ final class SchemaManager
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -79,7 +80,7 @@ final class SchemaManager
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -99,7 +100,7 @@ final class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot update document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
 
@@ -243,7 +244,7 @@ final class SchemaManager
     public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
@@ -270,7 +271,7 @@ final class SchemaManager
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -286,7 +287,7 @@ final class SchemaManager
     public function deleteDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
@@ -318,6 +319,10 @@ final class SchemaManager
 
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
+        }
+
+        if ($class->isView()) {
+            throw new Exception('Not implemented');
         }
 
         if ($class->isFile) {
@@ -368,6 +373,10 @@ final class SchemaManager
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
+        if ($class->isView()) {
+            throw new Exception('Not implemented');
+        }
+
         $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
 
         $this->dm->getDocumentCollection($documentName)->drop($options);
@@ -404,6 +413,10 @@ final class SchemaManager
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new InvalidArgumentException('Cannot drop document database for mapped super classes, embedded documents or query result documents.');
+        }
+
+        if ($class->isView()) {
+            throw new Exception('Not implemented');
         }
 
         $this->dm->getDocumentDatabase($documentName)->drop($this->getWriteOptions($maxTimeMs, $writeConcern));

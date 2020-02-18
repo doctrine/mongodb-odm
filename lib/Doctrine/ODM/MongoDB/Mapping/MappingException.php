@@ -255,4 +255,14 @@ final class MappingException extends BaseMappingException
             $expectedRepositoryClass
         ));
     }
+
+    public static function viewWithoutRootClass(string $className) : self
+    {
+        return new self(sprintf('Class "%s" mapped as view without must have a root class.', $className));
+    }
+
+    public static function viewRootClassNotFound(string $className, string $rootClass) : self
+    {
+        return new self(sprintf('Root class "%s" for view "%s" could not be found.', $rootClass, $className));
+    }
 }

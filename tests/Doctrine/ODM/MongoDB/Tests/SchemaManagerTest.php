@@ -65,7 +65,7 @@ class SchemaManagerTest extends BaseTest
 
         /** @var ClassMetadata $cm */
         foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
-            if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument) {
+            if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument || $cm->isView()) {
                 continue;
             }
             if ($cm->isFile) {

@@ -64,7 +64,7 @@ EOT
 
         /** @var ClassMetadata[] $metadatas */
         $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata) : bool {
-            return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
+            return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument && ! $classMetadata->isView();
         });
         $metadatas = MetadataFilter::filter($metadatas, $filter);
         $destPath  = $dm->getConfiguration()->getProxyDir();

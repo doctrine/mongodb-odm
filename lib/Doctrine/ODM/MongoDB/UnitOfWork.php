@@ -1559,7 +1559,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function persist(object $document) : void
     {
         $class = $this->dm->getClassMetadata(get_class($document));
-        if ($class->isMappedSuperclass || $class->isQueryResultDocument) {
+        if ($class->isMappedSuperclass || $class->isQueryResultDocument || $class->isView()) {
             throw MongoDBException::cannotPersistMappedSuperclass($class->name);
         }
         $visited = [];
@@ -2560,7 +2560,7 @@ final class UnitOfWork implements PropertyChangedListener
         $isManagedObject = false;
         $serializedId    = null;
         $id              = null;
-        if (! $class->isQueryResultDocument) {
+        if (! $class->isQueryResultDocument && ! $class->isView()) {
             $id              = $class->getDatabaseIdentifierValue($data['_id']);
             $serializedId    = serialize($id);
             $isManagedObject = isset($this->identityMap[$class->name][$serializedId]);
@@ -2588,7 +2588,7 @@ final class UnitOfWork implements PropertyChangedListener
                 $document = $class->newInstance();
             }
 
-            if (! $class->isQueryResultDocument) {
+            if (! $class->isQueryResultDocument && ! $class->isView()) {
                 $this->registerManaged($document, $id, $data);
                 $oid                                            = spl_object_hash($document);
                 $this->documentStates[$oid]                     = self::STATE_MANAGED;
@@ -2597,7 +2597,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
 
-            if (! $class->isQueryResultDocument) {
+            if (! $class->isQueryResultDocument && ! $class->isView()) {
                 $this->originalDocumentData[$oid] = $data;
             }
         }

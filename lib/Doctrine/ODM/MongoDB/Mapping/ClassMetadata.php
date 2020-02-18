@@ -434,6 +434,13 @@ class ClassMetadata implements BaseClassMetadata
     public $isQueryResultDocument = false;
 
     /**
+     * READ-ONLY: Whether this class describes the mapping of a database view.
+     *
+     * @var bool
+     */
+    private $isView = false;
+
+    /**
      * READ-ONLY: Whether this class describes the mapping of a gridFS file
      *
      * @var bool
@@ -500,6 +507,9 @@ class ClassMetadata implements BaseClassMetadata
 
     /** @var InstantiatorInterface */
     private $instantiator;
+
+    /** @var string|null */
+    private $rootClass;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
@@ -1719,6 +1729,22 @@ class ClassMetadata implements BaseClassMetadata
         $this->isReadOnly = true;
     }
 
+    public function getRootClass() : ?string
+    {
+        return $this->rootClass;
+    }
+
+    public function isView() : bool
+    {
+        return $this->isView;
+    }
+
+    public function markViewOf(string $rootClass) : void
+    {
+        $this->isView    = true;
+        $this->rootClass = $rootClass;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -2020,6 +2046,11 @@ class ClassMetadata implements BaseClassMetadata
 
         if ($this->isQueryResultDocument) {
             $serialized[] = 'isQueryResultDocument';
+        }
+
+        if ($this->isView()) {
+            $serialized[] = 'isView';
+            $serialized[] = 'rootClass';
         }
 
         if ($this->isFile) {

@@ -5,7 +5,8 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <view name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverViewWithoutRepository">
+    <view name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverViewWithoutRepository"
+          root-class="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser">
         <id />
         <field name="name" />
     </view>

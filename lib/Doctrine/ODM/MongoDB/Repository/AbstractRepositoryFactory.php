@@ -47,7 +47,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for a document class.
      *
-     * @return ObjectRepository|GridFSRepository
+     * @return ObjectRepository|GridFSRepository|ViewRepository
      */
     protected function createRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
     {
@@ -65,6 +65,12 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
             case $metadata->isFile:
                 if (! is_a($repositoryClassName, GridFSRepository::class, true)) {
                     throw MappingException::invalidRepositoryClass($documentName, $repositoryClassName, GridFSRepository::class);
+                }
+                break;
+
+            case $metadata->isView():
+                if (! is_a($repositoryClassName, ViewRepository::class, true)) {
+                    throw MappingException::invalidRepositoryClass($documentName, $repositoryClassName, ViewRepository::class);
                 }
                 break;
 
