@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Utility;
 
+use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
@@ -65,7 +66,7 @@ final class LifecycleEventManager
     public function postPersist(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::postPersist, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->evm->dispatchEvent(Events::postPersist, new LifecycleEventArgs($document, $this->dm));
+        $this->dispatchEvent($class, Events::postPersist, new LifecycleEventArgs($document, $this->dm));
         $this->cascadePostPersist($class, $document);
     }
 
@@ -75,7 +76,7 @@ final class LifecycleEventManager
     public function postRemove(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::postRemove, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->evm->dispatchEvent(Events::postRemove, new LifecycleEventArgs($document, $this->dm));
+        $this->dispatchEvent($class, Events::postRemove, new LifecycleEventArgs($document, $this->dm));
     }
 
     /**
@@ -85,7 +86,7 @@ final class LifecycleEventManager
     public function postUpdate(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::postUpdate, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->evm->dispatchEvent(Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
+        $this->dispatchEvent($class, Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
         $this->cascadePostUpdate($class, $document);
     }
 
@@ -95,7 +96,7 @@ final class LifecycleEventManager
     public function prePersist(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::prePersist, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($document, $this->dm));
+        $this->dispatchEvent($class, Events::prePersist, new LifecycleEventArgs($document, $this->dm));
     }
 
     /**
@@ -104,7 +105,7 @@ final class LifecycleEventManager
     public function preRemove(ClassMetadata $class, object $document) : void
     {
         $class->invokeLifecycleCallbacks(Events::preRemove, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->evm->dispatchEvent(Events::preRemove, new LifecycleEventArgs($document, $this->dm));
+        $this->dispatchEvent($class, Events::preRemove, new LifecycleEventArgs($document, $this->dm));
     }
 
     /**
@@ -116,7 +117,7 @@ final class LifecycleEventManager
             $class->invokeLifecycleCallbacks(Events::preUpdate, $document, [new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document))]);
             $this->uow->recomputeSingleDocumentChangeSet($class, $document);
         }
-        $this->evm->dispatchEvent(Events::preUpdate, new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document)));
+        $this->dispatchEvent($class, Events::preUpdate, new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document)));
         $this->cascadePreUpdate($class, $document);
     }
 
@@ -160,7 +161,7 @@ final class LifecycleEventManager
                 $entryClass = $this->dm->getClassMetadata(get_class($entry));
                 $event      = $this->uow->isScheduledForInsert($entry) ? Events::postPersist : Events::postUpdate;
                 $entryClass->invokeLifecycleCallbacks($event, $entry, [new LifecycleEventArgs($entry, $this->dm)]);
-                $this->evm->dispatchEvent($event, new LifecycleEventArgs($entry, $this->dm));
+                $this->dispatchEvent($entryClass, $event, new LifecycleEventArgs($entry, $this->dm));
 
                 $this->cascadePostUpdate($entryClass, $entry);
             }
@@ -182,5 +183,14 @@ final class LifecycleEventManager
                 $this->postPersist($this->dm->getClassMetadata(get_class($embeddedDocument)), $embeddedDocument);
             }
         }
+    }
+
+    private function dispatchEvent(ClassMetadata $class, string $eventName, ?EventArgs $eventArgs = null) : void
+    {
+        if ($class->isView()) {
+            return;
+        }
+
+        $this->evm->dispatchEvent($eventName, $eventArgs);
     }
 }

@@ -659,6 +659,10 @@ class ClassMetadata implements BaseClassMetadata
      */
     public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null) : void
     {
+        if ($this->isView()) {
+            return;
+        }
+
         if (! $document instanceof $this->name) {
             throw new InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
         }

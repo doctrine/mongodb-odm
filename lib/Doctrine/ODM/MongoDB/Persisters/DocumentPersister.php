@@ -127,7 +127,7 @@ final class DocumentPersister
         $this->class           = $class;
         $this->cp              = $this->uow->getCollectionPersister();
 
-        if ($class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+        if ($class->isEmbeddedDocument || $class->isQueryResultDocument) {
             return;
         }
 
