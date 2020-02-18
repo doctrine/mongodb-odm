@@ -66,7 +66,7 @@ final class StaticProxyFactory implements ProxyFactory
     public function generateProxyClasses(array $classes) : int
     {
         $concreteClasses = array_filter($classes, static function (ClassMetadata $metadata) : bool {
-            return ! ($metadata->isMappedSuperclass || $metadata->isQueryResultDocument || $metadata->isView() || $metadata->getReflectionClass()->isAbstract());
+            return ! ($metadata->isMappedSuperclass || $metadata->isQueryResultDocument || $metadata->getReflectionClass()->isAbstract());
         });
 
         foreach ($concreteClasses as $metadata) {
