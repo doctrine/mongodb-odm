@@ -12,10 +12,10 @@ class SimpleReferenceUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\User", simple=true, name="userId") @ODM\Index */
+    /** @ODM\ReferenceOne(targetDocument="Documents\User", simple=true, name="userId", inversedBy="simpleReferenceManyInverse") @ODM\Index */
     public $user;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\User", simple=true, inversedBy="simpleReferenceManyInverse") */
+    /** @ODM\ReferenceMany(targetDocument="Documents\User", simple=true) */
     public $users = array();
 
     /** @ODM\Field(type="string") */
