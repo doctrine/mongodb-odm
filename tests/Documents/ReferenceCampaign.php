@@ -11,7 +11,7 @@ class ReferenceCampaign
     protected $id;
 
     /**
-     * @ODM\ReferenceOne(targetDocument="Promo\Documents\Campaign",
+     * @ODM\ReferenceOne(targetDocument="Campaign",
      *     storeAs="id", inversedBy="referenceCampaigns",
      *     name="campaignId"
      * )
