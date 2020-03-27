@@ -1,31 +1,26 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsComment;
-use Documents\ReferenceUser;
 use Documents\Sharded\ShardedOne;
-use Documents\SimpleReferenceUser;
-use Documents\User;
 
-class LookupTest extends BaseTest
+class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 {
-    public function setUp() : void
+    public function setUp()
     {
         parent::setUp();
+        $this->requireMongoDB32('$lookup tests require at least MongoDB 3.2.0');
         $this->insertTestData();
     }
 
     public function testLookupStage()
     {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup('user')
-                ->alias('user');
+            ->alias('user');
 
         $expectedPipeline = [
             [
@@ -34,8 +29,8 @@ class LookupTest extends BaseTest
                     'localField' => 'userId',
                     'foreignField' => '_id',
                     'as' => 'user',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -49,12 +44,12 @@ class LookupTest extends BaseTest
 
     public function testLookupStageWithFieldNameTranslation()
     {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup(CmsComment::class)
-                ->localField('id')
-                ->foreignField('authorIp')
-                ->alias('user');
+            ->localField('id')
+            ->foreignField('authorIp')
+            ->alias('user');
 
         $expectedPipeline = [
             [
@@ -63,8 +58,8 @@ class LookupTest extends BaseTest
                     'localField' => '_id',
                     'foreignField' => 'ip',
                     'as' => 'user',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -72,12 +67,12 @@ class LookupTest extends BaseTest
 
     public function testLookupStageWithClassName()
     {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
-            ->lookup(User::class)
-                ->localField('userId')
-                ->foreignField('_id')
-                ->alias('user');
+            ->lookup(\Documents\User::class)
+            ->localField('userId')
+            ->foreignField('_id')
+            ->alias('user');
 
         $expectedPipeline = [
             [
@@ -86,8 +81,8 @@ class LookupTest extends BaseTest
                     'localField' => 'userId',
                     'foreignField' => '_id',
                     'as' => 'user',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -101,12 +96,12 @@ class LookupTest extends BaseTest
 
     public function testLookupStageWithCollectionName()
     {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup('randomCollectionName')
-                ->localField('userId')
-                ->foreignField('_id')
-                ->alias('user');
+            ->localField('userId')
+            ->foreignField('_id')
+            ->alias('user');
 
         $expectedPipeline = [
             [
@@ -115,8 +110,8 @@ class LookupTest extends BaseTest
                     'localField' => 'userId',
                     'foreignField' => '_id',
                     'as' => 'user',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -129,22 +124,24 @@ class LookupTest extends BaseTest
 
     public function testLookupStageReferenceMany()
     {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->unwind('$users')
             ->lookup('users')
-                ->alias('users');
+            ->alias('users');
 
         $expectedPipeline = [
-            ['$unwind' => '$users'],
+            [
+                '$unwind' => '$users',
+            ],
             [
                 '$lookup' => [
                     'from' => 'users',
                     'localField' => 'users',
                     'foreignField' => '_id',
                     'as' => 'users',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -160,22 +157,24 @@ class LookupTest extends BaseTest
 
     public function testLookupStageReferenceManyStoreAsRef()
     {
-        $builder = $this->dm->createAggregationBuilder(ReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\ReferenceUser::class);
         $builder
             ->unwind('$referencedUsers')
             ->lookup('referencedUsers')
-                ->alias('users');
+            ->alias('users');
 
         $expectedPipeline = [
-            ['$unwind' => '$referencedUsers'],
+            [
+                '$unwind' => '$referencedUsers',
+            ],
             [
                 '$lookup' => [
                     'from' => 'users',
                     'localField' => 'referencedUsers.id',
                     'foreignField' => '_id',
                     'as' => 'users',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -189,12 +188,14 @@ class LookupTest extends BaseTest
         $this->assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
-    public function testLookupStageReferenceManyWithoutUnwindMongoDB34()
+    public function testLookupStageReferenceManyWithoutUnwindMongoDB32()
     {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $this->skipOnMongoDB34('$lookup tests without unwind will not work on MongoDB 3.4.0');
+
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup('users')
-                ->alias('users');
+            ->alias('users');
 
         $expectedPipeline = [
             [
@@ -203,8 +204,36 @@ class LookupTest extends BaseTest
                     'localField' => 'users',
                     'foreignField' => '_id',
                     'as' => 'users',
-                ],
-            ],
+                ]
+            ]
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+
+        $result = $builder->execute()->toArray();
+
+        $this->assertCount(1, $result);
+        $this->assertCount(0, $result[0]['users']);
+    }
+
+    public function testLookupStageReferenceManyWithoutUnwindMongoDB34()
+    {
+        $this->requireMongoDB34('$lookup tests with unwind require at least MongoDB 3.4.0');
+
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder
+            ->lookup('users')
+            ->alias('users');
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'localField' => 'users',
+                    'foreignField' => '_id',
+                    'as' => 'users',
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -219,17 +248,17 @@ class LookupTest extends BaseTest
 
     public function testLookupStageReferenceOneInverse()
     {
-        $builder = $this->dm->createAggregationBuilder(User::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
             ->match()
-                ->field('username')
-                ->equals('alcaeus')
+            ->field('username')
+            ->equals('alcaeus')
             ->lookup('simpleReferenceOneInverse')
-                ->alias('simpleReferenceOneInverse');
+            ->alias('simpleReferenceOneInverse');
 
         $expectedPipeline = [
             [
-                '$match' => ['username' => 'alcaeus'],
+                '$match' => ['username' => 'alcaeus']
             ],
             [
                 '$lookup' => [
@@ -237,8 +266,8 @@ class LookupTest extends BaseTest
                     'localField' => '_id',
                     'foreignField' => 'userId',
                     'as' => 'simpleReferenceOneInverse',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -251,17 +280,17 @@ class LookupTest extends BaseTest
 
     public function testLookupStageReferenceManyInverse()
     {
-        $builder = $this->dm->createAggregationBuilder(User::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
             ->match()
-                ->field('username')
-                ->equals('alcaeus')
+            ->field('username')
+            ->equals('alcaeus')
             ->lookup('simpleReferenceManyInverse')
-                ->alias('simpleReferenceManyInverse');
+            ->alias('simpleReferenceManyInverse');
 
         $expectedPipeline = [
             [
-                '$match' => ['username' => 'alcaeus'],
+                '$match' => ['username' => 'alcaeus']
             ],
             [
                 '$lookup' => [
@@ -269,8 +298,8 @@ class LookupTest extends BaseTest
                     'localField' => '_id',
                     'foreignField' => 'users',
                     'as' => 'simpleReferenceManyInverse',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -283,17 +312,17 @@ class LookupTest extends BaseTest
 
     public function testLookupStageReferenceOneInverseStoreAsRef()
     {
-        $builder = $this->dm->createAggregationBuilder(User::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
             ->match()
-                ->field('username')
-                ->equals('alcaeus')
+            ->field('username')
+            ->equals('alcaeus')
             ->lookup('embeddedReferenceOneInverse')
-                ->alias('embeddedReferenceOneInverse');
+            ->alias('embeddedReferenceOneInverse');
 
         $expectedPipeline = [
             [
-                '$match' => ['username' => 'alcaeus'],
+                '$match' => ['username' => 'alcaeus']
             ],
             [
                 '$lookup' => [
@@ -301,8 +330,8 @@ class LookupTest extends BaseTest
                     'localField' => '_id',
                     'foreignField' => 'referencedUser.id',
                     'as' => 'embeddedReferenceOneInverse',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -315,17 +344,17 @@ class LookupTest extends BaseTest
 
     public function testLookupStageReferenceManyInverseStoreAsRef()
     {
-        $builder = $this->dm->createAggregationBuilder(User::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
             ->match()
-                ->field('username')
-                ->equals('alcaeus')
+            ->field('username')
+            ->equals('alcaeus')
             ->lookup('embeddedReferenceManyInverse')
-                ->alias('embeddedReferenceManyInverse');
+            ->alias('embeddedReferenceManyInverse');
 
         $expectedPipeline = [
             [
-                '$match' => ['username' => 'alcaeus'],
+                '$match' => ['username' => 'alcaeus']
             ],
             [
                 '$lookup' => [
@@ -333,8 +362,8 @@ class LookupTest extends BaseTest
                     'localField' => '_id',
                     'foreignField' => 'referencedUsers.id',
                     'as' => 'embeddedReferenceManyInverse',
-                ],
-            ],
+                ]
+            ]
         ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
@@ -347,13 +376,13 @@ class LookupTest extends BaseTest
 
     public function testLookupToShardedCollectionThrowsException()
     {
-        $builder = $this->dm->createAggregationBuilder(User::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
 
         $this->expectException(MappingException::class);
         $builder
             ->lookup(ShardedOne::class)
-                ->localField('id')
-                ->foreignField('id');
+            ->localField('id')
+            ->foreignField('id');
     }
 
     public function testLookupToShardedReferenceThrowsException()
@@ -367,22 +396,22 @@ class LookupTest extends BaseTest
 
     private function insertTestData()
     {
-        $user1 = new User();
+        $user1 = new \Documents\User();
         $user1->setUsername('alcaeus');
-        $user2 = new User();
+        $user2 = new \Documents\User();
         $user2->setUsername('malarzm');
-        $user3 = new User();
+        $user3 = new \Documents\User();
         $user3->setUsername('jmikola');
 
         $this->dm->persist($user1);
         $this->dm->persist($user2);
 
-        $simpleReferenceUser       = new SimpleReferenceUser();
+        $simpleReferenceUser = new \Documents\SimpleReferenceUser();
         $simpleReferenceUser->user = $user1;
         $simpleReferenceUser->addUser($user1);
         $simpleReferenceUser->addUser($user2);
 
-        $referenceUser = new ReferenceUser();
+        $referenceUser = new \Documents\ReferenceUser();
         $referenceUser->setReferencedUser($user1);
         $referenceUser->addReferencedUser($user1);
         $referenceUser->addReferencedUser($user2);
@@ -394,7 +423,7 @@ class LookupTest extends BaseTest
 
     public function testLookupStageAndDefaultAlias()
     {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup('user');
 
@@ -420,7 +449,7 @@ class LookupTest extends BaseTest
 
     public function testLookupStageWithFieldNameTranslationAndDefaultAlias()
     {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup(CmsComment::class)
             ->localField('id')
@@ -442,7 +471,7 @@ class LookupTest extends BaseTest
 
     public function testLookupStageWithClassNameAndDefaultAlias()
     {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup(User::class)
             ->localField('userId')
