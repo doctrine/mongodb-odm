@@ -423,17 +423,17 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLookupStageAndDefaultAlias()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\Campaign::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
-            ->lookup('referenceCampaigns');
+            ->lookup('user');
 
         $expectedPipeline = [
             [
                 '$lookup' => [
-                    'from' => 'ReferenceCampaign',
+                    'from' => 'SimpleReferenceUser',
                     'localField' => '_id',
-                    'foreignField' => 'campaignId',
-                    'as' => 'referenceCampaigns',
+                    'foreignField' => 'userId',
+                    'as' => 'user',
                 ],
             ],
         ];
@@ -443,7 +443,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $result = $builder->execute()->toArray();
 
         $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['user']);
-        $this->assertSame('alcaeus', $result[0]['user'][0]['username']);
+        $this->assertCount(1, $result[0]['referenceCampaigns']);
+        $this->assertSame('alcaeus', $result[0]['referenceCampaigns'][0]['username']);
     }
 }
