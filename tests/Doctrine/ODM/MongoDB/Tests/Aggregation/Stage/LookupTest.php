@@ -473,7 +473,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
-            ->lookup(User::class)
+            ->lookup( \Documents\User::class)
             ->localField('userId')
             ->foreignField('_id');
 

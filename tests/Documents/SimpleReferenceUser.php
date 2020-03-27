@@ -15,7 +15,7 @@ class SimpleReferenceUser
     /** @ODM\ReferenceOne(targetDocument="Documents\User", simple=true, name="userId") @ODM\Index */
     public $user;
 
-    /** @ODM\ReferenceMany(targetDocument="Documents\User", simple=true) */
+    /** @ODM\ReferenceMany(targetDocument="Documents\User", simple=true, inversedBy="simpleReferenceManyInverse") */
     public $users = array();
 
     /** @ODM\Field(type="string") */
