@@ -13,7 +13,7 @@ class Campaign
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument="Promo\Documents\Webhook", storeAs="id", mappedBy="campaign")*/
+    /** @ODM\ReferenceMany(targetDocument="ReferenceCampaign", storeAs="id", mappedBy="campaign")*/
     protected $referenceCampaigns;
 
     public function getId()
