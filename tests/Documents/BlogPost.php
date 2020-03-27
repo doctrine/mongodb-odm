@@ -50,7 +50,7 @@ class BlogPost
     /** @ODM\ReferenceMany(targetDocument="Comment", mappedBy="parent", repositoryMethod="findManyCommentsEager", prime={"author"}) */
     public $repoCommentsEager;
 
-    /** @ODM\ReferenceOne(targetDocument="User", inversedBy="posts", nullable=true) */
+    /** @ODM\ReferenceOne(targetDocument="User", inversedBy="posts", name="userId", nullable=true) */
     public $user;
 
     public function __construct($name = null)

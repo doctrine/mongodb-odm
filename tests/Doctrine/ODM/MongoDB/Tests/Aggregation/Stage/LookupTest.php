@@ -425,15 +425,15 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
-            ->lookup('simpleReferenceManyInverse');
+            ->lookup('posts');
 
         $expectedPipeline = [
             [
                 '$lookup' => [
-                    'from' => 'SimpleReferenceUser',
+                    'from' => 'BlogPost',
                     'localField' => '_id',
                     'foreignField' => 'userId',
-                    'as' => 'simpleReferenceManyInverse',
+                    'as' => 'posts',
                 ],
             ],
         ];
