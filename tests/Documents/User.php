@@ -71,7 +71,7 @@ class User extends BaseDocument
     /** @ODM\Field(type="float", strategy="increment") */
     protected $floatCount;
 
-    /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="user", storeAs="id", nullable=true) */
+    /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="user", nullable=true) */
     protected $posts;
 
     /** @ODM\ReferenceOne(targetDocument="Documents\SimpleReferenceUser", mappedBy="user") */
