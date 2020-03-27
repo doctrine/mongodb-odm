@@ -19,6 +19,7 @@ use function array_map;
 use function getenv;
 use function in_array;
 use function iterator_to_array;
+use function preg_match;
 use function version_compare;
 
 abstract class BaseTest extends TestCase
@@ -56,7 +57,7 @@ abstract class BaseTest extends TestCase
 
         foreach ($collections as $collection) {
             // See https://jira.mongodb.org/browse/SERVER-16541
-            if ($collection->getName() === 'system.indexes') {
+            if (preg_match('#^system\.#', $collection->getName())) {
                 continue;
             }
 
