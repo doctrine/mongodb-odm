@@ -423,67 +423,17 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLookupStageAndDefaultAlias()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\Campaign::class);
         $builder
-            ->lookup('user');
+            ->lookup('referenceCampaign');
 
         $expectedPipeline = [
             [
                 '$lookup' => [
-                    'from' => 'users',
-                    'localField' => 'userId',
+                    'from' => 'campaigns',
+                    'localField' => 'campaignId',
                     'foreignField' => '_id',
-                    'as' => 'user',
-                ],
-            ],
-        ];
-
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
-
-        $result = $builder->execute()->toArray();
-
-        $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['user']);
-        $this->assertSame('alcaeus', $result[0]['user'][0]['username']);
-    }
-
-    public function testLookupStageWithFieldNameTranslationAndDefaultAlias()
-    {
-        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
-        $builder
-            ->lookup(CmsComment::class)
-            ->localField('id')
-            ->foreignField('authorIp');
-
-        $expectedPipeline = [
-            [
-                '$lookup' => [
-                    'from' => 'CmsComment',
-                    'localField' => '_id',
-                    'foreignField' => 'ip',
-                    'as' => 'user',
-                ],
-            ],
-        ];
-
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
-    }
-
-    public function testLookupStageWithClassNameAndDefaultAlias()
-    {
-        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
-        $builder
-            ->lookup( \Documents\User::class)
-            ->localField('userId')
-            ->foreignField('_id');
-
-        $expectedPipeline = [
-            [
-                '$lookup' => [
-                    'from' => 'users',
-                    'localField' => 'userId',
-                    'foreignField' => '_id',
-                    'as' => 'user',
+                    'as' => 'referenceCampaigns',
                 ],
             ],
         ];
