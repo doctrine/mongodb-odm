@@ -431,8 +431,8 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             [
                 '$lookup' => [
                     'from' => 'ReferenceCampaign',
-                    'localField' => 'campaignId',
-                    'foreignField' => '_id',
+                    'localField' => '_id',
+                    'foreignField' => 'campaignId',
                     'as' => 'referenceCampaigns',
                 ],
             ],
