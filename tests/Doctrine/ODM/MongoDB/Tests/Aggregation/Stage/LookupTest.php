@@ -430,7 +430,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $expectedPipeline = [
             [
                 '$lookup' => [
-                    'from' => 'campaigns',
+                    'from' => 'ReferenceCampaign',
                     'localField' => 'campaignId',
                     'foreignField' => '_id',
                     'as' => 'referenceCampaigns',
