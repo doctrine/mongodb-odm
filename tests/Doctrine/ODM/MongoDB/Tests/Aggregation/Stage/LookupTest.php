@@ -425,7 +425,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(\Documents\Campaign::class);
         $builder
-            ->lookup('referenceCampaign');
+            ->lookup('referenceCampaigns');
 
         $expectedPipeline = [
             [
