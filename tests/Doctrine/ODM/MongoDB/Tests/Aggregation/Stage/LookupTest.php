@@ -423,9 +423,9 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
 
     public function testLookupStageAndDefaultAlias()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
-            ->lookup('user');
+            ->lookup('simpleReferenceManyInverse');
 
         $expectedPipeline = [
             [
@@ -433,7 +433,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
                     'from' => 'SimpleReferenceUser',
                     'localField' => '_id',
                     'foreignField' => 'userId',
-                    'as' => 'user',
+                    'as' => 'simpleReferenceManyInverse',
                 ],
             ],
         ];
