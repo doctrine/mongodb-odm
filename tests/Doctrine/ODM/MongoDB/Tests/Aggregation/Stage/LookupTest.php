@@ -421,19 +421,39 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
     }
 
+//    public function testLookupStageAndDefaultAlias()
+//    {
+//        $builder = $this->dm->createAggregationBuilder(\Documents\Campaign::class);
+//        $builder
+//            ->lookup('referenceCampaigns');
+//
+//        $expectedPipeline = [
+//            [
+//                '$lookup' => [
+//                    'from' => 'ReferenceCampaign',
+//                    'localField' => '_id',
+//                    'foreignField' => 'campaignId',
+//                    'as' => 'referenceCampaigns',
+//                ],
+//            ],
+//        ];
+//
+//        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+//    }
+
     public function testLookupStageAndDefaultAlias()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\Campaign::class);
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
-            ->lookup('referenceCampaigns');
+            ->lookup('simpleReferenceOneInverse');
 
         $expectedPipeline = [
             [
                 '$lookup' => [
-                    'from' => 'ReferenceCampaign',
+                    'from' => 'SimpleReferenceUser',
                     'localField' => '_id',
-                    'foreignField' => 'campaignId',
-                    'as' => 'referenceCampaigns',
+                    'foreignField' => 'userId',
+                    'as' => 'simpleReferenceOneInverse',
                 ],
             ],
         ];
@@ -441,8 +461,29 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
+        $this->assertCount(1, $result[0]['simpleReferenceOneInverse']);
+    }
 
-        $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['referenceCampaigns']);
+    public function testLookupStageAndDefaultAliasOverride()
+    {
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
+        $builder
+            ->lookup('simpleReferenceOneInverse')->alias('override');
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'SimpleReferenceUser',
+                    'localField' => '_id',
+                    'foreignField' => 'userId',
+                    'as' => 'override',
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+
+        $result = $builder->execute()->toArray();
+        $this->assertCount(1, $result[0]['override']);
     }
 }
