@@ -421,26 +421,6 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->dm->flush();
     }
 
-//    public function testLookupStageAndDefaultAlias()
-//    {
-//        $builder = $this->dm->createAggregationBuilder(\Documents\Campaign::class);
-//        $builder
-//            ->lookup('referenceCampaigns');
-//
-//        $expectedPipeline = [
-//            [
-//                '$lookup' => [
-//                    'from' => 'ReferenceCampaign',
-//                    'localField' => '_id',
-//                    'foreignField' => 'campaignId',
-//                    'as' => 'referenceCampaigns',
-//                ],
-//            ],
-//        ];
-//
-//        $this->assertEquals($expectedPipeline, $builder->getPipeline());
-//    }
-
     public function testLookupStageAndDefaultAlias()
     {
         $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
