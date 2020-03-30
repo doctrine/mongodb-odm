@@ -70,7 +70,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup(\Documents\User::class)
-            ->localField('userId')
+                ->localField('userId')
             ->foreignField('_id')
                 ->alias('user');
 
@@ -99,7 +99,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup('randomCollectionName')
-            ->localField('userId')
+                ->localField('userId')
             ->foreignField('_id')
                 ->alias('user');
 
