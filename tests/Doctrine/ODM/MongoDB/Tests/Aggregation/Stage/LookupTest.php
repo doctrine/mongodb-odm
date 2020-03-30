@@ -251,8 +251,8 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
             ->match()
-            ->field('username')
-            ->equals('alcaeus')
+                ->field('username')
+                ->equals('alcaeus')
             ->lookup('simpleReferenceOneInverse')
                 ->alias('simpleReferenceOneInverse');
 
@@ -315,8 +315,8 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
             ->match()
-               ->field('username')
-               ->equals('alcaeus')
+                ->field('username')
+                ->equals('alcaeus')
             ->lookup('embeddedReferenceOneInverse')
                 ->alias('embeddedReferenceOneInverse');
 
