@@ -382,7 +382,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder
             ->lookup(ShardedOne::class)
                 ->localField('id')
-            ->foreignField('id');
+                ->foreignField('id');
     }
 
     public function testLookupToShardedReferenceThrowsException()
