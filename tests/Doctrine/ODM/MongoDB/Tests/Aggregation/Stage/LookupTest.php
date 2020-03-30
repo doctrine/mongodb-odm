@@ -47,7 +47,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup(CmsComment::class)
-            ->localField('id')
+                ->localField('id')
             ->foreignField('authorIp')
                 ->alias('user');
 
@@ -448,7 +448,8 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     {
         $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
         $builder
-            ->lookup('simpleReferenceOneInverse')->alias('override');
+            ->lookup('simpleReferenceOneInverse')
+                ->alias('override');
 
         $expectedPipeline = [
             [
