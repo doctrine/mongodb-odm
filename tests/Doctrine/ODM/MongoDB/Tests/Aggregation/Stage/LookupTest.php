@@ -20,7 +20,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup('user')
-            ->alias('user');
+                ->alias('user');
 
         $expectedPipeline = [
             [
@@ -49,7 +49,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->lookup(CmsComment::class)
             ->localField('id')
             ->foreignField('authorIp')
-            ->alias('user');
+                ->alias('user');
 
         $expectedPipeline = [
             [
@@ -72,7 +72,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->lookup(\Documents\User::class)
             ->localField('userId')
             ->foreignField('_id')
-            ->alias('user');
+                ->alias('user');
 
         $expectedPipeline = [
             [
@@ -101,7 +101,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->lookup('randomCollectionName')
             ->localField('userId')
             ->foreignField('_id')
-            ->alias('user');
+                ->alias('user');
 
         $expectedPipeline = [
             [
@@ -128,7 +128,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder
             ->unwind('$users')
             ->lookup('users')
-            ->alias('users');
+                ->alias('users');
 
         $expectedPipeline = [
             [
@@ -161,7 +161,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder
             ->unwind('$referencedUsers')
             ->lookup('referencedUsers')
-            ->alias('users');
+                ->alias('users');
 
         $expectedPipeline = [
             [
@@ -195,7 +195,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup('users')
-            ->alias('users');
+                ->alias('users');
 
         $expectedPipeline = [
             [
@@ -223,7 +223,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder = $this->dm->createAggregationBuilder(\Documents\SimpleReferenceUser::class);
         $builder
             ->lookup('users')
-            ->alias('users');
+                ->alias('users');
 
         $expectedPipeline = [
             [
@@ -254,7 +254,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')
             ->equals('alcaeus')
             ->lookup('simpleReferenceOneInverse')
-            ->alias('simpleReferenceOneInverse');
+                ->alias('simpleReferenceOneInverse');
 
         $expectedPipeline = [
             [
@@ -286,7 +286,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')
             ->equals('alcaeus')
             ->lookup('simpleReferenceManyInverse')
-            ->alias('simpleReferenceManyInverse');
+                ->alias('simpleReferenceManyInverse');
 
         $expectedPipeline = [
             [
@@ -318,7 +318,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')
             ->equals('alcaeus')
             ->lookup('embeddedReferenceOneInverse')
-            ->alias('embeddedReferenceOneInverse');
+                ->alias('embeddedReferenceOneInverse');
 
         $expectedPipeline = [
             [
@@ -350,7 +350,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
             ->field('username')
             ->equals('alcaeus')
             ->lookup('embeddedReferenceManyInverse')
-            ->alias('embeddedReferenceManyInverse');
+                ->alias('embeddedReferenceManyInverse');
 
         $expectedPipeline = [
             [
@@ -381,7 +381,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->expectException(MappingException::class);
         $builder
             ->lookup(ShardedOne::class)
-            ->localField('id')
+                ->localField('id')
             ->foreignField('id');
     }
 
