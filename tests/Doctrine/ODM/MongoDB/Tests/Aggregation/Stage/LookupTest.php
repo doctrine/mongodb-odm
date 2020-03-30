@@ -48,7 +48,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder
             ->lookup(CmsComment::class)
                 ->localField('id')
-            ->foreignField('authorIp')
+                ->foreignField('authorIp')
                 ->alias('user');
 
         $expectedPipeline = [
@@ -71,7 +71,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder
             ->lookup(\Documents\User::class)
                 ->localField('userId')
-            ->foreignField('_id')
+                ->foreignField('_id')
                 ->alias('user');
 
         $expectedPipeline = [
@@ -100,7 +100,7 @@ class LookupTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $builder
             ->lookup('randomCollectionName')
                 ->localField('userId')
-            ->foreignField('_id')
+                ->foreignField('_id')
                 ->alias('user');
 
         $expectedPipeline = [
