@@ -74,7 +74,7 @@ class User extends BaseDocument
     /** @ODM\ReferenceMany(targetDocument="BlogPost", mappedBy="user", nullable=true) */
     protected $posts;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\SimpleReferenceUser", mappedBy="user", name="userId",storeAs="id") */
+    /** @ODM\ReferenceOne(targetDocument="Documents\SimpleReferenceUser", mappedBy="user") */
     protected $simpleReferenceOneInverse;
 
     /** @ODM\ReferenceMany(targetDocument="Documents\SimpleReferenceUser", mappedBy="users") */
