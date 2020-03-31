@@ -140,7 +140,8 @@ class Lookup extends BaseStage\Lookup
 
             $this
                 ->localField('_id')
-                ->foreignField($referencedFieldName);
+                ->foreignField($referencedFieldName)
+                ->alias($fieldName);
         }
 
         return $this;
