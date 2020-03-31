@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  test.mongodb.dev:
+    container_name: test.mongodb.dev
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/code
+    working_dir: /code
+    depends_on:
+      - mongodb
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - 27777:27017
+    logging:
+      driver: none
