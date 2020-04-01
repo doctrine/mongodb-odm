@@ -7,6 +7,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        TRAVIS_PHP_VERSION: "7.2"
+        COMPOSER_VERSION: "1.8"
+        ADAPTER_VERSION: "^1.0.0"
+        DRIVER_VERSION: "stable"
     volumes:
       - .:/code
     working_dir: /code
