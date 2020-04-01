@@ -47,7 +47,7 @@ class MongoDBException extends Exception
 
     public static function cannotPersistMappedSuperclass(string $className) : self
     {
-        return new self('Cannot persist an embedded document, aggregation result document or mapped superclass ' . $className);
+        return new self(sprintf('Cannot persist object of class "%s" as it is not a persistable document.', $className));
     }
 
     public static function invalidDocumentRepository(string $className) : self
@@ -142,5 +142,10 @@ class MongoDBException extends Exception
     public static function cannotRefreshDocument() : self
     {
         return new self('Failed to fetch current data of document being refreshed. Was it removed in the meantime?');
+    }
+
+    public static function cannotCreateRepository(string $className) : self
+    {
+        return new self(sprintf('Cannot create repository for class "%s".', $className));
     }
 }

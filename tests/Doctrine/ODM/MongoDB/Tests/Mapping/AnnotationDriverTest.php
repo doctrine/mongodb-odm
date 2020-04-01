@@ -210,6 +210,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         yield [
             /**
              * @ODM\Document()
+             * @ODM\View
+             */
+            new class () {
+            },
+            '/as View because it was already mapped as Document\.$/',
+        ];
+        yield [
+            /**
+             * @ODM\Document()
              * @ODM\MappedSuperclass
              */
             new class () {

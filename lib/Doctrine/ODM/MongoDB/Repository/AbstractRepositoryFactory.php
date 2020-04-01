@@ -6,7 +6,10 @@ namespace Doctrine\ODM\MongoDB\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
+use function is_a;
 use function ltrim;
 use function spl_object_hash;
 
@@ -44,18 +47,43 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for a document class.
      *
-     * @return ObjectRepository|GridFSRepository
+     * @return ObjectRepository|GridFSRepository|ViewRepository
      */
     protected function createRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
 
+        $repositoryClassName = $metadata->isFile
+            ? $documentManager->getConfiguration()->getDefaultGridFSRepositoryClassName()
+            : $documentManager->getConfiguration()->getDefaultDocumentRepositoryClassName();
+
         if ($metadata->customRepositoryClassName) {
             $repositoryClassName = $metadata->customRepositoryClassName;
-        } elseif ($metadata->isFile) {
-            $repositoryClassName = $documentManager->getConfiguration()->getDefaultGridFSRepositoryClassName();
-        } else {
-            $repositoryClassName = $documentManager->getConfiguration()->getDefaultDocumentRepositoryClassName();
+        }
+
+        switch (true) {
+            case $metadata->isFile:
+                if (! is_a($repositoryClassName, GridFSRepository::class, true)) {
+                    throw MappingException::invalidRepositoryClass($documentName, $repositoryClassName, GridFSRepository::class);
+                }
+                break;
+
+            case $metadata->isView():
+                if (! is_a($repositoryClassName, ViewRepository::class, true)) {
+                    throw MappingException::invalidRepositoryClass($documentName, $repositoryClassName, ViewRepository::class);
+                }
+                break;
+
+            case $metadata->isEmbeddedDocument:
+                throw MongoDBException::cannotCreateRepository($documentName);
+                break;
+
+            case $metadata->isMappedSuperclass:
+            default:
+                if (! is_a($repositoryClassName, DocumentRepository::class, true)) {
+                    throw MappingException::invalidRepositoryClass($documentName, $repositoryClassName, DocumentRepository::class);
+                }
+                break;
         }
 
         return $this->instantiateRepository($repositoryClassName, $documentManager, $metadata);

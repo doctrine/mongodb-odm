@@ -15,6 +15,7 @@ use SimpleXMLElement;
 use function array_keys;
 use function array_map;
 use function assert;
+use function class_exists;
 use function constant;
 use function count;
 use function current;
@@ -95,6 +96,21 @@ class XmlDriver extends FileDriver
             $class->isEmbeddedDocument = true;
         } elseif ($xmlRoot->getName() === 'query-result-document') {
             $class->isQueryResultDocument = true;
+        } elseif ($xmlRoot->getName() === 'view') {
+            if (isset($xmlRoot['repository-class'])) {
+                $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
+            }
+
+            if (! isset($xmlRoot['root-class'])) {
+                throw MappingException::viewWithoutRootClass($className);
+            }
+
+            $rootClass = (string) $xmlRoot['root-class'];
+            if (! class_exists($rootClass)) {
+                throw MappingException::viewRootClassNotFound($className, $rootClass);
+            }
+
+            $class->markViewOf($rootClass);
         } elseif ($xmlRoot->getName() === 'gridfs-file') {
             $class->isFile = true;
 
@@ -128,6 +144,9 @@ class XmlDriver extends FileDriver
         }
         if (isset($xmlRoot['bucket-name'])) {
             $class->setBucketName((string) $xmlRoot['bucket-name']);
+        }
+        if (isset($xmlRoot['view'])) {
+            $class->setCollection((string) $xmlRoot['view']);
         }
         if (isset($xmlRoot['write-concern'])) {
             $class->setWriteConcern((string) $xmlRoot['write-concern']);
@@ -585,7 +604,7 @@ class XmlDriver extends FileDriver
 
         $xmlElement = simplexml_load_file($file);
 
-        foreach (['document', 'embedded-document', 'mapped-superclass', 'query-result-document', 'gridfs-file'] as $type) {
+        foreach (['document', 'embedded-document', 'mapped-superclass', 'query-result-document', 'view', 'gridfs-file'] as $type) {
             if (! isset($xmlElement->$type)) {
                 continue;
             }

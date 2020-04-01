@@ -136,7 +136,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         assert($class instanceof ClassMetadata);
 
-        return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument;
+        return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument && ! $class->isView();
     }
 
     /**
@@ -223,7 +223,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function validateIdentifier(ClassMetadata $class) : void
     {
-        if (! $class->identifier && ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument) {
+        if (! $class->identifier && $this->isEntity($class)) {
             throw MappingException::identifierRequired($class->name);
         }
     }

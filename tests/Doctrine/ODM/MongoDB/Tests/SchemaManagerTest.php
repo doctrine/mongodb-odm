@@ -18,6 +18,7 @@ use Documents\File;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
 use Documents\SimpleReferenceUser;
+use Documents\UserName;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
@@ -41,6 +42,10 @@ class SchemaManagerTest extends BaseTest
         SimpleReferenceUser::class,
         ShardedOne::class,
         ShardedOneWithDifferentKey::class,
+    ];
+
+    private $views = [
+        UserName::class,
     ];
 
     /** @var Collection[]|MockObject[] */
@@ -317,11 +322,22 @@ class SchemaManagerTest extends BaseTest
      */
     public function testDeleteIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        foreach ($this->documentCollections as $collection) {
-            $collection
-                ->expects($this->atLeastOnce())
-                ->method('dropIndexes')
-                ->with(new ArraySubset($expectedWriteOptions));
+        $views = array_map(
+            function (string $fqcn) {
+                return $this->dm->getClassMetadata($fqcn)->getCollection();
+            },
+            $this->views
+        );
+
+        foreach ($this->documentCollections as $collectionName => $collection) {
+            if (in_array($collectionName, $views)) {
+                $collection->expects($this->never())->method('dropIndexes');
+            } else {
+                $collection
+                    ->expects($this->atLeastOnce())
+                    ->method('dropIndexes')
+                    ->with(new ArraySubset($expectedWriteOptions));
+            }
         }
 
         $this->schemaManager->deleteIndexes($maxTimeMs, $writeConcern);
@@ -394,12 +410,54 @@ class SchemaManagerTest extends BaseTest
     /**
      * @dataProvider getWriteOptions
      */
+    public function testCreateView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        $cm = $this->dm->getClassMetadata(UserName::class);
+
+        $options = [];
+
+        $database = $this->documentDatabases[$this->getDatabaseName($cm)];
+        $database
+            ->expects($this->never())
+            ->method('createCollection');
+
+        $database->expects($this->once())
+            ->method('command')
+            ->with(
+                [
+                    'create' => 'user-name',
+                    'viewOn' => 'CmsUser',
+                    'pipeline' => [
+                        [
+                            '$project' => ['username' => true],
+                        ],
+                    ],
+                ],
+                new ArraySubset($options + $expectedWriteOptions)
+            );
+
+        $rootCollection = $this->documentCollections['CmsUser'];
+        $rootCollection
+            ->method('getCollectionName')
+            ->willReturn('CmsUser');
+
+        $this->schemaManager->createDocumentCollection(UserName::class, $maxTimeMs, $writeConcern);
+    }
+
+    /**
+     * @dataProvider getWriteOptions
+     */
     public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         foreach ($this->documentDatabases as $class => $database) {
             $database
                 ->expects($this->atLeastOnce())
                 ->method('createCollection')
+                ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+
+            $database
+                ->expects($this->atLeastOnce())
+                ->method('command')
                 ->with($this->anything(), new ArraySubset($expectedWriteOptions));
         }
 
@@ -466,6 +524,25 @@ class SchemaManagerTest extends BaseTest
         }
 
         $this->schemaManager->dropDocumentCollection(File::class, $maxTimeMs, $writeConcern);
+    }
+
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testDropView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        $viewName = $this->dm->getClassMetadata(UserName::class)->getCollection();
+        foreach ($this->documentCollections as $collectionName => $collection) {
+            if ($collectionName === $viewName) {
+                $collection->expects($this->once())
+                    ->method('drop')
+                    ->with(new ArraySubset($expectedWriteOptions));
+            } else {
+                $collection->expects($this->never())->method('drop');
+            }
+        }
+
+        $this->schemaManager->dropDocumentCollection(UserName::class, $maxTimeMs, $writeConcern);
     }
 
     /**

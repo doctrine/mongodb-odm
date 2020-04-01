@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use InvalidArgumentException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
@@ -16,6 +17,7 @@ use function array_filter;
 use function array_merge;
 use function array_unique;
 use function assert;
+use function is_string;
 use function iterator_count;
 use function iterator_to_array;
 use function ksort;
@@ -61,7 +63,7 @@ final class SchemaManager
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -79,7 +81,7 @@ final class SchemaManager
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -99,7 +101,7 @@ final class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot update document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
 
@@ -243,7 +245,7 @@ final class SchemaManager
     public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
@@ -270,7 +272,7 @@ final class SchemaManager
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -286,7 +288,7 @@ final class SchemaManager
     public function deleteDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
@@ -318,6 +320,28 @@ final class SchemaManager
 
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
             throw new InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
+        }
+
+        if ($class->isView()) {
+            $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
+
+            $rootClass = $class->getRootClass();
+            assert(is_string($rootClass));
+
+            $builder    = $this->dm->createAggregationBuilder($rootClass);
+            $repository = $this->dm->getRepository($class->name);
+            assert($repository instanceof ViewRepository);
+            $repository->createViewAggregation($builder);
+
+            $collectionName = $this->dm->getDocumentCollection($rootClass)->getCollectionName();
+            $this->dm->getDocumentDatabase($documentName)
+                ->command([
+                    'create' => $class->collection,
+                    'viewOn' => $collectionName,
+                    'pipeline' => $builder->getPipeline(),
+                ], $options);
+
+            return;
         }
 
         if ($class->isFile) {

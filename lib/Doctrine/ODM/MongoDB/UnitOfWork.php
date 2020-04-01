@@ -450,6 +450,7 @@ final class UnitOfWork implements PropertyChangedListener
         if (empty($documents)) {
             return [];
         }
+
         $divided = [];
         $embeds  = [];
         foreach ($documents as $oid => $d) {
@@ -457,15 +458,22 @@ final class UnitOfWork implements PropertyChangedListener
             if (isset($embeds[$className])) {
                 continue;
             }
+
             if (isset($divided[$className])) {
                 $divided[$className][1][$oid] = $d;
                 continue;
             }
+
             $class = $this->dm->getClassMetadata($className);
             if ($class->isEmbeddedDocument && ! $includeEmbedded) {
                 $embeds[$className] = true;
                 continue;
             }
+
+            if ($class->isView()) {
+                continue;
+            }
+
             if (empty($divided[$class->name])) {
                 $divided[$class->name] = [$class, [$oid => $d]];
             } else {
@@ -485,7 +493,7 @@ final class UnitOfWork implements PropertyChangedListener
     {
         foreach ($this->documentInsertions as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
-            if ($class->isEmbeddedDocument) {
+            if ($class->isEmbeddedDocument || $class->isView()) {
                 continue;
             }
 
@@ -502,7 +510,7 @@ final class UnitOfWork implements PropertyChangedListener
     {
         foreach ($this->documentUpserts as $document) {
             $class = $this->dm->getClassMetadata(get_class($document));
-            if ($class->isEmbeddedDocument) {
+            if ($class->isEmbeddedDocument || $class->isView()) {
                 continue;
             }
 
@@ -611,6 +619,10 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function computeOrRecomputeChangeSet(ClassMetadata $class, object $document, bool $recompute = false) : void
     {
+        if ($class->isView()) {
+            return;
+        }
+
         $oid           = spl_object_hash($document);
         $actualData    = $this->getDocumentActualData($document);
         $isNewDocument = ! isset($this->originalDocumentData[$oid]);
@@ -813,7 +825,7 @@ final class UnitOfWork implements PropertyChangedListener
         // Compute changes for other MANAGED documents. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $documents) {
             $class = $this->dm->getClassMetadata($className);
-            if ($class->isEmbeddedDocument) {
+            if ($class->isEmbeddedDocument || $class->isView()) {
                 /* we do not want to compute changes to embedded documents up front
                  * in case embedded document was replaced and its changeset
                  * would corrupt data. Embedded documents' change set will
@@ -1280,7 +1292,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      */
-    public function scheduleForDelete(object $document) : void
+    public function scheduleForDelete(object $document, bool $isView = false) : void
     {
         $oid = spl_object_hash($document);
 
@@ -1304,6 +1316,10 @@ final class UnitOfWork implements PropertyChangedListener
             unset($this->documentUpdates[$oid]);
         }
         if (isset($this->documentDeletions[$oid])) {
+            return;
+        }
+
+        if ($isView) {
             return;
         }
 
@@ -1592,13 +1608,17 @@ final class UnitOfWork implements PropertyChangedListener
         switch ($documentState) {
             case self::STATE_MANAGED:
                 // Nothing to do, except if policy is "deferred explicit"
-                if ($class->isChangeTrackingDeferredExplicit()) {
+                if ($class->isChangeTrackingDeferredExplicit() && ! $class->isView()) {
                     $this->scheduleForSynchronization($document);
                 }
                 break;
             case self::STATE_NEW:
                 if ($class->isFile) {
                     throw MongoDBException::cannotPersistGridFSFile($class->name);
+                }
+
+                if ($class->isView()) {
+                    return;
                 }
 
                 $this->persistNew($class, $document);
@@ -1666,7 +1686,7 @@ final class UnitOfWork implements PropertyChangedListener
                 break;
             case self::STATE_MANAGED:
                 $this->lifecycleEventManager->preRemove($class, $document);
-                $this->scheduleForDelete($document);
+                $this->scheduleForDelete($document, $class->isView());
                 break;
             case self::STATE_DETACHED:
                 throw MongoDBException::detachedDocumentCannotBeRemoved();
@@ -2597,7 +2617,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
 
-            if (! $class->isQueryResultDocument) {
+            if (! $class->isQueryResultDocument && ! $class->isView()) {
                 $this->originalDocumentData[$oid] = $data;
             }
         }
