@@ -80,6 +80,9 @@ class Builder
      */
     private $readOnly = false;
 
+    /** @var bool */
+    private $rewindable = true;
+
     /**
      * The Collection instance.
      *
@@ -713,7 +716,8 @@ class Builder
             $this->hydrate,
             $this->refresh,
             $this->primers,
-            $this->readOnly
+            $this->readOnly,
+            $this->rewindable
         );
     }
 
@@ -1375,6 +1379,13 @@ class Builder
     public function setReadPreference(ReadPreference $readPreference) : self
     {
         $this->query['readPreference'] = $readPreference;
+
+        return $this;
+    }
+
+    public function setRewindable(bool $rewindable = true) : self
+    {
+        $this->rewindable = $rewindable;
 
         return $this;
     }

@@ -287,6 +287,28 @@ get the raw results directly back from mongo by using the
 
     print_r($users);
 
+Disabling Result Caching
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Due to MongoDB cursors not being rewindable, ODM uses a caching iterator when
+returning results from queries. This cache allows you to iterate a result cursor
+multiple times without re-executing the original query. However, in long-running
+processes or when handling a large number of results, this can lead to high
+memory usage. To disable this result cache, you can tell the query builder to
+not return a caching iterator:
+
+.. code-block:: php
+
+    <?php
+
+    $blogPosts = $dm->createQueryBuilder(BlogPost::class)
+        ->setRewindable(false)
+        ->getQuery()
+        ->execute();
+
+When setting this option to ``false``, attempting a second iteration will result
+in an exception.
+
 Limiting Results
 ~~~~~~~~~~~~~~~~
 

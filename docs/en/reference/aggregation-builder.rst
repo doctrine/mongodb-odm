@@ -191,6 +191,26 @@ specified document.
     can map embedded documents, define references, and even use discriminators
     to get different result documents according to the aggregation result.
 
+Disabling Result Caching
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Due to MongoDB cursors not being rewindable, ODM uses a caching iterator when
+returning results from aggregation pipelines. This cache allows you to iterate a
+result cursor multiple times without re-executing the original aggregation
+pipeline. However, in long-running processes or when handling a large number of
+results, this can lead to high memory usage. To disable this result cache, you
+can tell the query builder to not return a caching iterator:
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder->setRewindable(false);
+
+When setting this option to ``false``, attempting a second iteration will result
+in an exception.
+
 Aggregation pipeline stages
 ---------------------------
 

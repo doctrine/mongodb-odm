@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use DateTime;
+use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Query\Builder;
@@ -806,6 +807,15 @@ class BuilderTest extends BaseTest
             ],
         ];
         $this->assertEquals($expected, $qb->getNewObj());
+    }
+
+    public function testNonRewindable()
+    {
+        $query = $this->getTestQueryBuilder()
+            ->setRewindable(false)
+            ->getQuery();
+
+        $this->assertInstanceOf(UnrewindableIterator::class, $query->execute());
     }
 
     private function getTestQueryBuilder()

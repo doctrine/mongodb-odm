@@ -265,6 +265,16 @@ abstract class Stage
     }
 
     /**
+     * Controls if resulting iterator should be wrapped with CachingIterator.
+     */
+    public function rewindable(bool $rewindable = true) : self
+    {
+        $this->builder->rewindable($rewindable);
+
+        return $this;
+    }
+
+    /**
      * Randomly selects the specified number of documents from its input.
      *
      * @see https://docs.mongodb.org/manual/reference/operator/aggregation/sample/
