@@ -199,7 +199,8 @@ class Lookup extends Stage
 
             $this
                 ->localField('_id')
-                ->foreignField($referencedFieldName);
+                ->foreignField($referencedFieldName)
+                ->alias($fieldName);
         }
 
         return $this;
