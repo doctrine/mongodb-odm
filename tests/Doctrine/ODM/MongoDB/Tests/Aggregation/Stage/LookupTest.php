@@ -394,7 +394,7 @@ class LookupTest extends BaseTest
 
     public function testLookupStageAndDefaultAlias()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
+        $builder = $this->dm->createAggregationBuilder(User::class);
         $builder
             ->lookup('simpleReferenceOneInverse');
 
@@ -417,7 +417,7 @@ class LookupTest extends BaseTest
 
     public function testLookupStageAndDefaultAliasOverride()
     {
-        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
+        $builder = $this->dm->createAggregationBuilder(User::class);
         $builder
             ->lookup('simpleReferenceOneInverse')
                 ->alias('override');
