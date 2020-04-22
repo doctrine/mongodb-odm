@@ -31,6 +31,9 @@ Embed a single document:
         /** @EmbeddedDocument */
         class Address
         {
+            /** @Field(type="string") */
+            private $street;
+            
             // ...
         }
 
@@ -44,6 +47,10 @@ Embed a single document:
           <document name="Documents\User">
                 <embed-one field="address" target-document="Address" />
           </document>
+          
+          <embedded-document name="Address">
+                <field name="street" type="string" />
+          </embedded-document>
         </doctrine-mongo-mapping>
 
 .. _embed_many:
@@ -67,18 +74,21 @@ Embed many documents:
             // ...
 
             /** @EmbedMany(targetDocument=Phonenumber::class) */
-            private $phonenumbers;
+            private $phoneNumbers;
 
             // ...
             public function __construct()
             {
-                $this->phonenumbers = new ArrayCollection();
+                $this->phoneNumbers = new ArrayCollection();
             }
         }
 
         /** @EmbeddedDocument */
-        class Phonenumber
+        class PhoneNumber
         {
+            /** @Field(type="string") */
+            private $number;
+        
             // ...
         }
 
@@ -90,8 +100,12 @@ Embed many documents:
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
           <document name="Documents\User">
-                <embed-many field="phonenumbers" target-document="Phonenumber" />
+                <embed-many field="phoneNumbers" target-document="PhoneNumber" />
           </document>
+          
+          <embedded-document name="PhoneNumber">
+                <field name="number" type="string" />
+          </embedded-document>
         </doctrine-mongo-mapping>
 
 .. _embed_mixing_document_types:
