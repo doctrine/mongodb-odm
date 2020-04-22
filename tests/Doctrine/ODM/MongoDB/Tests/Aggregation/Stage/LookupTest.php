@@ -391,4 +391,51 @@ class LookupTest extends BaseTest
         $this->dm->persist($referenceUser);
         $this->dm->flush();
     }
+
+    public function testLookupStageAndDefaultAlias()
+    {
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
+        $builder
+            ->lookup('simpleReferenceOneInverse');
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'SimpleReferenceUser',
+                    'localField' => '_id',
+                    'foreignField' => 'userId',
+                    'as' => 'simpleReferenceOneInverse',
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+
+        $result = $builder->execute()->toArray();
+        $this->assertCount(1, $result[0]['simpleReferenceOneInverse']);
+    }
+
+    public function testLookupStageAndDefaultAliasOverride()
+    {
+        $builder = $this->dm->createAggregationBuilder(\Documents\User::class);
+        $builder
+            ->lookup('simpleReferenceOneInverse')
+                ->alias('override');
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'SimpleReferenceUser',
+                    'localField' => '_id',
+                    'foreignField' => 'userId',
+                    'as' => 'override',
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+
+        $result = $builder->execute()->toArray();
+        $this->assertCount(1, $result[0]['override']);
+    }
 }

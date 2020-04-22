@@ -95,7 +95,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         /** @ODM\ReferenceMany(targetDocument=Project::class) */
         private $projects;
 
-        public __construct() { $this->projects = new ArrayCollection(); }
+        public function __construct() { $this->projects = new ArrayCollection(); }
 
         public function getProjects(): Collection { return $this->projects; }
         public function addProject(Project $project): void { $this->projects[] = $project; }
