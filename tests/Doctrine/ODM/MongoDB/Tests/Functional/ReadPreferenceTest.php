@@ -16,7 +16,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $user = new User();
         $user->addGroup(new Group('Test'));
         $this->dm->persist($user);
-        $this->dm->flush();
+        $this->dm->flush(null, ['w' => 'majority']);
         $this->dm->clear();
     }
 
@@ -31,6 +31,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE_TAGS, $cursor->getHints());
 
         $user = $cursor->getSingleResult();
+        $this->assertInstanceOf(User::class, $user);
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->getGroups());
         $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $user->getGroups()->getHints());
@@ -53,6 +54,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertReadPreferenceTagsHint($tags, $cursor->getHints());
 
         $user = $cursor->getSingleResult();
+        $this->assertInstanceOf(User::class, $user);
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->getGroups());
         $this->assertReadPreferenceHint($readPreference, $user->getGroups()->getHints());
@@ -79,6 +81,7 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertReadPreferenceTagsHint($tags, $cursor->getHints());
 
         $user = $cursor->getSingleResult();
+        $this->assertInstanceOf(User::class, $user);
 
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $user->getGroups());
         $this->assertReadPreferenceHint($readPreference, $user->getGroups()->getHints());
@@ -100,8 +103,9 @@ class ReadPreferenceTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE_TAGS, $cursor->getHints());
 
         $user = $cursor->getSingleResult();
-        $groups = $user->getGroups();
+        $this->assertInstanceOf(User::class, $user);
 
+        $groups = $user->getGroups();
         $this->assertInstanceOf('Doctrine\ODM\MongoDB\PersistentCollection', $groups);
 
         $groups->setHints(array(
