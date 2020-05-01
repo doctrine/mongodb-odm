@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -21,6 +22,8 @@ use function usort;
 
 abstract class AbstractMappingDriverTest extends BaseTest
 {
+    use ArraySubsetAsserts;
+
     abstract protected function _loadDriver();
 
     protected function createMetadataDriverImpl()

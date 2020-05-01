@@ -791,7 +791,7 @@ class ClassMetadataTest extends BaseTest
         $cm->isFile = true;
 
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessageRegExp("#^Field 'contentType' in class '.+' is not a valid field for GridFS documents. You should move it to an embedded metadata document.$#");
+        $this->expectExceptionMessageMatches("#^Field 'contentType' in class '.+' is not a valid field for GridFS documents. You should move it to an embedded metadata document.$#");
 
         $cm->mapField(['type' => 'string', 'fieldName' => 'contentType']);
     }

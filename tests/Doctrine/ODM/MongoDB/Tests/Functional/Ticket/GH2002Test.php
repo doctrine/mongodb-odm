@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -12,6 +13,8 @@ use function sprintf;
 
 class GH2002Test extends BaseTest
 {
+    use ArraySubsetAsserts;
+
     /**
      * @dataProvider getValidReferenceData
      */

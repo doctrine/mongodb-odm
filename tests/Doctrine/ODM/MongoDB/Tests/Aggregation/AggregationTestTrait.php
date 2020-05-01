@@ -9,14 +9,14 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr as AggregationExpr;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
 use Documents\User;
 use PHPUnit\Framework\MockObject\MockBuilder;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 trait AggregationTestTrait
 {
     /**
      * @param string $className
      */
-    abstract protected function getMockBuilder($className) : MockBuilder;
+    abstract protected function getMockBuilder(string $className) : MockBuilder;
 
     /**
      * @return Builder
@@ -27,7 +27,7 @@ trait AggregationTestTrait
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|AggregationExpr
+     * @return MockObject|AggregationExpr
      */
     protected function getMockAggregationExpr()
     {
@@ -37,7 +37,7 @@ trait AggregationTestTrait
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|QueryExpr
+     * @return MockObject|QueryExpr
      */
     protected function getMockQueryExpr()
     {
