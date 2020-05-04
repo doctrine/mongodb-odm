@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 use BadMethodCallException;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
-use Doctrine\ODM\MongoDB\Id\AbstractIdGenerator;
+use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -48,8 +48,10 @@ use function strtoupper;
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
+ *
+ * @final
  */
-class ClassMetadata implements BaseClassMetadata
+/* final */ class ClassMetadata implements BaseClassMetadata
 {
     /* The Id generator types. */
     /**
@@ -80,7 +82,7 @@ class ClassMetadata implements BaseClassMetadata
      * does not exist or if an option was passed for that there is not setter in the new
      * generator class.
      *
-     * The class  will have to be a subtype of AbstractIdGenerator.
+     * The class will have to implement IdGenerator.
      */
     public const GENERATOR_TYPE_CUSTOM = 5;
 
@@ -328,7 +330,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
-     * @var AbstractIdGenerator|null
+     * @var IdGenerator|null
      */
     public $idGenerator;
 
@@ -1390,7 +1392,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Sets the ID generator used to generate IDs for instances of this class.
      */
-    public function setIdGenerator(AbstractIdGenerator $generator) : void
+    public function setIdGenerator(IdGenerator $generator) : void
     {
         $this->idGenerator = $generator;
     }

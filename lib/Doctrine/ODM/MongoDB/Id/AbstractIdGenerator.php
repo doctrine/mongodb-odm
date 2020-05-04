@@ -4,17 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Id;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-
 /**
- * AbstractIdGenerator
+ * @deprecated AbstractIdGenerator was deprecated in 2.1 and will be removed in 3.0. Implement IdGenerator interface instead.
  */
-abstract class AbstractIdGenerator
+abstract class AbstractIdGenerator implements IdGenerator
 {
-    /**
-     * Generates an identifier for a document.
-     *
-     * @return mixed
-     */
-    abstract public function generate(DocumentManager $dm, object $document);
 }
