@@ -7,6 +7,7 @@ namespace Documents;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use function bcadd;
 
 /**
  * @ODM\Document(collection="users")
@@ -73,6 +74,9 @@ class User extends BaseDocument
 
     /** @ODM\Field(type="float", strategy="increment") */
     protected $floatCount;
+
+    /** @ODM\Field(type="decimal128", strategy="increment") */
+    protected $decimal128Count;
 
     /** @ODM\ReferenceMany(targetDocument=BlogPost::class, mappedBy="user", nullable=true) */
     protected $posts;
@@ -320,6 +324,16 @@ class User extends BaseDocument
         $this->floatCount = $floatCount;
     }
 
+    public function getDecimal128Count()
+    {
+        return $this->decimal128Count;
+    }
+
+    public function setDecimal128Count($decimal128Count)
+    {
+        $this->decimal128Count = $decimal128Count;
+    }
+
     public function getSimpleReferenceOneInverse()
     {
         return $this->simpleReferenceOneInverse;
@@ -346,6 +360,11 @@ class User extends BaseDocument
         } else {
             $this->floatCount += $num;
         }
+    }
+
+    public function incrementDecimal128Count($num = null)
+    {
+        $this->decimal128Count = bcadd($this->decimal128Count, $num ?? '1');
     }
 
     public function setPosts($posts)

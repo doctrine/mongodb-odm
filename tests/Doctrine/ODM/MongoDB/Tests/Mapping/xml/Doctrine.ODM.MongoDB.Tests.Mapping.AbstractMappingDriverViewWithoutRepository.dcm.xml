@@ -8,6 +8,6 @@
     <view name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverViewWithoutRepository"
           root-class="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser">
         <id />
-        <field name="name" />
+        <field name="name" type="string"/>
     </view>
 </doctrine-mongo-mapping>

@@ -46,6 +46,8 @@ use function array_search;
 use function array_slice;
 use function array_values;
 use function assert;
+use function bcadd;
+use function bccomp;
 use function count;
 use function explode;
 use function get_class;
@@ -219,6 +221,10 @@ final class DocumentPersister
                     $nextVersionDateTime = $versionMapping['type'] === Type::DATE ? new DateTime() : new DateTimeImmutable();
                     $nextVersion         = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
+                } elseif ($versionMapping['type'] === Type::DECIMAL128) {
+                    $current     = (string) $this->class->reflFields[$this->class->versionField]->getValue($document);
+                    $nextVersion = bccomp('1', $current) === 1 ? '1' : $current;
+                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
                 $data[$versionMapping['name']] = $nextVersion;
             }
@@ -294,6 +300,10 @@ final class DocumentPersister
                 $nextVersionDateTime = $versionMapping['type'] === Type::DATE ? new DateTime() : new DateTimeImmutable();
                 $nextVersion         = Type::convertPHPToDatabaseValue($nextVersionDateTime);
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersionDateTime);
+            } elseif ($versionMapping['type'] === Type::DECIMAL128) {
+                $current     = (string) $this->class->reflFields[$this->class->versionField]->getValue($document);
+                $nextVersion = bccomp('1', $current) === 1 ? '1' : $current;
+                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             }
             $data['$set'][$versionMapping['name']] = $nextVersion;
         }
@@ -380,6 +390,12 @@ final class DocumentPersister
                 $nextVersion                             = $versionMapping['type'] === Type::DATE ? new DateTime() : new DateTimeImmutable();
                 $update['$set'][$versionMapping['name']] = Type::convertPHPToDatabaseValue($nextVersion);
                 $query[$versionMapping['name']]          = Type::convertPHPToDatabaseValue($currentVersion);
+            } elseif ($versionMapping['type'] === Type::DECIMAL128) {
+                $current                                 = $this->class->reflFields[$this->class->versionField]->getValue($document);
+                $nextVersion                             = bcadd($current, '1');
+                $type                                    = Type::getType(Type::DECIMAL128);
+                $update['$set'][$versionMapping['name']] = $type->convertPHPToDatabaseValue($nextVersion);
+                $query[$versionMapping['name']]          = $type->convertPHPToDatabaseValue($currentVersion);
             }
         }
 

@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Issue;
 use Documents\User;
 use InvalidArgumentException;
+use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use function get_class;
@@ -128,6 +129,28 @@ class LockTest extends BaseTest
         return $test;
     }
 
+    public function testLockDecimal128SetsDefaultValue()
+    {
+        $test        = new LockDecimal128();
+        $test->title = 'Testing';
+
+        $this->assertNull($test->version, 'Pre-Condition');
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+
+        $version = $test->version;
+
+        $this->assertSame('1', $version);
+
+        $test->title = 'changed';
+        $this->dm->flush();
+
+        $this->assertNotSame($version, $test->version);
+
+        return $test;
+    }
+
     public function testLockDateSetsDefaultValueOnUpsert()
     {
         $id = new ObjectId();
@@ -180,6 +203,32 @@ class LockTest extends BaseTest
         return $test;
     }
 
+    public function testLockDecimal128SetsDefaultValueOnUpsert()
+    {
+        $id = new ObjectId();
+
+        $test        = new LockDecimal128();
+        $test->title = 'Testing';
+        $test->id    = $id;
+
+        $this->assertNull($test->version, 'Pre-Condition');
+
+        $this->dm->persist($test);
+        $this->dm->flush();
+
+        $version = $test->version;
+
+        $this->assertSame($id, $test->id);
+        $this->assertSame('1', $version);
+
+        $test->title = 'changed';
+        $this->dm->flush();
+
+        $this->assertNotSame($version, $test->version);
+
+        return $test;
+    }
+
     public function testLockDateThrowsException()
     {
         $article = new LockDate('Test LockInt');
@@ -205,6 +254,23 @@ class LockTest extends BaseTest
 
         // Manually change the version so the next code will cause an exception
         $this->dm->getDocumentCollection(get_class($article))->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => new UTCDateTime(time() * 1000 + 600)]]);
+
+        // Now lets change a property and try and save it again
+        $article->title = 'ok';
+
+        $this->expectException(LockException::class);
+
+        $this->dm->flush();
+    }
+
+    public function testLockDecimal128ThrowsException()
+    {
+        $article = new LockDecimal128('Test LockDecimal128');
+        $this->dm->persist($article);
+        $this->dm->flush();
+
+        // Manually change the version so the next code will cause an exception
+        $this->dm->getDocumentCollection(get_class($article))->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => new Decimal128('3')]]);
 
         // Now lets change a property and try and save it again
         $article->title = 'ok';
@@ -447,7 +513,7 @@ class LockTest extends BaseTest
     public function testInvalidVersionDocument()
     {
         $this->expectException(MongoDBException::class);
-        $this->expectExceptionMessage('Invalid version field type string. Version field must be int, integer, date or date_immutable.');
+        $this->expectExceptionMessage('Invalid version field type string. Version field must be int, integer, date, date_immutable, or decimal128.');
         $this->dm->getClassMetadata(InvalidVersionDocument::class);
     }
 
@@ -543,6 +609,13 @@ class LockDate extends AbstractVersionBase
 class LockDateImmutable extends AbstractVersionBase
 {
     /** @ODM\Version @ODM\Field(type="date_immutable") */
+    public $version;
+}
+
+/** @ODM\Document */
+class LockDecimal128 extends AbstractVersionBase
+{
+    /** @ODM\Version @ODM\Field(type="decimal128") */
     public $version;
 }
 

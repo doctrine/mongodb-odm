@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -15,6 +16,7 @@ use InvalidArgumentException;
 use UnexpectedValueException;
 use function array_search;
 use function array_values;
+use function assert;
 use function get_class;
 
 /**
@@ -145,7 +147,9 @@ final class PersistenceBuilder
                 } else {
                     if ($new !== null && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                         $operator = '$inc';
-                        $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
+                        $type     = Type::getType($mapping['type']);
+                        assert($type instanceof Incrementable);
+                        $value = $type->convertToDatabaseValue($type->diff($old, $new));
                     } else {
                         $operator = '$set';
                         $value    = $new === null ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new);
@@ -247,7 +251,9 @@ final class PersistenceBuilder
                 if ($new !== null) {
                     if (empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                         $operator = '$inc';
-                        $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new - $old);
+                        $type     = Type::getType($mapping['type']);
+                        assert($type instanceof Incrementable);
+                        $value = $type->convertToDatabaseValue($type->diff($old, $new));
                     } else {
                         $operator = '$set';
                         $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new);

@@ -45,6 +45,6 @@ final class LockException extends MongoDBException
 
     public static function invalidVersionFieldType(string $type) : self
     {
-        return new self('Invalid version field type ' . $type . '. Version field must be int, integer, date or date_immutable.');
+        return new self('Invalid version field type ' . $type . '. Version field must be int, integer, date, date_immutable, or decimal128.');
     }
 }

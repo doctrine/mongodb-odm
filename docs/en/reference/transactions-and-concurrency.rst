@@ -42,7 +42,7 @@ Doctrine has integrated support for automatic optimistic locking
 via a ``version`` field. Any document that should be
 protected against concurrent modifications during long-running
 business transactions gets a ``version`` field that is either a simple
-number (mapping type: ``int``) or a date (mapping type: ``date`` or ``date_immutable``).
+number (mapping type: ``int`` or ``decimal128``) or a date (mapping type: ``date`` or ``date_immutable``).
 When changes to the document are persisted,
 the expected version and version increment are incorporated into the update criteria and modifiers, respectively.
 If this results in no document being modified by the update (i.e. expected version did not match),
@@ -68,6 +68,20 @@ The following example designates a version field using the ``int`` type:
     .. code-block:: xml
 
         <field field-name="version" version="true" type="int" />
+
+Or with ``decimal128`` type:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        /** @Version @Field(type="decimal128") */
+        private $version;
+
+    .. code-block:: xml
+
+        <field field-name="version" version="true" type="decimal128" />
 
 Alternatively, the ``date`` type may be used:
 
@@ -101,7 +115,7 @@ Choosing the Field Type
 """""""""""""""""""""""
 
 When using the date-based type in a high-concurrency environment, it is still possible to create multiple documents
-with the same version and cause a conflict. This can be avoided by using the ``int`` type.
+with the same version and cause a conflict. This can be avoided by using the ``int`` or ``decimal128`` type.
 
 Usage
 """""

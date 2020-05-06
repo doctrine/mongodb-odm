@@ -9,6 +9,7 @@ use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
@@ -25,6 +26,7 @@ use function array_pop;
 use function class_exists;
 use function constant;
 use function count;
+use function extension_loaded;
 use function get_class;
 use function in_array;
 use function is_array;
@@ -1194,12 +1196,6 @@ use function strtoupper;
         }
 
         switch (true) {
-            case $mapping['type'] === 'int':
-            case $mapping['type'] === 'float':
-                $defaultStrategy   = self::STORAGE_STRATEGY_SET;
-                $allowedStrategies = [self::STORAGE_STRATEGY_SET, self::STORAGE_STRATEGY_INCREMENT];
-                break;
-
             case $mapping['type'] === 'many':
                 $defaultStrategy   = CollectionHelper::DEFAULT_STRATEGY;
                 $allowedStrategies = [
@@ -1212,9 +1208,18 @@ use function strtoupper;
                 ];
                 break;
 
+            case $mapping['type'] === 'one':
+                $defaultStrategy   = self::STORAGE_STRATEGY_SET;
+                $allowedStrategies = [self::STORAGE_STRATEGY_SET];
+                break;
+
             default:
                 $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET];
+                $type              = Type::getType($mapping['type']);
+                if ($type instanceof Incrementable) {
+                    $allowedStrategies[] = self::STORAGE_STRATEGY_INCREMENT;
+                }
         }
 
         if (! isset($mapping['strategy'])) {
@@ -1669,7 +1674,7 @@ use function strtoupper;
      */
     public function setVersionMapping(array &$mapping) : void
     {
-        if (! in_array($mapping['type'], [Type::INT, Type::INTEGER, Type::DATE, Type::DATE_IMMUTABLE], true)) {
+        if (! in_array($mapping['type'], [Type::INT, Type::INTEGER, Type::DATE, Type::DATE_IMMUTABLE, Type::DECIMAL128], true)) {
             throw LockException::invalidVersionFieldType($mapping['type']);
         }
 
@@ -1976,6 +1981,7 @@ use function strtoupper;
 
         $this->applyStorageStrategy($mapping);
         $this->checkDuplicateMapping($mapping);
+        $this->typeRequirementsAreMet($mapping);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         if (isset($mapping['association'])) {
@@ -2118,6 +2124,13 @@ use function strtoupper;
     private function isAllowedGridFSField(string $name) : bool
     {
         return in_array($name, self::ALLOWED_GRIDFS_FIELDS, true);
+    }
+
+    private function typeRequirementsAreMet(array $mapping) : void
+    {
+        if ($mapping['type'] === Type::DECIMAL128 && ! extension_loaded('bcmath')) {
+            throw MappingException::typeRequirementsNotFulfilled($this->name, $mapping['fieldName'], Type::DECIMAL128, 'ext-bcmath is missing');
+        }
     }
 
     private function checkDuplicateMapping(array $mapping) : void

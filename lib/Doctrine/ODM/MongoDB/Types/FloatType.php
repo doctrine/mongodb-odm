@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Types;
 /**
  * The Float type.
  */
-class FloatType extends Type
+class FloatType extends Type implements Incrementable
 {
     public function convertToDatabaseValue($value)
     {
@@ -27,5 +27,10 @@ class FloatType extends Type
     public function closureToPHP() : string
     {
         return '$return = (float) $value;';
+    }
+
+    public function diff($old, $new)
+    {
+        return $new - $old;
     }
 }

@@ -47,6 +47,7 @@ abstract class Type
     public const COLLECTION         = 'collection';
     public const OBJECTID           = 'object_id';
     public const RAW                = 'raw';
+    public const DECIMAL128         = 'decimal128';
 
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static $typeObjects = [];
@@ -77,6 +78,7 @@ abstract class Type
         self::COLLECTION => Types\CollectionType::class,
         self::OBJECTID => Types\ObjectIdType::class,
         self::RAW => Types\RawType::class,
+        self::DECIMAL128 => Types\Decimal128Type::class,
     ];
 
     /** Prevent instantiation and force use of the factory method. */

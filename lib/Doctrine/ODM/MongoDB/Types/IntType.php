@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Types;
 /**
  * The Int type.
  */
-class IntType extends Type
+class IntType extends Type implements Incrementable
 {
     public function convertToDatabaseValue($value)
     {
@@ -27,5 +27,10 @@ class IntType extends Type
     public function closureToPHP() : string
     {
         return '$return = (int) $value;';
+    }
+
+    public function diff($old, $new)
+    {
+        return $new - $old;
     }
 }

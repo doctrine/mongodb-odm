@@ -47,9 +47,37 @@ use Documents\UserUpsertChild;
 use Documents\UserUpsertIdStrategyNone;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
+use const PHP_VERSION;
+use function bcscale;
+use function bcsqrt;
+use function min;
+use function strlen;
+use function version_compare;
 
 class FunctionalTest extends BaseTest
 {
+    /** @var int */
+    private $initialScale;
+
+    public function setUp() : void
+    {
+        parent::setUp();
+
+        if (version_compare('7.3.0', PHP_VERSION, '<=')) {
+            $this->initialScale = bcscale(2);
+        } else {
+            $this->initialScale = min(0, strlen(bcsqrt('2')) - 2);
+            bcscale(2);
+        }
+    }
+
+    public function tearDown() : void
+    {
+        parent::tearDown();
+
+        bcscale($this->initialScale);
+    }
+
     public function provideUpsertObjects()
     {
         return [
@@ -291,6 +319,7 @@ class FunctionalTest extends BaseTest
         $user->setUsername('jon');
         $user->setCount(100);
         $user->setFloatCount(100);
+        $user->setDecimal128Count('0.50');
 
         $this->dm->persist($user);
         $this->dm->flush();
@@ -300,21 +329,25 @@ class FunctionalTest extends BaseTest
 
         $user->incrementCount(5);
         $user->incrementFloatCount(5);
+        $user->incrementDecimal128Count('0.20');
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(105, $user->getCount());
         $this->assertSame(105.0, $user->getFloatCount());
+        $this->assertSame('0.70', $user->getDecimal128Count());
 
         $user->setCount(50);
         $user->setFloatCount(50);
+        $user->setDecimal128Count('9.99');
 
         $this->dm->flush();
         $this->dm->clear();
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(50, $user->getCount());
         $this->assertSame(50.0, $user->getFloatCount());
+        $this->assertSame('9.99', $user->getDecimal128Count());
     }
 
     public function testIncrementWithFloat()
@@ -355,6 +388,7 @@ class FunctionalTest extends BaseTest
         $user->setUsername('jon');
         $user->setCount(10);
         $user->setFloatCount(10);
+        $user->setDecimal128Count('10.00');
 
         $this->dm->persist($user);
         $this->dm->flush();
@@ -363,24 +397,29 @@ class FunctionalTest extends BaseTest
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(10, $user->getCount());
         $this->assertSame(10.0, $user->getFloatCount());
+        $this->assertSame('10.00', $user->getDecimal128Count());
 
         $user->incrementCount(1);
         $user->incrementFloatCount(1);
+        $user->incrementDecimal128Count('1');
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertSame(11, $user->getCount());
         $this->assertSame(11.0, $user->getFloatCount());
+        $this->assertSame('11.00', $user->getDecimal128Count());
 
         $user->setCount(null);
         $user->setFloatCount(null);
+        $user->setDecimal128Count(null);
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
         $this->assertNull($user->getCount());
         $this->assertNull($user->getFloatCount());
+        $this->assertNull($user->getDecimal128Count());
     }
 
     public function testTest()
