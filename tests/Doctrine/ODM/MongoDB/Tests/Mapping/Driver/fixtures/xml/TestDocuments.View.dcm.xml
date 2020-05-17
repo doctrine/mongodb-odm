@@ -7,7 +7,7 @@
 
     <view name="TestDocuments\View">
         <field name="name" type="string" />
-        <field name="count" type="integer" />
+        <field name="count" type="int" />
     </view>
 
 </doctrine-mongo-mapping>

@@ -61,7 +61,7 @@ Next create the ``Order`` entity that has a ``$product`` and ``$productId`` prop
     class Order
     {
         /**
-         * @Id @Column(type="integer")
+         * @Id @Column(type="int")
          * @GeneratedValue(strategy="AUTO")
          */
         private $id;

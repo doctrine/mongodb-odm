@@ -25,7 +25,7 @@
         <field field-name="lock" lock="true" type="int" />
         <field field-name="name" name="username" type="string" />
         <field field-name="email" type="string" unique="true" drop-dups="true" order="desc" />
-        <field field-name="mysqlProfileId" type="integer" unique="true" drop-dups="true" order="desc" />
+        <field field-name="mysqlProfileId" type="int" unique="true" drop-dups="true" order="desc" />
         <field field-name="createdAt" type="date" />
         <field field-name="roles" type="collection" />
         <indexes>

@@ -7,7 +7,7 @@
 
     <query-result-document name="TestDocuments\QueryResultDocument">
         <field name="name" type="string" />
-        <field name="count" type="integer" />
+        <field name="count" type="int" />
     </query-result-document>
 
 </doctrine-mongo-mapping>

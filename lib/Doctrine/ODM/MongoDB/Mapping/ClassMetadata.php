@@ -36,6 +36,7 @@ use function ltrim;
 use function sprintf;
 use function strtolower;
 use function strtoupper;
+use function trigger_error;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -1982,6 +1983,18 @@ use function strtoupper;
         $this->applyStorageStrategy($mapping);
         $this->checkDuplicateMapping($mapping);
         $this->typeRequirementsAreMet($mapping);
+
+        $deprecatedTypes = [
+            Type::BOOLEAN => Type::BOOL,
+            Type::INTEGER => Type::INT,
+        ];
+        if (isset($deprecatedTypes[$mapping['type']])) {
+            @trigger_error(sprintf(
+                '"%s" type was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use "%s" instead.',
+                $mapping['type'],
+                $deprecatedTypes[$mapping['type']]
+            ));
+        }
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         if (isset($mapping['association'])) {

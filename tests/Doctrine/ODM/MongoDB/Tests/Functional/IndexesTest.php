@@ -268,7 +268,7 @@ class PartialIndexOnDocumentTest
     /** @ODM\Field(type="string") */
     public $email;
 
-    /** @ODM\Field(type="integer") */
+    /** @ODM\Field(type="int") */
     public $counter;
 }
 

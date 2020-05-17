@@ -23,12 +23,14 @@ use function str_replace;
  */
 abstract class Type
 {
-    public const ID                 = 'id';
-    public const INTID              = 'int_id';
-    public const CUSTOMID           = 'custom_id';
-    public const BOOL               = 'bool';
-    public const BOOLEAN            = 'boolean';
-    public const INT                = 'int';
+    public const ID       = 'id';
+    public const INTID    = 'int_id';
+    public const CUSTOMID = 'custom_id';
+    public const BOOL     = 'bool';
+    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::BOOL instead */
+    public const BOOLEAN = 'boolean';
+    public const INT     = 'int';
+    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
     public const INTEGER            = 'integer';
     public const FLOAT              = 'float';
     public const STRING             = 'string';
