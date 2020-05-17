@@ -41,8 +41,7 @@ Approach
 Doctrine has integrated support for automatic optimistic locking
 via a ``version`` field. Any document that should be
 protected against concurrent modifications during long-running
-business transactions gets a ``version`` field that is either a simple
-number (mapping type: ``int`` or ``decimal128``) or a date (mapping type: ``date`` or ``date_immutable``).
+business transactions gets a ``version`` field.
 When changes to the document are persisted,
 the expected version and version increment are incorporated into the update criteria and modifiers, respectively.
 If this results in no document being modified by the update (i.e. expected version did not match),
@@ -51,6 +50,11 @@ a ``LockException`` is thrown, which indicates that the document was already mod
 .. note::
 
     | Versioning can only be used on *root* (top-level) documents.
+
+.. note::
+
+    Only types implementing the ``\Doctrine\ODM\MongoDB\Types\Versionable`` interface can be used for versioning.
+    Following ODM types can be used for versioning: ``int``, ``decimal128``, ``date``, and ``date_immutable``.
 
 Document Configuration
 ^^^^^^^^^^^^^^^^^^^^^^

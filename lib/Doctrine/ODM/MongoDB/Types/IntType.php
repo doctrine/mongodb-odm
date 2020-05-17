@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use function max;
+
 /**
  * The Int type.
  */
-class IntType extends Type implements Incrementable
+class IntType extends Type implements Incrementable, Versionable
 {
     public function convertToDatabaseValue($value)
     {
@@ -32,5 +34,10 @@ class IntType extends Type implements Incrementable
     public function diff($old, $new)
     {
         return $new - $old;
+    }
+
+    public function getNextVersion($current)
+    {
+        return max(1, (int) $current + 1);
     }
 }

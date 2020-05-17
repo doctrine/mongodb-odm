@@ -24,7 +24,7 @@ use function str_pad;
 /**
  * The Date type.
  */
-class DateType extends Type
+class DateType extends Type implements Versionable
 {
     /**
      * Converts a value to a DateTime.
@@ -110,5 +110,10 @@ class DateType extends Type
     public function closureToPHP() : string
     {
         return 'if ($value === null) { $return = null; } else { $return = \\' . static::class . '::getDateTime($value); }';
+    }
+
+    public function getNextVersion($current)
+    {
+        return new DateTime();
     }
 }

@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Types;
 
 use MongoDB\BSON\Decimal128;
+use function bcadd;
 use function bcsub;
 
-class Decimal128Type extends Type implements Incrementable
+class Decimal128Type extends Type implements Incrementable, Versionable
 {
     use ClosureToPHP;
 
@@ -31,5 +32,14 @@ class Decimal128Type extends Type implements Incrementable
     public function diff($old, $new)
     {
         return bcsub($new, $old);
+    }
+
+    public function getNextVersion($current)
+    {
+        if ($current === null) {
+            return '1';
+        }
+
+        return bcadd($current, '1');
     }
 }

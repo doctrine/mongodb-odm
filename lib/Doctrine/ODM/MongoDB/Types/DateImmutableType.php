@@ -34,4 +34,9 @@ class DateImmutableType extends DateType
             get_class($datetime)
         ));
     }
+
+    public function getNextVersion($current)
+    {
+        return new DateTimeImmutable();
+    }
 }
