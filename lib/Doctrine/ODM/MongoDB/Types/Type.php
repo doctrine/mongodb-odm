@@ -23,7 +23,8 @@ use function str_replace;
  */
 abstract class Type
 {
-    public const ID       = 'id';
+    public const ID = 'id';
+    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
     public const INTID    = 'int_id';
     public const CUSTOMID = 'custom_id';
     public const BOOL     = 'bool';
