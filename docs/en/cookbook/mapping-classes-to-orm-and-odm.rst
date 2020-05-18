@@ -52,7 +52,7 @@ First define the mapping for the ORM:
         /** @Entity(repositoryClass=BlogPostRepository::class) */
         class BlogPost
         {
-            /** @Id @Column(type="integer") */
+            /** @Id @Column(type="int") */
             private $id;
 
             /** @Column(type="string") */
@@ -73,7 +73,7 @@ First define the mapping for the ORM:
                                   http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Documents\Blog\BlogPost" repository-class="Documents\Blog\Repository\ORM\BlogPostRepository">
-                <id name="id" type="integer" />
+                <id name="id" type="int" />
                 <field name="name" type="string" />
                 <field name="email" type="text" />
             </entity>

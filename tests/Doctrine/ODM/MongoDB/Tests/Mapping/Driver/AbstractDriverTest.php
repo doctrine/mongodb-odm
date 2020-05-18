@@ -281,7 +281,7 @@ abstract class AbstractDriverTest extends TestCase
         $this->assertEquals([
             'fieldName' => 'count',
             'name' => 'count',
-            'type' => 'integer',
+            'type' => 'int',
             'isCascadeDetach' => false,
             'isCascadeMerge' => false,
             'isCascadePersist' => false,

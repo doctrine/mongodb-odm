@@ -117,7 +117,7 @@ class ShardedByScalars
     /** @ODM\Field(type="string") */
     public $string;
 
-    /** @ODM\Field(type="boolean") */
+    /** @ODM\Field(type="bool") */
     public $bool;
 
     /** @ODM\Field(type="float") */
