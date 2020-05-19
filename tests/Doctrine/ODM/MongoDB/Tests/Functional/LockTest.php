@@ -513,7 +513,7 @@ class LockTest extends BaseTest
     public function testInvalidVersionDocument()
     {
         $this->expectException(MongoDBException::class);
-        $this->expectExceptionMessage('Invalid version field type string. Version field must be int, integer, date, date_immutable, or decimal128.');
+        $this->expectExceptionMessage('Type string does not implement Versionable interface.');
         $this->dm->getClassMetadata(InvalidVersionDocument::class);
     }
 

@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use InvalidArgumentException;
@@ -1675,7 +1676,7 @@ use function trigger_error;
      */
     public function setVersionMapping(array &$mapping) : void
     {
-        if (! in_array($mapping['type'], [Type::INT, Type::INTEGER, Type::DATE, Type::DATE_IMMUTABLE, Type::DECIMAL128], true)) {
+        if (! Type::getType($mapping['type']) instanceof Versionable) {
             throw LockException::invalidVersionFieldType($mapping['type']);
         }
 

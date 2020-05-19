@@ -1093,7 +1093,9 @@ Alias of `@Index`_, with the ``unique`` option set by default.
 --------
 
 The annotated instance variable will be used to store version information for :ref:`optimistic locking <transactions_and_concurrency_optimistic_locking>`.
-This is only compatible with ``int``, ``decimal128``, ``date``, and ``date_immutable`` field types, and cannot be combined with `@Id`_.
+This is only compatible with types implementing the ``\Doctrine\ODM\MongoDB\Types\Versionable`` interface and cannot be
+combined with `@Id`_. Following ODM types can be used for versioning: ``int``, ``decimal128``, ``date``, and
+``date_immutable``.
 
 .. code-block:: php
 
