@@ -1897,7 +1897,7 @@ use function trigger_error;
                     if (! empty($this->generatorOptions['type'])) {
                         $mapping['type'] = $this->generatorOptions['type'];
                     } elseif (empty($mapping['type'])) {
-                        $mapping['type'] = $this->generatorType === self::GENERATOR_TYPE_INCREMENT ? 'int_id' : 'custom_id';
+                        $mapping['type'] = $this->generatorType === self::GENERATOR_TYPE_INCREMENT ? Type::INT : Type::CUSTOMID;
                     }
             }
             unset($this->generatorOptions['type']);
@@ -1988,6 +1988,7 @@ use function trigger_error;
         $deprecatedTypes = [
             Type::BOOLEAN => Type::BOOL,
             Type::INTEGER => Type::INT,
+            Type::INTID => Type::INT,
         ];
         if (isset($deprecatedTypes[$mapping['type']])) {
             @trigger_error(sprintf(

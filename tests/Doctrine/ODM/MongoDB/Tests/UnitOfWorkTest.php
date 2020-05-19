@@ -539,7 +539,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
 {
     private $_listeners = [];
 
-    /** @ODM\Id(type="int_id", strategy="none") */
+    /** @ODM\Id(type="int", strategy="none") */
     private $id;
 
     /** @ODM\Field(type="string") */
@@ -611,7 +611,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
 /** @ODM\Document */
 class NotifyChangedRelatedItem
 {
-    /** @ODM\Id(type="int_id", strategy="none") */
+    /** @ODM\Id(type="int", strategy="none") */
     private $id;
 
     /** @ODM\ReferenceOne(targetDocument=NotifyChangedDocument::class) */
