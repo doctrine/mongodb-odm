@@ -20,12 +20,14 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
+use Jean85\PrettyVersions;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
 use RuntimeException;
+use Throwable;
 use function array_search;
 use function assert;
 use function get_class;
@@ -148,6 +150,9 @@ class DocumentManager implements ObjectManager
     /** @var ClassNameResolver */
     private $classNameResolver;
 
+    /** @var string|null */
+    private static $version;
+
     /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
@@ -156,7 +161,17 @@ class DocumentManager implements ObjectManager
     {
         $this->config       = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
-        $this->client       = $client ?: new Client('mongodb://127.0.0.1', [], ['typeMap' => self::CLIENT_TYPEMAP]);
+        $this->client       = $client ?: new Client(
+            'mongodb://127.0.0.1',
+            [],
+            [
+                'typeMap' => self::CLIENT_TYPEMAP,
+                'driver' => [
+                    'name' => 'doctrine-odm',
+                    'version' => self::getVersion(),
+                ],
+            ]
+        );
 
         $this->checkTypeMap();
 
@@ -838,5 +853,18 @@ class DocumentManager implements ObjectManager
                 throw MongoDBException::invalidTypeMap($part, $expectedType);
             }
         }
+    }
+
+    private static function getVersion() : string
+    {
+        if (self::$version === null) {
+            try {
+                self::$version = PrettyVersions::getVersion('doctrine/mongodb-odm')->getPrettyVersion();
+            } catch (Throwable $t) {
+                return 'unknown';
+            }
+        }
+
+        return self::$version;
     }
 }
