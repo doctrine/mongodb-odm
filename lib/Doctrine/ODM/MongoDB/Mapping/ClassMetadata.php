@@ -14,6 +14,8 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
+use Doctrine\Persistence\Mapping\ReflectionService;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use InvalidArgumentException;
 use LogicException;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -24,6 +26,7 @@ use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_pop;
+use function assert;
 use function class_exists;
 use function constant;
 use function count;
@@ -514,6 +517,9 @@ use function trigger_error;
     /** @var InstantiatorInterface */
     private $instantiator;
 
+    /** @var ReflectionService */
+    private $reflectionService;
+
     /** @var string|null */
     private $rootClass;
 
@@ -523,9 +529,10 @@ use function trigger_error;
      */
     public function __construct(string $documentName)
     {
-        $this->name             = $documentName;
-        $this->rootDocumentName = $documentName;
-        $this->reflClass        = new ReflectionClass($documentName);
+        $this->name              = $documentName;
+        $this->rootDocumentName  = $documentName;
+        $this->reflectionService = new RuntimeReflectionService();
+        $this->reflClass         = new ReflectionClass($documentName);
         $this->setCollection($this->reflClass->getShortName());
         $this->instantiator = new Instantiator();
     }
@@ -2003,8 +2010,8 @@ use function trigger_error;
             $this->associationMappings[$mapping['fieldName']] = $mapping;
         }
 
-        $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
-        $reflProp->setAccessible(true);
+        $reflProp = $this->reflectionService->getAccessibleProperty($this->name, $mapping['fieldName']);
+        assert($reflProp instanceof ReflectionProperty);
         $this->reflFields[$mapping['fieldName']] = $reflProp;
 
         return $mapping;
@@ -2114,17 +2121,14 @@ use function trigger_error;
     public function __wakeup()
     {
         // Restore ReflectionClass and properties
-        $this->reflClass    = new ReflectionClass($this->name);
-        $this->instantiator = new Instantiator();
+        $this->reflectionService = new RuntimeReflectionService();
+        $this->reflClass         = new ReflectionClass($this->name);
+        $this->instantiator      = new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {
-            if (isset($mapping['declared'])) {
-                $reflField = new ReflectionProperty($mapping['declared'], $field);
-            } else {
-                $reflField = $this->reflClass->getProperty($field);
-            }
-            $reflField->setAccessible(true);
-            $this->reflFields[$field] = $reflField;
+            $prop = $this->reflectionService->getAccessibleProperty($mapping['declared'] ?? $this->name, $field);
+            assert($prop instanceof ReflectionProperty);
+            $this->reflFields[$field] = $prop;
         }
     }
 

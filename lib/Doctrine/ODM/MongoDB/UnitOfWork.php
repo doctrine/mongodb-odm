@@ -21,11 +21,15 @@ use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
+use Doctrine\Persistence\Mapping\ReflectionService;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ReflectionProperty;
 use UnexpectedValueException;
 use function array_filter;
+use function assert;
 use function count;
 use function get_class;
 use function in_array;
@@ -249,6 +253,9 @@ final class UnitOfWork implements PropertyChangedListener
     /** @var LifecycleEventManager */
     private $lifecycleEventManager;
 
+    /** @var ReflectionService */
+    private $reflectionService;
+
     /**
      * Array of embedded documents known to UnitOfWork. We need to hold them to prevent spl_object_hash
      * collisions in case already managed object is lost due to GC (so now it won't). Embedded documents
@@ -270,6 +277,7 @@ final class UnitOfWork implements PropertyChangedListener
         $this->evm                   = $evm;
         $this->hydratorFactory       = $hydratorFactory;
         $this->lifecycleEventManager = new LifecycleEventManager($dm, $this, $evm);
+        $this->reflectionService     = new RuntimeReflectionService();
     }
 
     /**
@@ -1778,9 +1786,10 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             // Merge state of $document into existing (managed) document
-            foreach ($class->reflClass->getProperties() as $prop) {
-                $name = $prop->name;
-                $prop->setAccessible(true);
+            foreach ($class->reflClass->getProperties() as $nativeReflection) {
+                $name = $nativeReflection->name;
+                $prop = $this->reflectionService->getAccessibleProperty($class->name, $name);
+                assert($prop instanceof ReflectionProperty);
                 if (! isset($class->associationMappings[$name])) {
                     if (! $class->isIdentifier($name)) {
                         $prop->setValue($managedCopy, $prop->getValue($document));
