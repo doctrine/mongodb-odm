@@ -28,7 +28,7 @@ class Facet extends Stage
     {
         return [
             '$facet' => array_map(static function (Builder $builder) {
-                return $builder->getPipeline();
+                return $builder->getPipeline(false);
             }, $this->pipelines),
         ];
     }

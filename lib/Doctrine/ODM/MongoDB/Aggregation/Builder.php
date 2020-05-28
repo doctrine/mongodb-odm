@@ -16,11 +16,16 @@ use GeoJson\Geometry\Point;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use OutOfRangeException;
+use TypeError;
 use function array_map;
 use function array_merge;
 use function array_unshift;
 use function assert;
+use function func_get_arg;
+use function func_num_args;
+use function gettype;
 use function is_array;
+use function is_bool;
 use function sprintf;
 
 /**
@@ -218,16 +223,35 @@ class Builder
         return $stage;
     }
 
+    // phpcs:disable Squiz.Commenting.FunctionComment.ExtraParamComment
     /**
      * Returns the assembled aggregation pipeline
+     *
+     * @param bool $applyFilters Whether to apply filters on the aggregation
+     * pipeline stage
      *
      * For pipelines where the first stage is a $geoNear stage, it will apply
      * the document filters and discriminator queries to the query portion of
      * the geoNear operation. For all other pipelines, it prepends a $match stage
      * containing the required query.
+     *
+     * For aggregation pipelines that will be nested (e.g. in a facet stage),
+     * you should not apply filters as this may cause wrong results to be
+     * given.
      */
-    public function getPipeline() : array
+    // phpcs:enable Squiz.Commenting.FunctionComment.ExtraParamComment
+    public function getPipeline(/* bool $applyFilters = true */) : array
     {
+        $applyFilters = func_num_args() > 0 ? func_get_arg(0) : true;
+
+        if (! is_bool($applyFilters)) {
+            throw new TypeError(sprintf(
+                'Argument 1 passed to %s must be of the type bool, %s given',
+                __METHOD__,
+                gettype($applyFilters)
+            ));
+        }
+
         $pipeline = array_map(
             static function (Stage $stage) {
                 return $stage->getExpression();
@@ -235,19 +259,27 @@ class Builder
             $this->stages
         );
 
-        if ($this->getStage(0) instanceof Stage\GeoNear) {
-            $pipeline[0]['$geoNear']['query'] = $this->applyFilters($pipeline[0]['$geoNear']['query']);
-        } elseif ($this->getStage(0) instanceof Stage\IndexStats) {
+        if ($this->getStage(0) instanceof Stage\IndexStats) {
             // Don't apply any filters when using an IndexStats stage: since it
             // needs to be the first pipeline stage, prepending a match stage
             // with discriminator information will not work
 
+            $applyFilters = false;
+        }
+
+        if (! $applyFilters) {
             return $pipeline;
-        } else {
-            $matchExpression = $this->applyFilters([]);
-            if ($matchExpression !== []) {
-                array_unshift($pipeline, ['$match' => $matchExpression]);
-            }
+        }
+
+        if ($this->getStage(0) instanceof Stage\GeoNear) {
+            $pipeline[0]['$geoNear']['query'] = $this->applyFilters($pipeline[0]['$geoNear']['query']);
+
+            return $pipeline;
+        }
+
+        $matchExpression = $this->applyFilters([]);
+        if ($matchExpression !== []) {
+            array_unshift($pipeline, ['$match' => $matchExpression]);
         }
 
         return $pipeline;

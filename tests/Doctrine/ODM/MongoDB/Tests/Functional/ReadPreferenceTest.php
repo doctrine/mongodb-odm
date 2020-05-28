@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Group;
 use Documents\User;
 use MongoDB\Driver\ReadPreference;
+use MongoDB\Driver\WriteConcern;
 
 class ReadPreferenceTest extends BaseTest
 {
@@ -21,7 +22,7 @@ class ReadPreferenceTest extends BaseTest
         $user = new User();
         $user->addGroup(new Group('Test'));
         $this->dm->persist($user);
-        $this->dm->flush();
+        $this->dm->flush(['writeConcern' => new WriteConcern('majority')]);
         $this->dm->clear();
     }
 
@@ -34,6 +35,7 @@ class ReadPreferenceTest extends BaseTest
         $this->assertArrayNotHasKey('readPreference', $query->getQuery());
 
         $user = $query->getSingleResult();
+        $this->assertInstanceOf(User::class, $user);
 
         $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
         $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $user->getGroups()->getHints());
@@ -52,6 +54,7 @@ class ReadPreferenceTest extends BaseTest
         $this->assertReadPreferenceHint($readPreference, $query->getQuery()['readPreference'], $tags);
 
         $user = $query->getSingleResult();
+        $this->assertInstanceOf(User::class, $user);
 
         $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
         $this->assertReadPreferenceHint($readPreference, $user->getGroups()->getHints()[Query::HINT_READ_PREFERENCE], $tags);
