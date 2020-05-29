@@ -1029,17 +1029,6 @@ final class DocumentPersister
      */
     private function convertToDatabaseValue(string $fieldName, $value)
     {
-        $mapping    = [];
-        $typeName   = '';
-        $dbValue    = null;
-        $hasMapping = $this->class->hasField($fieldName);
-        if ($hasMapping) {
-            $mapping  = $this->class->fieldMappings[$fieldName];
-            $typeName = $mapping['type'];
-        } else {
-            $dbValue = Type::convertPHPToDatabaseValue($value);
-        }
-
         if (is_array($value)) {
             foreach ($value as $k => $v) {
                 $value[$k] = $this->convertToDatabaseValue($fieldName, $v);
@@ -1048,9 +1037,12 @@ final class DocumentPersister
             return $value;
         }
 
-        if (! $hasMapping) {
-            return $dbValue;
+        if (! $this->class->hasField($fieldName)) {
+            return Type::convertPHPToDatabaseValue($value);
         }
+
+        $mapping  = $this->class->fieldMappings[$fieldName];
+        $typeName = $mapping['type'];
 
         if (! empty($mapping['reference']) || ! empty($mapping['embedded'])) {
             return $value;
