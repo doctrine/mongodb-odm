@@ -1012,10 +1012,7 @@ final class DocumentPersister
 
             $preparedQueryElements = $this->prepareQueryElement((string) $key, $value, null, true, $isNewObj);
             foreach ($preparedQueryElements as [$preparedKey, $preparedValue]) {
-                $preparedValue = Type::convertPHPToDatabaseValue($preparedValue);
-                if ($this->class->hasField($key)) {
-                    $preparedValue = $this->convertToDatabaseValue($key, $preparedValue);
-                }
+                $preparedValue               = $this->convertToDatabaseValue((string) $key, $preparedValue);
                 $preparedQuery[$preparedKey] = $preparedValue;
             }
         }
@@ -1024,7 +1021,7 @@ final class DocumentPersister
     }
 
     /**
-     * Converts a single value to its database representation based on the mapping type
+     * Converts a single value to its database representation based on the mapping type if possible.
      *
      * @param mixed $value
      *
@@ -1032,8 +1029,16 @@ final class DocumentPersister
      */
     private function convertToDatabaseValue(string $fieldName, $value)
     {
-        $mapping  = $this->class->fieldMappings[$fieldName];
-        $typeName = $mapping['type'];
+        $mapping    = [];
+        $typeName   = '';
+        $dbValue    = null;
+        $hasMapping = $this->class->hasField($fieldName);
+        if ($hasMapping) {
+            $mapping  = $this->class->fieldMappings[$fieldName];
+            $typeName = $mapping['type'];
+        } else {
+            $dbValue = Type::convertPHPToDatabaseValue($value);
+        }
 
         if (is_array($value)) {
             foreach ($value as $k => $v) {
@@ -1041,6 +1046,10 @@ final class DocumentPersister
             }
 
             return $value;
+        }
+
+        if (! $hasMapping) {
+            return $dbValue;
         }
 
         if (! empty($mapping['reference']) || ! empty($mapping['embedded'])) {
