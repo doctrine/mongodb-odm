@@ -6,7 +6,7 @@ language: php
 php:
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
 
 env:
   global:
@@ -55,8 +55,7 @@ jobs:
         - echo $DOCTRINE_MONGODB_SERVER
         - vendor/bin/phpunit --prepend xdebug-filter.php --coverage-clover=coverage.clover
       after_script:
-        - wget https://scrutinizer-ci.com/ocular.phar
-        - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+        - bash <(curl -s https://codecov.io/bash)
 
     # Check coding standards
     - stage: Code Quality
