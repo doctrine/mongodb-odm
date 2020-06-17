@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Closure;
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -15,6 +16,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Generator;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
 use ReflectionProperty;
 use function get_class;
@@ -459,6 +461,43 @@ class DocumentPersisterTest extends BaseTest
         $expected = ['complexRef.$id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+    }
+
+    /**
+     * @dataProvider queryProviderForComplexRefWithObjectValue
+     */
+    public function testPrepareQueryOrNewObjWithComplexRefToTargetDocumentFieldWithObjectValue(array $expected, array $query)
+    {
+        $class             = DocumentPersisterTestDocument::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $this->assertEquals(
+            $expected,
+            $documentPersister->prepareQueryOrNewObj($query)
+        );
+    }
+
+    public static function queryProviderForComplexRefWithObjectValue() : Generator
+    {
+        yield 'Direct comparison' => [
+            'expected' => ['complexRef.date' => new UTCDateTime('1590710400000')],
+            'query' => ['complexRef.date' => new DateTime('2020-05-29')],
+        ];
+
+        yield 'Operator with single value' => [
+            'expected' => ['complexRef.date' => ['$ne' => new UTCDateTime('1590710400000')]],
+            'query' => ['complexRef.date' => ['$ne' => new DateTime('2020-05-29')]],
+        ];
+
+        yield 'Operator with multiple values' => [
+            'expected' => ['complexRef.date' => ['$in' => [new UTCDateTime('1590710400000'), new UTCDateTime('1590796800000')]]],
+            'query' => ['complexRef.date' => ['$in' => [new DateTime('2020-05-29'), new DateTime('2020-05-30')]]],
+        ];
+
+        yield 'Nested operator' => [
+            'expected' => ['complexRef.date' => ['$not' => ['$in' => [new UTCDateTime('1590710400000'), new UTCDateTime('1590796800000')]]]],
+            'query' => ['complexRef.date' => ['$not' => ['$in' => [new DateTime('2020-05-29'), new DateTime('2020-05-30')]]]],
+        ];
     }
 
     public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithNormalIdType()
