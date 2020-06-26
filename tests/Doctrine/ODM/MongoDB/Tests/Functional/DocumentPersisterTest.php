@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Documents\Article;
 use Generator;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
@@ -138,6 +139,33 @@ class DocumentPersisterTest extends BaseTest
             ['association.nested.association.nested.id', 'associationName.nestedName.associationName.nestedName._id'],
             ['association.nested.association.nested.firstName', 'associationName.nestedName.associationName.nestedName.firstName'],
         ];
+    }
+
+    public function testCurrentDateInQuery()
+    {
+        $qb = $this->dm->createQueryBuilder(Article::class)
+            ->updateMany()
+            ->field('createdAt')->currentDate();
+
+        $this->assertSame(
+            ['$currentDate' => ['createdAt' => ['$type' => 'date']]],
+            $qb->getQuery()->debug('newObj')
+        );
+    }
+
+    public function testExistsInQuery()
+    {
+        $qb = $this->dm->createQueryBuilder(Article::class)
+            ->field('title')->exists(false)
+            ->field('createdAt')->exists(true);
+
+        $this->assertSame(
+            [
+                'title' => ['$exists' => false],
+                'createdAt' => ['$exists' => true],
+            ],
+            $qb->getQuery()->debug('query')
+        );
     }
 
     /**

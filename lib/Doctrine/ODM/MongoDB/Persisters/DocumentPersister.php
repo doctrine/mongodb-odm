@@ -1031,6 +1031,10 @@ final class DocumentPersister
     {
         if (is_array($value)) {
             foreach ($value as $k => $v) {
+                if ($k === '$exists' || $k === '$type' || $k === '$currentDate') {
+                    continue;
+                }
+
                 $value[$k] = $this->convertToDatabaseValue($fieldName, $v);
             }
 
