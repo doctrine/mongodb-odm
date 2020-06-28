@@ -73,8 +73,8 @@ follows:
 
     <?php
 
-    use Doctrine\Common\NotifyPropertyChanged,
-        Doctrine\Common\PropertyChangedListener;
+    use Doctrine\Persistence\NotifyPropertyChanged,
+        Doctrine\Persistence\PropertyChangedListener;
 
     /**
      * @Document
