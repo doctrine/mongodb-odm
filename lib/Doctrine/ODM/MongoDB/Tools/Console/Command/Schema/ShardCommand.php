@@ -18,6 +18,8 @@ class ShardCommand extends AbstractCommand
 {
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('odm:schema:shard')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')

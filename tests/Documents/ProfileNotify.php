@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\Persistence\NotifyPropertyChanged;
+use Doctrine\Persistence\PropertyChangedListener;
 
 /** @ODM\Document @ODM\ChangeTrackingPolicy("NOTIFY") */
 class ProfileNotify implements NotifyPropertyChanged
