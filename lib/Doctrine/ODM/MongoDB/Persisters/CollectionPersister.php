@@ -459,6 +459,7 @@ final class CollectionPersister
             return $paths;
         }
         sort($paths);
+        $paths = array_map(static function (string $path) { return $path . '.$'; }, $paths);
         $uniquePaths = [$paths[0]];
         for ($i = 1, $count = count($paths); $i < $count; ++$i) {
             $lastUniquePath = end($uniquePaths);
@@ -471,6 +472,6 @@ final class CollectionPersister
             $uniquePaths[] = $paths[$i];
         }
 
-        return $uniquePaths;
+        return array_map(static function (string $path) { return substr($path, 0, -2); }, $uniquePaths);
     }
 }
