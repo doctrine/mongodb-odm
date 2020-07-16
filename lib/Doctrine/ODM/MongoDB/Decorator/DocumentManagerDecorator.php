@@ -107,14 +107,6 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function flush()
-    {
-        $this->wrapped->flush();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getEventManager(): EventManager
     {
         return $this->wrapped->getEventManager();
