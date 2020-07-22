@@ -13,6 +13,7 @@ use GeoJson\Geometry\Point;
 use MongoDB\Collection;
 use OutOfRangeException;
 use TypeError;
+use const E_USER_DEPRECATED;
 use function array_map;
 use function array_unshift;
 use function func_get_arg;
@@ -21,6 +22,7 @@ use function gettype;
 use function is_array;
 use function is_bool;
 use function sprintf;
+use function trigger_error;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -162,9 +164,16 @@ class Builder
 
     /**
      * Executes the aggregation pipeline
+     *
+     * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
      */
     public function execute(array $options = []) : Iterator
     {
+        @trigger_error(
+            sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
+
         return $this->getAggregation($options)->getIterator();
     }
 
@@ -211,6 +220,9 @@ class Builder
         return $stage;
     }
 
+    /**
+     * Returns an aggregation object for the current pipeline
+     */
     public function getAggregation(array $options = []) : Aggregation
     {
         $class = $this->hydrationClass ? $this->dm->getClassMetadata($this->hydrationClass) : null;
