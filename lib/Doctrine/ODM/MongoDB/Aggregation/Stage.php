@@ -36,6 +36,14 @@ abstract class Stage
     }
 
     /**
+     * Returns an aggregation object for the current pipeline
+     */
+    public function getAggregation(array $options = []) : Aggregation
+    {
+        return $this->builder->getAggregation($options);
+    }
+
+    /**
      * Adds new fields to documents. $addFields outputs documents that contain
      * all existing fields from the input documents and newly added fields.
      *
