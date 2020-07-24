@@ -5,28 +5,24 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
-use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
-use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
 use GeoJson\Geometry\Point;
 use MongoDB\Collection;
-use MongoDB\Driver\Cursor;
 use OutOfRangeException;
 use TypeError;
+use const E_USER_DEPRECATED;
 use function array_map;
-use function array_merge;
 use function array_unshift;
-use function assert;
 use function func_get_arg;
 use function func_num_args;
 use function gettype;
 use function is_array;
 use function is_bool;
 use function sprintf;
+use function trigger_error;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -168,16 +164,17 @@ class Builder
 
     /**
      * Executes the aggregation pipeline
+     *
+     * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
      */
     public function execute(array $options = []) : Iterator
     {
-        // Force cursor to be used
-        $options = array_merge($options, ['cursor' => true]);
+        @trigger_error(
+            sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.', __METHOD__),
+            E_USER_DEPRECATED
+        );
 
-        $cursor = $this->collection->aggregate($this->getPipeline(), $options);
-        assert($cursor instanceof Cursor);
-
-        return $this->prepareIterator($cursor);
+        return $this->getAggregation($options)->getIterator();
     }
 
     public function expr() : Expr
@@ -221,6 +218,16 @@ class Builder
         $this->addStage($stage);
 
         return $stage;
+    }
+
+    /**
+     * Returns an aggregation object for the current pipeline
+     */
+    public function getAggregation(array $options = []) : Aggregation
+    {
+        $class = $this->hydrationClass ? $this->dm->getClassMetadata($this->hydrationClass) : null;
+
+        return new Aggregation($this->dm, $class, $this->collection, $this->getPipeline(), $options, $this->rewindable);
     }
 
     // phpcs:disable Squiz.Commenting.FunctionComment.ExtraParamComment
@@ -583,21 +590,5 @@ class Builder
     private function getDocumentPersister() : DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
-    }
-
-    private function prepareIterator(Cursor $cursor) : Iterator
-    {
-        $class = null;
-        if ($this->hydrationClass) {
-            $class = $this->dm->getClassMetadata($this->hydrationClass);
-        }
-
-        if ($class) {
-            $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $class);
-        }
-
-        $cursor = $this->rewindable ? new CachingIterator($cursor) : new UnrewindableIterator($cursor);
-
-        return $cursor;
     }
 }
