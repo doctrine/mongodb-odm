@@ -270,4 +270,9 @@ final class MappingException extends BaseMappingException
     {
         return new self(sprintf('Root class "%s" for view "%s" could not be found.', $rootClass, $className));
     }
+    
+    public static function targetDocumentCanNotBeCombinedWithDiscriminatorMap(string $className, string $fieldName) : self
+    {
+        return new self(sprintf('Cannot combine "targetDocument" and "discriminatorMap" on field "%s" in class "%s".', $fieldName, $className));
+    }
 }

@@ -323,6 +323,63 @@ class ClassMetadataTest extends BaseTest
         );
     }
 
+    public function testEmbedManyDocumentWithTargetDocumentAndDiscriminatorMap()
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+
+        $this->expectException(MappingException::class);
+        $cm->mapManyEmbedded([
+            'field' => 'name',
+            'targetDocument' => 'CmsUser',
+            'discriminatorMap' => [
+                'default' => 'CmsUser',
+            ],
+        ]);
+    }
+
+    public function testEmbedOneDocumentWithTargetDocumentAndDiscriminatorMap()
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+
+        $this->expectException(MappingException::class);
+        $cm->mapOneEmbedded([
+            'field' => 'name',
+            'targetDocument' => 'CmsUser',
+            'discriminatorMap' => [
+                'default' => 'CmsUser',
+            ],
+        ]);
+    }
+
+    public function testReferenceManyDocumentWithTargetDocumentAndDiscriminatorMap()
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+
+        $this->expectException(MappingException::class);
+        $cm->mapManyReference([
+            'field' => 'name',
+            'targetDocument' => 'CmsUser',
+            'discriminatorMap' => [
+                'default' => 'CmsUser',
+            ],
+        ]);
+    }
+
+
+    public function testReferenceOneDocumentWithTargetDocumentAndDiscriminatorMap()
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+
+        $this->expectException(MappingException::class);
+        $cm->mapOneReference([
+            'field' => 'name',
+            'targetDocument' => 'CmsUser',
+            'discriminatorMap' => [
+                'default' => 'CmsUser',
+            ],
+        ]);
+    }
+
     public function testGetFieldValue()
     {
         $document = new Album('ten');
