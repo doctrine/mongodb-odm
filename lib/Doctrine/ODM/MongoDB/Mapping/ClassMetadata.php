@@ -1946,6 +1946,16 @@ use function trigger_deprecation;
             throw MappingException::repositoryMethodCanNotBeCombinedWithSkipLimitAndSort($this->name, $mapping['fieldName']);
         }
 
+        if (isset($mapping['targetDocument']) && isset($mapping['discriminatorMap'])) {
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.2',
+                'Mapping both "targetDocument" and "discriminatorMap" on field "%s" in class "%s" is deprecated.',
+                $mapping['fieldName'],
+                $this->name
+            );
+        }
+
         if (isset($mapping['reference']) && $mapping['type'] === 'one') {
             $mapping['association'] = self::REFERENCE_ONE;
         }
