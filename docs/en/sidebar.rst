@@ -26,7 +26,6 @@
        reference/indexes
        reference/inheritance-mapping
        reference/embedded-mapping
-       reference/reference-mapping
        reference/trees
        reference/storing-files-with-gridfs
        reference/xml-mapping
