@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Helper;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Symfony\Component\Console\Helper\Helper;
 
 /**
@@ -12,15 +12,15 @@ use Symfony\Component\Console\Helper\Helper;
  */
 class DocumentManagerHelper extends Helper
 {
-    /** @var DocumentManager */
+    /** @var DocumentManagerInterface */
     protected $dm;
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManagerInterface $dm)
     {
         $this->dm = $dm;
     }
 
-    public function getDocumentManager() : DocumentManager
+    public function getDocumentManager() : DocumentManagerInterface
     {
         return $this->dm;
     }

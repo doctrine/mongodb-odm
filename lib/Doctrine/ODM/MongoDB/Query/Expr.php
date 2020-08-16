@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use BadMethodCallException;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use GeoJson\Geometry\Geometry;
@@ -61,7 +61,7 @@ class Expr
     /**
      * The DocumentManager instance for this query
      *
-     * @var DocumentManager
+     * @var DocumentManagerInterface
      */
     private $dm;
 
@@ -72,7 +72,7 @@ class Expr
      */
     private $class;
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManagerInterface $dm)
     {
         $this->dm = $dm;
     }

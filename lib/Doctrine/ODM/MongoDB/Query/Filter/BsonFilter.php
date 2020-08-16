@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Query\Filter;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use InvalidArgumentException;
 use function array_key_exists;
@@ -16,7 +16,7 @@ use function array_key_exists;
  */
 abstract class BsonFilter
 {
-    /** @var DocumentManager */
+    /** @var DocumentManagerInterface */
     protected $dm;
 
     /**
@@ -26,7 +26,7 @@ abstract class BsonFilter
      */
     protected $parameters = [];
 
-    final public function __construct(DocumentManager $dm)
+    final public function __construct(DocumentManagerInterface $dm)
     {
         $this->dm = $dm;
     }

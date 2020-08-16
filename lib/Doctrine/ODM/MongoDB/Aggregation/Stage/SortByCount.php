@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use function substr;
 
@@ -20,7 +20,7 @@ class SortByCount extends Stage
      * prefix the field name with a dollar sign $ and enclose it in quotes.
      * The expression can not evaluate to an object.
      */
-    public function __construct(Builder $builder, string $fieldName, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $fieldName, DocumentManagerInterface $documentManager, ClassMetadata $class)
     {
         parent::__construct($builder);
 

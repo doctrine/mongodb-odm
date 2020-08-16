@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Closure;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
@@ -52,7 +52,7 @@ final class ReferencePrimer
     /**
      * The DocumentManager instance.
      *
-     * @var DocumentManager $dm
+     * @var DocumentManagerInterface $dm
      */
     private $dm;
 
@@ -63,12 +63,12 @@ final class ReferencePrimer
      */
     private $uow;
 
-    public function __construct(DocumentManager $dm, UnitOfWork $uow)
+    public function __construct(DocumentManagerInterface $dm, UnitOfWork $uow)
     {
         $this->dm  = $dm;
         $this->uow = $uow;
 
-        $this->defaultPrimer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) : void {
+        $this->defaultPrimer = static function (DocumentManagerInterface $dm, ClassMetadata $class, array $ids, array $hints) : void {
             if ($class->identifier === null) {
                 return;
             }

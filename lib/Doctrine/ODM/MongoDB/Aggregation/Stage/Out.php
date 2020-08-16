@@ -6,20 +6,20 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 
 class Out extends Stage
 {
-    /** @var DocumentManager */
+    /** @var DocumentManagerInterface */
     private $dm;
 
     /** @var string */
     private $collection;
 
-    public function __construct(Builder $builder, string $collection, DocumentManager $documentManager)
+    public function __construct(Builder $builder, string $collection, DocumentManagerInterface $documentManager)
     {
         parent::__construct($builder);
 

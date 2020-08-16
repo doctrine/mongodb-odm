@@ -45,7 +45,7 @@ use function sprintf;
  *     $config = new Configuration();
  *     $dm = DocumentManager::create(new Connection(), $config);
  */
-class DocumentManager implements ObjectManager
+class DocumentManager implements DocumentManagerInterface
 {
     public const CLIENT_TYPEMAP = ['root' => 'array', 'document' => 'array'];
 
@@ -215,7 +215,7 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null) : DocumentManager
+    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null) : DocumentManagerInterface
     {
         return new static($client, $config, $eventManager);
     }

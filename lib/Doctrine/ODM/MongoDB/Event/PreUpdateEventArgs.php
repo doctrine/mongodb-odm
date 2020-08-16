@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use InvalidArgumentException;
 use function get_class;
 use function sprintf;
@@ -17,7 +17,7 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
     /** @var array */
     private $documentChangeSet;
 
-    public function __construct(object $document, DocumentManager $dm, array $changeSet)
+    public function __construct(object $document, DocumentManagerInterface $dm, array $changeSet)
     {
         parent::__construct($document, $dm);
         $this->documentChangeSet = $changeSet;

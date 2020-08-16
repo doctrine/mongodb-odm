@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -66,7 +66,7 @@ trait PersistentCollectionTrait
     /**
      * The DocumentManager that manages the persistence of the collection.
      *
-     * @var DocumentManager|null
+     * @var DocumentManagerInterface|null
      */
     private $dm;
 
@@ -92,7 +92,7 @@ trait PersistentCollectionTrait
     private $hints = [];
 
     /** {@inheritdoc} */
-    public function setDocumentManager(DocumentManager $dm)
+    public function setDocumentManager(DocumentManagerInterface $dm)
     {
         $this->dm  = $dm;
         $this->uow = $dm->getUnitOfWork();

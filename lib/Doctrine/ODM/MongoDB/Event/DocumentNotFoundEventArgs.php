@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 
 /**
  * Provides event arguments for the documentNotFound event.
@@ -20,7 +20,7 @@ final class DocumentNotFoundEventArgs extends LifecycleEventArgs
     /**
      * @param mixed $identifier
      */
-    public function __construct(object $document, DocumentManager $dm, $identifier)
+    public function __construct(object $document, DocumentManagerInterface $dm, $identifier)
     {
         parent::__construct($document, $dm);
         $this->identifier = $identifier;

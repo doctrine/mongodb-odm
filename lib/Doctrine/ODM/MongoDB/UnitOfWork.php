@@ -197,7 +197,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * The DocumentManager that "owns" this UnitOfWork instance.
      *
-     * @var DocumentManager
+     * @var DocumentManagerInterface
      */
     private $dm;
 
@@ -271,7 +271,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      */
-    public function __construct(DocumentManager $dm, EventManager $evm, HydratorFactory $hydratorFactory)
+    public function __construct(DocumentManagerInterface $dm, EventManager $evm, HydratorFactory $hydratorFactory)
     {
         $this->dm                    = $dm;
         $this->evm                   = $evm;

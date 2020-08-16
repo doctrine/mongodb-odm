@@ -18,7 +18,7 @@ final class PersistentCollection implements PersistentCollectionInterface
     /**
      * @param BaseCollection $coll
      */
-    public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
+    public function __construct(BaseCollection $coll, DocumentManagerInterface $dm, UnitOfWork $uow)
     {
         $this->coll = $coll;
         $this->dm   = $dm;

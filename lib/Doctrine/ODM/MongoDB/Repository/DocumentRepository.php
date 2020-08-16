@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
@@ -35,7 +35,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     /** @var string */
     protected $documentName;
 
-    /** @var DocumentManager */
+    /** @var DocumentManagerInterface */
     protected $dm;
 
     /** @var UnitOfWork */
@@ -47,11 +47,11 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Initializes this instance with the specified document manager, unit of work and class metadata.
      *
-     * @param DocumentManager $dm            The DocumentManager to use.
+     * @param DocumentManagerInterface $dm            The DocumentManager to use.
      * @param UnitOfWork      $uow           The UnitOfWork to use.
      * @param ClassMetadata   $classMetadata The class metadata.
      */
-    public function __construct(DocumentManager $dm, UnitOfWork $uow, ClassMetadata $classMetadata)
+    public function __construct(DocumentManagerInterface $dm, UnitOfWork $uow, ClassMetadata $classMetadata)
     {
         $this->documentName = $classMetadata->name;
         $this->dm           = $dm;
@@ -173,7 +173,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         return $this->documentName;
     }
 
-    public function getDocumentManager() : DocumentManager
+    public function getDocumentManager() : DocumentManagerInterface
     {
         return $this->dm;
     }

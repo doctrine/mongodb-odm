@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 
 /**
@@ -15,7 +15,7 @@ final class PostCollectionLoadEventArgs extends ManagerEventArgs
     /** @var PersistentCollectionInterface */
     private $collection;
 
-    public function __construct(PersistentCollectionInterface $collection, DocumentManager $dm)
+    public function __construct(PersistentCollectionInterface $collection, DocumentManagerInterface $dm)
     {
         parent::__construct($dm);
         $this->collection = $collection;

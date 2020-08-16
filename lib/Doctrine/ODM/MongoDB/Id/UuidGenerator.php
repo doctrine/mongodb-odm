@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Id;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Exception;
 use function chr;
 use function hexdec;
@@ -59,14 +59,14 @@ final class UuidGenerator extends AbstractIdGenerator
     /**
      * Generates a new UUID
      *
-     * @param DocumentManager $dm       Not used.
+     * @param DocumentManagerInterface $dm       Not used.
      * @param object          $document Not used.
      *
      * @return string UUID
      *
      * @throws Exception
      */
-    public function generate(DocumentManager $dm, object $document)
+    public function generate(DocumentManagerInterface $dm, object $document)
     {
         $uuid = $this->generateV4();
 

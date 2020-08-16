@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\Common\Cache\VoidCache;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,7 +35,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var DocumentManager $dm */
+        /** @var DocumentManagerInterface $dm */
         $dm              = $this->getHelper('documentManager')->getDocumentManager();
         $metadataFactory = $dm->getMetadataFactory();
         $metadataFactory->setCacheDriver(new VoidCache());

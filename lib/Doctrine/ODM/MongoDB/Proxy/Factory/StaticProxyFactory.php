@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Proxy\Factory;
 
 use Closure;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
@@ -32,7 +32,7 @@ final class StaticProxyFactory implements ProxyFactory
     /** @var LazyLoadingGhostFactory */
     private $proxyFactory;
 
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(DocumentManagerInterface $documentManager)
     {
         $this->uow                   = $documentManager->getUnitOfWork();
         $this->lifecycleEventManager = new LifecycleEventManager($documentManager, $this->uow, $documentManager->getEventManager());

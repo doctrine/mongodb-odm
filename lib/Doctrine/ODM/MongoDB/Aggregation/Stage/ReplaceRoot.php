@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -17,7 +17,7 @@ use function substr;
 
 class ReplaceRoot extends Operator
 {
-    /** @var DocumentManager */
+    /** @var DocumentManagerInterface */
     private $dm;
 
     /** @var ClassMetadata */
@@ -26,7 +26,7 @@ class ReplaceRoot extends Operator
     /** @var string|array|null */
     private $expression;
 
-    public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class, $expression = null)
+    public function __construct(Builder $builder, DocumentManagerInterface $documentManager, ClassMetadata $class, $expression = null)
     {
         parent::__construct($builder);
 

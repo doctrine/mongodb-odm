@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use MongoDB\Driver\WriteConcern;
@@ -53,7 +53,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @return DocumentManager
+     * @return DocumentManagerInterface
      */
     protected function getDocumentManager()
     {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
@@ -36,7 +36,7 @@ class Builder
     /**
      * The DocumentManager instance for this query
      *
-     * @var DocumentManager
+     * @var DocumentManagerInterface
      */
     private $dm;
 
@@ -66,7 +66,7 @@ class Builder
     /**
      * Create a new aggregation builder.
      */
-    public function __construct(DocumentManager $dm, string $documentName)
+    public function __construct(DocumentManagerInterface $dm, string $documentName)
     {
         $this->dm         = $dm;
         $this->class      = $this->dm->getClassMetadata($documentName);

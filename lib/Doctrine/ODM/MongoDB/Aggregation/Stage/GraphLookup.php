@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
@@ -45,7 +45,7 @@ class GraphLookup extends Stage
     /** @var Stage\GraphLookup\Match */
     private $restrictSearchWithMatch;
 
-    /** @var DocumentManager */
+    /** @var DocumentManagerInterface */
     private $dm;
 
     /** @var ClassMetadata */
@@ -58,7 +58,7 @@ class GraphLookup extends Stage
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
      */
-    public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $from, DocumentManagerInterface $documentManager, ClassMetadata $class)
     {
         parent::__construct($builder);
 
