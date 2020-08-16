@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\Persistence\ObjectManagerDecorator;
 use MongoDB\Client;
 use MongoDB\Collection;
@@ -22,12 +22,12 @@ use MongoDB\GridFS\Bucket;
 /**
  * Base class for DocumentManager decorators
  */
-abstract class DocumentManagerDecorator extends ObjectManagerDecorator implements ObjectManager
+abstract class DocumentManagerDecorator extends ObjectManagerDecorator implements DocumentManagerInterface
 {
-    /** @var ObjectManager */
+    /** @var DocumentManagerInterface */
     protected $wrapped;
 
-    public function __construct(ObjectManager $wrapped)
+    public function __construct(DocumentManagerInterface $wrapped)
     {
         $this->wrapped = $wrapped;
     }
