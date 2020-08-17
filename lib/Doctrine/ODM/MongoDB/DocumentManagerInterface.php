@@ -187,6 +187,7 @@ interface DocumentManagerInterface extends ObjectManager
      * @throws RuntimeException
      */
     public function createReference(object $document, array $referenceMapping);
+
     /**
      * Check if the Document manager is open or closed.
      */
@@ -196,14 +197,13 @@ interface DocumentManagerInterface extends ObjectManager
      * Gets the filter collection.
      */
     public function getFilterCollection() : FilterCollection;
-    
+
     /**
      * Gets the metadata factory used to gather the metadata of classes.
      *
      * @return ClassMetadataFactory
      */
     public function getMetadataFactory();
-
 
     /**
      * Returns the metadata for a class.

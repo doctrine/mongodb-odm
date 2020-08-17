@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManagerInterface;
-
 use const STR_PAD_LEFT;
 use function bccomp;
 use function bcdiv;
