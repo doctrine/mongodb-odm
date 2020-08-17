@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Benchmark;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use MongoDB\Client;
 use MongoDB\Model\DatabaseInfo;
@@ -24,11 +25,11 @@ abstract class BaseBench
     public const DATABASE_NAME           = 'doctrine_odm_performance';
     private const DEFAULT_MONGODB_SERVER = 'mongodb://localhost:27017';
 
-    /** @var DocumentManager */
+    /** @var DocumentManagerInterface */
     protected static $documentManager;
 
     /**
-     * @return DocumentManager
+     * @return DocumentManagerInterface
      */
     protected function getDocumentManager()
     {
