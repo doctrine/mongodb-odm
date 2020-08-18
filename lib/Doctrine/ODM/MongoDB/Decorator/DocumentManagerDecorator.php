@@ -6,13 +6,13 @@ namespace Doctrine\ODM\MongoDB\Decorator;
 
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
+use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\Persistence\ObjectManagerDecorator;
 use MongoDB\Client;
 use MongoDB\Collection;
@@ -35,7 +35,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function createQueryBuilder($documentName = null): Builder
+    public function createQueryBuilder($documentName = null) : Builder
     {
         return $this->wrapped->createQueryBuilder($documentName);
     }
@@ -43,7 +43,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function createAggregationBuilder($documentName): AggregationBuilder
+    public function createAggregationBuilder($documentName) : AggregationBuilder
     {
         return $this->wrapped->createAggregationBuilder($documentName);
     }
@@ -51,7 +51,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function getReference($documentName, $id): object
+    public function getReference($documentName, $id) : object
     {
         return $this->wrapped->getReference($documentName, $id);
     }
@@ -59,7 +59,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function getPartialReference($documentName, $identifier): object
+    public function getPartialReference($documentName, $identifier) : object
     {
         return $this->wrapped->getPartialReference($documentName, $identifier);
     }
@@ -67,7 +67,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function createReference(object $document, array $referenceMapping): object
+    public function createReference(object $document, array $referenceMapping) : object
     {
         return $this->wrapped->createReference($document, $referenceMapping);
     }
@@ -83,7 +83,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function lock(object $document, int $lockMode, ?int $lockVersion = null): void
+    public function lock(object $document, int $lockMode, ?int $lockVersion = null) : void
     {
         $this->wrapped->lock($document, $lockMode, $lockVersion);
     }
@@ -91,7 +91,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function unlock(object $document): void
+    public function unlock(object $document) : void
     {
         $this->wrapped->unlock($document);
     }
@@ -107,7 +107,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function getEventManager(): EventManager
+    public function getEventManager() : EventManager
     {
         return $this->wrapped->getEventManager();
     }
@@ -115,7 +115,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function getClient(): Client
+    public function getClient() : Client
     {
         return $this->wrapped->getClient();
     }
@@ -139,7 +139,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function getUnitOfWork(): UnitOfWork
+    public function getUnitOfWork() : UnitOfWork
     {
         return $this->wrapped->getUnitOfWork();
     }
@@ -219,7 +219,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function getFilterCollection(): FilterCollection
+    public function getFilterCollection() : FilterCollection
     {
         return $this->wrapped->getFilterCollection();
     }
