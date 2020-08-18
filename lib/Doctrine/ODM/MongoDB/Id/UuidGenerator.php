@@ -60,7 +60,7 @@ final class UuidGenerator extends AbstractIdGenerator
      * Generates a new UUID
      *
      * @param DocumentManagerInterface $dm       Not used.
-     * @param object          $document Not used.
+     * @param object                   $document Not used.
      *
      * @return string UUID
      *

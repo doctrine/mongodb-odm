@@ -20,9 +20,6 @@ use MongoDB\Database;
 use MongoDB\GridFS\Bucket;
 use RuntimeException;
 
-/**
- * The DocumentManager Interface 
- */
 interface DocumentManagerInterface extends ObjectManager
 {
     /**

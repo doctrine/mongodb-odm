@@ -48,8 +48,8 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Initializes this instance with the specified document manager, unit of work and class metadata.
      *
      * @param DocumentManagerInterface $dm            The DocumentManager to use.
-     * @param UnitOfWork      $uow           The UnitOfWork to use.
-     * @param ClassMetadata   $classMetadata The class metadata.
+     * @param UnitOfWork               $uow           The UnitOfWork to use.
+     * @param ClassMetadata            $classMetadata The class metadata.
      */
     public function __construct(DocumentManagerInterface $dm, UnitOfWork $uow, ClassMetadata $classMetadata)
     {
