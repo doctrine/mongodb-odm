@@ -6,8 +6,10 @@ namespace Doctrine\ODM\MongoDB\Decorator;
 
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
+use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
+use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
@@ -123,7 +125,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration()
+    public function getConfiguration() : Configuration
     {
         return $this->wrapped->getConfiguration();
     }
@@ -131,7 +133,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function isOpen()
+    public function isOpen() : bool
     {
         return $this->wrapped->isOpen();
     }
@@ -211,7 +213,7 @@ abstract class DocumentManagerDecorator extends ObjectManagerDecorator implement
     /**
      * {@inheritdoc}
      */
-    public function getProxyFactory()
+    public function getProxyFactory() : ProxyFactory
     {
         return $this->wrapped->getProxyFactory();
     }
