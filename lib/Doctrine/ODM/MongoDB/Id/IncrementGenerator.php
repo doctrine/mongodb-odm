@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Id;
 
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MongoDB\Operation\FindOneAndUpdate;
 use function get_class;
 
@@ -49,7 +49,7 @@ class IncrementGenerator extends AbstractIdGenerator
     }
 
     /** @inheritDoc */
-    public function generate(DocumentManagerInterface $dm, object $document)
+    public function generate(DocumentManager $dm, object $document)
     {
         $className = get_class($document);
         $db        = $dm->getDocumentDatabase($className);

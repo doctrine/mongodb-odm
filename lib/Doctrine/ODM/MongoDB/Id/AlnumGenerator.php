@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Id;
 
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use const STR_PAD_LEFT;
 use function bccomp;
 use function bcdiv;
@@ -64,7 +64,7 @@ final class AlnumGenerator extends IncrementGenerator
     }
 
     /** @inheritDoc */
-    public function generate(DocumentManagerInterface $dm, object $document)
+    public function generate(DocumentManager $dm, object $document)
     {
         $id    = (string) parent::generate($dm, $document);
         $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;
