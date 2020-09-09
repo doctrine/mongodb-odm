@@ -214,7 +214,7 @@ class DocumentManager implements DocumentManagerInterface
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null) : DocumentManagerInterface
+    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null) : DocumentManager
     {
         return new static($client, $config, $eventManager);
     }

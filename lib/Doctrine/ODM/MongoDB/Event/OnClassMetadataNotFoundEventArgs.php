@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Event;
 
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
@@ -21,7 +21,7 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     /** @var ClassMetadata|null */
     private $foundMetadata;
 
-    public function __construct(string $className, DocumentManagerInterface $dm)
+    public function __construct(string $className, DocumentManager $dm)
     {
         $this->className = $className;
 

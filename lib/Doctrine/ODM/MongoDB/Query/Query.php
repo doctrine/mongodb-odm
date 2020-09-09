@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use BadMethodCallException;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
@@ -60,7 +60,7 @@ final class Query implements IteratorAggregate
     /**
      * The DocumentManager instance.
      *
-     * @var DocumentManagerInterface
+     * @var DocumentManager
      */
     private $dm;
 
@@ -119,7 +119,7 @@ final class Query implements IteratorAggregate
      */
     private $options;
 
-    public function __construct(DocumentManagerInterface $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false, bool $rewindable = true)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false, bool $rewindable = true)
     {
         $primers = array_filter($primers);
 
@@ -220,7 +220,7 @@ final class Query implements IteratorAggregate
         return $this->class;
     }
 
-    public function getDocumentManager() : DocumentManagerInterface
+    public function getDocumentManager() : DocumentManager
     {
         return $this->dm;
     }

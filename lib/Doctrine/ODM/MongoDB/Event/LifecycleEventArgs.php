@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
 use function assert;
 
@@ -20,7 +19,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
         return $this->getObject();
     }
 
-    public function getDocumentManager() : DocumentManagerInterface
+    public function getDocumentManager() : DocumentManager
     {
         $dm = $this->getObjectManager();
         assert($dm instanceof DocumentManager);

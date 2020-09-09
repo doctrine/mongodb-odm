@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
@@ -40,7 +40,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var string */
     protected $cacheSalt = '$MONGODBODMCLASSMETADATA';
 
-    /** @var DocumentManagerInterface The DocumentManager instance */
+    /** @var DocumentManager The DocumentManager instance */
     private $dm;
 
     /** @var Configuration The Configuration instance */
@@ -52,7 +52,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var EventManager The event manager instance */
     private $evm;
 
-    public function setDocumentManager(DocumentManagerInterface $dm) : void
+    public function setDocumentManager(DocumentManager $dm) : void
     {
         $this->dm = $dm;
     }

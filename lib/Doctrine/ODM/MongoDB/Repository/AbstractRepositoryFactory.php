@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Repository;
 
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -28,7 +28,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * {@inheritdoc}
      */
-    public function getRepository(DocumentManagerInterface $documentManager, string $documentName) : ObjectRepository
+    public function getRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
         $hashKey  = $metadata->getName() . spl_object_hash($documentManager);
@@ -49,7 +49,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      *
      * @return ObjectRepository|GridFSRepository|ViewRepository
      */
-    protected function createRepository(DocumentManagerInterface $documentManager, string $documentName) : ObjectRepository
+    protected function createRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
 
@@ -92,5 +92,5 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Instantiates requested repository.
      */
-    abstract protected function instantiateRepository(string $repositoryClassName, DocumentManagerInterface $documentManager, ClassMetadata $metadata) : ObjectRepository;
+    abstract protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata) : ObjectRepository;
 }

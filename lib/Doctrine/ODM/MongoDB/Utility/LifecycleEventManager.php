@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Utility;
 
 use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventManager;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
@@ -22,7 +22,7 @@ use function get_class;
  */
 final class LifecycleEventManager
 {
-    /** @var DocumentManagerInterface */
+    /** @var DocumentManager */
     private $dm;
 
     /** @var EventManager */
@@ -31,7 +31,7 @@ final class LifecycleEventManager
     /** @var UnitOfWork */
     private $uow;
 
-    public function __construct(DocumentManagerInterface $dm, UnitOfWork $uow, EventManager $evm)
+    public function __construct(DocumentManager $dm, UnitOfWork $uow, EventManager $evm)
     {
         $this->dm  = $dm;
         $this->evm = $evm;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
@@ -31,7 +31,7 @@ final class PersistenceBuilder
     /**
      * The DocumentManager instance.
      *
-     * @var DocumentManagerInterface
+     * @var DocumentManager
      */
     private $dm;
 
@@ -45,7 +45,7 @@ final class PersistenceBuilder
     /**
      * Initializes a new PersistenceBuilder instance.
      */
-    public function __construct(DocumentManagerInterface $dm, UnitOfWork $uow)
+    public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {
         $this->dm  = $dm;
         $this->uow = $uow;

@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as BaseCollection;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
 /**
@@ -17,7 +17,7 @@ abstract class AbstractPersistentCollectionFactory implements PersistentCollecti
     /**
      * {@inheritdoc}
      */
-    public function create(DocumentManagerInterface $dm, array $mapping, ?BaseCollection $coll = null) : PersistentCollectionInterface
+    public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null) : PersistentCollectionInterface
     {
         if ($coll === null) {
             $coll = ! empty($mapping['collectionClass'])

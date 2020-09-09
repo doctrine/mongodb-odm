@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Id;
 
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 interface IdGenerator
 {
@@ -13,5 +13,5 @@ interface IdGenerator
      *
      * @return mixed
      */
-    public function generate(DocumentManagerInterface $dm, object $document);
+    public function generate(DocumentManager $dm, object $document);
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 use InvalidArgumentException;
@@ -27,7 +27,7 @@ final class FilterCollection
     /**
      * The DocumentManager that "owns" this FilterCollection instance.
      *
-     * @var DocumentManagerInterface
+     * @var DocumentManager
      */
     private $dm;
 
@@ -45,7 +45,7 @@ final class FilterCollection
      */
     private $cm;
 
-    public function __construct(DocumentManagerInterface $dm, ?CriteriaMerger $cm = null)
+    public function __construct(DocumentManager $dm, ?CriteriaMerger $cm = null)
     {
         $this->dm = $dm;
         $this->cm = $cm ?: new CriteriaMerger();

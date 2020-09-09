@@ -4,75 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\EventManager;
-use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\Persistence\ObjectManager;
-use InvalidArgumentException;
-use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\GridFS\Bucket;
-use RuntimeException;
 
 interface DocumentManagerInterface extends ObjectManager
 {
     /**
-     * Gets the proxy factory used by the DocumentManager to create document proxies.
-     */
-    public function getProxyFactory() : ProxyFactory;
-
-    /**
-     * Creates a new Document that operates on the given Mongo connection
-     * and uses the given Configuration.
-     */
-    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null) : DocumentManagerInterface;
-
-    /**
-     * Gets the EventManager used by the DocumentManager.
-     */
-    public function getEventManager() : EventManager;
-
-    /**
-     * Gets the MongoDB client instance that this DocumentManager wraps.
-     */
-    public function getClient() : Client;
-
-    /**
-     * Gets the UnitOfWork used by the DocumentManager to coordinate operations.
-     */
-    public function getUnitOfWork() : UnitOfWork;
-
-    /**
-     * Gets the Hydrator factory used by the DocumentManager to generate and get hydrators
-     * for each type of document.
-     */
-    public function getHydratorFactory() : HydratorFactory;
-
-    /**
-     * Returns SchemaManager, used to create/drop indexes/collections/databases.
-     */
-    public function getSchemaManager() : SchemaManager;
-
-    /** Returns the class name resolver which is used to resolve real class names for proxy objects. */
-    public function getClassNameResolver() : ClassNameResolver;
-
-    /**
      * Returns the MongoDB instance for a class.
      */
     public function getDocumentDatabase(string $className) : Database;
-
-    /**
-     * Gets the array of instantiated document database instances.
-     *
-     * @return Database[]
-     */
-    public function getDocumentDatabases() : array;
 
     /**
      * Returns the collection instance for a class.
@@ -89,13 +32,6 @@ interface DocumentManagerInterface extends ObjectManager
     public function getDocumentBucket(string $className) : Bucket;
 
     /**
-     * Gets the array of instantiated document collection instances.
-     *
-     * @return Collection[]
-     */
-    public function getDocumentCollections() : array;
-
-    /**
      * Create a new Query instance for a class.
      *
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
@@ -106,19 +42,6 @@ interface DocumentManagerInterface extends ObjectManager
      * Creates a new aggregation builder instance for a class.
      */
     public function createAggregationBuilder(string $documentName) : Aggregation\Builder;
-
-    /**
-     * Acquire a lock on the given document.
-     *
-     * @throws InvalidArgumentException
-     * @throws LockException
-     */
-    public function lock(object $document, int $lockMode, ?int $lockVersion = null) : void;
-
-    /**
-     * Releases a lock on the given document.
-     */
-    public function unlock(object $document) : void;
 
     /**
      * Gets a reference to the document identified by the given type and identifier
@@ -171,21 +94,6 @@ interface DocumentManagerInterface extends ObjectManager
     public function close();
 
     /**
-     * Gets the Configuration used by the DocumentManager.
-     */
-    public function getConfiguration() : Configuration;
-
-    /**
-     * Returns a reference to the supplied document.
-     *
-     * @return mixed The reference for the document in question, according to the desired mapping
-     *
-     * @throws MappingException
-     * @throws RuntimeException
-     */
-    public function createReference(object $document, array $referenceMapping);
-
-    /**
      * Check if the Document manager is open or closed.
      */
     public function isOpen() : bool;
@@ -194,18 +102,4 @@ interface DocumentManagerInterface extends ObjectManager
      * Gets the filter collection.
      */
     public function getFilterCollection() : FilterCollection;
-
-    /**
-     * Gets the metadata factory used to gather the metadata of classes.
-     *
-     * @return ClassMetadataFactory
-     */
-    public function getMetadataFactory();
-
-    /**
-     * Returns the metadata for a class.
-     *
-     * @param string $className The class name.
-     */
-    public function getClassMetadata($className) : ClassMetadata;
 }

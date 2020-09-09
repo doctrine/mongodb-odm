@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
 use Doctrine\ODM\MongoDB\ConfigurationException;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
 use InvalidArgumentException;
@@ -59,7 +59,7 @@ EOT
         $filter = $input->getOption('filter');
         assert(is_array($filter));
 
-        /** @var DocumentManagerInterface $dm */
+        /** @var DocumentManager $dm */
         $dm = $this->getHelper('documentManager')->getDocumentManager();
 
         /** @var ClassMetadata[] $metadatas */

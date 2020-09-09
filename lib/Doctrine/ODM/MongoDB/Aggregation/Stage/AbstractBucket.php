@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -23,7 +23,7 @@ use function substr;
  */
 abstract class AbstractBucket extends Stage
 {
-    /** @var DocumentManagerInterface */
+    /** @var DocumentManager */
     private $dm;
 
     /** @var ClassMetadata */
@@ -35,7 +35,7 @@ abstract class AbstractBucket extends Stage
     /** @var Expr|array */
     protected $groupBy;
 
-    public function __construct(Builder $builder, DocumentManagerInterface $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class)
     {
         $this->dm    = $documentManager;
         $this->class = $class;

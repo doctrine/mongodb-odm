@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
@@ -17,7 +17,7 @@ use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
  */
 class Lookup extends Stage
 {
-    /** @var DocumentManagerInterface */
+    /** @var DocumentManager */
     private $dm;
 
     /** @var ClassMetadata */
@@ -38,7 +38,7 @@ class Lookup extends Stage
     /** @var string */
     private $as;
 
-    public function __construct(Builder $builder, string $from, DocumentManagerInterface $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
     {
         parent::__construct($builder);
 

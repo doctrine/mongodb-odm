@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Hydrator;
 
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
@@ -41,7 +41,7 @@ final class HydratorFactory
     /**
      * The DocumentManager this factory is bound to.
      *
-     * @var DocumentManagerInterface
+     * @var DocumentManager
      */
     private $dm;
 
@@ -90,7 +90,7 @@ final class HydratorFactory
     /**
      * @throws HydratorException
      */
-    public function __construct(DocumentManagerInterface $dm, EventManager $evm, ?string $hydratorDir, ?string $hydratorNs, int $autoGenerate)
+    public function __construct(DocumentManager $dm, EventManager $evm, ?string $hydratorDir, ?string $hydratorNs, int $autoGenerate)
     {
         if (! $hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();

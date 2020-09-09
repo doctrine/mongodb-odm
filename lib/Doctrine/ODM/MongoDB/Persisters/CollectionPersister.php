@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Closure;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
@@ -43,7 +43,7 @@ use function strpos;
  */
 final class CollectionPersister
 {
-    /** @var DocumentManagerInterface */
+    /** @var DocumentManager */
     private $dm;
 
     /** @var PersistenceBuilder */
@@ -52,7 +52,7 @@ final class CollectionPersister
     /** @var UnitOfWork */
     private $uow;
 
-    public function __construct(DocumentManagerInterface $dm, PersistenceBuilder $pb, UnitOfWork $uow)
+    public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {
         $this->dm  = $dm;
         $this->pb  = $pb;

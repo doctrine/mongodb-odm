@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use BadMethodCallException;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
@@ -71,7 +71,7 @@ final class DocumentPersister
     /** @var PersistenceBuilder */
     private $pb;
 
-    /** @var DocumentManagerInterface */
+    /** @var DocumentManager */
     private $dm;
 
     /** @var UnitOfWork */
@@ -111,7 +111,7 @@ final class DocumentPersister
 
     public function __construct(
         PersistenceBuilder $pb,
-        DocumentManagerInterface $dm,
+        DocumentManager $dm,
         UnitOfWork $uow,
         HydratorFactory $hydratorFactory,
         ClassMetadata $class,

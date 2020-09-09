@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
 use Doctrine\Persistence\Event\ManagerEventArgs as BaseManagerEventArgs;
 use function assert;
 
@@ -14,7 +13,7 @@ use function assert;
  */
 class ManagerEventArgs extends BaseManagerEventArgs
 {
-    public function getDocumentManager() : DocumentManagerInterface
+    public function getDocumentManager() : DocumentManager
     {
         $dm = $this->getObjectManager();
         assert($dm instanceof DocumentManager);

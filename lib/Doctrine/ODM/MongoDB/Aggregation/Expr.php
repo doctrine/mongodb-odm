@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use BadMethodCallException;
-use Doctrine\ODM\MongoDB\DocumentManagerInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -24,7 +24,7 @@ use function substr;
  */
 class Expr
 {
-    /** @var DocumentManagerInterface */
+    /** @var DocumentManager */
     private $dm;
 
     /** @var ClassMetadata */
@@ -46,7 +46,7 @@ class Expr
     /**
      * @inheritDoc
      */
-    public function __construct(DocumentManagerInterface $dm, ClassMetadataInterface $class)
+    public function __construct(DocumentManager $dm, ClassMetadataInterface $class)
     {
         assert($class instanceof ClassMetadata);
         $this->dm    = $dm;
