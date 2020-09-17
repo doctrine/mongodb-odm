@@ -23,6 +23,7 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
+use Exception;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -268,6 +269,12 @@ final class UnitOfWork implements PropertyChangedListener
     /** @var int */
     private $commitsInProgress = 0;
 
+    /** @var array */
+    private $transactionEventsBuffer = [];
+
+    /** @var array */
+    private $transactionDeletionsBuffer = [];
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      */
@@ -408,24 +415,10 @@ final class UnitOfWork implements PropertyChangedListener
                 $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
             }
 
-            foreach ($this->getClassesForCommitAction($this->documentUpserts) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeUpserts($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->documentInsertions) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeInserts($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->documentUpdates) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeUpdates($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->documentDeletions, true) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeDeletions($class, $documents, $options);
+            if($this->dm->getConfiguration()->getEnableCommitTransaction()) {
+                $this->executeCommitTransaction($options);
+            } else {
+                $this->executeCommit($options);
             }
 
             // Raise postFlush
@@ -448,6 +441,112 @@ final class UnitOfWork implements PropertyChangedListener
         } finally {
             $this->commitsInProgress--;
         }
+    }
+
+    private function executeCommit(array $options = []) : void
+    {
+        foreach ($this->getClassesForCommitAction($this->documentUpserts) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeUpserts($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->documentInsertions) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeInserts($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->documentUpdates) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeUpdates($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->documentDeletions, true) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeDeletions($class, $documents, $options);
+        }
+    }
+
+
+    private function executeCommitTransaction(array $options = []) : void 
+    {
+        $session              = $this->dm->getClient()->startSession();
+        $commandsOptions      = ['session' => $session];
+        
+        $session->startTransaction($options);
+        
+        try {
+            foreach ($this->getClassesForCommitAction($this->documentUpserts) as $classAndDocuments) {
+                [$class, $documents] = $classAndDocuments;
+                $this->executeUpsertsInsideTransaction($class, $documents, $commandsOptions);
+            }
+
+            foreach ($this->getClassesForCommitAction($this->documentInsertions) as $classAndDocuments) {
+                [$class, $documents] = $classAndDocuments;
+                $this->executeInsertsInsideTransaction($class, $documents, $commandsOptions);
+            }
+
+            foreach ($this->getClassesForCommitAction($this->documentUpdates) as $classAndDocuments) {
+                [$class, $documents] = $classAndDocuments;
+                $this->executeUpdatesInsideTransaction($class, $documents, $commandsOptions);
+            }
+
+            foreach ($this->getClassesForCommitAction($this->documentDeletions, true) as $classAndDocuments) {
+                [$class, $documents] = $classAndDocuments;
+                $this->executeDeletionsInsideTransaction($class, $documents, $commandsOptions);
+            }
+
+            $session->commitTransaction();
+
+        } catch (Exception $e) {
+            $session->abortTransaction();
+            throw $e;
+        }
+
+        foreach ($this->transactionDeletionsBuffer as $deletedDocumentData) {
+            $oid      = $deletedDocumentData['oid'];
+            $class    = $deletedDocumentData['class'];
+            $document = $deletedDocumentData['document'];
+            
+            unset(
+                $this->documentIdentifiers[$oid],
+                $this->originalDocumentData[$oid]
+            );
+
+            // Clear snapshot information for any referenced PersistentCollection
+            // http://www.doctrine-project.org/jira/browse/MODM-95
+            foreach ($class->associationMappings as $fieldMapping) {
+                if (!isset($fieldMapping['type']) || $fieldMapping['type'] !== ClassMetadata::MANY) {
+                    continue;
+                }
+
+                $value = $class->reflFields[$fieldMapping['fieldName']]->getValue($document);
+                if (!($value instanceof PersistentCollectionInterface)) {
+                    continue;
+                }
+
+                $value->clearSnapshot();
+            }
+
+            // Document with this $oid after deletion treated as NEW, even if the $oid
+            // is obtained by a new document because the old one went out of scope.
+            $this->documentStates[$oid] = self::STATE_NEW;
+        }
+
+        //clear up deletions buffer
+        $this->transactionDeletionsBuffer = [];
+
+
+        // dispatch buffered events
+        foreach ($this->transactionEventsBuffer as $eventData) {
+            $event    = $eventData['event'];
+            $class    = $eventData['class'];
+            $document = $eventData['document'];
+            $this->lifecycleEventManager->$event($class, $document);
+        }
+        
+        // clear up events buffer
+        $this->transactionEventsBuffer = [];
+
     }
 
     /**
@@ -1087,6 +1186,25 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Executes all document insertions for documents of the specified type inside a transaction.
+     */
+    private function executeInsertsInsideTransaction(ClassMetadata $class, array $documents, array $options): void
+    {
+        $persister = $this->getDocumentPersister($class->name);
+
+        foreach ($documents as $document) {
+            $persister->addInsert($document);
+            $this->transactionEventsBuffer[] = [
+                'class'    => $class,
+                'document' => $document,
+                'event'    => 'postPersist'
+            ];
+        }
+
+        $persister->executeInserts($options);
+    }
+
+    /**
      * Executes all document upserts for documents of the specified type.
      */
     private function executeUpserts(ClassMetadata $class, array $documents, array $options = []) : void
@@ -1103,6 +1221,25 @@ final class UnitOfWork implements PropertyChangedListener
         foreach ($documents as $document) {
             $this->lifecycleEventManager->postPersist($class, $document);
         }
+    }
+
+    /**
+     * Executes all document upserts for documents of the specified type inside a transaction.
+     */
+    private function executeUpsertsInsideTransaction(ClassMetadata $class, array $documents, array $options): void
+    {
+        $persister = $this->getDocumentPersister($class->name);
+
+        foreach ($documents as $document) {
+            $persister->addUpsert($document);
+            $this->transactionEventsBuffer[] = [
+                'class'    => $class,
+                'document' => $document,
+                'event'    => 'postPersist'
+            ];
+        }
+
+        $persister->executeUpserts($options);
     }
 
     /**
@@ -1127,6 +1264,33 @@ final class UnitOfWork implements PropertyChangedListener
             unset($this->documentUpdates[$oid]);
 
             $this->lifecycleEventManager->postUpdate($class, $document);
+        }
+    }
+
+    /**
+     * Executes all document updates for documents of the specified type inside a transaction.
+     */
+    private function executeUpdatesInsideTransaction(ClassMetadata $class, array $documents, array $options): void
+    {
+        if ($class->isReadOnly) {
+            return;
+        }
+
+        $className = $class->name;
+        $persister = $this->getDocumentPersister($className);
+
+        foreach ($documents as $oid => $document) {
+            $this->lifecycleEventManager->preUpdate($class, $document);
+
+            if (!empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document)) {
+                $persister->update($document, $options);
+            }
+
+            $this->transactionEventsBuffer[] = [
+                'class'    => $class,
+                'document' => $document,
+                'event'    => 'postUpdate'
+            ];
         }
     }
 
@@ -1167,6 +1331,32 @@ final class UnitOfWork implements PropertyChangedListener
             $this->documentStates[$oid] = self::STATE_NEW;
 
             $this->lifecycleEventManager->postRemove($class, $document);
+        }
+    }
+
+    /**
+     * Executes all document deletions for documents of the specified type inside a transaction.
+     */
+    private function executeDeletionsInsideTransaction(ClassMetadata $class, array $documents, array $options): void
+    {
+        $persister = $this->getDocumentPersister($class->name);
+
+        foreach ($documents as $oid => $document) {
+            if (!$class->isEmbeddedDocument) {
+                $persister->delete($document, $options);
+            }
+
+            $this->transactionDeletionsBuffer[] = [
+                'oid'      => $oid,
+                'class'    => $class,
+                'document' => $document
+            ];
+
+            $this->transactionEventsBuffer[]     = [
+                'class'    => $class,
+                'document' => $document,
+                'event'    => 'postRemove'
+            ];
         }
     }
 

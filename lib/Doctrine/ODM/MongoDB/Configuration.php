@@ -475,6 +475,16 @@ class Configuration
     {
         return $this->proxyManagerConfiguration;
     }
+
+    public function setEnableCommitTransaction(bool $enableCommitTransaction) : void
+    {
+        $this->attributes['enableCommitTransaction'] = $enableCommitTransaction;
+    }
+
+    public function getEnableCommitTransaction() : bool
+    {
+        return $this->attributes['enableCommitTransaction'] ?? false;
+    }
 }
 
 interface_exists(MappingDriver::class);
