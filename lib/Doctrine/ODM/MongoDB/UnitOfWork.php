@@ -469,37 +469,38 @@ final class UnitOfWork implements PropertyChangedListener
 
     private function executeCommitTransaction(array $options = []) : void 
     {
-        $session              = $this->dm->getClient()->startSession();
-        $commandsOptions      = ['session' => $session];
+        $session            = $this->dm->getClient()->startSession();
+        $options['session'] = $session;
         
         $session->startTransaction($options);
         
         try {
             foreach ($this->getClassesForCommitAction($this->documentUpserts) as $classAndDocuments) {
                 [$class, $documents] = $classAndDocuments;
-                $this->executeUpsertsInsideTransaction($class, $documents, $commandsOptions);
+                $this->executeUpsertsInsideTransaction($class, $documents, $options);
             }
 
             foreach ($this->getClassesForCommitAction($this->documentInsertions) as $classAndDocuments) {
                 [$class, $documents] = $classAndDocuments;
-                $this->executeInsertsInsideTransaction($class, $documents, $commandsOptions);
+                $this->executeInsertsInsideTransaction($class, $documents, $options);
             }
 
             foreach ($this->getClassesForCommitAction($this->documentUpdates) as $classAndDocuments) {
                 [$class, $documents] = $classAndDocuments;
-                $this->executeUpdatesInsideTransaction($class, $documents, $commandsOptions);
+                $this->executeUpdatesInsideTransaction($class, $documents, $options);
             }
 
             foreach ($this->getClassesForCommitAction($this->documentDeletions, true) as $classAndDocuments) {
                 [$class, $documents] = $classAndDocuments;
-                $this->executeDeletionsInsideTransaction($class, $documents, $commandsOptions);
+                $this->executeDeletionsInsideTransaction($class, $documents, $options);
             }
 
             $session->commitTransaction();
-
         } catch (Exception $e) {
             $session->abortTransaction();
             throw $e;
+        } finally {
+            $session->endSession();
         }
 
         foreach ($this->transactionDeletionsBuffer as $deletedDocumentData) {
