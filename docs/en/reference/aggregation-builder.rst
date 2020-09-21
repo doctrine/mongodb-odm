@@ -101,16 +101,15 @@ those values into an embedded object for the ``id`` field. For example:
 Executing an aggregation pipeline
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When you are done building your pipeline, you can build an ``Aggregation``
-object using the ``getAggregation()`` method. The returning instance can yield a
-single result or return an iterator containing all results.
+You can execute a pipeline using the ``execute()`` method. This will run the
+aggregation pipeline and return a cursor for you to iterate over the results:
 
 .. code-block:: php
 
     <?php
 
     $builder = $dm->createAggregationBuilder(\Documents\User::class);
-    $result = $builder->getAggregation();
+    $result = $builder->execute();
 
 If you instead want to look at the built aggregation pipeline, call the
 ``Builder::getPipeline()`` method.
@@ -210,8 +209,7 @@ can tell the query builder to not return a caching iterator:
     $builder->setRewindable(false);
 
 When setting this option to ``false``, attempting a second iteration will result
-in an exception. Note that calling ``getAggregation()`` will always yield a
-fresh aggregation instance that can be re-executed.
+in an exception.
 
 Aggregation pipeline stages
 ---------------------------

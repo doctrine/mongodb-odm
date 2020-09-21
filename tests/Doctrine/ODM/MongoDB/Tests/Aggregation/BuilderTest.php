@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Aggregation\Aggregation;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
@@ -187,37 +186,6 @@ class BuilderTest extends BaseTest
                 ->sum(1)
             ->sort('numPosts', 'desc')
             ->execute();
-
-        $this->assertInstanceOf(Iterator::class, $resultCursor);
-
-        $results = $resultCursor->toArray();
-        $this->assertCount(2, $results);
-        $this->assertInstanceOf(BlogTagAggregation::class, $results[0]);
-
-        $this->assertSame('baseball', $results[0]->tag->name);
-        $this->assertSame(3, $results[0]->numPosts);
-    }
-
-    public function testGetAggregation()
-    {
-        $this->insertTestData();
-
-        $builder = $this->dm->createAggregationBuilder(BlogPost::class);
-
-        $aggregation = $builder
-            ->hydrate(BlogTagAggregation::class)
-            ->unwind('$tags')
-            ->group()
-                ->field('id')
-                ->expression('$tags')
-                ->field('numPosts')
-                ->sum(1)
-            ->sort('numPosts', 'desc')
-            ->getAggregation();
-
-        $this->assertInstanceOf(Aggregation::class, $aggregation);
-
-        $resultCursor = $aggregation->getIterator();
 
         $this->assertInstanceOf(Iterator::class, $resultCursor);
 
