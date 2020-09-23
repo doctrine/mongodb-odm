@@ -46,10 +46,6 @@ You can customize the index with some additional options:
    synchronously. If you specify TRUE with this option, index creation
    will be asynchronous.
 -
-   **safe** - You can specify a boolean value for checking if the
-   index creation succeeded. The driver will throw a
-   ``MongoDB\Driver\Exception\CommandException`` if index creation failed.
--
    **expireAfterSeconds** - If you specify this option then the associated
    document will be automatically removed when the provided time (in seconds)
    has passed. This option is bound to a number of limitations, which
