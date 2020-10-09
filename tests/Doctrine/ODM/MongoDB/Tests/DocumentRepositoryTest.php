@@ -178,4 +178,17 @@ class DocumentRepositoryTest extends BaseTest
         $this->dm->flush();
         $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['phonenumbers' => $phonenumber]));
     }
+
+    public function testFindOneByWithSort()
+    {
+        $george = new User();
+        $george->setUsername('George');
+        $andy = new User();
+        $andy->setUsername('Andy');
+        $this->dm->persist($george);
+        $this->dm->persist($andy);
+        $this->dm->flush();
+        $this->assertSame($andy, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'ASC']));
+        $this->assertSame($george, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'DESC']));
+    }
 }
