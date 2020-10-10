@@ -188,7 +188,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->dm->persist($george);
         $this->dm->persist($andy);
         $this->dm->flush();
-        $this->assertSame($andy, $this->dm->getRepository(User::class)->findOneBy([],['username'=>'ASC']));
-        $this->assertSame($george, $this->dm->getRepository(User::class)->findOneBy([],['username'=>'DESC']));
+        $this->assertSame($andy, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'ASC']));
+        $this->assertSame($george, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'DESC']));
     }
 }
