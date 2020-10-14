@@ -47,10 +47,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $class) : void
+    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata) : void
     {
-        assert($class instanceof ClassMetadata);
-        $reflClass = $class->getReflectionClass();
+        assert($metadata instanceof ClassMetadata);
+        $reflClass = $metadata->getReflectionClass();
 
         $classAnnotations = $this->reader->getClassAnnotations($reflClass);
 
@@ -67,31 +67,31 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             // non-document class annotations
             if ($annot instanceof ODM\AbstractIndex) {
-                $this->addIndex($class, $annot);
+                $this->addIndex($metadata, $annot);
             }
             if ($annot instanceof ODM\Indexes) {
                 // Setting the type to mixed is a workaround until https://github.com/doctrine/annotations/pull/209 is released.
                 /** @var mixed $value */
                 $value = $annot->value;
                 foreach (is_array($value) ? $value : [$value] as $index) {
-                    $this->addIndex($class, $index);
+                    $this->addIndex($metadata, $index);
                 }
             } elseif ($annot instanceof ODM\InheritanceType) {
-                $class->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_' . $annot->value));
+                $metadata->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_' . $annot->value));
             } elseif ($annot instanceof ODM\DiscriminatorField) {
-                $class->setDiscriminatorField($annot->value);
+                $metadata->setDiscriminatorField($annot->value);
             } elseif ($annot instanceof ODM\DiscriminatorMap) {
                 /** @var array $value */
                 $value = $annot->value;
-                $class->setDiscriminatorMap($value);
+                $metadata->setDiscriminatorMap($value);
             } elseif ($annot instanceof ODM\DiscriminatorValue) {
-                $class->setDiscriminatorValue($annot->value);
+                $metadata->setDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ChangeTrackingPolicy) {
-                $class->setChangeTrackingPolicy(constant(ClassMetadata::class . '::CHANGETRACKING_' . $annot->value));
+                $metadata->setChangeTrackingPolicy(constant(ClassMetadata::class . '::CHANGETRACKING_' . $annot->value));
             } elseif ($annot instanceof ODM\DefaultDiscriminatorValue) {
-                $class->setDefaultDiscriminatorValue($annot->value);
+                $metadata->setDefaultDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ReadPreference) {
-                $class->setReadPreference($annot->value, $annot->tags ?? []);
+                $metadata->setReadPreference($annot->value, $annot->tags ?? []);
             }
         }
 
@@ -100,11 +100,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         if ($documentAnnot instanceof ODM\MappedSuperclass) {
-            $class->isMappedSuperclass = true;
+            $metadata->isMappedSuperclass = true;
         } elseif ($documentAnnot instanceof ODM\EmbeddedDocument) {
-            $class->isEmbeddedDocument = true;
+            $metadata->isEmbeddedDocument = true;
         } elseif ($documentAnnot instanceof ODM\QueryResultDocument) {
-            $class->isQueryResultDocument = true;
+            $metadata->isQueryResultDocument = true;
         } elseif ($documentAnnot instanceof ODM\View) {
             if (! $documentAnnot->rootClass) {
                 throw MappingException::viewWithoutRootClass($className);
@@ -114,47 +114,47 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 throw MappingException::viewRootClassNotFound($className, $documentAnnot->rootClass);
             }
 
-            $class->markViewOf($documentAnnot->rootClass);
+            $metadata->markViewOf($documentAnnot->rootClass);
         } elseif ($documentAnnot instanceof ODM\File) {
-            $class->isFile = true;
+            $metadata->isFile = true;
 
             if ($documentAnnot->chunkSizeBytes !== null) {
-                $class->setChunkSizeBytes($documentAnnot->chunkSizeBytes);
+                $metadata->setChunkSizeBytes($documentAnnot->chunkSizeBytes);
             }
         }
 
         if (isset($documentAnnot->db)) {
-            $class->setDatabase($documentAnnot->db);
+            $metadata->setDatabase($documentAnnot->db);
         }
         if (isset($documentAnnot->collection)) {
-            $class->setCollection($documentAnnot->collection);
+            $metadata->setCollection($documentAnnot->collection);
         }
         if (isset($documentAnnot->view)) {
-            $class->setCollection($documentAnnot->view);
+            $metadata->setCollection($documentAnnot->view);
         }
         // Store bucketName as collection name for GridFS files
         if (isset($documentAnnot->bucketName)) {
-            $class->setBucketName($documentAnnot->bucketName);
+            $metadata->setBucketName($documentAnnot->bucketName);
         }
         if (isset($documentAnnot->repositoryClass)) {
-            $class->setCustomRepositoryClass($documentAnnot->repositoryClass);
+            $metadata->setCustomRepositoryClass($documentAnnot->repositoryClass);
         }
         if (isset($documentAnnot->writeConcern)) {
-            $class->setWriteConcern($documentAnnot->writeConcern);
+            $metadata->setWriteConcern($documentAnnot->writeConcern);
         }
         if (isset($documentAnnot->indexes)) {
             foreach ($documentAnnot->indexes as $index) {
-                $this->addIndex($class, $index);
+                $this->addIndex($metadata, $index);
             }
         }
         if (! empty($documentAnnot->readOnly)) {
-            $class->markReadOnly();
+            $metadata->markReadOnly();
         }
 
         foreach ($reflClass->getProperties() as $property) {
-            if (($class->isMappedSuperclass && ! $property->isPrivate())
+            if (($metadata->isMappedSuperclass && ! $property->isPrivate())
                 ||
-                ($class->isInheritedField($property->name) && $property->getDeclaringClass()->name !== $class->name)) {
+                ($metadata->isInheritedField($property->name) && $property->getDeclaringClass()->name !== $metadata->name)) {
                 continue;
             }
 
@@ -190,7 +190,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             if ($fieldAnnot) {
                 $mapping = array_replace($mapping, (array) $fieldAnnot);
-                $class->mapField($mapping);
+                $metadata->mapField($mapping);
             }
 
             if (! $indexes) {
@@ -200,14 +200,14 @@ class AnnotationDriver extends AbstractAnnotationDriver
             foreach ($indexes as $index) {
                 $name = $mapping['name'] ?? $mapping['fieldName'];
                 $keys = [$name => $index->order ?: 'asc'];
-                $this->addIndex($class, $index, $keys);
+                $this->addIndex($metadata, $index, $keys);
             }
         }
 
         // Set shard key after all fields to ensure we mapped all its keys
         if (isset($classAnnotations[ShardKey::class])) {
             assert($classAnnotations[ShardKey::class] instanceof ShardKey);
-            $this->setShardKey($class, $classAnnotations[ShardKey::class]);
+            $this->setShardKey($metadata, $classAnnotations[ShardKey::class]);
         }
 
         /** @var ReflectionMethod $method */
@@ -221,7 +221,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             foreach ($this->reader->getMethodAnnotations($method) as $annot) {
                 if ($annot instanceof ODM\AlsoLoad) {
-                    $class->registerAlsoLoadMethod($method->getName(), $annot->value);
+                    $metadata->registerAlsoLoadMethod($method->getName(), $annot->value);
                 }
 
                 if (! isset($classAnnotations[ODM\HasLifecycleCallbacks::class])) {
@@ -229,23 +229,23 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 if ($annot instanceof ODM\PrePersist) {
-                    $class->addLifecycleCallback($method->getName(), Events::prePersist);
+                    $metadata->addLifecycleCallback($method->getName(), Events::prePersist);
                 } elseif ($annot instanceof ODM\PostPersist) {
-                    $class->addLifecycleCallback($method->getName(), Events::postPersist);
+                    $metadata->addLifecycleCallback($method->getName(), Events::postPersist);
                 } elseif ($annot instanceof ODM\PreUpdate) {
-                    $class->addLifecycleCallback($method->getName(), Events::preUpdate);
+                    $metadata->addLifecycleCallback($method->getName(), Events::preUpdate);
                 } elseif ($annot instanceof ODM\PostUpdate) {
-                    $class->addLifecycleCallback($method->getName(), Events::postUpdate);
+                    $metadata->addLifecycleCallback($method->getName(), Events::postUpdate);
                 } elseif ($annot instanceof ODM\PreRemove) {
-                    $class->addLifecycleCallback($method->getName(), Events::preRemove);
+                    $metadata->addLifecycleCallback($method->getName(), Events::preRemove);
                 } elseif ($annot instanceof ODM\PostRemove) {
-                    $class->addLifecycleCallback($method->getName(), Events::postRemove);
+                    $metadata->addLifecycleCallback($method->getName(), Events::postRemove);
                 } elseif ($annot instanceof ODM\PreLoad) {
-                    $class->addLifecycleCallback($method->getName(), Events::preLoad);
+                    $metadata->addLifecycleCallback($method->getName(), Events::preLoad);
                 } elseif ($annot instanceof ODM\PostLoad) {
-                    $class->addLifecycleCallback($method->getName(), Events::postLoad);
+                    $metadata->addLifecycleCallback($method->getName(), Events::postLoad);
                 } elseif ($annot instanceof ODM\PreFlush) {
-                    $class->addLifecycleCallback($method->getName(), Events::preFlush);
+                    $metadata->addLifecycleCallback($method->getName(), Events::preFlush);
                 }
             }
         }

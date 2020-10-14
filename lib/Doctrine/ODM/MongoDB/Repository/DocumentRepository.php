@@ -153,11 +153,11 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Finds documents by a set of criteria.
      *
      * @param int|null $limit
-     * @param int|null $skip
+     * @param int|null $offset
      */
-    public function findBy(array $criteria, ?array $sort = null, $limit = null, $skip = null) : array
+    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null) : array
     {
-        return $this->getDocumentPersister()->loadAll($criteria, $sort, $limit, $skip)->toArray();
+        return $this->getDocumentPersister()->loadAll($criteria, $orderBy, $limit, $offset)->toArray();
     }
 
     /**

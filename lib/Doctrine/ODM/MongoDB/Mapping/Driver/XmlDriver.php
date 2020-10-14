@@ -78,27 +78,27 @@ class XmlDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $class)
+    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata)
     {
-        assert($class instanceof ClassMetadata);
+        assert($metadata instanceof ClassMetadata);
         $xmlRoot = $this->getElement($className);
 
         if ($xmlRoot->getName() === 'document') {
             if (isset($xmlRoot['repository-class'])) {
-                $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
+                $metadata->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
             }
         } elseif ($xmlRoot->getName() === 'mapped-superclass') {
-            $class->setCustomRepositoryClass(
+            $metadata->setCustomRepositoryClass(
                 isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null
             );
-            $class->isMappedSuperclass = true;
+            $metadata->isMappedSuperclass = true;
         } elseif ($xmlRoot->getName() === 'embedded-document') {
-            $class->isEmbeddedDocument = true;
+            $metadata->isEmbeddedDocument = true;
         } elseif ($xmlRoot->getName() === 'query-result-document') {
-            $class->isQueryResultDocument = true;
+            $metadata->isQueryResultDocument = true;
         } elseif ($xmlRoot->getName() === 'view') {
             if (isset($xmlRoot['repository-class'])) {
-                $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
+                $metadata->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
             }
 
             if (! isset($xmlRoot['root-class'])) {
@@ -110,21 +110,21 @@ class XmlDriver extends FileDriver
                 throw MappingException::viewRootClassNotFound($className, $rootClass);
             }
 
-            $class->markViewOf($rootClass);
+            $metadata->markViewOf($rootClass);
         } elseif ($xmlRoot->getName() === 'gridfs-file') {
-            $class->isFile = true;
+            $metadata->isFile = true;
 
             if (isset($xmlRoot['chunk-size-bytes'])) {
-                $class->setChunkSizeBytes((int) $xmlRoot['chunk-size-bytes']);
+                $metadata->setChunkSizeBytes((int) $xmlRoot['chunk-size-bytes']);
             }
 
             if (isset($xmlRoot['repository-class'])) {
-                $class->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
+                $metadata->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
             }
         }
 
         if (isset($xmlRoot['db'])) {
-            $class->setDatabase((string) $xmlRoot['db']);
+            $metadata->setDatabase((string) $xmlRoot['db']);
         }
 
         if (isset($xmlRoot['collection'])) {
@@ -137,54 +137,54 @@ class XmlDriver extends FileDriver
                 if (isset($xmlRoot['capped-collection-size'])) {
                     $config['size'] = (int) $xmlRoot['capped-collection-size'];
                 }
-                $class->setCollection($config);
+                $metadata->setCollection($config);
             } else {
-                $class->setCollection((string) $xmlRoot['collection']);
+                $metadata->setCollection((string) $xmlRoot['collection']);
             }
         }
         if (isset($xmlRoot['bucket-name'])) {
-            $class->setBucketName((string) $xmlRoot['bucket-name']);
+            $metadata->setBucketName((string) $xmlRoot['bucket-name']);
         }
         if (isset($xmlRoot['view'])) {
-            $class->setCollection((string) $xmlRoot['view']);
+            $metadata->setCollection((string) $xmlRoot['view']);
         }
         if (isset($xmlRoot['write-concern'])) {
-            $class->setWriteConcern((string) $xmlRoot['write-concern']);
+            $metadata->setWriteConcern((string) $xmlRoot['write-concern']);
         }
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
-            $class->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType));
+            $metadata->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType));
         }
         if (isset($xmlRoot['change-tracking-policy'])) {
-            $class->setChangeTrackingPolicy(constant(ClassMetadata::class . '::CHANGETRACKING_' . strtoupper((string) $xmlRoot['change-tracking-policy'])));
+            $metadata->setChangeTrackingPolicy(constant(ClassMetadata::class . '::CHANGETRACKING_' . strtoupper((string) $xmlRoot['change-tracking-policy'])));
         }
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};
-            $class->setDiscriminatorField((string) $discrField['name']);
+            $metadata->setDiscriminatorField((string) $discrField['name']);
         }
         if (isset($xmlRoot->{'discriminator-map'})) {
             $map = [];
             foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} as $discrMapElement) {
                 $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
             }
-            $class->setDiscriminatorMap($map);
+            $metadata->setDiscriminatorMap($map);
         }
         if (isset($xmlRoot->{'default-discriminator-value'})) {
-            $class->setDefaultDiscriminatorValue((string) $xmlRoot->{'default-discriminator-value'}['value']);
+            $metadata->setDefaultDiscriminatorValue((string) $xmlRoot->{'default-discriminator-value'}['value']);
         }
         if (isset($xmlRoot->{'indexes'})) {
             foreach ($xmlRoot->{'indexes'}->{'index'} as $index) {
-                $this->addIndex($class, $index);
+                $this->addIndex($metadata, $index);
             }
         }
         if (isset($xmlRoot->{'shard-key'})) {
-            $this->setShardKey($class, $xmlRoot->{'shard-key'}[0]);
+            $this->setShardKey($metadata, $xmlRoot->{'shard-key'}[0]);
         }
         if (isset($xmlRoot['read-only']) && (string) $xmlRoot['read-only'] === 'true') {
-            $class->markReadOnly();
+            $metadata->markReadOnly();
         }
         if (isset($xmlRoot->{'read-preference'})) {
-            $class->setReadPreference(...$this->transformReadPreference($xmlRoot->{'read-preference'}));
+            $metadata->setReadPreference(...$this->transformReadPreference($xmlRoot->{'read-preference'}));
         }
 
         if (isset($xmlRoot->id)) {
@@ -218,7 +218,7 @@ class XmlDriver extends FileDriver
                 }
             }
 
-            $this->addFieldMapping($class, $mapping);
+            $this->addFieldMapping($metadata, $mapping);
         }
 
         if (isset($xmlRoot->field)) {
@@ -251,35 +251,35 @@ class XmlDriver extends FileDriver
                     $mapping['lock'] = ((string) $attributes['lock'] === 'true');
                 }
 
-                $this->addFieldMapping($class, $mapping);
+                $this->addFieldMapping($metadata, $mapping);
             }
         }
 
-        $this->addGridFSMappings($class, $xmlRoot);
+        $this->addGridFSMappings($metadata, $xmlRoot);
 
         if (isset($xmlRoot->{'embed-one'})) {
             foreach ($xmlRoot->{'embed-one'} as $embed) {
-                $this->addEmbedMapping($class, $embed, 'one');
+                $this->addEmbedMapping($metadata, $embed, 'one');
             }
         }
         if (isset($xmlRoot->{'embed-many'})) {
             foreach ($xmlRoot->{'embed-many'} as $embed) {
-                $this->addEmbedMapping($class, $embed, 'many');
+                $this->addEmbedMapping($metadata, $embed, 'many');
             }
         }
         if (isset($xmlRoot->{'reference-many'})) {
             foreach ($xmlRoot->{'reference-many'} as $reference) {
-                $this->addReferenceMapping($class, $reference, 'many');
+                $this->addReferenceMapping($metadata, $reference, 'many');
             }
         }
         if (isset($xmlRoot->{'reference-one'})) {
             foreach ($xmlRoot->{'reference-one'} as $reference) {
-                $this->addReferenceMapping($class, $reference, 'one');
+                $this->addReferenceMapping($metadata, $reference, 'one');
             }
         }
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $class->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\Events::' . (string) $lifecycleCallback['type']));
+                $metadata->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\Events::' . (string) $lifecycleCallback['type']));
             }
         }
         if (! isset($xmlRoot->{'also-load-methods'})) {
@@ -287,7 +287,7 @@ class XmlDriver extends FileDriver
         }
 
         foreach ($xmlRoot->{'also-load-methods'}->{'also-load-method'} as $alsoLoadMethod) {
-            $class->registerAlsoLoadMethod((string) $alsoLoadMethod['method'], (string) $alsoLoadMethod['field']);
+            $metadata->registerAlsoLoadMethod((string) $alsoLoadMethod['method'], (string) $alsoLoadMethod['field']);
         }
     }
 
