@@ -44,7 +44,8 @@
         "phpbench/phpbench": "^0.13.0",
         "phpstan/phpstan": "^0.12.32",
         "phpunit/phpunit": "^8.2",
-        "squizlabs/php_codesniffer": "^3.5, <3.5.5"
+        "squizlabs/php_codesniffer": "^3.5, <3.5.5",
+        "vimeo/psalm": "^4.2.1"
     },
     "suggest": {
         "ext-bcmath": "Decimal128 type support"
