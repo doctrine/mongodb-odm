@@ -463,7 +463,7 @@ trait PersistentCollectionTrait
      */
     public function set($key, $value)
     {
-        return $this->doSet($key, $value, false);
+        $this->doSet($key, $value, false);
     }
 
     /**
@@ -624,7 +624,9 @@ trait PersistentCollectionTrait
     public function offsetSet($offset, $value)
     {
         if (! isset($offset)) {
-            return $this->doAdd($value, true);
+            $this->doAdd($value, true);
+
+            return;
         }
 
         $this->doSet($offset, $value, true);
@@ -698,7 +700,7 @@ trait PersistentCollectionTrait
      * @param mixed $value
      * @param bool  $arrayAccess
      *
-     * @return bool
+     * @return true
      */
     private function doAdd($value, $arrayAccess)
     {
