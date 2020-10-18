@@ -63,11 +63,6 @@ jobs:
       script:
         - vendor/bin/phpstan analyse
 
-    - stage: Code Quality
-      php: 7.2
-      script:
-        - vendor/bin/phpcs
-
     # Performance tests
     - stage: Performance
       php: 7.3
