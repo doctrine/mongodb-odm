@@ -43,4 +43,4 @@ jobs:
         run: "composer install --no-interaction --no-progress --no-suggest"
 
       - name: "Run a static analysis with phpstan/phpstan"
-        run: "vendor/bin/phpstan analyse"
+        run: "vendor/bin/phpstan analyse --error-format=github"

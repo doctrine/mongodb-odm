@@ -226,6 +226,8 @@ final class ReferencePrimer
 
             return ['fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping];
         }
+
+        throw new LogicException('Unable to parse property path for ReferencePrimer. Please report an issue in Doctrine\'s MongoDB ODM.');
     }
 
     /**
