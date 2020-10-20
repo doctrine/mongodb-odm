@@ -134,7 +134,7 @@ class Builder
      * You can create a new expression using the {@link Builder::expr()} method.
      *
      * @see Expr::addAnd()
-     * @see http://docs.mongodb.org/manual/reference/operator/and/
+     * @see https://docs.mongodb.com/manual/reference/operator/and/
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
@@ -152,7 +152,7 @@ class Builder
      * You can create a new expression using the {@link Builder::expr()} method.
      *
      * @see Expr::addNor()
-     * @see http://docs.mongodb.org/manual/reference/operator/nor/
+     * @see https://docs.mongodb.com/manual/reference/operator/nor/
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
@@ -170,7 +170,7 @@ class Builder
      * You can create a new expression using the {@link Builder::expr()} method.
      *
      * @see Expr::addOr()
-     * @see http://docs.mongodb.org/manual/reference/operator/or/
+     * @see https://docs.mongodb.com/manual/reference/operator/or/
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
@@ -194,8 +194,8 @@ class Builder
      * {@link Expr::each()}.
      *
      * @see Expr::addToSet()
-     * @see http://docs.mongodb.org/manual/reference/operator/addToSet/
-     * @see http://docs.mongodb.org/manual/reference/operator/each/
+     * @see https://docs.mongodb.com/manual/reference/operator/addToSet/
+     * @see https://docs.mongodb.com/manual/reference/operator/each/
      *
      * @param mixed|Expr $valueOrExpression
      */
@@ -210,7 +210,7 @@ class Builder
      * Specify $all criteria for the current field.
      *
      * @see Expr::all()
-     * @see http://docs.mongodb.org/manual/reference/operator/all/
+     * @see https://docs.mongodb.com/manual/reference/operator/all/
      */
     public function all(array $values) : self
     {
@@ -223,7 +223,7 @@ class Builder
      * Apply a bitwise and operation on the current field.
      *
      * @see Expr::bitAnd()
-     * @see http://docs.mongodb.org/manual/reference/operator/update/bit/
+     * @see https://docs.mongodb.com/manual/reference/operator/update/bit/
      *
      * @return $this
      */
@@ -238,7 +238,7 @@ class Builder
      * Apply a bitwise or operation on the current field.
      *
      * @see Expr::bitOr()
-     * @see http://docs.mongodb.org/manual/reference/operator/update/bit/
+     * @see https://docs.mongodb.com/manual/reference/operator/update/bit/
      */
     public function bitOr(int $value) : self
     {
@@ -252,7 +252,7 @@ class Builder
      * clear.
      *
      * @see Expr::bitsAllClear()
-     * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllClear/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAllClear/
      *
      * @param int|array|Binary $value
      */
@@ -268,7 +268,7 @@ class Builder
      * set.
      *
      * @see Expr::bitsAllSet()
-     * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAllSet/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAllSet/
      *
      * @param int|array|Binary $value
      */
@@ -284,7 +284,7 @@ class Builder
      * clear.
      *
      * @see Expr::bitsAnyClear()
-     * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnyClear/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAnyClear/
      *
      * @param int|array|Binary $value
      */
@@ -300,7 +300,7 @@ class Builder
      * set.
      *
      * @see Expr::bitsAnySet()
-     * @see https://docs.mongodb.org/manual/reference/operator/query/bitsAnySet/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAnySet/
      *
      * @param int|array|Binary $value
      */
@@ -315,7 +315,7 @@ class Builder
      * Apply a bitwise xor operation on the current field.
      *
      * @see Expr::bitXor()
-     * @see http://docs.mongodb.org/manual/reference/operator/update/bit/
+     * @see https://docs.mongodb.com/manual/reference/operator/update/bit/
      */
     public function bitXor(int $value) : self
     {
@@ -331,7 +331,7 @@ class Builder
      * This method must be called after text().
      *
      * @see Expr::caseSensitive()
-     * @see http://docs.mongodb.org/manual/reference/operator/text/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/text/
      *
      * @throws BadMethodCallException If the query does not already have $text criteria.
      */
@@ -346,7 +346,7 @@ class Builder
      * Associates a comment to any expression taking a query predicate.
      *
      * @see Expr::comment()
-     * @see http://docs.mongodb.org/manual/reference/operator/query/comment/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/comment/
      */
     public function comment(string $comment) : self
     {
@@ -369,7 +369,7 @@ class Builder
      * Sets the value of the current field to the current date, either as a date or a timestamp.
      *
      * @see Expr::currentDate()
-     * @see http://docs.mongodb.org/manual/reference/operator/currentDate/
+     * @see https://docs.mongodb.com/manual/reference/operator/update/currentDate/
      */
     public function currentDate(string $type = 'date') : self
     {
@@ -399,7 +399,7 @@ class Builder
      * This method must be called after text().
      *
      * @see Builder::diacriticSensitive()
-     * @see http://docs.mongodb.org/manual/reference/operator/text/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/text/
      *
      * @throws BadMethodCallException If the query does not already have $text criteria.
      */
@@ -413,7 +413,7 @@ class Builder
     /**
      * Change the query type to a distinct command.
      *
-     * @see http://docs.mongodb.org/manual/reference/command/distinct/
+     * @see https://docs.mongodb.com/manual/reference/command/distinct/
      */
     public function distinct(string $field) : self
     {
@@ -429,7 +429,7 @@ class Builder
      * You can create a new expression using the {@link Builder::expr()} method.
      *
      * @see Expr::elemMatch()
-     * @see http://docs.mongodb.org/manual/reference/operator/elemMatch/
+     * @see https://docs.mongodb.com/manual/reference/operator/elemMatch/
      *
      * @param array|Expr $expression
      */
@@ -481,7 +481,7 @@ class Builder
      * Specify $exists criteria for the current field.
      *
      * @see Expr::exists()
-     * @see http://docs.mongodb.org/manual/reference/operator/exists/
+     * @see https://docs.mongodb.com/manual/reference/operator/exists/
      */
     public function exists(bool $bool) : self
     {
@@ -546,7 +546,7 @@ class Builder
      * geometry's JSON representation.
      *
      * @see Expr::geoIntersects()
-     * @see http://docs.mongodb.org/manual/reference/operator/geoIntersects/
+     * @see https://docs.mongodb.com/manual/reference/operator/geoIntersects/
      *
      * @param array|Geometry $geometry
      */
@@ -564,7 +564,7 @@ class Builder
      * geometry's JSON representation.
      *
      * @see Expr::geoWithin()
-     * @see http://docs.mongodb.org/manual/reference/operator/geoWithin/
+     * @see https://docs.mongodb.com/manual/reference/operator/geoWithin/
      *
      * @param array|Geometry $geometry
      */
@@ -585,7 +585,7 @@ class Builder
      * indexes. This cannot be used with 2dsphere indexes and GeoJSON shapes.
      *
      * @see Expr::geoWithinBox()
-     * @see http://docs.mongodb.org/manual/reference/operator/box/
+     * @see https://docs.mongodb.com/manual/reference/operator/box/
      */
     public function geoWithinBox(float $x1, float $y1, float $x2, float $y2) : self
     {
@@ -601,7 +601,7 @@ class Builder
      * indexes. This cannot be used with 2dsphere indexes and GeoJSON shapes.
      *
      * @see Expr::geoWithinCenter()
-     * @see http://docs.mongodb.org/manual/reference/operator/center/
+     * @see https://docs.mongodb.com/manual/reference/operator/center/
      */
     public function geoWithinCenter(float $x, float $y, float $radius) : self
     {
@@ -616,7 +616,7 @@ class Builder
      * Note: the $centerSphere operator supports both 2d and 2dsphere indexes.
      *
      * @see Expr::geoWithinCenterSphere()
-     * @see http://docs.mongodb.org/manual/reference/operator/centerSphere/
+     * @see https://docs.mongodb.com/manual/reference/operator/centerSphere/
      */
     public function geoWithinCenterSphere(float $x, float $y, float $radius) : self
     {
@@ -637,7 +637,7 @@ class Builder
      * indexes. This cannot be used with 2dsphere indexes and GeoJSON shapes.
      *
      * @see Expr::geoWithinPolygon()
-     * @see http://docs.mongodb.org/manual/reference/operator/polygon/
+     * @see https://docs.mongodb.com/manual/reference/operator/polygon/
      *
      * @param array $point1    First point of the polygon
      * @param array $point2    Second point of the polygon
@@ -743,7 +743,7 @@ class Builder
      * Specify $gt criteria for the current field.
      *
      * @see Expr::gt()
-     * @see http://docs.mongodb.org/manual/reference/operator/gt/
+     * @see https://docs.mongodb.com/manual/reference/operator/gt/
      *
      * @param mixed $value
      */
@@ -758,7 +758,7 @@ class Builder
      * Specify $gte criteria for the current field.
      *
      * @see Expr::gte()
-     * @see http://docs.mongodb.org/manual/reference/operator/gte/
+     * @see https://docs.mongodb.com/manual/reference/operator/gte/
      *
      * @param mixed $value
      */
@@ -802,7 +802,7 @@ class Builder
      * Specify $in criteria for the current field.
      *
      * @see Expr::in()
-     * @see http://docs.mongodb.org/manual/reference/operator/in/
+     * @see https://docs.mongodb.com/manual/reference/operator/in/
      */
     public function in(array $values) : self
     {
@@ -817,7 +817,7 @@ class Builder
      * If the field does not exist, it will be set to this value.
      *
      * @see Expr::inc()
-     * @see http://docs.mongodb.org/manual/reference/operator/inc/
+     * @see https://docs.mongodb.com/manual/reference/operator/inc/
      *
      * @param float|int $value
      */
@@ -849,7 +849,7 @@ class Builder
      * This method must be called after text().
      *
      * @see Expr::language()
-     * @see http://docs.mongodb.org/manual/reference/operator/text/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/text/
      */
     public function language(string $language) : self
     {
@@ -876,7 +876,7 @@ class Builder
      * Specify $lt criteria for the current field.
      *
      * @see Expr::lte()
-     * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     * @see https://docs.mongodb.com/manual/reference/operator/lte/
      *
      * @param mixed $value
      */
@@ -891,7 +891,7 @@ class Builder
      * Specify $lte criteria for the current field.
      *
      * @see Expr::lte()
-     * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     * @see https://docs.mongodb.com/manual/reference/operator/lte/
      *
      * @param mixed $value
      */
@@ -906,7 +906,7 @@ class Builder
      * Updates the value of the field to a specified value if the specified value is greater than the current value of the field.
      *
      * @see Expr::max()
-     * @see http://docs.mongodb.org/manual/reference/operator/update/max/
+     * @see https://docs.mongodb.com/manual/reference/operator/update/max/
      *
      * @param mixed $value
      */
@@ -931,7 +931,7 @@ class Builder
      * Updates the value of the field to a specified value if the specified value is less than the current value of the field.
      *
      * @see Expr::min()
-     * @see http://docs.mongodb.org/manual/reference/operator/update/min/
+     * @see https://docs.mongodb.com/manual/reference/operator/update/min/
      *
      * @param mixed $value
      */
@@ -946,7 +946,7 @@ class Builder
      * Specify $mod criteria for the current field.
      *
      * @see Expr::mod()
-     * @see http://docs.mongodb.org/manual/reference/operator/mod/
+     * @see https://docs.mongodb.com/manual/reference/operator/mod/
      *
      * @param float|int $divisor
      * @param float|int $remainder
@@ -964,7 +964,7 @@ class Builder
      * If the field does not exist, it will be set to 0.
      *
      * @see Expr::mul()
-     * @see http://docs.mongodb.org/manual/reference/operator/mul/
+     * @see https://docs.mongodb.com/manual/reference/operator/update/mul/
      *
      * @param float|int $value
      */
@@ -983,7 +983,7 @@ class Builder
      * an array corresponding to the point's JSON representation.
      *
      * @see Expr::near()
-     * @see http://docs.mongodb.org/manual/reference/operator/near/
+     * @see https://docs.mongodb.com/manual/reference/operator/near/
      *
      * @param float|array|Point $x
      * @param float             $y
@@ -1003,7 +1003,7 @@ class Builder
      * an array corresponding to the point's JSON representation.
      *
      * @see Expr::nearSphere()
-     * @see http://docs.mongodb.org/manual/reference/operator/nearSphere/
+     * @see https://docs.mongodb.com/manual/reference/operator/nearSphere/
      *
      * @param float|array|Point $x
      * @param float             $y
@@ -1021,7 +1021,7 @@ class Builder
      * You can create a new expression using the {@link Builder::expr()} method.
      *
      * @see Expr::not()
-     * @see http://docs.mongodb.org/manual/reference/operator/not/
+     * @see https://docs.mongodb.com/manual/reference/operator/not/
      *
      * @param array|Expr $expression
      */
@@ -1036,7 +1036,7 @@ class Builder
      * Specify $ne criteria for the current field.
      *
      * @see Expr::notEqual()
-     * @see http://docs.mongodb.org/manual/reference/operator/ne/
+     * @see https://docs.mongodb.com/manual/reference/operator/ne/
      *
      * @param mixed $value
      */
@@ -1051,7 +1051,7 @@ class Builder
      * Specify $nin criteria for the current field.
      *
      * @see Expr::notIn()
-     * @see http://docs.mongodb.org/manual/reference/operator/nin/
+     * @see https://docs.mongodb.com/manual/reference/operator/nin/
      *
      * @param array $values
      */
@@ -1066,7 +1066,7 @@ class Builder
      * Remove the first element from the current array field.
      *
      * @see Expr::popFirst()
-     * @see http://docs.mongodb.org/manual/reference/operator/pop/
+     * @see https://docs.mongodb.com/manual/reference/operator/pop/
      */
     public function popFirst() : self
     {
@@ -1079,7 +1079,7 @@ class Builder
      * Remove the last element from the current array field.
      *
      * @see Expr::popLast()
-     * @see http://docs.mongodb.org/manual/reference/operator/pop/
+     * @see https://docs.mongodb.com/manual/reference/operator/pop/
      */
     public function popLast() : self
     {
@@ -1128,7 +1128,7 @@ class Builder
      * current array field.
      *
      * @see Expr::pull()
-     * @see http://docs.mongodb.org/manual/reference/operator/pull/
+     * @see https://docs.mongodb.com/manual/reference/operator/pull/
      *
      * @param mixed|Expr $valueOrExpression
      */
@@ -1144,7 +1144,7 @@ class Builder
      * array field.
      *
      * @see Expr::pullAll()
-     * @see http://docs.mongodb.org/manual/reference/operator/pullAll/
+     * @see https://docs.mongodb.com/manual/reference/operator/pullAll/
      */
     public function pullAll(array $values) : self
     {
@@ -1165,10 +1165,10 @@ class Builder
      * also be used to limit and order array elements, respectively.
      *
      * @see Expr::push()
-     * @see http://docs.mongodb.org/manual/reference/operator/push/
-     * @see http://docs.mongodb.org/manual/reference/operator/each/
-     * @see http://docs.mongodb.org/manual/reference/operator/slice/
-     * @see http://docs.mongodb.org/manual/reference/operator/sort/
+     * @see https://docs.mongodb.com/manual/reference/operator/push/
+     * @see https://docs.mongodb.com/manual/reference/operator/each/
+     * @see https://docs.mongodb.com/manual/reference/operator/slice/
+     * @see https://docs.mongodb.com/manual/reference/operator/sort/
      *
      * @param mixed|Expr $valueOrExpression
      */
@@ -1230,7 +1230,7 @@ class Builder
      * Rename the current field.
      *
      * @see Expr::rename()
-     * @see http://docs.mongodb.org/manual/reference/operator/rename/
+     * @see https://docs.mongodb.com/manual/reference/operator/rename/
      */
     public function rename(string $name) : self
     {
@@ -1271,7 +1271,7 @@ class Builder
      * Select only matching embedded documents in an array field for the query
      * projection.
      *
-     * @see http://docs.mongodb.org/manual/reference/projection/elemMatch/
+     * @see https://docs.mongodb.com/manual/reference/projection/elemMatch/
      *
      * @param array|Expr $expression
      */
@@ -1288,7 +1288,7 @@ class Builder
     /**
      * Select a metadata field for the query projection.
      *
-     * @see http://docs.mongodb.org/master/reference/operator/projection/meta/
+     * @see https://docs.mongodb.com/manual/reference/operator/projection/meta/
      */
     public function selectMeta(string $fieldName, string $metaDataKeyword) : self
     {
@@ -1304,7 +1304,7 @@ class Builder
      * whether or not $limit is provided. See the MongoDB documentation for more
      * information.
      *
-     * @see http://docs.mongodb.org/manual/reference/projection/slice/
+     * @see https://docs.mongodb.com/manual/reference/projection/slice/
      */
     public function selectSlice(string $fieldName, int $countOrSkip, ?int $limit = null) : self
     {
@@ -1325,7 +1325,7 @@ class Builder
      * whether or not a $set operator is used.
      *
      * @see Expr::set()
-     * @see http://docs.mongodb.org/manual/reference/operator/set/
+     * @see https://docs.mongodb.com/manual/reference/operator/set/
      *
      * @param mixed $value
      */
@@ -1358,7 +1358,7 @@ class Builder
      * $setOnInsert does nothing.
      *
      * @see Expr::setOnInsert()
-     * @see https://docs.mongodb.org/manual/reference/operator/update/setOnInsert/
+     * @see https://docs.mongodb.com/manual/reference/operator/update/setOnInsert/
      *
      * @param mixed $value
      */
@@ -1374,7 +1374,7 @@ class Builder
      *
      * This is only relevant for read-only queries and commands.
      *
-     * @see http://docs.mongodb.org/manual/core/read-preference/
+     * @see https://docs.mongodb.com/manual/core/read-preference/
      */
     public function setReadPreference(ReadPreference $readPreference) : self
     {
@@ -1406,7 +1406,7 @@ class Builder
      * Specify $size criteria for the current field.
      *
      * @see Expr::size()
-     * @see http://docs.mongodb.org/manual/reference/operator/size/
+     * @see https://docs.mongodb.com/manual/reference/operator/size/
      */
     public function size(int $size) : self
     {
@@ -1475,7 +1475,7 @@ class Builder
      * projection document. This method will call {@link Builder::selectMeta()}
      * if the field is not already set in the projection.
      *
-     * @see http://docs.mongodb.org/master/reference/operator/projection/meta/#sort
+     * @see https://docs.mongodb.com/manual/reference/operator/projection/meta/#sort
      */
     public function sortMeta(string $fieldName, string $metaDataKeyword) : self
     {
@@ -1498,7 +1498,7 @@ class Builder
      * The $language option may be set with {@link Builder::language()}.
      *
      * @see Expr::text()
-     * @see http://docs.mongodb.org/master/reference/operator/query/text/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/text/
      */
     public function text(string $search) : self
     {
@@ -1511,7 +1511,7 @@ class Builder
      * Specify $type criteria for the current field.
      *
      * @see Expr::type()
-     * @see http://docs.mongodb.org/manual/reference/operator/type/
+     * @see https://docs.mongodb.com/manual/reference/operator/type/
      *
      * @param int|string $type
      */
@@ -1528,7 +1528,7 @@ class Builder
      * The field will be removed from the document (not set to null).
      *
      * @see Expr::unsetField()
-     * @see http://docs.mongodb.org/manual/reference/operator/unset/
+     * @see https://docs.mongodb.com/manual/reference/operator/unset/
      */
     public function unsetField() : self
     {
@@ -1569,7 +1569,7 @@ class Builder
      * Specify a JavaScript expression to use for matching documents.
      *
      * @see Expr::where()
-     * @see http://docs.mongodb.org/manual/reference/operator/where/
+     * @see https://docs.mongodb.com/manual/reference/operator/where/
      *
      * @param string|Javascript $javascript
      */

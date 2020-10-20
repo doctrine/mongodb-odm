@@ -138,7 +138,7 @@ class Builder
      * $collStats must be the first stage in an aggregation pipeline, or else
      * the pipeline returns an error.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/collStats/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/collStats/
      */
     public function collStats() : Stage\CollStats
     {
@@ -207,7 +207,7 @@ class Builder
      *
      * You can only use this as the first stage of a pipeline.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/geoNear/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/
      *
      * @param float|array|Point $x
      * @param float             $y
@@ -308,7 +308,7 @@ class Builder
      * Performs a recursive search on a collection, with options for restricting
      * the search by recursion depth and query filter.
      *
-     * @see https://docs.mongodb.org/manual/reference/operator/aggregation/graphLookup/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/graphLookup/
      *
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
@@ -325,7 +325,7 @@ class Builder
      * Groups documents by some specified expression and outputs to the next
      * stage a document for each distinct grouping.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/group/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/group/
      */
     public function group() : Stage\Group
     {
@@ -348,7 +348,7 @@ class Builder
     /**
      * Returns statistics regarding the use of each index for the collection.
      *
-     * @see https://docs.mongodb.org/manual/reference/operator/aggregation/indexStats/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexStats/
      */
     public function indexStats() : Stage\IndexStats
     {
@@ -361,7 +361,7 @@ class Builder
     /**
      * Limits the number of documents passed to the next stage in the pipeline.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/limit/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/limit/
      */
     public function limit(int $limit) : Stage\Limit
     {
@@ -376,7 +376,7 @@ class Builder
      * database to filter in documents from the “joined” collection for
      * processing.
      *
-     * @see https://docs.mongodb.org/manual/reference/operator/aggregation/lookup/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/
      */
     public function lookup(string $from) : Stage\Lookup
     {
@@ -390,7 +390,7 @@ class Builder
      * Filters the documents to pass only the documents that match the specified
      * condition(s) to the next pipeline stage.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/match/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/match/
      */
     public function match() : Stage\Match
     {
@@ -415,7 +415,7 @@ class Builder
      * Takes the documents returned by the aggregation pipeline and writes them
      * to a specified collection. This must be the last stage in the pipeline.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/out/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/out/
      */
     public function out(string $from) : Stage\Out
     {
@@ -430,7 +430,7 @@ class Builder
      * stage in the pipeline. The specified fields can be existing fields from
      * the input documents or newly computed fields.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/project/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/project/
      */
     public function project() : Stage\Project
     {
@@ -444,7 +444,7 @@ class Builder
      * Restricts the contents of the documents based on information stored in
      * the documents themselves.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/redact/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/redact/
      */
     public function redact() : Stage\Redact
     {
@@ -486,7 +486,7 @@ class Builder
     /**
      * Randomly selects the specified number of documents from its input.
      *
-     * @see https://docs.mongodb.org/manual/reference/operator/aggregation/sample/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sample/
      */
     public function sample(int $size) : Stage\Sample
     {
@@ -500,7 +500,7 @@ class Builder
      * Skips over the specified number of documents that pass into the stage and
      * passes the remaining documents to the next stage in the pipeline.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/skip/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/skip/
      */
     public function skip(int $skip) : Stage\Skip
     {
@@ -517,7 +517,7 @@ class Builder
      * If sorting by multiple fields, the first argument should be an array of
      * field name (key) and order (value) pairs.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sort/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
      *
      * @param array|string $fieldName Field name or array of field/order pairs
      * @param int|string   $order     Field order (if one field is specified)
@@ -536,7 +536,7 @@ class Builder
      * Groups incoming documents based on the value of a specified expression,
      * then computes the count of documents in each distinct group.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sortByCount/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/
      */
     public function sortByCount(string $expression) : Stage\SortByCount
     {
@@ -551,7 +551,7 @@ class Builder
      * for each element. Each output document is the input document with the
      * value of the array field replaced by the element.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/unwind/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/
      */
     public function unwind(string $fieldName) : Stage\Unwind
     {

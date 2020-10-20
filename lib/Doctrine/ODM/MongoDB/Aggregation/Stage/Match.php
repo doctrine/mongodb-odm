@@ -43,7 +43,7 @@ class Match extends Stage
      * method.
      *
      * @see Expr::addAnd()
-     * @see http://docs.mongodb.org/manual/reference/operator/and/
+     * @see https://docs.mongodb.com/manual/reference/operator/and/
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
@@ -62,7 +62,7 @@ class Match extends Stage
      * method.
      *
      * @see Expr::addNor()
-     * @see http://docs.mongodb.org/manual/reference/operator/nor/
+     * @see https://docs.mongodb.com/manual/reference/operator/nor/
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
@@ -81,7 +81,7 @@ class Match extends Stage
      * method.
      *
      * @see Expr::addOr()
-     * @see http://docs.mongodb.org/manual/reference/operator/or/
+     * @see https://docs.mongodb.com/manual/reference/operator/or/
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
@@ -97,7 +97,7 @@ class Match extends Stage
      * Specify $all criteria for the current field.
      *
      * @see Expr::all()
-     * @see http://docs.mongodb.org/manual/reference/operator/all/
+     * @see https://docs.mongodb.com/manual/reference/operator/all/
      */
     public function all(array $values) : self
     {
@@ -113,7 +113,7 @@ class Match extends Stage
      * method.
      *
      * @see Expr::elemMatch()
-     * @see http://docs.mongodb.org/manual/reference/operator/elemMatch/
+     * @see https://docs.mongodb.com/manual/reference/operator/elemMatch/
      *
      * @param array|Expr $expression
      */
@@ -142,7 +142,7 @@ class Match extends Stage
      * Specify $exists criteria for the current field.
      *
      * @see Expr::exists()
-     * @see http://docs.mongodb.org/manual/reference/operator/exists/
+     * @see https://docs.mongodb.com/manual/reference/operator/exists/
      */
     public function exists(bool $bool) : self
     {
@@ -179,7 +179,7 @@ class Match extends Stage
      * geometry's JSON representation.
      *
      * @see Expr::geoIntersects()
-     * @see http://docs.mongodb.org/manual/reference/operator/geoIntersects/
+     * @see https://docs.mongodb.com/manual/reference/operator/geoIntersects/
      *
      * @param array|Geometry $geometry
      */
@@ -197,7 +197,7 @@ class Match extends Stage
      * geometry's JSON representation.
      *
      * @see Expr::geoWithin()
-     * @see http://docs.mongodb.org/manual/reference/operator/geoWithin/
+     * @see https://docs.mongodb.com/manual/reference/operator/geoWithin/
      */
     public function geoWithin(Geometry $geometry) : self
     {
@@ -216,7 +216,7 @@ class Match extends Stage
      * indexes. This cannot be used with 2dsphere indexes and GeoJSON shapes.
      *
      * @see Expr::geoWithinBox()
-     * @see http://docs.mongodb.org/manual/reference/operator/box/
+     * @see https://docs.mongodb.com/manual/reference/operator/box/
      */
     public function geoWithinBox(float $x1, float $y1, float $x2, float $y2) : self
     {
@@ -232,7 +232,7 @@ class Match extends Stage
      * indexes. This cannot be used with 2dsphere indexes and GeoJSON shapes.
      *
      * @see Expr::geoWithinCenter()
-     * @see http://docs.mongodb.org/manual/reference/operator/center/
+     * @see https://docs.mongodb.com/manual/reference/operator/center/
      */
     public function geoWithinCenter(float $x, float $y, float $radius) : self
     {
@@ -247,7 +247,7 @@ class Match extends Stage
      * Note: the $centerSphere operator supports both 2d and 2dsphere indexes.
      *
      * @see Expr::geoWithinCenterSphere()
-     * @see http://docs.mongodb.org/manual/reference/operator/centerSphere/
+     * @see https://docs.mongodb.com/manual/reference/operator/centerSphere/
      */
     public function geoWithinCenterSphere(float $x, float $y, float $radius) : self
     {
@@ -268,7 +268,7 @@ class Match extends Stage
      * indexes. This cannot be used with 2dsphere indexes and GeoJSON shapes.
      *
      * @see Expr::geoWithinPolygon()
-     * @see http://docs.mongodb.org/manual/reference/operator/polygon/
+     * @see https://docs.mongodb.com/manual/reference/operator/polygon/
      *
      * @param array $point1    First point of the polygon
      * @param array $point2    Second point of the polygon
@@ -296,7 +296,7 @@ class Match extends Stage
      * Specify $gt criteria for the current field.
      *
      * @see Expr::gt()
-     * @see http://docs.mongodb.org/manual/reference/operator/gt/
+     * @see https://docs.mongodb.com/manual/reference/operator/gt/
      *
      * @param mixed $value
      */
@@ -311,7 +311,7 @@ class Match extends Stage
      * Specify $gte criteria for the current field.
      *
      * @see Expr::gte()
-     * @see http://docs.mongodb.org/manual/reference/operator/gte/
+     * @see https://docs.mongodb.com/manual/reference/operator/gte/
      *
      * @param mixed $value
      */
@@ -326,7 +326,7 @@ class Match extends Stage
      * Specify $in criteria for the current field.
      *
      * @see Expr::in()
-     * @see http://docs.mongodb.org/manual/reference/operator/in/
+     * @see https://docs.mongodb.com/manual/reference/operator/in/
      */
     public function in(array $values) : self
     {
@@ -348,7 +348,7 @@ class Match extends Stage
      * This method must be called after text().
      *
      * @see Expr::language()
-     * @see http://docs.mongodb.org/manual/reference/operator/text/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/text/
      */
     public function language(string $language) : self
     {
@@ -361,7 +361,7 @@ class Match extends Stage
      * Specify $lt criteria for the current field.
      *
      * @see Expr::lte()
-     * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     * @see https://docs.mongodb.com/manual/reference/operator/lte/
      *
      * @param mixed $value
      */
@@ -376,7 +376,7 @@ class Match extends Stage
      * Specify $lte criteria for the current field.
      *
      * @see Expr::lte()
-     * @see http://docs.mongodb.org/manual/reference/operator/lte/
+     * @see https://docs.mongodb.com/manual/reference/operator/lte/
      *
      * @param mixed $value
      */
@@ -391,7 +391,7 @@ class Match extends Stage
      * Specify $mod criteria for the current field.
      *
      * @see Expr::mod()
-     * @see http://docs.mongodb.org/manual/reference/operator/mod/
+     * @see https://docs.mongodb.com/manual/reference/operator/mod/
      *
      * @param float|int $divisor
      * @param float|int $remainder
@@ -410,7 +410,7 @@ class Match extends Stage
      * method.
      *
      * @see Expr::not()
-     * @see http://docs.mongodb.org/manual/reference/operator/not/
+     * @see https://docs.mongodb.com/manual/reference/operator/not/
      *
      * @param array|Expr $expression
      */
@@ -425,7 +425,7 @@ class Match extends Stage
      * Specify $ne criteria for the current field.
      *
      * @see Expr::notEqual()
-     * @see http://docs.mongodb.org/manual/reference/operator/ne/
+     * @see https://docs.mongodb.com/manual/reference/operator/ne/
      *
      * @param mixed $value
      */
@@ -440,7 +440,7 @@ class Match extends Stage
      * Specify $nin criteria for the current field.
      *
      * @see Expr::notIn()
-     * @see http://docs.mongodb.org/manual/reference/operator/nin/
+     * @see https://docs.mongodb.com/manual/reference/operator/nin/
      */
     public function notIn(array $values) : self
     {
@@ -478,7 +478,7 @@ class Match extends Stage
      * Specify $size criteria for the current field.
      *
      * @see Expr::size()
-     * @see http://docs.mongodb.org/manual/reference/operator/size/
+     * @see https://docs.mongodb.com/manual/reference/operator/size/
      */
     public function size(int $size) : self
     {
@@ -495,7 +495,7 @@ class Match extends Stage
      * You can only use this in the first $match stage of a pipeline.
      *
      * @see Expr::text()
-     * @see http://docs.mongodb.org/master/reference/operator/query/text/
+     * @see https://docs.mongodb.com/manual/reference/operator/query/text/
      */
     public function text(string $search) : self
     {
@@ -508,7 +508,7 @@ class Match extends Stage
      * Specify $type criteria for the current field.
      *
      * @see Expr::type()
-     * @see http://docs.mongodb.org/manual/reference/operator/type/
+     * @see https://docs.mongodb.com/manual/reference/operator/type/
      *
      * @param int|string $type
      */

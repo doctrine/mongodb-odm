@@ -194,7 +194,7 @@ class IdTest extends BaseTest
         /* MongoDB allows comparisons between different numeric types, so we
          * cannot test integer and floating point values (e.g. 123 and 123.0).
          *
-         * See: http://docs.mongodb.org/manual/faq/developers/#what-is-the-compare-order-for-bson-types
+         * See: https://docs.mongodb.com/manual/faq/developers/#what-is-the-compare-order-for-bson-types
          */
         return [
             ['123', 123],
