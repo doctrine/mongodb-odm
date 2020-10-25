@@ -9,6 +9,7 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
@@ -204,8 +205,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         // Set shard key after all fields to ensure we mapped all its keys
-        if (isset($classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey'])) {
-            $this->setShardKey($class, $classAnnotations['Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey']);
+        if (isset($classAnnotations[ShardKey::class])) {
+            assert($classAnnotations[ShardKey::class] instanceof ShardKey);
+            $this->setShardKey($class, $classAnnotations[ShardKey::class]);
         }
 
         /** @var ReflectionMethod $method */
