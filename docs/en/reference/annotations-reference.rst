@@ -154,7 +154,8 @@ Optional attributes:
 -
    ``repositoryClass`` - Specifies a custom repository class to use.
 -
-   ``indexes`` - Specifies an array of indexes for this document.
+   ``indexes`` - Specifies an array of indexes for this document (deprecated,
+   specify all ``@Index`` annotations on a class level).
 -
    ``readOnly`` - Prevents document from being updated: it can only be inserted,
    upserted or removed.
@@ -340,7 +341,8 @@ Optional attributes:
 
 -
    ``indexes`` - Specifies an array of indexes for this embedded document, to be
-   included in the schemas of any embedding documents.
+   included in the schemas of any embedding documents (deprecated, specify all
+   ``@Index`` annotations on a class level).
 
 @Field
 ------
@@ -409,7 +411,8 @@ Optional attributes:
    must extend the ``Doctrine\ODM\MongoDB\Repository\GridFSRepository``
    interface.
 -
-   ``indexes`` - Specifies an array of indexes for this document.
+   ``indexes`` - Specifies an array of indexes for this document (deprecated,
+   specify all ``@Index`` annotations on a class level).
 -
    ``readOnly`` - Prevents the file from being updated: it can only be inserted,
    upserted or removed.
@@ -512,8 +515,7 @@ customize this via the :ref:`strategy <basic_mapping_identifiers>` attribute.
 @Index
 ------
 
-This annotation is used inside of the class-level `@Document`_ or
-`@EmbeddedDocument`_ annotations to specify indexes to be created on the
+This annotation is used  to specify indexes to be created on the
 collection (or embedding document's collection in the case of
 `@EmbeddedDocument`_). It may also be used at the property-level to define
 single-field indexes.
@@ -539,11 +541,8 @@ ODM allows mapped field names (i.e. PHP property names) to be used when defining
     <?php
 
     /**
-     * @Document(
-     *   indexes={
-     *     @Index(keys={"username"="desc"}, options={"unique"=true})
-     *   }
-     * )
+     * @Document
+     * @Index(keys={"username"="desc"}, options={"unique"=true})
      */
     class User
     {
@@ -572,9 +571,13 @@ If you are creating a single-field index, you can simply specify an `@Index`_ or
 @Indexes
 --------
 
+.. note::
+    The ``@Indexes`` annotation was deprecated in 2.2 and will be removed in 3.0.
+    Please move all nested ``@Index`` annotations to a class level.
+
 This annotation may be used at the class level to specify an array of `@Index`_
-annotations. It is functionally equivalent to using the ``indexes`` option for
-the `@Document`_ or `@EmbeddedDocument`_ annotations.
+annotations. It is functionally equivalent to specifying multiple ``@Index``
+annotations on a class level.
 
 .. code-block:: php
 

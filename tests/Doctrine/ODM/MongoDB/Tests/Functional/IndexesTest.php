@@ -79,6 +79,28 @@ class IndexesTest extends BaseTest
         $this->assertEquals(1, $indexes[0]['keys']['type']);
     }
 
+    public function testMultipleIndexAnnotations()
+    {
+        $class   = $this->dm->getClassMetadata(DocumentWithMultipleIndexAnnotations::class);
+        $sm      = $this->dm->getSchemaManager();
+        $indexes = $sm->getDocumentIndexes($class->name);
+
+        $this->assertCount(3, $indexes);
+
+        $this->assertTrue(isset($indexes[0]['keys']['name']));
+        $this->assertEquals(1, $indexes[0]['keys']['name']);
+
+        $this->assertTrue(isset($indexes[1]['keys']['name']));
+        $this->assertEquals(-1, $indexes[1]['keys']['name']);
+
+        $this->assertTrue(isset($indexes[2]['keys']['name']));
+        $this->assertEquals(1, $indexes[2]['keys']['name']);
+        $this->assertTrue(isset($indexes[2]['options']['unique']));
+        $this->assertEquals(true, $indexes[2]['options']['unique']);
+        $this->assertTrue(isset($indexes[2]['options']['sparse']));
+        $this->assertEquals(true, $indexes[2]['options']['sparse']);
+    }
+
     public function testIndexDefinitions()
     {
         $class   = $this->dm->getClassMetadata(UniqueOnFieldTest::class);
@@ -375,6 +397,21 @@ class DocumentWithDiscriminatorIndex
 {
     /** @ODM\Id */
     public $id;
+}
+
+/**
+ * @ODM\Document
+ * @ODM\Index(keys={"name"="asc"})
+ * @ODM\Index(keys={"name"="desc"})
+ * @ODM\UniqueIndex(keys={"name"="asc"}, options={"sparse"=true})
+ */
+class DocumentWithMultipleIndexAnnotations
+{
+    /** @ODM\Id */
+    public $id;
+
+    /** @ODM\Field(type="string") */
+    public $name;
 }
 
 /** @ODM\EmbeddedDocument */
