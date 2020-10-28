@@ -228,7 +228,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/match/
      */
-    public function match() : Stage\Match
+    public function match() : Stage\MatchStage
     {
         return $this->builder->match();
     }
