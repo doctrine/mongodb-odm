@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
+use Doctrine\ODM\MongoDB\Aggregation\Stage\MatchStage;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use GeoJson\Geometry\Point;
 use const E_USER_DEPRECATED;
@@ -227,7 +228,7 @@ abstract class Stage
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/match/
      */
-    public function match() : Stage\Match
+    public function match() : MatchStage
     {
         return $this->builder->match();
     }

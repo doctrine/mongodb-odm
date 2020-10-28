@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Aggregation\Stage\Match;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\MatchStage;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -13,13 +13,13 @@ use Documents\User;
 use GeoJson\Geometry\Geometry;
 use MongoDB\BSON\UTCDateTime;
 
-class MatchTest extends BaseTest
+class MatchStageTest extends BaseTest
 {
     use AggregationTestTrait;
 
     public function testMatchStage()
     {
-        $matchStage = new Match($this->getTestAggregationBuilder());
+        $matchStage = new MatchStage($this->getTestAggregationBuilder());
         $matchStage
             ->field('someField')
             ->equals('someValue');
@@ -49,7 +49,7 @@ class MatchTest extends BaseTest
             ->method($method)
             ->with(...$args);
 
-        $stage = new class($this->getTestAggregationBuilder()) extends Match {
+        $stage = new class($this->getTestAggregationBuilder()) extends MatchStage {
             public function setQuery(Expr $query)
             {
                 $this->query = $query;

@@ -392,9 +392,9 @@ class Builder
      *
      * @see http://docs.mongodb.org/manual/reference/operator/aggregation/match/
      */
-    public function match() : Stage\Match
+    public function match() : Stage\MatchStage
     {
-        $stage = new Stage\Match($this);
+        $stage = new Stage\MatchStage($this);
         $this->addStage($stage);
 
         return $stage;
