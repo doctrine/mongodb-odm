@@ -44,7 +44,7 @@ abstract class AbstractOutput extends Stage
      *
      * AddToSet is an accumulator operation only available in the group stage.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/addToSet/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/addToSet/
      * @see Expr::addToSet
      *
      * @param mixed|Expr $expression
@@ -63,7 +63,7 @@ abstract class AbstractOutput extends Stage
      * a specified expression to each document in a group of documents that
      * share the same group by key. Ignores nun-numeric values.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/avg/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/avg/
      * @see Expr::avg
      *
      * @param mixed|Expr $expression
@@ -80,7 +80,7 @@ abstract class AbstractOutput extends Stage
     /**
      * Used to use an expression as field value. Can be any expression.
      *
-     * @see http://docs.mongodb.org/manual/meta/aggregation-quick-reference/#aggregation-expressions
+     * @see https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
      * @see Expr::expression
      *
      * @param mixed|Expr $value
@@ -115,7 +115,7 @@ abstract class AbstractOutput extends Stage
      * document in a group of documents that share the same group by key. Only
      * meaningful when documents are in a defined order.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/first/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/first/
      * @see Expr::first
      *
      * @param mixed|Expr $expression
@@ -134,7 +134,7 @@ abstract class AbstractOutput extends Stage
      * document in a group of documents that share the same group by a field.
      * Only meaningful when documents are in a defined order.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/last/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/last/
      * @see Expr::last
      *
      * @param mixed|Expr $expression
@@ -152,7 +152,7 @@ abstract class AbstractOutput extends Stage
      * Returns the highest value that results from applying an expression to
      * each document in a group of documents that share the same group by key.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/max/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/max/
      * @see Expr::max
      *
      * @param mixed|Expr $expression
@@ -170,7 +170,7 @@ abstract class AbstractOutput extends Stage
      * Returns the lowest value that results from applying an expression to each
      * document in a group of documents that share the same group by key.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/min/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/min/
      * @see Expr::min
      *
      * @param mixed|Expr $expression
@@ -188,7 +188,7 @@ abstract class AbstractOutput extends Stage
      * Returns an array of all values that result from applying an expression to
      * each document in a group of documents that share the same group by key.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/push/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/push/
      * @see Expr::push
      *
      * @param mixed|Expr $expression
@@ -207,7 +207,7 @@ abstract class AbstractOutput extends Stage
      *
      * The argument can be any expression as long as it resolves to an array.
      *
-     * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevPop/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevPop/
      * @see Expr::stdDevPop
      *
      * @param mixed|Expr $expression
@@ -226,7 +226,7 @@ abstract class AbstractOutput extends Stage
      *
      * The argument can be any expression as long as it resolves to an array.
      *
-     * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevSamp/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevSamp/
      * @see Expr::stdDevSamp
      *
      * @param mixed|Expr $expression
@@ -245,7 +245,7 @@ abstract class AbstractOutput extends Stage
      * applying a specified expression to each document in a group of documents
      * that share the same group by key. Ignores nun-numeric values.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sum/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sum/
      * @see Expr::sum
      *
      * @param mixed|Expr $expression

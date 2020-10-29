@@ -27,7 +27,7 @@ class Project extends Operator
      * a specified expression to each document in a group of documents that
      * share the same group by key. Ignores nun-numeric values.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/avg/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/avg/
      * @see Expr::avg
      *
      * @param mixed|Expr $expression1
@@ -71,7 +71,7 @@ class Project extends Operator
      * Returns the highest value that results from applying an expression to
      * each document in a group of documents that share the same group by key.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/max/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/max/
      * @see Expr::max
      *
      * @param mixed|Expr $expression1
@@ -88,7 +88,7 @@ class Project extends Operator
      * Returns the lowest value that results from applying an expression to each
      * document in a group of documents that share the same group by key.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/min/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/min/
      * @see Expr::min
      *
      * @param mixed|Expr $expression1
@@ -106,7 +106,7 @@ class Project extends Operator
      *
      * The argument can be any expression as long as it resolves to an array.
      *
-     * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevPop/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevPop/
      * @see Expr::stdDevPop
      *
      * @param mixed|Expr $expression1
@@ -124,7 +124,7 @@ class Project extends Operator
      *
      * The argument can be any expression as long as it resolves to an array.
      *
-     * @see https://docs.mongodb.org/manual/reference/operator/aggregation/stdDevSamp/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevSamp/
      * @see Expr::stdDevSamp
      *
      * @param mixed|Expr $expression1
@@ -142,7 +142,7 @@ class Project extends Operator
      * applying a specified expression to each document in a group of documents
      * that share the same group by key. Ignores nun-numeric values.
      *
-     * @see http://docs.mongodb.org/manual/reference/operator/aggregation/sum/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sum/
      * @see Expr::sum
      *
      * @param mixed|Expr $expression1
