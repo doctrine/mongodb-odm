@@ -21,9 +21,11 @@ use function array_replace;
 use function assert;
 use function class_exists;
 use function constant;
+use function count;
 use function get_class;
 use function interface_exists;
 use function is_array;
+use function sprintf;
 use function trigger_error;
 
 /**
@@ -70,8 +72,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $this->addIndex($class, $annot);
             }
             if ($annot instanceof ODM\Indexes) {
-                // Setting the type to mixed is a workaround until https://github.com/doctrine/annotations/pull/209 is released.
-                /** @var mixed $value */
+                @trigger_error(
+                    sprintf(
+                        'Indexes annotation used in %s was deprecated in doctrine/mongodb-odm 2.2 and will be removed in 3.0. Specify all Index and UniqueIndex annotations on a class level.',
+                        $className
+                    ),
+                    E_USER_DEPRECATED
+                );
                 $value = $annot->value;
                 foreach (is_array($value) ? $value : [$value] as $index) {
                     $this->addIndex($class, $index);
@@ -142,7 +149,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($documentAnnot->writeConcern)) {
             $class->setWriteConcern($documentAnnot->writeConcern);
         }
-        if (isset($documentAnnot->indexes)) {
+        if (isset($documentAnnot->indexes) && count($documentAnnot->indexes)) {
+            @trigger_error(
+                sprintf(
+                    'Indexes parameter used in %s\'s %s was deprecated in doctrine/mongodb-odm 2.2 and will be removed in 3.0. Specify all Index and UniqueIndex annotations on a class level.',
+                    $className,
+                    get_class($documentAnnot)
+                ),
+                E_USER_DEPRECATED
+            );
             foreach ($documentAnnot->indexes as $index) {
                 $this->addIndex($class, $index);
             }
