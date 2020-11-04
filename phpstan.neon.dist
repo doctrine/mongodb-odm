@@ -1,9 +1,9 @@
+includes:
+  - phpstan-baseline.neon
+
 parameters:
-  level: 7
+  treatPhpDocTypesAsCertain: false
+  level: 5
   paths:
     - %rootDir%/../../../benchmark
     - %rootDir%/../../../lib
-
-  ignoreErrors:
-    # See https://github.com/phpstan/phpstan/pull/1730
-    - '#^Parameter \#1 $wstring of class MongoDB\\Driver\\WriteConcern constructor expects string, int|string given\.$#'

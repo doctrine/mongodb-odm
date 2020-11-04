@@ -222,14 +222,12 @@ final class DocumentPersister
             $inserts[] = $data;
         }
 
-        if ($inserts) {
-            try {
-                assert($this->collection instanceof Collection);
-                $this->collection->insertMany($inserts, $options);
-            } catch (DriverException $e) {
-                $this->queuedInserts = [];
-                throw $e;
-            }
+        try {
+            assert($this->collection instanceof Collection);
+            $this->collection->insertMany($inserts, $options);
+        } catch (DriverException $e) {
+            $this->queuedInserts = [];
+            throw $e;
         }
 
         /* All collections except for ones using addToSet have already been
@@ -614,9 +612,9 @@ final class DocumentPersister
      * @param object $document The document object to fill, if any.
      * @param array  $hints    Hints for document creation.
      *
-     * @return object|null The filled and managed document object or NULL, if the query result is empty.
+     * @return object The filled and managed document object.
      */
-    private function createDocument(array $result, ?object $document = null, array $hints = []) : ?object
+    private function createDocument(array $result, ?object $document = null, array $hints = []) : object
     {
         if ($document !== null) {
             $hints[Query::HINT_REFRESH] = true;
@@ -885,7 +883,7 @@ final class DocumentPersister
     }
 
     /**
-     * @param int|string $sort
+     * @param int|string|null $sort
      *
      * @return int|string|null
      */

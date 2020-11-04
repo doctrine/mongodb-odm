@@ -23,7 +23,6 @@ use function count;
 use function explode;
 use function get_class;
 use function implode;
-use function is_callable;
 use function is_object;
 use function serialize;
 use function sprintf;
@@ -101,7 +100,6 @@ final class ReferencePrimer
      *
      * @throws InvalidArgumentException If the mapped field is not the owning
      *                                   side of a reference relationship.
-     * @throws InvalidArgumentException If $primer is not callable.
      * @throws LogicException If the mapped field is a simple reference and is
      *                         missing a target document class.
      */
@@ -125,10 +123,6 @@ final class ReferencePrimer
          */
         if ($mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID && empty($mapping['targetDocument'])) {
             throw new LogicException(sprintf('Field "%s" is an identifier reference without a target document class in class "%s"', $fieldName, $class->name));
-        }
-
-        if ($primer !== null && ! is_callable($primer)) {
-            throw new InvalidArgumentException('$primer is not callable');
         }
 
         $primer     = $primer ?: $this->defaultPrimer;
@@ -232,6 +226,8 @@ final class ReferencePrimer
 
             return ['fieldName' => $fieldName, 'class' => $class, 'documents' => $documents, 'mapping' => $mapping];
         }
+
+        throw new LogicException('Unable to parse property path for ReferencePrimer. Please report an issue in Doctrine\'s MongoDB ODM.');
     }
 
     /**

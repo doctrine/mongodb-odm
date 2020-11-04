@@ -76,7 +76,6 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
 
             case $metadata->isEmbeddedDocument:
                 throw MongoDBException::cannotCreateRepository($documentName);
-                break;
 
             case $metadata->isMappedSuperclass:
             default:
