@@ -31,7 +31,6 @@ jobs:
           coverage: "none"
           extensions: "mongodb"
           php-version: "${{ matrix.php-version }}"
-          tools: "cs2pr"
 
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@v2"
@@ -44,4 +43,4 @@ jobs:
         run: "composer install --no-interaction --no-progress --no-suggest"
 
       - name: "Run a static analysis with phpstan/phpstan"
-        run: "vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr"
+        run: "vendor/bin/phpstan analyse"
