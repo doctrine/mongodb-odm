@@ -222,14 +222,12 @@ final class DocumentPersister
             $inserts[] = $data;
         }
 
-        if ($inserts) {
-            try {
-                assert($this->collection instanceof Collection);
-                $this->collection->insertMany($inserts, $options);
-            } catch (DriverException $e) {
-                $this->queuedInserts = [];
-                throw $e;
-            }
+        try {
+            assert($this->collection instanceof Collection);
+            $this->collection->insertMany($inserts, $options);
+        } catch (DriverException $e) {
+            $this->queuedInserts = [];
+            throw $e;
         }
 
         /* All collections except for ones using addToSet have already been
