@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * Specifies a default discriminator value to be used when the discriminator
@@ -12,6 +12,13 @@ use Doctrine\Common\Annotations\Annotation;
  *
  * @Annotation
  */
-final class DefaultDiscriminatorValue extends Annotation
+final class DefaultDiscriminatorValue implements NamedArgumentConstructorAnnotation
 {
+    /** @var string */
+    public $value;
+
+    public function __construct(string $value)
+    {
+        $this->value = $value;
+    }
 }

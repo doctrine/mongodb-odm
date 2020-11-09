@@ -5,18 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations\File;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * @Annotation
  */
 final class Metadata extends AbstractField
 {
-    /** @var string */
-    public $name = 'metadata';
-
-    /** @var string */
-    public $type = 'one';
-
     /** @var bool */
     public $embedded = true;
 
@@ -31,4 +26,23 @@ final class Metadata extends AbstractField
 
     /** @var string|null */
     public $defaultDiscriminatorValue;
+
+    public function __construct(
+        string $name = 'metadata',
+        bool $nullable = false,
+        array $options = [],
+        ?string $strategy = null,
+        bool $notSaved = false,
+        ?string $targetDocument = null,
+        ?string $discriminatorField = null,
+        ?array $discriminatorMap = null,
+        ?string $defaultDiscriminatorValue = null
+    ) {
+        parent::__construct($name, ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
+
+        $this->targetDocument = $targetDocument;
+        $this->discriminatorField = $discriminatorField;
+        $this->discriminatorMap = $discriminatorMap;
+        $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
+    }
 }

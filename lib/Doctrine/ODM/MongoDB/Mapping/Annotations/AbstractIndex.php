@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
-abstract class AbstractIndex extends Annotation
+abstract class AbstractIndex implements NamedArgumentConstructorAnnotation
 {
     /** @var string[] */
-    public $keys = [];
+    public $keys;
 
     /** @var string */
     public $name;
@@ -24,14 +24,36 @@ abstract class AbstractIndex extends Annotation
     public $order;
 
     /** @var bool */
-    public $unique = false;
+    public $unique;
 
     /** @var bool */
-    public $sparse = false;
+    public $sparse;
 
     /** @var mixed[] */
-    public $options = [];
+    public $options;
 
     /** @var array */
-    public $partialFilterExpression = [];
+    public $partialFilterExpression;
+
+    public function __construct(
+        array $keys = [],
+        ?string $name = null,
+        ?bool $background = null,
+        ?int $expireAfterSeconds = null,
+        $order = null,
+        bool $unique = false,
+        bool $sparse = false,
+        array $options = [],
+        array $partialFilterExpression = []
+    ) {
+        $this->keys = $keys;
+        $this->name = $name;
+        $this->background = $background;
+        $this->expireAfterSeconds = $expireAfterSeconds;
+        $this->order = $order;
+        $this->unique = $unique;
+        $this->sparse = $sparse;
+        $this->options = $options;
+        $this->partialFilterExpression = $partialFilterExpression;
+    }
 }
