@@ -14,9 +14,14 @@ final class Id extends AbstractField
     /** @var bool */
     public $id = true;
 
-    /** @var string|null */
-    public $type;
-
-    /** @var string */
-    public $strategy = 'auto';
+    public function __construct(
+        ?string $name = null,
+        ?string $type = null,
+        bool $nullable = false,
+        array $options = [],
+        string $strategy = 'auto',
+        bool $notSaved = false
+    ) {
+        parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
+    }
 }

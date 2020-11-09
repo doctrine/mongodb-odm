@@ -11,6 +11,16 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
  */
 final class UniqueIndex extends AbstractIndex
 {
-    /** @var bool */
-    public $unique = true;
+    public function __construct(
+        array $keys = [],
+        ?string $name = null,
+        ?bool $background = null,
+        ?int $expireAfterSeconds = null,
+        $order = null,
+        bool $sparse = false,
+        array $options = [],
+        array $partialFilterExpression = []
+    ) {
+        parent::__construct($keys, $name, $background, $expireAfterSeconds, $order, true, $sparse, $options, $partialFilterExpression);
+    }
 }

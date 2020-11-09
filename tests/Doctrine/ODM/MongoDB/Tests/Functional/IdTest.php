@@ -373,7 +373,7 @@ class %s
     /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="%s", options={"type"="%s"}) **/
     public $id;
 
-    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Field("type=string") **/
+    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Field(type="string") **/
     public $test = "test";
 }',
                 $shortClassName,

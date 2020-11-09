@@ -24,7 +24,7 @@
     "require": {
         "php": "^7.2",
         "ext-mongodb": "^1.5",
-        "doctrine/annotations": "^1.6",
+        "doctrine/annotations": "^1.11",
         "doctrine/cache": "^1.7",
         "doctrine/collections": "^1.5",
         "doctrine/event-manager": "^1.0",

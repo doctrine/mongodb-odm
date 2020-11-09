@@ -11,6 +11,6 @@ use Doctrine\Common\Annotations\Annotation;
  *
  * @Annotation
  */
-final class Lock extends Annotation
+final class Lock
 {
 }

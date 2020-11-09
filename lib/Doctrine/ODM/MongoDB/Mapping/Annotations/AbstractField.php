@@ -4,28 +4,44 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 use function sprintf;
 
-abstract class AbstractField extends Annotation
+abstract class AbstractField implements NamedArgumentConstructorAnnotation
 {
     /** @var string */
     public $name;
 
-    /** @var string */
-    public $type = 'string';
+    /** @var string|null */
+    public $type;
 
     /** @var bool */
-    public $nullable = false;
+    public $nullable;
 
     /** @var mixed[] */
-    public $options = [];
+    public $options;
 
     /** @var string|null */
     public $strategy;
 
     /** @var bool */
-    public $notSaved = false;
+    public $notSaved;
+
+    public function __construct(
+        ?string $name = null,
+        ?string $type = 'string',
+        bool $nullable = false,
+        array $options = [],
+        ?string $strategy = null,
+        bool $notSaved = false
+    ) {
+        $this->name = $name;
+        $this->type = $type;
+        $this->nullable = $nullable;
+        $this->options = $options;
+        $this->strategy = $strategy;
+        $this->notSaved = $notSaved;
+    }
 
     /**
      * Gets deprecation message. The method *WILL* be removed in 2.0.

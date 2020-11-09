@@ -11,12 +11,14 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
  */
 final class Length extends AbstractField
 {
-    /** @var string */
-    public $name = 'length';
-
-    /** @var string */
-    public $type = 'int';
-
-    /** @var bool */
-    public $notSaved = true;
+    public function __construct(
+        string $name = 'length',
+        string $type = 'int',
+        bool $nullable = false,
+        array $options = [],
+        ?string $strategy = null,
+        bool $notSaved = true
+    ) {
+        parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
+    }
 }
