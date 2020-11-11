@@ -169,7 +169,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testClassCanBeMappedByOneAbstractDocument(object $wrong, string $messageRegExp)
     {
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessageRegExp($messageRegExp);
+        $this->expectExceptionMessageMatches($messageRegExp);
 
         $cm               = new ClassMetadata(get_class($wrong));
         $reader           = new AnnotationReader();

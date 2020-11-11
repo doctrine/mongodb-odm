@@ -452,7 +452,7 @@ class QueryTest extends BaseTest
 
         $collection = $this->getMockCollection();
         $collection
-            ->expects($this->at(0))
+            ->expects($this->once())
             ->method('findOneAndDelete')
             ->with(['type' => 1], ['projection' => ['_id' => 1]]);
 

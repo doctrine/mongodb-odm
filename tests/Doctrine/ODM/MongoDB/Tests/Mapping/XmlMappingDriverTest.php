@@ -45,7 +45,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class = new ClassMetadata($className);
 
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessageRegExp("#Element '\{http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping\}field', attribute 'id': The attribute 'id' is not allowed.#");
+        $this->expectExceptionMessageMatches("#Element '\{http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping\}field', attribute 'id': The attribute 'id' is not allowed.#");
 
         $mappingDriver->loadMetadataForClass($className, $class);
     }
