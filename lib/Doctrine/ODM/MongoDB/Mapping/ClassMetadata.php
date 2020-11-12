@@ -21,6 +21,7 @@ use LogicException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionProperty;
+use const E_USER_DEPRECATED;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -2002,7 +2003,7 @@ use function trigger_error;
                 '"%s" type was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use "%s" instead.',
                 $mapping['type'],
                 $deprecatedTypes[$mapping['type']]
-            ));
+            ), E_USER_DEPRECATED);
         }
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
