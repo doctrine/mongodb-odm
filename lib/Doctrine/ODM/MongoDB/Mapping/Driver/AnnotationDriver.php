@@ -149,7 +149,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($documentAnnot->indexes) && count($documentAnnot->indexes)) {
             trigger_deprecation(
                 'doctrine/mongodb-odm',
-                '2.1',
+                '2.2',
                 'The "indexes" parameter in the "%s" annotation for class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" annotations on the class.',
                 $className,
                 get_class($documentAnnot)
