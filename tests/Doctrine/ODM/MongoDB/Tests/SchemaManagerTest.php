@@ -26,9 +26,14 @@ use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use MongoDB\Model\IndexInfo;
 use MongoDB\Model\IndexInfoIteratorIterator;
+use PHPUnit\Framework\Constraint\ArrayHasKey;
 use PHPUnit\Framework\Constraint\ArraySubset;
+use PHPUnit\Framework\Constraint\Callback;
+use PHPUnit\Framework\Constraint\Constraint;
+use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
 use function array_map;
+use function class_exists;
 use function in_array;
 
 class SchemaManagerTest extends BaseTest
@@ -119,7 +124,7 @@ class SchemaManagerTest extends BaseTest
                 'maxTimeMs' => null,
                 'writeConcern' => $writeConcern,
             ],
-            'maxTimeMsAndWriteConern' => [
+            'maxTimeMsAndWriteConcern' => [
                 'expectedWriteOptions' => ['maxTimeMs' => 1000, 'writeConcern' => $writeConcern],
                 'maxTimeMs' => 1000,
                 'writeConcern' => $writeConcern,
@@ -150,8 +155,6 @@ class SchemaManagerTest extends BaseTest
      */
     public function testEnsureIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $indexedCollections = array_map(
             function (string $fqcn) {
                 return $this->dm->getClassMetadata($fqcn)->getCollection();
@@ -163,7 +166,7 @@ class SchemaManagerTest extends BaseTest
                 $collection
                     ->expects($this->atLeastOnce())
                     ->method('createIndex')
-                    ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+                    ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('createIndex');
             }
@@ -177,7 +180,7 @@ class SchemaManagerTest extends BaseTest
             $bucket->getFilesCollection()
                 ->expects($this->atLeastOnce())
                 ->method('createIndex')
-                ->with(['filename' => 1, 'uploadDate' => 1], new ArraySubset($expectedWriteOptions));
+                ->with(['filename' => 1, 'uploadDate' => 1], $this->writeOptions($expectedWriteOptions));
 
             $bucket->getChunksCollection()
                 ->expects($this->any())
@@ -186,7 +189,7 @@ class SchemaManagerTest extends BaseTest
             $bucket->getChunksCollection()
                 ->expects($this->atLeastOnce())
                 ->method('createIndex')
-                ->with(['files_id' => 1, 'n' => 1], new ArraySubset(['unique' => true] + $expectedWriteOptions));
+                ->with(['files_id' => 1, 'n' => 1], $this->writeOptions(['unique' => true] + $expectedWriteOptions));
         }
 
         $this->schemaManager->ensureIndexes($maxTimeMs, $writeConcern, $background);
@@ -197,15 +200,13 @@ class SchemaManagerTest extends BaseTest
      */
     public function testEnsureDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
         foreach ($this->documentCollections as $collectionName => $collection) {
             if ($collectionName === $cmsArticleCollectionName) {
                 $collection
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+                    ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('createIndex');
             }
@@ -219,8 +220,6 @@ class SchemaManagerTest extends BaseTest
      */
     public function testEnsureDocumentIndexesForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         foreach ($this->documentCollections as $class => $collection) {
             $collection->expects($this->never())->method('createIndex');
         }
@@ -235,7 +234,7 @@ class SchemaManagerTest extends BaseTest
                 $bucket->getFilesCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['filename' => 1, 'uploadDate' => 1], new ArraySubset($expectedWriteOptions));
+                    ->with(['filename' => 1, 'uploadDate' => 1], $this->writeOptions($expectedWriteOptions));
 
                 $bucket->getChunksCollection()
                     ->expects($this->any())
@@ -244,7 +243,7 @@ class SchemaManagerTest extends BaseTest
                 $bucket->getChunksCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['files_id' => 1, 'n' => 1], new ArraySubset(['unique' => true] + $expectedWriteOptions));
+                    ->with(['files_id' => 1, 'n' => 1], $this->writeOptions(['unique' => true] + $expectedWriteOptions));
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('createIndex');
                 $bucket->getChunksCollection()->expects($this->never())->method('createIndex');
@@ -259,14 +258,12 @@ class SchemaManagerTest extends BaseTest
      */
     public function testEnsureDocumentIndexesWithTwoLevelInheritance(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $collectionName = $this->dm->getClassMetadata(CmsProduct::class)->getCollection();
         $collection     = $this->documentCollections[$collectionName];
         $collection
             ->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
 
         $this->schemaManager->ensureDocumentIndexes(CmsProduct::class, $maxTimeMs, $writeConcern, $background);
     }
@@ -276,8 +273,6 @@ class SchemaManagerTest extends BaseTest
      */
     public function testUpdateDocumentIndexesShouldCreateMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
         $collection     = $this->documentCollections[$collectionName];
         $collection
@@ -287,11 +282,11 @@ class SchemaManagerTest extends BaseTest
         $collection
             ->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
         $collection
             ->expects($this->never())
             ->method('dropIndex')
-            ->with(new ArraySubset($expectedWriteOptions));
+            ->with($this->writeOptions($expectedWriteOptions));
 
         $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
@@ -301,8 +296,6 @@ class SchemaManagerTest extends BaseTest
      */
     public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
         $collection     = $this->documentCollections[$collectionName];
         $indexes        = [
@@ -320,11 +313,11 @@ class SchemaManagerTest extends BaseTest
         $collection
             ->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
         $collection
             ->expects($this->once())
             ->method('dropIndex')
-            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
 
         $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
@@ -334,8 +327,6 @@ class SchemaManagerTest extends BaseTest
      */
     public function testDeleteIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $views = array_map(
             function (string $fqcn) {
                 return $this->dm->getClassMetadata($fqcn)->getCollection();
@@ -350,7 +341,7 @@ class SchemaManagerTest extends BaseTest
                 $collection
                     ->expects($this->atLeastOnce())
                     ->method('dropIndexes')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             }
         }
 
@@ -362,15 +353,13 @@ class SchemaManagerTest extends BaseTest
      */
     public function testDeleteDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
         foreach ($this->documentCollections as $collectionName => $collection) {
             if ($collectionName === $cmsArticleCollectionName) {
                 $collection
                     ->expects($this->once())
                     ->method('dropIndexes')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('dropIndexes');
             }
@@ -384,8 +373,6 @@ class SchemaManagerTest extends BaseTest
      */
     public function testCreateDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $cm                   = $this->dm->getClassMetadata(CmsArticle::class);
         $cm->collectionCapped = true;
         $cm->collectionSize   = 1048576;
@@ -402,7 +389,7 @@ class SchemaManagerTest extends BaseTest
             ->method('createCollection')
             ->with(
                 'CmsArticle',
-                new ArraySubset($options + $expectedWriteOptions)
+                $this->writeOptions($options + $expectedWriteOptions)
             );
 
         $this->schemaManager->createDocumentCollection(CmsArticle::class, $maxTimeMs, $writeConcern);
@@ -413,16 +400,14 @@ class SchemaManagerTest extends BaseTest
      */
     public function testCreateDocumentCollectionForFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $database = $this->documentDatabases[$this->getDatabaseName($this->dm->getClassMetadata(File::class))];
         $database
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('createCollection')
-            ->with('fs.files', new ArraySubset($expectedWriteOptions));
-        $database->expects($this->at(1))
-            ->method('createCollection')
-            ->with('fs.chunks', new ArraySubset($expectedWriteOptions));
+            ->withConsecutive(
+                ['fs.files', $this->writeOptions($expectedWriteOptions)],
+                ['fs.chunks', $this->writeOptions($expectedWriteOptions)]
+            );
 
         $this->schemaManager->createDocumentCollection(File::class, $maxTimeMs, $writeConcern);
     }
@@ -432,8 +417,6 @@ class SchemaManagerTest extends BaseTest
      */
     public function testCreateView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $cm = $this->dm->getClassMetadata(UserName::class);
 
         $options = [];
@@ -455,7 +438,7 @@ class SchemaManagerTest extends BaseTest
                         ],
                     ],
                 ],
-                new ArraySubset($options + $expectedWriteOptions)
+                $this->writeOptions($options + $expectedWriteOptions)
             );
 
         $rootCollection = $this->documentCollections['CmsUser'];
@@ -471,18 +454,16 @@ class SchemaManagerTest extends BaseTest
      */
     public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         foreach ($this->documentDatabases as $class => $database) {
             $database
                 ->expects($this->atLeastOnce())
                 ->method('createCollection')
-                ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+                ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
 
             $database
                 ->expects($this->atLeastOnce())
                 ->method('command')
-                ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+                ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
         }
 
         $this->schemaManager->createCollections($maxTimeMs, $writeConcern);
@@ -493,12 +474,10 @@ class SchemaManagerTest extends BaseTest
      */
     public function testDropCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         foreach ($this->documentCollections as $collection) {
             $collection->expects($this->atLeastOnce())
                 ->method('drop')
-                ->with(new ArraySubset($expectedWriteOptions));
+                ->with($this->writeOptions($expectedWriteOptions));
         }
 
         $this->schemaManager->dropCollections($maxTimeMs, $writeConcern);
@@ -509,14 +488,12 @@ class SchemaManagerTest extends BaseTest
      */
     public function testDropDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
         foreach ($this->documentCollections as $collectionName => $collection) {
             if ($collectionName === $cmsArticleCollectionName) {
                 $collection->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('drop');
             }
@@ -530,8 +507,6 @@ class SchemaManagerTest extends BaseTest
      */
     public function testDropDocumentCollectionForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         foreach ($this->documentCollections as $collection) {
             $collection->expects($this->never())->method('drop');
         }
@@ -542,11 +517,11 @@ class SchemaManagerTest extends BaseTest
                 $bucket->getFilesCollection()
                     ->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
                 $bucket->getChunksCollection()
                     ->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('drop');
                 $bucket->getChunksCollection()->expects($this->never())->method('drop');
@@ -561,14 +536,12 @@ class SchemaManagerTest extends BaseTest
      */
     public function testDropView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $viewName = $this->dm->getClassMetadata(UserName::class)->getCollection();
         foreach ($this->documentCollections as $collectionName => $collection) {
             if ($collectionName === $viewName) {
                 $collection->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('drop');
             }
@@ -582,15 +555,13 @@ class SchemaManagerTest extends BaseTest
      */
     public function testDropDocumentDatabase(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         $cmsArticleDatabaseName = $this->getDatabaseName($this->dm->getClassMetadata(CmsArticle::class));
         foreach ($this->documentDatabases as $databaseName => $database) {
             if ($databaseName === $cmsArticleDatabaseName) {
                 $database
                     ->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $database->expects($this->never())->method('drop');
             }
@@ -604,13 +575,11 @@ class SchemaManagerTest extends BaseTest
      */
     public function testDropDatabases(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        $this->markTestIncomplete('Test needs to be rewritten for PHP 8');
-
         foreach ($this->documentDatabases as $database) {
             $database
                 ->expects($this->atLeastOnce())
                 ->method('drop')
-                ->with(new ArraySubset($expectedWriteOptions));
+                ->with($this->writeOptions($expectedWriteOptions));
         }
 
         $this->schemaManager->dropDatabases($maxTimeMs, $writeConcern);
@@ -1009,5 +978,26 @@ class SchemaManagerTest extends BaseTest
         });
 
         return $db;
+    }
+
+    private function writeOptions(array $expectedWriteOptions) : Constraint
+    {
+        if (class_exists(ArraySubset::class)) {
+            return new ArraySubset($expectedWriteOptions);
+        }
+
+        return new Callback(static function ($value) use ($expectedWriteOptions) {
+            foreach ($expectedWriteOptions as $writeOption => $expectedValue) {
+                if (! (new ArrayHasKey($writeOption))->evaluate($value, '', true)) {
+                    return false;
+                }
+
+                if (! (new IsEqual($expectedValue))->evaluate($value[$writeOption], '', true)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
     }
 }
