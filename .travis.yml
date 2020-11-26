@@ -57,17 +57,6 @@ jobs:
       after_script:
         - bash <(curl -s https://codecov.io/bash)
 
-    # Check coding standards
-    - stage: Code Quality
-      php: 7.2
-      script:
-        - vendor/bin/phpstan analyse
-
-    - stage: Code Quality
-      php: 7.2
-      script:
-        - vendor/bin/phpcs
-
     # Performance tests
     - stage: Performance
       php: 7.3

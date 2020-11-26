@@ -296,7 +296,10 @@ class DocumentManager implements ObjectManager
      */
     public function getClassMetadata($className) : ClassMetadata
     {
-        return $this->metadataFactory->getMetadataFor($className);
+        $metadata = $this->metadataFactory->getMetadataFor($className);
+        assert($metadata instanceof ClassMetadata);
+
+        return $metadata;
     }
 
     /**
@@ -340,9 +343,9 @@ class DocumentManager implements ObjectManager
     {
         $className = $this->classNameResolver->getRealClass($className);
 
-        /** @var ClassMetadata $metadata */
         $metadata = $this->metadataFactory->getMetadataFor($className);
         assert($metadata instanceof ClassMetadata);
+
         if ($metadata->isFile) {
             return $this->getDocumentBucket($className)->getFilesCollection();
         }
@@ -376,8 +379,9 @@ class DocumentManager implements ObjectManager
     {
         $className = $this->classNameResolver->getRealClass($className);
 
-        /** @var ClassMetadata $metadata */
         $metadata = $this->metadataFactory->getMetadataFor($className);
+        assert($metadata instanceof ClassMetadata);
+
         if (! $metadata->isFile) {
             throw MongoDBException::documentBucketOnlyAvailableForGridFSFiles($className);
         }
@@ -587,8 +591,8 @@ class DocumentManager implements ObjectManager
      */
     public function getReference(string $documentName, $identifier) : object
     {
-        /** @var ClassMetadata $class */
-        $class    = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
+        $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
+        assert($class instanceof ClassMetadata);
         $document = $this->unitOfWork->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
@@ -623,6 +627,7 @@ class DocumentManager implements ObjectManager
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         assert($class instanceof ClassMetadata);
+
         $document = $this->unitOfWork->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.

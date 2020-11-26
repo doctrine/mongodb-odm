@@ -328,6 +328,10 @@ running!
 Setup
 -----
 
+A prerequisite of using the Doctrine MongoDB ODM library is to have the
+MongoDB PHP extension installed and enabled. See the `official PHP
+manual`_ for download and installation instructions.
+
 Before we can begin, we'll need to install the Doctrine MongoDB ODM library and
 its dependencies. The easiest way to do this is with `Composer`_:
 
@@ -506,3 +510,4 @@ please create separate clients for your application and ODM.
 .. _10gen: http://www.10gen.com
 .. _Composer: http://getcomposer.org/
 .. _tuning for production: https://ocramius.github.io/ProxyManager/docs/tuning-for-production.html
+.. _official PHP manual: https://www.php.net/manual/en/mongodb.installation.php
