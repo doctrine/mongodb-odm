@@ -8,11 +8,13 @@ use Doctrine\ODM\MongoDB\Configuration;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
 use const DIRECTORY_SEPARATOR;
 use function array_map;
 use function array_pop;
+use function assert;
 use function class_exists;
 use function dirname;
 use function explode;
@@ -25,6 +27,7 @@ use function is_writable;
 use function method_exists;
 use function mkdir;
 use function rename;
+use function sprintf;
 use function str_replace;
 use function strtolower;
 use function substr;
@@ -215,20 +218,16 @@ CODE;
         /** @var ReflectionParameter $param */
         foreach ($parameters as $param) {
             $parameterDefinition = '';
-            $parameterType       = $this->getParameterType($param);
-
-            if ($parameterType) {
-                $parameterDefinition .= $parameterType . ' ';
+            if ($param->hasType()) {
+                $parameterDefinition .= $this->getParameterType($param) . ' ';
             }
 
             if ($param->isPassedByReference()) {
                 $parameterDefinition .= '&';
             }
 
-            if (method_exists($param, 'isVariadic')) {
-                if ($param->isVariadic()) {
-                    $parameterDefinition .= '...';
-                }
+            if ($param->isVariadic()) {
+                $parameterDefinition .= '...';
             }
 
             $parameters[]         = '$' . $param->name;
@@ -244,29 +243,21 @@ CODE;
         return implode(', ', $parameterDefinitions);
     }
 
-    private function getParameterType(ReflectionParameter $parameter) : ?string
+    private function getParameterType(ReflectionParameter $parameter) : string
     {
-        // We need to pick the type hint class too
-        if ($parameter->isArray()) {
-            return 'array';
+        if (! $parameter->hasType()) {
+            throw new ReflectionException(sprintf('Parameter "%s" has no type. Please file a bug report.', $parameter->getName()));
         }
 
-        if (method_exists($parameter, 'isCallable') && $parameter->isCallable()) {
-            return 'callable';
-        }
+        $type = $parameter->getType();
+        assert($type instanceof ReflectionNamedType);
 
-        try {
-            $parameterClass = $parameter->getClass();
-
-            if ($parameterClass) {
-                return '\\' . $parameterClass->name;
-            }
-        } catch (ReflectionException $previous) {
-            // @todo ProxyGenerator throws specialized exceptions
-            throw $previous;
-        }
-
-        return null;
+        return sprintf(
+            '%s%s%s',
+            $type->allowsNull() ? '?' : '',
+            $type->isBuiltin() ? '' : '\\',
+            $type->getName()
+        );
     }
 
     /**
@@ -280,10 +271,8 @@ CODE;
             static function (ReflectionParameter $parameter) {
                 $name = '';
 
-                if (method_exists($parameter, 'isVariadic')) {
-                    if ($parameter->isVariadic()) {
-                        $name .= '...';
-                    }
+                if ($parameter->isVariadic()) {
+                    $name .= '...';
                 }
 
                 return $name . '$' . $parameter->name;
