@@ -7,9 +7,6 @@ on:
       - "*.x"
       - "master"
   push:
-    branches:
-      - "*.x"
-      - "master"
 
 jobs:
   coding-standards:
