@@ -72,7 +72,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($annot instanceof ODM\Indexes) {
                 trigger_deprecation(
                     'doctrine/mongodb-odm',
-                    '2.1',
+                    '2.2',
                     'The "@Indexes" annotation used in class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" annotations on the class.',
                     $className
                 );
