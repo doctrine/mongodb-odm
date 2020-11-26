@@ -57,11 +57,6 @@ jobs:
       after_script:
         - bash <(curl -s https://codecov.io/bash)
 
-    # Performance tests
-    - stage: Performance
-      php: 7.3
-      script: vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate
-
 before_install:
   - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
 

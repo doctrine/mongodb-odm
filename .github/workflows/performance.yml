@@ -1,0 +1,49 @@
+name: "Performance tests"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+      - "master"
+  push:
+
+jobs:
+  performance-tests:
+    name: "Performance Tests"
+    runs-on: "ubuntu-20.04"
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.3"
+
+    services:
+      mongodb:
+        image: "mongo"
+        ports:
+          - "27017:27017"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          extensions: "mongodb, bcmath"
+          php-version: "${{ matrix.php-version }}"
+
+      - name: "Cache dependencies installed with Composer"
+        uses: "actions/cache@v2"
+        with:
+          path: "~/.composer/cache"
+          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
+
+      - name: "Install dependencies with Composer"
+        run: "composer install --no-interaction --no-progress --no-suggest"
+
+      # https://github.com/doctrine/.github/issues/3
+      - name: "Run PHP_CodeSniffer"
+        run: "vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate"
