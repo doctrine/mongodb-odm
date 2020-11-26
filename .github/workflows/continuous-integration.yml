@@ -23,6 +23,7 @@ jobs:
           - "7.2"
           - "7.3"
           - "7.4"
+          - "8.0"
         mongodb-version:
           - "4.4"
           - "4.2"
@@ -87,7 +88,11 @@ jobs:
 
       - name: "Install dependencies with composer"
         run: "composer update --no-interaction --no-progress"
-        if: "${{ matrix.deps == 'normal' }}"
+        if: "${{ matrix.deps == 'normal' && matrix.php-version != '8.0' }}"
+
+      - name: "Install dependencies with composer (PHP 8)"
+        run: "composer remove --ignore-platform-req=php --dev doctrine/coding-standard phpbench/phpbench phpstan/phpstan squizlabs/php_codesniffer"
+        if: "${{ matrix.php-version == '8.0' }}"
 
       - name: "Install lowest possible dependencies with composer"
         run: "composer update --no-interaction --no-progress --prefer-dist --prefer-lowest"
