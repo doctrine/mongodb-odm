@@ -21,7 +21,6 @@ use LogicException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionProperty;
-use const E_USER_DEPRECATED;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -41,7 +40,7 @@ use function ltrim;
 use function sprintf;
 use function strtolower;
 use function strtoupper;
-use function trigger_error;
+use function trigger_deprecation;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -1999,11 +1998,13 @@ use function trigger_error;
             Type::INTID => Type::INT,
         ];
         if (isset($deprecatedTypes[$mapping['type']])) {
-            @trigger_error(sprintf(
-                '"%s" type was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use "%s" instead.',
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.1',
+                'The "%s" mapping type is deprecated. Use "%s" instead.',
                 $mapping['type'],
                 $deprecatedTypes[$mapping['type']]
-            ), E_USER_DEPRECATED);
+            );
         }
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;

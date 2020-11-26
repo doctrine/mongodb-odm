@@ -6,9 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use GeoJson\Geometry\Point;
-use const E_USER_DEPRECATED;
-use function sprintf;
-use function trigger_error;
+use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -37,9 +35,12 @@ abstract class Stage
      */
     public function execute(array $options = []) : Iterator
     {
-        @trigger_error(
-            sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.', __METHOD__),
-            E_USER_DEPRECATED
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.2',
+            'Using "%s" is deprecated, use "%s::getAggregation()" instead.',
+            __METHOD__,
+            self::class
         );
 
         return $this->builder->execute($options);
