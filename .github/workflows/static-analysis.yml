@@ -44,6 +44,9 @@ jobs:
           extensions: "mongodb, bcmath"
           php-version: "${{ matrix.php-version }}"
 
+      - name: "Show driver information"
+        run: "php --ri mongodb"
+
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@v2"
         with:

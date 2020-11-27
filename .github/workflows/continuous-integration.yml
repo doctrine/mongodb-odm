@@ -75,6 +75,9 @@ jobs:
           coverage: "none"
           ini-values: "zend.assertions=1"
 
+      - name: "Show driver information"
+        run: "php --ri mongodb"
+
       - name: "Cache dependencies installed with composer"
         uses: "actions/cache@v2"
         with:
