@@ -13,7 +13,6 @@ use GeoJson\Geometry\Point;
 use MongoDB\Collection;
 use OutOfRangeException;
 use TypeError;
-use const E_USER_DEPRECATED;
 use function array_map;
 use function array_unshift;
 use function func_get_arg;
@@ -22,7 +21,7 @@ use function gettype;
 use function is_array;
 use function is_bool;
 use function sprintf;
-use function trigger_error;
+use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -169,9 +168,12 @@ class Builder
      */
     public function execute(array $options = []) : Iterator
     {
-        @trigger_error(
-            sprintf('The "%s" method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.', __METHOD__),
-            E_USER_DEPRECATED
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.2',
+            'Using "%s" is deprecated. Please use "%s::getAggregation()" instead.',
+            __METHOD__,
+            self::class
         );
 
         return $this->getAggregation($options)->getIterator();

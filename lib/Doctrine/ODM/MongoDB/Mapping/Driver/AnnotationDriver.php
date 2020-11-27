@@ -15,7 +15,6 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use ReflectionClass;
 use ReflectionMethod;
-use const E_USER_DEPRECATED;
 use function array_merge;
 use function array_replace;
 use function assert;
@@ -25,8 +24,7 @@ use function count;
 use function get_class;
 use function interface_exists;
 use function is_array;
-use function sprintf;
-use function trigger_error;
+use function trigger_deprecation;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -72,12 +70,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $this->addIndex($class, $annot);
             }
             if ($annot instanceof ODM\Indexes) {
-                @trigger_error(
-                    sprintf(
-                        'Indexes annotation used in %s was deprecated in doctrine/mongodb-odm 2.2 and will be removed in 3.0. Specify all Index and UniqueIndex annotations on a class level.',
-                        $className
-                    ),
-                    E_USER_DEPRECATED
+                trigger_deprecation(
+                    'doctrine/mongodb-odm',
+                    '2.2',
+                    'The "@Indexes" annotation used in class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" annotations on the class.',
+                    $className
                 );
                 $value = $annot->value;
                 foreach (is_array($value) ? $value : [$value] as $index) {
@@ -150,14 +147,14 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $class->setWriteConcern($documentAnnot->writeConcern);
         }
         if (isset($documentAnnot->indexes) && count($documentAnnot->indexes)) {
-            @trigger_error(
-                sprintf(
-                    'Indexes parameter used in %s\'s %s was deprecated in doctrine/mongodb-odm 2.2 and will be removed in 3.0. Specify all Index and UniqueIndex annotations on a class level.',
-                    $className,
-                    get_class($documentAnnot)
-                ),
-                E_USER_DEPRECATED
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.2',
+                'The "indexes" parameter in the "%s" annotation for class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" annotations on the class.',
+                $className,
+                get_class($documentAnnot)
             );
+
             foreach ($documentAnnot->indexes as $index) {
                 $this->addIndex($class, $index);
             }
@@ -180,9 +177,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             foreach ($this->reader->getPropertyAnnotations($property) as $annot) {
                 if ($annot instanceof ODM\AbstractField) {
                     $fieldAnnot = $annot;
-                    if ($annot->isDeprecated()) {
-                        @trigger_error($annot->getDeprecationMessage(), E_USER_DEPRECATED);
-                    }
                 }
                 if ($annot instanceof ODM\AbstractIndex) {
                     $indexes[] = $annot;
