@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache;
 
-use Doctrine\Common\Cache\ApcCache;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
-use LogicException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function assert;
 
 use const PHP_EOL;
 
@@ -38,20 +39,18 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dm          = $this->getHelper('documentManager')->getDocumentManager();
-        $cacheDriver = $dm->getConfiguration()->getMetadataCacheImpl();
+        $dm = $this->getHelper('documentManager')->getDocumentManager();
+        assert($dm instanceof DocumentManager);
+
+        $cacheDriver = $dm->getConfiguration()->getMetadataCache();
 
         if (! $cacheDriver) {
             throw new InvalidArgumentException('No Metadata cache driver is configured on given DocumentManager.');
         }
 
-        if ($cacheDriver instanceof ApcCache) {
-            throw new LogicException('Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
-        }
-
         $output->write('Clearing ALL Metadata cache entries' . PHP_EOL);
 
-        $success = $cacheDriver->deleteAll();
+        $success = $cacheDriver->clear();
 
         if ($success) {
             $output->write('The cache entries were successfully deleted.' . PHP_EOL);

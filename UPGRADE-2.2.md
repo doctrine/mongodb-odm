@@ -22,3 +22,11 @@ Using `@Index` annotation(s) on a class level is a preferred way for defining
 indexes for documents. Using `@Index` in the `@Indexes` annotation or an `indexes`
 property of other annotations was deprecated and will be removed in ODM 3.0.
 
+## DocumentManager configuration
+
+Using doctrine/cache to cache metadata is deprecated in favor of using PSR-6.
+The `getMetadataCacheImpl` and `setMetadataCacheImpl` methods in
+`Doctrine\ODM\MongoDB\Configuration` have been deprecated. Please use
+`getMetadataCache`and `setMetadataCache` with a PSR-6 implementation instead.
+Note that even after switching to PSR-6, `getMetadataCacheImpl` will return a
+cache instance that wraps the PSR-6 cache.

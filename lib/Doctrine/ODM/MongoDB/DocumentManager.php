@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -35,6 +36,7 @@ use function get_class;
 use function gettype;
 use function is_object;
 use function ltrim;
+use function method_exists;
 use function sprintf;
 
 /**
@@ -178,9 +180,13 @@ class DocumentManager implements ObjectManager
         $this->metadataFactory->setDocumentManager($this);
         $this->metadataFactory->setConfiguration($this->config);
 
-        $cacheDriver = $this->config->getMetadataCacheImpl();
+        $cacheDriver = $this->config->getMetadataCache();
         if ($cacheDriver) {
-            $this->metadataFactory->setCacheDriver($cacheDriver);
+            if (method_exists($this->metadataFactory, 'setCache')) {
+                $this->metadataFactory->setCache($cacheDriver);
+            } else {
+                $this->metadataFactory->setCacheDriver(DoctrineProvider::wrap($cacheDriver));
+            }
         }
 
         $hydratorDir           = $this->config->getHydratorDir();

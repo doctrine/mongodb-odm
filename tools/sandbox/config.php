@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
 
 $file = __DIR__ . '/../../vendor/autoload.php';
 
@@ -23,8 +24,7 @@ $config->setProxyNamespace('Proxies');
 $config->setHydratorDir(__DIR__ . '/Hydrators');
 $config->setHydratorNamespace('Hydrators');
 $config->setDefaultDB('doctrine_odm_sandbox');
-// $config->setLoggerCallable(function(array $log) { print_r($log); });
-// $config->setMetadataCacheImpl(new Doctrine\Common\Cache\ApcCache());
+$config->setMetadataCache(new ApcuAdapter());
 $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
 
 $dm = DocumentManager::create(null, $config);

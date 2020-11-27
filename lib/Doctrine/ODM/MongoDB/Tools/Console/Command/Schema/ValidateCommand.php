@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
-use Doctrine\Common\Cache\VoidCache;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,7 +39,6 @@ EOT
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         assert($dm instanceof DocumentManager);
         $metadataFactory = $dm->getMetadataFactory();
-        $metadataFactory->setCacheDriver(new VoidCache());
 
         $errors = 0;
         foreach ($metadataFactory->getAllMetadata() as $meta) {
