@@ -7,9 +7,6 @@ on:
       - "*.x"
       - "master"
   push:
-    branches:
-      - "*.x"
-      - "master"
 
 jobs:
   coding-standards:
@@ -25,12 +22,31 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v2"
 
+      - name: Setup cache environment
+        id: extcache
+        uses: shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: "mongodb-${{ matrix.driver-version }}, bcmath"
+          key: "extcache-v1"
+
+      - name: Cache extensions
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.extcache.outputs.dir }}
+          key: ${{ steps.extcache.outputs.key }}
+          restore-keys: ${{ steps.extcache.outputs.key }}
+
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
+          extensions: "mongodb, bcmath"
           php-version: "${{ matrix.php-version }}"
           tools: "cs2pr"
+
+      - name: "Show driver information"
+        run: "php --ri mongodb"
 
       - name: "Cache dependencies installed with Composer"
         uses: "actions/cache@v2"

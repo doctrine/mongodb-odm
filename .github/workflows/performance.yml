@@ -1,5 +1,4 @@
-
-name: "Static Analysis"
+name: "Performance tests"
 
 on:
   pull_request:
@@ -9,17 +8,23 @@ on:
   push:
 
 jobs:
-  static-analysis-phpstan:
-    name: "Static Analysis with PHPStan"
+  performance-tests:
+    name: "Performance Tests"
     runs-on: "ubuntu-20.04"
 
     strategy:
       matrix:
         php-version:
-          - "7.4"
+          - "7.3"
+
+    services:
+      mongodb:
+        image: "mongo"
+        ports:
+          - "27017:27017"
 
     steps:
-      - name: "Checkout code"
+      - name: "Checkout"
         uses: "actions/checkout@v2"
 
       - name: Setup cache environment
@@ -47,15 +52,16 @@ jobs:
       - name: "Show driver information"
         run: "php --ri mongodb"
 
-      - name: "Cache dependencies installed with composer"
+      - name: "Cache dependencies installed with Composer"
         uses: "actions/cache@v2"
         with:
           path: "~/.composer/cache"
           key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
           restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
 
-      - name: "Install dependencies with composer"
-        run: "composer install --no-interaction --no-progress --no-suggest"
+      - name: "Install dependencies with Composer"
+        run: "composer install --no-interaction --no-progress"
 
-      - name: "Run a static analysis with phpstan/phpstan"
-        run: "vendor/bin/phpstan analyse --error-format=github"
+      # https://github.com/doctrine/.github/issues/3
+      - name: "Run PHP_CodeSniffer"
+        run: "vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate"
