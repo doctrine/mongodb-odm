@@ -55,7 +55,7 @@ jobs:
           restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
 
       - name: "Install dependencies with composer"
-        run: "composer install --no-interaction --no-progress --no-suggest"
+        run: "composer install --no-interaction --no-progress"
 
       - name: "Run a static analysis with phpstan/phpstan"
         run: "vendor/bin/phpstan analyse --error-format=github"
@@ -88,7 +88,7 @@ jobs:
           restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
 
       - name: "Install dependencies with composer"
-        run: "composer install --no-interaction --no-progress --no-suggest"
+        run: "composer install --no-interaction --no-progress"
 
       - name: "Run a static analysis with vimeo/psalm"
         run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"
