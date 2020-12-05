@@ -2777,15 +2777,15 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Notifies this UnitOfWork of a property change in a document.
      *
-     * @param object $document     The document that owns the property.
+     * @param object $sender       The document that owns the property.
      * @param string $propertyName The name of the property that changed.
      * @param mixed  $oldValue     The old value of the property.
      * @param mixed  $newValue     The new value of the property.
      */
-    public function propertyChanged($document, $propertyName, $oldValue, $newValue)
+    public function propertyChanged($sender, $propertyName, $oldValue, $newValue)
     {
-        $oid   = spl_object_hash($document);
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $oid   = spl_object_hash($sender);
+        $class = $this->dm->getClassMetadata(get_class($sender));
 
         if (! isset($class->fieldMappings[$propertyName])) {
             return; // ignore non-persistent fields
@@ -2797,7 +2797,7 @@ final class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        $this->scheduleForSynchronization($document);
+        $this->scheduleForSynchronization($sender);
     }
 
     /**

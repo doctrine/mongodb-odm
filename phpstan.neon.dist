@@ -2,7 +2,6 @@ includes:
   - phpstan-baseline.neon
 
 parameters:
-  treatPhpDocTypesAsCertain: false
   level: 5
   paths:
     - %rootDir%/../../../benchmark

@@ -11,6 +11,8 @@ use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 use InvalidArgumentException;
 use function array_map;
 use function array_values;
+use function assert;
+use function is_string;
 
 /**
  * Collection class for all the query filters.
@@ -75,7 +77,8 @@ final class FilterCollection
         }
 
         if (! $this->isEnabled($name)) {
-            $filterClass      = $this->config->getFilterClassName($name);
+            $filterClass = $this->config->getFilterClassName($name);
+            assert(is_string($filterClass));
             $filterParameters = $this->config->getFilterParameters($name);
             $filter           = new $filterClass($this->dm);
 

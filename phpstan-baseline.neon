@@ -1,22 +1,27 @@
 parameters:
-	ignoreErrors:
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$applyFilters$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
+    ignoreErrors:
+        # Adding a parameter would be BC-break
+        -
+            message: "#^PHPDoc tag @param references unknown parameter\\: \\$applyFilters$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
 
-		-
-			message: "#^Unsafe usage of new static\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
+        # Making classes final as suggested would be a BC-break
+        -
+            message: "#^Unsafe usage of new static\\(\\)\\.$#"
+            paths:
+                 - lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
+                 - lib/Doctrine/ODM/MongoDB/DocumentManager.php
 
-		-
-			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php
+        # The limit option in GeoNear has been removed in MongoDB 4.2 in favor of $limit stage
+        -
+            message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php
 
-		-
-			message: "#^Unsafe usage of new static\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
+        # Union types cannot be added yet
+        -
+            message: "#^Result of && is always false\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Query/Builder.php
 
