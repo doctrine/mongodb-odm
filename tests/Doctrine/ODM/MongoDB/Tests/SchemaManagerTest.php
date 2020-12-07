@@ -617,6 +617,16 @@ class SchemaManagerTest extends BaseTest
                 'mongoIndex' => ['key' => ['foo' => 1]],
                 'documentIndex' => ['keys' => ['foo' => -1]],
             ],
+            'compoundIndexKeysSame' => [
+                'expected' => true,
+                'mongoIndex' => ['key' => ['foo' => 1, 'baz' => 1]],
+                'documentIndex' => ['keys' => ['foo' => 1, 'baz' => 1]],
+            ],
+            'compoundIndexKeysSameDifferentOrder' => [
+                'expected' => false,
+                'mongoIndex' => ['key' => ['foo' => 1, 'baz' => 1]],
+                'documentIndex' => ['keys' => ['baz' => 1, 'foo' => 1]],
+            ],
             // Sparse option
             'sparseOnlyInMongoIndex' => [
                 'expected' => false,
@@ -824,33 +834,44 @@ class SchemaManagerTest extends BaseTest
             'compoundIndexKeysSameAndWeightsSame' => [
                 'expected' => true,
                 'mongoIndex' => [
+                    'key' => ['a' => -1, '_fts' => 'text', '_ftsx' => 1, 'd' => 1],
+                    'weights' => ['b' => 1, 'c' => 2],
+                ],
+                'documentIndex' => [
+                    'keys' => ['a' => -1, 'b' => 'text', 'c' => 'text',  'd' => 1],
+                    'options' => ['weights' => ['b' => 1, 'c' => 2]],
+                ],
+            ],
+            'compoundIndexKeysDifferentOrder' => [
+                'expected' => false,
+                'mongoIndex' => [
                     'key' => ['_fts' => 'text', '_ftsx' => 1, 'a' => -1, 'd' => 1],
                     'weights' => ['b' => 1, 'c' => 2],
                 ],
                 'documentIndex' => [
-                    'keys' => ['a' => -1,  'b' => 'text', 'c' => 'text', 'd' => 1],
+                    'keys' => ['a' => -1, 'b' => 'text', 'c' => 'text', 'd' => 1],
                     'options' => ['weights' => ['b' => 1, 'c' => 2]],
                 ],
             ],
             'compoundIndexKeysSameAndWeightsDiffer' => [
                 'expected' => false,
                 'mongoIndex' => [
-                    'key' => ['_fts' => 'text', '_ftsx' => 1, 'a' => -1, 'd' => 1],
+                    'key' => ['a' => -1, '_fts' => 'text', '_ftsx' => 1, 'd' => 1],
                     'weights' => ['b' => 1, 'c' => 2],
                 ],
                 'documentIndex' => [
-                    'keys' => ['a' => -1,  'b' => 'text', 'c' => 'text', 'd' => 1],
+                    'keys' => ['a' => -1, 'b' => 'text', 'c' => 'text', 'd' => 1],
                     'options' => ['weights' => ['b' => 3, 'c' => 2]],
                 ],
             ],
             'compoundIndexKeysDifferAndWeightsSame' => [
                 'expected' => false,
                 'mongoIndex' => [
-                    'key' => ['_fts' => 'text', '_ftsx' => 1, 'a' => 1, 'd' => 1],
+                    'key' => ['a' => 1, '_fts' => 'text', '_ftsx' => 1, 'd' => 1],
                     'weights' => ['b' => 1, 'c' => 2],
                 ],
                 'documentIndex' => [
-                    'keys' => ['a' => -1,  'b' => 'text', 'c' => 'text', 'd' => 1],
+                    'keys' => ['a' => -1, 'b' => 'text', 'c' => 'text', 'd' => 1],
                     'options' => ['weights' => ['b' => 1, 'c' => 2]],
                 ],
             ],
