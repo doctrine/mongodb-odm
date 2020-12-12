@@ -14,9 +14,13 @@ use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
 use function array_diff_key;
 use function array_filter;
+use function array_keys;
 use function array_merge;
+use function array_search;
 use function array_unique;
+use function array_values;
 use function assert;
+use function in_array;
 use function is_string;
 use function iterator_count;
 use function iterator_to_array;
@@ -460,11 +464,35 @@ final class SchemaManager
             });
         }
 
-        /* Avoid a strict equality check here. The numeric type returned by
-         * MongoDB may differ from the document index without implying that the
-         * indexes themselves are inequivalent. */
+        /* Avoid a strict equality check of the arrays here. The numeric type returned
+         * by MongoDB may differ from the document index without implying that the
+         * indexes themselves are inequivalent. The strict check of the keys asserts
+         * that the order of the keys remained the same. */
         // phpcs:disable SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
-        return $mongoIndexKeys == $documentIndexKeys;
+        return $this->hasTextIndexesAtSamePosition($mongoIndex, $documentIndex) &&
+            array_keys($mongoIndexKeys) === array_keys($documentIndexKeys) &&
+            $mongoIndexKeys == $documentIndexKeys;
+    }
+
+    private function hasTextIndexesAtSamePosition(IndexInfo $mongoIndex, array $documentIndex) : bool
+    {
+        $mongoIndexKeys    = $mongoIndex['key'];
+        $documentIndexKeys = $documentIndex['keys'];
+
+        if (! isset($mongoIndexKeys['_fts']) && ! in_array('text', $documentIndexKeys, true)) {
+            return true;
+        }
+
+        /*
+         * We unset _ftsx to avoid the uncertainty whether _fts really comes first and
+         * therefore denotes the position of the text index.
+         */
+        unset($mongoIndexKeys['_ftsx']);
+
+        $mongoIndexTextPosition    = array_search('_fts', array_keys($mongoIndexKeys), true);
+        $documentIndexTextPosition = array_search('text', array_values($documentIndexKeys), true);
+
+        return $mongoIndexTextPosition === $documentIndexTextPosition;
     }
 
     /**
