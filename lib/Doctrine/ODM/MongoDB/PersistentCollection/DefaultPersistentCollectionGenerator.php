@@ -190,6 +190,11 @@ CODE;
         $parametersString = $this->buildParametersString($method);
         $callParamsString = implode(', ', $this->getParameterNamesForDecoratedCall($method->getParameters()));
 
+        $return = 'return ';
+        if ($method->getReturnType() !== null && $this->formatType($method->getReturnType(), $method) === 'void') {
+            $return = '';
+        }
+
         return <<<CODE
 
     /**
@@ -201,7 +206,7 @@ CODE;
         if (\$this->needsSchedulingForSynchronization()) {
             \$this->changed();
         }
-        return \$this->coll->{$method->name}($callParamsString);
+        {$return}\$this->coll->{$method->name}($callParamsString);
     }
 
 CODE;
