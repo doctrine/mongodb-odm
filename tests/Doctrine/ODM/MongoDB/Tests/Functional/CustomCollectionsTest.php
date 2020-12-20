@@ -168,6 +168,19 @@ class CustomCollectionsTest extends BaseTest
         $this->assertEquals($f2->getId(), $profile->getImages()[0]->getId());
         $this->assertEquals($f1->getId(), $profile->getImages()[1]->getId());
     }
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testMethodWithVoidReturnType()
+    {
+        $d = new DocumentWithCustomCollection();
+        $this->dm->persist($d);
+        $this->dm->flush();
+
+        $d = $this->dm->find(get_class($d), $d->id);
+        $d->coll->nothingReally();
+    }
 }
 
 /**
@@ -259,6 +272,10 @@ class MyEmbedsCollection extends ArrayCollection
         $tmp = $this->get($i);
         $this->set($i, $this->get($j));
         $this->set($j, $tmp);
+    }
+
+    public function nothingReally() : void
+    {
     }
 }
 
