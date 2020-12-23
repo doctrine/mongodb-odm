@@ -86,13 +86,13 @@ jobs:
           key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
           restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
 
+      - name: "Prepare PHP 8 dependencies"
+        run: "composer remove --no-update --ignore-platform-req=php --dev doctrine/coding-standard phpbench/phpbench phpstan/phpstan squizlabs/php_codesniffer"
+        if: "${{ matrix.php-version == '8.0' }}"
+
       - name: "Install dependencies with composer"
         run: "composer update --no-interaction --no-progress"
-        if: "${{ matrix.deps == 'normal' && matrix.php-version != '8.0' }}"
-
-      - name: "Install dependencies with composer (PHP 8)"
-        run: "composer remove --ignore-platform-req=php --dev doctrine/coding-standard phpbench/phpbench phpstan/phpstan squizlabs/php_codesniffer"
-        if: "${{ matrix.php-version == '8.0' }}"
+        if: "${{ matrix.deps == 'normal' }}"
 
       - name: "Install lowest possible dependencies with composer"
         run: "composer update --no-interaction --no-progress --prefer-dist --prefer-lowest"
