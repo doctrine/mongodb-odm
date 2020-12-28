@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Configuration;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
 use ReflectionUnionType;
@@ -24,7 +25,6 @@ use function implode;
 use function interface_exists;
 use function is_dir;
 use function is_writable;
-use function method_exists;
 use function mkdir;
 use function rename;
 use function sprintf;
@@ -305,7 +305,8 @@ CODE;
             ));
         }
 
-        $name      = method_exists($type, 'getName') ? $type->getName() : (string) $type;
+        assert($type instanceof ReflectionNamedType);
+        $name      = $type->getName();
         $nameLower = strtolower($name);
         if ($nameLower === 'self') {
             $name = $method->getDeclaringClass()->getName();
