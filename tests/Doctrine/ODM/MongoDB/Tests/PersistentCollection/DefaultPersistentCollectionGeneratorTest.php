@@ -7,6 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests\PersistentCollection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use function phpversion;
+use function version_compare;
 
 /**
  * Tests aims to check if classes generated for various PHP versions are correct (i.e. parses).
@@ -44,5 +46,16 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
         $class = $this->generator->loadClass(CollWithNullableReturnType::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollWithNullableReturnType(), $this->dm, $this->uow);
         $this->assertInstanceOf(CollWithNullableReturnType::class, $coll);
+    }
+
+    public function testPHP80Types()
+    {
+        if (version_compare((string) phpversion(), '8.0.0', '<')) {
+            $this->markTestSkipped('PHP 8.0 is required to run this test');
+        }
+
+        $class = $this->generator->loadClass(CollWithPHP80Types::class, Configuration::AUTOGENERATE_EVAL);
+        $coll  = new $class(new CollWithPHP80Types(), $this->dm, $this->uow);
+        $this->assertInstanceOf(CollWithPHP80Types::class, $coll);
     }
 }
