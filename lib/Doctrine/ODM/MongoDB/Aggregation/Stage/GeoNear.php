@@ -11,7 +11,7 @@ use function is_array;
 /**
  * Fluent interface for adding a $geoNear stage to an aggregation pipeline.
  */
-class GeoNear extends Match
+class GeoNear extends MatchStage
 {
     /** @var string */
     private $distanceField;

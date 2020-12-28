@@ -9,6 +9,13 @@ to the `Query` class.
 The `Doctrine\ODM\MongoDB\Aggregation\Builder::execute()` method was deprecated
 and will be removed in ODM 3.0.
 
+The `Doctrine\ODM\MongoDB\Aggregation\Stage\Match` and 
+`Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup\Match` classes were
+deprecated and replaced by `Doctrine\ODM\MongoDB\Aggregation\Stage\MatchStage`
+and `Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup\MatchStage`
+respectively. This change was necessary due to `match` being a reserved keyword
+in PHP 8. You must replace any usage of this class before you migrate to PHP 8.
+
 ## Document indexes (annotations)
 
 Using `@Index` annotation(s) on a class level is a preferred way for defining

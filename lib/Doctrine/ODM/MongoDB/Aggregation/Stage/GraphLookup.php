@@ -42,7 +42,7 @@ class GraphLookup extends Stage
     /** @var string */
     private $depthField;
 
-    /** @var Stage\GraphLookup\Match */
+    /** @var Stage\GraphLookup\MatchStage */
     private $restrictSearchWithMatch;
 
     /** @var DocumentManager */
@@ -64,7 +64,7 @@ class GraphLookup extends Stage
 
         $this->dm                      = $documentManager;
         $this->class                   = $class;
-        $this->restrictSearchWithMatch = new GraphLookup\Match($this->builder, $this);
+        $this->restrictSearchWithMatch = new GraphLookup\MatchStage($this->builder, $this);
         $this->from($from);
     }
 
@@ -218,7 +218,7 @@ class GraphLookup extends Stage
     /**
      * A document specifying additional conditions for the recursive search.
      */
-    public function restrictSearchWithMatch() : GraphLookup\Match
+    public function restrictSearchWithMatch() : GraphLookup\MatchStage
     {
         return $this->restrictSearchWithMatch;
     }

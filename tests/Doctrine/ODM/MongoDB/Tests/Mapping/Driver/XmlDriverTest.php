@@ -66,7 +66,7 @@ class XmlDriverTest extends AbstractDriverTest
         $classMetadata = new ClassMetadata(InvalidPartialFilterDocument::class);
 
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessageRegExp('#The mapping file .+ is invalid#');
+        $this->expectExceptionMessageMatches('#The mapping file .+ is invalid#');
 
         $this->driver->loadMetadataForClass(InvalidPartialFilterDocument::class, $classMetadata);
     }

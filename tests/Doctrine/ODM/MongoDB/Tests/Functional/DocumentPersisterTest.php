@@ -509,22 +509,22 @@ class DocumentPersisterTest extends BaseTest
     {
         yield 'Direct comparison' => [
             'expected' => ['complexRef.date' => new UTCDateTime('1590710400000')],
-            'query' => ['complexRef.date' => new DateTime('2020-05-29')],
+            'query' => ['complexRef.date' => DateTime::createFromFormat('U', '1590710400')],
         ];
 
         yield 'Operator with single value' => [
             'expected' => ['complexRef.date' => ['$ne' => new UTCDateTime('1590710400000')]],
-            'query' => ['complexRef.date' => ['$ne' => new DateTime('2020-05-29')]],
+            'query' => ['complexRef.date' => ['$ne' => DateTime::createFromFormat('U', '1590710400')]],
         ];
 
         yield 'Operator with multiple values' => [
             'expected' => ['complexRef.date' => ['$in' => [new UTCDateTime('1590710400000'), new UTCDateTime('1590796800000')]]],
-            'query' => ['complexRef.date' => ['$in' => [new DateTime('2020-05-29'), new DateTime('2020-05-30')]]],
+            'query' => ['complexRef.date' => ['$in' => [DateTime::createFromFormat('U', '1590710400'), DateTime::createFromFormat('U', '1590796800')]]],
         ];
 
         yield 'Nested operator' => [
             'expected' => ['complexRef.date' => ['$not' => ['$in' => [new UTCDateTime('1590710400000'), new UTCDateTime('1590796800000')]]]],
-            'query' => ['complexRef.date' => ['$not' => ['$in' => [new DateTime('2020-05-29'), new DateTime('2020-05-30')]]]],
+            'query' => ['complexRef.date' => ['$not' => ['$in' => [DateTime::createFromFormat('U', '1590710400'), DateTime::createFromFormat('U', '1590796800')]]]],
         ];
     }
 
@@ -643,7 +643,7 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
+            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->containsEqual($writeConcern)));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -667,7 +667,7 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('updateOne')
-            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
+            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->containsEqual($writeConcern)));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -692,7 +692,7 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('deleteOne')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->contains($writeConcern)));
+            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->containsEqual($writeConcern)));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);

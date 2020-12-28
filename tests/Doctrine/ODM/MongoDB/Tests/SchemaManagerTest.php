@@ -26,9 +26,14 @@ use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use MongoDB\Model\IndexInfo;
 use MongoDB\Model\IndexInfoIteratorIterator;
+use PHPUnit\Framework\Constraint\ArrayHasKey;
 use PHPUnit\Framework\Constraint\ArraySubset;
+use PHPUnit\Framework\Constraint\Callback;
+use PHPUnit\Framework\Constraint\Constraint;
+use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
 use function array_map;
+use function class_exists;
 use function in_array;
 
 class SchemaManagerTest extends BaseTest
@@ -119,7 +124,7 @@ class SchemaManagerTest extends BaseTest
                 'maxTimeMs' => null,
                 'writeConcern' => $writeConcern,
             ],
-            'maxTimeMsAndWriteConern' => [
+            'maxTimeMsAndWriteConcern' => [
                 'expectedWriteOptions' => ['maxTimeMs' => 1000, 'writeConcern' => $writeConcern],
                 'maxTimeMs' => 1000,
                 'writeConcern' => $writeConcern,
@@ -161,7 +166,7 @@ class SchemaManagerTest extends BaseTest
                 $collection
                     ->expects($this->atLeastOnce())
                     ->method('createIndex')
-                    ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+                    ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('createIndex');
             }
@@ -175,7 +180,7 @@ class SchemaManagerTest extends BaseTest
             $bucket->getFilesCollection()
                 ->expects($this->atLeastOnce())
                 ->method('createIndex')
-                ->with(['filename' => 1, 'uploadDate' => 1], new ArraySubset($expectedWriteOptions));
+                ->with(['filename' => 1, 'uploadDate' => 1], $this->writeOptions($expectedWriteOptions));
 
             $bucket->getChunksCollection()
                 ->expects($this->any())
@@ -184,7 +189,7 @@ class SchemaManagerTest extends BaseTest
             $bucket->getChunksCollection()
                 ->expects($this->atLeastOnce())
                 ->method('createIndex')
-                ->with(['files_id' => 1, 'n' => 1], new ArraySubset(['unique' => true] + $expectedWriteOptions));
+                ->with(['files_id' => 1, 'n' => 1], $this->writeOptions(['unique' => true] + $expectedWriteOptions));
         }
 
         $this->schemaManager->ensureIndexes($maxTimeMs, $writeConcern, $background);
@@ -201,7 +206,7 @@ class SchemaManagerTest extends BaseTest
                 $collection
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+                    ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('createIndex');
             }
@@ -229,7 +234,7 @@ class SchemaManagerTest extends BaseTest
                 $bucket->getFilesCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['filename' => 1, 'uploadDate' => 1], new ArraySubset($expectedWriteOptions));
+                    ->with(['filename' => 1, 'uploadDate' => 1], $this->writeOptions($expectedWriteOptions));
 
                 $bucket->getChunksCollection()
                     ->expects($this->any())
@@ -238,7 +243,7 @@ class SchemaManagerTest extends BaseTest
                 $bucket->getChunksCollection()
                     ->expects($this->once())
                     ->method('createIndex')
-                    ->with(['files_id' => 1, 'n' => 1], new ArraySubset(['unique' => true] + $expectedWriteOptions));
+                    ->with(['files_id' => 1, 'n' => 1], $this->writeOptions(['unique' => true] + $expectedWriteOptions));
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('createIndex');
                 $bucket->getChunksCollection()->expects($this->never())->method('createIndex');
@@ -258,7 +263,7 @@ class SchemaManagerTest extends BaseTest
         $collection
             ->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
 
         $this->schemaManager->ensureDocumentIndexes(CmsProduct::class, $maxTimeMs, $writeConcern, $background);
     }
@@ -277,11 +282,11 @@ class SchemaManagerTest extends BaseTest
         $collection
             ->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
         $collection
             ->expects($this->never())
             ->method('dropIndex')
-            ->with(new ArraySubset($expectedWriteOptions));
+            ->with($this->writeOptions($expectedWriteOptions));
 
         $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
@@ -308,11 +313,11 @@ class SchemaManagerTest extends BaseTest
         $collection
             ->expects($this->once())
             ->method('createIndex')
-            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
         $collection
             ->expects($this->once())
             ->method('dropIndex')
-            ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
 
         $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
@@ -336,7 +341,7 @@ class SchemaManagerTest extends BaseTest
                 $collection
                     ->expects($this->atLeastOnce())
                     ->method('dropIndexes')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             }
         }
 
@@ -354,7 +359,7 @@ class SchemaManagerTest extends BaseTest
                 $collection
                     ->expects($this->once())
                     ->method('dropIndexes')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('dropIndexes');
             }
@@ -384,7 +389,7 @@ class SchemaManagerTest extends BaseTest
             ->method('createCollection')
             ->with(
                 'CmsArticle',
-                new ArraySubset($options + $expectedWriteOptions)
+                $this->writeOptions($options + $expectedWriteOptions)
             );
 
         $this->schemaManager->createDocumentCollection(CmsArticle::class, $maxTimeMs, $writeConcern);
@@ -397,12 +402,12 @@ class SchemaManagerTest extends BaseTest
     {
         $database = $this->documentDatabases[$this->getDatabaseName($this->dm->getClassMetadata(File::class))];
         $database
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('createCollection')
-            ->with('fs.files', new ArraySubset($expectedWriteOptions));
-        $database->expects($this->at(1))
-            ->method('createCollection')
-            ->with('fs.chunks', new ArraySubset($expectedWriteOptions));
+            ->withConsecutive(
+                ['fs.files', $this->writeOptions($expectedWriteOptions)],
+                ['fs.chunks', $this->writeOptions($expectedWriteOptions)]
+            );
 
         $this->schemaManager->createDocumentCollection(File::class, $maxTimeMs, $writeConcern);
     }
@@ -433,7 +438,7 @@ class SchemaManagerTest extends BaseTest
                         ],
                     ],
                 ],
-                new ArraySubset($options + $expectedWriteOptions)
+                $this->writeOptions($options + $expectedWriteOptions)
             );
 
         $rootCollection = $this->documentCollections['CmsUser'];
@@ -453,12 +458,12 @@ class SchemaManagerTest extends BaseTest
             $database
                 ->expects($this->atLeastOnce())
                 ->method('createCollection')
-                ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+                ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
 
             $database
                 ->expects($this->atLeastOnce())
                 ->method('command')
-                ->with($this->anything(), new ArraySubset($expectedWriteOptions));
+                ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
         }
 
         $this->schemaManager->createCollections($maxTimeMs, $writeConcern);
@@ -472,7 +477,7 @@ class SchemaManagerTest extends BaseTest
         foreach ($this->documentCollections as $collection) {
             $collection->expects($this->atLeastOnce())
                 ->method('drop')
-                ->with(new ArraySubset($expectedWriteOptions));
+                ->with($this->writeOptions($expectedWriteOptions));
         }
 
         $this->schemaManager->dropCollections($maxTimeMs, $writeConcern);
@@ -488,7 +493,7 @@ class SchemaManagerTest extends BaseTest
             if ($collectionName === $cmsArticleCollectionName) {
                 $collection->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('drop');
             }
@@ -512,11 +517,11 @@ class SchemaManagerTest extends BaseTest
                 $bucket->getFilesCollection()
                     ->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
                 $bucket->getChunksCollection()
                     ->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $bucket->getFilesCollection()->expects($this->never())->method('drop');
                 $bucket->getChunksCollection()->expects($this->never())->method('drop');
@@ -536,7 +541,7 @@ class SchemaManagerTest extends BaseTest
             if ($collectionName === $viewName) {
                 $collection->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $collection->expects($this->never())->method('drop');
             }
@@ -556,7 +561,7 @@ class SchemaManagerTest extends BaseTest
                 $database
                     ->expects($this->once())
                     ->method('drop')
-                    ->with(new ArraySubset($expectedWriteOptions));
+                    ->with($this->writeOptions($expectedWriteOptions));
             } else {
                 $database->expects($this->never())->method('drop');
             }
@@ -574,7 +579,7 @@ class SchemaManagerTest extends BaseTest
             $database
                 ->expects($this->atLeastOnce())
                 ->method('drop')
-                ->with(new ArraySubset($expectedWriteOptions));
+                ->with($this->writeOptions($expectedWriteOptions));
         }
 
         $this->schemaManager->dropDatabases($maxTimeMs, $writeConcern);
@@ -973,5 +978,26 @@ class SchemaManagerTest extends BaseTest
         });
 
         return $db;
+    }
+
+    private function writeOptions(array $expectedWriteOptions) : Constraint
+    {
+        if (class_exists(ArraySubset::class)) {
+            return new ArraySubset($expectedWriteOptions);
+        }
+
+        return new Callback(static function ($value) use ($expectedWriteOptions) {
+            foreach ($expectedWriteOptions as $writeOption => $expectedValue) {
+                if (! (new ArrayHasKey($writeOption))->evaluate($value, '', true)) {
+                    return false;
+                }
+
+                if (! (new IsEqual($expectedValue))->evaluate($value[$writeOption], '', true)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
     }
 }

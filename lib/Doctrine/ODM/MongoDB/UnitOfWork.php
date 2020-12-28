@@ -529,7 +529,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the changeset for a document.
      *
-     * @return array array('property' => array(0 => mixed|null, 1 => mixed|null))
+     * @return array array('property' => array(0 => mixed, 1 => mixed))
      */
     public function getDocumentChangeSet(object $document) : array
     {

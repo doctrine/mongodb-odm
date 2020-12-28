@@ -29,7 +29,7 @@ class GH1344Test extends BaseTest
         // Ensure that at least the beginning of the index name is contained in
         // the exception message. This can vary between driver/server versions.
         $this->expectException(CommandException::class);
-        $this->expectExceptionMessageRegExp('#GH1344LongIndexName.\$embedded1_this_is_a_really_long_name_that#');
+        $this->expectExceptionMessageMatches('#GH1344LongIndexName.\$embedded1_this_is_a_really_long_name_that#');
 
         $this->dm->getSchemaManager()->ensureDocumentIndexes(GH1344LongIndexName::class);
     }

@@ -12,7 +12,7 @@ interface Versionable
     /**
      * Calculates next version.
      *
-     * @param mixed|null $current version currently in use, null if not versioned yet (i.e. first version)
+     * @param mixed $current version currently in use, null if not versioned yet (i.e. first version)
      *
      * @return mixed
      */

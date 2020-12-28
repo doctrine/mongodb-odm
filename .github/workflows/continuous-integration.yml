@@ -23,6 +23,7 @@ jobs:
           - "7.2"
           - "7.3"
           - "7.4"
+          - "8.0"
         mongodb-version:
           - "4.4"
           - "4.2"
@@ -84,6 +85,10 @@ jobs:
           path: "~/.composer/cache"
           key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
           restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
+
+      - name: "Prepare PHP 8 dependencies"
+        run: "composer remove --no-update --ignore-platform-req=php --dev doctrine/coding-standard phpstan/phpstan squizlabs/php_codesniffer"
+        if: "${{ matrix.php-version == '8.0' }}"
 
       - name: "Install dependencies with composer"
         run: "composer update --no-interaction --no-progress"
