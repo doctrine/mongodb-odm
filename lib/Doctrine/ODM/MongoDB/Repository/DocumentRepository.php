@@ -162,10 +162,13 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds a single document by a set of criteria.
+     *
+     * @param array      $criteria
+     * @param array|null $sort
      */
-    public function findOneBy(array $criteria) : ?object
+    public function findOneBy(array $criteria, ?array $sort = null) : ?object
     {
-        return $this->getDocumentPersister()->load($criteria);
+        return $this->getDocumentPersister()->load($criteria, null, [], 0, $sort);
     }
 
     public function getDocumentName() : string
