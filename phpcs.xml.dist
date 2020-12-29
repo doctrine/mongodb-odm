@@ -17,6 +17,7 @@
     <exclude-pattern>tests/Proxies*</exclude-pattern>
     <exclude-pattern>tests/Hydrators*</exclude-pattern>
     <exclude-pattern>tests/PersistentCollections*</exclude-pattern>
+    <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP80Types.php</exclude-pattern>
 
     <rule ref="Doctrine">
         <!-- Traversable type hints often end up as mixed[], so we skip them for now -->
