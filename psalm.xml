@@ -9,6 +9,8 @@
     <projectFiles>
         <directory name="lib/Doctrine/ODM/MongoDB" />
         <ignoreFiles>
+            <file name="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php" />
+            <file name="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php" />
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
