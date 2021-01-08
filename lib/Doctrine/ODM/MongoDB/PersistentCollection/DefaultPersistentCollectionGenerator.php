@@ -11,6 +11,7 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
+use ReflectionUnionType;
 use const DIRECTORY_SEPARATOR;
 use function array_map;
 use function array_pop;
@@ -24,7 +25,6 @@ use function implode;
 use function interface_exists;
 use function is_dir;
 use function is_writable;
-use function method_exists;
 use function mkdir;
 use function rename;
 use function sprintf;
@@ -254,15 +254,10 @@ CODE;
             throw new ReflectionException(sprintf('Parameter "%s" has no type. Please file a bug report.', $parameter->getName()));
         }
 
-        $type = $parameter->getType();
-        assert($type instanceof ReflectionNamedType);
+        $method = $parameter->getDeclaringFunction();
+        assert($method instanceof ReflectionMethod);
 
-        return sprintf(
-            '%s%s%s',
-            $type->allowsNull() ? '?' : '',
-            $type->isBuiltin() ? '' : '\\',
-            $type->getName()
-        );
+        return $this->formatType($parameter->getType(), $method, $parameter);
     }
 
     /**
@@ -301,7 +296,17 @@ CODE;
         ReflectionMethod $method,
         ?ReflectionParameter $parameter = null
     ) : string {
-        $name      = method_exists($type, 'getName') ? $type->getName() : (string) $type;
+        if ($type instanceof ReflectionUnionType) {
+            return implode('|', array_map(
+                function (ReflectionType $unionedType) use ($method, $parameter) {
+                    return $this->formatType($unionedType, $method, $parameter);
+                },
+                $type->getTypes()
+            ));
+        }
+
+        assert($type instanceof ReflectionNamedType);
+        $name      = $type->getName();
         $nameLower = strtolower($name);
         if ($nameLower === 'self') {
             $name = $method->getDeclaringClass()->getName();
@@ -314,7 +319,7 @@ CODE;
 
             $name = $parentClass->getName();
         }
-        if (! $type->isBuiltin() && ! class_exists($name) && ! interface_exists($name)) {
+        if ($nameLower !== 'static' && ! $type->isBuiltin() && ! class_exists($name) && ! interface_exists($name)) {
             if ($parameter !== null) {
                 throw PersistentCollectionException::invalidParameterTypeHint(
                     $method->getDeclaringClass()->getName(),
@@ -327,11 +332,12 @@ CODE;
                 $method->getName()
             );
         }
-        if (! $type->isBuiltin()) {
+        if ($nameLower !== 'static' && ! $type->isBuiltin()) {
             $name = '\\' . $name;
         }
         if ($type->allowsNull()
             && ($parameter === null || ! $parameter->isDefaultValueAvailable() || $parameter->getDefaultValue() !== null)
+            && $name !== 'mixed'
         ) {
             $name = '?' . $name;
         }

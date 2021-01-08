@@ -6,3 +6,6 @@ parameters:
   paths:
     - %rootDir%/../../../benchmark
     - %rootDir%/../../../lib
+  excludes_analyse:
+    - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php
+    - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php
