@@ -97,4 +97,4 @@ jobs:
         run: "composer install --no-interaction --no-progress"
 
       - name: "Run a static analysis with vimeo/psalm"
-        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"
+        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc) --php-version=${{ matrix.php-version }}"
