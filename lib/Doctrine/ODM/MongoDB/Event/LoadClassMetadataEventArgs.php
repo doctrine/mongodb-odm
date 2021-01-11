@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClassMetadataEventArgs;
+
 use function assert;
 
 /**
@@ -13,7 +14,7 @@ use function assert;
  */
 final class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
-    public function getDocumentManager() : DocumentManager
+    public function getDocumentManager(): DocumentManager
     {
         $dm = $this->getObjectManager();
         assert($dm instanceof DocumentManager);

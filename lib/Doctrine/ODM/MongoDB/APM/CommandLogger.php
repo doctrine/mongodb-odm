@@ -8,6 +8,7 @@ use Countable;
 use MongoDB\Driver\Monitoring\CommandFailedEvent;
 use MongoDB\Driver\Monitoring\CommandStartedEvent;
 use MongoDB\Driver\Monitoring\CommandSucceededEvent;
+
 use function count;
 use function MongoDB\Driver\Monitoring\addSubscriber;
 use function MongoDB\Driver\Monitoring\removeSubscriber;
@@ -23,7 +24,7 @@ final class CommandLogger implements Countable, CommandLoggerInterface
     /** @var bool */
     private $registered = false;
 
-    public function register() : void
+    public function register(): void
     {
         if ($this->registered) {
             return;
@@ -33,7 +34,7 @@ final class CommandLogger implements Countable, CommandLoggerInterface
         addSubscriber($this);
     }
 
-    public function unregister() : void
+    public function unregister(): void
     {
         if (! $this->registered) {
             return;
@@ -68,12 +69,12 @@ final class CommandLogger implements Countable, CommandLoggerInterface
         $this->logCommand(Command::createForFailedCommand($commandStartedEvent, $event));
     }
 
-    public function clear() : void
+    public function clear(): void
     {
         $this->commands = [];
     }
 
-    public function count() : int
+    public function count(): int
     {
         return count($this->commands);
     }
@@ -81,12 +82,12 @@ final class CommandLogger implements Countable, CommandLoggerInterface
     /**
      * @return Command[]
      */
-    public function getAll() : array
+    public function getAll(): array
     {
         return $this->commands;
     }
 
-    private function findAndRemoveCommandStartedEvent(string $requestId) : ?CommandStartedEvent
+    private function findAndRemoveCommandStartedEvent(string $requestId): ?CommandStartedEvent
     {
         $startedEvent = $this->startedCommands[$requestId] ?? null;
         unset($this->startedCommands[$requestId]);
@@ -94,7 +95,7 @@ final class CommandLogger implements Countable, CommandLoggerInterface
         return $startedEvent;
     }
 
-    private function logCommand(Command $command) : void
+    private function logCommand(Command $command): void
     {
         $this->commands[] = $command;
     }

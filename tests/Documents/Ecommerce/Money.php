@@ -24,6 +24,7 @@ class Money
                 'money amount cannot be empty, equal or less than 0'
             );
         }
+
         $this->amount = $amount;
         $this->setCurrency($currency);
     }

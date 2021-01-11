@@ -13,7 +13,7 @@ use Documents\Ecommerce\StockItem;
 
 class EcommerceTest extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -34,6 +34,7 @@ class EcommerceTest extends BaseTest
         foreach ($currencies as $currency) {
             $this->dm->detach($currency);
         }
+
         $this->dm->detach($product);
 
         unset($currencies, $product);

@@ -15,5 +15,5 @@ interface RepositoryFactory
     /**
      * Gets the repository for a document class.
      */
-    public function getRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository;
+    public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository;
 }

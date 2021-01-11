@@ -14,6 +14,8 @@ use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\File;
 use Documents\ProfileNotify;
+
+use function assert;
 use function get_class;
 
 class CustomCollectionsTest extends BaseTest
@@ -146,8 +148,8 @@ class CustomCollectionsTest extends BaseTest
 
     public function testModifyingCollectionInChangeTrackingNotifyDocument()
     {
-        /** @var GridFSRepository $repository */
         $repository = $this->dm->getRepository(File::class);
+        assert($repository instanceof GridFSRepository);
 
         $f1 = $repository->uploadFromFile(__FILE__);
         $f2 = $repository->uploadFromFile(__FILE__);
@@ -274,7 +276,7 @@ class MyEmbedsCollection extends ArrayCollection
         $this->set($j, $tmp);
     }
 
-    public function nothingReally() : void
+    public function nothingReally(): void
     {
     }
 }

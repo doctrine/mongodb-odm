@@ -20,7 +20,7 @@ class QueryExpressionVisitorTest extends BaseTest
     private $queryBuilder;
     private $visitor;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         $this->queryBuilder = $this->dm->createQueryBuilder(Bar::class);

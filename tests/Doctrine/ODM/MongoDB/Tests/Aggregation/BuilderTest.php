@@ -17,6 +17,7 @@ use Documents\CmsComment;
 use Documents\GuestServer;
 use Documents\Tag;
 use MongoDB\BSON\UTCDateTime;
+
 use function array_keys;
 
 class BuilderTest extends BaseTest
@@ -434,7 +435,7 @@ class BuilderTest extends BaseTest
 
 class TestStage extends Stage
 {
-    public function getExpression() : array
+    public function getExpression(): array
     {
         return ['$foo' => 'bar'];
     }

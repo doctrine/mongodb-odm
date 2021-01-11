@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use InvalidArgumentException;
+
 use function key;
 use function sprintf;
 use function strcmp;
@@ -21,11 +22,11 @@ use function usort;
 
 abstract class AbstractMappingDriverTest extends BaseTest
 {
-    abstract protected function _loadDriver();
+    abstract protected function loadDriver();
 
     protected function createMetadataDriverImpl()
     {
-        return $this->_loadDriver();
+        return $this->loadDriver();
     }
 
     /**
@@ -937,7 +938,7 @@ class AbstractMappingDriverView
 
 class AbstractMappingDriverViewRepository extends DocumentRepository implements ViewRepository
 {
-    public function createViewAggregation(Builder $builder) : void
+    public function createViewAggregation(Builder $builder): void
     {
         $builder
             ->project()

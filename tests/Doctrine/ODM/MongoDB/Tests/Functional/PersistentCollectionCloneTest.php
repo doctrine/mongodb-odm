@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsGroup;
 use Documents\CmsUser;
+
 use function get_class;
 
 class PersistentCollectionCloneTest extends BaseTest
@@ -14,7 +15,7 @@ class PersistentCollectionCloneTest extends BaseTest
     private $user1;
     private $user2;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 

@@ -22,7 +22,7 @@ final class CriteriaMerger
      *
      * @param array ...$criterias Any number of query criteria arrays
      */
-    public function merge(...$criterias) : array
+    public function merge(...$criterias): array
     {
         $nonEmptyCriterias = array_values(array_filter($criterias, static function (array $criteria) {
             return ! empty($criteria);
@@ -31,8 +31,10 @@ final class CriteriaMerger
         switch (count($nonEmptyCriterias)) {
             case 0:
                 return [];
+
             case 1:
                 return $nonEmptyCriterias[0];
+
             default:
                 return ['$and' => $nonEmptyCriterias];
         }

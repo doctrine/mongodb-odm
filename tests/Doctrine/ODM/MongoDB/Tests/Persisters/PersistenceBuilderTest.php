@@ -14,20 +14,22 @@ use Documents\Ecommerce\Currency;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
 use MongoDB\BSON\ObjectId;
+
 use function array_keys;
+use function assert;
 use function get_class;
 
 class PersistenceBuilderTest extends BaseTest
 {
     private $pb;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         $this->pb = $this->dm->getUnitOfWork()->getPersistenceBuilder();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->pb);
         parent::tearDown();
@@ -44,10 +46,8 @@ class PersistenceBuilderTest extends BaseTest
         $this->dm->flush();
         $this->uow->computeChangeSets();
 
-        /**
-         * @var Builder $qb
-         */
         $qb = $this->dm->createQueryBuilder(SameCollection1::class);
+        assert($qb instanceof Builder);
         $qb->updateOne()
             ->field('ok')->set(true)
             ->field('test')->set('OK! TEST')
@@ -92,10 +92,8 @@ class PersistenceBuilderTest extends BaseTest
 
         $this->uow->computeChangeSets();
 
-        /**
-         * @var Builder $qb
-         */
         $qb = $this->dm->createQueryBuilder(SameCollection2::class);
+        assert($qb instanceof Builder);
         $qb
             ->field('id')->in($ids)
             ->select('id')->hydrate(false);
@@ -240,11 +238,14 @@ class PersistenceBuilderTest extends BaseTest
                 $this->assertInstanceOf(ObjectId::class, $value);
                 continue;
             }
+
             $this->assertEquals($expectedData[$key], $value);
         }
+
         if (! isset($preparedData['_id'])) {
             $this->fail('insert data should always contain id');
         }
+
         unset($preparedData['_id']);
         $this->assertEquals(array_keys($expectedData), array_keys($preparedData));
     }
@@ -268,10 +269,8 @@ class PersistenceBuilderTest extends BaseTest
         $articleId = (string) $article->id;
         $commentId = (string) $comment->id;
 
-        /**
-         * @var Builder $qb
-         */
         $qb = $this->dm->createQueryBuilder(CmsComment::class);
+        assert($qb instanceof Builder);
         $qb
             ->field('article.id')->in([$articleId]);
         $query   = $qb->getQuery();

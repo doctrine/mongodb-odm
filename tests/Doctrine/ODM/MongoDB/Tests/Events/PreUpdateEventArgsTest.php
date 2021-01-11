@@ -11,6 +11,7 @@ use Documents\Article;
 use Documents\Book;
 use Documents\Chapter;
 use Documents\Page;
+
 use function get_class;
 use function in_array;
 
@@ -48,11 +49,11 @@ class PreUpdateEventArgsTest extends BaseTest
         $chapter->pages->add(new Page(3));
         $this->dm->flush();
 
-        $listener->checkOnly([ Chapter::class ]);
+        $listener->checkOnly([Chapter::class]);
         unset($chapter->pages[0]);
         $this->dm->flush();
 
-        $listener->checkOnly([ Book::class ]);
+        $listener->checkOnly([Book::class]);
 
         $book->chapters->removeElement($chapter2);
         $this->dm->flush();
@@ -78,7 +79,7 @@ class CollectionsAreInChangeSetListener
 
     public function __construct(PreUpdateEventArgsTest $phpunit)
     {
-        $this->allowed = [ Book::class, Chapter::class ];
+        $this->allowed = [Book::class, Chapter::class];
         $this->phpunit = $phpunit;
     }
 
@@ -94,11 +95,13 @@ class CollectionsAreInChangeSetListener
                 if (in_array(Book::class, $this->allowed)) {
                     $this->phpunit->assertTrue($e->hasChangedField('chapters'));
                 }
+
                 break;
             case Chapter::class:
                 if (in_array(Chapter::class, $this->allowed)) {
                     $this->phpunit->assertTrue($e->hasChangedField('pages'));
                 }
+
                 break;
         }
     }

@@ -17,12 +17,14 @@ class GH880Test extends BaseTest
         foreach ($docs as $doc) {
             $this->dm->persist($doc);
         }
+
         $this->dm->flush();
         $query  = $this->dm->createQueryBuilder(GH880Document::class);
         $cursor = $query->find()->getQuery()->execute();
         foreach ($cursor as $c) {
             $this->assertEquals(1, $c->category);
         }
+
         $query = $this->dm->createQueryBuilder(GH880Document::class);
         $query->updateMany()
             ->field('category')->equals(1)

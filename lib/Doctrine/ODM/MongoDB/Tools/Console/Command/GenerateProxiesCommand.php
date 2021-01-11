@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
 use InvalidArgumentException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputOption;
-use const PHP_EOL;
+
 use function array_filter;
 use function assert;
 use function count;
@@ -23,6 +23,8 @@ use function is_writable;
 use function mkdir;
 use function realpath;
 use function sprintf;
+
+use const PHP_EOL;
 
 /**
  * Command to (re)generate the proxy classes used by doctrine.
@@ -59,11 +61,11 @@ EOT
         $filter = $input->getOption('filter');
         assert(is_array($filter));
 
-        /** @var DocumentManager $dm */
         $dm = $this->getHelper('documentManager')->getDocumentManager();
+        assert($dm instanceof DocumentManager);
 
         /** @var ClassMetadata[] $metadatas */
-        $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata) : bool {
+        $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata): bool {
             return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
         });
         $metadatas = MetadataFilter::filter($metadatas, $filter);

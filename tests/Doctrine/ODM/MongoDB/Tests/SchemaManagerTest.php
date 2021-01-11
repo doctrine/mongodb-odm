@@ -32,7 +32,9 @@ use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
+
 use function array_map;
+use function assert;
 use function class_exists;
 use function in_array;
 
@@ -65,7 +67,7 @@ class SchemaManagerTest extends BaseTest
     /** @var SchemaManager */
     private $schemaManager;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -73,11 +75,12 @@ class SchemaManagerTest extends BaseTest
         $client->method('getTypeMap')->willReturn(DocumentManager::CLIENT_TYPEMAP);
         $this->dm = DocumentManager::create($client, $this->dm->getConfiguration(), $this->createMock(EventManager::class));
 
-        /** @var ClassMetadata $cm */
         foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
+            assert($cm instanceof ClassMetadata);
             if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument) {
                 continue;
             }
+
             if ($cm->isFile) {
                 $this->documentBuckets[$cm->getBucketName()] = $this->getMockBucket();
             } else {
@@ -99,12 +102,12 @@ class SchemaManagerTest extends BaseTest
         $this->schemaManager = $this->dm->getSchemaManager();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         // do not call parent, client here is mocked and there's nothing to tidy up in the database
     }
 
-    public static function getWriteOptions() : array
+    public static function getWriteOptions(): array
     {
         $writeConcern = new WriteConcern(1, 500, true);
 
@@ -132,9 +135,9 @@ class SchemaManagerTest extends BaseTest
         ];
     }
 
-    public static function getIndexCreationWriteOptions() : array
+    public static function getIndexCreationWriteOptions(): array
     {
-        $originalOptionsWithBackground = array_map(static function (array $arguments) : array {
+        $originalOptionsWithBackground = array_map(static function (array $arguments): array {
             $arguments['expectedWriteOptions']['background'] = false;
 
             return $arguments;
@@ -945,7 +948,7 @@ class SchemaManagerTest extends BaseTest
         ];
     }
 
-    private function getDatabaseName(ClassMetadata $cm) : string
+    private function getDatabaseName(ClassMetadata $cm): string
     {
         return $cm->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB() ?: 'doctrine';
     }
@@ -980,7 +983,7 @@ class SchemaManagerTest extends BaseTest
         return $db;
     }
 
-    private function writeOptions(array $expectedWriteOptions) : Constraint
+    private function writeOptions(array $expectedWriteOptions): Constraint
     {
         if (class_exists(ArraySubset::class)) {
             return new ArraySubset($expectedWriteOptions);

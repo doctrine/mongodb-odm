@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use MongoDB\BSON\ObjectId;
+
 use function get_class;
 
 class GH774Test extends BaseTest

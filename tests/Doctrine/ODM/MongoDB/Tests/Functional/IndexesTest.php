@@ -46,11 +46,11 @@ class IndexesTest extends BaseTest
         $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
         $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
 
-        $this->assertTrue(isset($indexes[2]['keys']['embedded_secondary.name']));
-        $this->assertEquals(1, $indexes[2]['keys']['embedded_secondary.name']);
+        $this->assertTrue(isset($indexes[2]['keys']['embeddedSecondary.name']));
+        $this->assertEquals(1, $indexes[2]['keys']['embeddedSecondary.name']);
 
-        $this->assertTrue(isset($indexes[3]['keys']['embedded_secondary.embeddedMany.name']));
-        $this->assertEquals(1, $indexes[3]['keys']['embedded_secondary.embeddedMany.name']);
+        $this->assertTrue(isset($indexes[3]['keys']['embeddedSecondary.embeddedMany.name']));
+        $this->assertEquals(1, $indexes[3]['keys']['embeddedSecondary.embeddedMany.name']);
     }
 
     public function testDiscriminatedEmbeddedIndexes()
@@ -385,7 +385,7 @@ class DocumentWithEmbeddedIndexes
     public $embedded;
 
     /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class) */
-    public $embedded_secondary;
+    public $embeddedSecondary;
 }
 
 /**

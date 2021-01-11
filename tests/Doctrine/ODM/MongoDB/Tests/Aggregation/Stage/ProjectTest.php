@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Project;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+
 use function array_combine;
 use function array_map;
 
@@ -73,7 +74,7 @@ class ProjectTest extends BaseTest
             ->method($method)
             ->with(...$args);
 
-        $stage = new class($this->getTestAggregationBuilder()) extends Project {
+        $stage = new class ($this->getTestAggregationBuilder()) extends Project {
             public function setExpr(Expr $expr)
             {
                 $this->expr = $expr;

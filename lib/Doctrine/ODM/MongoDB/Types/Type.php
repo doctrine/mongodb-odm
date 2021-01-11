@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
+
 use function assert;
 use function end;
 use function explode;
@@ -115,12 +116,12 @@ abstract class Type
         return $value;
     }
 
-    public function closureToMongo() : string
+    public function closureToMongo(): string
     {
         return '$return = $value;';
     }
 
-    public function closureToPHP() : string
+    public function closureToPHP(): string
     {
         return '$return = $value;';
     }
@@ -128,7 +129,7 @@ abstract class Type
     /**
      * Register a new type in the type map.
      */
-    public static function registerType(string $name, string $class) : void
+    public static function registerType(string $name, string $class): void
     {
         self::$typesMap[$name] = $class;
     }
@@ -138,11 +139,12 @@ abstract class Type
      *
      * @throws InvalidArgumentException
      */
-    public static function getType(string $type) : Type
+    public static function getType(string $type): Type
     {
         if (! isset(self::$typesMap[$type])) {
             throw new InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
         }
+
         if (! isset(self::$typeObjects[$type])) {
             $className                = self::$typesMap[$type];
             self::$typeObjects[$type] = new $className();
@@ -158,7 +160,7 @@ abstract class Type
      *
      * @throws InvalidArgumentException
      */
-    public static function getTypeFromPHPVariable($variable) : ?Type
+    public static function getTypeFromPHPVariable($variable): ?Type
     {
         if (is_object($variable)) {
             if ($variable instanceof DateTimeInterface) {
@@ -196,7 +198,7 @@ abstract class Type
      *
      * @static
      */
-    public static function addType(string $name, string $className) : void
+    public static function addType(string $name, string $className): void
     {
         if (isset(self::$typesMap[$name])) {
             throw MappingException::typeExists($name);
@@ -210,7 +212,7 @@ abstract class Type
      *
      * @static
      */
-    public static function hasType(string $name) : bool
+    public static function hasType(string $name): bool
     {
         return isset(self::$typesMap[$name]);
     }
@@ -222,7 +224,7 @@ abstract class Type
      *
      * @static
      */
-    public static function overrideType(string $name, string $className) : void
+    public static function overrideType(string $name, string $className): void
     {
         if (! isset(self::$typesMap[$name])) {
             throw MappingException::typeNotFound($name);
@@ -235,7 +237,7 @@ abstract class Type
      * Get the types array map which holds all registered types and the corresponding
      * type class
      */
-    public static function getTypesMap() : array
+    public static function getTypesMap(): array
     {
         return self::$typesMap;
     }

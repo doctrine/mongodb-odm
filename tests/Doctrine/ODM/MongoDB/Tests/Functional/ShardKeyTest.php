@@ -9,6 +9,8 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Sharded\ShardedOne;
 use MongoDB\BSON\ObjectId;
+
+use function assert;
 use function end;
 use function get_class;
 
@@ -20,7 +22,7 @@ class ShardKeyTest extends BaseTest
     /** @var CommandLogger */
     private $logger;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -33,7 +35,7 @@ class ShardKeyTest extends BaseTest
         $this->logger->register();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->logger->unregister();
 
@@ -46,8 +48,8 @@ class ShardKeyTest extends BaseTest
         $this->dm->persist($o);
         $this->dm->flush();
 
-        /** @var ShardedOne $o */
-        $o        = $this->dm->find(get_class($o), $o->id);
+        $o = $this->dm->find(get_class($o), $o->id);
+        assert($o instanceof ShardedOne);
         $o->title = 'test2';
         $this->dm->flush();
 

@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Documents\User;
 use InvalidArgumentException;
+
 use function is_array;
 
 trait AggregationOperatorsProviderTrait
@@ -607,12 +608,12 @@ trait AggregationOperatorsProviderTrait
         ];
     }
 
-    protected function createExpr() : Expr
+    protected function createExpr(): Expr
     {
         return new Expr($this->dm, new ClassMetadata(User::class));
     }
 
-    protected function resolveArgs($args) : array
+    protected function resolveArgs($args): array
     {
         if (is_array($args)) {
             return $args;

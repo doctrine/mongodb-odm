@@ -13,11 +13,13 @@ use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Timestamp;
 use MongoDB\BSON\UTCDateTime;
-use const STR_PAD_LEFT;
+
 use function md5;
 use function str_pad;
 use function str_repeat;
 use function time;
+
+use const STR_PAD_LEFT;
 
 class TypeTest extends BaseTest
 {

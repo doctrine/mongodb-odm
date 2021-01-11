@@ -20,7 +20,7 @@ class GH1418Test extends BaseTest
             'embedMany' => [
                 ['name' => 'maciej', 'sourceId' => 2],
             ],
-        ], [ Query::HINT_READ_ONLY => true ]);
+        ], [Query::HINT_READ_ONLY => true]);
 
         $this->assertEquals(1, $document->embedOne->id);
         $this->assertEquals(2, $document->embedMany->first()->id);

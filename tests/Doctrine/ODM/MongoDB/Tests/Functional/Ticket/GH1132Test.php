@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Phonenumber;
 use Documents\User;
+
 use function get_class;
 
 class GH1132Test extends BaseTest

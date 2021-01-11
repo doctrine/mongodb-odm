@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Functional\Ticket\GH683\EmbeddedSubDocument1;
 use Documents\Functional\Ticket\GH683\EmbeddedSubDocument2;
 use Documents\Functional\Ticket\GH683\ParentDocument;
+
 use function get_class;
 
 class GH683Test extends BaseTest

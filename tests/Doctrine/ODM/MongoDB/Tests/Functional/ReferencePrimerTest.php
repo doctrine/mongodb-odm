@@ -32,6 +32,8 @@ use Documents\User;
 use InvalidArgumentException;
 use MongoDB\Driver\ReadPreference;
 use ProxyManager\Proxy\GhostObjectInterface;
+
+use function assert;
 use function func_get_args;
 
 class ReferencePrimerTest extends BaseTest
@@ -246,8 +248,8 @@ class ReferencePrimerTest extends BaseTest
             ->field('otherUser')->prime(true)
             ->field('otherUsers')->prime(true);
 
-        /** @var ReferenceUser $referenceUser */
         foreach ($qb->getQuery() as $referenceUser) {
+            assert($referenceUser instanceof ReferenceUser);
             // storeAs=id reference
             $this->assertInstanceOf(GhostObjectInterface::class, $referenceUser->getUser());
             $this->assertTrue($referenceUser->getUser()->isProxyInitialized());
@@ -494,20 +496,20 @@ class ReferencePrimerTest extends BaseTest
             ->field('name')->equals('Bundle')
             ->field('options.money.currency')->prime(true);
 
-        /** @var Query $query */
         $query = $qb->getQuery();
+        assert($query instanceof Query);
 
-        /** @var ConfigurableProduct $product */
         $product = $query->getSingleResult();
+        assert($product instanceof ConfigurableProduct);
 
-        /** @var Option $option */
         $option = $product->getOption('Lens2');
+        assert($option instanceof Option);
 
-        /** @var Money $money */
         $money = $option->getPrice(true);
+        assert($money instanceof Money);
 
-        /** @var Currency $currency */
         $currency = $money->getCurrency();
+        assert($currency instanceof Currency);
 
         $this->assertInstanceOf(GhostObjectInterface::class, $currency);
         $this->assertTrue($currency->isProxyInitialized());
@@ -532,8 +534,8 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        /** @var BlogPost $post */
         $post = $this->dm->find(BlogPost::class, $post->id);
+        assert($post instanceof BlogPost);
         $this->assertInstanceOf(BlogPost::class, $post);
 
         $comment = $post->comments->first();
@@ -560,8 +562,8 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        /** @var BlogPost $post */
         $post = $this->dm->find(BlogPost::class, $post->id);
+        assert($post instanceof BlogPost);
         $this->assertInstanceOf(BlogPost::class, $post);
 
         $comment = $post->repoCommentsWithPrimer->first();

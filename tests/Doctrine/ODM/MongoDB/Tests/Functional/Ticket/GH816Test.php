@@ -11,8 +11,8 @@ class GH816Test extends BaseTest
 {
     public function testPersistAfterDetachWithIdSet()
     {
-        $d      =new GH816Document();
-        $d->_id =new ObjectId();
+        $d     = new GH816Document();
+        $d->id = new ObjectId();
         $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
@@ -22,8 +22,8 @@ class GH816Test extends BaseTest
 
     public function testPersistAfterDetachWithTitleSet()
     {
-        $d        =new GH816Document();
-        $d->title ='Test';
+        $d        = new GH816Document();
+        $d->title = 'Test';
         $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
@@ -38,7 +38,7 @@ class GH816Test extends BaseTest
 class GH816Document
 {
     /** @ODM\Id */
-    public $_id;
+    public $id;
 
     /** @ODM\Field(type="string") */
     public $title;

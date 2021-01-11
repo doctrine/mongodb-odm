@@ -28,7 +28,7 @@ class Bucket extends AbstractBucket
      *
      * @param array ...$boundaries
      */
-    public function boundaries(...$boundaries) : self
+    public function boundaries(...$boundaries): self
     {
         $this->boundaries = $boundaries;
 
@@ -42,7 +42,7 @@ class Bucket extends AbstractBucket
      *
      * @param mixed $default
      */
-    public function defaultBucket($default) : self
+    public function defaultBucket($default): self
     {
         $this->default = $default;
 
@@ -54,7 +54,7 @@ class Bucket extends AbstractBucket
      * in addition to the _id field. To specify the field to include, you must
      * use accumulator expressions.
      */
-    public function output() : Bucket\BucketOutput
+    public function output(): Bucket\BucketOutput
     {
         if (! $this->output) {
             $this->output = new Bucket\BucketOutput($this->builder, $this);
@@ -65,7 +65,7 @@ class Bucket extends AbstractBucket
         return $this->output;
     }
 
-    protected function getExtraPipelineFields() : array
+    protected function getExtraPipelineFields(): array
     {
         $fields = ['boundaries' => $this->boundaries];
         if ($this->default !== null) {
@@ -75,7 +75,7 @@ class Bucket extends AbstractBucket
         return $fields;
     }
 
-    protected function getStageName() : string
+    protected function getStageName(): string
     {
         return '$bucket';
     }

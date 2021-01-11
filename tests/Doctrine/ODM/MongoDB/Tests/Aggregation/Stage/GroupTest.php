@@ -28,7 +28,7 @@ class GroupTest extends BaseTest
             ->method($method)
             ->with(...$args);
 
-        $stage = new class($this->getTestAggregationBuilder()) extends Group {
+        $stage = new class ($this->getTestAggregationBuilder()) extends Group {
             public function setExpr(Expr $expr)
             {
                 $this->expr = $expr;

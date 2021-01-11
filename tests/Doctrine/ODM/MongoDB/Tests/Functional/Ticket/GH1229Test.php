@@ -7,6 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+
+use function assert;
 use function count;
 use function end;
 
@@ -18,10 +20,7 @@ class GH1229Test extends BaseTest
     /** @var string */
     protected $secondParentId;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -46,12 +45,12 @@ class GH1229Test extends BaseTest
      */
     public function testMethodAWithoutClone()
     {
-        /** @var GH1229Parent $firstParent */
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
+        assert($firstParent instanceof GH1229Parent);
         $this->assertNotNull($firstParent);
 
-        /** @var GH1229Parent $secondParent */
         $secondParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->secondParentId);
+        assert($secondParent instanceof GH1229Parent);
         $this->assertNotNull($secondParent);
 
         foreach ($firstParent->getChildren() as $child) {
@@ -67,19 +66,19 @@ class GH1229Test extends BaseTest
 
             $this->assertNotSame($actualChildren, $child);
 
-            [, $parent ] = $this->uow->getParentAssociation(end($actualChildren));
+            [, $parent] = $this->uow->getParentAssociation(end($actualChildren));
             $this->assertSame($this->secondParentId, $parent->id);
         }
 
         $this->dm->clear();
 
-        /** @var GH1229Parent $firstParent */
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
+        assert($firstParent instanceof GH1229Parent);
         $this->assertNotNull($firstParent);
         $this->assertCount(0, $firstParent->getChildren());
 
-        /** @var GH1229Parent $secondParent */
         $secondParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->secondParentId);
+        assert($secondParent instanceof GH1229Parent);
         $this->assertNotNull($secondParent);
         $this->assertCount(2, $secondParent->getChildren());
 
@@ -94,12 +93,12 @@ class GH1229Test extends BaseTest
      */
     public function testMethodAWithClone()
     {
-        /** @var GH1229Parent $firstParent */
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
+        assert($firstParent instanceof GH1229Parent);
         $this->assertNotNull($firstParent);
 
-        /** @var GH1229Parent $secondParent */
         $secondParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->secondParentId);
+        assert($secondParent instanceof GH1229Parent);
         $this->assertNotNull($secondParent);
 
         foreach ($firstParent->getChildren() as $child) {
@@ -115,13 +114,13 @@ class GH1229Test extends BaseTest
 
         $this->dm->clear();
 
-        /** @var GH1229Parent $firstParent */
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
+        assert($firstParent instanceof GH1229Parent);
         $this->assertNotNull($firstParent);
         $this->assertCount(0, $firstParent->getChildren());
 
-        /** @var GH1229Parent $secondParent */
         $secondParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->secondParentId);
+        assert($secondParent instanceof GH1229Parent);
         $this->assertNotNull($secondParent);
         $this->assertCount(2, $secondParent->getChildren());
 

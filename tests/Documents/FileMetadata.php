@@ -25,17 +25,17 @@ final class FileMetadata
         $this->embedOne = new Embedded();
     }
 
-    public function getOwner() : ?User
+    public function getOwner(): ?User
     {
         return $this->owner;
     }
 
-    public function setOwner(?User $owner) : void
+    public function setOwner(?User $owner): void
     {
         $this->owner = $owner;
     }
 
-    public function getEmbedOne() : Embedded
+    public function getEmbedOne(): Embedded
     {
         return $this->embedOne;
     }

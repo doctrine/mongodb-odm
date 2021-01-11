@@ -8,6 +8,7 @@ use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+
 use function mkdir;
 use function rmdir;
 use function sys_get_temp_dir;
@@ -64,13 +65,13 @@ abstract class AbstractDriverTest extends TestCase
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Document\Foo');
     }
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->dir = sys_get_temp_dir() . '/abstract_driver_test';
         @mkdir($this->dir, 0775, true);
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->dir), RecursiveIteratorIterator::CHILD_FIRST);
 

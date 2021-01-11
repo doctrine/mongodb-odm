@@ -22,6 +22,7 @@ use MongoDB\Operation\FindOneAndUpdate;
 use MongoDB\UpdateResult;
 use Traversable;
 use UnexpectedValueException;
+
 use function array_combine;
 use function array_filter;
 use function array_flip;
@@ -194,9 +195,11 @@ final class Query implements IteratorAggregate
         /* If a single document is returned from a findAndModify command and it
          * includes the identifier field, attempt hydration.
          */
-        if (($this->query['type'] === self::TYPE_FIND_AND_UPDATE ||
+        if (
+            ($this->query['type'] === self::TYPE_FIND_AND_UPDATE ||
                 $this->query['type'] === self::TYPE_FIND_AND_REMOVE) &&
-            is_array($results) && isset($results['_id'])) {
+            is_array($results) && isset($results['_id'])
+        ) {
             $results = $uow->getOrCreateDocument($this->class->name, $results, $this->unitOfWorkHints);
 
             if (! empty($this->primers)) {
@@ -215,12 +218,12 @@ final class Query implements IteratorAggregate
     /**
      * Gets the ClassMetadata instance.
      */
-    public function getClass() : ClassMetadata
+    public function getClass(): ClassMetadata
     {
         return $this->class;
     }
 
-    public function getDocumentManager() : DocumentManager
+    public function getDocumentManager(): DocumentManager
     {
         return $this->dm;
     }
@@ -239,7 +242,7 @@ final class Query implements IteratorAggregate
      * @throws UnexpectedValueException If the query did not return an Iterator.
      * @throws MongoDBException
      */
-    public function getIterator() : Iterator
+    public function getIterator(): Iterator
     {
         switch ($this->query['type']) {
             case self::TYPE_FIND:
@@ -255,6 +258,7 @@ final class Query implements IteratorAggregate
             if (! $result instanceof Iterator) {
                 throw new UnexpectedValueException('Iterator was not returned for query type: ' . $this->query['type']);
             }
+
             $this->iterator = $result;
         }
 
@@ -264,7 +268,7 @@ final class Query implements IteratorAggregate
     /**
      * Return the query structure.
      */
-    public function getQuery() : array
+    public function getQuery(): array
     {
         return $this->query;
     }
@@ -285,7 +289,7 @@ final class Query implements IteratorAggregate
     /**
      * Return the query type.
      */
-    public function getType() : int
+    public function getType(): int
     {
         return $this->query['type'];
     }
@@ -293,7 +297,7 @@ final class Query implements IteratorAggregate
     /**
      * Sets whether or not to hydrate the documents to objects.
      */
-    public function setHydrate(bool $hydrate) : void
+    public function setHydrate(bool $hydrate): void
     {
         $this->hydrate = $hydrate;
     }
@@ -304,7 +308,7 @@ final class Query implements IteratorAggregate
      *
      * This option has no effect if hydration is disabled.
      */
-    public function setReadOnly(bool $readOnly) : void
+    public function setReadOnly(bool $readOnly): void
     {
         $this->unitOfWorkHints[self::HINT_READ_ONLY] = $readOnly;
     }
@@ -315,7 +319,7 @@ final class Query implements IteratorAggregate
      *
      * This option has no effect if hydration is disabled.
      */
-    public function setRefresh(bool $refresh) : void
+    public function setRefresh(bool $refresh): void
     {
         $this->unitOfWorkHints[self::HINT_REFRESH] = $refresh;
     }
@@ -323,7 +327,7 @@ final class Query implements IteratorAggregate
     /**
      * Set to enable wrapping of resulting Iterator with CachingIterator
      */
-    public function setRewindable(bool $rewindable = true) : void
+    public function setRewindable(bool $rewindable = true): void
     {
         $this->rewindable = $rewindable;
     }
@@ -333,7 +337,7 @@ final class Query implements IteratorAggregate
      *
      * @see IteratorAggregate::toArray()
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         return $this->getIterator()->toArray();
     }
@@ -342,7 +346,7 @@ final class Query implements IteratorAggregate
      * Returns an array containing the specified keys and their values from the
      * query array, provided they exist and are not null.
      */
-    private function getQueryOptions(string ...$keys) : array
+    private function getQueryOptions(string ...$keys): array
     {
         return array_filter(
             array_intersect_key($this->query, array_flip($keys)),
@@ -360,7 +364,7 @@ final class Query implements IteratorAggregate
      * HydratingIterator, CachingIterator, and BaseIterator expect a Traversable
      * so this should not have any adverse effects.
      */
-    private function makeIterator(Traversable $cursor) : Iterator
+    private function makeIterator(Traversable $cursor): Iterator
     {
         if ($this->hydrate) {
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->class, $this->unitOfWorkHints);
@@ -381,7 +385,7 @@ final class Query implements IteratorAggregate
      *
      * @return array $rename Translation map (from => to) for renaming keys
      */
-    private function renameQueryOptions(array $options, array $rename) : array
+    private function renameQueryOptions(array $options, array $rename): array
     {
         if (empty($options)) {
             return $options;
@@ -429,6 +433,7 @@ final class Query implements IteratorAggregate
                 );
 
                 return $this->makeIterator($cursor);
+
             case self::TYPE_FIND_AND_UPDATE:
                 $queryOptions                   = $this->getQueryOptions('select', 'sort', 'upsert');
                 $queryOptions                   = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
@@ -441,6 +446,7 @@ final class Query implements IteratorAggregate
                     $this->query['newObj'],
                     array_merge($options, $queryOptions)
                 );
+
             case self::TYPE_FIND_AND_REMOVE:
                 $queryOptions = $this->getQueryOptions('select', 'sort');
                 $queryOptions = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
@@ -449,8 +455,10 @@ final class Query implements IteratorAggregate
                     $this->query['query'],
                     array_merge($options, $queryOptions)
                 );
+
             case self::TYPE_INSERT:
                 return $this->collection->insertOne($this->query['newObj'], $options);
+
             case self::TYPE_UPDATE:
                 $multiple = $this->query['multiple'] ?? false;
 
@@ -477,8 +485,10 @@ final class Query implements IteratorAggregate
                     $this->query['newObj'],
                     array_merge($options, $this->getQueryOptions('upsert'))
                 );
+
             case self::TYPE_REMOVE:
                 return $this->collection->deleteMany($this->query['query'], $options);
+
             case self::TYPE_DISTINCT:
                 $collection = $this->collection;
                 $query      = $this->query;
@@ -488,6 +498,7 @@ final class Query implements IteratorAggregate
                     $query['query'],
                     array_merge($options, $this->getQueryOptions('readPreference'))
                 );
+
             case self::TYPE_COUNT:
                 $collection = $this->collection;
                 $query      = $this->query;
@@ -496,12 +507,13 @@ final class Query implements IteratorAggregate
                     $query['query'],
                     array_merge($options, $this->getQueryOptions('hint', 'limit', 'skip', 'readPreference'))
                 );
+
             default:
                 throw new InvalidArgumentException('Invalid query type: ' . $this->query['type']);
         }
     }
 
-    private function isFirstKeyUpdateOperator() : bool
+    private function isFirstKeyUpdateOperator(): bool
     {
         reset($this->query['newObj']);
         $firstKey = key($this->query['newObj']);

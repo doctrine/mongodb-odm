@@ -12,7 +12,7 @@ interface ProxyFactory
     /**
      * @param ClassMetadata[] $classes
      */
-    public function generateProxyClasses(array $classes) : int;
+    public function generateProxyClasses(array $classes): int;
 
     /**
      * Gets a reference proxy instance for the entity of the given type and identified by
@@ -20,5 +20,5 @@ interface ProxyFactory
      *
      * @param mixed $identifier
      */
-    public function getProxy(ClassMetadata $metadata, $identifier) : GhostObjectInterface;
+    public function getProxy(ClassMetadata $metadata, $identifier): GhostObjectInterface;
 }

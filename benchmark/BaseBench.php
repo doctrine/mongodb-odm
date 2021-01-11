@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use MongoDB\Client;
 use MongoDB\Model\DatabaseInfo;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
+
 use function array_map;
 use function getenv;
 use function in_array;

@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Event;
 use Documents\User;
+
 use function get_class;
 
 class IdentifiersTest extends BaseTest

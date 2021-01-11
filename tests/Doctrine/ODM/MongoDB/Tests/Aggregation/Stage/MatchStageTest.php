@@ -49,7 +49,7 @@ class MatchStageTest extends BaseTest
             ->method($method)
             ->with(...$args);
 
-        $stage = new class($this->getTestAggregationBuilder()) extends MatchStage {
+        $stage = new class ($this->getTestAggregationBuilder()) extends MatchStage {
             public function setQuery(Expr $query)
             {
                 $this->query = $query;

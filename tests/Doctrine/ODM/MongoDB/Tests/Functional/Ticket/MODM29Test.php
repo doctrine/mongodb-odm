@@ -45,6 +45,7 @@ class MODM29Test extends BaseTest
         foreach ($doc->get() as $value) {
             $array[] = $value->get();
         }
+
         $this->assertEquals(['1', 'tmp', '2'], $array);
     }
 }

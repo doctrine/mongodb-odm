@@ -15,7 +15,7 @@ use MongoDB\Driver\WriteConcern;
 
 class ReadPreferenceTest extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -83,7 +83,7 @@ class ReadPreferenceTest extends BaseTest
             ->createQueryBuilder()
             ->getQuery();
 
-        $this->assertReadPreferenceHint(ReadPreference::RP_NEAREST, $query->getQuery()['readPreference'], [ ['dc' => 'east'] ]);
+        $this->assertReadPreferenceHint(ReadPreference::RP_NEAREST, $query->getQuery()['readPreference'], [['dc' => 'east']]);
     }
 
     public function testDocumentLevelReadPreferenceCanBeOverriddenInQueryBuilder()

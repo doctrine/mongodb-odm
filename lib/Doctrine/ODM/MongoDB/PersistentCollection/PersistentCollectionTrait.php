@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+
 use function array_udiff;
 use function array_udiff_assoc;
 use function array_values;
@@ -184,10 +185,12 @@ trait PersistentCollectionTrait
         if ($this->isDirty) {
             return true;
         }
+
         if (! $this->initialized && count($this->coll)) {
             // not initialized collection with added elements
             return true;
         }
+
         if ($this->initialized) {
             // if initialized let's check with last known snapshot
             return $this->coll->toArray() !== $this->snapshot;
@@ -219,6 +222,7 @@ trait PersistentCollectionTrait
                 $this->coll->add($document);
             }
         }
+
         $this->snapshot = $this->coll->toArray();
         $this->isDirty  = false;
     }
@@ -295,7 +299,7 @@ trait PersistentCollectionTrait
     }
 
     /** {@inheritdoc} */
-    public function getOwner() : ?object
+    public function getOwner(): ?object
     {
         return $this->owner;
     }
@@ -711,6 +715,7 @@ trait PersistentCollectionTrait
         if (isset($this->mapping['strategy']) && CollectionHelper::isHash($this->mapping['strategy'])) {
             $this->initialize();
         }
+
         $arrayAccess ? $this->coll->offsetSet(null, $value) : $this->coll->add($value);
         $this->changed();
 

@@ -33,6 +33,7 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 use RuntimeException;
 use stdClass;
+
 use function get_class;
 
 class DocumentManagerTest extends BaseTest
@@ -234,14 +235,14 @@ class DocumentManagerTest extends BaseTest
     /**
      * @dataProvider dataInvalidTypeMap
      */
-    public function testThrowsExceptionOnInvalidTypeMap(string $expectedMessage, Client $client) : void
+    public function testThrowsExceptionOnInvalidTypeMap(string $expectedMessage, Client $client): void
     {
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage($expectedMessage);
         DocumentManager::create($client);
     }
 
-    public function dataInvalidTypeMap() : array
+    public function dataInvalidTypeMap(): array
     {
         $noTypeMap              = new Client();
         $invalidDocumentTypeMap = new Client('mongodb://127.0.0.1', [], ['typeMap' => ['root' => 'array', 'document' => stdClass::class]]);

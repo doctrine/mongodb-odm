@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use GeoJson\Geometry\Geometry;
+
 use function func_get_args;
 
 /**
@@ -48,7 +49,7 @@ class MatchStage extends Stage
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions) : self
+    public function addAnd($expression, ...$expressions): self
     {
         $this->query->addAnd(...func_get_args());
 
@@ -67,7 +68,7 @@ class MatchStage extends Stage
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
-    public function addNor($expression, ...$expressions) : self
+    public function addNor($expression, ...$expressions): self
     {
         $this->query->addNor(...func_get_args());
 
@@ -86,7 +87,7 @@ class MatchStage extends Stage
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions) : self
+    public function addOr($expression, ...$expressions): self
     {
         $this->query->addOr(...func_get_args());
 
@@ -99,7 +100,7 @@ class MatchStage extends Stage
      * @see Expr::all()
      * @see https://docs.mongodb.com/manual/reference/operator/all/
      */
-    public function all(array $values) : self
+    public function all(array $values): self
     {
         $this->query->all($values);
 
@@ -117,7 +118,7 @@ class MatchStage extends Stage
      *
      * @param array|Expr $expression
      */
-    public function elemMatch($expression) : self
+    public function elemMatch($expression): self
     {
         $this->query->elemMatch($expression);
 
@@ -131,7 +132,7 @@ class MatchStage extends Stage
      *
      * @param mixed $value
      */
-    public function equals($value) : self
+    public function equals($value): self
     {
         $this->query->equals($value);
 
@@ -144,7 +145,7 @@ class MatchStage extends Stage
      * @see Expr::exists()
      * @see https://docs.mongodb.com/manual/reference/operator/exists/
      */
-    public function exists(bool $bool) : self
+    public function exists(bool $bool): self
     {
         $this->query->exists($bool);
 
@@ -155,7 +156,7 @@ class MatchStage extends Stage
      * Create a new Expr instance that can be used to build partial expressions
      * for other operator methods.
      */
-    public function expr() : Expr
+    public function expr(): Expr
     {
         return $this->builder->matchExpr();
     }
@@ -165,7 +166,7 @@ class MatchStage extends Stage
      *
      * @see Expr::field()
      */
-    public function field(string $field) : self
+    public function field(string $field): self
     {
         $this->query->field($field);
 
@@ -183,7 +184,7 @@ class MatchStage extends Stage
      *
      * @param array|Geometry $geometry
      */
-    public function geoIntersects($geometry) : self
+    public function geoIntersects($geometry): self
     {
         $this->query->geoIntersects($geometry);
 
@@ -199,7 +200,7 @@ class MatchStage extends Stage
      * @see Expr::geoWithin()
      * @see https://docs.mongodb.com/manual/reference/operator/geoWithin/
      */
-    public function geoWithin(Geometry $geometry) : self
+    public function geoWithin(Geometry $geometry): self
     {
         $this->query->geoWithin($geometry);
 
@@ -218,7 +219,7 @@ class MatchStage extends Stage
      * @see Expr::geoWithinBox()
      * @see https://docs.mongodb.com/manual/reference/operator/box/
      */
-    public function geoWithinBox(float $x1, float $y1, float $x2, float $y2) : self
+    public function geoWithinBox(float $x1, float $y1, float $x2, float $y2): self
     {
         $this->query->geoWithinBox($x1, $y1, $x2, $y2);
 
@@ -234,7 +235,7 @@ class MatchStage extends Stage
      * @see Expr::geoWithinCenter()
      * @see https://docs.mongodb.com/manual/reference/operator/center/
      */
-    public function geoWithinCenter(float $x, float $y, float $radius) : self
+    public function geoWithinCenter(float $x, float $y, float $radius): self
     {
         $this->query->geoWithinCenter($x, $y, $radius);
 
@@ -249,7 +250,7 @@ class MatchStage extends Stage
      * @see Expr::geoWithinCenterSphere()
      * @see https://docs.mongodb.com/manual/reference/operator/centerSphere/
      */
-    public function geoWithinCenterSphere(float $x, float $y, float $radius) : self
+    public function geoWithinCenterSphere(float $x, float $y, float $radius): self
     {
         $this->query->geoWithinCenterSphere($x, $y, $radius);
 
@@ -275,7 +276,7 @@ class MatchStage extends Stage
      * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
      */
-    public function geoWithinPolygon($point1, $point2, $point3, ...$points) : self
+    public function geoWithinPolygon($point1, $point2, $point3, ...$points): self
     {
         $this->query->geoWithinPolygon(...func_get_args());
 
@@ -285,7 +286,7 @@ class MatchStage extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression() : array
+    public function getExpression(): array
     {
         return [
             '$match' => $this->query->getQuery() ?: (object) [],
@@ -300,7 +301,7 @@ class MatchStage extends Stage
      *
      * @param mixed $value
      */
-    public function gt($value) : self
+    public function gt($value): self
     {
         $this->query->gt($value);
 
@@ -315,7 +316,7 @@ class MatchStage extends Stage
      *
      * @param mixed $value
      */
-    public function gte($value) : self
+    public function gte($value): self
     {
         $this->query->gte($value);
 
@@ -328,14 +329,14 @@ class MatchStage extends Stage
      * @see Expr::in()
      * @see https://docs.mongodb.com/manual/reference/operator/in/
      */
-    public function in(array $values) : self
+    public function in(array $values): self
     {
         $this->query->in($values);
 
         return $this;
     }
 
-    public function includesReferenceTo(object $document) : self
+    public function includesReferenceTo(object $document): self
     {
         $this->query->includesReferenceTo($document);
 
@@ -350,7 +351,7 @@ class MatchStage extends Stage
      * @see Expr::language()
      * @see https://docs.mongodb.com/manual/reference/operator/text/
      */
-    public function language(string $language) : self
+    public function language(string $language): self
     {
         $this->query->language($language);
 
@@ -365,7 +366,7 @@ class MatchStage extends Stage
      *
      * @param mixed $value
      */
-    public function lt($value) : self
+    public function lt($value): self
     {
         $this->query->lt($value);
 
@@ -380,7 +381,7 @@ class MatchStage extends Stage
      *
      * @param mixed $value
      */
-    public function lte($value) : self
+    public function lte($value): self
     {
         $this->query->lte($value);
 
@@ -396,7 +397,7 @@ class MatchStage extends Stage
      * @param float|int $divisor
      * @param float|int $remainder
      */
-    public function mod($divisor, $remainder = 0) : self
+    public function mod($divisor, $remainder = 0): self
     {
         $this->query->mod($divisor, $remainder);
 
@@ -414,7 +415,7 @@ class MatchStage extends Stage
      *
      * @param array|Expr $expression
      */
-    public function not($expression) : self
+    public function not($expression): self
     {
         $this->query->not($expression);
 
@@ -429,7 +430,7 @@ class MatchStage extends Stage
      *
      * @param mixed $value
      */
-    public function notEqual($value) : self
+    public function notEqual($value): self
     {
         $this->query->notEqual($value);
 
@@ -442,7 +443,7 @@ class MatchStage extends Stage
      * @see Expr::notIn()
      * @see https://docs.mongodb.com/manual/reference/operator/nin/
      */
-    public function notIn(array $values) : self
+    public function notIn(array $values): self
     {
         $this->query->notIn($values);
 
@@ -460,14 +461,14 @@ class MatchStage extends Stage
      * @param mixed $start
      * @param mixed $end
      */
-    public function range($start, $end) : self
+    public function range($start, $end): self
     {
         $this->query->range($start, $end);
 
         return $this;
     }
 
-    public function references(object $document) : self
+    public function references(object $document): self
     {
         $this->query->references($document);
 
@@ -480,7 +481,7 @@ class MatchStage extends Stage
      * @see Expr::size()
      * @see https://docs.mongodb.com/manual/reference/operator/size/
      */
-    public function size(int $size) : self
+    public function size(int $size): self
     {
         $this->query->size($size);
 
@@ -497,7 +498,7 @@ class MatchStage extends Stage
      * @see Expr::text()
      * @see https://docs.mongodb.com/master/reference/operator/query/text/
      */
-    public function text(string $search) : self
+    public function text(string $search): self
     {
         $this->query->text($search);
 
@@ -512,7 +513,7 @@ class MatchStage extends Stage
      *
      * @param int|string $type
      */
-    public function type($type) : self
+    public function type($type): self
     {
         $this->query->type($type);
 

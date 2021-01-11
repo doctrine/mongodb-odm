@@ -12,8 +12,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Client;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
-use const DOCTRINE_MONGODB_DATABASE;
-use const DOCTRINE_MONGODB_SERVER;
+
 use function array_key_exists;
 use function array_map;
 use function getenv;
@@ -23,6 +22,9 @@ use function iterator_to_array;
 use function preg_match;
 use function version_compare;
 
+use const DOCTRINE_MONGODB_DATABASE;
+use const DOCTRINE_MONGODB_SERVER;
+
 abstract class BaseTest extends TestCase
 {
     /** @var DocumentManager */
@@ -30,13 +32,13 @@ abstract class BaseTest extends TestCase
     /** @var UnitOfWork */
     protected $uow;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->dm  = $this->createTestDocumentManager();
         $this->uow = $this->dm->getUnitOfWork();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         if (! $this->dm) {
             return;
@@ -91,7 +93,7 @@ abstract class BaseTest extends TestCase
      *
      * @deprecated
      */
-    public static function assertArraySubset($subset, $array, bool $checkForObjectIdentity = false, string $message = '') : void
+    public static function assertArraySubset($subset, $array, bool $checkForObjectIdentity = false, string $message = ''): void
     {
         if (is_callable([parent::class, 'assertArraySubset'])) {
             parent::assertArraySubset($subset, $array, $checkForObjectIdentity, $message);

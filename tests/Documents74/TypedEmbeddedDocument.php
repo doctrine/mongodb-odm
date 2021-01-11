@@ -11,14 +11,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class TypedEmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     private string $name;
 
-    /**
-     * @ODM\Field(type="int")
-     */
+    /** @ODM\Field(type="int") */
     private int $number;
 
     public function __construct(string $name, int $number)
@@ -27,12 +23,12 @@ class TypedEmbeddedDocument
         $this->number = $number;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getNumber() : int
+    public function getNumber(): int
     {
         return $this->number;
     }

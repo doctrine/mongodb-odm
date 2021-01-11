@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Phonebook;
 use Documents\Phonenumber;
+
 use function get_class;
 
 class NestedCollectionsTest extends BaseTest

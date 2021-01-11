@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Utility;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+
 use function in_array;
 
 /**
@@ -19,7 +20,7 @@ final class CollectionHelper
     /**
      * Returns whether update query must be included in query updating owning document.
      */
-    public static function isAtomic(string $strategy) : bool
+    public static function isAtomic(string $strategy): bool
     {
         return $strategy === ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET || $strategy === ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY;
     }
@@ -27,7 +28,7 @@ final class CollectionHelper
     /**
      * Returns whether Collection hold associative array.
      */
-    public static function isHash(string $strategy) : bool
+    public static function isHash(string $strategy): bool
     {
         return $strategy === ClassMetadata::STORAGE_STRATEGY_SET || $strategy === ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET;
     }
@@ -35,7 +36,7 @@ final class CollectionHelper
     /**
      * Returns whether Collection hold array indexed by consecutive numbers.
      */
-    public static function isList(?string $strategy) : bool
+    public static function isList(?string $strategy): bool
     {
         return $strategy !== ClassMetadata::STORAGE_STRATEGY_SET && $strategy !== ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET;
     }
@@ -43,7 +44,7 @@ final class CollectionHelper
     /**
      * Returns whether strategy uses $set to update its data.
      */
-    public static function usesSet(string $strategy) : bool
+    public static function usesSet(string $strategy): bool
     {
         return in_array(
             $strategy,

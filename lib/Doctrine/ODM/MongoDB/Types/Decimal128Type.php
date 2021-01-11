@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Types;
 
 use MongoDB\BSON\Decimal128;
+
 use function bcadd;
 use function bcsub;
 
@@ -17,6 +18,7 @@ class Decimal128Type extends Type implements Incrementable, Versionable
         if ($value === null) {
             return null;
         }
+
         if (! $value instanceof Decimal128) {
             $value = new Decimal128($value);
         }

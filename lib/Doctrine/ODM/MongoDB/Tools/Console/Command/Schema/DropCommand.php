@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+
 use function array_filter;
 use function is_string;
 use function sprintf;
@@ -53,6 +54,7 @@ class DropCommand extends AbstractCommand
                 } else {
                     $this->{'process' . ucfirst($option)}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 }
+
                 $output->writeln(sprintf(
                     'Dropped <comment>%s%s</comment> for <info>%s</info>',
                     $option,

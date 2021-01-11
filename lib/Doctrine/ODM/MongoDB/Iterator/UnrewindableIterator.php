@@ -8,6 +8,7 @@ use Generator;
 use LogicException;
 use RuntimeException;
 use Traversable;
+
 use function iterator_to_array;
 use function sprintf;
 
@@ -36,7 +37,7 @@ final class UnrewindableIterator implements Iterator
         $this->iterator->key();
     }
 
-    public function toArray() : array
+    public function toArray(): array
     {
         $this->preventRewinding(__METHOD__);
 
@@ -44,6 +45,7 @@ final class UnrewindableIterator implements Iterator
             if (! $this->valid()) {
                 return;
             }
+
             yield $this->key() => $this->current();
             yield from $this->getIterator();
         };
@@ -78,7 +80,7 @@ final class UnrewindableIterator implements Iterator
     /**
      * @see http://php.net/iterator.next
      */
-    public function next() : void
+    public function next(): void
     {
         if (! $this->iterator) {
             return;
@@ -90,7 +92,7 @@ final class UnrewindableIterator implements Iterator
     /**
      * @see http://php.net/iterator.rewind
      */
-    public function rewind() : void
+    public function rewind(): void
     {
         $this->preventRewinding(__METHOD__);
     }
@@ -98,12 +100,12 @@ final class UnrewindableIterator implements Iterator
     /**
      * @see http://php.net/iterator.valid
      */
-    public function valid() : bool
+    public function valid(): bool
     {
         return $this->key() !== null;
     }
 
-    private function preventRewinding(string $method) : void
+    private function preventRewinding(string $method): void
     {
         if ($this->iteratorAdvanced) {
             throw new LogicException(sprintf(
@@ -113,7 +115,7 @@ final class UnrewindableIterator implements Iterator
         }
     }
 
-    private function getIterator() : Generator
+    private function getIterator(): Generator
     {
         if ($this->iterator === null) {
             throw new RuntimeException('Iterator has already been destroyed');
@@ -122,10 +124,11 @@ final class UnrewindableIterator implements Iterator
         return $this->iterator;
     }
 
-    private function wrapTraversable(Traversable $traversable) : Generator
+    private function wrapTraversable(Traversable $traversable): Generator
     {
         foreach ($traversable as $key => $value) {
             yield $key => $value;
+
             $this->iteratorAdvanced = true;
         }
 

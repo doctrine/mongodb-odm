@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Query\Filter;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use InvalidArgumentException;
+
 use function array_key_exists;
 
 /**
@@ -36,7 +37,7 @@ abstract class BsonFilter
      *
      * @param mixed $value Value of the parameter.
      */
-    final public function setParameter(string $name, $value) : self
+    final public function setParameter(string $name, $value): self
     {
         $this->parameters[$name] = $value;
 
@@ -66,5 +67,5 @@ abstract class BsonFilter
      *
      * If there is no criteria for the class, an empty array should be returned.
      */
-    abstract public function addFilterCriteria(ClassMetadata $class) : array;
+    abstract public function addFilterCriteria(ClassMetadata $class): array;
 }

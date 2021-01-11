@@ -12,6 +12,7 @@ use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
+
 use function array_diff_key;
 use function array_filter;
 use function array_keys;
@@ -63,7 +64,7 @@ final class SchemaManager
      * Ensure indexes are created for all documents that can be loaded with the
      * metadata factory.
      */
-    public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
+    public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -81,7 +82,7 @@ final class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      */
-    public function updateIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function updateIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -101,7 +102,7 @@ final class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function updateDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function updateDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
 
@@ -143,14 +144,14 @@ final class SchemaManager
         $this->ensureDocumentIndexes($documentName, $maxTimeMs, $writeConcern);
     }
 
-    public function getDocumentIndexes(string $documentName) : array
+    public function getDocumentIndexes(string $documentName): array
     {
         $visited = [];
 
         return $this->doGetDocumentIndexes($documentName, $visited);
     }
 
-    private function doGetDocumentIndexes(string $documentName, array &$visited) : array
+    private function doGetDocumentIndexes(string $documentName, array &$visited): array
     {
         if (isset($visited[$documentName])) {
             return [];
@@ -213,7 +214,7 @@ final class SchemaManager
         return $indexes;
     }
 
-    private function prepareIndexes(ClassMetadata $class) : array
+    private function prepareIndexes(ClassMetadata $class): array
     {
         $persister  = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
         $indexes    = $class->getIndexes();
@@ -246,7 +247,7 @@ final class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
+    public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
@@ -272,7 +273,7 @@ final class SchemaManager
      * Delete indexes for all documents that can be loaded with the
      * metadata factory.
      */
-    public function deleteIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function deleteIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -289,7 +290,7 @@ final class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function deleteDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function deleteDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
@@ -302,13 +303,14 @@ final class SchemaManager
     /**
      * Create all the mapped document collections in the metadata factory.
      */
-    public function createCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function createCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
+
             $this->createDocumentCollection($class->name, $maxTimeMs, $writeConcern);
         }
     }
@@ -318,7 +320,7 @@ final class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function createDocumentCollection(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function createDocumentCollection(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
 
@@ -372,7 +374,7 @@ final class SchemaManager
     /**
      * Drop all the mapped document collections in the metadata factory.
      */
-    public function dropCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function dropCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -389,7 +391,7 @@ final class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function dropDocumentCollection(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function dropDocumentCollection(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -410,7 +412,7 @@ final class SchemaManager
     /**
      * Drop all the mapped document databases in the metadata factory.
      */
-    public function dropDatabases(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function dropDatabases(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -427,7 +429,7 @@ final class SchemaManager
      *
      * @throws InvalidArgumentException
      */
-    public function dropDocumentDatabase(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null) : void
+    public function dropDocumentDatabase(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
@@ -437,7 +439,7 @@ final class SchemaManager
         $this->dm->getDocumentDatabase($documentName)->drop($this->getWriteOptions($maxTimeMs, $writeConcern));
     }
 
-    public function isMongoIndexEquivalentToDocumentIndex(IndexInfo $mongoIndex, array $documentIndex) : bool
+    public function isMongoIndexEquivalentToDocumentIndex(IndexInfo $mongoIndex, array $documentIndex): bool
     {
         return $this->isEquivalentIndexKeys($mongoIndex, $documentIndex) && $this->isEquivalentIndexOptions($mongoIndex, $documentIndex);
     }
@@ -446,7 +448,7 @@ final class SchemaManager
      * Determine if the keys for a MongoDB index can be considered equivalent to
      * those for an index in class metadata.
      */
-    private function isEquivalentIndexKeys(IndexInfo $mongoIndex, array $documentIndex) : bool
+    private function isEquivalentIndexKeys(IndexInfo $mongoIndex, array $documentIndex): bool
     {
         $mongoIndexKeys    = $mongoIndex['key'];
         $documentIndexKeys = $documentIndex['keys'];
@@ -474,7 +476,7 @@ final class SchemaManager
             $mongoIndexKeys == $documentIndexKeys;
     }
 
-    private function hasTextIndexesAtSamePosition(IndexInfo $mongoIndex, array $documentIndex) : bool
+    private function hasTextIndexesAtSamePosition(IndexInfo $mongoIndex, array $documentIndex): bool
     {
         $mongoIndexKeys    = $mongoIndex['key'];
         $documentIndexKeys = $documentIndex['keys'];
@@ -509,7 +511,7 @@ final class SchemaManager
      * The background option is only relevant to index creation and is not
      * considered.
      */
-    private function isEquivalentIndexOptions(IndexInfo $mongoIndex, array $documentIndex) : bool
+    private function isEquivalentIndexOptions(IndexInfo $mongoIndex, array $documentIndex): bool
     {
         $mongoIndexOptions = $mongoIndex->__debugInfo();
         unset($mongoIndexOptions['v'], $mongoIndexOptions['ns'], $mongoIndexOptions['key']);
@@ -529,8 +531,10 @@ final class SchemaManager
         }
 
         foreach (['bits', 'max', 'min'] as $option) {
-            if (isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
-                $mongoIndexOptions[$option] !== $documentIndexOptions[$option]) {
+            if (
+                isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
+                $mongoIndexOptions[$option] !== $documentIndexOptions[$option]
+            ) {
                 return false;
             }
         }
@@ -539,8 +543,10 @@ final class SchemaManager
             return false;
         }
 
-        if (isset($mongoIndexOptions['partialFilterExpression'], $documentIndexOptions['partialFilterExpression']) &&
-            $mongoIndexOptions['partialFilterExpression'] !== $documentIndexOptions['partialFilterExpression']) {
+        if (
+            isset($mongoIndexOptions['partialFilterExpression'], $documentIndexOptions['partialFilterExpression']) &&
+            $mongoIndexOptions['partialFilterExpression'] !== $documentIndexOptions['partialFilterExpression']
+        ) {
             return false;
         }
 
@@ -551,8 +557,10 @@ final class SchemaManager
         foreach (['default_language', 'language_override', 'textIndexVersion'] as $option) {
             /* Text indexes will always report defaults for these options, so
              * only compare if we have explicit values in the document index. */
-            if (isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
-                $mongoIndexOptions[$option] !== $documentIndexOptions[$option]) {
+            if (
+                isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
+                $mongoIndexOptions[$option] !== $documentIndexOptions[$option]
+            ) {
                 return false;
             }
         }
@@ -566,7 +574,7 @@ final class SchemaManager
      * Options added to the ALLOWED_MISSING_INDEX_OPTIONS constant are ignored
      * and are expected to be checked later
      */
-    private function indexOptionsAreMissing(array $mongoIndexOptions, array $documentIndexOptions) : bool
+    private function indexOptionsAreMissing(array $mongoIndexOptions, array $documentIndexOptions): bool
     {
         foreach (self::ALLOWED_MISSING_INDEX_OPTIONS as $option) {
             unset($mongoIndexOptions[$option], $documentIndexOptions[$option]);
@@ -579,7 +587,7 @@ final class SchemaManager
      * Determine if the text index weights for a MongoDB index can be considered
      * equivalent to those for an index in class metadata.
      */
-    private function isEquivalentTextIndexWeights(IndexInfo $mongoIndex, array $documentIndex) : bool
+    private function isEquivalentTextIndexWeights(IndexInfo $mongoIndex, array $documentIndex): bool
     {
         $mongoIndexWeights    = $mongoIndex['weights'];
         $documentIndexWeights = $documentIndex['options']['weights'] ?? [];
@@ -611,7 +619,7 @@ final class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function ensureSharding(?WriteConcern $writeConcern = null) : void
+    public function ensureSharding(?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
@@ -628,7 +636,7 @@ final class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function ensureDocumentSharding(string $documentName, ?WriteConcern $writeConcern = null) : void
+    public function ensureDocumentSharding(string $documentName, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
         if (! $class->isSharded()) {
@@ -653,7 +661,7 @@ final class SchemaManager
      *
      * @throws MongoDBException
      */
-    public function enableShardingForDbByDocumentName(string $documentName) : void
+    public function enableShardingForDbByDocumentName(string $documentName): void
     {
         $dbName  = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $adminDb = $this->dm->getClient()->selectDatabase('admin');
@@ -670,7 +678,7 @@ final class SchemaManager
         }
     }
 
-    private function runShardCollectionCommand(string $documentName, ?WriteConcern $writeConcern = null) : array
+    private function runShardCollectionCommand(string $documentName, ?WriteConcern $writeConcern = null): array
     {
         $class    = $this->dm->getClassMetadata($documentName);
         $dbName   = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
@@ -704,13 +712,13 @@ final class SchemaManager
         )->toArray()[0];
     }
 
-    private function ensureGridFSIndexes(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
+    private function ensureGridFSIndexes(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $this->ensureChunksIndex($class, $maxTimeMs, $writeConcern, $background);
         $this->ensureFilesIndex($class, $maxTimeMs, $writeConcern, $background);
     }
 
-    private function ensureChunksIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
+    private function ensureChunksIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $chunksCollection = $this->dm->getDocumentBucket($class->getName())->getChunksCollection();
         foreach ($chunksCollection->listIndexes() as $index) {
@@ -725,7 +733,7 @@ final class SchemaManager
         );
     }
 
-    private function ensureFilesIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false) : void
+    private function ensureFilesIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $filesCollection = $this->dm->getDocumentCollection($class->getName());
         foreach ($filesCollection->listIndexes() as $index) {
@@ -737,7 +745,7 @@ final class SchemaManager
         $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX, $this->getWriteOptions($maxTimeMs, $writeConcern, ['background' => $background]));
     }
 
-    private function collectionIsSharded(string $documentName) : bool
+    private function collectionIsSharded(string $documentName): bool
     {
         $class = $this->dm->getClassMetadata($documentName);
 
@@ -752,7 +760,7 @@ final class SchemaManager
         return (bool) ($stats['sharded'] ?? false);
     }
 
-    private function getWriteOptions(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, array $options = []) : array
+    private function getWriteOptions(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, array $options = []): array
     {
         unset($options['maxTimeMs'], $options['writeConcern']);
 

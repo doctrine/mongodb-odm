@@ -8,12 +8,14 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents74\TypedDocument;
 use Documents74\TypedEmbeddedDocument;
 use MongoDB\BSON\ObjectId;
+
+use function assert;
 use function phpversion;
 use function version_compare;
 
 class TypedPropertiesTest extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         if (version_compare((string) phpversion(), '7.4.0', '<')) {
             $this->markTestSkipped('PHP 7.4 is required to run this test');
@@ -22,7 +24,7 @@ class TypedPropertiesTest extends BaseTest
         parent::setUp();
     }
 
-    public function testPersistNew() : void
+    public function testPersistNew(): void
     {
         $doc = new TypedDocument();
         $doc->setName('Maciej');
@@ -32,15 +34,15 @@ class TypedPropertiesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        /** @var TypedDocument $saved */
         $saved = $this->dm->find(TypedDocument::class, $doc->getId());
+        assert($saved instanceof TypedDocument);
         $this->assertEquals($doc->getId(), $saved->getId());
         $this->assertSame($doc->getName(), $saved->getName());
         $this->assertEquals($doc->getEmbedOne(), $saved->getEmbedOne());
         $this->assertEquals($doc->getEmbedMany()->getValues(), $saved->getEmbedMany()->getValues());
     }
 
-    public function testMerge() : void
+    public function testMerge(): void
     {
         $doc = new TypedDocument();
         $doc->setId((string) new ObjectId());
@@ -55,7 +57,7 @@ class TypedPropertiesTest extends BaseTest
         $this->assertEquals($doc->getEmbedMany()->getValues(), $merged->getEmbedMany()->getValues());
     }
 
-    public function testProxying() : void
+    public function testProxying(): void
     {
         $doc = new TypedDocument();
         $doc->setName('Maciej');
@@ -65,8 +67,8 @@ class TypedPropertiesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        /** @var TypedDocument $proxy */
         $proxy = $this->dm->getReference(TypedDocument::class, $doc->getId());
+        assert($proxy instanceof TypedDocument);
         $this->assertEquals($doc->getId(), $proxy->getId());
         $this->assertSame($doc->getName(), $proxy->getName());
         $this->assertEquals($doc->getEmbedOne(), $proxy->getEmbedOne());

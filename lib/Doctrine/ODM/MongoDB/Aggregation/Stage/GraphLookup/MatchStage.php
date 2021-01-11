@@ -24,7 +24,7 @@ class MatchStage extends BaseMatchStage
     /**
      * {@inheritdoc}
      */
-    public function getExpression() : array
+    public function getExpression(): array
     {
         return $this->query->getQuery();
     }
@@ -36,7 +36,7 @@ class MatchStage extends BaseMatchStage
      * The from collection cannot be sharded and must be in the same database as
      * any other collections used in the operation.
      */
-    public function from(string $from) : GraphLookup
+    public function from(string $from): GraphLookup
     {
         return $this->graphLookup->from($from);
     }
@@ -50,7 +50,7 @@ class MatchStage extends BaseMatchStage
      *
      * @param string|array|Expr $expression
      */
-    public function startWith($expression) : GraphLookup
+    public function startWith($expression): GraphLookup
     {
         return $this->graphLookup->startWith($expression);
     }
@@ -62,7 +62,7 @@ class MatchStage extends BaseMatchStage
      * Optionally, connectFromField may be an array of field names, each of
      * which is individually followed through the traversal process.
      */
-    public function connectFromField(string $connectFromField) : GraphLookup
+    public function connectFromField(string $connectFromField): GraphLookup
     {
         return $this->graphLookup->connectFromField($connectFromField);
     }
@@ -71,7 +71,7 @@ class MatchStage extends BaseMatchStage
      * Field name in other documents against which to match the value of the
      * field specified by the connectFromField parameter.
      */
-    public function connectToField(string $connectToField) : GraphLookup
+    public function connectToField(string $connectToField): GraphLookup
     {
         return $this->graphLookup->connectToField($connectToField);
     }
@@ -82,7 +82,7 @@ class MatchStage extends BaseMatchStage
      * Contains the documents traversed in the $graphLookup stage to reach the
      * document.
      */
-    public function alias(string $alias) : GraphLookup
+    public function alias(string $alias): GraphLookup
     {
         return $this->graphLookup->alias($alias);
     }
@@ -90,7 +90,7 @@ class MatchStage extends BaseMatchStage
     /**
      * Non-negative integral number specifying the maximum recursion depth.
      */
-    public function maxDepth(int $maxDepth) : GraphLookup
+    public function maxDepth(int $maxDepth): GraphLookup
     {
         return $this->graphLookup->maxDepth($maxDepth);
     }
@@ -102,7 +102,7 @@ class MatchStage extends BaseMatchStage
      * represented as a NumberLong. Recursion depth value starts at zero, so the
      * first lookup corresponds to zero depth.
      */
-    public function depthField(string $depthField) : GraphLookup
+    public function depthField(string $depthField): GraphLookup
     {
         return $this->graphLookup->depthField($depthField);
     }

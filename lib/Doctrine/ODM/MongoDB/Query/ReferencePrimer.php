@@ -14,6 +14,7 @@ use InvalidArgumentException;
 use LogicException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Traversable;
+
 use function array_push;
 use function array_shift;
 use function array_values;
@@ -67,7 +68,7 @@ final class ReferencePrimer
         $this->dm  = $dm;
         $this->uow = $uow;
 
-        $this->defaultPrimer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) : void {
+        $this->defaultPrimer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints): void {
             if ($class->identifier === null) {
                 return;
             }
@@ -103,7 +104,7 @@ final class ReferencePrimer
      * @throws LogicException If the mapped field is a simple reference and is
      *                         missing a target document class.
      */
-    public function primeReferences(ClassMetadata $class, $documents, string $fieldName, array $hints = [], ?callable $primer = null) : void
+    public function primeReferences(ClassMetadata $class, $documents, string $fieldName, array $hints = [], ?callable $primer = null): void
     {
         $data      = $this->parseDotSyntaxForPrimer($fieldName, $class, $documents);
         $mapping   = $data['mapping'];
@@ -128,7 +129,6 @@ final class ReferencePrimer
         $primer     = $primer ?: $this->defaultPrimer;
         $groupedIds = [];
 
-        /** @var PersistentCollectionInterface $document */
         foreach ($documents as $document) {
             $fieldValue = $class->getFieldValue($document, $fieldName);
 
@@ -164,7 +164,7 @@ final class ReferencePrimer
      *
      * @param array|Traversable $documents
      */
-    private function parseDotSyntaxForPrimer(string $fieldName, ClassMetadata $class, $documents, ?array $mapping = null) : array
+    private function parseDotSyntaxForPrimer(string $fieldName, ClassMetadata $class, $documents, ?array $mapping = null): array
     {
         // Recursion passthrough:
         if ($mapping !== null) {
@@ -237,7 +237,7 @@ final class ReferencePrimer
      * have a target document class defined. Without that, there is no way to
      * infer the class of the referenced documents.
      */
-    private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds) : void
+    private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds): void
     {
         $mapping   = $persistentCollection->getMapping();
         $class     = null;

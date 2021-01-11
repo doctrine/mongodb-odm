@@ -25,6 +25,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionException;
 use stdClass;
+
 use function array_merge;
 use function get_class;
 use function serialize;
@@ -782,7 +783,7 @@ class ClassMetadataTest extends BaseTest
         $cm->setShardKey(['referenceMany' => 1]);
     }
 
-    public function testArbitraryFieldInGridFSFileThrowsException() : void
+    public function testArbitraryFieldInGridFSFileThrowsException(): void
     {
         $object = new class {
             public $contentType;

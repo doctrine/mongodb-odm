@@ -21,12 +21,12 @@ abstract class AbstractDriverTest extends TestCase
 {
     protected $driver;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         // implement driver setup and metadata read
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->driver);
     }

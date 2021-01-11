@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use IteratorAggregate;
 use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
+
 use function array_merge;
 use function assert;
 
@@ -46,7 +47,7 @@ final class Aggregation implements IteratorAggregate
         $this->rewindable    = $rewindable;
     }
 
-    public function getIterator() : Iterator
+    public function getIterator(): Iterator
     {
         // Force cursor to be used
         $options = array_merge($this->options, ['cursor' => true]);
@@ -57,7 +58,7 @@ final class Aggregation implements IteratorAggregate
         return $this->prepareIterator($cursor);
     }
 
-    private function prepareIterator(Cursor $cursor) : Iterator
+    private function prepareIterator(Cursor $cursor): Iterator
     {
         if ($this->classMetadata) {
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->classMetadata);

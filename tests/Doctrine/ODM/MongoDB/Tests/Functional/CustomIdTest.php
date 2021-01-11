@@ -86,6 +86,7 @@ class CustomIdTest extends BaseTest
             if ($user->getId() === 'userId') {
                 $results['userId'] = true;
             }
+
             $this->assertNotNull($user->getId());
             $results['ids'][] = $user->getId();
         }
@@ -98,6 +99,7 @@ class CustomIdTest extends BaseTest
             if ($user->getId() === 'userId') {
                 $results['userId'] = true;
             }
+
             $this->assertNotNull($user->getId());
             $results['ids'][] = $user->getId();
         }

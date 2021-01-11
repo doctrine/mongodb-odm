@@ -9,11 +9,12 @@ use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use ProxyManager\Proxy\GhostObjectInterface;
+
 use function iterator_to_array;
 
 class GH593Test extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 

@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use ProxyManager\Proxy\GhostObjectInterface;
-use const DIRECTORY_SEPARATOR;
+
 use function array_key_exists;
 use function chmod;
 use function class_exists;
@@ -31,6 +31,8 @@ use function sprintf;
 use function str_replace;
 use function substr;
 use function uniqid;
+
+use const DIRECTORY_SEPARATOR;
 
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
@@ -95,9 +97,11 @@ final class HydratorFactory
         if (! $hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();
         }
+
         if (! $hydratorNs) {
             throw HydratorException::hydratorNamespaceRequired();
         }
+
         $this->dm                = $dm;
         $this->evm               = $evm;
         $this->hydratorDir       = $hydratorDir;
@@ -110,7 +114,7 @@ final class HydratorFactory
      *
      * @internal
      */
-    public function setUnitOfWork(UnitOfWork $uow) : void
+    public function setUnitOfWork(UnitOfWork $uow): void
     {
         $this->unitOfWork = $uow;
     }
@@ -118,11 +122,12 @@ final class HydratorFactory
     /**
      * Gets the hydrator object for the given document class.
      */
-    public function getHydratorFor(string $className) : HydratorInterface
+    public function getHydratorFor(string $className): HydratorInterface
     {
         if (isset($this->hydrators[$className])) {
             return $this->hydrators[$className];
         }
+
         $hydratorClassName = str_replace('\\', '', $className) . 'Hydrator';
         $fqn               = $this->hydratorNamespace . '\\' . $hydratorClassName;
         $class             = $this->dm->getClassMetadata($className);
@@ -143,6 +148,7 @@ final class HydratorFactory
                     if (! file_exists($fileName)) {
                         $this->generateHydratorClass($class, $hydratorClassName, $fileName);
                     }
+
                     require $fileName;
                     break;
 
@@ -151,6 +157,7 @@ final class HydratorFactory
                     break;
             }
         }
+
         $this->hydrators[$className] = new $fqn($this->dm, $this->unitOfWork, $class);
 
         return $this->hydrators[$className];
@@ -164,7 +171,7 @@ final class HydratorFactory
      *                        directory configured on the Configuration of the DocumentManager used
      *                        by this factory is used.
      */
-    public function generateHydratorClasses(array $classes, ?string $toDir = null) : void
+    public function generateHydratorClasses(array $classes, ?string $toDir = null): void
     {
         $hydratorDir = $toDir ?: $this->hydratorDir;
         $hydratorDir = rtrim($hydratorDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -175,7 +182,7 @@ final class HydratorFactory
         }
     }
 
-    private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, ?string $fileName) : void
+    private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, ?string $fileName): void
     {
         $code = '';
 
@@ -440,7 +447,7 @@ EOF
      *
      * @param array $hints Any hints to account for during reconstitution/lookup of the document.
      */
-    public function hydrate(object $document, array $data, array $hints = []) : array
+    public function hydrate(object $document, array $data, array $hints = []): array
     {
         $metadata = $this->dm->getClassMetadata(get_class($document));
         // Invoke preLoad lifecycle events and listeners
@@ -448,6 +455,7 @@ EOF
             $args = [new PreLoadEventArgs($document, $this->dm, $data)];
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
+
         if ($this->evm->hasListeners(Events::preLoad)) {
             $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
         }
@@ -473,7 +481,7 @@ EOF
                 array $parameters, // we don't care
                 &$initializer,
                 array $properties // we currently do not use this
-            ) : bool {
+            ): bool {
                 $initializer = null;
 
                 return true;
@@ -486,6 +494,7 @@ EOF
         if (! empty($metadata->lifecycleCallbacks[Events::postLoad])) {
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document, [new LifecycleEventArgs($document, $this->dm)]);
         }
+
         if ($this->evm->hasListeners(Events::postLoad)) {
             $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
         }

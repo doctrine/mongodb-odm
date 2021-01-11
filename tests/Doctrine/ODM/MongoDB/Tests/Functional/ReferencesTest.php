@@ -21,6 +21,7 @@ use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 use ProxyManager\Proxy\GhostObjectInterface;
+
 use function get_class;
 
 class ReferencesTest extends BaseTest

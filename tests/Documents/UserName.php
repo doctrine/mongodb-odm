@@ -25,17 +25,17 @@ class UserName
     /** @ODM\ReferenceOne(targetDocument=ViewReference::class, name="_id", storeAs=ClassMetadata::REFERENCE_STORE_AS_ID, notSaved=true) */
     private $viewReference;
 
-    public function getId() : ?string
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getUsername() : ?string
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    public function getViewReference() : ?ViewReference
+    public function getViewReference(): ?ViewReference
     {
         return $this->viewReference;
     }

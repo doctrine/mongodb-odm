@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+
 use function assert;
 
 /**
@@ -22,7 +23,7 @@ class BucketAutoOutput extends AbstractOutput
      * An expression to group documents by. To specify a field path, prefix the
      * field name with a dollar sign $ and enclose it in quotes.
      */
-    public function groupBy($expression) : Stage\BucketAuto
+    public function groupBy($expression): Stage\BucketAuto
     {
         assert($this->bucket instanceof Stage\BucketAuto);
 
@@ -32,7 +33,7 @@ class BucketAutoOutput extends AbstractOutput
     /**
      * A positive 32-bit integer that specifies the number of buckets into which input documents are grouped.
      */
-    public function buckets(int $buckets) : Stage\BucketAuto
+    public function buckets(int $buckets): Stage\BucketAuto
     {
         assert($this->bucket instanceof Stage\BucketAuto);
 
@@ -44,7 +45,7 @@ class BucketAutoOutput extends AbstractOutput
      * the calculated boundary edges end on preferred round numbers or their
      * powers of 10.
      */
-    public function granularity(string $granularity) : Stage\BucketAuto
+    public function granularity(string $granularity): Stage\BucketAuto
     {
         assert($this->bucket instanceof Stage\BucketAuto);
 

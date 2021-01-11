@@ -11,11 +11,12 @@ use Documents\CmsUser;
 use Documents\UserName;
 use Documents\ViewReference;
 use ProxyManager\Proxy\GhostObjectInterface;
+
 use function assert;
 
 class ViewTest extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 

@@ -8,11 +8,13 @@ use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MongoDB\GridFS\Bucket;
 use MongoDB\GridFS\Exception\FileNotFoundException;
-use const PATHINFO_BASENAME;
+
 use function fclose;
 use function fopen;
 use function is_object;
 use function pathinfo;
+
+use const PATHINFO_BASENAME;
 
 class DefaultGridFSRepository extends DocumentRepository implements GridFSRepository
 {
@@ -31,7 +33,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     /**
      * @see Bucket::downloadToStream
      */
-    public function downloadToStream($id, $destination) : void
+    public function downloadToStream($id, $destination): void
     {
         try {
             $this->getDocumentBucket()->downloadToStream($this->class->getDatabaseIdentifierValue($id), $destination);
@@ -81,12 +83,12 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         }
     }
 
-    private function getDocumentBucket() : Bucket
+    private function getDocumentBucket(): Bucket
     {
         return $this->dm->getDocumentBucket($this->documentName);
     }
 
-    private function prepareOptions(?UploadOptions $uploadOptions = null) : array
+    private function prepareOptions(?UploadOptions $uploadOptions = null): array
     {
         if ($uploadOptions === null) {
             $uploadOptions = new UploadOptions();

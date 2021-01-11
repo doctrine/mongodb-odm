@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use InvalidArgumentException;
+
 use function array_map;
 
 class GH1275Test extends BaseTest
@@ -49,7 +50,7 @@ class GH1275Test extends BaseTest
         $this->dm->refresh($container);
 
         $this->assertSame(
-            ['Number One','Number Three', 'Number Two'],
+            ['Number One', 'Number Three', 'Number Two'],
             array_map($getNameCallback, $container->items->toArray())
         );
     }

@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Throwable;
+
 use function iterator_to_array;
 
 class CachingIteratorTest extends TestCase

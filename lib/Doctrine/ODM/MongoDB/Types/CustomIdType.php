@@ -19,12 +19,12 @@ class CustomIdType extends Type
         return $value;
     }
 
-    public function closureToMongo() : string
+    public function closureToMongo(): string
     {
         return '$return = $value;';
     }
 
-    public function closureToPHP() : string
+    public function closureToPHP(): string
     {
         return '$return = $value;';
     }

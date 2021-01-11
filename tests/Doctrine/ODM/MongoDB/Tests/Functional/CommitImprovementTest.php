@@ -13,6 +13,7 @@ use Documents\Phonebook;
 use Documents\Phonenumber;
 use Documents\User;
 use Documents\VersionedUser;
+
 use function get_class;
 
 class CommitImprovementTest extends BaseTest
@@ -20,7 +21,7 @@ class CommitImprovementTest extends BaseTest
     /** @var CommandLogger */
     private $logger;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -28,7 +29,7 @@ class CommitImprovementTest extends BaseTest
         $this->logger->register();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->logger->unregister();
 
@@ -159,6 +160,7 @@ class PhonenumberMachine implements EventSubscriber
         if (! ($document instanceof User)) {
             return;
         }
+
         // hey I just met you, and this is crazy!
         $document->addPhonenumber(new Phonenumber($this->numbers[$this->numberId++]));
         // and call me maybe ;)

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 use function array_search;
 use function in_array;
 
@@ -73,6 +74,7 @@ class Article
         if (! in_array($tag, $this->tags)) {
             return;
         }
+
         unset($this->tags[array_search($tag, $this->tags)]);
     }
 

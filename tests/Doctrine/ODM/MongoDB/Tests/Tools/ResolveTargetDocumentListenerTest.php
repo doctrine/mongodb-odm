@@ -22,7 +22,7 @@ class ResolveTargetDocumentListenerTest extends BaseTest
     /** @var ClassMetadataFactory */
     private $factory;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 

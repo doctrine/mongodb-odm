@@ -16,6 +16,7 @@ use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+
 use function array_values;
 use function get_class;
 use function iterator_to_array;
@@ -23,7 +24,7 @@ use function strtotime;
 
 class QueryTest extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -442,7 +443,7 @@ class QueryTest extends BaseTest
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
-    public function testPopFirst() : void
+    public function testPopFirst(): void
     {
         $article = new Article();
         $article->setTitle('test');
@@ -468,7 +469,7 @@ class QueryTest extends BaseTest
         $this->assertSame([2, 3], $article->getTags());
     }
 
-    public function testPopLast() : void
+    public function testPopLast(): void
     {
         $article = new Article();
         $article->setTitle('test');
@@ -499,7 +500,7 @@ class QueryTest extends BaseTest
      *
      * @doesNotPerformAssertions
      */
-    public function testReplaceDocumentRunsReplaceOperation() : void
+    public function testReplaceDocumentRunsReplaceOperation(): void
     {
         $this->dm->createQueryBuilder(Article::class)
             ->updateOne()
@@ -513,7 +514,7 @@ class QueryTest extends BaseTest
     /**
      * Checks that the query class runs a ReplaceOne operation internally
      */
-    public function testReplaceMultipleCausesException() : void
+    public function testReplaceMultipleCausesException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Combining the "multiple" option without using an update operator as first operation in a query is not supported.');
@@ -530,7 +531,7 @@ class QueryTest extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testFindAndReplaceDocumentRunsFindAndReplaceOperation() : void
+    public function testFindAndReplaceDocumentRunsFindAndReplaceOperation(): void
     {
         $this->dm->createQueryBuilder(Article::class)
             ->findAndUpdate()

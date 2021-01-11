@@ -6,5 +6,5 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 interface Iterator extends \Iterator
 {
-    public function toArray() : array;
+    public function toArray(): array;
 }

@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use const PHP_EOL;
+
 use function assert;
 use function count;
 use function file_exists;
@@ -19,6 +19,8 @@ use function is_writable;
 use function mkdir;
 use function realpath;
 use function sprintf;
+
+use const PHP_EOL;
 
 /**
  * Command to (re)generate the persistent collection classes used by doctrine.
@@ -102,6 +104,7 @@ EOT
                     if (empty($mapping['collectionClass']) || isset($generated[$mapping['collectionClass']])) {
                         continue;
                     }
+
                     $generated[$mapping['collectionClass']] = true;
                     $output->write(
                         sprintf('Generating class for "<info>%s</info>"', $mapping['collectionClass']) . PHP_EOL

@@ -47,19 +47,22 @@ use Documents\UserUpsertChild;
 use Documents\UserUpsertIdStrategyNone;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
-use const PHP_VERSION;
+
+use function assert;
 use function bcscale;
 use function bcsqrt;
 use function min;
 use function strlen;
 use function version_compare;
 
+use const PHP_VERSION;
+
 class FunctionalTest extends BaseTest
 {
     /** @var int */
     private $initialScale;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -71,7 +74,7 @@ class FunctionalTest extends BaseTest
         }
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         parent::tearDown();
 
@@ -575,11 +578,11 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        /** @var FavoritesUser $test */
         $test = $this->dm->find(FavoritesUser::class, $user->getId());
+        assert($test instanceof FavoritesUser);
 
-        /** @var PersistentCollection $collection */
         $collection = $test->getFavorites();
+        assert($collection instanceof PersistentCollection);
         $this->expectException(MongoDBException::class);
         $collection->getTypeClass();
     }
@@ -594,11 +597,11 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        /** @var Bar $test */
         $test = $this->dm->find(Bar::class, $bar->getId());
+        assert($test instanceof Bar);
 
-        /** @var PersistentCollection $collection */
         $collection = $test->getLocations();
+        assert($collection instanceof PersistentCollection);
         $this->assertInstanceOf(ClassMetadata::class, $collection->getTypeClass());
     }
 

@@ -12,5 +12,5 @@ interface ViewRepository extends ObjectRepository
     /**
      * Appends the aggregation pipeline to the given builder
      */
-    public function createViewAggregation(Builder $builder) : void;
+    public function createViewAggregation(Builder $builder): void;
 }

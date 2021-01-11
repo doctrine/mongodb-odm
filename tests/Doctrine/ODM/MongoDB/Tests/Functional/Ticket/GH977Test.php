@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+
 use function get_class;
 
 class GH977Test extends BaseTest
@@ -25,6 +26,7 @@ class GH977Test extends BaseTest
         if (isset($changeSet['value1'])) {
             $d->value2 = 'v1 has changed';
         }
+
         $this->dm->flush();
         $this->dm->clear();
 

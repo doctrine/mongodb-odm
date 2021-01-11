@@ -17,11 +17,11 @@ class GH232Test extends BaseTest
         /* END PARENT DOCUMENT */
 
         /* ADD EMBEDDED DOCUMENT */
-        $sub_product = new SubProduct();
-        $product->subproducts->add($sub_product);
+        $subProduct = new SubProduct();
+        $product->subproducts->add($subProduct);
 
         $price = new Price();
-        $sub_product->prices->add($price);
+        $subProduct->prices->add($price);
         /* END ADD EMBEDDED DOCUMENT */
 
         // persist & double flush

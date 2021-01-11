@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Types;
 
 use MongoDB\BSON\Binary;
+
 use function sprintf;
 
 /**
@@ -43,12 +44,12 @@ class BinDataType extends Type
         return $value !== null ? ($value instanceof Binary ? $value->getData() : $value) : null;
     }
 
-    public function closureToMongo() : string
+    public function closureToMongo(): string
     {
         return sprintf('$return = $value !== null ? new \MongoDB\BSON\Binary($value, %d) : null;', $this->binDataType);
     }
 
-    public function closureToPHP() : string
+    public function closureToPHP(): string
     {
         return '$return = $value !== null ? ($value instanceof \MongoDB\BSON\Binary ? $value->getData() : $value) : null;';
     }

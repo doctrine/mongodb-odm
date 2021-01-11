@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\FriendUser;
+
 use function get_class;
 
 class FlushTest extends BaseTest
@@ -34,6 +35,7 @@ class FlushTest extends BaseTest
         foreach ([$userA, $userB, $userC] as $user) {
             $this->dm->persist($user);
         }
+
         $this->dm->flush();
         $this->dm->clear();
 

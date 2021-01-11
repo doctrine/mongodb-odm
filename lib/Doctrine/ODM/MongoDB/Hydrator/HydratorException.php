@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+
 use function sprintf;
 
 /**
@@ -12,17 +13,17 @@ use function sprintf;
  */
 final class HydratorException extends MongoDBException
 {
-    public static function hydratorDirectoryNotWritable() : self
+    public static function hydratorDirectoryNotWritable(): self
     {
         return new self('Your hydrator directory must be writable.');
     }
 
-    public static function hydratorDirectoryRequired() : self
+    public static function hydratorDirectoryRequired(): self
     {
         return new self('You must configure a hydrator directory. See docs for details.');
     }
 
-    public static function hydratorNamespaceRequired() : self
+    public static function hydratorNamespaceRequired(): self
     {
         return new self('You must configure a hydrator namespace. See docs for details');
     }

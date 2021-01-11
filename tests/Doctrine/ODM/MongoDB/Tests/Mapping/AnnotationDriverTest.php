@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Documents\CmsUser;
+
 use function get_class;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
@@ -97,10 +98,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testGetAllClassNamesIsIdempotent()
     {
-        $annotationDriver = $this->_loadDriverForCMSDocuments();
+        $annotationDriver = $this->loadDriverForCMSDocuments();
         $original         = $annotationDriver->getAllClassNames();
 
-        $annotationDriver = $this->_loadDriverForCMSDocuments();
+        $annotationDriver = $this->loadDriverForCMSDocuments();
         $afterTestReset   = $annotationDriver->getAllClassNames();
 
         $this->assertEquals($original, $afterTestReset);
@@ -111,10 +112,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances()
     {
-        $annotationDriver = $this->_loadDriverForCMSDocuments();
+        $annotationDriver = $this->loadDriverForCMSDocuments();
         $original         = $annotationDriver->getAllClassNames();
 
-        $annotationDriver = $this->_loadDriverForCMSDocuments();
+        $annotationDriver = $this->loadDriverForCMSDocuments();
         $afterTestReset   = $annotationDriver->getAllClassNames();
 
         $this->assertEquals($original, $afterTestReset);
@@ -125,7 +126,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate()
     {
-        $annotationDriver = $this->_loadDriverForCMSDocuments();
+        $annotationDriver = $this->loadDriverForCMSDocuments();
         $classes          = $annotationDriver->getAllClassNames();
 
         $this->assertContains(CmsUser::class, $classes);
@@ -138,7 +139,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $extraneousClassName = ColumnWithoutType::class;
 
-        $annotationDriver = $this->_loadDriverForCMSDocuments();
+        $annotationDriver = $this->loadDriverForCMSDocuments();
         $classes          = $annotationDriver->getAllClassNames();
 
         $this->assertNotContains($extraneousClassName, $classes);
@@ -189,6 +190,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             },
             '/as EmbeddedDocument because it was already mapped as Document\.$/',
         ];
+
         yield [
             /**
              * @ODM\Document()
@@ -198,6 +200,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             },
             '/as File because it was already mapped as Document\.$/',
         ];
+
         yield [
             /**
              * @ODM\Document()
@@ -207,6 +210,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             },
             '/as QueryResultDocument because it was already mapped as Document\.$/',
         ];
+
         yield [
             /**
              * @ODM\Document()
@@ -216,6 +220,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             },
             '/as View because it was already mapped as Document\.$/',
         ];
+
         yield [
             /**
              * @ODM\Document()
@@ -225,6 +230,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             },
             '/as MappedSuperclass because it was already mapped as Document\.$/',
         ];
+
         yield [
             /**
              * @ODM\MappedSuperclass()
@@ -236,15 +242,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         ];
     }
 
-    protected function _loadDriverForCMSDocuments()
+    protected function loadDriverForCMSDocuments()
     {
-        $annotationDriver = $this->_loadDriver();
+        $annotationDriver = $this->loadDriver();
         $annotationDriver->addPaths([__DIR__ . '/../../../../../Documents']);
 
         return $annotationDriver;
     }
 
-    protected function _loadDriver()
+    protected function loadDriver()
     {
         $reader = new AnnotationReader();
 

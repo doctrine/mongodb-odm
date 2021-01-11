@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
+
 use function is_a;
 use function ltrim;
 use function spl_object_hash;
@@ -25,10 +26,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      */
     private $repositoryList = [];
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
+    public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
         $hashKey  = $metadata->getName() . spl_object_hash($documentManager);
@@ -49,7 +47,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      *
      * @return ObjectRepository|GridFSRepository|ViewRepository
      */
-    protected function createRepository(DocumentManager $documentManager, string $documentName) : ObjectRepository
+    protected function createRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
 
@@ -66,12 +64,14 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
                 if (! is_a($repositoryClassName, GridFSRepository::class, true)) {
                     throw MappingException::invalidRepositoryClass($documentName, $repositoryClassName, GridFSRepository::class);
                 }
+
                 break;
 
             case $metadata->isView():
                 if (! is_a($repositoryClassName, ViewRepository::class, true)) {
                     throw MappingException::invalidRepositoryClass($documentName, $repositoryClassName, ViewRepository::class);
                 }
+
                 break;
 
             case $metadata->isEmbeddedDocument:
@@ -82,6 +82,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
                 if (! is_a($repositoryClassName, DocumentRepository::class, true)) {
                     throw MappingException::invalidRepositoryClass($documentName, $repositoryClassName, DocumentRepository::class);
                 }
+
                 break;
         }
 
@@ -91,5 +92,5 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Instantiates requested repository.
      */
-    abstract protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata) : ObjectRepository;
+    abstract protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata): ObjectRepository;
 }

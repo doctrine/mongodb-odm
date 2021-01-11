@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\BlogPost;
 use Documents\Comment;
 use Documents\User;
+
 use function strtotime;
 
 class ReferenceRepositoryMethodTest extends BaseTest

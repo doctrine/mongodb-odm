@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use PHPUnit\Framework\TestCase;
+
 use function call_user_func_array;
 
 class CriteriaMergerTest extends TestCase

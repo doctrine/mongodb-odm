@@ -9,9 +9,11 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
-use const PHP_INT_SIZE;
+
 use function get_class;
 use function time;
+
+use const PHP_INT_SIZE;
 
 class DateTest extends BaseTest
 {

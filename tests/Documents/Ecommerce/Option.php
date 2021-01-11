@@ -46,10 +46,12 @@ class Option
         if (empty($this->name)) {
             throw new InvalidArgumentException('option name cannot be empty');
         }
+
         $this->money = $money;
         if (empty($this->money)) {
             throw new InvalidArgumentException('option price cannot be empty');
         }
+
         $this->stockItem = $stockItem;
     }
 

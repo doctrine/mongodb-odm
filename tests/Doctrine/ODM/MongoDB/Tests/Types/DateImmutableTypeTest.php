@@ -12,9 +12,11 @@ use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use const PHP_INT_SIZE;
+
 use function date;
 use function strtotime;
+
+use const PHP_INT_SIZE;
 
 class DateImmutableTypeTest extends TestCase
 {
