@@ -17,17 +17,23 @@
     <exclude-pattern>tests/Proxies*</exclude-pattern>
     <exclude-pattern>tests/Hydrators*</exclude-pattern>
     <exclude-pattern>tests/PersistentCollections*</exclude-pattern>
+    <!-- Figure out what to do with "Scope keyword "static" must be followed by a single space; found newline" -->
     <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP80Types.php</exclude-pattern>
 
     <rule ref="Doctrine">
         <!-- Traversable type hints often end up as mixed[], so we skip them for now -->
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification" />
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification" />
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification" />
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification" />
 
         <!-- Will cause BC breaks to method signatures - disabled for now -->
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint" />
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint" />
+
+        <!-- To be removed once PHP 7.4 is the lowest supported version -->
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint" />
 
         <!-- Disabled to avoid class renaming - to be handled in a separate PR -->
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
@@ -72,8 +78,34 @@
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint">
+    <!-- To be removed once PHP 8.0 is the lowest supported version -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+        <properties>
+            <property name="enableMixedTypeHint" value="false"/>
+        </properties>
+    </rule>
+
+    <!-- To be removed once PHP 8.0 is the lowest supported version -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+        <properties>
+            <property name="enableStaticTypeHint" value="false"/>
+            <property name="enableMixedTypeHint" value="false"/>
+            <property name="enableUnionTypeHint" value="false"/>
+        </properties>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
         <exclude-pattern>*/tests/*</exclude-pattern>
-        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
+        <!-- We do want to test generating collections without return types -->
+        <exclude-pattern>*/tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/Coll*</exclude-pattern>
+        <!-- This is causing a lot of noise to add void to test methods -->
+        <exclude-pattern>*/tests/Doctrine/ODM/MongoDB/Tests/*Test.php</exclude-pattern>
     </rule>
 </ruleset>
