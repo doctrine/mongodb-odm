@@ -9,6 +9,8 @@
     <!-- Ignore warnings and show progress of the run -->
     <arg value="np"/>
 
+    <config name="php_version" value="70200"/>
+
     <file>benchmark</file>
     <file>lib</file>
     <file>tests</file>
@@ -35,10 +37,6 @@
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint" />
-
-        <!-- To be removed once PHP 7.4 is the lowest supported version -->
-        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint" />
-        <exclude name="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator.RequiredNullCoalesceEqualOperator" />
 
         <!-- Disabled to avoid class renaming - to be handled in a separate PR -->
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
@@ -87,20 +85,14 @@
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
-    <!-- To be removed once PHP 8.0 is the lowest supported version -->
-    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
-        <properties>
-            <property name="enableMixedTypeHint" value="false"/>
-        </properties>
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
     </rule>
 
-    <!-- To be removed once PHP 8.0 is the lowest supported version -->
-    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
-        <properties>
-            <property name="enableStaticTypeHint" value="false"/>
-            <property name="enableMixedTypeHint" value="false"/>
-            <property name="enableUnionTypeHint" value="false"/>
-        </properties>
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
     </rule>
 
     <!-- This is causing a lot of noise to be handled in a separate PR -->
