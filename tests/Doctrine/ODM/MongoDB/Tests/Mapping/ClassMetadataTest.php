@@ -331,9 +331,7 @@ class ClassMetadataTest extends BaseTest
         $cm->mapManyEmbedded([
             'field' => 'name',
             'targetDocument' => 'CmsUser',
-            'discriminatorMap' => [
-                'default' => 'CmsUser',
-            ],
+            'discriminatorMap' => ['default' => 'CmsUser'],
         ]);
     }
 
@@ -345,9 +343,7 @@ class ClassMetadataTest extends BaseTest
         $cm->mapOneEmbedded([
             'field' => 'name',
             'targetDocument' => 'CmsUser',
-            'discriminatorMap' => [
-                'default' => 'CmsUser',
-            ],
+            'discriminatorMap' => ['default' => 'CmsUser'],
         ]);
     }
 
@@ -359,12 +355,9 @@ class ClassMetadataTest extends BaseTest
         $cm->mapManyReference([
             'field' => 'name',
             'targetDocument' => 'CmsUser',
-            'discriminatorMap' => [
-                'default' => 'CmsUser',
-            ],
+            'discriminatorMap' => ['default' => 'CmsUser'],
         ]);
     }
-
 
     public function testReferenceOneDocumentWithTargetDocumentAndDiscriminatorMap()
     {
@@ -374,9 +367,7 @@ class ClassMetadataTest extends BaseTest
         $cm->mapOneReference([
             'field' => 'name',
             'targetDocument' => 'CmsUser',
-            'discriminatorMap' => [
-                'default' => 'CmsUser',
-            ],
+            'discriminatorMap' => ['default' => 'CmsUser'],
         ]);
     }
 

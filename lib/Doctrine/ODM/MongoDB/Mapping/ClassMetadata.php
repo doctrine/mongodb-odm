@@ -1935,7 +1935,7 @@ use function trigger_error;
         if (isset($mapping['repositoryMethod']) && ! (empty($mapping['skip']) && empty($mapping['limit']) && empty($mapping['sort']))) {
             throw MappingException::repositoryMethodCanNotBeCombinedWithSkipLimitAndSort($this->name, $mapping['fieldName']);
         }
-        
+
         if (isset($mapping['targetDocument']) && isset($mapping['discriminatorMap'])) {
             throw MappingException::targetDocumentCanNotBeCombinedWithDiscriminatorMap($this->name, $mapping['fieldName']);
         }
