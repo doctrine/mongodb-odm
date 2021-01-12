@@ -49,7 +49,7 @@
                 <remove />
             </cascade>
         </reference-one>
-        <reference-many target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber" collection-class="Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection" field="phonenumbers">
+        <reference-many collection-class="Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection" field="phonenumbers">
             <cascade>
                 <persist />
             </cascade>
@@ -69,7 +69,7 @@
         </reference-many>
         <embed-one target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber" field-name="embeddedPhonenumber" field="embedded_phone_number">
         </embed-one>
-        <embed-many target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber" collection-class="Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection" field="otherPhonenumbers">
+        <embed-many collection-class="Doctrine\ODM\MongoDB\Tests\Mapping\PhonenumberCollection" field="otherPhonenumbers">
             <discriminator-field name="discr" />
             <discriminator-map>
                 <discriminator-mapping value="home" class="Doctrine\ODM\MongoDB\Tests\Mapping\HomePhonenumber" />
