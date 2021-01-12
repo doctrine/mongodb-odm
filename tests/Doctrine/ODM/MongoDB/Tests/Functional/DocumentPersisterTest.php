@@ -770,10 +770,6 @@ class DocumentPersisterTestDocument
      * @ODM\EmbedOne(
      *     targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\AbstractDocumentPersisterTestDocumentAssociation::class,
      *     discriminatorField="type",
-     *     discriminatorMap={
-     *         "reference"=Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentReference::class,
-     *         "embed"=Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentEmbed::class
-     *     },
      *     name="associationName"
      * )
      */
@@ -826,10 +822,6 @@ abstract class AbstractDocumentPersisterTestDocumentAssociation
      * @ODM\EmbedOne(
      *     targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\AbstractDocumentPersisterTestDocumentAssociation::class,
      *     discriminatorField="type",
-     *     discriminatorMap={
-     *         "reference"=Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentReference::class,
-     *         "embed"=Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentEmbed::class
-     *     },
      *     name="associationName"
      * )
      */
