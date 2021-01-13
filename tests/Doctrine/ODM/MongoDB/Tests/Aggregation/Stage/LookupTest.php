@@ -14,7 +14,7 @@ use Documents\User;
 
 class LookupTest extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         $this->insertTestData();

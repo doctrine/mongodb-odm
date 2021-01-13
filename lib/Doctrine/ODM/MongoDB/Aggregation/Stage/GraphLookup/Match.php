@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup;
+
 use function trigger_deprecation;
 
 /**

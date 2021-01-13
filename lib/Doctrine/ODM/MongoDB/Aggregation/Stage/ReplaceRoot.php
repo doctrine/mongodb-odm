@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
+
 use function array_map;
 use function is_array;
 use function is_string;
@@ -38,7 +39,7 @@ class ReplaceRoot extends Operator
     /**
      * {@inheritdoc}
      */
-    public function getExpression() : array
+    public function getExpression(): array
     {
         $expression = $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression();
 
@@ -62,7 +63,7 @@ class ReplaceRoot extends Operator
         return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
     }
 
-    private function getDocumentPersister() : DocumentPersister
+    private function getDocumentPersister(): DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }

@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+
 use function substr;
 
 class SortByCount extends Stage
@@ -31,7 +32,7 @@ class SortByCount extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression() : array
+    public function getExpression(): array
     {
         return [
             '$sortByCount' => $this->fieldName,

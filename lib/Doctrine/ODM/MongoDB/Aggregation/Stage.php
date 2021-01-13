@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use GeoJson\Geometry\Point;
+
 use function trigger_deprecation;
 
 /**
@@ -26,14 +27,14 @@ abstract class Stage
     /**
      * Assembles the aggregation stage
      */
-    abstract public function getExpression() : array;
+    abstract public function getExpression(): array;
 
     /**
      * Executes the aggregation pipeline
      *
      * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
      */
-    public function execute(array $options = []) : Iterator
+    public function execute(array $options = []): Iterator
     {
         trigger_deprecation(
             'doctrine/mongodb-odm',
@@ -49,7 +50,7 @@ abstract class Stage
     /**
      * Returns an aggregation object for the current pipeline
      */
-    public function getAggregation(array $options = []) : Aggregation
+    public function getAggregation(array $options = []): Aggregation
     {
         return $this->builder->getAggregation($options);
     }
@@ -64,7 +65,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/
      */
-    public function addFields() : Stage\AddFields
+    public function addFields(): Stage\AddFields
     {
         return $this->builder->addFields();
     }
@@ -81,7 +82,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bucket/
      */
-    public function bucket() : Stage\Bucket
+    public function bucket(): Stage\Bucket
     {
         return $this->builder->bucket();
     }
@@ -100,7 +101,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/
      */
-    public function bucketAuto() : Stage\BucketAuto
+    public function bucketAuto(): Stage\BucketAuto
     {
         return $this->builder->bucketAuto();
     }
@@ -113,7 +114,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/
      */
-    public function collStats() : Stage\CollStats
+    public function collStats(): Stage\CollStats
     {
         return $this->builder->collStats();
     }
@@ -124,7 +125,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/count/
      */
-    public function count(string $fieldName) : Stage\Count
+    public function count(string $fieldName): Stage\Count
     {
         return $this->builder->count($fieldName);
     }
@@ -136,7 +137,7 @@ abstract class Stage
      * Each sub-pipeline has its own field in the output document where its
      * results are stored as an array of documents.
      */
-    public function facet() : Stage\Facet
+    public function facet(): Stage\Facet
     {
         return $this->builder->facet();
     }
@@ -150,7 +151,7 @@ abstract class Stage
      * @param float|array|Point $x
      * @param float             $y
      */
-    public function geoNear($x, $y = null) : Stage\GeoNear
+    public function geoNear($x, $y = null): Stage\GeoNear
     {
         return $this->builder->geoNear($x, $y);
     }
@@ -158,7 +159,7 @@ abstract class Stage
     /**
      * Returns the assembled aggregation pipeline
      */
-    public function getPipeline() : array
+    public function getPipeline(): array
     {
         return $this->builder->getPipeline();
     }
@@ -172,7 +173,7 @@ abstract class Stage
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
      */
-    public function graphLookup(string $from) : Stage\GraphLookup
+    public function graphLookup(string $from): Stage\GraphLookup
     {
         return $this->builder->graphLookup($from);
     }
@@ -183,7 +184,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/group/
      */
-    public function group() : Stage\Group
+    public function group(): Stage\Group
     {
         return $this->builder->group();
     }
@@ -193,7 +194,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexStats/
      */
-    public function indexStats() : Stage\IndexStats
+    public function indexStats(): Stage\IndexStats
     {
         return $this->builder->indexStats();
     }
@@ -217,7 +218,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/
      */
-    public function lookup(string $from) : Stage\Lookup
+    public function lookup(string $from): Stage\Lookup
     {
         return $this->builder->lookup($from);
     }
@@ -228,7 +229,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/match/
      */
-    public function match() : Stage\MatchStage
+    public function match(): Stage\MatchStage
     {
         return $this->builder->match();
     }
@@ -239,7 +240,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/out/
      */
-    public function out(string $collection) : Stage\Out
+    public function out(string $collection): Stage\Out
     {
         return $this->builder->out($collection);
     }
@@ -251,7 +252,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/project/
      */
-    public function project() : Stage\Project
+    public function project(): Stage\Project
     {
         return $this->builder->project();
     }
@@ -262,7 +263,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/redact/
      */
-    public function redact() : Stage\Redact
+    public function redact(): Stage\Redact
     {
         return $this->builder->redact();
     }
@@ -278,7 +279,7 @@ abstract class Stage
      * @param string|array|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
-    public function replaceRoot($expression = null) : Stage\ReplaceRoot
+    public function replaceRoot($expression = null): Stage\ReplaceRoot
     {
         return $this->builder->replaceRoot($expression);
     }
@@ -286,7 +287,7 @@ abstract class Stage
     /**
      * Controls if resulting iterator should be wrapped with CachingIterator.
      */
-    public function rewindable(bool $rewindable = true) : self
+    public function rewindable(bool $rewindable = true): self
     {
         $this->builder->rewindable($rewindable);
 
@@ -298,7 +299,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sample/
      */
-    public function sample(int $size) : Stage\Sample
+    public function sample(int $size): Stage\Sample
     {
         return $this->builder->sample($size);
     }
@@ -309,7 +310,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/skip/
      */
-    public function skip(int $skip) : Stage\Skip
+    public function skip(int $skip): Stage\Skip
     {
         return $this->builder->skip($skip);
     }
@@ -320,7 +321,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/
      */
-    public function sortByCount(string $expression) : Stage\SortByCount
+    public function sortByCount(string $expression): Stage\SortByCount
     {
         return $this->builder->sortByCount($expression);
     }
@@ -336,7 +337,7 @@ abstract class Stage
      * @param array|string $fieldName Field name or array of field/order pairs
      * @param int|string   $order     Field order (if one field is specified)
      */
-    public function sort($fieldName, $order = null) : Stage\Sort
+    public function sort($fieldName, $order = null): Stage\Sort
     {
         return $this->builder->sort($fieldName, $order);
     }
@@ -348,7 +349,7 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/
      */
-    public function unwind(string $fieldName) : Stage\Unwind
+    public function unwind(string $fieldName): Stage\Unwind
     {
         return $this->builder->unwind($fieldName);
     }
@@ -358,7 +359,7 @@ abstract class Stage
      *
      * @return Stage The method returns the stage given as an argument
      */
-    public function addStage(Stage $stage) : Stage
+    public function addStage(Stage $stage): Stage
     {
         return $this->builder->addStage($stage);
     }

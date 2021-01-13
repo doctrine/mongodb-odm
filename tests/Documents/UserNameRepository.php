@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 
 class UserNameRepository extends DocumentRepository implements ViewRepository
 {
-    public function createViewAggregation(Builder $builder) : void
+    public function createViewAggregation(Builder $builder): void
     {
         $builder->project()
             ->includeFields(['username']);

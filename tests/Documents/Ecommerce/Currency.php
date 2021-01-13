@@ -6,6 +6,7 @@ namespace Documents\Ecommerce;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use InvalidArgumentException;
+
 use function implode;
 use function in_array;
 
@@ -14,10 +15,9 @@ use function in_array;
  */
 class Currency
 {
-    public const
-        USD  = 'USD',
-        EURO = 'EURO',
-        JPN  = 'JPN';
+    public const USD  = 'USD';
+    public const EURO = 'EURO';
+    public const JPN  = 'JPN';
 
     /** @ODM\Id */
     protected $id;
@@ -37,6 +37,7 @@ class Currency
                 $name . 'given'
             );
         }
+
         $this->name = $name;
         $this->setMultiplier($multiplier);
     }
@@ -64,6 +65,7 @@ class Currency
                 'currency multiplier must be a positive float number'
             );
         }
+
         $this->multiplier = $multiplier;
     }
 

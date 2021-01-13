@@ -12,7 +12,7 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
 use ReflectionUnionType;
-use const DIRECTORY_SEPARATOR;
+
 use function array_map;
 use function array_pop;
 use function assert;
@@ -33,6 +33,8 @@ use function strtolower;
 use function substr;
 use function uniqid;
 use function var_export;
+
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Default generator for custom PersistentCollection classes.
@@ -59,10 +61,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
         $this->collectionNamespace = $collectionNs;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function generateClass(string $class, string $dir) : void
+    public function generateClass(string $class, string $dir): void
     {
         $collClassName = str_replace('\\', '', $class) . 'Persistent';
         $className     = $this->collectionNamespace . '\\' . $collClassName;
@@ -70,15 +69,13 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
         $this->generateCollectionClass($class, $className, $fileName);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function loadClass(string $collectionClass, int $autoGenerate) : string
+    public function loadClass(string $collectionClass, int $autoGenerate): string
     {
         // These checks are not in __construct() because of BC and should be moved for 2.0
         if (! $this->collectionDir) {
             throw PersistentCollectionException::directoryRequired();
         }
+
         if (! $this->collectionNamespace) {
             throw PersistentCollectionException::namespaceRequired();
         }
@@ -101,6 +98,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
                     if (! file_exists($fileName)) {
                         $this->generateCollectionClass($collectionClass, $className, $fileName);
                     }
+
                     require $fileName;
                     break;
 
@@ -156,15 +154,18 @@ CODE;
         $rc        = new ReflectionClass($for);
         $rt        = new ReflectionClass('Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait');
         foreach ($rc->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            if ($rt->hasMethod($method->name) ||
+            if (
+                $rt->hasMethod($method->name) ||
                 $method->isConstructor() ||
                 $method->isFinal() ||
                 $method->isStatic()
             ) {
                 continue;
             }
+
             $code .= $this->generateMethod($method);
         }
+
         $code .= "}\n";
 
         if ($fileName === false) {
@@ -188,7 +189,7 @@ CODE;
         }
     }
 
-    private function generateMethod(ReflectionMethod $method) : string
+    private function generateMethod(ReflectionMethod $method): string
     {
         $parametersString = $this->buildParametersString($method);
         $callParamsString = implode(', ', $this->getParameterNamesForDecoratedCall($method->getParameters()));
@@ -215,13 +216,13 @@ CODE;
 CODE;
     }
 
-    private function buildParametersString(ReflectionMethod $method) : string
+    private function buildParametersString(ReflectionMethod $method): string
     {
         $parameters           = $method->getParameters();
         $parameterDefinitions = [];
 
-        /** @var ReflectionParameter $param */
         foreach ($parameters as $param) {
+            assert($param instanceof ReflectionParameter);
             $parameterDefinition = '';
             if ($param->hasType()) {
                 $parameterDefinition .= $this->getParameterType($param) . ' ';
@@ -248,7 +249,7 @@ CODE;
         return implode(', ', $parameterDefinitions);
     }
 
-    private function getParameterType(ReflectionParameter $parameter) : string
+    private function getParameterType(ReflectionParameter $parameter): string
     {
         if (! $parameter->hasType()) {
             throw new ReflectionException(sprintf('Parameter "%s" has no type. Please file a bug report.', $parameter->getName()));
@@ -265,7 +266,7 @@ CODE;
      *
      * @return string[]
      */
-    private function getParameterNamesForDecoratedCall(array $parameters) : array
+    private function getParameterNamesForDecoratedCall(array $parameters): array
     {
         return array_map(
             static function (ReflectionParameter $parameter) {
@@ -281,7 +282,7 @@ CODE;
         );
     }
 
-    private function getMethodReturnType(ReflectionMethod $method) : string
+    private function getMethodReturnType(ReflectionMethod $method): string
     {
         $returnType = $method->getReturnType();
         if ($returnType === null) {
@@ -295,7 +296,7 @@ CODE;
         ReflectionType $type,
         ReflectionMethod $method,
         ?ReflectionParameter $parameter = null
-    ) : string {
+    ): string {
         if ($type instanceof ReflectionUnionType) {
             return implode('|', array_map(
                 function (ReflectionType $unionedType) use ($method, $parameter) {
@@ -311,6 +312,7 @@ CODE;
         if ($nameLower === 'self') {
             $name = $method->getDeclaringClass()->getName();
         }
+
         if ($nameLower === 'parent') {
             $parentClass = $method->getDeclaringClass()->getParentClass();
             if (! $parentClass) {
@@ -319,6 +321,7 @@ CODE;
 
             $name = $parentClass->getName();
         }
+
         if ($nameLower !== 'static' && ! $type->isBuiltin() && ! class_exists($name) && ! interface_exists($name)) {
             if ($parameter !== null) {
                 throw PersistentCollectionException::invalidParameterTypeHint(
@@ -327,15 +330,19 @@ CODE;
                     $parameter->getName()
                 );
             }
+
             throw PersistentCollectionException::invalidReturnTypeHint(
                 $method->getDeclaringClass()->getName(),
                 $method->getName()
             );
         }
+
         if ($nameLower !== 'static' && ! $type->isBuiltin()) {
             $name = '\\' . $name;
         }
-        if ($type->allowsNull()
+
+        if (
+            $type->allowsNull()
             && ($parameter === null || ! $parameter->isDefaultValueAvailable() || $parameter->getDefaultValue() !== null)
             && $name !== 'mixed'
         ) {

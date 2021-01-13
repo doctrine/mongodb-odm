@@ -20,6 +20,7 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
 use ReflectionProperty;
+
 use function get_class;
 use function gettype;
 use function is_object;
@@ -32,7 +33,7 @@ class DocumentPersisterTest extends BaseTest
     /** @var DocumentPersister */
     private $documentPersister;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -297,7 +298,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
-    public static function queryProviderForCustomTypeId() : Generator
+    public static function queryProviderForCustomTypeId(): Generator
     {
         $objectIdString  = (string) new ObjectId();
         $objectIdString2 = (string) new ObjectId();
@@ -321,9 +322,9 @@ class DocumentPersisterTest extends BaseTest
         ];
     }
 
-    public static function queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId() : Generator
+    public static function queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId(): Generator
     {
-        $getReference = static function (DocumentManager $dm) : DocumentPersisterTestDocumentWithCustomId {
+        $getReference = static function (DocumentManager $dm): DocumentPersisterTestDocumentWithCustomId {
             $objectIdString = (string) new ObjectId();
             $customId       = DocumentPersisterCustomTypedId::fromString($objectIdString);
 
@@ -334,7 +335,7 @@ class DocumentPersisterTest extends BaseTest
         };
 
         yield 'Direct comparison' => [
-            static function (DocumentManager $dm) use ($getReference) : array {
+            static function (DocumentManager $dm) use ($getReference): array {
                 $ref = $getReference($dm);
 
                 return [
@@ -345,7 +346,7 @@ class DocumentPersisterTest extends BaseTest
         ];
 
         yield 'Operator with single value' => [
-            static function (DocumentManager $dm) use ($getReference) : array {
+            static function (DocumentManager $dm) use ($getReference): array {
                 $ref = $getReference($dm);
 
                 return [
@@ -356,7 +357,7 @@ class DocumentPersisterTest extends BaseTest
         ];
 
         yield 'Operator with multiple values' => [
-            static function (DocumentManager $dm) use ($getReference) : array {
+            static function (DocumentManager $dm) use ($getReference): array {
                 $ref1 = $getReference($dm);
                 $ref2 = $getReference($dm);
 
@@ -505,7 +506,7 @@ class DocumentPersisterTest extends BaseTest
         );
     }
 
-    public static function queryProviderForComplexRefWithObjectValue() : Generator
+    public static function queryProviderForComplexRefWithObjectValue(): Generator
     {
         yield 'Direct comparison' => [
             'expected' => ['complexRef.date' => new UTCDateTime('1590710400000')],
@@ -905,17 +906,17 @@ final class DocumentPersisterCustomTypedId
         $this->value = $value;
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->value;
     }
 
-    public static function fromString(string $value) : self
+    public static function fromString(string $value): self
     {
         return new static($value);
     }
 
-    public static function generate() : self
+    public static function generate(): self
     {
         return new static((string) (new ObjectId()));
     }
@@ -930,6 +931,7 @@ final class DocumentPersisterCustomIdType extends Type
         if ($value instanceof ObjectId) {
             return $value;
         }
+
         if ($value instanceof DocumentPersisterCustomTypedId) {
             return new ObjectId($value->toString());
         }
@@ -942,6 +944,7 @@ final class DocumentPersisterCustomIdType extends Type
         if ($value instanceof DocumentPersisterCustomTypedId) {
             return $value;
         }
+
         if ($value instanceof ObjectId) {
             return DocumentPersisterCustomTypedId::fromString((string) $value);
         }
@@ -949,7 +952,7 @@ final class DocumentPersisterCustomIdType extends Type
         throw self::createException($value);
     }
 
-    private static function createException($value) : InvalidArgumentException
+    private static function createException($value): InvalidArgumentException
     {
         return new InvalidArgumentException(
             sprintf(
@@ -973,7 +976,7 @@ class DocumentPersisterTestDocumentWithCustomId
         $this->id = $id;
     }
 
-    public function getId() : DocumentPersisterCustomTypedId
+    public function getId(): DocumentPersisterCustomTypedId
     {
         return $this->id;
     }
@@ -993,7 +996,7 @@ class DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId
         $this->documentWithCustomId = $documentWithCustomId;
     }
 
-    public function getId() : DocumentPersisterCustomTypedId
+    public function getId(): DocumentPersisterCustomTypedId
     {
         return $this->id;
     }

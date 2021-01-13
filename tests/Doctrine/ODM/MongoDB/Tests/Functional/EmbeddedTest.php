@@ -20,6 +20,7 @@ use Documents\Functional\VirtualHostDirective;
 use Documents\Phonenumber;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+
 use function get_class;
 
 class EmbeddedTest extends BaseTest

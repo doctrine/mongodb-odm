@@ -15,6 +15,7 @@ use Documents\Page;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 use MongoDB\BSON\ObjectId;
+
 use function get_class;
 
 /**
@@ -27,7 +28,7 @@ class AtomicSetTest extends BaseTest
     /** @var CommandLogger */
     private $logger;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -35,7 +36,7 @@ class AtomicSetTest extends BaseTest
         $this->logger->register();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->logger->unregister();
 

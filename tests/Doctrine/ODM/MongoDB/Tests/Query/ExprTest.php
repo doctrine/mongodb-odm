@@ -682,7 +682,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$nin' => ['value1', 'value2']], $expr->getQuery());
     }
 
-    private function createExpr() : Expr
+    private function createExpr(): Expr
     {
         $expr = new Expr($this->dm);
         $expr->setClassMetadata($this->dm->getClassMetadata(User::class));

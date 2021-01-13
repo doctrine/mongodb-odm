@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Sharded\ShardedByUser;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
+
 use function iterator_to_array;
 
 /**
@@ -16,7 +17,7 @@ use function iterator_to_array;
  */
 class EnsureShardingTest extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 

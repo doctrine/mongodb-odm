@@ -35,6 +35,7 @@ use MongoDB\Driver\Exception\WriteException;
 use MongoDB\GridFS\Bucket;
 use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
+
 use function array_combine;
 use function array_fill;
 use function array_intersect_key;
@@ -138,12 +139,12 @@ final class DocumentPersister
         $this->bucket = $dm->getDocumentBucket($class->name);
     }
 
-    public function getInserts() : array
+    public function getInserts(): array
     {
         return $this->queuedInserts;
     }
 
-    public function isQueuedForInsert(object $document) : bool
+    public function isQueuedForInsert(object $document): bool
     {
         return isset($this->queuedInserts[spl_object_hash($document)]);
     }
@@ -152,17 +153,17 @@ final class DocumentPersister
      * Adds a document to the queued insertions.
      * The document remains queued until {@link executeInserts} is invoked.
      */
-    public function addInsert(object $document) : void
+    public function addInsert(object $document): void
     {
         $this->queuedInserts[spl_object_hash($document)] = $document;
     }
 
-    public function getUpserts() : array
+    public function getUpserts(): array
     {
         return $this->queuedUpserts;
     }
 
-    public function isQueuedForUpsert(object $document) : bool
+    public function isQueuedForUpsert(object $document): bool
     {
         return isset($this->queuedUpserts[spl_object_hash($document)]);
     }
@@ -171,7 +172,7 @@ final class DocumentPersister
      * Adds a document to the queued upserts.
      * The document remains queued until {@link executeUpserts} is invoked.
      */
-    public function addUpsert(object $document) : void
+    public function addUpsert(object $document): void
     {
         $this->queuedUpserts[spl_object_hash($document)] = $document;
     }
@@ -180,7 +181,7 @@ final class DocumentPersister
      * Gets the ClassMetadata instance of the document class this persister is
      * used for.
      */
-    public function getClassMetadata() : ClassMetadata
+    public function getClassMetadata(): ClassMetadata
     {
         return $this->class;
     }
@@ -195,7 +196,7 @@ final class DocumentPersister
      *
      * @throws DriverException
      */
-    public function executeInserts(array $options = []) : void
+    public function executeInserts(array $options = []): void
     {
         if (! $this->queuedInserts) {
             return;
@@ -216,6 +217,7 @@ final class DocumentPersister
                     $nextVersion = $type->getNextVersion(null);
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
+
                 $data[$versionMapping['name']] = $type->convertPHPToDatabaseValue($nextVersion);
             }
 
@@ -227,6 +229,7 @@ final class DocumentPersister
             $this->collection->insertMany($inserts, $options);
         } catch (DriverException $e) {
             $this->queuedInserts = [];
+
             throw $e;
         }
 
@@ -248,7 +251,7 @@ final class DocumentPersister
      *
      * If no upserts are queued, invoking this method is a NOOP.
      */
-    public function executeUpserts(array $options = []) : void
+    public function executeUpserts(array $options = []): void
     {
         if (! $this->queuedUpserts) {
             return;
@@ -262,6 +265,7 @@ final class DocumentPersister
                 unset($this->queuedUpserts[$oid]);
             } catch (WriteException $e) {
                 unset($this->queuedUpserts[$oid]);
+
                 throw $e;
             }
         }
@@ -270,7 +274,7 @@ final class DocumentPersister
     /**
      * Executes a single upsert in {@link executeUpserts}
      */
-    private function executeUpsert(object $document, array $options) : void
+    private function executeUpsert(object $document, array $options): void
     {
         $options['upsert'] = true;
         $criteria          = $this->getQueryForDocument($document);
@@ -287,6 +291,7 @@ final class DocumentPersister
                 $nextVersion = $type->getNextVersion(null);
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             }
+
             $data['$set'][$versionMapping['name']] = $type->convertPHPToDatabaseValue($nextVersion);
         }
 
@@ -343,7 +348,7 @@ final class DocumentPersister
      *
      * @throws LockException
      */
-    public function update(object $document, array $options = []) : void
+    public function update(object $document, array $options = []): void
     {
         $update = $this->pb->prepareUpdateData($document);
 
@@ -406,7 +411,7 @@ final class DocumentPersister
      *
      * @throws LockException
      */
-    public function delete(object $document, array $options = []) : void
+    public function delete(object $document, array $options = []): void
     {
         if ($this->bucket instanceof Bucket) {
             $documentIdentifier = $this->uow->getDocumentIdentifier($document);
@@ -436,7 +441,7 @@ final class DocumentPersister
     /**
      * Refreshes a managed document.
      */
-    public function refresh(object $document) : void
+    public function refresh(object $document): void
     {
         assert($this->collection instanceof Collection);
         $query = $this->getQueryForDocument($document);
@@ -444,6 +449,7 @@ final class DocumentPersister
         if ($data === null) {
             throw MongoDBException::cannotRefreshDocument();
         }
+
         $data = $this->hydratorFactory->hydrate($document, (array) $data);
         $this->uow->setOriginalDocumentData($document, $data);
     }
@@ -461,7 +467,7 @@ final class DocumentPersister
      * @todo Check identity map? loadById method? Try to guess whether
      *     $criteria is the id?
      */
-    public function load($criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null) : ?object
+    public function load($criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null): ?object
     {
         // TODO: remove this
         if ($criteria === null || is_scalar($criteria) || $criteria instanceof ObjectId) {
@@ -476,6 +482,7 @@ final class DocumentPersister
         if ($sort !== null) {
             $options['sort'] = $this->prepareSort($sort);
         }
+
         assert($this->collection instanceof Collection);
         $result = $this->collection->findOne($criteria, $options);
         $result = $result !== null ? (array) $result : null;
@@ -497,7 +504,7 @@ final class DocumentPersister
     /**
      * Finds documents by a set of criteria.
      */
-    public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null) : Iterator
+    public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null): Iterator
     {
         $criteria = $this->prepareQueryOrNewObj($criteria);
         $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
@@ -525,7 +532,7 @@ final class DocumentPersister
     /**
      * @throws MongoDBException
      */
-    private function getShardKeyQuery(object $document) : array
+    private function getShardKeyQuery(object $document): array
     {
         if (! $this->class->isSharded()) {
             return [];
@@ -563,7 +570,7 @@ final class DocumentPersister
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
      */
-    private function wrapCursor(Cursor $baseCursor) : Iterator
+    private function wrapCursor(Cursor $baseCursor): Iterator
     {
         return new CachingIterator(new HydratingIterator($baseCursor, $this->dm->getUnitOfWork(), $this->class));
     }
@@ -571,7 +578,7 @@ final class DocumentPersister
     /**
      * Checks whether the given managed document exists in the database.
      */
-    public function exists(object $document) : bool
+    public function exists(object $document): bool
     {
         $id = $this->class->getIdentifierObject($document);
         assert($this->collection instanceof Collection);
@@ -582,7 +589,7 @@ final class DocumentPersister
     /**
      * Locks document by storing the lock mode on the mapped lock field.
      */
-    public function lock(object $document, int $lockMode) : void
+    public function lock(object $document, int $lockMode): void
     {
         $id          = $this->uow->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
@@ -595,7 +602,7 @@ final class DocumentPersister
     /**
      * Releases any lock that exists on this document.
      */
-    public function unlock(object $document) : void
+    public function unlock(object $document): void
     {
         $id          = $this->uow->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
@@ -614,7 +621,7 @@ final class DocumentPersister
      *
      * @return object The filled and managed document object.
      */
-    private function createDocument(array $result, ?object $document = null, array $hints = []) : object
+    private function createDocument(array $result, ?object $document = null, array $hints = []): object
     {
         if ($document !== null) {
             $hints[Query::HINT_REFRESH] = true;
@@ -628,7 +635,7 @@ final class DocumentPersister
     /**
      * Loads a PersistentCollection data. Used in the initialize() method.
      */
-    public function loadCollection(PersistentCollectionInterface $collection) : void
+    public function loadCollection(PersistentCollectionInterface $collection): void
     {
         $mapping = $collection->getMapping();
         switch ($mapping['association']) {
@@ -646,11 +653,12 @@ final class DocumentPersister
                         $this->loadReferenceManyCollectionInverseSide($collection);
                     }
                 }
+
                 break;
         }
     }
 
-    private function loadEmbedManyCollection(PersistentCollectionInterface $collection) : void
+    private function loadEmbedManyCollection(PersistentCollectionInterface $collection): void
     {
         $embeddedDocuments = $collection->getMongoData();
         $mapping           = $collection->getMapping();
@@ -681,6 +689,7 @@ final class DocumentPersister
             if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
                 $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
             }
+
             if (CollectionHelper::isHash($mapping['strategy'])) {
                 $collection->set($key, $embeddedDocumentObject);
             } else {
@@ -689,7 +698,7 @@ final class DocumentPersister
         }
     }
 
-    private function loadReferenceManyCollectionOwningSide(PersistentCollectionInterface $collection) : void
+    private function loadReferenceManyCollectionOwningSide(PersistentCollectionInterface $collection): void
     {
         $hints      = $collection->getHints();
         $mapping    = $collection->getMapping();
@@ -731,6 +740,7 @@ final class DocumentPersister
 
             $groupedIds[$className][] = $identifier;
         }
+
         foreach ($groupedIds as $className => $ids) {
             $class           = $this->dm->getClassMetadata($className);
             $mongoCollection = $this->dm->getDocumentCollection($className);
@@ -745,12 +755,15 @@ final class DocumentPersister
             if (isset($mapping['sort'])) {
                 $options['sort'] = $this->prepareSort($mapping['sort']);
             }
+
             if (isset($mapping['limit'])) {
                 $options['limit'] = $mapping['limit'];
             }
+
             if (isset($mapping['skip'])) {
                 $options['skip'] = $mapping['skip'];
             }
+
             if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
                 $options['readPreference'] = $hints[Query::HINT_READ_PREFERENCE];
             }
@@ -773,7 +786,7 @@ final class DocumentPersister
         }
     }
 
-    private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection) : void
+    private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection): void
     {
         $query    = $this->createReferenceManyInverseSideQuery($collection);
         $iterator = $query->execute();
@@ -784,7 +797,7 @@ final class DocumentPersister
         }
     }
 
-    public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection) : Query
+    public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection): Query
     {
         $hints   = $collection->getHints();
         $mapping = $collection->getMapping();
@@ -811,9 +824,11 @@ final class DocumentPersister
         if (isset($mapping['sort'])) {
             $qb->sort($mapping['sort']);
         }
+
         if (isset($mapping['limit'])) {
             $qb->limit($mapping['limit']);
         }
+
         if (isset($mapping['skip'])) {
             $qb->skip($mapping['skip']);
         }
@@ -829,7 +844,7 @@ final class DocumentPersister
         return $qb->getQuery();
     }
 
-    private function loadReferenceManyWithRepositoryMethod(PersistentCollectionInterface $collection) : void
+    private function loadReferenceManyWithRepositoryMethod(PersistentCollectionInterface $collection): void
     {
         $cursor    = $this->createReferenceManyWithRepositoryMethodCursor($collection);
         $mapping   = $collection->getMapping();
@@ -843,7 +858,7 @@ final class DocumentPersister
         }
     }
 
-    public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection) : Iterator
+    public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection): Iterator
     {
         $mapping          = $collection->getMapping();
         $repositoryMethod = $mapping['repositoryMethod'];
@@ -871,7 +886,7 @@ final class DocumentPersister
      * Prepare a projection array by converting keys, which are PHP property
      * names, to MongoDB field names.
      */
-    public function prepareProjection(array $fields) : array
+    public function prepareProjection(array $fields): array
     {
         $preparedFields = [];
 
@@ -892,6 +907,7 @@ final class DocumentPersister
         switch (strtolower((string) $sort)) {
             case 'desc':
                 return -1;
+
             case 'asc':
                 return 1;
         }
@@ -903,7 +919,7 @@ final class DocumentPersister
      * Prepare a sort specification array by converting keys to MongoDB field
      * names and changing direction strings to int.
      */
-    public function prepareSort(array $fields) : array
+    public function prepareSort(array $fields): array
     {
         $sortFields = [];
 
@@ -922,7 +938,7 @@ final class DocumentPersister
      * Prepare a mongodb field name and convert the PHP property names to
      * MongoDB field names.
      */
-    public function prepareFieldName(string $fieldName) : string
+    public function prepareFieldName(string $fieldName): string
     {
         $fieldNames = $this->prepareQueryElement($fieldName, null, null, false);
 
@@ -941,7 +957,7 @@ final class DocumentPersister
      * nested expressions. It should be called before
      * {@link DocumentPerister::addFilterToPreparedQuery()}.
      */
-    public function addDiscriminatorToPreparedQuery(array $preparedQuery) : array
+    public function addDiscriminatorToPreparedQuery(array $preparedQuery): array
     {
         if (isset($preparedQuery[$this->class->discriminatorField]) || $this->class->discriminatorField === null) {
             return $preparedQuery;
@@ -969,7 +985,7 @@ final class DocumentPersister
      * nested expressions. It should be called after
      * {@link DocumentPerister::addDiscriminatorToPreparedQuery()}.
      */
-    public function addFilterToPreparedQuery(array $preparedQuery) : array
+    public function addFilterToPreparedQuery(array $preparedQuery): array
     {
         /* If filter criteria exists for this class, prepare it and merge
          * over the existing query.
@@ -990,7 +1006,7 @@ final class DocumentPersister
      *
      * PHP field names and types will be converted to those used by MongoDB.
      */
-    public function prepareQueryOrNewObj(array $query, bool $isNewObj = false) : array
+    public function prepareQueryOrNewObj(array $query, bool $isNewObj = false): array
     {
         $preparedQuery = [];
 
@@ -1000,6 +1016,7 @@ final class DocumentPersister
                 foreach ($value as $k2 => $v2) {
                     $preparedQuery[$key][$k2] = $this->prepareQueryOrNewObj($v2, $isNewObj);
                 }
+
                 continue;
             }
 
@@ -1055,6 +1072,7 @@ final class DocumentPersister
                 sprintf('Mapping type "%s" does not exist', $typeName)
             );
         }
+
         if (in_array($typeName, ['collection', 'hash'])) {
             return $value;
         }
@@ -1074,7 +1092,7 @@ final class DocumentPersister
      *
      * @param mixed $value
      */
-    private function prepareQueryElement(string $fieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false) : array
+    private function prepareQueryElement(string $fieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false): array
     {
         $class = $class ?? $this->class;
 
@@ -1090,8 +1108,10 @@ final class DocumentPersister
             }
 
             // Prepare mapped, embedded objects
-            if (! empty($mapping['embedded']) && is_object($value) &&
-                ! $this->dm->getMetadataFactory()->isTransient(get_class($value))) {
+            if (
+                ! empty($mapping['embedded']) && is_object($value) &&
+                ! $this->dm->getMetadataFactory()->isTransient(get_class($value))
+            ) {
                 return [[$fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value)]];
             }
 
@@ -1171,8 +1191,10 @@ final class DocumentPersister
             return [[$fieldName, $value]];
         }
 
-        if ($mapping['type'] === 'many' && CollectionHelper::isHash($mapping['strategy'])
-                && isset($e[2])) {
+        if (
+            $mapping['type'] === 'many' && CollectionHelper::isHash($mapping['strategy'])
+                && isset($e[2])
+        ) {
             $objectProperty       = $e[2];
             $objectPropertyPrefix = $e[1] . '.';
             $nextObjectProperty   = implode('.', array_slice($e, 3));
@@ -1255,6 +1277,7 @@ final class DocumentPersister
                 if ($nextObjectProperty[0] !== '$' && in_array($targetMapping['storeAs'], [ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB, ClassMetadata::REFERENCE_STORE_AS_DB_REF])) {
                     $nextObjectProperty = '$' . $nextObjectProperty;
                 }
+
                 $fieldNames = [[$nextObjectProperty, $value]];
             }
 
@@ -1268,7 +1291,7 @@ final class DocumentPersister
         return [[$fieldName, $value]];
     }
 
-    private function prepareQueryExpression(array $expression, ClassMetadata $class) : array
+    private function prepareQueryExpression(array $expression, ClassMetadata $class): array
     {
         foreach ($expression as $k => $v) {
             // Ignore query operators whose arguments need no type conversion
@@ -1286,10 +1309,12 @@ final class DocumentPersister
 
                         continue;
                     }
+
                     // Otherwise if a value in a query is already id, e.g. ['referenceField' => $targetDocumentId],
                     // just convert id to it's database representation using it's type
                     $expression[$k][$k2] = $class->getDatabaseIdentifierValue($v2);
                 }
+
                 continue;
             }
 
@@ -1319,7 +1344,7 @@ final class DocumentPersister
      *
      * @param mixed $value
      */
-    private function hasDBRefFields($value) : bool
+    private function hasDBRefFields($value): bool
     {
         if (! is_array($value) && ! is_object($value)) {
             return false;
@@ -1329,7 +1354,7 @@ final class DocumentPersister
             $value = get_object_vars($value);
         }
 
-        foreach ($value as $key => $_) {
+        foreach ($value as $key => $value) {
             if ($key === '$ref' || $key === '$id' || $key === '$db') {
                 return true;
             }
@@ -1343,7 +1368,7 @@ final class DocumentPersister
      *
      * @param mixed $value
      */
-    private function hasQueryOperators($value) : bool
+    private function hasQueryOperators($value): bool
     {
         if (! is_array($value) && ! is_object($value)) {
             return false;
@@ -1353,7 +1378,7 @@ final class DocumentPersister
             $value = get_object_vars($value);
         }
 
-        foreach ($value as $key => $_) {
+        foreach ($value as $key => $value) {
             if (isset($key[0]) && $key[0] === '$') {
                 return true;
             }
@@ -1365,7 +1390,7 @@ final class DocumentPersister
     /**
      * Returns the list of discriminator values for the given ClassMetadata
      */
-    private function getClassDiscriminatorValues(ClassMetadata $metadata) : array
+    private function getClassDiscriminatorValues(ClassMetadata $metadata): array
     {
         $discriminatorValues = [];
 
@@ -1390,7 +1415,7 @@ final class DocumentPersister
         return $discriminatorValues;
     }
 
-    private function handleCollections(object $document, array $options) : void
+    private function handleCollections(object $document, array $options): void
     {
         // Collection deletions (deletions of complete collections)
         $collections = [];
@@ -1401,9 +1426,11 @@ final class DocumentPersister
 
             $collections[] = $coll;
         }
+
         if (! empty($collections)) {
             $this->cp->delete($document, $collections, $options);
         }
+
         // Collection updates (deleteRows, updateRows, insertRows)
         $collections = [];
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
@@ -1413,9 +1440,11 @@ final class DocumentPersister
 
             $collections[] = $coll;
         }
+
         if (! empty($collections)) {
             $this->cp->update($document, $collections, $options);
         }
+
         // Take new snapshots from visited collections
         foreach ($this->uow->getVisitedCollections($document) as $coll) {
             $coll->takeSnapshot();
@@ -1429,7 +1458,7 @@ final class DocumentPersister
      *
      * @throws MongoDBException
      */
-    private function guardMissingShardKey(object $document, string $shardKeyField, array $actualDocumentData) : void
+    private function guardMissingShardKey(object $document, string $shardKeyField, array $actualDocumentData): void
     {
         $dcs      = $this->uow->getDocumentChangeSet($document);
         $isUpdate = $this->uow->isScheduledForUpdate($document);
@@ -1449,7 +1478,7 @@ final class DocumentPersister
     /**
      * Get shard key aware query for single document.
      */
-    private function getQueryForDocument(object $document) : array
+    private function getQueryForDocument(object $document): array
     {
         $id = $this->uow->getDocumentIdentifier($document);
         $id = $this->class->getDatabaseIdentifierValue($id);
@@ -1459,7 +1488,7 @@ final class DocumentPersister
         return array_merge(['_id' => $id], $shardKeyQueryPart);
     }
 
-    private function getWriteOptions(array $options = []) : array
+    private function getWriteOptions(array $options = []): array
     {
         $defaultOptions  = $this->dm->getConfiguration()->getDefaultCommitOptions();
         $documentOptions = [];
@@ -1470,7 +1499,7 @@ final class DocumentPersister
         return array_merge($defaultOptions, $documentOptions, $options);
     }
 
-    private function prepareReference(string $fieldName, $value, array $mapping, bool $inNewObj) : array
+    private function prepareReference(string $fieldName, $value, array $mapping, bool $inNewObj): array
     {
         $reference = $this->dm->createReference($value, $mapping);
         if ($inNewObj || $mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID) {
@@ -1493,6 +1522,7 @@ final class DocumentPersister
                 if (isset($mapping['targetDocument'])) {
                     unset($keys['$ref'], $keys['$db']);
                 }
+
                 break;
 
             default:

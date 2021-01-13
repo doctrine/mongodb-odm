@@ -9,8 +9,10 @@ use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+
 use function array_key_exists;
 use function array_replace_recursive;
+use function assert;
 use function ltrim;
 
 /**
@@ -37,7 +39,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
     /**
      * Add a target-document class name to resolve to a new class name.
      */
-    public function addResolveTargetDocument(string $originalDocument, string $newDocument, array $mapping) : void
+    public function addResolveTargetDocument(string $originalDocument, string $newDocument, array $mapping): void
     {
         $mapping['targetDocument']                                    = ltrim($newDocument, '\\');
         $this->resolveTargetDocuments[ltrim($originalDocument, '\\')] = $mapping;
@@ -64,10 +66,10 @@ class ResolveTargetDocumentListener implements EventSubscriber
     /**
      * Process event and resolve new target document names.
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $args) : void
+    public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
     {
-        /** @var ClassMetadata $cm */
         $cm = $args->getClassMetadata();
+        assert($cm instanceof ClassMetadata);
         foreach ($cm->associationMappings as $mapping) {
             if (! isset($this->resolveTargetDocuments[$mapping['targetDocument']])) {
                 continue;
@@ -77,7 +79,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
         }
     }
 
-    private function remapAssociation(ClassMetadata $classMetadata, array $mapping) : void
+    private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
     {
         $newMapping              = $this->resolveTargetDocuments[$mapping['targetDocument']];
         $newMapping              = array_replace_recursive($mapping, $newMapping);

@@ -47,14 +47,15 @@ class BucketTest extends BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame([[
-            '$bucket' => [
-                'groupBy' => '$someField',
-                'boundaries' => [1, 2, 3],
-                'default' => 0,
-                'output' => ['averageValue' => ['$avg' => '$value']],
+        $this->assertSame([
+            [
+                '$bucket' => [
+                    'groupBy' => '$someField',
+                    'boundaries' => [1, 2, 3],
+                    'default' => 0,
+                    'output' => ['averageValue' => ['$avg' => '$value']],
+                ],
             ],
-        ],
         ], $builder->getPipeline());
     }
 
@@ -86,14 +87,15 @@ class BucketTest extends BaseTest
                 ->avg('$value');
 
         $this->assertEquals(
-            [[
-                '$bucket' => [
-                    'groupBy' => '$ip',
-                    'boundaries' => [1, 2, 3],
-                    'default' => 0,
-                    'output' => ['averageValue' => ['$avg' => '$value']],
+            [
+                [
+                    '$bucket' => [
+                        'groupBy' => '$ip',
+                        'boundaries' => [1, 2, 3],
+                        'default' => 0,
+                        'output' => ['averageValue' => ['$avg' => '$value']],
+                    ],
                 ],
-            ],
             ],
             $builder->getPipeline()
         );

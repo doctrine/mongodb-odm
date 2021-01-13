@@ -23,12 +23,12 @@ final class ProxyManagerClassNameResolver implements ClassNameResolver
     /**
      * Gets the real class name of a class name that could be a proxy.
      */
-    public function getRealClass(string $class) : string
+    public function getRealClass(string $class): string
     {
         return $this->getClassNameInflector()->getUserClassName($class);
     }
 
-    private function getClassNameInflector() : ClassNameInflectorInterface
+    private function getClassNameInflector(): ClassNameInflectorInterface
     {
         return $this->configuration->getProxyManagerConfiguration()->getClassNameInflector();
     }

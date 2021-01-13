@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
+
 use function array_map;
 use function is_array;
 use function is_string;
@@ -49,7 +50,7 @@ abstract class AbstractBucket extends Stage
      *
      * @param array|Expr $expression
      */
-    public function groupBy($expression) : self
+    public function groupBy($expression): self
     {
         $this->groupBy = $expression;
 
@@ -59,7 +60,7 @@ abstract class AbstractBucket extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression() : array
+    public function getExpression(): array
     {
         $stage = [
             $this->getStageName() => [
@@ -74,12 +75,12 @@ abstract class AbstractBucket extends Stage
         return $stage;
     }
 
-    abstract protected function getExtraPipelineFields() : array;
+    abstract protected function getExtraPipelineFields(): array;
 
     /**
      * Returns the stage name with the dollar prefix
      */
-    abstract protected function getStageName() : string;
+    abstract protected function getStageName(): string;
 
     private function convertExpression($expression)
     {
@@ -94,7 +95,7 @@ abstract class AbstractBucket extends Stage
         return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
     }
 
-    private function getDocumentPersister() : DocumentPersister
+    private function getDocumentPersister(): DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }

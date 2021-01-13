@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+
 use function is_array;
 
 final class HydratingIteratorTest extends BaseTest

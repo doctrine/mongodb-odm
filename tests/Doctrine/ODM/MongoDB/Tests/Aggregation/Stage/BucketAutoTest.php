@@ -47,14 +47,15 @@ class BucketAutoTest extends BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame([[
-            '$bucketAuto' => [
-                'groupBy' => '$someField',
-                'buckets' => 3,
-                'granularity' => 'R10',
-                'output' => ['averageValue' => ['$avg' => '$value']],
+        $this->assertSame([
+            [
+                '$bucketAuto' => [
+                    'groupBy' => '$someField',
+                    'buckets' => 3,
+                    'granularity' => 'R10',
+                    'output' => ['averageValue' => ['$avg' => '$value']],
+                ],
             ],
-        ],
         ], $builder->getPipeline());
     }
 
@@ -86,14 +87,15 @@ class BucketAutoTest extends BaseTest
                 ->avg('$value');
 
         $this->assertEquals(
-            [[
-                '$bucketAuto' => [
-                    'groupBy' => '$ip',
-                    'buckets' => 3,
-                    'granularity' => 'R10',
-                    'output' => ['averageValue' => ['$avg' => '$value']],
+            [
+                [
+                    '$bucketAuto' => [
+                        'groupBy' => '$ip',
+                        'buckets' => 3,
+                        'granularity' => 'R10',
+                        'output' => ['averageValue' => ['$avg' => '$value']],
+                    ],
                 ],
-            ],
             ],
             $builder->getPipeline()
         );

@@ -71,7 +71,7 @@ class CollectionsTest extends BaseTest
         $this->assertCount(0, $locations);
         $this->dm->flush();
 
-        $bar->setLocations(new ArrayCollection([ new Location('Cracow') ]));
+        $bar->setLocations(new ArrayCollection([new Location('Cracow')]));
         $this->uow->computeChangeSets();
         $changeSet = $this->uow->getDocumentChangeSet($bar);
         $this->assertNotEmpty($changeSet['locations']);

@@ -33,37 +33,37 @@ class ViewReference
         $this->referenceManyViewMappedBy = new ArrayCollection();
     }
 
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getReferenceOneView() : ?UserName
+    public function getReferenceOneView(): ?UserName
     {
         return $this->referenceOneView;
     }
 
-    public function getReferenceOneViewMappedBy() : ?UserName
+    public function getReferenceOneViewMappedBy(): ?UserName
     {
         return $this->referenceOneViewMappedBy;
     }
 
-    public function getReferenceManyView() : Collection
+    public function getReferenceManyView(): Collection
     {
         return $this->referenceManyView;
     }
 
-    public function getReferenceManyViewMappedBy() : Collection
+    public function getReferenceManyViewMappedBy(): Collection
     {
         return $this->referenceManyViewMappedBy;
     }
 
-    public function setReferenceOneView(?UserName $userName) : void
+    public function setReferenceOneView(?UserName $userName): void
     {
         $this->referenceOneView = $userName;
     }
 
-    public function addReferenceManyView(UserName $userName) : void
+    public function addReferenceManyView(UserName $userName): void
     {
         $this->referenceManyView->add($userName);
     }

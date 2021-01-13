@@ -13,6 +13,7 @@ use GeoJson\Geometry\Point;
 use MongoDB\Collection;
 use OutOfRangeException;
 use TypeError;
+
 use function array_map;
 use function array_unshift;
 use function func_get_arg;
@@ -81,7 +82,7 @@ class Builder
      *
      * @see http://docs.mongodb.com/manual/reference/operator/aggregation/addFields/
      */
-    public function addFields() : Stage\AddFields
+    public function addFields(): Stage\AddFields
     {
         $stage = new Stage\AddFields($this);
         $this->addStage($stage);
@@ -101,7 +102,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bucket/
      */
-    public function bucket() : Stage\Bucket
+    public function bucket(): Stage\Bucket
     {
         $stage = new Stage\Bucket($this, $this->dm, $this->class);
         $this->addStage($stage);
@@ -123,7 +124,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/
      */
-    public function bucketAuto() : Stage\BucketAuto
+    public function bucketAuto(): Stage\BucketAuto
     {
         $stage = new Stage\BucketAuto($this, $this->dm, $this->class);
         $this->addStage($stage);
@@ -139,7 +140,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/collStats/
      */
-    public function collStats() : Stage\CollStats
+    public function collStats(): Stage\CollStats
     {
         $stage = new Stage\CollStats($this);
         $this->addStage($stage);
@@ -153,7 +154,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/count/
      */
-    public function count(string $fieldName) : Stage\Count
+    public function count(string $fieldName): Stage\Count
     {
         $stage = new Stage\Count($this, $fieldName);
         $this->addStage($stage);
@@ -166,7 +167,7 @@ class Builder
      *
      * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
      */
-    public function execute(array $options = []) : Iterator
+    public function execute(array $options = []): Iterator
     {
         trigger_deprecation(
             'doctrine/mongodb-odm',
@@ -179,7 +180,7 @@ class Builder
         return $this->getAggregation($options)->getIterator();
     }
 
-    public function expr() : Expr
+    public function expr(): Expr
     {
         return new Expr($this->dm, $this->class);
     }
@@ -191,7 +192,7 @@ class Builder
      * Each sub-pipeline has its own field in the output document where its
      * results are stored as an array of documents.
      */
-    public function facet() : Stage\Facet
+    public function facet(): Stage\Facet
     {
         $stage = new Stage\Facet($this);
         $this->addStage($stage);
@@ -214,7 +215,7 @@ class Builder
      * @param float|array|Point $x
      * @param float             $y
      */
-    public function geoNear($x, $y = null) : Stage\GeoNear
+    public function geoNear($x, $y = null): Stage\GeoNear
     {
         $stage = new Stage\GeoNear($this, $x, $y);
         $this->addStage($stage);
@@ -225,7 +226,7 @@ class Builder
     /**
      * Returns an aggregation object for the current pipeline
      */
-    public function getAggregation(array $options = []) : Aggregation
+    public function getAggregation(array $options = []): Aggregation
     {
         $class = $this->hydrationClass ? $this->dm->getClassMetadata($this->hydrationClass) : null;
 
@@ -249,7 +250,7 @@ class Builder
      * given.
      */
     // phpcs:enable Squiz.Commenting.FunctionComment.ExtraParamComment
-    public function getPipeline(/* bool $applyFilters = true */) : array
+    public function getPipeline(/* bool $applyFilters = true */): array
     {
         $applyFilters = func_num_args() > 0 ? func_get_arg(0) : true;
 
@@ -297,7 +298,7 @@ class Builder
     /**
      * Returns a certain stage from the pipeline
      */
-    public function getStage(int $index) : Stage
+    public function getStage(int $index): Stage
     {
         if (! isset($this->stages[$index])) {
             throw new OutOfRangeException(sprintf('Could not find stage with index %d.', $index));
@@ -315,7 +316,7 @@ class Builder
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
      */
-    public function graphLookup(string $from) : Stage\GraphLookup
+    public function graphLookup(string $from): Stage\GraphLookup
     {
         $stage = new Stage\GraphLookup($this, $from, $this->dm, $this->class);
         $this->addStage($stage);
@@ -329,7 +330,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/group/
      */
-    public function group() : Stage\Group
+    public function group(): Stage\Group
     {
         $stage = new Stage\Group($this);
         $this->addStage($stage);
@@ -340,7 +341,7 @@ class Builder
     /**
      * Set which class to use when hydrating results as document class instances.
      */
-    public function hydrate(string $className) : self
+    public function hydrate(string $className): self
     {
         $this->hydrationClass = $className;
 
@@ -352,7 +353,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexStats/
      */
-    public function indexStats() : Stage\IndexStats
+    public function indexStats(): Stage\IndexStats
     {
         $stage = new Stage\IndexStats($this);
         $this->addStage($stage);
@@ -365,7 +366,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/limit/
      */
-    public function limit(int $limit) : Stage\Limit
+    public function limit(int $limit): Stage\Limit
     {
         $stage = new Stage\Limit($this, $limit);
         $this->addStage($stage);
@@ -380,7 +381,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/
      */
-    public function lookup(string $from) : Stage\Lookup
+    public function lookup(string $from): Stage\Lookup
     {
         $stage = new Stage\Lookup($this, $from, $this->dm, $this->class);
         $this->addStage($stage);
@@ -394,7 +395,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/match/
      */
-    public function match() : Stage\MatchStage
+    public function match(): Stage\MatchStage
     {
         $stage = new Stage\MatchStage($this);
         $this->addStage($stage);
@@ -405,7 +406,7 @@ class Builder
     /**
      * Returns a query expression to be used in match stages
      */
-    public function matchExpr() : QueryExpr
+    public function matchExpr(): QueryExpr
     {
         $expr = new QueryExpr($this->dm);
         $expr->setClassMetadata($this->class);
@@ -419,7 +420,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/out/
      */
-    public function out(string $from) : Stage\Out
+    public function out(string $from): Stage\Out
     {
         $stage = new Stage\Out($this, $from, $this->dm);
         $this->addStage($stage);
@@ -434,7 +435,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/project/
      */
-    public function project() : Stage\Project
+    public function project(): Stage\Project
     {
         $stage = new Stage\Project($this);
         $this->addStage($stage);
@@ -448,7 +449,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/redact/
      */
-    public function redact() : Stage\Redact
+    public function redact(): Stage\Redact
     {
         $stage = new Stage\Redact($this);
         $this->addStage($stage);
@@ -467,7 +468,7 @@ class Builder
      * @param string|array|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
-    public function replaceRoot($expression = null) : Stage\ReplaceRoot
+    public function replaceRoot($expression = null): Stage\ReplaceRoot
     {
         $stage = new Stage\ReplaceRoot($this, $this->dm, $this->class, $expression);
         $this->addStage($stage);
@@ -478,7 +479,7 @@ class Builder
     /**
      * Controls if resulting iterator should be wrapped with CachingIterator.
      */
-    public function rewindable(bool $rewindable = true) : self
+    public function rewindable(bool $rewindable = true): self
     {
         $this->rewindable = $rewindable;
 
@@ -490,7 +491,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sample/
      */
-    public function sample(int $size) : Stage\Sample
+    public function sample(int $size): Stage\Sample
     {
         $stage = new Stage\Sample($this, $size);
         $this->addStage($stage);
@@ -504,7 +505,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/skip/
      */
-    public function skip(int $skip) : Stage\Skip
+    public function skip(int $skip): Stage\Skip
     {
         $stage = new Stage\Skip($this, $skip);
         $this->addStage($stage);
@@ -524,7 +525,7 @@ class Builder
      * @param array|string $fieldName Field name or array of field/order pairs
      * @param int|string   $order     Field order (if one field is specified)
      */
-    public function sort($fieldName, $order = null) : Stage\Sort
+    public function sort($fieldName, $order = null): Stage\Sort
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
         // fixme: move to sort stage
@@ -540,7 +541,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/
      */
-    public function sortByCount(string $expression) : Stage\SortByCount
+    public function sortByCount(string $expression): Stage\SortByCount
     {
         $stage = new Stage\SortByCount($this, $expression, $this->dm, $this->class);
         $this->addStage($stage);
@@ -555,7 +556,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/
      */
-    public function unwind(string $fieldName) : Stage\Unwind
+    public function unwind(string $fieldName): Stage\Unwind
     {
         // Fixme: move field name translation to stage
         $stage = new Stage\Unwind($this, $this->getDocumentPersister()->prepareFieldName($fieldName));
@@ -569,7 +570,7 @@ class Builder
      *
      * @return Stage The method returns the stage given as an argument
      */
-    public function addStage(Stage $stage) : Stage
+    public function addStage(Stage $stage): Stage
     {
         $this->stages[] = $stage;
 
@@ -579,7 +580,7 @@ class Builder
     /**
      * Applies filters and discriminator queries to the pipeline
      */
-    private function applyFilters(array $query) : array
+    private function applyFilters(array $query): array
     {
         $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
 
@@ -589,7 +590,7 @@ class Builder
         return $query;
     }
 
-    private function getDocumentPersister() : DocumentPersister
+    private function getDocumentPersister(): DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }

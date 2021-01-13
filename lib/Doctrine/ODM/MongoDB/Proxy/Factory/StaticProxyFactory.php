@@ -15,6 +15,7 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
+
 use function array_filter;
 use function count;
 
@@ -39,7 +40,7 @@ final class StaticProxyFactory implements ProxyFactory
         $this->proxyFactory          = $documentManager->getConfiguration()->buildGhostObjectFactory();
     }
 
-    public function getProxy(ClassMetadata $metadata, $identifier) : GhostObjectInterface
+    public function getProxy(ClassMetadata $metadata, $identifier): GhostObjectInterface
     {
         $documentPersister = $this->uow->getDocumentPersister($metadata->getName());
 
@@ -63,9 +64,9 @@ final class StaticProxyFactory implements ProxyFactory
      *
      * @param ClassMetadata[] $classes
      */
-    public function generateProxyClasses(array $classes) : int
+    public function generateProxyClasses(array $classes): int
     {
-        $concreteClasses = array_filter($classes, static function (ClassMetadata $metadata) : bool {
+        $concreteClasses = array_filter($classes, static function (ClassMetadata $metadata): bool {
             return ! ($metadata->isMappedSuperclass || $metadata->isQueryResultDocument || $metadata->getReflectionClass()->isAbstract());
         });
 
@@ -89,7 +90,7 @@ final class StaticProxyFactory implements ProxyFactory
     private function createInitializer(
         ClassMetadata $metadata,
         DocumentPersister $documentPersister
-    ) : Closure {
+    ): Closure {
         return function (
             GhostObjectInterface $ghostObject,
             string $method,
@@ -101,7 +102,7 @@ final class StaticProxyFactory implements ProxyFactory
         ) use (
             $metadata,
             $documentPersister
-        ) : bool {
+        ): bool {
             $originalInitializer = $initializer;
             $initializer         = null;
             $identifier          = $metadata->getIdentifierValue($ghostObject);
@@ -125,7 +126,7 @@ final class StaticProxyFactory implements ProxyFactory
     /**
      * @return string[]
      */
-    private function skippedFieldsFqns(ClassMetadata $metadata) : array
+    private function skippedFieldsFqns(ClassMetadata $metadata): array
     {
         $idFieldFqcns = [];
 
@@ -136,7 +137,7 @@ final class StaticProxyFactory implements ProxyFactory
         return $idFieldFqcns;
     }
 
-    private function propertyFqcn(ReflectionProperty $property) : string
+    private function propertyFqcn(ReflectionProperty $property): string
     {
         if ($property->isPrivate()) {
             return "\0" . $property->getDeclaringClass()->getName() . "\0" . $property->getName();

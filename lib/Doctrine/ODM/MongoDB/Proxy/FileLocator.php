@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Proxy;
 
 use ProxyManager\FileLocator\FileLocator as BaseFileLocator;
+
 use function mkdir;
 use function realpath;
 

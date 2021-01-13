@@ -13,6 +13,8 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use stdClass;
+
+use function assert;
 use function serialize;
 use function unserialize;
 
@@ -35,9 +37,9 @@ class PersistentCollectionTest extends BaseTest
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
         $owner      = new stdClass();
 
-        $serialized = serialize($collection);
-        /** @var PersistentCollection $unserialized */
+        $serialized   = serialize($collection);
         $unserialized = unserialize($serialized);
+        assert($unserialized instanceof PersistentCollection);
 
         $unserialized->setOwner($owner, ['targetDocument' => '\stdClass']);
         $this->expectException(MongoDBException::class);
@@ -52,9 +54,9 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
-        $serialized = serialize($collection);
-        /** @var PersistentCollection $unserialized */
+        $serialized   = serialize($collection);
         $unserialized = unserialize($serialized);
+        assert($unserialized instanceof PersistentCollection);
 
         $unserialized->setDocumentManager($this->dm);
         $this->expectException(MongoDBException::class);
@@ -69,9 +71,9 @@ class PersistentCollectionTest extends BaseTest
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
-        $serialized = serialize($collection);
-        /** @var PersistentCollection $unserialized */
+        $serialized   = serialize($collection);
         $unserialized = unserialize($serialized);
+        assert($unserialized instanceof PersistentCollection);
 
         $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('phonebooks'));
         $unserialized->setDocumentManager($this->dm);
@@ -94,9 +96,9 @@ class PersistentCollectionTest extends BaseTest
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
         $collection->setMongoData($mongoData);
 
-        $serialized = serialize($collection);
-        /** @var PersistentCollection $unserialized */
+        $serialized   = serialize($collection);
         $unserialized = unserialize($serialized);
+        assert($unserialized instanceof PersistentCollection);
 
         $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('groups'));
         $unserialized->setDocumentManager($this->dm);
@@ -114,9 +116,9 @@ class PersistentCollectionTest extends BaseTest
         $this->assertFalse($collection->isDirty());
         $this->assertCount(1, $collection->unwrap());
 
-        $serialized = serialize($collection);
-        /** @var PersistentCollection $unserialized */
+        $serialized   = serialize($collection);
         $unserialized = unserialize($serialized);
+        assert($unserialized instanceof PersistentCollection);
 
         $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('groups'));
         $unserialized->setDocumentManager($this->dm);
@@ -139,6 +141,7 @@ class PersistentCollectionTest extends BaseTest
         foreach ($snapshot as $item) {
             $collection->add($item);
         }
+
         $collection->takeSnapshot();
         $callback($collection);
 
@@ -212,6 +215,7 @@ class PersistentCollectionTest extends BaseTest
         foreach ($snapshot as $item) {
             $collection->add($item);
         }
+
         $collection->takeSnapshot();
         $callback($collection);
 

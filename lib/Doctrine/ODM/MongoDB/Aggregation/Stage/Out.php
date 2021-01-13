@@ -30,17 +30,14 @@ class Out extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression() : array
+    public function getExpression(): array
     {
         return [
             '$out' => $this->collection,
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function out(string $collection) : Stage\Out
+    public function out(string $collection): Stage\Out
     {
         try {
             $class = $this->dm->getClassMetadata($collection);
@@ -55,7 +52,7 @@ class Out extends Stage
         return $this;
     }
 
-    private function fromDocument(ClassMetadata $classMetadata) : void
+    private function fromDocument(ClassMetadata $classMetadata): void
     {
         if ($classMetadata->isSharded()) {
             throw MappingException::cannotUseShardedCollectionInOutStage($classMetadata->name);

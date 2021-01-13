@@ -9,12 +9,13 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Phonenumber;
 use Documents\User;
+
 use function get_class;
 use function sort;
 
 class MODM166Test extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -44,6 +45,7 @@ class MODM166Test extends BaseTest
         foreach ($test->getPhonenumbers() as $phonenumber) {
             $phonenumbers[] = $phonenumber->getPhonenumber();
         }
+
         sort($phonenumbers);
 
         $this->assertEquals(['1111', '2222'], $phonenumbers);

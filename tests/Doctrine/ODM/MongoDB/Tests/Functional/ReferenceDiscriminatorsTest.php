@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class ReferenceDiscriminatorsTest extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         $this->dm->getSchemaManager()->ensureDocumentIndexes(CommentableAction::class);

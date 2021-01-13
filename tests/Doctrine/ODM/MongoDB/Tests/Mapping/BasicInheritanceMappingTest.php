@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\Functional\MappedSuperclassRelated1;
+
 use function serialize;
 use function unserialize;
 
@@ -16,7 +17,7 @@ class BasicInheritanceMappingTest extends BaseTest
 {
     private $factory;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         $this->factory = new ClassMetadataFactory();
@@ -78,7 +79,7 @@ class BasicInheritanceMappingTest extends BaseTest
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
         $this->assertSame('secondary', $class->readPreference);
-        $this->assertEquals([ ['dc' => 'east'] ], $class->readPreferenceTags);
+        $this->assertEquals([['dc' => 'east']], $class->readPreferenceTags);
     }
 
     public function testGridFSOptionsAreInherited()

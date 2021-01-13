@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Exception;
 use MongoDB\BSON\ObjectId;
+
 use function array_merge;
 use function get_class;
 

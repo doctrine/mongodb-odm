@@ -15,7 +15,7 @@ class GH1138Test extends BaseTest
     /** @var CommandLogger */
     private $logger;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -23,7 +23,7 @@ class GH1138Test extends BaseTest
         $this->logger->register();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->logger->unregister();
 

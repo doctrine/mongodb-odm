@@ -9,11 +9,12 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Group;
 use Documents\Profile;
 use Documents\User;
+
 use function sort;
 
 class FilterTest extends BaseTest
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -99,6 +100,7 @@ class FilterTest extends BaseTest
         if (isset($tim)) {
             $usernames[] = $tim->getUsername();
         }
+
         if (isset($john)) {
             $usernames[] = $john->getUsername();
         }
@@ -129,6 +131,7 @@ class FilterTest extends BaseTest
         foreach ($all as $user) {
             $usernames[] = $user->getUsername();
         }
+
         sort($usernames);
 
         return $usernames;
@@ -175,6 +178,7 @@ class FilterTest extends BaseTest
         foreach ($all as $user) {
             $usernames[] = $user->getUsername();
         }
+
         sort($usernames);
 
         return $usernames;
@@ -205,6 +209,7 @@ class FilterTest extends BaseTest
                //Proxy object filtered
             }
         }
+
         sort($groupnames);
 
         return $groupnames;
@@ -296,6 +301,7 @@ class FilterTest extends BaseTest
         foreach ($all as $user) {
             $usernames[] = $user->getUsername();
         }
+
         sort($usernames);
 
         return $usernames;

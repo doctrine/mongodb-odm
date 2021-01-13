@@ -9,6 +9,7 @@ use Exception;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Throwable;
+
 use function iterator_to_array;
 
 class UnrewindableIteratorTest extends TestCase

@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
+
 use function assert;
 use function is_numeric;
 use function is_string;
@@ -96,7 +97,7 @@ EOT
         }
 
         $cloner = new VarCloner();
-        $dumper = new CliDumper(static function (string $payload) use ($output) : void {
+        $dumper = new CliDumper(static function (string $payload) use ($output): void {
             $output->write($payload);
         });
 

@@ -124,7 +124,7 @@ interface PersistentCollectionInterface extends Collection
     /**
      * Gets the collection owner.
      */
-    public function getOwner() : ?object;
+    public function getOwner(): ?object;
 
     /**
      * @return array

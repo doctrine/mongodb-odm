@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Id;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MongoDB\Operation\FindOneAndUpdate;
+
 use function get_class;
 
 /**
@@ -38,12 +39,12 @@ class IncrementGenerator extends AbstractIdGenerator
         $this->collection = $collection;
     }
 
-    public function setKey(string $key) : void
+    public function setKey(string $key): void
     {
         $this->key = $key;
     }
 
-    public function setStartingId(int $startingId) : void
+    public function setStartingId(int $startingId): void
     {
         $this->startingId = $startingId;
     }

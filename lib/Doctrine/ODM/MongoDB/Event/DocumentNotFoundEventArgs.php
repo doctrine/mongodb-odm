@@ -39,7 +39,7 @@ final class DocumentNotFoundEventArgs extends LifecycleEventArgs
     /**
      * Indicates whether the proxy initialization exception is disabled.
      */
-    public function isExceptionDisabled() : bool
+    public function isExceptionDisabled(): bool
     {
         return $this->disableException;
     }
@@ -50,7 +50,7 @@ final class DocumentNotFoundEventArgs extends LifecycleEventArgs
      * This method indicates to the proxy initializer that the missing document
      * has been handled and no exception should be thrown. This can't be reset.
      */
-    public function disableException(bool $disableException = true) : void
+    public function disableException(bool $disableException = true): void
     {
         $this->disableException = $disableException;
     }

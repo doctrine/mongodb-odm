@@ -8,6 +8,8 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsArticle;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
+
+use function assert;
 use function serialize;
 use function unserialize;
 
@@ -101,8 +103,8 @@ class DetachedDocumentTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        /** @var CmsArticle $cmsArticle */
         $cmsArticle = $this->dm->find(CmsArticle::class, $cmsArticle->id);
+        assert($cmsArticle instanceof CmsArticle);
         $this->assertInstanceOf(CmsArticle::class, $cmsArticle);
         $this->assertSame('alcaeus', $cmsArticle->user->getUsername());
         $this->dm->clear();

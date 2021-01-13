@@ -25,6 +25,7 @@ use Documents\User;
 use MongoDB\BSON\ObjectId;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Throwable;
+
 use function get_class;
 use function spl_object_hash;
 use function sprintf;
@@ -166,11 +167,11 @@ class UnitOfWorkTest extends BaseTest
         $this->assertArrayNotHasKey('notSaved', $changeset);
     }
 
-    public function testNoUpdatesOnGridFSFields() : void
+    public function testNoUpdatesOnGridFSFields(): void
     {
         $file = new File();
 
-        $access = Closure::bind(function (string $property, $value) : void {
+        $access = Closure::bind(function (string $property, $value): void {
             $this->$property = $value;
         }, $file, $file);
 
@@ -204,11 +205,11 @@ class UnitOfWorkTest extends BaseTest
         $this->assertArrayHasKey('metadata', $changeset);
     }
 
-    public function testComputingChangesetForFileWithoutMetadataThrowsNoError() : void
+    public function testComputingChangesetForFileWithoutMetadataThrowsNoError(): void
     {
         $file = new FileWithoutMetadata();
 
-        $access = Closure::bind(function (string $property, $value) : void {
+        $access = Closure::bind(function (string $property, $value): void {
             $this->$property = $value;
         }, $file, $file);
 
@@ -328,7 +329,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
 
-    public function testPersistNewGridFSFile() : void
+    public function testPersistNewGridFSFile(): void
     {
         $file = new File();
 
@@ -576,7 +577,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
             return;
         }
 
-        $this->_onPropertyChanged('data', $this->data, $data);
+        $this->onPropertyChanged('data', $this->data, $data);
         $this->data = $data;
     }
 
@@ -591,7 +592,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
             return;
         }
 
-        $this->_onPropertyChanged('transient', $this->transient, $value);
+        $this->onPropertyChanged('transient', $this->transient, $value);
         $this->transient = $value;
     }
 
@@ -600,7 +601,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->_listeners[] = $listener;
     }
 
-    protected function _onPropertyChanged($propName, $oldValue, $newValue)
+    protected function onPropertyChanged($propName, $oldValue, $newValue)
     {
         foreach ($this->_listeners as $listener) {
             $listener->propertyChanged($this, $propName, $oldValue, $newValue);

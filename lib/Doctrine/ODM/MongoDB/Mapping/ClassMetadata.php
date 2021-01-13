@@ -21,6 +21,7 @@ use LogicException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionProperty;
+
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -554,7 +555,7 @@ use function trigger_deprecation;
     /**
      * Returns the reference prefix used for a reference
      */
-    private static function getReferencePrefix(string $storeAs) : string
+    private static function getReferencePrefix(string $storeAs): string
     {
         if (! in_array($storeAs, [self::REFERENCE_STORE_AS_REF, self::REFERENCE_STORE_AS_DB_REF, self::REFERENCE_STORE_AS_DB_REF_WITH_DB])) {
             throw new LogicException('Can only get a reference prefix for DBRef and reference arrays');
@@ -570,7 +571,7 @@ use function trigger_deprecation;
      *
      * @param string $pathPrefix The field path prefix
      */
-    public static function getReferenceFieldName(string $storeAs, string $pathPrefix = '') : string
+    public static function getReferenceFieldName(string $storeAs, string $pathPrefix = ''): string
     {
         if ($storeAs === self::REFERENCE_STORE_AS_ID) {
             return $pathPrefix;
@@ -579,10 +580,7 @@ use function trigger_deprecation;
         return ($pathPrefix ? $pathPrefix . '.' : '') . static::getReferencePrefix($storeAs) . 'id';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getReflectionClass() : ReflectionClass
+    public function getReflectionClass(): ReflectionClass
     {
         return $this->reflClass;
     }
@@ -590,7 +588,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function isIdentifier($fieldName) : bool
+    public function isIdentifier($fieldName): bool
     {
         return $this->identifier === $fieldName;
     }
@@ -600,7 +598,7 @@ use function trigger_deprecation;
      *
      * @internal
      */
-    public function setIdentifier(?string $identifier) : void
+    public function setIdentifier(?string $identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -611,7 +609,7 @@ use function trigger_deprecation;
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
      */
-    public function getIdentifier() : array
+    public function getIdentifier(): array
     {
         return [$this->identifier];
     }
@@ -622,7 +620,7 @@ use function trigger_deprecation;
      *
      * return (string|null)[]
      */
-    public function getIdentifierFieldNames() : array
+    public function getIdentifierFieldNames(): array
     {
         return [$this->identifier];
     }
@@ -630,7 +628,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function hasField($fieldName) : bool
+    public function hasField($fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
     }
@@ -638,7 +636,7 @@ use function trigger_deprecation;
     /**
      * Sets the inheritance type used by the class and it's subclasses.
      */
-    public function setInheritanceType(int $type) : void
+    public function setInheritanceType(int $type): void
     {
         $this->inheritanceType = $type;
     }
@@ -646,7 +644,7 @@ use function trigger_deprecation;
     /**
      * Checks whether a mapped field is inherited from an entity superclass.
      */
-    public function isInheritedField(string $fieldName) : bool
+    public function isInheritedField(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['inherited']);
     }
@@ -654,7 +652,7 @@ use function trigger_deprecation;
     /**
      * Registers a custom repository class for the document class.
      */
-    public function setCustomRepositoryClass(?string $repositoryClassName) : void
+    public function setCustomRepositoryClass(?string $repositoryClassName): void
     {
         if ($this->isEmbeddedDocument || $this->isQueryResultDocument) {
             return;
@@ -670,7 +668,7 @@ use function trigger_deprecation;
      * @throws InvalidArgumentException If document class is not this class or
      *                                   a Proxy of this class.
      */
-    public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null) : void
+    public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null): void
     {
         if ($this->isView()) {
             return;
@@ -696,7 +694,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the class has callbacks registered for a lifecycle event.
      */
-    public function hasLifecycleCallbacks(string $event) : bool
+    public function hasLifecycleCallbacks(string $event): bool
     {
         return ! empty($this->lifecycleCallbacks[$event]);
     }
@@ -704,7 +702,7 @@ use function trigger_deprecation;
     /**
      * Gets the registered lifecycle callbacks for an event.
      */
-    public function getLifecycleCallbacks(string $event) : array
+    public function getLifecycleCallbacks(string $event): array
     {
         return $this->lifecycleCallbacks[$event] ?? [];
     }
@@ -714,7 +712,7 @@ use function trigger_deprecation;
      *
      * If the callback is already registered, this is a NOOP.
      */
-    public function addLifecycleCallback(string $callback, string $event) : void
+    public function addLifecycleCallback(string $callback, string $event): void
     {
         if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event])) {
             return;
@@ -728,7 +726,7 @@ use function trigger_deprecation;
      *
      * Any previously registered callbacks are overwritten.
      */
-    public function setLifecycleCallbacks(array $callbacks) : void
+    public function setLifecycleCallbacks(array $callbacks): void
     {
         $this->lifecycleCallbacks = $callbacks;
     }
@@ -741,7 +739,7 @@ use function trigger_deprecation;
      *
      * @param array|string $fields Database field name(s)
      */
-    public function registerAlsoLoadMethod(string $method, $fields) : void
+    public function registerAlsoLoadMethod(string $method, $fields): void
     {
         $this->alsoLoadMethods[$method] = is_array($fields) ? $fields : [$fields];
     }
@@ -751,7 +749,7 @@ use function trigger_deprecation;
      *
      * Any previously registered methods are overwritten.
      */
-    public function setAlsoLoadMethods(array $methods) : void
+    public function setAlsoLoadMethods(array $methods): void
     {
         $this->alsoLoadMethods = $methods;
     }
@@ -768,7 +766,7 @@ use function trigger_deprecation;
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
      */
-    public function setDiscriminatorField($discriminatorField) : void
+    public function setDiscriminatorField($discriminatorField): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -805,7 +803,7 @@ use function trigger_deprecation;
      *
      * @throws MappingException
      */
-    public function setDiscriminatorMap(array $map) : void
+    public function setDiscriminatorMap(array $map): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -823,6 +821,7 @@ use function trigger_deprecation;
                 if (! class_exists($className)) {
                     throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
                 }
+
                 if (is_subclass_of($className, $this->name)) {
                     $this->subClasses[] = $className;
                 }
@@ -836,7 +835,7 @@ use function trigger_deprecation;
      *
      * @throws MappingException
      */
-    public function setDefaultDiscriminatorValue(?string $defaultDiscriminatorValue) : void
+    public function setDefaultDiscriminatorValue(?string $defaultDiscriminatorValue): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -862,7 +861,7 @@ use function trigger_deprecation;
      *
      * @throws MappingException
      */
-    public function setDiscriminatorValue(string $value) : void
+    public function setDiscriminatorValue(string $value): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -875,13 +874,14 @@ use function trigger_deprecation;
     /**
      * Add a index for this Document.
      */
-    public function addIndex(array $keys, array $options = []) : void
+    public function addIndex(array $keys, array $options = []): void
     {
         $this->indexes[] = [
             'keys' => array_map(static function ($value) {
                 if ($value === 1 || $value === -1) {
                     return $value;
                 }
+
                 if (is_string($value)) {
                     $lower = strtolower($value);
                     if ($lower === 'asc') {
@@ -902,7 +902,7 @@ use function trigger_deprecation;
     /**
      * Returns the array of indexes for this Document.
      */
-    public function getIndexes() : array
+    public function getIndexes(): array
     {
         return $this->indexes;
     }
@@ -910,7 +910,7 @@ use function trigger_deprecation;
     /**
      * Checks whether this document has indexes or not.
      */
-    public function hasIndexes() : bool
+    public function hasIndexes(): bool
     {
         return $this->indexes !== [];
     }
@@ -920,7 +920,7 @@ use function trigger_deprecation;
      *
      * @throws MappingException
      */
-    public function setShardKey(array $keys, array $options = []) : void
+    public function setShardKey(array $keys, array $options = []): void
     {
         if ($this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION && $this->shardKey !== []) {
             throw MappingException::shardKeyInSingleCollInheritanceSubclass($this->getName());
@@ -949,6 +949,7 @@ use function trigger_deprecation;
                 if ($value === 1 || $value === -1) {
                     return $value;
                 }
+
                 if (is_string($value)) {
                     $lower = strtolower($value);
                     if ($lower === 'asc') {
@@ -966,7 +967,7 @@ use function trigger_deprecation;
         ];
     }
 
-    public function getShardKey() : array
+    public function getShardKey(): array
     {
         return $this->shardKey;
     }
@@ -974,7 +975,7 @@ use function trigger_deprecation;
     /**
      * Checks whether this document has shard key or not.
      */
-    public function isSharded() : bool
+    public function isSharded(): bool
     {
         return $this->shardKey !== [];
     }
@@ -982,7 +983,7 @@ use function trigger_deprecation;
     /**
      * Sets the read preference used by this class.
      */
-    public function setReadPreference(?string $readPreference, array $tags) : void
+    public function setReadPreference(?string $readPreference, array $tags): void
     {
         $this->readPreference     = $readPreference;
         $this->readPreferenceTags = $tags;
@@ -993,7 +994,7 @@ use function trigger_deprecation;
      *
      * @param string|int|null $writeConcern
      */
-    public function setWriteConcern($writeConcern) : void
+    public function setWriteConcern($writeConcern): void
     {
         $this->writeConcern = $writeConcern;
     }
@@ -1009,7 +1010,7 @@ use function trigger_deprecation;
     /**
      * Whether there is a write concern configured for this class.
      */
-    public function hasWriteConcern() : bool
+    public function hasWriteConcern(): bool
     {
         return $this->writeConcern !== null;
     }
@@ -1017,7 +1018,7 @@ use function trigger_deprecation;
     /**
      * Sets the change tracking policy used by this class.
      */
-    public function setChangeTrackingPolicy(int $policy) : void
+    public function setChangeTrackingPolicy(int $policy): void
     {
         $this->changeTrackingPolicy = $policy;
     }
@@ -1025,7 +1026,7 @@ use function trigger_deprecation;
     /**
      * Whether the change tracking policy of this class is "deferred explicit".
      */
-    public function isChangeTrackingDeferredExplicit() : bool
+    public function isChangeTrackingDeferredExplicit(): bool
     {
         return $this->changeTrackingPolicy === self::CHANGETRACKING_DEFERRED_EXPLICIT;
     }
@@ -1033,7 +1034,7 @@ use function trigger_deprecation;
     /**
      * Whether the change tracking policy of this class is "deferred implicit".
      */
-    public function isChangeTrackingDeferredImplicit() : bool
+    public function isChangeTrackingDeferredImplicit(): bool
     {
         return $this->changeTrackingPolicy === self::CHANGETRACKING_DEFERRED_IMPLICIT;
     }
@@ -1041,7 +1042,7 @@ use function trigger_deprecation;
     /**
      * Whether the change tracking policy of this class is "notify".
      */
-    public function isChangeTrackingNotify() : bool
+    public function isChangeTrackingNotify(): bool
     {
         return $this->changeTrackingPolicy === self::CHANGETRACKING_NOTIFY;
     }
@@ -1049,7 +1050,7 @@ use function trigger_deprecation;
     /**
      * Gets the ReflectionProperties of the mapped class.
      */
-    public function getReflectionProperties() : array
+    public function getReflectionProperties(): array
     {
         return $this->reflFields;
     }
@@ -1057,15 +1058,12 @@ use function trigger_deprecation;
     /**
      * Gets a ReflectionProperty for a specific field of the mapped class.
      */
-    public function getReflectionProperty(string $name) : ReflectionProperty
+    public function getReflectionProperty(string $name): ReflectionProperty
     {
         return $this->reflFields[$name];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -1073,7 +1071,7 @@ use function trigger_deprecation;
     /**
      * Returns the database this Document is mapped to.
      */
-    public function getDatabase() : ?string
+    public function getDatabase(): ?string
     {
         return $this->db;
     }
@@ -1081,7 +1079,7 @@ use function trigger_deprecation;
     /**
      * Set the database this Document is mapped to.
      */
-    public function setDatabase(?string $db) : void
+    public function setDatabase(?string $db): void
     {
         $this->db = $db;
     }
@@ -1089,7 +1087,7 @@ use function trigger_deprecation;
     /**
      * Get the collection this Document is mapped to.
      */
-    public function getCollection() : string
+    public function getCollection(): string
     {
         return $this->collection;
     }
@@ -1101,12 +1099,13 @@ use function trigger_deprecation;
      *
      * @throws InvalidArgumentException
      */
-    public function setCollection($name) : void
+    public function setCollection($name): void
     {
         if (is_array($name)) {
             if (! isset($name['name'])) {
                 throw new InvalidArgumentException('A name key is required when passing an array to setCollection()');
             }
+
             $this->collectionCapped = $name['capped'] ?? false;
             $this->collectionSize   = $name['size'] ?? 0;
             $this->collectionMax    = $name['max'] ?? 0;
@@ -1116,23 +1115,23 @@ use function trigger_deprecation;
         }
     }
 
-    public function getBucketName() : ?string
+    public function getBucketName(): ?string
     {
         return $this->bucketName;
     }
 
-    public function setBucketName(string $bucketName) : void
+    public function setBucketName(string $bucketName): void
     {
         $this->bucketName = $bucketName;
         $this->setCollection($bucketName . '.files');
     }
 
-    public function getChunkSizeBytes() : ?int
+    public function getChunkSizeBytes(): ?int
     {
         return $this->chunkSizeBytes;
     }
 
-    public function setChunkSizeBytes(int $chunkSizeBytes) : void
+    public function setChunkSizeBytes(int $chunkSizeBytes): void
     {
         $this->chunkSizeBytes = $chunkSizeBytes;
     }
@@ -1140,7 +1139,7 @@ use function trigger_deprecation;
     /**
      * Get whether or not the documents collection is capped.
      */
-    public function getCollectionCapped() : bool
+    public function getCollectionCapped(): bool
     {
         return $this->collectionCapped;
     }
@@ -1148,7 +1147,7 @@ use function trigger_deprecation;
     /**
      * Set whether or not the documents collection is capped.
      */
-    public function setCollectionCapped(bool $bool) : void
+    public function setCollectionCapped(bool $bool): void
     {
         $this->collectionCapped = $bool;
     }
@@ -1156,7 +1155,7 @@ use function trigger_deprecation;
     /**
      * Get the collection size
      */
-    public function getCollectionSize() : ?int
+    public function getCollectionSize(): ?int
     {
         return $this->collectionSize;
     }
@@ -1164,7 +1163,7 @@ use function trigger_deprecation;
     /**
      * Set the collection size.
      */
-    public function setCollectionSize(int $size) : void
+    public function setCollectionSize(int $size): void
     {
         $this->collectionSize = $size;
     }
@@ -1172,7 +1171,7 @@ use function trigger_deprecation;
     /**
      * Get the collection max.
      */
-    public function getCollectionMax() : ?int
+    public function getCollectionMax(): ?int
     {
         return $this->collectionMax;
     }
@@ -1180,7 +1179,7 @@ use function trigger_deprecation;
     /**
      * Set the collection max.
      */
-    public function setCollectionMax(int $max) : void
+    public function setCollectionMax(int $max): void
     {
         $this->collectionMax = $max;
     }
@@ -1188,7 +1187,7 @@ use function trigger_deprecation;
     /**
      * Returns TRUE if this Document is mapped to a collection FALSE otherwise.
      */
-    public function isMappedToCollection() : bool
+    public function isMappedToCollection(): bool
     {
         return $this->collection !== '' && $this->collection !== null;
     }
@@ -1198,7 +1197,7 @@ use function trigger_deprecation;
      *
      * @throws MappingException
      */
-    private function applyStorageStrategy(array &$mapping) : void
+    private function applyStorageStrategy(array &$mapping): void
     {
         if (! isset($mapping['type']) || isset($mapping['id'])) {
             return;
@@ -1239,8 +1238,10 @@ use function trigger_deprecation;
             throw MappingException::invalidStorageStrategy($this->name, $mapping['fieldName'], $mapping['type'], $mapping['strategy']);
         }
 
-        if (isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
-            && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])) {
+        if (
+            isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
+            && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])
+        ) {
             throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
         }
     }
@@ -1248,7 +1249,7 @@ use function trigger_deprecation;
     /**
      * Map a single embedded document.
      */
-    public function mapOneEmbedded(array $mapping) : void
+    public function mapOneEmbedded(array $mapping): void
     {
         $mapping['embedded'] = true;
         $mapping['type']     = 'one';
@@ -1258,7 +1259,7 @@ use function trigger_deprecation;
     /**
      * Map a collection of embedded documents.
      */
-    public function mapManyEmbedded(array $mapping) : void
+    public function mapManyEmbedded(array $mapping): void
     {
         $mapping['embedded'] = true;
         $mapping['type']     = 'many';
@@ -1268,7 +1269,7 @@ use function trigger_deprecation;
     /**
      * Map a single document reference.
      */
-    public function mapOneReference(array $mapping) : void
+    public function mapOneReference(array $mapping): void
     {
         $mapping['reference'] = true;
         $mapping['type']      = 'one';
@@ -1278,7 +1279,7 @@ use function trigger_deprecation;
     /**
      * Map a collection of document references.
      */
-    public function mapManyReference(array $mapping) : void
+    public function mapManyReference(array $mapping): void
     {
         $mapping['reference'] = true;
         $mapping['type']      = 'many';
@@ -1291,7 +1292,7 @@ use function trigger_deprecation;
      *
      * @internal
      */
-    public function addInheritedFieldMapping(array $fieldMapping) : void
+    public function addInheritedFieldMapping(array $fieldMapping): void
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
 
@@ -1310,7 +1311,7 @@ use function trigger_deprecation;
      *
      * @throws MappingException
      */
-    public function addInheritedAssociationMapping(array $mapping) : void
+    public function addInheritedAssociationMapping(array $mapping): void
     {
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
@@ -1318,7 +1319,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the class has a mapped association with the given field name.
      */
-    public function hasReference(string $fieldName) : bool
+    public function hasReference(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['reference']);
     }
@@ -1326,7 +1327,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the class has a mapped embed with the given field name.
      */
-    public function hasEmbed(string $fieldName) : bool
+    public function hasEmbed(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['embedded']);
     }
@@ -1336,7 +1337,7 @@ use function trigger_deprecation;
      *
      * Checks whether the class has a mapped association (embed or reference) with the given field name.
      */
-    public function hasAssociation($fieldName) : bool
+    public function hasAssociation($fieldName): bool
     {
         return $this->hasReference($fieldName) || $this->hasEmbed($fieldName);
     }
@@ -1347,7 +1348,7 @@ use function trigger_deprecation;
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a single valued association.
      */
-    public function isSingleValuedAssociation($fieldName) : bool
+    public function isSingleValuedAssociation($fieldName): bool
     {
         return $this->isSingleValuedReference($fieldName) || $this->isSingleValuedEmbed($fieldName);
     }
@@ -1358,7 +1359,7 @@ use function trigger_deprecation;
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a collection valued association.
      */
-    public function isCollectionValuedAssociation($fieldName) : bool
+    public function isCollectionValuedAssociation($fieldName): bool
     {
         return $this->isCollectionValuedReference($fieldName) || $this->isCollectionValuedEmbed($fieldName);
     }
@@ -1367,7 +1368,7 @@ use function trigger_deprecation;
      * Checks whether the class has a mapped association for the specified field
      * and if yes, checks whether it is a single-valued association (to-one).
      */
-    public function isSingleValuedReference(string $fieldName) : bool
+    public function isSingleValuedReference(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
             $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_ONE;
@@ -1377,7 +1378,7 @@ use function trigger_deprecation;
      * Checks whether the class has a mapped association for the specified field
      * and if yes, checks whether it is a collection-valued association (to-many).
      */
-    public function isCollectionValuedReference(string $fieldName) : bool
+    public function isCollectionValuedReference(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
             $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_MANY;
@@ -1387,7 +1388,7 @@ use function trigger_deprecation;
      * Checks whether the class has a mapped embedded document for the specified field
      * and if yes, checks whether it is a single-valued association (to-one).
      */
-    public function isSingleValuedEmbed(string $fieldName) : bool
+    public function isSingleValuedEmbed(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
             $this->fieldMappings[$fieldName]['association'] === self::EMBED_ONE;
@@ -1397,7 +1398,7 @@ use function trigger_deprecation;
      * Checks whether the class has a mapped embedded document for the specified field
      * and if yes, checks whether it is a collection-valued association (to-many).
      */
-    public function isCollectionValuedEmbed(string $fieldName) : bool
+    public function isCollectionValuedEmbed(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]['association']) &&
             $this->fieldMappings[$fieldName]['association'] === self::EMBED_MANY;
@@ -1406,7 +1407,7 @@ use function trigger_deprecation;
     /**
      * Sets the ID generator used to generate IDs for instances of this class.
      */
-    public function setIdGenerator(IdGenerator $generator) : void
+    public function setIdGenerator(IdGenerator $generator): void
     {
         $this->idGenerator = $generator;
     }
@@ -1446,7 +1447,7 @@ use function trigger_deprecation;
      *
      * @param mixed $id
      */
-    public function setIdentifierValue(object $document, $id) : void
+    public function setIdentifierValue(object $document, $id): void
     {
         $id = $this->getPHPIdentifierValue($id);
         $this->reflFields[$this->identifier]->setValue($document, $id);
@@ -1469,7 +1470,7 @@ use function trigger_deprecation;
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
      */
-    public function getIdentifierValues($object) : array
+    public function getIdentifierValues($object): array
     {
         return [$this->identifier => $this->getIdentifierValue($object)];
     }
@@ -1489,7 +1490,7 @@ use function trigger_deprecation;
      *
      * @param mixed $value
      */
-    public function setFieldValue(object $document, string $field, $value) : void
+    public function setFieldValue(object $document, string $field, $value): void
     {
         if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
             //property changes to an uninitialized proxy will not be tracked or persisted,
@@ -1519,7 +1520,7 @@ use function trigger_deprecation;
      *
      * @throws MappingException If the $fieldName is not found in the fieldMappings array.
      */
-    public function getFieldMapping(string $fieldName) : array
+    public function getFieldMapping(string $fieldName): array
     {
         if (! isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
@@ -1531,7 +1532,7 @@ use function trigger_deprecation;
     /**
      * Gets mappings of fields holding embedded document(s).
      */
-    public function getEmbeddedFieldsMappings() : array
+    public function getEmbeddedFieldsMappings(): array
     {
         return array_filter(
             $this->associationMappings,
@@ -1547,7 +1548,7 @@ use function trigger_deprecation;
      *
      * @throws MappingException
      */
-    public function getFieldMappingByDbFieldName(string $dbFieldName) : array
+    public function getFieldMappingByDbFieldName(string $dbFieldName): array
     {
         foreach ($this->fieldMappings as $mapping) {
             if ($mapping['name'] === $dbFieldName) {
@@ -1561,7 +1562,7 @@ use function trigger_deprecation;
     /**
      * Check if the field is not null.
      */
-    public function isNullable(string $fieldName) : bool
+    public function isNullable(string $fieldName): bool
     {
         $mapping = $this->getFieldMapping($fieldName);
 
@@ -1571,7 +1572,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the document has a discriminator field and value configured.
      */
-    public function hasDiscriminator() : bool
+    public function hasDiscriminator(): bool
     {
         return isset($this->discriminatorField, $this->discriminatorValue);
     }
@@ -1579,7 +1580,7 @@ use function trigger_deprecation;
     /**
      * Sets the type of Id generator to use for the mapped class.
      */
-    public function setIdGeneratorType(int $generatorType) : void
+    public function setIdGeneratorType(int $generatorType): void
     {
         $this->generatorType = $generatorType;
     }
@@ -1587,12 +1588,12 @@ use function trigger_deprecation;
     /**
      * Sets the Id generator options.
      */
-    public function setIdGeneratorOptions(array $generatorOptions) : void
+    public function setIdGeneratorOptions(array $generatorOptions): void
     {
         $this->generatorOptions = $generatorOptions;
     }
 
-    public function isInheritanceTypeNone() : bool
+    public function isInheritanceTypeNone(): bool
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_NONE;
     }
@@ -1600,7 +1601,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the mapped class uses the SINGLE_COLLECTION inheritance mapping strategy.
      */
-    public function isInheritanceTypeSingleCollection() : bool
+    public function isInheritanceTypeSingleCollection(): bool
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION;
     }
@@ -1608,7 +1609,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the mapped class uses the COLLECTION_PER_CLASS inheritance mapping strategy.
      */
-    public function isInheritanceTypeCollectionPerClass() : bool
+    public function isInheritanceTypeCollectionPerClass(): bool
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
     }
@@ -1618,7 +1619,7 @@ use function trigger_deprecation;
      *
      * @param string[] $subclasses The names of all mapped subclasses.
      */
-    public function setSubclasses(array $subclasses) : void
+    public function setSubclasses(array $subclasses): void
     {
         foreach ($subclasses as $subclass) {
             $this->subClasses[] = $subclass;
@@ -1632,7 +1633,7 @@ use function trigger_deprecation;
      *
      * @param string[] $classNames
      */
-    public function setParentClasses(array $classNames) : void
+    public function setParentClasses(array $classNames): void
     {
         $this->parentClasses = $classNames;
 
@@ -1646,7 +1647,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the class will generate a new \MongoDB\BSON\ObjectId instance for us.
      */
-    public function isIdGeneratorAuto() : bool
+    public function isIdGeneratorAuto(): bool
     {
         return $this->generatorType === self::GENERATOR_TYPE_AUTO;
     }
@@ -1654,7 +1655,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the class will use a collection to generate incremented identifiers.
      */
-    public function isIdGeneratorIncrement() : bool
+    public function isIdGeneratorIncrement(): bool
     {
         return $this->generatorType === self::GENERATOR_TYPE_INCREMENT;
     }
@@ -1662,7 +1663,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the class will generate a uuid id.
      */
-    public function isIdGeneratorUuid() : bool
+    public function isIdGeneratorUuid(): bool
     {
         return $this->generatorType === self::GENERATOR_TYPE_UUID;
     }
@@ -1670,7 +1671,7 @@ use function trigger_deprecation;
     /**
      * Checks whether the class uses no id generator.
      */
-    public function isIdGeneratorNone() : bool
+    public function isIdGeneratorNone(): bool
     {
         return $this->generatorType === self::GENERATOR_TYPE_NONE;
     }
@@ -1681,7 +1682,7 @@ use function trigger_deprecation;
      *
      * @throws LockException
      */
-    public function setVersionMapping(array &$mapping) : void
+    public function setVersionMapping(array &$mapping): void
     {
         if (! Type::getType($mapping['type']) instanceof Versionable) {
             throw LockException::invalidVersionFieldType($mapping['type']);
@@ -1694,7 +1695,7 @@ use function trigger_deprecation;
     /**
      * Sets whether this class is to be versioned for optimistic locking.
      */
-    public function setVersioned(bool $bool) : void
+    public function setVersioned(bool $bool): void
     {
         $this->isVersioned = $bool;
     }
@@ -1703,7 +1704,7 @@ use function trigger_deprecation;
      * Sets the name of the field that is to be used for versioning if this class is
      * versioned for optimistic locking.
      */
-    public function setVersionField(?string $versionField) : void
+    public function setVersionField(?string $versionField): void
     {
         $this->versionField = $versionField;
     }
@@ -1714,7 +1715,7 @@ use function trigger_deprecation;
      *
      * @throws LockException
      */
-    public function setLockMapping(array &$mapping) : void
+    public function setLockMapping(array &$mapping): void
     {
         if ($mapping['type'] !== 'int') {
             throw LockException::invalidLockFieldType($mapping['type']);
@@ -1727,7 +1728,7 @@ use function trigger_deprecation;
     /**
      * Sets whether this class is to allow pessimistic locking.
      */
-    public function setLockable(bool $bool) : void
+    public function setLockable(bool $bool): void
     {
         $this->isLockable = $bool;
     }
@@ -1736,7 +1737,7 @@ use function trigger_deprecation;
      * Sets the name of the field that is to be used for storing whether a document
      * is currently locked or not.
      */
-    public function setLockField(string $lockField) : void
+    public function setLockField(string $lockField): void
     {
         $this->lockField = $lockField;
     }
@@ -1744,22 +1745,22 @@ use function trigger_deprecation;
     /**
      * Marks this class as read only, no change tracking is applied to it.
      */
-    public function markReadOnly() : void
+    public function markReadOnly(): void
     {
         $this->isReadOnly = true;
     }
 
-    public function getRootClass() : ?string
+    public function getRootClass(): ?string
     {
         return $this->rootClass;
     }
 
-    public function isView() : bool
+    public function isView(): bool
     {
         return $this->isView;
     }
 
-    public function markViewOf(string $rootClass) : void
+    public function markViewOf(string $rootClass): void
     {
         $this->isView    = true;
         $this->rootClass = $rootClass;
@@ -1768,7 +1769,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function getFieldNames() : array
+    public function getFieldNames(): array
     {
         return array_keys($this->fieldMappings);
     }
@@ -1776,7 +1777,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function getAssociationNames() : array
+    public function getAssociationNames(): array
     {
         return array_keys($this->associationMappings);
     }
@@ -1784,7 +1785,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function getTypeOfField($fieldName) : ?string
+    public function getTypeOfField($fieldName): ?string
     {
         return isset($this->fieldMappings[$fieldName]) ?
             $this->fieldMappings[$fieldName]['type'] : null;
@@ -1793,7 +1794,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function getAssociationTargetClass($assocName) : ?string
+    public function getAssociationTargetClass($assocName): ?string
     {
         if (! isset($this->associationMappings[$assocName])) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
@@ -1805,7 +1806,7 @@ use function trigger_deprecation;
     /**
      * Retrieve the collectionClass associated with an association
      */
-    public function getAssociationCollectionClass(string $assocName) : string
+    public function getAssociationCollectionClass(string $assocName): string
     {
         if (! isset($this->associationMappings[$assocName])) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
@@ -1821,7 +1822,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function isAssociationInverseSide($fieldName) : bool
+    public function isAssociationInverseSide($fieldName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
@@ -1839,14 +1840,16 @@ use function trigger_deprecation;
      *
      * @throws MappingException
      */
-    public function mapField(array $mapping) : array
+    public function mapField(array $mapping): array
     {
         if (! isset($mapping['fieldName']) && isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
         }
+
         if (! isset($mapping['fieldName']) || ! is_string($mapping['fieldName'])) {
             throw MappingException::missingFieldName($this->name);
         }
+
         if (! isset($mapping['name'])) {
             $mapping['name'] = $mapping['fieldName'];
         }
@@ -1854,12 +1857,15 @@ use function trigger_deprecation;
         if ($this->identifier === $mapping['name'] && empty($mapping['id'])) {
             throw MappingException::mustNotChangeIdentifierFieldsType($this->name, (string) $mapping['name']);
         }
+
         if ($this->discriminatorField !== null && $this->discriminatorField === $mapping['name']) {
             throw MappingException::discriminatorFieldConflict($this->name, $this->discriminatorField);
         }
+
         if (isset($mapping['collectionClass'])) {
             $mapping['collectionClass'] = ltrim($mapping['collectionClass'], '\\');
         }
+
         if (! empty($mapping['collectionClass'])) {
             $rColl = new ReflectionClass($mapping['collectionClass']);
             if (! $rColl->implementsInterface('Doctrine\\Common\\Collections\\Collection')) {
@@ -1895,6 +1901,7 @@ use function trigger_deprecation;
             if (isset($mapping['strategy'])) {
                 $this->generatorType = constant(self::class . '::GENERATOR_TYPE_' . strtoupper($mapping['strategy']));
             }
+
             $this->generatorOptions = $mapping['options'] ?? [];
             switch ($this->generatorType) {
                 case self::GENERATOR_TYPE_AUTO:
@@ -1907,6 +1914,7 @@ use function trigger_deprecation;
                         $mapping['type'] = $this->generatorType === self::GENERATOR_TYPE_INCREMENT ? Type::INT : Type::CUSTOMID;
                     }
             }
+
             unset($this->generatorOptions['type']);
         }
 
@@ -1914,7 +1922,8 @@ use function trigger_deprecation;
             $mapping['nullable'] = false;
         }
 
-        if (isset($mapping['reference'])
+        if (
+            isset($mapping['reference'])
             && isset($mapping['storeAs'])
             && $mapping['storeAs'] === self::REFERENCE_STORE_AS_ID
             && ! isset($mapping['targetDocument'])
@@ -1922,8 +1931,10 @@ use function trigger_deprecation;
             throw MappingException::simpleReferenceRequiresTargetDocument($this->name, $mapping['fieldName']);
         }
 
-        if (isset($mapping['reference']) && empty($mapping['targetDocument']) && empty($mapping['discriminatorMap']) &&
-                (isset($mapping['mappedBy']) || isset($mapping['inversedBy']))) {
+        if (
+            isset($mapping['reference']) && empty($mapping['targetDocument']) && empty($mapping['discriminatorMap']) &&
+                (isset($mapping['mappedBy']) || isset($mapping['inversedBy']))
+        ) {
             throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);
         }
 
@@ -1938,12 +1949,15 @@ use function trigger_deprecation;
         if (isset($mapping['reference']) && $mapping['type'] === 'one') {
             $mapping['association'] = self::REFERENCE_ONE;
         }
+
         if (isset($mapping['reference']) && $mapping['type'] === 'many') {
             $mapping['association'] = self::REFERENCE_MANY;
         }
+
         if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
             $mapping['association'] = self::EMBED_ONE;
         }
+
         if (isset($mapping['embedded']) && $mapping['type'] === 'many') {
             $mapping['association'] = self::EMBED_MANY;
         }
@@ -1956,10 +1970,12 @@ use function trigger_deprecation;
             $mapping['notSaved'] = true;
             $this->setVersionMapping($mapping);
         }
+
         if (isset($mapping['lock'])) {
             $mapping['notSaved'] = true;
             $this->setLockMapping($mapping);
         }
+
         $mapping['isOwningSide']  = true;
         $mapping['isInverseSide'] = false;
         if (isset($mapping['reference'])) {
@@ -1967,14 +1983,17 @@ use function trigger_deprecation;
                 $mapping['isOwningSide']  = true;
                 $mapping['isInverseSide'] = false;
             }
+
             if (isset($mapping['mappedBy']) && $mapping['mappedBy']) {
                 $mapping['isInverseSide'] = true;
                 $mapping['isOwningSide']  = false;
             }
+
             if (isset($mapping['repositoryMethod'])) {
                 $mapping['isInverseSide'] = true;
                 $mapping['isOwningSide']  = false;
             }
+
             if (! isset($mapping['orphanRemoval'])) {
                 $mapping['orphanRemoval'] = false;
             }
@@ -2137,24 +2156,24 @@ use function trigger_deprecation;
     /**
      * Creates a new instance of the mapped class, without invoking the constructor.
      */
-    public function newInstance() : object
+    public function newInstance(): object
     {
         return $this->instantiator->instantiate($this->name);
     }
 
-    private function isAllowedGridFSField(string $name) : bool
+    private function isAllowedGridFSField(string $name): bool
     {
         return in_array($name, self::ALLOWED_GRIDFS_FIELDS, true);
     }
 
-    private function typeRequirementsAreMet(array $mapping) : void
+    private function typeRequirementsAreMet(array $mapping): void
     {
         if ($mapping['type'] === Type::DECIMAL128 && ! extension_loaded('bcmath')) {
             throw MappingException::typeRequirementsNotFulfilled($this->name, $mapping['fieldName'], Type::DECIMAL128, 'ext-bcmath is missing');
         }
     }
 
-    private function checkDuplicateMapping(array $mapping) : void
+    private function checkDuplicateMapping(array $mapping): void
     {
         if ($mapping['notSaved'] ?? false) {
             return;

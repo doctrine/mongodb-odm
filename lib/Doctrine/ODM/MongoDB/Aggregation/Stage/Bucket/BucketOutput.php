@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+
 use function assert;
 
 /**

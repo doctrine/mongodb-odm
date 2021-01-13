@@ -39,12 +39,12 @@
     },
     "require-dev": {
         "ext-bcmath": "*",
-        "doctrine/coding-standard": "^6.0",
+        "doctrine/coding-standard": "^8.2",
         "jmikola/geojson": "^1.0",
         "phpbench/phpbench": "^1.0.0-alpha3",
         "phpstan/phpstan": "^0.12.32",
         "phpunit/phpunit": "^8.5 || ^9",
-        "squizlabs/php_codesniffer": "^3.5, <3.5.5",
+        "squizlabs/php_codesniffer": "^3.5",
         "vimeo/psalm": "^4.2.1"
     },
     "suggest": {

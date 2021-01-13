@@ -84,7 +84,7 @@ class HydratorTest extends BaseTest
             'embedMany' => [
                 ['name' => 'maciej'],
             ],
-        ], [ Query::HINT_READ_ONLY => true ]);
+        ], [Query::HINT_READ_ONLY => true]);
 
         $this->assertFalse($this->uow->isInIdentityMap($user));
         $this->assertFalse($this->uow->isInIdentityMap($user->embedOne));

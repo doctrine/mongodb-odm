@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+
 use function get_class;
 
 class CollectionPersisterTest extends BaseTest
@@ -17,7 +18,7 @@ class CollectionPersisterTest extends BaseTest
     /** @var CommandLogger */
     private $logger;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -25,14 +26,14 @@ class CollectionPersisterTest extends BaseTest
         $this->logger->register();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->logger->unregister();
 
         parent::tearDown();
     }
 
-    public function testDeleteReferenceMany() : void
+    public function testDeleteReferenceMany(): void
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
@@ -42,7 +43,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
 
-    public function testDeleteEmbedMany() : void
+    public function testDeleteEmbedMany(): void
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
@@ -52,7 +53,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
     }
 
-    public function testDeleteNestedEmbedMany() : void
+    public function testDeleteNestedEmbedMany(): void
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
@@ -87,7 +88,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertTrue(isset($check['categories'][1]), 'Test that the category with the children still exists');
     }
 
-    public function testDeleteNestedEmbedManyAndNestedParent() : void
+    public function testDeleteNestedEmbedManyAndNestedParent(): void
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
@@ -118,7 +119,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertFalse(isset($check['categories']), 'Test that the nested categories field was deleted');
     }
 
-    public function testDeleteRows() : void
+    public function testDeleteRows(): void
     {
         $user = $this->getTestUser('jwage');
 
@@ -157,7 +158,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertFalse(isset($check['categories'][1]));
     }
 
-    public function testInsertRows() : void
+    public function testInsertRows(): void
     {
         $user                 = $this->getTestUser('jwage');
         $user->phonenumbers[] = new CollectionPersisterPhonenumber('6155139185');
@@ -201,7 +202,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertCount(2, $check['categories'][3]['children']['1']['children']);
     }
 
-    private function getTestUser(string $username) : CollectionPersisterUser
+    private function getTestUser(string $username): CollectionPersisterUser
     {
         $user                  = new CollectionPersisterUser();
         $user->username        = $username;
@@ -229,7 +230,7 @@ class CollectionPersisterTest extends BaseTest
         return $user;
     }
 
-    private function getCollectionPersister() : CollectionPersister
+    private function getCollectionPersister(): CollectionPersister
     {
         $uow = $this->dm->getUnitOfWork();
         $pb  = new PersistenceBuilder($this->dm, $uow);
@@ -237,7 +238,7 @@ class CollectionPersisterTest extends BaseTest
         return new CollectionPersister($this->dm, $pb, $uow);
     }
 
-    public function testNestedEmbedManySetStrategy() : void
+    public function testNestedEmbedManySetStrategy(): void
     {
         $post      = new CollectionPersisterPost('postA');
         $commentA  = new CollectionPersisterComment('commentA', 'userA');
@@ -343,7 +344,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertFalse(isset($doc['comments']['b']));
     }
 
-    public function testFindBySetStrategyKey() : void
+    public function testFindBySetStrategyKey(): void
     {
         $post      = new CollectionPersisterPost('postA');
         $commentA  = new CollectionPersisterComment('commentA', 'userA');
@@ -359,7 +360,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.comments.b.by' => 'userB']));
     }
 
-    public function testPersistSeveralNestedEmbedManySetStrategy() : void
+    public function testPersistSeveralNestedEmbedManySetStrategy(): void
     {
         $structure = new CollectionPersisterStructure();
         $structure->set->add(new CollectionPersisterNestedStructure('nested1'));
@@ -390,7 +391,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
-    public function testPersistSeveralNestedEmbedManySetArrayStrategy() : void
+    public function testPersistSeveralNestedEmbedManySetArrayStrategy(): void
     {
         $structure = new CollectionPersisterStructure();
         $structure->setArray->add(new CollectionPersisterNestedStructure('nested1'));
@@ -421,7 +422,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
-    public function testPersistSeveralNestedEmbedManyAddToSetStrategy() : void
+    public function testPersistSeveralNestedEmbedManyAddToSetStrategy(): void
     {
         $structure = new CollectionPersisterStructure();
         $structure->addToSet->add(new CollectionPersisterNestedStructure('nested1'));
@@ -452,7 +453,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
-    public function testPersistSeveralNestedEmbedManyPushAllStrategy() : void
+    public function testPersistSeveralNestedEmbedManyPushAllStrategy(): void
     {
         $structure = new CollectionPersisterStructure();
         $structure->pushAll->add(new CollectionPersisterNestedStructure('nested1'));
@@ -483,7 +484,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
-    public function testPersistSeveralNestedEmbedManyDifferentStrategies() : void
+    public function testPersistSeveralNestedEmbedManyDifferentStrategies(): void
     {
         $structure = new CollectionPersisterStructure();
         $structure->set->add(new CollectionPersisterNestedStructure('nested1'));
@@ -517,7 +518,7 @@ class CollectionPersisterTest extends BaseTest
         $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
-    public function testPersistSeveralNestedEmbedManyDifferentStrategiesDeepNesting() : void
+    public function testPersistSeveralNestedEmbedManyDifferentStrategiesDeepNesting(): void
     {
         $structure = new CollectionPersisterStructure();
         $nested1   = new CollectionPersisterNestedStructure('nested1');

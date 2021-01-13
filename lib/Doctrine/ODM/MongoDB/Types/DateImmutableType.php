@@ -8,6 +8,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use RuntimeException;
+
 use function get_class;
 use function sprintf;
 
@@ -16,7 +17,7 @@ class DateImmutableType extends DateType
     /**
      * @return DateTimeImmutable
      */
-    public static function getDateTime($value) : DateTimeInterface
+    public static function getDateTime($value): DateTimeInterface
     {
         $datetime = parent::getDateTime($value);
 

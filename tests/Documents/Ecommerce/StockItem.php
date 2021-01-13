@@ -33,9 +33,11 @@ class StockItem
         if ($name !== null) {
             $this->setName($name);
         }
+
         if ($cost !== null) {
             $this->setCost($cost);
         }
+
         if ($inventory === null) {
             return;
         }

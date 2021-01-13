@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+
 use function count;
 
 class MODM52Test extends BaseTest
@@ -50,6 +51,7 @@ class MODM52Container
         if ($items) {
             $this->items = $items;
         }
+
         $this->value = $value;
     }
 

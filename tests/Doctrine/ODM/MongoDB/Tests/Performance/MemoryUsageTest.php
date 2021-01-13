@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Performance;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
-use const PHP_EOL;
+
 use function current;
 use function end;
 use function floor;
@@ -17,6 +17,8 @@ use function memory_get_usage;
 use function pow;
 use function round;
 use function sprintf;
+
+use const PHP_EOL;
 
 /**
  * @group performance

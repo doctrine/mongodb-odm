@@ -12,6 +12,7 @@ use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
 use SimpleXMLElement;
+
 use function array_keys;
 use function array_map;
 use function assert;
@@ -134,55 +135,70 @@ class XmlDriver extends FileDriver
                 if (isset($xmlRoot['capped-collection-max'])) {
                     $config['max'] = (int) $xmlRoot['capped-collection-max'];
                 }
+
                 if (isset($xmlRoot['capped-collection-size'])) {
                     $config['size'] = (int) $xmlRoot['capped-collection-size'];
                 }
+
                 $metadata->setCollection($config);
             } else {
                 $metadata->setCollection((string) $xmlRoot['collection']);
             }
         }
+
         if (isset($xmlRoot['bucket-name'])) {
             $metadata->setBucketName((string) $xmlRoot['bucket-name']);
         }
+
         if (isset($xmlRoot['view'])) {
             $metadata->setCollection((string) $xmlRoot['view']);
         }
+
         if (isset($xmlRoot['write-concern'])) {
             $metadata->setWriteConcern((string) $xmlRoot['write-concern']);
         }
+
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
             $metadata->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType));
         }
+
         if (isset($xmlRoot['change-tracking-policy'])) {
             $metadata->setChangeTrackingPolicy(constant(ClassMetadata::class . '::CHANGETRACKING_' . strtoupper((string) $xmlRoot['change-tracking-policy'])));
         }
+
         if (isset($xmlRoot->{'discriminator-field'})) {
             $discrField = $xmlRoot->{'discriminator-field'};
             $metadata->setDiscriminatorField((string) $discrField['name']);
         }
+
         if (isset($xmlRoot->{'discriminator-map'})) {
             $map = [];
             foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} as $discrMapElement) {
                 $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
             }
+
             $metadata->setDiscriminatorMap($map);
         }
+
         if (isset($xmlRoot->{'default-discriminator-value'})) {
             $metadata->setDefaultDiscriminatorValue((string) $xmlRoot->{'default-discriminator-value'}['value']);
         }
+
         if (isset($xmlRoot->{'indexes'})) {
             foreach ($xmlRoot->{'indexes'}->{'index'} as $index) {
                 $this->addIndex($metadata, $index);
             }
         }
+
         if (isset($xmlRoot->{'shard-key'})) {
             $this->setShardKey($metadata, $xmlRoot->{'shard-key'}[0]);
         }
+
         if (isset($xmlRoot['read-only']) && (string) $xmlRoot['read-only'] === 'true') {
             $metadata->markReadOnly();
         }
+
         if (isset($xmlRoot->{'read-preference'})) {
             $metadata->setReadPreference(...$this->transformReadPreference($xmlRoot->{'read-preference'}));
         }
@@ -194,8 +210,8 @@ class XmlDriver extends FileDriver
                 'fieldName' => 'id',
             ];
 
-            /** @var SimpleXMLElement $attributes */
             $attributes = $field->attributes();
+            assert($attributes instanceof SimpleXMLElement);
             foreach ($attributes as $key => $value) {
                 $mapping[$key] = (string) $value;
             }
@@ -262,26 +278,31 @@ class XmlDriver extends FileDriver
                 $this->addEmbedMapping($metadata, $embed, 'one');
             }
         }
+
         if (isset($xmlRoot->{'embed-many'})) {
             foreach ($xmlRoot->{'embed-many'} as $embed) {
                 $this->addEmbedMapping($metadata, $embed, 'many');
             }
         }
+
         if (isset($xmlRoot->{'reference-many'})) {
             foreach ($xmlRoot->{'reference-many'} as $reference) {
                 $this->addReferenceMapping($metadata, $reference, 'many');
             }
         }
+
         if (isset($xmlRoot->{'reference-one'})) {
             foreach ($xmlRoot->{'reference-one'} as $reference) {
                 $this->addReferenceMapping($metadata, $reference, 'one');
             }
         }
+
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
                 $metadata->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ODM\MongoDB\Events::' . (string) $lifecycleCallback['type']));
             }
         }
+
         if (! isset($xmlRoot->{'also-load-methods'})) {
             return;
         }
@@ -291,7 +312,7 @@ class XmlDriver extends FileDriver
         }
     }
 
-    private function addFieldMapping(ClassMetadata $class, array $mapping) : void
+    private function addFieldMapping(ClassMetadata $class, array $mapping): void
     {
         if (isset($mapping['name'])) {
             $name = $mapping['name'];
@@ -314,12 +335,15 @@ class XmlDriver extends FileDriver
         if (isset($mapping['background'])) {
             $options['background'] = (bool) $mapping['background'];
         }
+
         if (isset($mapping['index-name'])) {
             $options['name'] = (string) $mapping['index-name'];
         }
+
         if (isset($mapping['sparse'])) {
             $options['sparse'] = (bool) $mapping['sparse'];
         }
+
         if (isset($mapping['unique'])) {
             $options['unique'] = (bool) $mapping['unique'];
         }
@@ -327,7 +351,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function addEmbedMapping(ClassMetadata $class, SimpleXMLElement $embed, string $type) : void
+    private function addEmbedMapping(ClassMetadata $class, SimpleXMLElement $embed, string $type): void
     {
         $attributes      = $embed->attributes();
         $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
@@ -342,34 +366,41 @@ class XmlDriver extends FileDriver
         if (isset($attributes['field-name'])) {
             $mapping['fieldName'] = (string) $attributes['field-name'];
         }
+
         if (isset($embed->{'discriminator-field'})) {
             $attr                          = $embed->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
         }
+
         if (isset($embed->{'discriminator-map'})) {
             foreach ($embed->{'discriminator-map'}->{'discriminator-mapping'} as $discriminatorMapping) {
                 $attr                                                 = $discriminatorMapping->attributes();
                 $mapping['discriminatorMap'][(string) $attr['value']] = (string) $attr['class'];
             }
         }
+
         if (isset($embed->{'default-discriminator-value'})) {
             $mapping['defaultDiscriminatorValue'] = (string) $embed->{'default-discriminator-value'}['value'];
         }
+
         if (isset($attributes['not-saved'])) {
             $mapping['notSaved'] = ((string) $attributes['not-saved'] === 'true');
         }
+
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
         }
+
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addReferenceMapping(ClassMetadata $class, $reference, string $type) : void
+    private function addReferenceMapping(ClassMetadata $class, $reference, string $type): void
     {
         $cascade = array_keys((array) $reference->cascade);
         if (count($cascade) === 1) {
             $cascade = current($cascade) ?: next($cascade);
         }
+
         $attributes      = $reference->attributes();
         $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping         = [
@@ -393,37 +424,45 @@ class XmlDriver extends FileDriver
         if (isset($attributes['field-name'])) {
             $mapping['fieldName'] = (string) $attributes['field-name'];
         }
+
         if (isset($reference->{'discriminator-field'})) {
             $attr                          = $reference->{'discriminator-field'};
             $mapping['discriminatorField'] = (string) $attr['name'];
         }
+
         if (isset($reference->{'discriminator-map'})) {
             foreach ($reference->{'discriminator-map'}->{'discriminator-mapping'} as $discriminatorMapping) {
                 $attr                                                 = $discriminatorMapping->attributes();
                 $mapping['discriminatorMap'][(string) $attr['value']] = (string) $attr['class'];
             }
         }
+
         if (isset($reference->{'default-discriminator-value'})) {
             $mapping['defaultDiscriminatorValue'] = (string) $reference->{'default-discriminator-value'}['value'];
         }
+
         if (isset($reference->{'sort'})) {
             foreach ($reference->{'sort'}->{'sort'} as $sort) {
                 $attr                                     = $sort->attributes();
                 $mapping['sort'][(string) $attr['field']] = (string) ($attr['order'] ?? 'asc');
             }
         }
+
         if (isset($reference->{'criteria'})) {
             foreach ($reference->{'criteria'}->{'criteria'} as $criteria) {
                 $attr                                         = $criteria->attributes();
                 $mapping['criteria'][(string) $attr['field']] = (string) $attr['value'];
             }
         }
+
         if (isset($attributes['not-saved'])) {
             $mapping['notSaved'] = ((string) $attributes['not-saved'] === 'true');
         }
+
         if (isset($attributes['also-load'])) {
             $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
         }
+
         if (isset($reference->{'prime'})) {
             foreach ($reference->{'prime'}->{'field'} as $field) {
                 $attr               = $field->attributes();
@@ -434,7 +473,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addIndex(ClassMetadata $class, SimpleXMLElement $xmlIndex) : void
+    private function addIndex(ClassMetadata $class, SimpleXMLElement $xmlIndex): void
     {
         $attributes = $xmlIndex->attributes();
 
@@ -449,12 +488,15 @@ class XmlDriver extends FileDriver
         if (isset($attributes['background'])) {
             $options['background'] = ((string) $attributes['background'] === 'true');
         }
+
         if (isset($attributes['name'])) {
             $options['name'] = (string) $attributes['name'];
         }
+
         if (isset($attributes['sparse'])) {
             $options['sparse'] = ((string) $attributes['sparse'] === 'true');
         }
+
         if (isset($attributes['unique'])) {
             $options['unique'] = ((string) $attributes['unique'] === 'true');
         }
@@ -469,6 +511,7 @@ class XmlDriver extends FileDriver
                 } elseif (is_numeric($value)) {
                     $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
                 }
+
                 $options[(string) $option['name']] = $value;
             }
         }
@@ -501,7 +544,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    private function getPartialFilterExpression(SimpleXMLElement $fields) : array
+    private function getPartialFilterExpression(SimpleXMLElement $fields): array
     {
         $partialFilterExpression = [];
         foreach ($fields as $field) {
@@ -536,7 +579,7 @@ class XmlDriver extends FileDriver
         return $partialFilterExpression;
     }
 
-    private function setShardKey(ClassMetadata $class, SimpleXMLElement $xmlShardkey) : void
+    private function setShardKey(ClassMetadata $class, SimpleXMLElement $xmlShardkey): void
     {
         $attributes = $xmlShardkey->attributes();
 
@@ -564,6 +607,7 @@ class XmlDriver extends FileDriver
                 } elseif (is_numeric($value)) {
                     $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
                 }
+
                 $options[(string) $option['name']] = $value;
             }
         }
@@ -576,7 +620,7 @@ class XmlDriver extends FileDriver
      *
      * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
      */
-    private function transformReadPreference(SimpleXMLElement $xmlReadPreference) : array
+    private function transformReadPreference(SimpleXMLElement $xmlReadPreference): array
     {
         $tags = null;
         if (isset($xmlReadPreference->{'tag-set'})) {
@@ -586,6 +630,7 @@ class XmlDriver extends FileDriver
                 foreach ($tagSet->tag as $tag) {
                     $set[(string) $tag['name']] = (string) $tag['value'];
                 }
+
                 $tags[] = $set;
             }
         }
@@ -596,7 +641,7 @@ class XmlDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
-    protected function loadMappingFile($file) : array
+    protected function loadMappingFile($file): array
     {
         $result = [];
 
@@ -618,7 +663,7 @@ class XmlDriver extends FileDriver
         return $result;
     }
 
-    private function validateSchema(string $filename) : void
+    private function validateSchema(string $filename): void
     {
         $document = new DOMDocument();
         $document->load($filename);
@@ -639,14 +684,14 @@ class XmlDriver extends FileDriver
     /**
      * @param LibXMLError[] $xmlErrors
      */
-    private function formatErrors(array $xmlErrors) : string
+    private function formatErrors(array $xmlErrors): string
     {
-        return implode("\n", array_map(static function (LibXMLError $error) : string {
+        return implode("\n", array_map(static function (LibXMLError $error): string {
             return sprintf('Line %d:%d: %s', $error->line, $error->column, $error->message);
         }, $xmlErrors));
     }
 
-    private function addGridFSMappings(ClassMetadata $class, SimpleXMLElement $xmlRoot) : void
+    private function addGridFSMappings(ClassMetadata $class, SimpleXMLElement $xmlRoot): void
     {
         if (! $class->isFile) {
             return;

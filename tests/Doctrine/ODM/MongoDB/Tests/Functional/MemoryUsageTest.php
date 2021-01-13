@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
+
 use function current;
 use function end;
 use function floor;

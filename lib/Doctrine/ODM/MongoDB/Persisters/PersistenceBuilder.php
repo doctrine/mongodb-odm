@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
 use UnexpectedValueException;
+
 use function array_search;
 use function array_values;
 use function assert;
@@ -93,8 +94,10 @@ final class PersistenceBuilder
             // @ReferenceMany, @EmbedMany
             // We're excluding collections using addToSet since there is a risk
             // of duplicated entries stored in the collection
-            } elseif ($mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
-                    && $mapping['strategy'] !== ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET && ! $new->isEmpty()) {
+            } elseif (
+                $mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
+                    && $mapping['strategy'] !== ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET && ! $new->isEmpty()
+            ) {
                 $insertData[$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }
         }
@@ -212,6 +215,7 @@ final class PersistenceBuilder
                 }
             }
         }
+
         // collections that aren't dirty but could be subject to update are
         // excluded from change set, let's go through them now
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
@@ -287,9 +291,11 @@ final class PersistenceBuilder
                 }
 
             // @ReferenceMany, @EmbedMany
-            } elseif ($mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
+            } elseif (
+                $mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
                     && $new instanceof PersistentCollectionInterface && $new->isDirty()
-                    && CollectionHelper::isAtomic($mapping['strategy'])) {
+                    && CollectionHelper::isAtomic($mapping['strategy'])
+            ) {
                 $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }
             // @EmbedMany and @ReferenceMany are handled by CollectionPersister
@@ -383,8 +389,10 @@ final class PersistenceBuilder
                     case ClassMetadata::EMBED_MANY:
                     case ClassMetadata::REFERENCE_MANY:
                         // Skip PersistentCollections already scheduled for deletion
-                        if (! $includeNestedCollections && $rawValue instanceof PersistentCollectionInterface
-                            && $this->uow->isCollectionScheduledForDeletion($rawValue)) {
+                        if (
+                            ! $includeNestedCollections && $rawValue instanceof PersistentCollectionInterface
+                            && $this->uow->isCollectionScheduledForDeletion($rawValue)
+                        ) {
                             break;
                         }
 

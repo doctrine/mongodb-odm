@@ -6,10 +6,12 @@ namespace Doctrine\Tests\ODM\MongoDB\Performance;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsUser;
-use const PHP_EOL;
+
 use function gc_collect_cycles;
 use function memory_get_usage;
 use function microtime;
+
+use const PHP_EOL;
 
 /**
  * @group performance
@@ -32,7 +34,7 @@ class InsertPerformanceTest extends BaseTest
             $user->username = 'user' . $i;
             $user->name     = 'Mr.Smith-' . $i;
             $this->dm->persist($user);
-            if (($i % $batchSize) !== 0) {
+            if ($i % $batchSize !== 0) {
                 continue;
             }
 

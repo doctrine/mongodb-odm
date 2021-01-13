@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\PersistentCollection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+
 use function phpversion;
 use function version_compare;
 
@@ -18,7 +19,7 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
     /** @var DefaultPersistentCollectionGenerator */
     private $generator;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         $this->generator = new DefaultPersistentCollectionGenerator(

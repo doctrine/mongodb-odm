@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1990Test extends BaseTest
 {
-    public function testInitialisationOfInverseProxy() : void
+    public function testInitialisationOfInverseProxy(): void
     {
         // Generate proxy class using generateProxyClasses to ensure it is
         // consistent with other proxy classes
@@ -44,7 +44,7 @@ class GH1990Document
         $this->parent = $parent;
     }
 
-    public function getId() : ?string
+    public function getId(): ?string
     {
         return $this->id;
     }

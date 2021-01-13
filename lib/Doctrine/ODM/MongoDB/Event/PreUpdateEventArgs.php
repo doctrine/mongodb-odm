@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
+
 use function get_class;
 use function sprintf;
 
@@ -23,12 +24,12 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
         $this->documentChangeSet = $changeSet;
     }
 
-    public function getDocumentChangeSet() : array
+    public function getDocumentChangeSet(): array
     {
         return $this->documentChangeSet;
     }
 
-    public function hasChangedField(string $field) : bool
+    public function hasChangedField(string $field): bool
     {
         return isset($this->documentChangeSet[$field]);
     }
@@ -62,7 +63,7 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
      *
      * @param mixed $value
      */
-    public function setNewValue(string $field, $value) : void
+    public function setNewValue(string $field, $value): void
     {
         $this->assertValidField($field);
 
@@ -75,7 +76,7 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
      *
      * @throws InvalidArgumentException If the field has no changeset.
      */
-    private function assertValidField(string $field) : void
+    private function assertValidField(string $field): void
     {
         if (! isset($this->documentChangeSet[$field])) {
             throw new InvalidArgumentException(sprintf(

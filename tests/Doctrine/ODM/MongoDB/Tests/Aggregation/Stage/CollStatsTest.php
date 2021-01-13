@@ -50,12 +50,13 @@ class CollStatsTest extends BaseTest
             ->showLatencyStats(true)
             ->showStorageStats();
 
-        $this->assertSame([[
-            '$collStats' => [
-                'latencyStats' => ['histograms' => true],
-                'storageStats' => [],
+        $this->assertSame([
+            [
+                '$collStats' => [
+                    'latencyStats' => ['histograms' => true],
+                    'storageStats' => [],
+                ],
             ],
-        ],
         ], $builder->getPipeline());
     }
 }

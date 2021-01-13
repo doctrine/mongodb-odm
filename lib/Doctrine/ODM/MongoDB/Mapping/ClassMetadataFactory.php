@@ -21,6 +21,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionException;
+
 use function assert;
 use function get_class;
 use function get_class_methods;
@@ -52,12 +53,12 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var EventManager The event manager instance */
     private $evm;
 
-    public function setDocumentManager(DocumentManager $dm) : void
+    public function setDocumentManager(DocumentManager $dm): void
     {
         $this->dm = $dm;
     }
 
-    public function setConfiguration(Configuration $config) : void
+    public function setConfiguration(Configuration $config): void
     {
         $this->config = $config;
     }
@@ -71,7 +72,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Lazy initialization of this stuff, especially the metadata driver,
      * since these are not needed at all when a metadata cache is active.
      */
-    protected function initialize() : void
+    protected function initialize(): void
     {
         $driver = $this->config->getMetadataDriverImpl();
         if ($driver === null) {
@@ -102,7 +103,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName) : string
+    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName): string
     {
         return $this->config->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
     }
@@ -115,24 +116,15 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $this->driver;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService) : void
+    protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService) : void
+    protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function isEntity(ClassMetadataInterface $class) : bool
+    protected function isEntity(ClassMetadataInterface $class): bool
     {
         assert($class instanceof ClassMetadata);
 
@@ -142,7 +134,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []) : void
+    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []): void
     {
         assert($class instanceof ClassMetadata);
         if ($parent instanceof ClassMetadata) {
@@ -191,9 +183,11 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
             if ($parent->generatorType) {
                 $class->setIdGeneratorType($parent->generatorType);
             }
+
             if ($parent->generatorOptions) {
                 $class->setIdGeneratorOptions($parent->generatorOptions);
             }
+
             if ($parent->idGenerator) {
                 $class->setIdGenerator($parent->idGenerator);
             }
@@ -221,7 +215,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws MappingException
      */
-    protected function validateIdentifier(ClassMetadata $class) : void
+    protected function validateIdentifier(ClassMetadata $class): void
     {
         if (! $class->identifier && $this->isEntity($class)) {
             throw MappingException::identifierRequired($class->name);
@@ -231,12 +225,12 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritdoc}
      */
-    protected function newClassMetadataInstance($className) : ClassMetadata
+    protected function newClassMetadataInstance($className): ClassMetadata
     {
         return new ClassMetadata($className);
     }
 
-    private function completeIdGeneratorMapping(ClassMetadata $class) : void
+    private function completeIdGeneratorMapping(ClassMetadata $class): void
     {
         $idGenOptions = $class->generatorOptions;
         switch ($class->generatorType) {
@@ -248,12 +242,15 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if (isset($idGenOptions['key'])) {
                     $incrementGenerator->setKey((string) $idGenOptions['key']);
                 }
+
                 if (isset($idGenOptions['collection'])) {
                     $incrementGenerator->setCollection((string) $idGenOptions['collection']);
                 }
+
                 if (isset($idGenOptions['startingId'])) {
                     $incrementGenerator->setStartingId((int) $idGenOptions['startingId']);
                 }
+
                 $class->setIdGenerator($incrementGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_UUID:
@@ -261,6 +258,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if (isset($idGenOptions['salt'])) {
                     $uuidGenerator->setSalt((string) $idGenOptions['salt']);
                 }
+
                 $class->setIdGenerator($uuidGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:
@@ -268,6 +266,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if (isset($idGenOptions['pad'])) {
                     $alnumGenerator->setPad((int) $idGenOptions['pad']);
                 }
+
                 if (isset($idGenOptions['chars'])) {
                     $alnumGenerator->setChars((string) $idGenOptions['chars']);
                 } elseif (isset($idGenOptions['awkwardSafe'])) {
@@ -296,6 +295,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                     $customGenerator->$method($value);
                 }
+
                 $class->setIdGenerator($customGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_NONE:
@@ -308,17 +308,20 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited fields to the subclass mapping.
      */
-    private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass) : void
+    private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
             if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
+
             if (! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
+
             $subClass->addInheritedFieldMapping($mapping);
         }
+
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;
         }
@@ -329,7 +332,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws MappingException
      */
-    private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass) : void
+    private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->associationMappings as $field => $mapping) {
             if ($parentClass->isMappedSuperclass) {
@@ -339,9 +342,11 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
             if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
+
             if (! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
+
             $subClass->addInheritedAssociationMapping($mapping);
         }
     }
@@ -349,7 +354,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited indexes to the subclass mapping.
      */
-    private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass) : void
+    private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->indexes as $index) {
             $subClass->addIndex($index['keys'], $index['options']);
@@ -359,7 +364,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited shard key to the subclass mapping.
      */
-    private function setInheritedShardKey(ClassMetadata $subClass, ClassMetadata $parentClass) : void
+    private function setInheritedShardKey(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         if (! $parentClass->isSharded()) {
             return;

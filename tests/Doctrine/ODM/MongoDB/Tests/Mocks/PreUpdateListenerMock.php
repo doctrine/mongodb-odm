@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mocks;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
+
 use function spl_object_hash;
 
 class PreUpdateListenerMock implements EventSubscriber

@@ -17,6 +17,7 @@ use Documents\GraphLookup\ReportingHierarchy;
 use Documents\GraphLookup\Traveller;
 use Documents\Sharded\ShardedOne;
 use Documents\User;
+
 use function array_merge;
 use function count;
 
@@ -58,16 +59,17 @@ class GraphLookupTest extends BaseTest
             ->alias('reportingHierarchy');
 
         $this->assertEquals(
-            [[
-                '$graphLookup' => [
-                    'from' => 'employees',
-                    'startWith' => '$reportsTo',
-                    'connectFromField' => 'reportsTo',
-                    'connectToField' => 'name',
-                    'as' => 'reportingHierarchy',
-                    'restrictSearchWithMatch' => (object) [],
+            [
+                [
+                    '$graphLookup' => [
+                        'from' => 'employees',
+                        'startWith' => '$reportsTo',
+                        'connectFromField' => 'reportsTo',
+                        'connectToField' => 'name',
+                        'as' => 'reportingHierarchy',
+                        'restrictSearchWithMatch' => (object) [],
+                    ],
                 ],
-            ],
             ],
             $builder->getPipeline()
         );
@@ -88,18 +90,19 @@ class GraphLookupTest extends BaseTest
             ->depthField('depth');
 
         $this->assertSame(
-            [[
-                '$graphLookup' => [
-                    'from' => 'employees',
-                    'startWith' => '$reportsTo',
-                    'connectFromField' => 'reportsTo',
-                    'connectToField' => 'name',
-                    'as' => 'reportingHierarchy',
-                    'restrictSearchWithMatch' => ['hobbies' => 'golf'],
-                    'maxDepth' => 1,
-                    'depthField' => 'depth',
+            [
+                [
+                    '$graphLookup' => [
+                        'from' => 'employees',
+                        'startWith' => '$reportsTo',
+                        'connectFromField' => 'reportsTo',
+                        'connectToField' => 'name',
+                        'as' => 'reportingHierarchy',
+                        'restrictSearchWithMatch' => ['hobbies' => 'golf'],
+                        'maxDepth' => 1,
+                        'depthField' => 'depth',
+                    ],
                 ],
-            ],
             ],
             $builder->getPipeline()
         );

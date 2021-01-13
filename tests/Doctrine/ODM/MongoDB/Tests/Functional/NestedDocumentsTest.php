@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
+
 use function is_numeric;
 use function is_string;
 
@@ -175,6 +176,7 @@ class Hierarchy
         if (is_numeric($name)) {
             return $this->children[$name];
         }
+
         foreach ($this->children as $child) {
             if ($child->name === $name) {
                 return $child;
@@ -189,6 +191,7 @@ class Hierarchy
         if (is_string($child)) {
             $child = new Hierarchy($child);
         }
+
         $this->children[] = $child;
 
         return $child;
@@ -230,6 +233,7 @@ class BaseCategory
         if (is_numeric($name)) {
             return $this->children[$name];
         }
+
         foreach ($this->children as $child) {
             if ($child->name === $name) {
                 return $child;
@@ -244,6 +248,7 @@ class BaseCategory
         if (is_string($child)) {
             $child = new ChildCategory($child);
         }
+
         $this->children[] = $child;
 
         return $child;

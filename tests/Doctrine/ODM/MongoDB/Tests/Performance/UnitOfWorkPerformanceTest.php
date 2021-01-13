@@ -6,9 +6,11 @@ namespace Doctrine\Tests\ODM\MongoDB\Performance;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsUser;
-use const PHP_EOL;
+
 use function microtime;
 use function str_replace;
+
+use const PHP_EOL;
 
 /**
  * @group performance
@@ -29,6 +31,7 @@ class UnitOfWorkPerformanceTest extends BaseTest
             $this->dm->persist($user);
             $users[] = $user;
         }
+
         $this->dm->flush();
 
         foreach ($users as $user) {

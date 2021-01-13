@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MongoDB\BSON\Binary;
 use ProxyManager\Proxy\GhostObjectInterface;
+
 use function get_class;
 
 class GH852Test extends BaseTest
@@ -95,13 +96,15 @@ class GH852Test extends BaseTest
         $binDataType = Binary::TYPE_GENERIC;
 
         return [
-            [static function ($id) {
-                return ['foo' => $id];
-            },
+            [
+                static function ($id) {
+                    return ['foo' => $id];
+                },
             ],
-            [static function ($id) use ($binDataType) {
-                return new Binary($id, $binDataType);
-            },
+            [
+                static function ($id) use ($binDataType) {
+                    return new Binary($id, $binDataType);
+                },
             ],
         ];
     }

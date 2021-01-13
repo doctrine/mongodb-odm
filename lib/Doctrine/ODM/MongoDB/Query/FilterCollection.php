@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 use InvalidArgumentException;
+
 use function array_map;
 use function array_values;
 use function assert;
@@ -60,7 +61,7 @@ final class FilterCollection
      *
      * @return BsonFilter[]
      */
-    public function getEnabledFilters() : array
+    public function getEnabledFilters(): array
     {
         return $this->enabledFilters;
     }
@@ -70,7 +71,7 @@ final class FilterCollection
      *
      * @throws InvalidArgumentException If the filter does not exist.
      */
-    public function enable(string $name) : BsonFilter
+    public function enable(string $name): BsonFilter
     {
         if (! $this->has($name)) {
             throw new InvalidArgumentException("Filter '" . $name . "' does not exist.");
@@ -97,7 +98,7 @@ final class FilterCollection
      *
      * @throws InvalidArgumentException If the filter does not exist.
      */
-    public function disable(string $name) : BsonFilter
+    public function disable(string $name): BsonFilter
     {
         // Get the filter to return it
         $filter = $this->getFilter($name);
@@ -112,7 +113,7 @@ final class FilterCollection
      *
      * @throws InvalidArgumentException If the filter is not enabled.
      */
-    public function getFilter(string $name) : BsonFilter
+    public function getFilter(string $name): BsonFilter
     {
         if (! $this->isEnabled($name)) {
             throw new InvalidArgumentException("Filter '" . $name . "' is not enabled.");
@@ -128,7 +129,7 @@ final class FilterCollection
      *
      * @return bool true if the filter exists, false if not.
      */
-    public function has(string $name) : bool
+    public function has(string $name): bool
     {
         return $this->config->getFilterClassName($name) !== null;
     }
@@ -136,7 +137,7 @@ final class FilterCollection
     /**
      * Checks whether filter with given name is enabled.
      */
-    public function isEnabled(string $name) : bool
+    public function isEnabled(string $name): bool
     {
         return isset($this->enabledFilters[$name]);
     }
@@ -144,7 +145,7 @@ final class FilterCollection
     /**
      * Gets enabled filter criteria.
      */
-    public function getFilterCriteria(ClassMetadata $class) : array
+    public function getFilterCriteria(ClassMetadata $class): array
     {
         if (empty($this->enabledFilters)) {
             return [];

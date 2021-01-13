@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+
 use function get_class;
 
 class RawTypeTest extends BaseTest

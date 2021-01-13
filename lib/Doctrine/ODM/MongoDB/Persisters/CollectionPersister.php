@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use LogicException;
 use UnexpectedValueException;
+
 use function array_diff_key;
 use function array_fill_keys;
 use function array_flip;
@@ -65,7 +66,7 @@ final class CollectionPersister
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    public function delete(object $parent, array $collections, array $options) : void
+    public function delete(object $parent, array $collections, array $options): void
     {
         $unsetPathsMap = [];
 
@@ -74,9 +75,11 @@ final class CollectionPersister
             if ($mapping['isInverseSide']) {
                 continue; // ignore inverse side
             }
+
             if (CollectionHelper::isAtomic($mapping['strategy'])) {
                 throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
             }
+
             [$propertyPath]               = $this->getPathAndParent($collection);
             $unsetPathsMap[$propertyPath] = true;
         }
@@ -99,7 +102,7 @@ final class CollectionPersister
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    public function update(object $parent, array $collections, array $options) : void
+    public function update(object $parent, array $collections, array $options): void
     {
         $setStrategyColls     = [];
         $addPushStrategyColls = [];
@@ -110,6 +113,7 @@ final class CollectionPersister
             if ($mapping['isInverseSide']) {
                 continue; // ignore inverse side
             }
+
             switch ($mapping['strategy']) {
                 case ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET:
                 case ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY:
@@ -133,6 +137,7 @@ final class CollectionPersister
         if (! empty($setStrategyColls)) {
             $this->setCollections($parent, $setStrategyColls, $options);
         }
+
         if (empty($addPushStrategyColls)) {
             return;
         }
@@ -152,12 +157,12 @@ final class CollectionPersister
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    private function setCollections(object $parent, array $collections, array $options) : void
+    private function setCollections(object $parent, array $collections, array $options): void
     {
         $pathCollMap = [];
         $paths       = [];
         foreach ($collections as $coll) {
-            [$propertyPath ]            = $this->getPathAndParent($coll);
+            [$propertyPath]             = $this->getPathAndParent($coll);
             $pathCollMap[$propertyPath] = $coll;
             $paths[]                    = $propertyPath;
         }
@@ -175,6 +180,7 @@ final class CollectionPersister
             );
             $setPayload[$propertyPath] = $setData;
         }
+
         if (empty($setPayload)) {
             return;
         }
@@ -191,7 +197,7 @@ final class CollectionPersister
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    private function deleteElements(object $parent, array $collections, array $options) : void
+    private function deleteElements(object $parent, array $collections, array $options): void
     {
         $pathCollMap   = [];
         $paths         = [];
@@ -202,12 +208,14 @@ final class CollectionPersister
             if (! $this->uow->isCollectionScheduledForUpdate($coll)) {
                 continue;
             }
+
             $deleteDiff = $coll->getDeleteDiff();
 
             if (empty($deleteDiff)) {
                 continue;
             }
-            [$propertyPath ] = $this->getPathAndParent($coll);
+
+            [$propertyPath] = $this->getPathAndParent($coll);
 
             $pathCollMap[$propertyPath]   = $coll;
             $paths[]                      = $propertyPath;
@@ -223,12 +231,14 @@ final class CollectionPersister
             foreach ($deleteDiff as $key => $document) {
                 $unsetPayload[$propertyPath . '.' . $key] = true;
             }
+
             $pullPayload[$propertyPath] = null;
         }
 
         if (! empty($unsetPayload)) {
             $this->executeQuery($parent, ['$unset' => $unsetPayload], $options);
         }
+
         if (empty($pullPayload)) {
             return;
         }
@@ -250,7 +260,7 @@ final class CollectionPersister
      * @param PersistentCollectionInterface[] $collections
      * @param array                           $options
      */
-    private function insertElements(object $parent, array $collections, array $options) : void
+    private function insertElements(object $parent, array $collections, array $options): void
     {
         $pushAllPathCollMap  = [];
         $addToSetPathCollMap = [];
@@ -263,6 +273,7 @@ final class CollectionPersister
             if (! $this->uow->isCollectionScheduledForUpdate($coll)) {
                 continue;
             }
+
             $insertDiff = $coll->getInsertDiff();
 
             if (empty($insertDiff)) {
@@ -272,7 +283,7 @@ final class CollectionPersister
             $mapping  = $coll->getMapping();
             $strategy = $mapping['strategy'];
 
-            [$propertyPath ]         = $this->getPathAndParent($coll);
+            [$propertyPath]          = $this->getPathAndParent($coll);
             $diffsMap[$propertyPath] = $insertDiff;
 
             switch ($strategy) {
@@ -300,6 +311,7 @@ final class CollectionPersister
                 $options
             );
         }
+
         if (empty($addToSetPaths)) {
             return;
         }
@@ -322,7 +334,7 @@ final class CollectionPersister
      * @param array  $diffsMap     List of collection diffs indexed by collections paths.
      * @param array  $options
      */
-    private function pushAllCollections(object $parent, array $collsPaths, array $pathCollsMap, array $diffsMap, array $options) : void
+    private function pushAllCollections(object $parent, array $collsPaths, array $pathCollsMap, array $diffsMap, array $options): void
     {
         $pushAllPaths = $this->excludeSubPaths($collsPaths);
         /** @var PersistentCollectionInterface[] $pushAllColls */
@@ -356,7 +368,7 @@ final class CollectionPersister
      * @param array  $diffsMap     List of collection diffs indexed by collections paths.
      * @param array  $options
      */
-    private function addToSetCollections(object $parent, array $collsPaths, array $pathCollsMap, array $diffsMap, array $options) : void
+    private function addToSetCollections(object $parent, array $collsPaths, array $pathCollsMap, array $diffsMap, array $options): void
     {
         $addToSetPaths = $this->excludeSubPaths($collsPaths);
         /** @var PersistentCollectionInterface[] $addToSetColls */
@@ -380,7 +392,7 @@ final class CollectionPersister
      * Return callback instance for specified collection. This callback will prepare values for query from documents
      * that collection contain.
      */
-    private function getValuePrepareCallback(PersistentCollectionInterface $coll) : Closure
+    private function getValuePrepareCallback(PersistentCollectionInterface $coll): Closure
     {
         $mapping = $coll->getMapping();
         if (isset($mapping['embedded'])) {
@@ -405,7 +417,7 @@ final class CollectionPersister
      *     list($path, $parent) = $this->getPathAndParent($coll)
      *     </code>
      */
-    private function getPathAndParent(PersistentCollectionInterface $coll) : array
+    private function getPathAndParent(PersistentCollectionInterface $coll): array
     {
         $mapping = $coll->getMapping();
         $fields  = [];
@@ -415,9 +427,11 @@ final class CollectionPersister
             if (isset($m['reference'])) {
                 break;
             }
+
             $parent   = $owner;
             $fields[] = $field;
         }
+
         $propertyPath = implode('.', array_reverse($fields));
         $path         = $mapping['name'];
         if ($propertyPath) {
@@ -430,7 +444,7 @@ final class CollectionPersister
     /**
      * Executes a query updating the given document.
      */
-    private function executeQuery(object $document, array $newObj, array $options) : void
+    private function executeQuery(object $document, array $newObj, array $options): void
     {
         $className = get_class($document);
         $class     = $this->dm->getClassMetadata($className);
@@ -439,6 +453,7 @@ final class CollectionPersister
         if ($class->isVersioned) {
             $query[$class->fieldMappings[$class->versionField]['name']] = $class->reflFields[$class->versionField]->getValue($document);
         }
+
         $collection = $this->dm->getDocumentCollection($className);
         $result     = $collection->updateOne($query, $newObj, $options);
         if ($class->isVersioned && ! $result->getMatchedCount()) {
@@ -453,11 +468,12 @@ final class CollectionPersister
      *
      * @return string[]
      */
-    private function excludeSubPaths(array $paths) : array
+    private function excludeSubPaths(array $paths): array
     {
         if (empty($paths)) {
             return $paths;
         }
+
         sort($paths);
         $uniquePaths = [$paths[0]];
         for ($i = 1, $count = count($paths); $i < $count; ++$i) {

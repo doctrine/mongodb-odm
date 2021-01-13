@@ -24,7 +24,7 @@ final class PostCollectionLoadEventArgs extends ManagerEventArgs
     /**
      * Gets collection that was just initialized (loaded).
      */
-    public function getCollection() : PersistentCollectionInterface
+    public function getCollection(): PersistentCollectionInterface
     {
         return $this->collection;
     }

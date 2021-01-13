@@ -21,12 +21,12 @@ class StringType extends Type
         return $value !== null ? (string) $value : null;
     }
 
-    public function closureToMongo() : string
+    public function closureToMongo(): string
     {
         return '$return = (string) $value;';
     }
 
-    public function closureToPHP() : string
+    public function closureToPHP(): string
     {
         return '$return = (string) $value;';
     }

@@ -54,9 +54,6 @@ jobs:
           key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
           restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
 
-      - name: "Prepare PHP 8 dependencies"
-        run: "composer remove --no-update --ignore-platform-req=php --dev doctrine/coding-standard squizlabs/php_codesniffer"
-
       - name: "Install dependencies with composer"
         run: "composer install --no-interaction --no-progress"
 
@@ -89,9 +86,6 @@ jobs:
           path: "~/.composer/cache"
           key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
           restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
-
-      - name: "Prepare PHP 8 dependencies"
-        run: "composer remove --no-update --ignore-platform-req=php --dev doctrine/coding-standard squizlabs/php_codesniffer"
 
       - name: "Install dependencies with composer"
         run: "composer install --no-interaction --no-progress"

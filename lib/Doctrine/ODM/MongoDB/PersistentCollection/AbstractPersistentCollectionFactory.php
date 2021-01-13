@@ -17,7 +17,7 @@ abstract class AbstractPersistentCollectionFactory implements PersistentCollecti
     /**
      * {@inheritdoc}
      */
-    public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null) : PersistentCollectionInterface
+    public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null): PersistentCollectionInterface
     {
         if ($coll === null) {
             $coll = ! empty($mapping['collectionClass'])
@@ -42,5 +42,5 @@ abstract class AbstractPersistentCollectionFactory implements PersistentCollecti
      *
      * @return BaseCollection
      */
-    abstract protected function createCollectionClass(string $collectionClass) : BaseCollection;
+    abstract protected function createCollectionClass(string $collectionClass): BaseCollection;
 }

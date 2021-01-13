@@ -9,6 +9,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function assert;
 use function serialize;
 use function sprintf;
 use function unserialize;
@@ -35,8 +37,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var DocumentManager $dm */
-        $dm              = $this->getHelper('documentManager')->getDocumentManager();
+        $dm = $this->getHelper('documentManager')->getDocumentManager();
+        assert($dm instanceof DocumentManager);
         $metadataFactory = $dm->getMetadataFactory();
         $metadataFactory->setCacheDriver(new VoidCache());
 
@@ -49,6 +51,7 @@ EOT
             ++$errors;
             $output->writeln(sprintf('%s has mapping issues.', $meta->getName()));
         }
+
         if ($errors) {
             $output->writeln(sprintf('<error>%d document(s) have mapping issues.</error>', $errors));
         } else {

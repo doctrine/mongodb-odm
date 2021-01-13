@@ -21,9 +21,11 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
 use Traversable;
-use const DOCTRINE_MONGODB_DATABASE;
+
 use function array_keys;
 use function iterator_to_array;
+
+use const DOCTRINE_MONGODB_DATABASE;
 
 class QueryTest extends BaseTest
 {
@@ -520,7 +522,7 @@ class QueryTest extends BaseTest
         $this->assertInstanceOf(Traversable::class, $query->execute());
     }
 
-    public function testNonRewindable() : void
+    public function testNonRewindable(): void
     {
         $cursor = new ArrayIterator(['foo']);
 

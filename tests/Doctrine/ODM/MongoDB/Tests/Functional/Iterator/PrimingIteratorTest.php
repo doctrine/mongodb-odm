@@ -36,14 +36,14 @@ final class PrimingIteratorTest extends BaseTest
         $this->assertSame([Profile::class, ProfileNotify::class], $this->callbackCalls);
     }
 
-    private function createPrimerCallback() : Closure
+    private function createPrimerCallback(): Closure
     {
         return function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) {
             $this->callbackCalls[] = $class->name;
         };
     }
 
-    private function getIterator() : Iterator
+    private function getIterator(): Iterator
     {
         $items = [
             $this->createUserForPriming(),
@@ -54,7 +54,7 @@ final class PrimingIteratorTest extends BaseTest
         return new ArrayIterator($items);
     }
 
-    private function createUserForPriming() : User
+    private function createUserForPriming(): User
     {
         $user = new User();
         $user->setId(new ObjectId());

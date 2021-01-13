@@ -23,7 +23,7 @@ final class CachingClassNameResolver implements ClassNameResolver
     /**
      * Gets the real class name of a class name that could be a proxy.
      */
-    public function getRealClass(string $class) : string
+    public function getRealClass(string $class): string
     {
         if (! isset($this->resolvedNames[$class])) {
             $this->resolvedNames[$class] = $this->resolver->getRealClass($class);

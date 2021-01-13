@@ -10,12 +10,14 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use ReflectionMethod;
 use SimpleXmlElement;
 use stdClass;
-use const DIRECTORY_SEPARATOR;
+
 use function get_class;
+
+use const DIRECTORY_SEPARATOR;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function loadDriver()
     {
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }
@@ -23,7 +25,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testSetShardKeyOptionsByAttributes()
     {
         $class   = new ClassMetadata(stdClass::class);
-        $driver  = $this->_loadDriver();
+        $driver  = $this->loadDriver();
         $element = new SimpleXmlElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
 
         /** @uses XmlDriver::setShardKey */
@@ -37,10 +39,10 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertSame(['_id' => 1], $shardKey['keys']);
     }
 
-    public function testInvalidMappingFileTriggersException() : void
+    public function testInvalidMappingFileTriggersException(): void
     {
         $className     = InvalidMappingDocument::class;
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata($className);
 

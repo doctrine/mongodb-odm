@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use const PHP_EOL;
+
 use function assert;
 use function count;
 use function file_exists;
@@ -19,6 +19,8 @@ use function is_writable;
 use function mkdir;
 use function realpath;
 use function sprintf;
+
+use const PHP_EOL;
 
 /**
  * Command to (re)generate the hydrator classes used by doctrine.

@@ -13,24 +13,16 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class TypedDocument
 {
-    /**
-     * @ODM\Id()
-     */
+    /** @ODM\Id() */
     private string $id;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    /** @ODM\Field(type="string") */
     private string $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=TypedEmbeddedDocument::class)
-     */
+    /** @ODM\EmbedOne(targetDocument=TypedEmbeddedDocument::class) */
     private TypedEmbeddedDocument $embedOne;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=TypedEmbeddedDocument::class)
-     */
+    /** @ODM\EmbedMany(targetDocument=TypedEmbeddedDocument::class) */
     private Collection $embedMany;
 
     public function __construct()
@@ -38,37 +30,37 @@ class TypedDocument
         $this->embedMany = new ArrayCollection();
     }
 
-    public function getId() : string
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function setId(string $id) : void
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName(string $name) : void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getEmbedOne() : TypedEmbeddedDocument
+    public function getEmbedOne(): TypedEmbeddedDocument
     {
         return $this->embedOne;
     }
 
-    public function setEmbedOne(TypedEmbeddedDocument $embedOne) : void
+    public function setEmbedOne(TypedEmbeddedDocument $embedOne): void
     {
         $this->embedOne = $embedOne;
     }
 
-    public function getEmbedMany() : Collection
+    public function getEmbedMany(): Collection
     {
         return $this->embedMany;
     }

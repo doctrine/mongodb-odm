@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Exception;
+
 use function get_class;
 
 class GH999Test extends BaseTest

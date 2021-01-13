@@ -55,7 +55,7 @@ class Lookup extends Stage
      * collection. If the specified name already exists in the input document,
      * the existing field is overwritten.
      */
-    public function alias(string $alias) : self
+    public function alias(string $alias): self
     {
         $this->as = $alias;
 
@@ -67,7 +67,7 @@ class Lookup extends Stage
      *
      * The from collection cannot be sharded.
      */
-    public function from(string $from) : self
+    public function from(string $from): self
     {
         // $from can either be
         // a) a field name indicating a reference to a different document. Currently, only REFERENCE_STORE_AS_ID is supported
@@ -99,7 +99,7 @@ class Lookup extends Stage
     /**
      * {@inheritdoc}
      */
-    public function getExpression() : array
+    public function getExpression(): array
     {
         return [
             '$lookup' => [
@@ -119,7 +119,7 @@ class Lookup extends Stage
      * contain the localField, the $lookup treats the field as having a value of
      * null for matching purposes.
      */
-    public function localField(string $localField) : self
+    public function localField(string $localField): self
     {
         $this->localField = $this->prepareFieldName($localField, $this->class);
 
@@ -134,14 +134,14 @@ class Lookup extends Stage
      * contain the foreignField, the $lookup treats the value as null for
      * matching purposes.
      */
-    public function foreignField(string $foreignField) : self
+    public function foreignField(string $foreignField): self
     {
         $this->foreignField = $this->prepareFieldName($foreignField, $this->targetClass);
 
         return $this;
     }
 
-    protected function prepareFieldName(string $fieldName, ?ClassMetadata $class = null) : string
+    protected function prepareFieldName(string $fieldName, ?ClassMetadata $class = null): string
     {
         if (! $class) {
             return $fieldName;
@@ -153,7 +153,7 @@ class Lookup extends Stage
     /**
      * @throws MappingException
      */
-    private function fromReference(string $fieldName) : self
+    private function fromReference(string $fieldName): self
     {
         if (! $this->class->hasReference($fieldName)) {
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);
@@ -206,7 +206,7 @@ class Lookup extends Stage
         return $this;
     }
 
-    private function getDocumentPersister(ClassMetadata $class) : DocumentPersister
+    private function getDocumentPersister(ClassMetadata $class): DocumentPersister
     {
         return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
     }

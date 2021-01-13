@@ -12,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+
 use function is_numeric;
 use function is_string;
 
@@ -68,14 +69,14 @@ abstract class AbstractCommand extends Command
         return $this->getDocumentManager()->getMetadataFactory();
     }
 
-    protected function getMaxTimeMsFromInput(InputInterface $input) : ?int
+    protected function getMaxTimeMsFromInput(InputInterface $input): ?int
     {
         $maxTimeMs = $input->getOption('maxTimeMs');
 
         return is_string($maxTimeMs) ? (int) $maxTimeMs : null;
     }
 
-    protected function getWriteConcernFromInput(InputInterface $input) : ?WriteConcern
+    protected function getWriteConcernFromInput(InputInterface $input): ?WriteConcern
     {
         $w        = $input->getOption('w');
         $wTimeout = $input->getOption('wTimeout');

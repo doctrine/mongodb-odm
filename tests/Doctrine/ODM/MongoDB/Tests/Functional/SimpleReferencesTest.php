@@ -10,6 +10,7 @@ use Documents\User;
 use MongoDB\BSON\ObjectId;
 use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
+
 use function current;
 use function end;
 
@@ -18,7 +19,7 @@ class SimpleReferencesTest extends BaseTest
     private $user;
     private $test;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
+
 use function is_callable;
 use function iterator_to_array;
 
@@ -38,7 +39,7 @@ final class PrimingIterator implements Iterator
         $this->unitOfWorkHints = $unitOfWorkHints;
     }
 
-    public function toArray() : array
+    public function toArray(): array
     {
         return iterator_to_array($this);
     }
@@ -50,7 +51,7 @@ final class PrimingIterator implements Iterator
         return $this->iterator->current();
     }
 
-    public function next() : void
+    public function next(): void
     {
         $this->iterator->next();
     }
@@ -60,17 +61,17 @@ final class PrimingIterator implements Iterator
         return $this->iterator->key();
     }
 
-    public function valid() : bool
+    public function valid(): bool
     {
         return $this->iterator->valid();
     }
 
-    public function rewind() : void
+    public function rewind(): void
     {
         $this->iterator->rewind();
     }
 
-    private function primeReferences() : void
+    private function primeReferences(): void
     {
         if ($this->referencesPrimed || empty($this->primers)) {
             return;
