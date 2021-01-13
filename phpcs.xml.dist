@@ -21,8 +21,6 @@
     <exclude-pattern>tests/PersistentCollections*</exclude-pattern>
     <!-- Figure out what to do with "Scope keyword "static" must be followed by a single space; found newline" -->
     <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP80Types.php</exclude-pattern>
-    <!-- Figure out whether the test is still needed -->
-    <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM117Test.php</exclude-pattern>
     <exclude-pattern>lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php</exclude-pattern>
     <exclude-pattern>lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php</exclude-pattern>
 
