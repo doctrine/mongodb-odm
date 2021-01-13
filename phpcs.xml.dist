@@ -95,20 +95,8 @@
         <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
     </rule>
 
-    <!-- This is causing a lot of noise to be handled in a separate PR -->
-    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-    </rule>
-
-    <!-- This is causing a lot of noise to be handled in a separate PR -->
-    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-    </rule>
-
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
         <!-- We do want to test generating collections without return types -->
         <exclude-pattern>*/tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/Coll*</exclude-pattern>
-        <!-- This is causing a lot of noise to be handled in a separate PR -->
-        <exclude-pattern>*/tests/Doctrine/ODM/MongoDB/Tests/*Test.php</exclude-pattern>
     </rule>
 </ruleset>
