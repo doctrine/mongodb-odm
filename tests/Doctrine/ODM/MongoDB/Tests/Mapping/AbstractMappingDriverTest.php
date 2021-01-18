@@ -134,10 +134,10 @@ abstract class AbstractMappingDriverTest extends BaseTest
     {
         $this->assertEquals(Address::class, $class->getAssociationTargetClass('address'));
         $this->assertEquals(Group::class, $class->getAssociationTargetClass('groups'));
-        $this->assertEquals(Phonenumber::class, $class->getAssociationTargetClass('phonenumbers'));
+        $this->assertNull($class->getAssociationTargetClass('phonenumbers'));
         $this->assertEquals(Phonenumber::class, $class->getAssociationTargetClass('morePhoneNumbers'));
         $this->assertEquals(Phonenumber::class, $class->getAssociationTargetClass('embeddedPhonenumber'));
-        $this->assertEquals(Phonenumber::class, $class->getAssociationTargetClass('otherPhonenumbers'));
+        $this->assertNull($class->getAssociationTargetClass('otherPhonenumbers'));
     }
 
     /**
@@ -625,7 +625,7 @@ class AbstractMappingDriverUser
     /** @ODM\ReferenceOne(targetDocument=Address::class, cascade={"remove"}) */
     public $address;
 
-    /** @ODM\ReferenceMany(targetDocument=Phonenumber::class, collectionClass=PhonenumberCollection::class, cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
+    /** @ODM\ReferenceMany(collectionClass=PhonenumberCollection::class, cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
     public $phonenumbers;
 
     /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}) */
@@ -637,7 +637,7 @@ class AbstractMappingDriverUser
     /** @ODM\EmbedMany(targetDocument=Phonenumber::class, name="embedded_phone_number") */
     public $embeddedPhonenumber;
 
-    /** @ODM\EmbedMany(targetDocument=Phonenumber::class, discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
+    /** @ODM\EmbedMany(discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
     public $otherPhonenumbers;
 
     /** @ODM\Field(type="date") */
