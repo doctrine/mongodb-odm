@@ -46,6 +46,8 @@ class ReadPreferenceTest extends BaseTest
      */
     public function testHintIsSetOnQuery($readPreference, array $tags = [])
     {
+        $this->skipTestIfSharded(User::class);
+
         $query = $this->dm->getRepository(User::class)
             ->createQueryBuilder()
             ->setReadPreference(new ReadPreference($readPreference, $tags))
