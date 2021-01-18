@@ -1950,7 +1950,7 @@ use function trigger_deprecation;
             trigger_deprecation(
                 'doctrine/mongodb-odm',
                 '2.2',
-                'Mapping both "targetDocument" and "discriminatorMap" on field "%s" in class "%s" is deprecated.',
+                'Mapping both "targetDocument" and "discriminatorMap" on field "%s" in class "%s" is deprecated. Only one of them can be used at a time',
                 $mapping['fieldName'],
                 $this->name
             );
