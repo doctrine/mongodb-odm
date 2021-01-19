@@ -133,15 +133,23 @@ abstract class BaseTest extends TestCase
     protected function skipTestIfNotSharded($className)
     {
         $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
-        if (! $result['ok']) {
-            $this->markTestSkipped('Could not check whether server supports sharding');
-        }
 
         if (array_key_exists('shardCollection', $result['commands'])) {
             return;
         }
 
         $this->markTestSkipped('Test skipped because server does not support sharding');
+    }
+
+    protected function skipTestIfSharded($className)
+    {
+        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
+
+        if (! array_key_exists('shardCollection', $result['commands'])) {
+            return;
+        }
+
+        $this->markTestSkipped('Test does not apply on sharded clusters');
     }
 
     protected function requireVersion($installedVersion, $requiredVersion, $operator, $message)

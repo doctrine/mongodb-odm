@@ -11,14 +11,14 @@ env:
   fail-fast: true
 
 jobs:
-  phpunit-standalone:
-    name: "PHPUnit on standalone servers"
+  phpunit:
+    name: "PHPUnit"
     runs-on: "${{ matrix.os }}"
 
     strategy:
       matrix:
         os:
-          - "ubuntu-20.04"
+          - "ubuntu-18.04"
         php-version:
           - "7.2"
           - "7.3"
@@ -28,23 +28,25 @@ jobs:
           - "4.4"
           - "4.2"
           - "4.0"
-          - "3.6"
         driver-version:
           - "stable"
+        topology:
+          - "server"
         deps:
           - "normal"
         include:
           - deps: "low"
-            os: "ubuntu-20.04"
+            os: "ubuntu-16.04"
             php-version: "7.2"
             mongodb-version: "3.6"
             driver-version: "1.5.0"
-
-    services:
-      mongodb:
-        image: "mongo:${{ matrix.mongodb-version }}"
-        ports:
-          - "27017:27017"
+            topology: "server"
+          - topology: "sharded_cluster"
+            os: "ubuntu-18.04"
+            php-version: "8.0"
+            mongodb-version: "4.4"
+            driver-version: "stable"
+            deps: "normal"
 
     steps:
       - name: "Checkout"
@@ -94,5 +96,13 @@ jobs:
         run: "composer update --no-interaction --no-progress --prefer-dist --prefer-lowest"
         if: "${{ matrix.deps == 'low' }}"
 
+      - id: setup-mongodb
+        uses: mongodb-labs/drivers-evergreen-tools@master
+        with:
+          version: ${{ matrix.mongodb-version }}
+          topology: ${{ matrix.topology }}
+
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit"
+        env:
+          DOCTRINE_MONGODB_SERVER: ${{ steps.setup-mongodb.outputs.cluster-uri }}
