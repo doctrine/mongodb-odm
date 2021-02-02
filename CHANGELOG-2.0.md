@@ -61,7 +61,7 @@ CHANGELOG for 2.0.x
 ------------------------
 
 Deprecated functionality has been removed. Please check the
-[UPGRADE-2.0 document](https://github.com/doctrine/mongodb-odm/blob/master/UPGRADE-2.0.md)
+[UPGRADE-2.0 document](https://github.com/doctrine/mongodb-odm/blob/2.0.0/UPGRADE-2.0.md)
 to review the changes.
 
  - [1904: Always use dump method from VarDumper component](https://github.com/doctrine/mongodb-odm/pull/1904) thanks to @alcaeus

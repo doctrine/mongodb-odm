@@ -1,7 +1,7 @@
 # Doctrine MongoDB Object Document Mapper
 
-[![Build Status](https://secure.travis-ci.org/doctrine/mongodb-odm.png?branch=master)](http://travis-ci.org/doctrine/mongodb-odm)
-[![Code Coverage](https://codecov.io/gh/doctrine/mongodb-odm/branch/master/graph/badge.svg)](https://codecov.io/gh/doctrine/mongodb-odm/branch/master)
+[![Build Status](https://github.com/doctrine/mongodb-odm/workflows/Continuous%20Integration/badge.svg)](https://github.com/doctrine/mongodb-odm/actions?query=workflow%3A%22Continuous+Integration%22)
+[![Code Coverage](https://codecov.io/gh/doctrine/mongodb-odm/branch/2.2.x/graph/badge.svg)](https://codecov.io/gh/doctrine/mongodb-odm/branch/2.2.x)
 [![Gitter](https://badges.gitter.im/doctrine/mongodb-odm.svg)](https://gitter.im/doctrine/mongodb-odm)
 
 
