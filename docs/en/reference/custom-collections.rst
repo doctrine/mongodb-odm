@@ -125,7 +125,7 @@ By default, Doctrine assumes that it can instantiate your collections in same
 manner as an ``ArrayCollection`` (i.e. the only parameter is an optional PHP
 array); however, you may want to inject additional dependencies into your
 custom collection class(es). This will require you to create a
-`PersistentCollectionFactory implementation <https://github.com/doctrine/mongodb-odm/blob/master/lib/Doctrine/ODM/MongoDB/PersistentCollection/PersistentCollectionFactory.php>`_,
+`PersistentCollectionFactory implementation <https://github.com/doctrine/mongodb-odm/blob/2.2.x/lib/Doctrine/ODM/MongoDB/PersistentCollection/PersistentCollectionFactory.php>`_,
 which Doctrine will then use to construct its persistent collections.
 You may decide to implement this class from scratch or extend our
 ``AbstractPersistentCollectionFactory``:

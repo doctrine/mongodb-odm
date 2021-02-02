@@ -5,8 +5,8 @@ about: Have you encountered an issue during upgrade? 💣
 
 <!--
 Before reporting a BC break, please consult the changelog to make sure it's not an expected change.
-For 1.2: https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-1.2.md
-For 2.0: https://github.com/doctrine/mongodb-odm/blob/master/CHANGELOG-2.0.md
+For 1.2: https://github.com/doctrine/mongodb-odm/blob/1.2.0/CHANGELOG-1.2.md
+For 2.0: https://github.com/doctrine/mongodb-odm/blob/2.0.0/CHANGELOG-2.0.md
 -->
 
 ### BC Break Report
