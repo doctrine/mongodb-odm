@@ -31,10 +31,10 @@ jobs:
           - "stable"
         topology:
           - "server"
-        deps:
-          - "normal"
+        dependencies:
+          - "highest"
         include:
-          - deps: "low"
+          - deps: "lowest"
             os: "ubuntu-16.04"
             php-version: "7.2"
             mongodb-version: "3.6"
@@ -45,7 +45,7 @@ jobs:
             php-version: "8.0"
             mongodb-version: "4.4"
             driver-version: "stable"
-            deps: "normal"
+            deps: "highest"
 
     steps:
       - name: "Checkout"
@@ -80,20 +80,11 @@ jobs:
       - name: "Show driver information"
         run: "php --ri mongodb"
 
-      - name: "Cache dependencies installed with composer"
-        uses: "actions/cache@v2"
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
         with:
-          path: "~/.composer/cache"
-          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
-          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
-
-      - name: "Install dependencies with composer"
-        run: "composer update --no-interaction --no-progress"
-        if: "${{ matrix.deps == 'normal' }}"
-
-      - name: "Install lowest possible dependencies with composer"
-        run: "composer update --no-interaction --no-progress --prefer-dist --prefer-lowest"
-        if: "${{ matrix.deps == 'low' }}"
+          dependency-versions: "${{ matrix.dependencies }}"
+          composer-options: "--prefer-dist"
 
       - id: setup-mongodb
         uses: mongodb-labs/drivers-evergreen-tools@master
