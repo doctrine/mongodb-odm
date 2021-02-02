@@ -5,7 +5,6 @@ on:
   pull_request:
     branches:
       - "*.x"
-      - "master"
   push:
 
 jobs:
@@ -48,15 +47,9 @@ jobs:
       - name: "Show driver information"
         run: "php --ri mongodb"
 
-      - name: "Cache dependencies installed with Composer"
-        uses: "actions/cache@v2"
-        with:
-          path: "~/.composer/cache"
-          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
-          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
-
       - name: "Install dependencies with Composer"
-        run: "composer install --no-interaction --no-progress --no-suggest"
+        uses: "ramsey/composer-install@v1"
+
 
       # https://github.com/doctrine/.github/issues/3
       - name: "Run PHP_CodeSniffer"

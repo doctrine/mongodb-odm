@@ -127,7 +127,7 @@ as its default one:
     }
 
 In order to change the way Doctrine instantiates repositories, you will need to implement your own
-`RepositoryFactory <https://github.com/doctrine/mongodb-odm/blob/master/lib/Doctrine/ODM/MongoDB/Repository/RepositoryFactory.php>`_
+`RepositoryFactory <https://github.com/doctrine/mongodb-odm/blob/2.2.x/lib/Doctrine/ODM/MongoDB/Repository/RepositoryFactory.php>`_
 
 .. code-block:: php
 

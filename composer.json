@@ -65,10 +65,5 @@
     },
     "config": {
         "sort-packages": true
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.2.x-dev"
-        }
     }
 }
