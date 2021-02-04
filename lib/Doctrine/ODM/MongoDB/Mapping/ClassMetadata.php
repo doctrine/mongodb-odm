@@ -2129,6 +2129,11 @@ use function trigger_deprecation;
             $serialized[] = 'versionField';
         }
 
+        if ($this->isLockable) {
+            $serialized[] = 'isLockable';
+            $serialized[] = 'lockField';
+        }
+
         if ($this->lifecycleCallbacks) {
             $serialized[] = 'lifecycleCallbacks';
         }
