@@ -163,7 +163,7 @@ can also open an upload stream and write contents yourself.
     <?php
 
     $repository = $documentManager->getRepository(Documents\Image::class);
-    $file = $repository->uploadFromFile('image.jpg', '/tmp/path/to/image');
+    $file = $repository->uploadFromFile('/tmp/path/to/image', 'image.jpg');
 
 When using the default GridFS repository implementation, the ``uploadFromFile``
 and ``uploadFromStream`` methods return a proxy object of the file you just
@@ -184,7 +184,7 @@ can pass an ``UploadOptions`` object as the last argument to the
     $uploadOptions->chunkSizeBytes = 1024 * 1024;
 
     $repository = $documentManager->getRepository(Documents\Image::class);
-    $file = $repository->uploadFromFile('image.jpg', '/tmp/path/to/image', $uploadOptions);
+    $file = $repository->uploadFromFile('/tmp/path/to/image', 'image.jpg', $uploadOptions);
 
 Reading files from GridFS buckets
 ---------------------------------
@@ -208,8 +208,13 @@ uploading:
 
     <?php
 
+    use Doctrine\ODM\MongoDB\Repository\UploadOptions;
+
+    $uploadOptions = new UploadOptions();
+    $uploadOptions->metadata = new Documents\ImageMetadata('image/jpeg');
+
     $repository = $documentManager->getRepository(Documents\Image::class);
-    $file = $repository->uploadFromFile('image.jpg', '/tmp/path/to/image', new Documents\ImageMetadata('image/jpeg'));
+    $file = $repository->uploadFromFile('/tmp/path/to/image', 'image.jpg', $uploadOptions);
 
     $stream = fopen('tmp/path/to/copy', 'w+');
     try {
@@ -236,7 +241,7 @@ a stream from where you can read file contents:
     $uploadOptions->metadata = new Documents\ImageMetadata('image/jpeg');
 
     $repository = $documentManager->getRepository(Documents\Image::class);
-    $file = $repository->uploadFromFile('image.jpg', '/tmp/path/to/image', $uploadOptions);
+    $file = $repository->uploadFromFile('/tmp/path/to/image', 'image.jpg', $uploadOptions);
 
     $stream = $repository->openDownloadStream($file->getId());
     try {
