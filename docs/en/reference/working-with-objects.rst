@@ -291,8 +291,8 @@ Example:
     // $document now refers to the fully managed copy returned by the merge operation.
     // The DocumentManager $dm now manages the persistence of $document as usual.
 
-    The semantics of the merge operation, applied to a document X, are
-    as follows:
+The semantics of the merge operation, applied to a document X, are
+as follows:
 
 -
    If X is a detached document, the state of X is copied onto a
