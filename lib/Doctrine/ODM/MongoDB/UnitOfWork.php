@@ -324,6 +324,10 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Get the document persister instance for the given document name
+     *
+     * @template T of object
+     * @psalm-param class-string<T> $documentName
+     * @psalm-return Persisters\DocumentPersister<T>
      */
     public function getDocumentPersister(string $documentName): Persisters\DocumentPersister
     {
@@ -2611,6 +2615,11 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Creates a document. Used for reconstitution of documents during hydration.
+     *
+     * @template T of object
+     * @psalm-param class-string<T> $className
+     * @psalm-param T|null $document
+     * @psalm-return T
      */
     public function getOrCreateDocument(string $className, array $data, array &$hints = [], ?object $document = null): object
     {
@@ -2633,6 +2642,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         if (! empty($hints[Query::HINT_READ_ONLY])) {
+            /** @psalm-var T $document */
             $document = $class->newInstance();
             $this->hydratorFactory->hydrate($document, $data, $hints);
 
