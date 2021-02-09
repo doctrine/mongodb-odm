@@ -30,10 +30,17 @@ use function is_array;
  *
  * This class is designed for inheritance and users can subclass this class to
  * write their own repositories with business-specific methods to locate documents.
+ *
+ * @template T of object
+ * @template-implements Selectable<int,T>
+ * @template-implements ObjectRepository<T>
  */
 class DocumentRepository implements ObjectRepository, Selectable
 {
-    /** @var string */
+    /**
+     * @var string
+     * @psalm-var class-string<T>
+     */
     protected $documentName;
 
     /** @var DocumentManager */
@@ -227,6 +234,9 @@ class DocumentRepository implements ObjectRepository, Selectable
         return new ArrayCollection($iterator->toArray());
     }
 
+    /**
+     * @psalm-return DocumentPersister<T>
+     */
     protected function getDocumentPersister(): DocumentPersister
     {
         return $this->uow->getDocumentPersister($this->documentName);

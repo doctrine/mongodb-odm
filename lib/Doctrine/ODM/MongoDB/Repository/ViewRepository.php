@@ -7,6 +7,10 @@ namespace Doctrine\ODM\MongoDB\Repository;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\Persistence\ObjectRepository;
 
+/**
+ * @template T of object
+ * @template-extends ObjectRepository<T>
+ */
 interface ViewRepository extends ObjectRepository
 {
     /**

@@ -564,6 +564,11 @@ class DocumentManager implements ObjectManager
      * @param string $documentName The name of the Document.
      *
      * @return ObjectRepository  The repository.
+     *
+     * @template T of object
+     * @psalm-param class-string<T> $documentName
+     *
+     * @psalm-return ObjectRepository<T>
      */
     public function getRepository($documentName)
     {
@@ -657,6 +662,11 @@ class DocumentManager implements ObjectManager
      * @param mixed  $id
      * @param int    $lockMode
      * @param int    $lockVersion
+     *
+     * @template T of object
+     * @psalm-param class-string<T> $className
+     *
+     * @psalm-return T|null
      */
     public function find($className, $id, $lockMode = LockMode::NONE, $lockVersion = null): ?object
     {

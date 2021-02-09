@@ -6,6 +6,10 @@ namespace Doctrine\ODM\MongoDB\Repository;
 
 use Doctrine\Persistence\ObjectRepository;
 
+/**
+ * @template T of object
+ * @template-extends ObjectRepository<T>
+ */
 interface GridFSRepository extends ObjectRepository
 {
     /**

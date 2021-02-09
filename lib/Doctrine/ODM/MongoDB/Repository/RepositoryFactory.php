@@ -14,6 +14,10 @@ interface RepositoryFactory
 {
     /**
      * Gets the repository for a document class.
+     *
+     * @template T of object
+     * @psalm-param class-string<T> $documentName
+     * @psalm-return ObjectRepository<T>
      */
     public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository;
 }
