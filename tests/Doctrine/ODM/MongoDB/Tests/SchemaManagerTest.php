@@ -71,8 +71,7 @@ class SchemaManagerTest extends BaseTest
     {
         parent::setUp();
 
-        $client = $this->createMock(Client::class);
-        $client->method('getTypeMap')->willReturn(DocumentManager::CLIENT_TYPEMAP);
+        $client   = $this->createMock(Client::class);
         $this->dm = DocumentManager::create($client, $this->dm->getConfiguration(), $this->createMock(EventManager::class));
 
         foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
