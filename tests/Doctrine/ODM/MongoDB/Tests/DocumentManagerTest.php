@@ -7,7 +7,6 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
@@ -230,29 +229,6 @@ class DocumentManagerTest extends BaseTest
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref4']);
         $this->assertCount(1, $dbRef);
         $this->assertArrayHasKey('id', $dbRef);
-    }
-
-    /**
-     * @dataProvider dataInvalidTypeMap
-     */
-    public function testThrowsExceptionOnInvalidTypeMap(string $expectedMessage, Client $client): void
-    {
-        $this->expectException(MongoDBException::class);
-        $this->expectExceptionMessage($expectedMessage);
-        DocumentManager::create($client);
-    }
-
-    public function dataInvalidTypeMap(): array
-    {
-        $noTypeMap              = new Client();
-        $invalidDocumentTypeMap = new Client('mongodb://127.0.0.1', [], ['typeMap' => ['root' => 'array', 'document' => stdClass::class]]);
-        $invalidRootTypeMap     = new Client('mongodb://127.0.0.1', [], ['typeMap' => ['root' => stdClass::class, 'document' => 'array']]);
-
-        return [
-            'No typeMap' => ['Invalid typemap provided. Type "array" is required for "root".', $noTypeMap],
-            'Invalid document' => ['Invalid typemap provided. Type "array" is required for "document".', $invalidDocumentTypeMap],
-            'Invalid root' => ['Invalid typemap provided. Type "array" is required for "root".', $invalidRootTypeMap],
-        ];
     }
 }
 

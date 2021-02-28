@@ -166,15 +166,12 @@ class DocumentManager implements ObjectManager
             'mongodb://127.0.0.1',
             [],
             [
-                'typeMap' => self::CLIENT_TYPEMAP,
                 'driver' => [
                     'name' => 'doctrine-odm',
                     'version' => self::getVersion(),
                 ],
             ]
         );
-
-        $this->checkTypeMap();
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory    = new $metadataFactoryClassName();
@@ -360,7 +357,7 @@ class DocumentManager implements ObjectManager
         if (! isset($this->documentCollections[$className])) {
             $db = $this->getDocumentDatabase($className);
 
-            $options = [];
+            $options = ['typeMap' => self::CLIENT_TYPEMAP];
             if ($metadata->readPreference !== null) {
                 $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
             }
@@ -865,17 +862,6 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->filterCollection;
-    }
-
-    private function checkTypeMap(): void
-    {
-        $typeMap = $this->client->getTypeMap();
-
-        foreach (self::CLIENT_TYPEMAP as $part => $expectedType) {
-            if (! isset($typeMap[$part]) || $typeMap[$part] !== $expectedType) {
-                throw MongoDBException::invalidTypeMap($part, $expectedType);
-            }
-        }
     }
 
     private static function getVersion(): string
