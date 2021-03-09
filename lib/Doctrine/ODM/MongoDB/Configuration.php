@@ -21,6 +21,7 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
+use MongoDB\Driver\WriteConcern;
 use ProxyManager\Configuration as ProxyManagerConfiguration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
@@ -347,7 +348,11 @@ class Configuration
 
     public function getDefaultCommitOptions(): array
     {
-        return $this->attributes['defaultCommitOptions'] ?? ['w' => 1];
+        if (! isset($this->attributes['defaultCommitOptions'])) {
+            $this->attributes['defaultCommitOptions'] = ['writeConcern' => new WriteConcern(1)];
+        }
+
+        return $this->attributes['defaultCommitOptions'];
     }
 
     public function setDefaultCommitOptions(array $defaultCommitOptions): void
