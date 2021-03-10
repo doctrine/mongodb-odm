@@ -32,6 +32,7 @@ use MongoDB\Collection;
 use MongoDB\Driver\Cursor;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Exception\WriteException;
+use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
@@ -39,6 +40,7 @@ use stdClass;
 use function array_combine;
 use function array_fill;
 use function array_intersect_key;
+use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -61,6 +63,7 @@ use function spl_object_hash;
 use function sprintf;
 use function strpos;
 use function strtolower;
+use function trigger_deprecation;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -1493,10 +1496,22 @@ final class DocumentPersister
         $defaultOptions  = $this->dm->getConfiguration()->getDefaultCommitOptions();
         $documentOptions = [];
         if ($this->class->hasWriteConcern()) {
-            $documentOptions['w'] = $this->class->getWriteConcern();
+            $documentOptions['writeConcern'] = new WriteConcern($this->class->getWriteConcern());
         }
 
-        return array_merge($defaultOptions, $documentOptions, $options);
+        $writeOptions = array_merge($defaultOptions, $documentOptions, $options);
+        if (array_key_exists('w', $writeOptions)) {
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.2',
+                'The "w" option as commit option is deprecated, please pass "%s" object in "writeConcern" option.',
+                WriteConcern::class
+            );
+            $writeOptions['writeConcern'] = new WriteConcern($writeOptions['w']);
+            unset($writeOptions['w']);
+        }
+
+        return $writeOptions;
     }
 
     private function prepareReference(string $fieldName, $value, array $mapping, bool $inNewObj): array

@@ -19,6 +19,7 @@ use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
+use MongoDB\Driver\WriteConcern;
 use ReflectionProperty;
 
 use function get_class;
@@ -644,7 +645,7 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->containsEqual($writeConcern)));
+            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -668,7 +669,7 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('updateOne')
-            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->containsEqual($writeConcern)));
+            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -693,7 +694,7 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('deleteOne')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->containsEqual($writeConcern)));
+            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -715,7 +716,28 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->equalTo(['w' => 0]));
+            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
+
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $this->dm->getConfiguration()->setDefaultCommitOptions(['writeConcern' => new WriteConcern(0)]);
+
+        $testDocument = new $class();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+    }
+
+    public function testDefaultWriteConcernIsRespectedBackwardCompatibility()
+    {
+        $class             = DocumentPersisterTestDocument::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->createMock(Collection::class);
+        $collection->expects($this->once())
+            ->method('insertMany')
+            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
