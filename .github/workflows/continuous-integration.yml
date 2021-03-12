@@ -19,8 +19,6 @@ jobs:
         os:
           - "ubuntu-18.04"
         php-version:
-          - "7.2"
-          - "7.3"
           - "7.4"
           - "8.0"
         mongodb-version:
@@ -36,7 +34,7 @@ jobs:
         include:
           - deps: "lowest"
             os: "ubuntu-16.04"
-            php-version: "7.2"
+            php-version: "7.4"
             mongodb-version: "3.6"
             driver-version: "1.5.0"
             topology: "server"

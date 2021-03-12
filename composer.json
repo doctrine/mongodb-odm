@@ -22,7 +22,7 @@
         { "name": "Andreas Braun", "email": "alcaeus@alcaeus.org" }
     ],
     "require": {
-        "php": "^7.2 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "ext-mongodb": "^1.5",
         "doctrine/annotations": "^1.6",
         "doctrine/cache": "^1.7",
