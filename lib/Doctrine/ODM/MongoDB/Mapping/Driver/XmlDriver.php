@@ -243,7 +243,7 @@ class XmlDriver extends FileDriver
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
                     $mapping[$key]     = (string) $value;
-                    $booleanAttributes = ['reference', 'embed', 'unique', 'sparse'];
+                    $booleanAttributes = ['reference', 'embed', 'unique', 'sparse', 'nullable'];
                     if (! in_array($key, $booleanAttributes)) {
                         continue;
                     }
@@ -362,6 +362,7 @@ class XmlDriver extends FileDriver
             'collectionClass' => isset($attributes['collection-class']) ? (string) $attributes['collection-class'] : null,
             'name'            => (string) $attributes['field'],
             'strategy'        => (string) ($attributes['strategy'] ?? $defaultStrategy),
+            'nullable'        => isset($attributes['nullable']) ? ((string) $attributes['nullable'] === 'true') : false,
         ];
         if (isset($attributes['field-name'])) {
             $mapping['fieldName'] = (string) $attributes['field-name'];
@@ -419,6 +420,7 @@ class XmlDriver extends FileDriver
             'limit'            => isset($attributes['limit']) ? (int) $attributes['limit'] : null,
             'skip'             => isset($attributes['skip']) ? (int) $attributes['skip'] : null,
             'prime'            => [],
+            'nullable'         => isset($attributes['nullable']) ? ((string) $attributes['nullable'] === 'true') : false,
         ];
 
         if (isset($attributes['field-name'])) {
