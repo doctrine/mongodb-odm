@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+    <document name="TestDocuments\NullableFieldsDocument">
+        <id/>
+        <field name="username" type="string" nullable="true"/>
+        <embed-one target-document="Documents\Address" field="address" nullable="true"/>
+        <embed-many target-document="Documents\Phonenumber" field="phonenumbers" nullable="true"/>
+        <reference-one target-document="Documents\Profile" field="profile" nullable="true"/>
+        <reference-many target-document="Documents\Group" field="groups" nullable="true"/>
+    </document>
+</doctrine-mongo-mapping>
