@@ -1321,7 +1321,12 @@ final class DocumentPersister
                 continue;
             }
 
-            // Recursively process expressions within a $not operator
+            // Recursively process expressions within a $not or $elemMatch operator
+            if ($k === '$elemMatch' && is_array($v)) {
+                $expression[$k] = $this->prepareQueryOrNewObj($v, false);
+                continue;
+            }
+
             if ($k === '$not' && is_array($v)) {
                 $expression[$k] = $this->prepareQueryExpression($v, $class);
                 continue;
