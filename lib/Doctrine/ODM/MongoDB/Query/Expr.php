@@ -95,12 +95,7 @@ class Expr
 
         $this->query['$and'] = array_merge(
             $this->query['$and'],
-            array_map(
-                static function ($expression) {
-                    return $expression instanceof Expr ? $expression->getQuery() : $expression;
-                },
-                func_get_args()
-            )
+            func_get_args()
         );
 
         return $this;
@@ -123,9 +118,7 @@ class Expr
 
         $this->query['$nor'] = array_merge(
             $this->query['$nor'],
-            array_map(static function ($expression) {
-                return $expression instanceof Expr ? $expression->getQuery() : $expression;
-            }, func_get_args())
+            func_get_args()
         );
 
         return $this;
@@ -148,9 +141,7 @@ class Expr
 
         $this->query['$or'] = array_merge(
             $this->query['$or'],
-            array_map(static function ($expression) {
-                return $expression instanceof Expr ? $expression->getQuery() : $expression;
-            }, func_get_args())
+            func_get_args()
         );
 
         return $this;
@@ -175,12 +166,8 @@ class Expr
      */
     public function addToSet($valueOrExpression): self
     {
-        if ($valueOrExpression instanceof Expr) {
-            $valueOrExpression = $valueOrExpression->getQuery();
-        }
-
         $this->requiresCurrentField();
-        $this->newObj['$addToSet'][$this->currentField] = $valueOrExpression;
+        $this->newObj['$addToSet'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
 
         return $this;
     }
@@ -414,7 +401,7 @@ class Expr
      */
     public function elemMatch($expression): self
     {
-        return $this->operator('$elemMatch', $expression instanceof Expr ? $expression->getQuery() : $expression);
+        return $this->operator('$elemMatch', $expression);
     }
 
     /**
@@ -601,7 +588,7 @@ class Expr
     {
         return $this->dm->getUnitOfWork()
             ->getDocumentPersister($this->class->name)
-            ->prepareQueryOrNewObj($this->query);
+            ->prepareQueryOrNewObj($this->convertExpressions($this->query));
     }
 
     /**
@@ -878,7 +865,7 @@ class Expr
      */
     public function not($expression): self
     {
-        return $this->operator('$not', $expression instanceof Expr ? $expression->getQuery() : $expression);
+        return $this->operator('$not', $expression);
     }
 
     /**
@@ -978,12 +965,8 @@ class Expr
      */
     public function pull($valueOrExpression): self
     {
-        if ($valueOrExpression instanceof Expr) {
-            $valueOrExpression = $valueOrExpression->getQuery();
-        }
-
         $this->requiresCurrentField();
-        $this->newObj['$pull'][$this->currentField] = $valueOrExpression;
+        $this->newObj['$pull'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
 
         return $this;
     }
@@ -1419,5 +1402,49 @@ class Expr
         }
 
         $query = ['$in' => [$query]];
+    }
+
+    private function convertExpressions(array $query, ?ClassMetadata $classMetadata = null): array
+    {
+        if ($classMetadata === null) {
+            $classMetadata = $this->class;
+        }
+
+        $convertedQuery = [];
+        foreach ($query as $key => $value) {
+            if (is_string($key) && $classMetadata->hasAssociation($key)) {
+                $targetDocument = $classMetadata->getAssociationTargetClass($key);
+
+                if ($targetDocument) {
+                    $fieldMetadata = $this->dm->getClassMetadata($targetDocument);
+                }
+            }
+
+            if (is_array($value)) {
+                $convertedQuery[$key] = $this->convertExpressions($value, $fieldMetadata ?? $classMetadata);
+                continue;
+            }
+
+            $convertedQuery[$key] = static::convertExpression($value, $fieldMetadata ?? $classMetadata);
+        }
+
+        return $convertedQuery;
+    }
+
+    /**
+     * Converts expression objects to query arrays. Non-expression values are
+     * returned unmodified.
+     *
+     * @param Expr|mixed $expression
+     */
+    private static function convertExpression($expression, ClassMetadata $classMetadata)
+    {
+        if (! $expression instanceof Expr) {
+            return $expression;
+        }
+
+        $expression->setClassMetadata($classMetadata);
+
+        return $expression->getQuery();
     }
 }
