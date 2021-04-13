@@ -564,21 +564,44 @@ class XmlDriver extends FileDriver
 
                 $value = $nestedExpression;
             } else {
-                $value = trim((string) $field['value']);
-            }
-
-            if ($value === 'true') {
-                $value = true;
-            } elseif ($value === 'false') {
-                $value = false;
-            } elseif (is_numeric($value)) {
-                $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
+                $value = $this->convertFilterExpressionValue(trim((string) $field['value']));
             }
 
             $partialFilterExpression[(string) $field['name']] = $operator ? ['$' . $operator => $value] : $value;
         }
 
         return $partialFilterExpression;
+    }
+
+    /**
+     * Converts XML strings to scalar values.
+     *
+     * Special strings "false", "true", and "null" are converted to their
+     * respective values. Numeric strings are cast to int or float depending on
+     * whether they contain decimal separators or not.
+     *
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    private function convertFilterExpressionValue($value)
+    {
+        switch ($value) {
+            case 'true':
+                return true;
+
+            case 'false':
+                return false;
+
+            case 'null':
+                return null;
+        }
+
+        if (! is_numeric($value)) {
+            return $value;
+        }
+
+        return preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
     }
 
     private function setShardKey(ClassMetadata $class, SimpleXMLElement $xmlShardkey): void

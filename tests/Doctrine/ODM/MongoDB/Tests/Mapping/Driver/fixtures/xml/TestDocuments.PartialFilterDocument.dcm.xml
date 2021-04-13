@@ -13,6 +13,7 @@
                 <partial-filter-expression>
                     <field name="version" value="1" operator="gt" />
                     <field name="discr" operator="eq" value="default" />
+                    <field name="parent" operator="eq" value="null" />
                 </partial-filter-expression>
             </index>
             <index>
