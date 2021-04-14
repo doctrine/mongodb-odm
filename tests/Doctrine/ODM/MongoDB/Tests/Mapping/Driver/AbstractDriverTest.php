@@ -307,6 +307,7 @@ abstract class AbstractDriverTest extends TestCase
                     'partialFilterExpression' => [
                         'version' => ['$gt' => 1],
                         'discr' => ['$eq' => 'default'],
+                        'parent' => ['$eq' => null],
                     ],
                 ],
             ],
