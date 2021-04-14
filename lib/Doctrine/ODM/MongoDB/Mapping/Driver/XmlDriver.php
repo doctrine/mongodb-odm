@@ -505,16 +505,7 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlIndex->{'option'})) {
             foreach ($xmlIndex->{'option'} as $option) {
-                $value = (string) $option['value'];
-                if ($value === 'true') {
-                    $value = true;
-                } elseif ($value === 'false') {
-                    $value = false;
-                } elseif (is_numeric($value)) {
-                    $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
-                }
-
-                $options[(string) $option['name']] = $value;
+                $options[(string) $option['name']] = $this->convertXMLElementValue((string) $option['value']);
             }
         }
 
@@ -624,16 +615,7 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlShardkey->{'option'})) {
             foreach ($xmlShardkey->{'option'} as $option) {
-                $value = (string) $option['value'];
-                if ($value === 'true') {
-                    $value = true;
-                } elseif ($value === 'false') {
-                    $value = false;
-                } elseif (is_numeric($value)) {
-                    $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
-                }
-
-                $options[(string) $option['name']] = $value;
+                $options[(string) $option['name']] = $this->convertXMLElementValue((string) $option['value']);
             }
         }
 
