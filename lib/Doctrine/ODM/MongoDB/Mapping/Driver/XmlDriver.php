@@ -564,7 +564,7 @@ class XmlDriver extends FileDriver
 
                 $value = $nestedExpression;
             } else {
-                $value = $this->convertFilterExpressionValue(trim((string) $field['value']));
+                $value = $this->convertXMLElementValue((string) $field['value']);
             }
 
             $partialFilterExpression[(string) $field['name']] = $operator ? ['$' . $operator => $value] : $value;
@@ -580,12 +580,12 @@ class XmlDriver extends FileDriver
      * respective values. Numeric strings are cast to int or float depending on
      * whether they contain decimal separators or not.
      *
-     * @param mixed $value
-     *
-     * @return mixed
+     * @return scalar|null
      */
-    private function convertFilterExpressionValue($value)
+    private function convertXMLElementValue(string $value)
     {
+        $value = trim($value);
+
         switch ($value) {
             case 'true':
                 return true;
