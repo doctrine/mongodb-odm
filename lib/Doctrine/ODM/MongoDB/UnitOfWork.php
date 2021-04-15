@@ -1830,6 +1830,11 @@ final class UnitOfWork implements PropertyChangedListener
                 $name = $nativeReflection->name;
                 $prop = $this->reflectionService->getAccessibleProperty($class->name, $name);
                 assert($prop instanceof ReflectionProperty);
+
+                if (method_exists($prop, 'isInitialized') && ! $prop->isInitialized($document)) {
+                    continue;
+                }
+
                 if (! isset($class->associationMappings[$name])) {
                     if (! $class->isIdentifier($name)) {
                         $prop->setValue($managedCopy, $prop->getValue($document));
