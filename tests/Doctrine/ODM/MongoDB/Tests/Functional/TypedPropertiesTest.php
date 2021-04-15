@@ -26,52 +26,96 @@ class TypedPropertiesTest extends BaseTest
 
     public function testPersistNew(): void
     {
-        $doc = new TypedDocument();
-        $doc->setName('Maciej');
-        $doc->setEmbedOne(new TypedEmbeddedDocument('The answer', 42));
+        $ref       = new TypedDocument();
+        $ref->name = 'alcaeus';
+        $this->dm->persist($ref);
+
+        $doc               = new TypedDocument();
+        $doc->name         = 'Maciej';
+        $doc->embedOne     = new TypedEmbeddedDocument('The answer', 42);
+        $doc->referenceOne = $ref;
         $doc->getEmbedMany()->add(new TypedEmbeddedDocument('Lucky number', 7));
         $this->dm->persist($doc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $saved = $this->dm->find(TypedDocument::class, $doc->getId());
+        $ref   = $this->dm->find(TypedDocument::class, $ref->id);
+        $saved = $this->dm->find(TypedDocument::class, $doc->id);
         assert($saved instanceof TypedDocument);
-        $this->assertEquals($doc->getId(), $saved->getId());
-        $this->assertSame($doc->getName(), $saved->getName());
-        $this->assertEquals($doc->getEmbedOne(), $saved->getEmbedOne());
+        $this->assertEquals($doc->id, $saved->id);
+        $this->assertSame($doc->name, $saved->name);
+        $this->assertEquals($doc->embedOne, $saved->embedOne);
+        $this->assertSame($ref, $saved->referenceOne);
         $this->assertEquals($doc->getEmbedMany()->getValues(), $saved->getEmbedMany()->getValues());
     }
 
     public function testMerge(): void
     {
-        $doc = new TypedDocument();
-        $doc->setId((string) new ObjectId());
-        $doc->setName('Maciej');
-        $doc->setEmbedOne(new TypedEmbeddedDocument('The answer', 42));
+        $ref       = new TypedDocument();
+        $ref->name = 'alcaeus';
+        $this->dm->persist($ref);
+
+        $doc               = new TypedDocument();
+        $doc->id           = (string) new ObjectId();
+        $doc->name         = 'Maciej';
+        $doc->embedOne     = new TypedEmbeddedDocument('The answer', 42);
+        $doc->referenceOne = $ref;
         $doc->getEmbedMany()->add(new TypedEmbeddedDocument('Lucky number', 7));
 
         $merged = $this->dm->merge($doc);
-        $this->assertEquals($doc->getId(), $merged->getId());
-        $this->assertSame($doc->getName(), $merged->getName());
-        $this->assertEquals($doc->getEmbedOne(), $merged->getEmbedOne());
+        assert($merged instanceof TypedDocument);
+        $this->assertEquals($doc->id, $merged->id);
+        $this->assertSame($doc->name, $merged->name);
+        $this->assertEquals($doc->embedOne, $merged->embedOne);
+        $this->assertEquals($doc->referenceOne, $merged->referenceOne);
+        $this->assertEquals($doc->getEmbedMany()->getValues(), $merged->getEmbedMany()->getValues());
+    }
+
+    public function testMergeWithUninitializedAssociations(): void
+    {
+        $doc       = new TypedDocument();
+        $doc->id   = (string) new ObjectId();
+        $doc->name = 'Maciej';
+        $doc->getEmbedMany()->add(new TypedEmbeddedDocument('Lucky number', 7));
+
+        $merged = $this->dm->merge($doc);
+        assert($merged instanceof TypedDocument);
+        $this->assertEquals($doc->id, $merged->id);
+        $this->assertSame($doc->name, $merged->name);
         $this->assertEquals($doc->getEmbedMany()->getValues(), $merged->getEmbedMany()->getValues());
     }
 
     public function testProxying(): void
     {
-        $doc = new TypedDocument();
-        $doc->setName('Maciej');
-        $doc->setEmbedOne(new TypedEmbeddedDocument('The answer', 42));
+        $doc           = new TypedDocument();
+        $doc->name     = 'Maciej';
+        $doc->embedOne = new TypedEmbeddedDocument('The answer', 42);
         $doc->getEmbedMany()->add(new TypedEmbeddedDocument('Lucky number', 7));
         $this->dm->persist($doc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $proxy = $this->dm->getReference(TypedDocument::class, $doc->getId());
+        $proxy = $this->dm->getReference(TypedDocument::class, $doc->id);
         assert($proxy instanceof TypedDocument);
-        $this->assertEquals($doc->getId(), $proxy->getId());
-        $this->assertSame($doc->getName(), $proxy->getName());
-        $this->assertEquals($doc->getEmbedOne(), $proxy->getEmbedOne());
+        $this->assertEquals($doc->id, $proxy->id);
+        $this->assertSame($doc->name, $proxy->name);
+        $this->assertEquals($doc->embedOne, $proxy->embedOne);
         $this->assertEquals($doc->getEmbedMany()->getValues(), $proxy->getEmbedMany()->getValues());
+    }
+
+    public function testNullableProperties(): void
+    {
+        $doc       = new TypedDocument();
+        $doc->name = 'webmozart';
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $saved = $this->dm->find(TypedDocument::class, $doc->id);
+        assert($saved instanceof TypedDocument);
+        $this->assertNull($saved->nullableEmbedOne);
+        $this->assertNull($saved->initializedNullableEmbedOne);
+        $this->assertNull($saved->nullableReferenceOne);
+        $this->assertNull($saved->initializedNullableReferenceOne);
     }
 }

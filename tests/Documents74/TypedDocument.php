@@ -14,13 +14,28 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class TypedDocument
 {
     /** @ODM\Id() */
-    private string $id;
+    public string $id;
 
     /** @ODM\Field(type="string") */
-    private string $name;
+    public string $name;
 
     /** @ODM\EmbedOne(targetDocument=TypedEmbeddedDocument::class) */
-    private TypedEmbeddedDocument $embedOne;
+    public TypedEmbeddedDocument $embedOne;
+
+    /** @ODM\EmbedOne(targetDocument=TypedEmbeddedDocument::class, nullable=true) */
+    public ?TypedEmbeddedDocument $nullableEmbedOne;
+
+    /** @ODM\EmbedOne(targetDocument=TypedEmbeddedDocument::class, nullable=true) */
+    public ?TypedEmbeddedDocument $initializedNullableEmbedOne = null;
+
+    /** @ODM\ReferenceOne(targetDocument=TypedDocument::class) */
+    public TypedDocument $referenceOne;
+
+    /** @ODM\ReferenceOne(targetDocument=TypedDocument::class, nullable=true) */
+    public ?TypedDocument $nullableReferenceOne;
+
+    /** @ODM\ReferenceOne(targetDocument=TypedDocument::class, nullable=true) */
+    public ?TypedDocument $initializedNullableReferenceOne = null;
 
     /** @ODM\EmbedMany(targetDocument=TypedEmbeddedDocument::class) */
     private Collection $embedMany;
@@ -28,36 +43,6 @@ class TypedDocument
     public function __construct()
     {
         $this->embedMany = new ArrayCollection();
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-
-    public function getEmbedOne(): TypedEmbeddedDocument
-    {
-        return $this->embedOne;
-    }
-
-    public function setEmbedOne(TypedEmbeddedDocument $embedOne): void
-    {
-        $this->embedOne = $embedOne;
     }
 
     public function getEmbedMany(): Collection
