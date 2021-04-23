@@ -182,6 +182,7 @@ class DocumentManager implements ObjectManager
 
         $cacheDriver = $this->config->getMetadataCache();
         if ($cacheDriver) {
+            // Todo: check can be removed when doctrine/persistence 2.2 is required
             if (method_exists($this->metadataFactory, 'setCache')) {
                 $this->metadataFactory->setCache($cacheDriver);
             } else {
