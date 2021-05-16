@@ -1,4 +1,4 @@
 {
-    "bootstrap": "tests/bootstrap.php",
-    "path": "benchmark"
+    "runner.bootstrap": "tests/bootstrap.php",
+    "runner.path": "benchmark"
 }
