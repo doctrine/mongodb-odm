@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Proxy\Resolver;
 
-/** @deprecated */
+/** @deprecated Deprecated in favor of Doctrine\Persistence\Mapping\ProxyClassNameResolver */
 interface ClassNameResolver
 {
     /**

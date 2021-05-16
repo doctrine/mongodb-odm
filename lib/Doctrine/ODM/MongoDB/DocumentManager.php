@@ -286,7 +286,7 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the class name resolver which is used to resolve real class names for proxy objects.
      *
-     * @deprecated
+     * @deprecated Fetch metadata for any class string (e.g. proxy object class) and read the class name from the metadata object
      */
     public function getClassNameResolver(): ClassNameResolver
     {
