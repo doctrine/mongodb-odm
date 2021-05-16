@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -36,7 +35,6 @@ use function get_class;
 use function gettype;
 use function is_object;
 use function ltrim;
-use function method_exists;
 use function sprintf;
 
 /**
@@ -182,12 +180,7 @@ class DocumentManager implements ObjectManager
 
         $cacheDriver = $this->config->getMetadataCache();
         if ($cacheDriver) {
-            // Todo: check can be removed when doctrine/persistence 2.2 is required
-            if (method_exists($this->metadataFactory, 'setCache')) {
-                $this->metadataFactory->setCache($cacheDriver);
-            } else {
-                $this->metadataFactory->setCacheDriver(DoctrineProvider::wrap($cacheDriver));
-            }
+            $this->metadataFactory->setCache($cacheDriver);
         }
 
         $hydratorDir           = $this->config->getHydratorDir();
@@ -206,6 +199,8 @@ class DocumentManager implements ObjectManager
         $this->proxyFactory      = new StaticProxyFactory($this);
         $this->repositoryFactory = $this->config->getRepositoryFactory();
         $this->classNameResolver = new CachingClassNameResolver(new ProxyManagerClassNameResolver($this->config));
+
+        $this->metadataFactory->setProxyClassNameResolver($this->classNameResolver);
     }
 
     /**
@@ -288,7 +283,11 @@ class DocumentManager implements ObjectManager
         return $this->schemaManager;
     }
 
-    /** Returns the class name resolver which is used to resolve real class names for proxy objects. */
+    /**
+     * Returns the class name resolver which is used to resolve real class names for proxy objects.
+     *
+     * @deprecated Fetch metadata for any class string (e.g. proxy object class) and read the class name from the metadata object
+     */
     public function getClassNameResolver(): ClassNameResolver
     {
         return $this->classNameResolver;
@@ -312,14 +311,14 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentDatabase(string $className): Database
     {
-        $className = $this->classNameResolver->getRealClass($className);
+        $metadata = $this->metadataFactory->getMetadataFor($className);
+        assert($metadata instanceof ClassMetadata);
+
+        $className = $metadata->getName();
 
         if (isset($this->documentDatabases[$className])) {
             return $this->documentDatabases[$className];
         }
-
-        $metadata = $this->metadataFactory->getMetadataFor($className);
-        assert($metadata instanceof ClassMetadata);
 
         $db                                  = $metadata->getDatabase();
         $db                                  = $db ?: $this->config->getDefaultDB();
@@ -346,8 +345,6 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentCollection(string $className): Collection
     {
-        $className = $this->classNameResolver->getRealClass($className);
-
         $metadata = $this->metadataFactory->getMetadataFor($className);
         assert($metadata instanceof ClassMetadata);
 
@@ -382,8 +379,6 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentBucket(string $className): Bucket
     {
-        $className = $this->classNameResolver->getRealClass($className);
-
         $metadata = $this->metadataFactory->getMetadataFor($className);
         assert($metadata instanceof ClassMetadata);
 

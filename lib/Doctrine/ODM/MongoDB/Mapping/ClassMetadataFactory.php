@@ -63,11 +63,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->config = $config;
     }
 
-    public function getMetadataFor($className)
-    {
-        return parent::getMetadataFor($this->dm->getClassNameResolver()->getRealClass($className));
-    }
-
     /**
      * Lazy initialization of this stuff, especially the metadata driver,
      * since these are not needed at all when a metadata cache is active.
