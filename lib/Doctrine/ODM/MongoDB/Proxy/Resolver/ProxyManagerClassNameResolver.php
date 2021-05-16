@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Proxy\Resolver;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use ProxyManager\Inflector\ClassNameInflectorInterface;
+use ProxyManager\Proxy\ProxyInterface;
 
 /**
  * @internal
@@ -26,6 +27,11 @@ final class ProxyManagerClassNameResolver implements ClassNameResolver, ProxyCla
         return $this->resolveClassName($class);
     }
 
+    /**
+     * @psalm-template RealClassName of object
+     * @psalm-param class-string<RealClassName>|class-string<ProxyInterface<RealClassName>> $className
+     * @psalm-return class-string<RealClassName>
+     */
     public function resolveClassName(string $className): string
     {
         return $this->getClassNameInflector()->getUserClassName($className);

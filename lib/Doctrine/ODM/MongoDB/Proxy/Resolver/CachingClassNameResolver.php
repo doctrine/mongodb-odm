@@ -33,7 +33,7 @@ final class CachingClassNameResolver implements ClassNameResolver, ProxyClassNam
     public function resolveClassName(string $className): string
     {
         if (! isset($this->resolvedNames[$className])) {
-            $this->resolvedNames[$className] = $this->resolver->getRealClass($className);
+            $this->resolvedNames[$className] = $this->resolver->resolveClassName($className);
         }
 
         return $this->resolvedNames[$className];
