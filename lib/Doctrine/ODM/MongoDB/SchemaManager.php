@@ -301,6 +301,64 @@ final class SchemaManager
     }
 
     /**
+     * Ensure collection validators are up to date for all mapped document classes.
+     */
+    public function updateValidators(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            assert($class instanceof ClassMetadata);
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isFile) {
+                continue;
+            }
+
+            $this->updateDocumentValidator($class->name, $maxTimeMs, $writeConcern);
+        }
+    }
+
+    /**
+     * Ensure collection validators are up to date for the mapped document class.
+     */
+    public function updateDocumentValidator(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isFile) {
+            throw new InvalidArgumentException('Cannot update validators for files, views, mapped super classes, embedded documents or aggregation result documents.');
+        }
+
+        $validator = [];
+        if ($class->getValidator() !== null) {
+            $validator = $class->getValidator();
+        }
+
+        $collection       = $this->dm->getDocumentCollection($class->name);
+        $database         = $this->dm->getDocumentDatabase($class->name);
+        $collections      = $database->listCollections();
+        $collectionExists = false;
+        foreach ($collections as $existingCollection) {
+            if ($collection->getCollectionName() === $existingCollection->getName()) {
+                $collectionExists = true;
+                break;
+            }
+        }
+
+        if (! $collectionExists) {
+            $this->createDocumentCollection($documentName, $maxTimeMs, $writeConcern);
+
+            return;
+        }
+
+        $database->command(
+            [
+                'collMod' => $class->collection,
+                'validator' => $validator,
+                'validationAction' => $class->getValidationAction(),
+                'validationLevel' => $class->getValidationLevel(),
+            ],
+            $this->getWriteOptions($maxTimeMs, $writeConcern)
+        );
+    }
+
+    /**
      * Create all the mapped document collections in the metadata factory.
      */
     public function createCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
@@ -364,6 +422,12 @@ final class SchemaManager
             'size' => $class->getCollectionSize(),
             'max' => $class->getCollectionMax(),
         ];
+
+        if ($class->getValidator() !== null) {
+            $options['validator']        = $class->getValidator();
+            $options['validationAction'] = $class->getValidationAction();
+            $options['validationLevel']  = $class->getValidationLevel();
+        }
 
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),

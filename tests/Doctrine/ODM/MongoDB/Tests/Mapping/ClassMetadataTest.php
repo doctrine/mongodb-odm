@@ -28,6 +28,8 @@ use stdClass;
 
 use function array_merge;
 use function get_class;
+use function MongoDB\BSON\fromJSON;
+use function MongoDB\BSON\toPHP;
 use function serialize;
 use function unserialize;
 
@@ -61,6 +63,10 @@ class ClassMetadataTest extends BaseTest
         $cm->setLockField('lock');
         $cm->setVersioned(true);
         $cm->setVersionField('version');
+        $validatorJson = '{ "$and": [ { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\\\.com$", "options": "" } } } } ] }';
+        $cm->setValidator(toPHP(fromJSON($validatorJson)));
+        $cm->setValidationAction(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN);
+        $cm->setValidationLevel(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF);
         $this->assertIsArray($cm->getFieldMapping('phonenumbers'));
         $this->assertCount(1, $cm->fieldMappings);
         $this->assertCount(1, $cm->associationMappings);
@@ -90,6 +96,9 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals('lock', $cm->lockField);
         $this->assertEquals(true, $cm->isVersioned);
         $this->assertEquals('version', $cm->versionField);
+        $this->assertEquals(toPHP(fromJSON($validatorJson)), $cm->getValidator());
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $cm->getValidationAction());
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF, $cm->getValidationLevel());
     }
 
     public function testOwningSideAndInverseSide()
@@ -804,6 +813,24 @@ class ClassMetadataTest extends BaseTest
         $this->expectExceptionMessageMatches("#^Field 'contentType' in class '.+' is not a valid field for GridFS documents. You should move it to an embedded metadata document.$#");
 
         $cm->mapField(['type' => 'string', 'fieldName' => 'contentType']);
+    }
+
+    public function testDefaultValueForValidator()
+    {
+        $cm = new ClassMetadata('stdClass');
+        $this->assertNull($cm->getValidator());
+    }
+
+    public function testDefaultValueForValidationAction()
+    {
+        $cm = new ClassMetadata('stdClass');
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR, $cm->getValidationAction());
+    }
+
+    public function testDefaultValueForValidationLevel()
+    {
+        $cm = new ClassMetadata('stdClass');
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT, $cm->getValidationLevel());
     }
 }
 

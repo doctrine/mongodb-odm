@@ -102,6 +102,7 @@
       <xs:element name="indexes" type="odm:indexes" minOccurs="0" />
       <xs:element name="shard-key" type="odm:shard-key" minOccurs="0" />
       <xs:element name="read-preference" type="odm:read-preference" minOccurs="0" />
+      <xs:element name="schema-validation" type="odm:schema-validation" minOccurs="0" />
     </xs:choice>
 
     <xs:attribute name="db" type="xs:NMTOKEN" />
@@ -514,4 +515,29 @@
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="value" type="xs:string" use="required" />
   </xs:complexType>
+
+  <xs:complexType name="schema-validation">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="action" type="odm:schema-validation-action" />
+        <xs:attribute name="level" type="odm:schema-validation-level" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="schema-validation-action">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="error" />
+      <xs:enumeration value="warn" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="schema-validation-level">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="off" />
+      <xs:enumeration value="strict" />
+      <xs:enumeration value="moderate" />
+    </xs:restriction>
+  </xs:simpleType>
+
 </xs:schema>
