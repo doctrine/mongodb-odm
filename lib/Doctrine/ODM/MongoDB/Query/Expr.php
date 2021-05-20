@@ -861,11 +861,11 @@ class Expr
      * @see Builder::not()
      * @see https://docs.mongodb.com/manual/reference/operator/not/
      *
-     * @param array|Expr $expression
+     * @param array|Expr|mixed $valueOrExpression
      */
-    public function not($expression): self
+    public function not($valueOrExpression): self
     {
-        return $this->operator('$not', $expression);
+        return $this->operator('$not', $valueOrExpression);
     }
 
     /**
