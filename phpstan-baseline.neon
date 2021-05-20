@@ -13,6 +13,12 @@ parameters:
                  - lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
                  - lib/Doctrine/ODM/MongoDB/DocumentManager.php
 
+        # This cannot be solved the way it is, see https://github.com/vimeo/psalm/issues/5788
+        -
+            message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
+
         # The limit option in GeoNear has been removed in MongoDB 4.2 in favor of $limit stage
         -
             message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"

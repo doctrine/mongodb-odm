@@ -58,6 +58,8 @@ use function trigger_deprecation;
  *    the serialized representation).
  *
  * @final
+ * @template T of object
+ * @template-implements BaseClassMetadata<T>
  */
 /* final */ class ClassMetadata implements BaseClassMetadata
 {
@@ -273,6 +275,7 @@ use function trigger_deprecation;
      * READ-ONLY: The name of the document class.
      *
      * @var string
+     * @psalm-var class-string<T>
      */
     public $name;
 
@@ -282,6 +285,7 @@ use function trigger_deprecation;
      * as {@link $documentName}.
      *
      * @var string
+     * @psalm-var class-string
      */
     public $rootDocumentName;
 
@@ -290,6 +294,7 @@ use function trigger_deprecation;
      * (Optional).
      *
      * @var string|null
+     * @psalm-var class-string|null
      */
     public $customRepositoryClassName;
 
@@ -297,6 +302,7 @@ use function trigger_deprecation;
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var array
+     * @psalm-var list<class-string>
      */
     public $parentClasses = [];
 
@@ -304,6 +310,7 @@ use function trigger_deprecation;
      * READ-ONLY: The names of all subclasses (descendants).
      *
      * @var array
+     * @psalm-var list<class-string>
      */
     public $subClasses = [];
 
@@ -505,6 +512,7 @@ use function trigger_deprecation;
      * The ReflectionClass instance of the mapped class.
      *
      * @var ReflectionClass
+     * @psalm-var ReflectionClass<T>
      */
     public $reflClass;
 
@@ -521,12 +529,17 @@ use function trigger_deprecation;
     /** @var ReflectionService */
     private $reflectionService;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     * @psalm-var class-string|null
+     */
     private $rootClass;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
+     *
+     * @psalm-param class-string<T> $documentName
      */
     public function __construct(string $documentName)
     {
@@ -2165,9 +2178,12 @@ use function trigger_deprecation;
 
     /**
      * Creates a new instance of the mapped class, without invoking the constructor.
+     *
+     * @psalm-return T
      */
     public function newInstance(): object
     {
+        /** @psalm-var T */
         return $this->instantiator->instantiate($this->name);
     }
 
