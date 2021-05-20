@@ -19,6 +19,7 @@ use GeoJson\Geometry\Point;
 use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\Regex;
 use MongoDB\Driver\ReadPreference;
 use ReflectionProperty;
 
@@ -294,6 +295,19 @@ class BuilderTest extends BaseTest
                 '$not' => [
                     '$in' => ['boo'],
                 ],
+            ],
+        ];
+        $this->assertEquals($expected, $qb->getQueryArray());
+    }
+
+    public function testNotAllowsRegex()
+    {
+        $qb = $this->getTestQueryBuilder();
+        $qb->field('username')->not(new Regex('Boo', 'i'));
+
+        $expected = [
+            'username' => [
+                '$not' => new Regex('Boo', 'i'),
             ],
         ];
         $this->assertEquals($expected, $qb->getQueryArray());
