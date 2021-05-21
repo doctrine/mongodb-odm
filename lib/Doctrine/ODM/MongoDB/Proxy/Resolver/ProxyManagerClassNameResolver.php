@@ -28,9 +28,11 @@ final class ProxyManagerClassNameResolver implements ClassNameResolver, ProxyCla
     }
 
     /**
-     * @psalm-template RealClassName of object
      * @psalm-param class-string<RealClassName>|class-string<ProxyInterface<RealClassName>> $className
+     *
      * @psalm-return class-string<RealClassName>
+     *
+     * @psalm-template RealClassName of object
      */
     public function resolveClassName(string $className): string
     {

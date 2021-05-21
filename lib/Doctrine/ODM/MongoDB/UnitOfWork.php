@@ -325,9 +325,11 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Get the document persister instance for the given document name
      *
-     * @template T of object
      * @psalm-param class-string<T> $documentName
+     *
      * @psalm-return Persisters\DocumentPersister<T>
+     *
+     * @template T of object
      */
     public function getDocumentPersister(string $documentName): Persisters\DocumentPersister
     {
@@ -2621,10 +2623,12 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Creates a document. Used for reconstitution of documents during hydration.
      *
-     * @template T of object
      * @psalm-param class-string<T> $className
      * @psalm-param T|null $document
+     *
      * @psalm-return T
+     *
+     * @template T of object
      */
     public function getOrCreateDocument(string $className, array $data, array &$hints = [], ?object $document = null): object
     {
