@@ -12,6 +12,7 @@ use Documents\Phonenumber;
 use Documents\Profile;
 use PHPUnit\Framework\TestCase;
 use TestDocuments\EmbeddedDocument;
+use TestDocuments\NullableFieldsDocument;
 use TestDocuments\PartialFilterDocument;
 use TestDocuments\PrimedCollectionDocument;
 use TestDocuments\QueryResultDocument;
@@ -306,6 +307,7 @@ abstract class AbstractDriverTest extends TestCase
                     'partialFilterExpression' => [
                         'version' => ['$gt' => 1],
                         'discr' => ['$eq' => 'default'],
+                        'parent' => ['$eq' => null],
                     ],
                 ],
             ],
@@ -391,5 +393,120 @@ abstract class AbstractDriverTest extends TestCase
             'orphanRemoval' => false,
             'prime' => ['references'],
         ], $classMetadata->fieldMappings['inverseMappedBy']);
+    }
+
+    public function testNullableFieldsMapping()
+    {
+        $classMetadata = new ClassMetadata(NullableFieldsDocument::class);
+        $this->driver->loadMetadataForClass(NullableFieldsDocument::class, $classMetadata);
+
+        $this->assertEquals([
+            'fieldName' => 'username',
+            'name' => 'username',
+            'type' => 'string',
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => true,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+        ], $classMetadata->fieldMappings['username']);
+
+        $this->assertEquals([
+            'association' => ClassMetadata::EMBED_ONE,
+            'fieldName' => 'address',
+            'name' => 'address',
+            'type' => ClassMetadata::ONE,
+            'embedded' => true,
+            'targetDocument' => Address::class,
+            'collectionClass' => null,
+            'isCascadeDetach' => true,
+            'isCascadeMerge' => true,
+            'isCascadePersist' => true,
+            'isCascadeRefresh' => true,
+            'isCascadeRemove' => true,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => true,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+        ], $classMetadata->fieldMappings['address']);
+
+        $this->assertEquals([
+            'association' => ClassMetadata::EMBED_MANY,
+            'fieldName' => 'phonenumbers',
+            'name' => 'phonenumbers',
+            'type' => ClassMetadata::MANY,
+            'embedded' => true,
+            'targetDocument' => Phonenumber::class,
+            'collectionClass' => null,
+            'isCascadeDetach' => true,
+            'isCascadeMerge' => true,
+            'isCascadePersist' => true,
+            'isCascadeRefresh' => true,
+            'isCascadeRemove' => true,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => true,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
+        ], $classMetadata->fieldMappings['phonenumbers']);
+
+        $this->assertEquals([
+            'association' => ClassMetadata::REFERENCE_ONE,
+            'fieldName' => 'profile',
+            'name' => 'profile',
+            'type' => ClassMetadata::ONE,
+            'reference' => true,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF,
+            'targetDocument' => Profile::class,
+            'collectionClass' => null,
+            'cascade' => [],
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => true,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+            'inversedBy' => null,
+            'mappedBy' => null,
+            'repositoryMethod' => null,
+            'limit' => null,
+            'skip' => null,
+            'orphanRemoval' => false,
+            'prime' => [],
+        ], $classMetadata->fieldMappings['profile']);
+
+        $this->assertEquals([
+            'association' => ClassMetadata::REFERENCE_MANY,
+            'fieldName' => 'groups',
+            'name' => 'groups',
+            'type' => ClassMetadata::MANY,
+            'reference' => true,
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF,
+            'targetDocument' => Group::class,
+            'collectionClass' => null,
+            'cascade' => [],
+            'isCascadeDetach' => false,
+            'isCascadeMerge' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeRemove' => false,
+            'isInverseSide' => false,
+            'isOwningSide' => true,
+            'nullable' => true,
+            'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
+            'inversedBy' => null,
+            'mappedBy' => null,
+            'repositoryMethod' => null,
+            'limit' => null,
+            'skip' => null,
+            'orphanRemoval' => false,
+            'prime' => [],
+        ], $classMetadata->fieldMappings['groups']);
     }
 }

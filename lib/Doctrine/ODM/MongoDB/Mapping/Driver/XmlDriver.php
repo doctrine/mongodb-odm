@@ -243,7 +243,7 @@ class XmlDriver extends FileDriver
                 $attributes = $field->attributes();
                 foreach ($attributes as $key => $value) {
                     $mapping[$key]     = (string) $value;
-                    $booleanAttributes = ['reference', 'embed', 'unique', 'sparse'];
+                    $booleanAttributes = ['reference', 'embed', 'unique', 'sparse', 'nullable'];
                     if (! in_array($key, $booleanAttributes)) {
                         continue;
                     }
@@ -362,6 +362,7 @@ class XmlDriver extends FileDriver
             'collectionClass' => isset($attributes['collection-class']) ? (string) $attributes['collection-class'] : null,
             'name'            => (string) $attributes['field'],
             'strategy'        => (string) ($attributes['strategy'] ?? $defaultStrategy),
+            'nullable'        => isset($attributes['nullable']) ? ((string) $attributes['nullable'] === 'true') : false,
         ];
         if (isset($attributes['field-name'])) {
             $mapping['fieldName'] = (string) $attributes['field-name'];
@@ -419,6 +420,7 @@ class XmlDriver extends FileDriver
             'limit'            => isset($attributes['limit']) ? (int) $attributes['limit'] : null,
             'skip'             => isset($attributes['skip']) ? (int) $attributes['skip'] : null,
             'prime'            => [],
+            'nullable'         => isset($attributes['nullable']) ? ((string) $attributes['nullable'] === 'true') : false,
         ];
 
         if (isset($attributes['field-name'])) {
@@ -503,16 +505,7 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlIndex->{'option'})) {
             foreach ($xmlIndex->{'option'} as $option) {
-                $value = (string) $option['value'];
-                if ($value === 'true') {
-                    $value = true;
-                } elseif ($value === 'false') {
-                    $value = false;
-                } elseif (is_numeric($value)) {
-                    $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
-                }
-
-                $options[(string) $option['name']] = $value;
+                $options[(string) $option['name']] = $this->convertXMLElementValue((string) $option['value']);
             }
         }
 
@@ -562,21 +555,44 @@ class XmlDriver extends FileDriver
 
                 $value = $nestedExpression;
             } else {
-                $value = trim((string) $field['value']);
-            }
-
-            if ($value === 'true') {
-                $value = true;
-            } elseif ($value === 'false') {
-                $value = false;
-            } elseif (is_numeric($value)) {
-                $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
+                $value = $this->convertXMLElementValue((string) $field['value']);
             }
 
             $partialFilterExpression[(string) $field['name']] = $operator ? ['$' . $operator => $value] : $value;
         }
 
         return $partialFilterExpression;
+    }
+
+    /**
+     * Converts XML strings to scalar values.
+     *
+     * Special strings "false", "true", and "null" are converted to their
+     * respective values. Numeric strings are cast to int or float depending on
+     * whether they contain decimal separators or not.
+     *
+     * @return scalar|null
+     */
+    private function convertXMLElementValue(string $value)
+    {
+        $value = trim($value);
+
+        switch ($value) {
+            case 'true':
+                return true;
+
+            case 'false':
+                return false;
+
+            case 'null':
+                return null;
+        }
+
+        if (! is_numeric($value)) {
+            return $value;
+        }
+
+        return preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
     }
 
     private function setShardKey(ClassMetadata $class, SimpleXMLElement $xmlShardkey): void
@@ -599,16 +615,7 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlShardkey->{'option'})) {
             foreach ($xmlShardkey->{'option'} as $option) {
-                $value = (string) $option['value'];
-                if ($value === 'true') {
-                    $value = true;
-                } elseif ($value === 'false') {
-                    $value = false;
-                } elseif (is_numeric($value)) {
-                    $value = preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
-                }
-
-                $options[(string) $option['name']] = $value;
+                $options[(string) $option['name']] = $this->convertXMLElementValue((string) $option['value']);
             }
         }
 

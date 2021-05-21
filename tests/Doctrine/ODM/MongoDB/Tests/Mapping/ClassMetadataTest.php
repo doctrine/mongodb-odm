@@ -57,6 +57,10 @@ class ClassMetadataTest extends BaseTest
         $cm->setCollectionCapped(true);
         $cm->setCollectionMax(1000);
         $cm->setCollectionSize(500);
+        $cm->setLockable(true);
+        $cm->setLockField('lock');
+        $cm->setVersioned(true);
+        $cm->setVersionField('version');
         $this->assertIsArray($cm->getFieldMapping('phonenumbers'));
         $this->assertCount(1, $cm->fieldMappings);
         $this->assertCount(1, $cm->associationMappings);
@@ -82,6 +86,10 @@ class ClassMetadataTest extends BaseTest
         $this->assertTrue($cm->getCollectionCapped());
         $this->assertEquals(1000, $cm->getCollectionMax());
         $this->assertEquals(500, $cm->getCollectionSize());
+        $this->assertEquals(true, $cm->isLockable);
+        $this->assertEquals('lock', $cm->lockField);
+        $this->assertEquals(true, $cm->isVersioned);
+        $this->assertEquals('version', $cm->versionField);
     }
 
     public function testOwningSideAndInverseSide()

@@ -42,7 +42,9 @@ EOT
 
         $errors = 0;
         foreach ($metadataFactory->getAllMetadata() as $meta) {
-            if ($meta === unserialize(serialize($meta))) {
+            // Don't use === to compare as that will always evaluate to false since we receive a different object
+            // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
+            if ($meta == unserialize(serialize($meta))) {
                 continue;
             }
 

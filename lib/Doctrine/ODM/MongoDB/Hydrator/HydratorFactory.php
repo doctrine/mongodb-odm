@@ -250,18 +250,20 @@ EOF
                     <<<EOF
 
         /** @ReferenceOne */
-        if (isset(\$data['%1\$s'])) {
-            \$reference = \$data['%1\$s'];
+        if (isset(\$data['%1\$s']) || (! empty(\$this->class->fieldMappings['%2\$s']['nullable']) && array_key_exists('%1\$s', \$data))) {
+            \$return = \$data['%1\$s'];
+            if (\$return !== null) {
+                if (\$this->class->fieldMappings['%2\$s']['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID && ! is_array(\$return)) {
+                    throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$return));
+                }
 
-            if (\$this->class->fieldMappings['%2\$s']['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID && ! is_array(\$reference)) {
-                throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$reference));
+                \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$return);
+                \$identifier = ClassMetadata::getReferenceId(\$return, \$this->class->fieldMappings['%2\$s']['storeAs']);
+                \$targetMetadata = \$this->dm->getClassMetadata(\$className);
+                \$id = \$targetMetadata->getPHPIdentifierValue(\$identifier);
+                \$return = \$this->dm->getReference(\$className, \$id);
             }
 
-            \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$reference);
-            \$identifier = ClassMetadata::getReferenceId(\$reference, \$this->class->fieldMappings['%2\$s']['storeAs']);
-            \$targetMetadata = \$this->dm->getClassMetadata(\$className);
-            \$id = \$targetMetadata->getPHPIdentifierValue(\$identifier);
-            \$return = \$this->dm->getReference(\$className, \$id);
             \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
             \$hydratedData['%2\$s'] = \$return;
         }
@@ -344,24 +346,27 @@ EOF
                     <<<EOF
 
         /** @EmbedOne */
-        if (isset(\$data['%1\$s'])) {
-            \$embeddedDocument = \$data['%1\$s'];
+        if (isset(\$data['%1\$s']) || (! empty(\$this->class->fieldMappings['%2\$s']['nullable']) && array_key_exists('%1\$s', \$data))) {
+            \$return = \$data['%1\$s'];
+            if (\$return !== null) {
+                \$embeddedDocument = \$return;
 
-            if (! is_array(\$embeddedDocument)) {
-                throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$embeddedDocument));
-            }
+                if (! is_array(\$embeddedDocument)) {
+                    throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$embeddedDocument));
+                }
         
-            \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$embeddedDocument);
-            \$embeddedMetadata = \$this->dm->getClassMetadata(\$className);
-            \$return = \$embeddedMetadata->newInstance();
+                \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$embeddedDocument);
+                \$embeddedMetadata = \$this->dm->getClassMetadata(\$className);
+                \$return = \$embeddedMetadata->newInstance();
 
-            \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
+                \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
 
-            \$embeddedData = \$this->dm->getHydratorFactory()->hydrate(\$return, \$embeddedDocument, \$hints);
-            \$embeddedId = \$embeddedMetadata->identifier && isset(\$embeddedData[\$embeddedMetadata->identifier]) ? \$embeddedData[\$embeddedMetadata->identifier] : null;
+                \$embeddedData = \$this->dm->getHydratorFactory()->hydrate(\$return, \$embeddedDocument, \$hints);
+                \$embeddedId = \$embeddedMetadata->identifier && isset(\$embeddedData[\$embeddedMetadata->identifier]) ? \$embeddedData[\$embeddedMetadata->identifier] : null;
 
-            if (empty(\$hints[Query::HINT_READ_ONLY])) {
-                \$this->unitOfWork->registerManaged(\$return, \$embeddedId, \$embeddedData);
+                if (empty(\$hints[Query::HINT_READ_ONLY])) {
+                    \$this->unitOfWork->registerManaged(\$return, \$embeddedId, \$embeddedData);
+                }
             }
 
             \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);

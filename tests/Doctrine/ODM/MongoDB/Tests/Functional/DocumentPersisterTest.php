@@ -19,6 +19,7 @@ use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
+use MongoDB\Driver\WriteConcern;
 use ReflectionProperty;
 
 use function get_class;
@@ -197,7 +198,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$elemMatch' => $hashId]];
-        $expected = ['_id' => ['$elemMatch' => (object) $hashId]];
+        $expected = ['_id' => ['$elemMatch' => $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
@@ -207,7 +208,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$not' => ['$elemMatch' => $hashId]]];
-        $expected = ['_id' => ['$not' => ['$elemMatch' => (object) $hashId]]];
+        $expected = ['_id' => ['$not' => ['$elemMatch' => $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
@@ -395,7 +396,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$elemMatch' => $hashId]];
-        $expected = ['simpleRef' => ['$elemMatch' => (object) $hashId]];
+        $expected = ['simpleRef' => ['$elemMatch' => $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
@@ -405,7 +406,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$not' => ['$elemMatch' => $hashId]]];
-        $expected = ['simpleRef' => ['$not' => ['$elemMatch' => (object) $hashId]]];
+        $expected = ['simpleRef' => ['$not' => ['$elemMatch' => $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
@@ -472,7 +473,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$elemMatch' => $hashId]];
-        $expected = ['complexRef.$id' => ['$elemMatch' => (object) $hashId]];
+        $expected = ['complexRef.$id' => ['$elemMatch' => $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
@@ -482,7 +483,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
-        $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => (object) $hashId]]];
+        $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
@@ -586,7 +587,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$elemMatch' => $hashId]];
-        $expected = ['embeddedRef.id' => ['$elemMatch' => (object) $hashId]];
+        $expected = ['embeddedRef.id' => ['$elemMatch' => $hashId]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
@@ -596,7 +597,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
-        $expected = ['embeddedRef.id' => ['$not' => ['$elemMatch' => (object) $hashId]]];
+        $expected = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
 
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
@@ -644,7 +645,7 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->containsEqual($writeConcern)));
+            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -668,7 +669,7 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('updateOne')
-            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->containsEqual($writeConcern)));
+            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -693,7 +694,7 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('deleteOne')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('w'), $this->containsEqual($writeConcern)));
+            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -715,7 +716,28 @@ class DocumentPersisterTest extends BaseTest
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->equalTo(['w' => 0]));
+            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
+
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $this->dm->getConfiguration()->setDefaultCommitOptions(['writeConcern' => new WriteConcern(0)]);
+
+        $testDocument = new $class();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+    }
+
+    public function testDefaultWriteConcernIsRespectedBackwardCompatibility()
+    {
+        $class             = DocumentPersisterTestDocument::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->createMock(Collection::class);
+        $collection->expects($this->once())
+            ->method('insertMany')
+            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
