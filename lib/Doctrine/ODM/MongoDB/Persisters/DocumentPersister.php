@@ -83,7 +83,10 @@ final class DocumentPersister
     /** @var UnitOfWork */
     private $uow;
 
-    /** @var ClassMetadata */
+    /**
+     * @var ClassMetadata
+     * @psalm-var ClassMetadata<T>
+     */
     private $class;
 
     /** @var Collection|null */
@@ -624,9 +627,9 @@ final class DocumentPersister
     /**
      * Creates or fills a single document object from an query result.
      *
-     * @param array  $result   The query result.
-     * @param object $document The document object to fill, if any.
-     * @param array  $hints    Hints for document creation.
+     * @param array       $result   The query result.
+     * @param object|null $document The document object to fill, if any.
+     * @param array       $hints    Hints for document creation.
      *
      * @return object The filled and managed document object.
      *
