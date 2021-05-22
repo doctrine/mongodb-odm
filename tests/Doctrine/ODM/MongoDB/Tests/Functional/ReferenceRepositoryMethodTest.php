@@ -10,6 +10,7 @@ use Documents\BlogPost;
 use Documents\Comment;
 use Documents\User;
 
+use function assert;
 use function strtotime;
 
 class ReferenceRepositoryMethodTest extends BaseTest
@@ -32,6 +33,8 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
+
+        assert($blogPost instanceof BlogPost);
 
         $this->assertEquals('Comment 2', $blogPost->repoComment->getText());
         $this->assertEquals('Comment 1', $blogPost->repoComments[0]->getText());
@@ -87,6 +90,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
                   ->getQuery()
                   ->getSingleResult();
+        assert($blogPost instanceof BlogPost);
         $this->assertEquals('Comment', $blogPost->repoCommentsSet[0]->getText());
     }
 
@@ -102,6 +106,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
+        assert($blogPost instanceof BlogPost);
         $this->assertCount(1, $blogPost->repoCommentsWithoutMappedBy);
         $this->assertEquals('Comment', $blogPost->repoCommentsWithoutMappedBy[0]->getText());
     }

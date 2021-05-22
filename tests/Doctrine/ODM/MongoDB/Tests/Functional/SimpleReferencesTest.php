@@ -11,6 +11,7 @@ use MongoDB\BSON\ObjectId;
 use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
 
+use function assert;
 use function current;
 use function end;
 
@@ -78,14 +79,17 @@ class SimpleReferencesTest extends BaseTest
         $this->dm->clear();
 
         $test = $qb->getQuery()->getSingleResult();
+        assert($test instanceof SimpleReferenceUser);
 
         $this->assertNotNull($test);
-        $this->assertNotNull($test->getUser());
-        $this->assertInstanceOf(User::class, $test->getUser());
-        $this->assertInstanceOf(GhostObjectInterface::class, $test->getUser());
-        $this->assertFalse($test->getUser()->isProxyInitialized());
-        $this->assertEquals('jwage', $test->getUser()->getUsername());
-        $this->assertTrue($test->getUser()->isProxyInitialized());
+        $user = $test->getUser();
+        assert($user instanceof User && $user instanceof GhostObjectInterface);
+        $this->assertNotNull($user);
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(GhostObjectInterface::class, $user);
+        $this->assertFalse($user->isProxyInitialized());
+        $this->assertEquals('jwage', $user->getUsername());
+        $this->assertTrue($user->isProxyInitialized());
     }
 
     public function testPersistentCollectionOwningSide()
