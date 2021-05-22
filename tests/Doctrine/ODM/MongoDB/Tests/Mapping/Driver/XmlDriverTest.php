@@ -144,6 +144,11 @@ class UserCustomIdGenerator
     protected $id;
 }
 
+class CustomIdGenerator
+{
+    protected $id;
+}
+
 class UserNonStringOptions
 {
     protected $id;
