@@ -518,7 +518,6 @@ class UnitOfWorkTest extends BaseTest
         $this->expectExceptionMessage('This should not happen');
 
         $this->dm->flush();
-        $this->assertAttributeSame(0, 'commitsInProgress', $this->dm->getUnitOfWork());
     }
 }
 
