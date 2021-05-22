@@ -20,10 +20,7 @@ class VirtualHost
         return $this->id;
     }
 
-    /**
-     * @return Documents\Functional\VirtualHostDirective
-     */
-    public function getVHostDirective()
+    public function getVHostDirective(): VirtualHostDirective
     {
         if (! $this->vhostDirective) {
             $this->vhostDirective = new VirtualHostDirective('VirtualHost', '*:80');

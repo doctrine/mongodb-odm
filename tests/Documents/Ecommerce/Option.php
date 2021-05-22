@@ -25,22 +25,18 @@ class Option
     /**
      * @ODM\EmbedOne(targetDocument=Documents\Ecommerce\Money::class)
      *
-     * @var float
+     * @var Money
      */
     protected $money;
 
     /**
      * @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\StockItem::class, cascade="all")
      *
-     * @var Documents\StockItem
+     * @var StockItem
      */
     protected $stockItem;
 
-    /**
-     * @param string $name
-     * @param float  $price
-     */
-    public function __construct($name, Money $money, StockItem $stockItem)
+    public function __construct(string $name, Money $money, StockItem $stockItem)
     {
         $this->name = (string) $name;
         if (empty($this->name)) {
@@ -64,7 +60,7 @@ class Option
     }
 
     /**
-     * @return float
+     * @return float|Money
      */
     public function getPrice($object = false)
     {

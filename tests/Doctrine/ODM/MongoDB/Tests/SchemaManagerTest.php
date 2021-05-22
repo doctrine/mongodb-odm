@@ -61,13 +61,13 @@ class SchemaManagerTest extends BaseTest
         UserName::class,
     ];
 
-    /** @var Collection[]|MockObject[] */
+    /** @var array<Collection&MockObject> */
     private $documentCollections = [];
 
-    /** @var Bucket[]|MockObject[] */
+    /** @var array<Bucket&MockObject> */
     private $documentBuckets = [];
 
-    /** @var Database[]|MockObject[] */
+    /** @var array<Database&MockObject> */
     private $documentDatabases = [];
 
     /** @var SchemaManager */
@@ -1094,7 +1094,7 @@ EOT;
         return $cm->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB() ?: 'doctrine';
     }
 
-    /** @return Bucket|MockObject */
+    /** @return Bucket&MockObject */
     private function getMockBucket()
     {
         $mock = $this->createMock(Bucket::class);
@@ -1104,7 +1104,7 @@ EOT;
         return $mock;
     }
 
-    /** @return Collection|MockObject */
+    /** @return Collection&MockObject */
     private function getMockCollection(?string $name = null)
     {
         $collection = $this->createMock(Collection::class);
@@ -1115,7 +1115,7 @@ EOT;
         return $collection;
     }
 
-    /** @return Database|MockObject */
+    /** @return Database&MockObject */
     private function getMockDatabase()
     {
         $db = $this->createMock(Database::class);
