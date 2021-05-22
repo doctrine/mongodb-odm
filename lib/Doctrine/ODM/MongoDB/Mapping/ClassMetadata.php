@@ -58,7 +58,7 @@ use function trigger_deprecation;
  *    the serialized representation).
  *
  * @final
- * @template T of object
+ * @template-covariant T of object
  * @template-implements BaseClassMetadata<T>
  */
 /* final */ class ClassMetadata implements BaseClassMetadata
