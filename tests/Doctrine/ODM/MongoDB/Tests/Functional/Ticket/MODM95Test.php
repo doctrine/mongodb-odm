@@ -69,7 +69,7 @@ class MODM95TestDocument
      * by mapping array indexes (size URL's are required, cropMetadata is not).
      * Any invalid elements will be ignored.
      *
-     * @param array|Traversable $children
+     * @param array|Traversable $embeddedDocuments
      */
     public function setEmbeddedDocuments($embeddedDocuments)
     {
