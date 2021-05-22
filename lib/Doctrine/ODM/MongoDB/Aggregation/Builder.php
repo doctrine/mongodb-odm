@@ -465,7 +465,7 @@ class Builder
      * including the _id field. You can promote an existing embedded document to
      * the top level, or create a new document for promotion.
      *
-     * @param string|array|null $expression Optional. A replacement expression that
+     * @param string|array|Expr|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
     public function replaceRoot($expression = null): Stage\ReplaceRoot
