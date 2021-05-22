@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <psalm
     errorLevel="7"
+    findUnusedPsalmSuppress="true"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -8,10 +9,25 @@
 >
     <projectFiles>
         <directory name="lib/Doctrine/ODM/MongoDB" />
+        <directory name="tests/Doctrine" />
+        <directory name="tests/Documents" />
+        <directory name="tests/Documents74" />
         <ignoreFiles>
             <file name="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php" />
             <file name="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php" />
+            <file name="tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures/User.php" />
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <UndefinedConstant>
+            <!-- DOCTRINE_MONGODB_DATABASE constant defined in phpunit.xml.dist -->
+            <errorLevel type="suppress">
+                <file name="tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php"/>
+                <file name="tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php"/>
+                <file name="tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php"/>
+                <file name="tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php"/>
+            </errorLevel>
+        </UndefinedConstant>
+    </issueHandlers>
 </psalm>
