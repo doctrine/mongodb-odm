@@ -16,7 +16,9 @@ use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ProxyManagerClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
+use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
@@ -563,8 +565,8 @@ class DocumentManager implements ObjectManager
      * @param string $documentName The name of the Document.
      * @psalm-param class-string<T> $documentName
      *
-     * @return ObjectRepository  The repository.
-     * @psalm-return ObjectRepository<T>
+     * @return ObjectRepository|DocumentRepository|GridFSRepository|ViewRepository  The repository.
+     * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      *
      * @template T of object
      */

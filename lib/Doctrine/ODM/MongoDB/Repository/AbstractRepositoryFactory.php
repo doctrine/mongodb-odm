@@ -26,6 +26,13 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      */
     private $repositoryList = [];
 
+    /**
+     * @psalm-param class-string<T> $documentName
+     *
+     * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
+     *
+     * @template T of object
+     */
     public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
@@ -45,7 +52,12 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for a document class.
      *
-     * @return ObjectRepository|GridFSRepository|ViewRepository
+     * @psalm-param class-string<T> $documentName
+     *
+     * @return ObjectRepository|DocumentRepository|GridFSRepository|ViewRepository
+     * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
+     *
+     * @template T of object
      */
     protected function createRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
