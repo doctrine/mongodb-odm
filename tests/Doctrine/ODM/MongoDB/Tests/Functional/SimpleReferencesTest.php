@@ -17,7 +17,10 @@ use function end;
 
 class SimpleReferencesTest extends BaseTest
 {
+    /** @var User */
     private $user;
+
+    /** @var SimpleReferenceUser */
     private $test;
 
     public function setUp(): void

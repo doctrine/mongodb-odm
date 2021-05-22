@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Group;
 use Documents\Profile;
@@ -14,6 +15,12 @@ use function sort;
 
 class FilterTest extends BaseTest
 {
+    /** @var array<string, string> */
+    private $ids;
+
+    /** @var FilterCollection */
+    private $fc;
+
     public function setUp(): void
     {
         parent::setUp();
