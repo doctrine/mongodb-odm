@@ -473,9 +473,9 @@ trait PersistentCollectionTrait
     /**
      * {@inheritdoc}
      */
-    public function add($value)
+    public function add($element)
     {
-        return $this->doAdd($value, false);
+        return $this->doAdd($element, false);
     }
 
     /**

@@ -443,18 +443,18 @@ class DocumentManager implements ObjectManager
      * NOTE: The persist operation always considers documents that are not yet known to
      * this DocumentManager as NEW. Do not pass detached documents to the persist operation.
      *
-     * @param object $document The instance to make managed and persistent.
+     * @param object $object The instance to make managed and persistent.
      *
-     * @throws InvalidArgumentException When the given $document param is not an object.
+     * @throws InvalidArgumentException When the given $object param is not an object.
      */
-    public function persist($document)
+    public function persist($object)
     {
-        if (! is_object($document)) {
-            throw new InvalidArgumentException(gettype($document));
+        if (! is_object($object)) {
+            throw new InvalidArgumentException(gettype($object));
         }
 
         $this->errorIfClosed();
-        $this->unitOfWork->persist($document);
+        $this->unitOfWork->persist($object);
     }
 
     /**
@@ -463,36 +463,36 @@ class DocumentManager implements ObjectManager
      * A removed document will be removed from the database at or before transaction commit
      * or as a result of the flush operation.
      *
-     * @param object $document The document instance to remove.
+     * @param object $object The document instance to remove.
      *
-     * @throws InvalidArgumentException When the $document param is not an object.
+     * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function remove($document)
+    public function remove($object)
     {
-        if (! is_object($document)) {
-            throw new InvalidArgumentException(gettype($document));
+        if (! is_object($object)) {
+            throw new InvalidArgumentException(gettype($object));
         }
 
         $this->errorIfClosed();
-        $this->unitOfWork->remove($document);
+        $this->unitOfWork->remove($object);
     }
 
     /**
      * Refreshes the persistent state of a document from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param object $document The document to refresh.
+     * @param object $object The document to refresh.
      *
-     * @throws InvalidArgumentException When the given $document param is not an object.
+     * @throws InvalidArgumentException When the given $object param is not an object.
      */
-    public function refresh($document)
+    public function refresh($object)
     {
-        if (! is_object($document)) {
-            throw new InvalidArgumentException(gettype($document));
+        if (! is_object($object)) {
+            throw new InvalidArgumentException(gettype($object));
         }
 
         $this->errorIfClosed();
-        $this->unitOfWork->refresh($document);
+        $this->unitOfWork->refresh($object);
     }
 
     /**
@@ -502,17 +502,17 @@ class DocumentManager implements ObjectManager
      * Documents which previously referenced the detached document will continue to
      * reference it.
      *
-     * @param object $document The document to detach.
+     * @param object $object The document to detach.
      *
-     * @throws InvalidArgumentException When the $document param is not an object.
+     * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function detach($document)
+    public function detach($object)
     {
-        if (! is_object($document)) {
-            throw new InvalidArgumentException(gettype($document));
+        if (! is_object($object)) {
+            throw new InvalidArgumentException(gettype($object));
         }
 
-        $this->unitOfWork->detach($document);
+        $this->unitOfWork->detach($object);
     }
 
     /**
@@ -520,22 +520,22 @@ class DocumentManager implements ObjectManager
      * of this DocumentManager and returns the managed copy of the document.
      * The document passed to merge will not become associated/managed with this DocumentManager.
      *
-     * @param object $document The detached document to merge into the persistence context.
+     * @param object $object The detached document to merge into the persistence context.
      *
      * @return object The managed copy of the document.
      *
      * @throws LockException
-     * @throws InvalidArgumentException If the $document param is not an object.
+     * @throws InvalidArgumentException If the $object param is not an object.
      */
-    public function merge($document)
+    public function merge($object)
     {
-        if (! is_object($document)) {
-            throw new InvalidArgumentException(gettype($document));
+        if (! is_object($object)) {
+            throw new InvalidArgumentException(gettype($object));
         }
 
         $this->errorIfClosed();
 
-        return $this->unitOfWork->merge($document);
+        return $this->unitOfWork->merge($object);
     }
 
     /**
@@ -560,17 +560,17 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the repository for a document class.
      *
-     * @param string $documentName The name of the Document.
-     * @psalm-param class-string<T> $documentName
+     * @param string $className The name of the Document.
+     * @psalm-param class-string<T> $className
      *
      * @return ObjectRepository  The repository.
      * @psalm-return ObjectRepository<T>
      *
      * @template T of object
      */
-    public function getRepository($documentName)
+    public function getRepository($className)
     {
-        return $this->repositoryFactory->getRepository($this, $documentName);
+        return $this->repositoryFactory->getRepository($this, $className);
     }
 
     /**
@@ -682,11 +682,11 @@ class DocumentManager implements ObjectManager
      * All documents that are currently managed by this DocumentManager become
      * detached.
      *
-     * @param string|null $documentName if given, only documents of this type will get detached
+     * @param string|null $objectName if given, only documents of this type will get detached
      */
-    public function clear($documentName = null)
+    public function clear($objectName = null)
     {
-        $this->unitOfWork->clear($documentName);
+        $this->unitOfWork->clear($objectName);
     }
 
     /**
@@ -703,21 +703,21 @@ class DocumentManager implements ObjectManager
     /**
      * Determines whether a document instance is managed in this DocumentManager.
      *
-     * @param object $document
+     * @param object $object
      *
      * @return bool TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
      *
-     * @throws InvalidArgumentException When the $document param is not an object.
+     * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function contains($document)
+    public function contains($object)
     {
-        if (! is_object($document)) {
-            throw new InvalidArgumentException(gettype($document));
+        if (! is_object($object)) {
+            throw new InvalidArgumentException(gettype($object));
         }
 
-        return $this->unitOfWork->isScheduledForInsert($document) ||
-            $this->unitOfWork->isInIdentityMap($document) &&
-            ! $this->unitOfWork->isScheduledForDelete($document);
+        return $this->unitOfWork->isScheduledForInsert($object) ||
+            $this->unitOfWork->isInIdentityMap($object) &&
+            ! $this->unitOfWork->isScheduledForDelete($object);
     }
 
     /**

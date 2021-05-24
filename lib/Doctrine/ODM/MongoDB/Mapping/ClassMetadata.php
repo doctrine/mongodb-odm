@@ -1835,7 +1835,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function isAssociationInverseSide($fieldName): bool
+    public function isAssociationInverseSide($assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
@@ -1843,7 +1843,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function getAssociationMappedByTargetField($fieldName)
+    public function getAssociationMappedByTargetField($assocName)
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
