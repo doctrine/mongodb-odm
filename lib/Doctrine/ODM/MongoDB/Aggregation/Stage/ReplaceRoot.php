@@ -24,7 +24,7 @@ class ReplaceRoot extends Operator
     /** @var ClassMetadata */
     private $class;
 
-    /** @var string|array|null */
+    /** @var string|array|Expr|null */
     private $expression;
 
     public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class, $expression = null)
