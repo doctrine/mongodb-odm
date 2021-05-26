@@ -9,21 +9,25 @@ use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\SchemaManager;
+use Documents\BaseDocument;
 use Documents\CmsAddress;
 use Documents\CmsArticle;
 use Documents\CmsComment;
 use Documents\CmsProduct;
 use Documents\Comment;
 use Documents\File;
+use Documents\SchemaValidated;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
 use Documents\SimpleReferenceUser;
 use Documents\UserName;
+use InvalidArgumentException;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
+use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\IndexInfo;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\Constraint\ArrayHasKey;
@@ -37,6 +41,8 @@ use function array_map;
 use function assert;
 use function class_exists;
 use function in_array;
+use function MongoDB\BSON\fromJSON;
+use function MongoDB\BSON\toPHP;
 
 class SchemaManagerTest extends BaseTest
 {
@@ -83,7 +89,7 @@ class SchemaManagerTest extends BaseTest
             if ($cm->isFile) {
                 $this->documentBuckets[$cm->getBucketName()] = $this->getMockBucket();
             } else {
-                $this->documentCollections[$cm->getCollection()] = $this->getMockCollection();
+                $this->documentCollections[$cm->getCollection()] = $this->getMockCollection($cm->getCollection());
             }
 
             $db = $this->getDatabaseName($cm);
@@ -370,6 +376,99 @@ class SchemaManagerTest extends BaseTest
         $this->schemaManager->deleteDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
+    public function testUpdateValidators()
+    {
+        $dbCommands = [];
+        foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
+            assert($cm instanceof ClassMetadata);
+            if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument || $cm->isView() || $cm->isFile) {
+                continue;
+            }
+
+            $databaseName              = $this->getDatabaseName($cm);
+            $dbCommands[$databaseName] = empty($dbCommands[$databaseName]) ? 1 : $dbCommands[$databaseName] + 1;
+        }
+
+        foreach ($dbCommands as $databaseName => $nbCommands) {
+            $this->documentDatabases[$databaseName]
+                ->expects($this->exactly($nbCommands))
+                ->method('command');
+        }
+
+        $this->schemaManager->updateValidators();
+    }
+
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testUpdateDocumentValidator(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        $class                 = $this->dm->getClassMetadata(SchemaValidated::class);
+        $database              = $this->documentDatabases[$this->getDatabaseName($class)];
+        $expectedValidatorJson = <<<'EOT'
+{
+    "$jsonSchema": {
+        "required": ["name"],
+        "properties": {
+            "name": {
+                "bsonType": "string",
+                "description": "must be a string and is required"
+            }
+        }
+    },
+    "$or": [
+        { "phone": { "$type": "string" } },
+        { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } } },
+        { "status": { "$in": [ "Unknown", "Incomplete" ] } }
+    ]
+}
+EOT;
+        $expectedValidatorBson = fromJSON($expectedValidatorJson);
+        $expectedValidator     = toPHP($expectedValidatorBson, []);
+        $database
+            ->expects($this->exactly(1))
+            ->method('command')
+            ->with(
+                [
+                    'collMod' => $class->collection,
+                    'validator' => $expectedValidator,
+                    'validationAction' => ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
+                    'validationLevel' => ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
+                ],
+                $expectedWriteOptions
+            );
+        $this->schemaManager->updateDocumentValidator($class->name, $maxTimeMs, $writeConcern);
+    }
+
+    public function testUpdateDocumentValidatorShouldThrowExceptionForMappedSuperclass()
+    {
+        $class = $this->dm->getClassMetadata(BaseDocument::class);
+        $this->expectException(InvalidArgumentException::class);
+        $this->schemaManager->updateDocumentValidator($class->name);
+    }
+
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testUpdateDocumentValidatorReset(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        $class    = $this->dm->getClassMetadata(CmsArticle::class);
+        $database = $this->documentDatabases[$this->getDatabaseName($class)];
+        $database
+            ->expects($this->exactly(1))
+            ->method('command')
+            ->with(
+                [
+                    'collMod' => $class->collection,
+                    'validator' => [],
+                    'validationAction' => ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR,
+                    'validationLevel' => ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT,
+                ],
+                $expectedWriteOptions
+            );
+        $this->schemaManager->updateDocumentValidator($class->name, $maxTimeMs, $writeConcern);
+    }
+
     /**
      * @dataProvider getWriteOptions
      */
@@ -412,6 +511,49 @@ class SchemaManagerTest extends BaseTest
             );
 
         $this->schemaManager->createDocumentCollection(File::class, $maxTimeMs, $writeConcern);
+    }
+
+    /**
+     * @dataProvider getWriteOptions
+     */
+    public function testCreateDocumentCollectionWithValidator(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        $expectedValidatorJson = <<<'EOT'
+{
+    "$jsonSchema": {
+        "required": ["name"],
+        "properties": {
+            "name": {
+                "bsonType": "string",
+                "description": "must be a string and is required"
+            }
+        }
+    },
+    "$or": [
+        { "phone": { "$type": "string" } },
+        { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } } },
+        { "status": { "$in": [ "Unknown", "Incomplete" ] } }
+    ]
+}
+EOT;
+        $expectedValidatorBson = fromJSON($expectedValidatorJson);
+        $expectedValidator     = toPHP($expectedValidatorBson, []);
+        $options               = [
+            'capped' => false,
+            'size' => null,
+            'max' => null,
+            'validator' => $expectedValidator,
+            'validationAction' => ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
+            'validationLevel' => ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
+        ];
+        $cm                    = $this->dm->getClassMetadata(SchemaValidated::class);
+        $database              = $this->documentDatabases[$this->getDatabaseName($cm)];
+        $database
+            ->expects($this->once())
+            ->method('createCollection')
+            ->with('SchemaValidated', $options + $expectedWriteOptions);
+
+        $this->schemaManager->createDocumentCollection($cm->name, $maxTimeMs, $writeConcern);
     }
 
     /**
@@ -963,9 +1105,14 @@ class SchemaManagerTest extends BaseTest
     }
 
     /** @return Collection|MockObject */
-    private function getMockCollection()
+    private function getMockCollection(?string $name = null)
     {
-        return $this->createMock(Collection::class);
+        $collection = $this->createMock(Collection::class);
+        $collection->method('getCollectionName')->willReturnCallback(static function () use ($name) {
+            return $name;
+        });
+
+        return $collection;
     }
 
     /** @return Database|MockObject */
@@ -977,6 +1124,14 @@ class SchemaManagerTest extends BaseTest
         });
         $db->method('selectGridFSBucket')->willReturnCallback(function (array $options) {
             return $this->documentBuckets[$options['bucketName']];
+        });
+        $db->method('listCollections')->willReturnCallback(function () {
+            $collections = [];
+            foreach ($this->documentCollections as $collectionName => $collection) {
+                $collections[] = new CollectionInfo(['name' => $collectionName]);
+            }
+
+            return $collections;
         });
 
         return $db;

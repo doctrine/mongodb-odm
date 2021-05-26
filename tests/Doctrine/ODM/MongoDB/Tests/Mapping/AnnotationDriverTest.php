@@ -242,6 +242,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         ];
     }
 
+    public function testWrongValueForValidationValidatorShouldThrowException()
+    {
+        $annotationDriver = $this->loadDriver();
+        $classMetadata    = new ClassMetadata(WrongValueForValidationValidator::class);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('The following schema validation error occurred while parsing the "validator" property of the "Doctrine\ODM\MongoDB\Tests\Mapping\WrongValueForValidationValidator" class: "Got parse error at "w", position 0: "SPECIAL_EXPECTED"" (code 0).');
+        $annotationDriver->loadMetadataForClass($classMetadata->name, $classMetadata);
+    }
+
     protected function loadDriverForCMSDocuments()
     {
         $annotationDriver = $this->loadDriver();
@@ -315,6 +324,13 @@ class AnnotationDriverTestWriteConcernMajority
  * @ODM\Document(writeConcern=0)
  */
 class AnnotationDriverTestWriteConcernUnacknowledged
+{
+    /** @ODM\Id */
+    public $id;
+}
+
+/** @ODM\Validation(validator="wrong") */
+class WrongValueForValidationValidator
 {
     /** @ODM\Id */
     public $id;

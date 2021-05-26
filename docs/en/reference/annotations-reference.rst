@@ -139,7 +139,7 @@ and it does not contain the class name of the persisted document, a
 @Document
 ---------
 
-Required annotation to mark a PHP class as a document, whose peristence will be
+Required annotation to mark a PHP class as a document, whose persistence will be
 managed by ODM.
 
 Optional attributes:
@@ -1091,6 +1091,100 @@ Alias of `@Index`_, with the ``unique`` option set by default.
     private $email;
 
 .. _annotations_reference_version:
+
+@Validation
+-----------
+
+This annotation may be used at the class level to specify the validation schema
+for the related collection.
+
+-
+   ``validator`` - Specifies a schema that will be used by
+   MongoDB to validate data inserted or updated in the collection.
+   Please refer to the following
+   `MongoDB documentation (Schema Validation ¶) <https://docs.mongodb.com/manual/core/schema-validation/>`_
+   for more details. The value should be a string representing a BSON document under the
+   `Extended JSON specification <https://github.com/mongodb/specifications/blob/master/source/extended-json.rst>`_.
+   The recommended way to fill up this property is to create a class constant
+   (eg. ``::VALIDATOR``) using the
+   `HEREDOC/NOWDOC syntax <https://www.php.net/manual/en/language.types.string.php#language.types.string.syntax.nowdoc>`_
+   for clarity and to reference it as the annotation value.
+   Please note that if you decide to insert the schema directly in the annotation without
+   using a class constant then double quotes ``"`` have to be escaped by doubling them ``""``.
+   This method also requires that you don't prefix multiline strings by the Docblock asterisk symbol ``*``.
+-
+   ``action`` - Determines how MongoDB handles documents that violate
+   the validation rules. Please refer to the related
+   `MongoDB documentation (Accept or Reject Invalid Documents ¶) <https://docs.mongodb.com/manual/core/schema-validation/#accept-or-reject-invalid-documents>`_
+   for more details. The allowed values are the following:
+
+       - ``error``
+       - ``warn``
+
+   If it is not defined then the default behavior (``error``) will be used.
+   Those values are also declared as constants for convenience:
+
+      - ``\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR``
+      - ``\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN``
+
+   Import the ``ClassMetadata`` namespace to use those constants in your annotation.
+-
+   ``level`` - Determines which operations MongoDB applies the
+   validation rules. Please refer to the related
+   `MongoDB documentation (Existing Documents ¶) <https://docs.mongodb.com/manual/core/schema-validation/#existing-documents>`_
+   for more details. The allowed values are the following:
+
+      - ``off``
+      - ``strict``
+      - ``moderate``
+
+   If it is not defined then the default behavior (``strict``) will be used.
+   Those values are also declared as constants for convenience:
+
+      - ``\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF``
+      - ``\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT``
+      - ``\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE``
+
+   Import the ``ClassMetadata`` namespace to use those constants in your annotation.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+    // ... other imports
+
+    /**
+     * @Document
+     * @Validation(
+     *     validator=SchemaValidated::VALIDATOR,
+     *     action=ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
+     *     level=ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
+     * )
+     */
+    class SchemaValidated
+    {
+        public const VALIDATOR = <<<'EOT'
+    {
+        "$jsonSchema": {
+            "required": ["name"],
+            "properties": {
+                "name": {
+                    "bsonType": "string",
+                    "description": "must be a string and is required"
+                }
+            }
+        },
+        "$or": [
+            { "phone": { "$type": "string" } },
+            { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } } },
+            { "status": { "$in": [ "Unknown", "Incomplete" ] } }
+        ]
+    }
+    EOT;
+
+        // rest of the class code...
+    }
 
 @Version
 --------

@@ -11,6 +11,7 @@ use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
+use MongoDB\Driver\Exception\UnexpectedValueException;
 use SimpleXMLElement;
 
 use function array_keys;
@@ -29,6 +30,8 @@ use function iterator_to_array;
 use function libxml_clear_errors;
 use function libxml_get_errors;
 use function libxml_use_internal_errors;
+use function MongoDB\BSON\fromJSON;
+use function MongoDB\BSON\toPHP;
 use function next;
 use function preg_match;
 use function simplexml_load_file;
@@ -193,6 +196,28 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlRoot->{'shard-key'})) {
             $this->setShardKey($metadata, $xmlRoot->{'shard-key'}[0]);
+        }
+
+        if (isset($xmlRoot->{'schema-validation'})) {
+            $xmlSchemaValidation = $xmlRoot->{'schema-validation'};
+
+            if (isset($xmlSchemaValidation['action'])) {
+                $metadata->setValidationAction((string) $xmlSchemaValidation['action']);
+            }
+
+            if (isset($xmlSchemaValidation['level'])) {
+                $metadata->setValidationLevel((string) $xmlSchemaValidation['level']);
+            }
+
+            $validatorJson = (string) $xmlSchemaValidation;
+            try {
+                $validatorBson = fromJSON($validatorJson);
+            } catch (UnexpectedValueException $e) {
+                throw MappingException::schemaValidationError($e->getCode(), $e->getMessage(), $className, 'schema-validation');
+            }
+
+            $validator = toPHP($validatorBson, []);
+            $metadata->setValidator($validator);
         }
 
         if (isset($xmlRoot['read-only']) && (string) $xmlRoot['read-only'] === 'true') {

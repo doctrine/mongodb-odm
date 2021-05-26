@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use MongoDB\Driver\Exception\UnexpectedValueException;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -25,6 +26,8 @@ use function count;
 use function get_class;
 use function interface_exists;
 use function is_array;
+use function MongoDB\BSON\fromJSON;
+use function MongoDB\BSON\toPHP;
 use function trigger_deprecation;
 
 /**
@@ -99,6 +102,25 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $metadata->setDefaultDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ReadPreference) {
                 $metadata->setReadPreference($annot->value, $annot->tags ?? []);
+            } elseif ($annot instanceof ODM\Validation) {
+                if (isset($annot->validator)) {
+                    try {
+                        $validatorBson = fromJSON($annot->validator);
+                    } catch (UnexpectedValueException $e) {
+                        throw MappingException::schemaValidationError($e->getCode(), $e->getMessage(), $className, 'validator');
+                    }
+
+                    $validator = toPHP($validatorBson, []);
+                    $metadata->setValidator($validator);
+                }
+
+                if (isset($annot->action)) {
+                    $metadata->setValidationAction($annot->action);
+                }
+
+                if (isset($annot->level)) {
+                    $metadata->setValidationLevel($annot->level);
+                }
             }
         }
 
