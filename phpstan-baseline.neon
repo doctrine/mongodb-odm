@@ -31,3 +31,15 @@ parameters:
             count: 1
             path: lib/Doctrine/ODM/MongoDB/Query/Builder.php
 
+        -
+            message: "#DOCTRINE_MONGODB_DATABASE not found\\.$#"
+            paths:
+                - tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+                - tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
+                - tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php
+                - tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+        -
+            message: "#DOCTRINE_MONGODB_SERVER not found\\.$#"
+            paths:
+                - tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
