@@ -838,7 +838,7 @@ class AbstractMappingDriverSuperClass
     /** @ODM\Id */
     public $id;
 
-    /** @var @ODM\Field(type="string") */
+    /** @ODM\Field(type="string") */
     protected $override;
 }
 

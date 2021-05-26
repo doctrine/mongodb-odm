@@ -669,7 +669,7 @@ use function trigger_deprecation;
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
      *
-     * return (string|null)[]
+     * @return array<string|null>
      */
     public function getIdentifierFieldNames(): array
     {
