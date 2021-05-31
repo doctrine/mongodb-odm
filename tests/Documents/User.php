@@ -28,8 +28,11 @@ class User extends BaseDocument
     /** @ODM\Field(type="date") */
     protected $createdAt;
 
-    /** @ODM\EmbedOne(targetDocument=Address::class, nullable=true) */
+    /** @ODM\EmbedOne(targetDocument=Address::class) */
     protected $address;
+
+    /** @ODM\EmbedOne(targetDocument=Address::class, nullable=true) */
+    protected $addressNullable;
 
     /** @ODM\ReferenceOne(targetDocument=Profile::class, cascade={"all"}) */
     protected $profile;
@@ -177,12 +180,14 @@ class User extends BaseDocument
 
     public function setAddress(?Address $address = null)
     {
-        $this->address = $address;
+        $this->address         = $address;
+        $this->addressNullable = $address ? clone $address : $address;
     }
 
     public function removeAddress()
     {
-        $this->address = null;
+        $this->address         = null;
+        $this->addressNullable = null;
     }
 
     public function setProfile(Profile $profile)

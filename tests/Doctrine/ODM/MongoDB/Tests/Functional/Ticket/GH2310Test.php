@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents74\GH2310Container;
 use Documents74\GH2310Embedded;
 use MongoDB\BSON\ObjectId;
-use ReflectionProperty;
 
 use function phpversion;
 use function version_compare;
@@ -36,8 +35,7 @@ class GH2310Test extends BaseTest
 
         self::assertInstanceOf(GH2310Container::class, $result);
         self::assertSame($document->id, $result->id);
-        $reflectionProperty = new ReflectionProperty($result, 'embedded');
-        self::assertFalse($reflectionProperty->isInitialized($result));
+        self::assertNull($result->embedded);
     }
 
     public function testAggregatorBuilderWithNullableEmbeddedAfterUpsert(): void
@@ -53,8 +51,7 @@ class GH2310Test extends BaseTest
 
         self::assertInstanceOf(GH2310Container::class, $result);
         self::assertSame($document->id, $result->id);
-        $reflectionProperty = new ReflectionProperty($result, 'embedded');
-        self::assertFalse($reflectionProperty->isInitialized($result));
+        self::assertNull($result->embedded);
     }
 
     public function testFindWithNullableEmbeddedAfterInsert(): void
