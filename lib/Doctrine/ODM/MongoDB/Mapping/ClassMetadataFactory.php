@@ -35,6 +35,10 @@ use function ucfirst;
  * to a document database.
  *
  * @internal
+ *
+ * @method ClassMetadata[] getAllMetadata()
+ * @method ClassMetadata[] getLoadedMetadata()
+ * @method ClassMetadata getMetadataFor($className)
  */
 final class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
