@@ -86,6 +86,12 @@ jobs:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--prefer-dist"
 
+      - name: "Upload composer.lock as build artifact"
+        uses: actions/upload-artifact@v2
+        with:
+          name: composer.lock
+          path: composer.lock
+
       - id: setup-mongodb
         uses: mongodb-labs/drivers-evergreen-tools@master
         with:
