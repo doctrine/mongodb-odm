@@ -24,6 +24,9 @@ use function strtotime;
 
 class QueryTest extends BaseTest
 {
+    /** @var User */
+    private $user;
+
     public function setUp(): void
     {
         parent::setUp();

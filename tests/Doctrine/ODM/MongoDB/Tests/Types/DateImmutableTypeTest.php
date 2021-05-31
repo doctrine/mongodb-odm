@@ -7,12 +7,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
+use Doctrine\ODM\MongoDB\Types\DateImmutableType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+use function assert;
 use function date;
 use function strtotime;
 
@@ -23,6 +25,7 @@ class DateImmutableTypeTest extends TestCase
     public function testGetDateTime()
     {
         $type = Type::getType(Type::DATE_IMMUTABLE);
+        assert($type instanceof DateImmutableType);
 
         $timestamp = 100000000.001;
         $dateTime  = $type->getDateTime($timestamp);

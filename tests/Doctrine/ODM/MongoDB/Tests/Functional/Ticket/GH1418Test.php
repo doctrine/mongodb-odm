@@ -8,6 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+use function assert;
+
 class GH1418Test extends BaseTest
 {
     public function testManualHydrateAndMerge()
@@ -60,6 +62,7 @@ class GH1418Test extends BaseTest
             ->equals(1)
             ->getQuery()
             ->getSingleResult();
+        assert($document instanceof GH1418Document);
 
         $this->assertEquals(1, $document->id);
         $this->assertEquals('maciej', $document->embedOne->name);

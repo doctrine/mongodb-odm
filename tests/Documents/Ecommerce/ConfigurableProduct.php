@@ -26,7 +26,7 @@ class ConfigurableProduct
     /** @ODM\EmbedMany(targetDocument=Documents\Ecommerce\Option::class) */
     protected $options = [];
 
-    /** @var Documents\Option */
+    /** @var Option */
     protected $selectedOption;
 
     public function __construct($name)
@@ -63,9 +63,8 @@ class ConfigurableProduct
 
     /**
      * @param string|Option $name
-     * @param float|null    $price
      */
-    public function addOption($name, $price = null, ?StockItem $item = null)
+    public function addOption($name, ?Money $price = null, ?StockItem $item = null)
     {
         if (! $name instanceof Option) {
             $name = (string) $name;

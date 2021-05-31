@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Event;
 use Documents\User;
 
+use function assert;
 use function get_class;
 
 class IdentifiersTest extends BaseTest
@@ -66,11 +67,13 @@ class IdentifiersTest extends BaseTest
             ->field('id')->equals($user->getId());
 
         $user = $qb->getQuery()->getSingleResult();
+        assert($user instanceof User);
         $this->assertSame($user, $user);
 
         $this->dm->clear();
 
         $user2 = $qb->getQuery()->getSingleResult();
+        assert($user2 instanceof User);
         $this->assertNotSame($user, $user2);
 
         $user2->setUsername('changed');
@@ -78,6 +81,7 @@ class IdentifiersTest extends BaseTest
         $qb->refresh();
 
         $user3 = $qb->getQuery()->getSingleResult();
+        assert($user3 instanceof User);
         $this->assertSame($user2, $user3);
         $this->assertEquals('jwage', $user3->getUsername());
 
@@ -86,6 +90,7 @@ class IdentifiersTest extends BaseTest
         $qb->refresh(false);
 
         $user4 = $qb->getQuery()->getSingleResult();
+        assert($user4 instanceof User);
         $this->assertEquals('changed', $user4->getUsername());
 
         $qb = $this->dm->createQueryBuilder(User::class)

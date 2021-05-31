@@ -12,6 +12,9 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM67Test extends BaseTest
 {
+    /** @var MODM67TestEventListener */
+    private $listener;
+
     private function getDocumentManager()
     {
         $this->listener = new MODM67TestEventListener($this->dm);

@@ -510,22 +510,22 @@ class DocumentPersisterTest extends BaseTest
     public static function queryProviderForComplexRefWithObjectValue(): Generator
     {
         yield 'Direct comparison' => [
-            'expected' => ['complexRef.date' => new UTCDateTime('1590710400000')],
+            'expected' => ['complexRef.date' => new UTCDateTime(1590710400000)],
             'query' => ['complexRef.date' => DateTime::createFromFormat('U', '1590710400')],
         ];
 
         yield 'Operator with single value' => [
-            'expected' => ['complexRef.date' => ['$ne' => new UTCDateTime('1590710400000')]],
+            'expected' => ['complexRef.date' => ['$ne' => new UTCDateTime(1590710400000)]],
             'query' => ['complexRef.date' => ['$ne' => DateTime::createFromFormat('U', '1590710400')]],
         ];
 
         yield 'Operator with multiple values' => [
-            'expected' => ['complexRef.date' => ['$in' => [new UTCDateTime('1590710400000'), new UTCDateTime('1590796800000')]]],
+            'expected' => ['complexRef.date' => ['$in' => [new UTCDateTime(1590710400000), new UTCDateTime(1590796800000)]]],
             'query' => ['complexRef.date' => ['$in' => [DateTime::createFromFormat('U', '1590710400'), DateTime::createFromFormat('U', '1590796800')]]],
         ];
 
         yield 'Nested operator' => [
-            'expected' => ['complexRef.date' => ['$not' => ['$in' => [new UTCDateTime('1590710400000'), new UTCDateTime('1590796800000')]]]],
+            'expected' => ['complexRef.date' => ['$not' => ['$in' => [new UTCDateTime(1590710400000), new UTCDateTime(1590796800000)]]]],
             'query' => ['complexRef.date' => ['$not' => ['$in' => [DateTime::createFromFormat('U', '1590710400'), DateTime::createFromFormat('U', '1590796800')]]]],
         ];
     }

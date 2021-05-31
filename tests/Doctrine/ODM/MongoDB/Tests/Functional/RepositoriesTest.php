@@ -5,11 +5,18 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 
 class RepositoriesTest extends BaseTest
 {
+    /** @var User */
+    private $user;
+
+    /** @var DocumentRepository */
+    private $repository;
+
     public function setUp(): void
     {
         parent::setUp();

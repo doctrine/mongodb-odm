@@ -346,7 +346,6 @@ class IdTest extends BaseTest
 
     public function testStrategyAutoWithNotValidIdThrowsException()
     {
-        $this->createIdTestClass('id', 'auto');
         $user     = new TestIdTypesIdAutoUser();
         $user->id = 1;
         $this->expectException(InvalidArgumentException::class);
@@ -514,4 +513,11 @@ class CustomIdUser
     {
         $this->name = $name;
     }
+}
+
+/** @ODM\Document */
+class TestIdTypesIdAutoUser
+{
+    /** @ODM\Id(strategy="auto", options={"type"="id"}) **/
+    public $id;
 }

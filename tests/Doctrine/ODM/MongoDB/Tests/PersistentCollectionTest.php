@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
 use function assert;
@@ -329,7 +330,7 @@ class PersistentCollectionTest extends BaseTest
     }
 
     /**
-     * @return Collection
+     * @return Collection&MockObject
      */
     private function getMockCollection()
     {

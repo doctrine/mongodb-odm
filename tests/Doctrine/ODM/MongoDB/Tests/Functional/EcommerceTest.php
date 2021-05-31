@@ -78,7 +78,6 @@ class EcommerceTest extends BaseTest
         $this->dm->flush();
         $this->dm->detach($product);
         unset($product);
-        $this->assertFalse(isset($product));
 
         $product = $this->getProduct();
         $this->assertCount(2, $product->getOptions());

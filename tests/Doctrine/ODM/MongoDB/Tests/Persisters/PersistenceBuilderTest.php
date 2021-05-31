@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsArticle;
@@ -21,6 +22,7 @@ use function get_class;
 
 class PersistenceBuilderTest extends BaseTest
 {
+    /** @var PersistenceBuilder */
     private $pb;
 
     public function setUp(): void

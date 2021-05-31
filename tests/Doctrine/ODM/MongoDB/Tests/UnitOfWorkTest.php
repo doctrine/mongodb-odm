@@ -514,11 +514,20 @@ class UnitOfWorkTest extends BaseTest
 
         $this->dm->persist($user);
 
-        $this->expectException(Throwable::class);
-        $this->expectExceptionMessage('This should not happen');
+        try {
+            $this->dm->flush();
+        } catch (Throwable $exception) {
+            $getCommitsInProgress = Closure::bind(function (UnitOfWork $unitOfWork) {
+                /** @psalm-suppress InaccessibleProperty */
+                return $unitOfWork->commitsInProgress;
+            }, $this->dm->getUnitOfWork(), UnitOfWork::class);
 
-        $this->dm->flush();
-        $this->assertAttributeSame(0, 'commitsInProgress', $this->dm->getUnitOfWork());
+            $this->assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
+
+            return;
+        }
+
+        $this->fail('This should never be reached, an exception should have been thrown.');
     }
 }
 

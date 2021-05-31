@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Documents\CmsUser;
+use stdClass;
 
 use function get_class;
 
@@ -89,7 +90,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $reader           = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
-        $annotationDriver->loadMetadataForClass(InvalidColumn::class, $cm);
+        $annotationDriver->loadMetadataForClass(stdClass::class, $cm);
         $this->assertEquals('id', $cm->fieldMappings['id']['type']);
     }
 

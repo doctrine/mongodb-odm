@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM81Test extends BaseTest
 {
-    /**
-     * @return DocumentManager
-     */
-    private function getDocumentManager()
+    private function getDocumentManager(): DocumentManager
     {
         return $this->dm;
     }

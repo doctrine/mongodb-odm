@@ -250,9 +250,10 @@ class ReferencePrimerTest extends BaseTest
 
         foreach ($qb->getQuery() as $referenceUser) {
             assert($referenceUser instanceof ReferenceUser);
-            // storeAs=id reference
-            $this->assertInstanceOf(GhostObjectInterface::class, $referenceUser->getUser());
-            $this->assertTrue($referenceUser->getUser()->isProxyInitialized());
+            $user = $referenceUser->getUser();
+            assert($user instanceof User && $user instanceof GhostObjectInterface);
+            $this->assertInstanceOf(GhostObjectInterface::class, $user);
+            $this->assertTrue($user->isProxyInitialized());
 
             $this->assertCount(1, $referenceUser->getUsers());
 
@@ -261,9 +262,10 @@ class ReferencePrimerTest extends BaseTest
                 $this->assertInstanceOf(User::class, $user);
             }
 
-            // storeAs=dbRef reference
-            $this->assertInstanceOf(GhostObjectInterface::class, $referenceUser->getParentUser());
-            $this->assertTrue($referenceUser->getParentUser()->isProxyInitialized());
+            $parentUser = $referenceUser->getParentUser();
+            assert($parentUser instanceof User && $parentUser instanceof GhostObjectInterface);
+            $this->assertInstanceOf(GhostObjectInterface::class, $parentUser);
+            $this->assertTrue($parentUser->isProxyInitialized());
 
             $this->assertCount(1, $referenceUser->getParentUsers());
 
@@ -272,9 +274,10 @@ class ReferencePrimerTest extends BaseTest
                 $this->assertInstanceOf(User::class, $user);
             }
 
-            // storeAs=dbRefWithDb reference
-            $this->assertInstanceOf(GhostObjectInterface::class, $referenceUser->getOtherUser());
-            $this->assertTrue($referenceUser->getOtherUser()->isProxyInitialized());
+            $otherUser = $referenceUser->getOtherUser();
+            assert($otherUser instanceof User && $otherUser instanceof GhostObjectInterface);
+            $this->assertInstanceOf(GhostObjectInterface::class, $otherUser);
+            $this->assertTrue($otherUser->isProxyInitialized());
 
             $this->assertCount(1, $referenceUser->getOtherUsers());
 
@@ -424,6 +427,8 @@ class ReferencePrimerTest extends BaseTest
 
         $user = $qb->getQuery()->execute();
 
+        assert($user instanceof User);
+
         $this->assertCount(1, $user->getGroups());
 
         foreach ($user->getGroups() as $group) {
@@ -451,7 +456,8 @@ class ReferencePrimerTest extends BaseTest
             ->field('username')->equals('SomeName')
             ->field('phonenumbers.lastCalledBy')->prime(true);
 
-        $user         = $qb->getQuery()->getSingleResult();
+        $user = $qb->getQuery()->getSingleResult();
+        assert($user instanceof User);
         $phonenumbers = $user->getPhonenumbers();
 
         $this->assertCount(1, $phonenumbers);
@@ -509,6 +515,7 @@ class ReferencePrimerTest extends BaseTest
         assert($money instanceof Money);
 
         $currency = $money->getCurrency();
+        assert($currency instanceof Currency && $currency instanceof GhostObjectInterface);
         assert($currency instanceof Currency);
 
         $this->assertInstanceOf(GhostObjectInterface::class, $currency);

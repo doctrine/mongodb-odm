@@ -8,6 +8,7 @@ use Closure;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -22,6 +23,7 @@ use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 use ProxyManager\Proxy\GhostObjectInterface;
 
+use function assert;
 use function get_class;
 
 class ReferencesTest extends BaseTest
@@ -50,6 +52,7 @@ class ReferencesTest extends BaseTest
         $qb     = $this->dm->createQueryBuilder(Group::class);
         $query  = $qb->getQuery();
         $groups = $query->execute();
+        assert($groups instanceof Iterator);
 
         $this->assertCount(0, $groups->toArray());
     }
@@ -72,8 +75,10 @@ class ReferencesTest extends BaseTest
         $query = $qb->getQuery();
 
         $user = $query->getSingleResult();
+        assert($user instanceof User);
 
         $profile = $user->getProfile();
+        assert($profile instanceof Profile);
 
         $this->assertInstanceOf(Profile::class, $profile);
         $this->assertInstanceOf(GhostObjectInterface::class, $profile);
@@ -132,6 +137,7 @@ class ReferencesTest extends BaseTest
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
+        assert($user2 instanceof User);
         $this->assertEquals($user->getAddress(), $user2->getAddress());
     }
 
@@ -149,6 +155,7 @@ class ReferencesTest extends BaseTest
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
+        assert($user2 instanceof User);
         $this->assertEquals($user->getPhonenumbers()->toArray(), $user2->getPhonenumbers()->toArray());
     }
 
@@ -191,11 +198,12 @@ class ReferencesTest extends BaseTest
         $this->assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
-        $qb     = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')
             ->equals($user->getId());
-        $query  = $qb->getQuery();
-        $user2  = $query->getSingleResult();
+        $query = $qb->getQuery();
+        $user2 = $query->getSingleResult();
+        assert($user2 instanceof User);
         $groups = $user2->getGroups();
         $this->assertFalse($groups->isInitialized());
 
@@ -219,10 +227,11 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb     = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
-        $query  = $qb->getQuery();
-        $user3  = $query->getSingleResult();
+        $query = $qb->getQuery();
+        $user3 = $query->getSingleResult();
+        assert($user3 instanceof User);
         $groups = $user3->getGroups();
 
         $this->assertEquals('test', $groups[0]->getName());
@@ -290,11 +299,13 @@ class ReferencesTest extends BaseTest
         $this->assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
-        $qb     = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')
             ->equals($user->getId());
-        $query  = $qb->getQuery();
-        $user2  = $query->getSingleResult();
+        $query = $qb->getQuery();
+        $user2 = $query->getSingleResult();
+        assert($user2 instanceof User);
+
         $groups = $user2->getUniqueGroups();
         $this->assertFalse($groups->isInitialized());
 
@@ -318,10 +329,11 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $qb     = $this->dm->createQueryBuilder(User::class)
+        $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
-        $query  = $qb->getQuery();
-        $user3  = $query->getSingleResult();
+        $query = $qb->getQuery();
+        $user3 = $query->getSingleResult();
+        assert($user3 instanceof User);
         $groups = $user3->getUniqueGroups();
 
         $this->assertEquals('test', $groups[0]->getName());
