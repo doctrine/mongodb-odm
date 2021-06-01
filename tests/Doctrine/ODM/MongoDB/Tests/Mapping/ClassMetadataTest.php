@@ -19,6 +19,7 @@ use Documents\Bars\Bar;
 use Documents\CmsUser;
 use Documents\SpecialUser;
 use Documents\User;
+use Documents\UserName;
 use Documents\UserRepository;
 use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -50,8 +51,8 @@ class ClassMetadataTest extends BaseTest
 
         // Customize state
         $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION);
-        $cm->setSubclasses(['One', 'Two', 'Three']);
-        $cm->setParentClasses(['UserParent']);
+        $cm->setSubclasses([User::class, UserName::class]);
+        $cm->setParentClasses([stdClass::class]);
         $cm->setCustomRepositoryClass(UserRepository::class);
         $cm->setDiscriminatorField('disc');
         $cm->mapOneEmbedded(['fieldName' => 'phonenumbers', 'targetDocument' => Bar::class]);
@@ -79,9 +80,9 @@ class ClassMetadataTest extends BaseTest
         $this->assertGreaterThan(0, $cm->getReflectionProperties());
         $this->assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         $this->assertEquals(CmsUser::class, $cm->name);
-        $this->assertEquals('UserParent', $cm->rootDocumentName);
-        $this->assertEquals(['One', 'Two', 'Three'], $cm->subClasses);
-        $this->assertEquals(['UserParent'], $cm->parentClasses);
+        $this->assertEquals(stdClass::class, $cm->rootDocumentName);
+        $this->assertEquals([User::class, UserName::class], $cm->subClasses);
+        $this->assertEquals([stdClass::class], $cm->parentClasses);
         $this->assertEquals(UserRepository::class, $cm->customRepositoryClassName);
         $this->assertEquals('disc', $cm->discriminatorField);
         $this->assertIsArray($cm->getFieldMapping('phonenumbers'));
