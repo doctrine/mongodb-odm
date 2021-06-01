@@ -155,11 +155,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryTest.php
 
         -
-            message: "#^Call to an undefined method ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:setLastName\\(\\)\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/ReferencesTest.php
-
-        -
             message: "#^Parameter \\#1 \\$coll of method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:isCollectionScheduledForUpdate\\(\\) expects Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\PersistentCollectionInterface, Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<mixed, mixed\\> given\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1011Test.php
@@ -195,26 +190,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
 
         -
-            message: "#^Call to an undefined method ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:getId\\(\\)\\.$#"
-            count: 2
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH593Test.php
-
-        -
-            message: "#^Call to an undefined method ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:getId\\(\\)\\.$#"
-            count: 2
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH602Test.php
-
-        -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$id\\.$#"
-            count: 3
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH852Test.php
-
-        -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$name\\.$#"
-            count: 3
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH852Test.php
-
-        -
             message: "#^Cannot call method current\\(\\) on array\\|int\\|object\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH852Test.php
@@ -243,11 +218,6 @@ parameters:
             message: "#^Result of \\|\\| is always true\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM95Test.php
-
-        -
-            message: "#^Call to an undefined method ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:getId\\(\\)\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/ViewTest.php
 
         -
             message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$birthdate\\.$#"

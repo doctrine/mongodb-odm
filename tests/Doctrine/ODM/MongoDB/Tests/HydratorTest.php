@@ -193,7 +193,11 @@ class HydrationClosureUser
     /** @ODM\Field(type="date") */
     public $birthdate;
 
-    /** @ODM\ReferenceOne(targetDocument=HydrationClosureReferenceOne::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=HydrationClosureReferenceOne::class)
+     *
+     * @var HydrationClosureReferenceOne
+     */
     public $referenceOne;
 
     /** @ODM\ReferenceMany(targetDocument=HydrationClosureReferenceMany::class) */
