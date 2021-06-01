@@ -471,7 +471,7 @@ class QueryTest extends BaseTest
         $collection->expects($this->once())
             ->method('count')
             ->with(['foo' => 'bar'], ['maxTimeMS' => 100, 'skip' => 5, 'readPreference' => $nearest])
-            ->will($this->returnValue(100));
+            ->willReturn(100);
 
         $queryArray = [
             'type' => Query::TYPE_COUNT,
@@ -501,7 +501,7 @@ class QueryTest extends BaseTest
         $collection->expects($this->once())
             ->method('find')
             ->with(['foo' => 'bar'], ['maxTimeMS' => 100, 'skip' => 5, 'readPreference' => $nearest])
-            ->will($this->returnValue($cursor));
+            ->willReturn($cursor);
 
         $queryArray = [
             'type' => Query::TYPE_FIND,
@@ -530,7 +530,7 @@ class QueryTest extends BaseTest
         $collection->expects($this->once())
             ->method('find')
             ->with([], [])
-            ->will($this->returnValue($cursor));
+            ->willReturn($cursor);
 
         $queryArray = [
             'type' => Query::TYPE_FIND,

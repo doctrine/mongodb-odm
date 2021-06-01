@@ -28,7 +28,7 @@ class PersistentCollectionTest extends BaseTest
         $collection->expects($this->once())
             ->method('slice')
             ->with($start, $limit)
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $pCollection = new PersistentCollection($collection, $this->dm, $this->uow);
         $pCollection->slice($start, $limit);
     }

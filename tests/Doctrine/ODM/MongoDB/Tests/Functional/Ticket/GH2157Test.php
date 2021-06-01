@@ -36,7 +36,7 @@ class GH2157Test extends BaseTest
             ->execute()->toArray();
 
         $this->assertEquals(4, $result[0]['count'][0]['count']);
-        $this->assertEquals(2, count($result[0]['limitedResults']));
+        $this->assertCount(2, $result[0]['limitedResults']);
     }
 }
 

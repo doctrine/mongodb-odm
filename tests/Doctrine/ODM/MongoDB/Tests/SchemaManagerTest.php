@@ -286,7 +286,7 @@ class SchemaManagerTest extends BaseTest
         $collection
             ->expects($this->once())
             ->method('listIndexes')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator([]))));
+            ->willReturn(new IndexInfoIteratorIterator(new ArrayIterator([])));
         $collection
             ->expects($this->once())
             ->method('createIndex')
@@ -317,7 +317,7 @@ class SchemaManagerTest extends BaseTest
         $collection
             ->expects($this->once())
             ->method('listIndexes')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator($indexes))));
+            ->willReturn(new IndexInfoIteratorIterator(new ArrayIterator($indexes)));
         $collection
             ->expects($this->once())
             ->method('createIndex')
@@ -426,7 +426,7 @@ EOT;
         $expectedValidatorBson = fromJSON($expectedValidatorJson);
         $expectedValidator     = toPHP($expectedValidatorBson, []);
         $database
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('command')
             ->with(
                 [
@@ -455,7 +455,7 @@ EOT;
         $class    = $this->dm->getClassMetadata(CmsArticle::class);
         $database = $this->documentDatabases[$this->getDatabaseName($class)];
         $database
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('command')
             ->with(
                 [

@@ -845,7 +845,7 @@ class BuilderTest extends BaseTest
 
         $point->expects($this->once())
             ->method('jsonSerialize')
-            ->will($this->returnValue($json));
+            ->willReturn($json);
 
         return $point;
     }
