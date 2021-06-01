@@ -69,7 +69,7 @@ class MODM90Test extends BaseTest
 
         $testDoc = $dm->find(MODM90TestDocument::class, $testDoc->id);
 
-        $this->assertEquals($testDoc->embedded->type, 'test2');
+        $this->assertEquals('test2', $testDoc->embedded->type);
     }
 }
 
