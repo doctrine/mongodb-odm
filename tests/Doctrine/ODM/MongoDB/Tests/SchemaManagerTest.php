@@ -182,7 +182,6 @@ class SchemaManagerTest extends BaseTest
 
         foreach ($this->documentBuckets as $class => $bucket) {
             $bucket->getFilesCollection()
-                ->expects($this->any())
                 ->method('listIndexes')
                 ->willReturn([]);
             $bucket->getFilesCollection()
@@ -191,7 +190,6 @@ class SchemaManagerTest extends BaseTest
                 ->with(['filename' => 1, 'uploadDate' => 1], $this->writeOptions($expectedWriteOptions));
 
             $bucket->getChunksCollection()
-                ->expects($this->any())
                 ->method('listIndexes')
                 ->willReturn([]);
             $bucket->getChunksCollection()
@@ -236,7 +234,6 @@ class SchemaManagerTest extends BaseTest
         foreach ($this->documentBuckets as $class => $bucket) {
             if ($class === $fileBucket) {
                 $bucket->getFilesCollection()
-                    ->expects($this->any())
                     ->method('listIndexes')
                     ->willReturn([]);
                 $bucket->getFilesCollection()
@@ -245,7 +242,6 @@ class SchemaManagerTest extends BaseTest
                     ->with(['filename' => 1, 'uploadDate' => 1], $this->writeOptions($expectedWriteOptions));
 
                 $bucket->getChunksCollection()
-                    ->expects($this->any())
                     ->method('listIndexes')
                     ->willReturn([]);
                 $bucket->getChunksCollection()
@@ -1098,8 +1094,8 @@ EOT;
     private function getMockBucket()
     {
         $mock = $this->createMock(Bucket::class);
-        $mock->expects($this->any())->method('getFilesCollection')->willReturn($this->getMockCollection());
-        $mock->expects($this->any())->method('getChunksCollection')->willReturn($this->getMockCollection());
+        $mock->method('getFilesCollection')->willReturn($this->getMockCollection());
+        $mock->method('getChunksCollection')->willReturn($this->getMockCollection());
 
         return $mock;
     }
