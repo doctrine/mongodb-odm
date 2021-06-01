@@ -408,7 +408,7 @@ class AtomicSetTest extends BaseTest
         // Create a book which has one chapter with one page.
         $chapter1 = new Chapter();
         $chapter1->pages->add(new Page(1));
-        $book = new Book('title');
+        $book = new Book();
         $book->chapters->add($chapter1);
 
         $this->dm->persist($book);
