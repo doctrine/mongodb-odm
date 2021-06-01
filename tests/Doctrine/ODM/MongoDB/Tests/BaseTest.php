@@ -17,7 +17,6 @@ use function array_key_exists;
 use function array_map;
 use function getenv;
 use function in_array;
-use function is_callable;
 use function iterator_to_array;
 use function preg_match;
 use function version_compare;
@@ -95,12 +94,6 @@ abstract class BaseTest extends TestCase
      */
     public static function assertArraySubset($subset, $array, bool $checkForObjectIdentity = false, string $message = ''): void
     {
-        if (is_callable([parent::class, 'assertArraySubset'])) {
-            parent::assertArraySubset($subset, $array, $checkForObjectIdentity, $message);
-
-            return;
-        }
-
         foreach ($subset as $key => $value) {
             self::assertArrayHasKey($key, $array, $message);
 
