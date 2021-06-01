@@ -143,7 +143,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             }
 
             $document = $this->getDocumentPersister()->load($criteria);
-            if ($document) {
+            if ($document !== null) {
                 $this->uow->lock($document, $lockMode, $lockVersion);
             }
 

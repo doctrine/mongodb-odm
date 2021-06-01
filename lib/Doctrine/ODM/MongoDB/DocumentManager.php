@@ -28,6 +28,7 @@ use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
+use ProxyManager\Proxy\GhostObjectInterface;
 use RuntimeException;
 use Throwable;
 
@@ -599,9 +600,15 @@ class DocumentManager implements ObjectManager
      * loads itself on first access.
      *
      * @param mixed $identifier
+     * @psalm-param class-string<T> $documentName
+     *
+     * @psalm-return T|(T&GhostObjectInterface<T>)
+     *
+     * @template T of object
      */
     public function getReference(string $documentName, $identifier): object
     {
+        /** @psalm-var ClassMetadata<T> $class */
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         assert($class instanceof ClassMetadata);
         $document = $this->unitOfWork->tryGetById($identifier, $class);
