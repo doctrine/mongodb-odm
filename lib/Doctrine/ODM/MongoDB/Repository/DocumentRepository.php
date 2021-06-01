@@ -49,7 +49,10 @@ class DocumentRepository implements ObjectRepository, Selectable
     /** @var UnitOfWork */
     protected $uow;
 
-    /** @var ClassMetadata */
+    /**
+     * @var ClassMetadata
+     * @psalm-var ClassMetadata<T>
+     */
     protected $class;
 
     /**
