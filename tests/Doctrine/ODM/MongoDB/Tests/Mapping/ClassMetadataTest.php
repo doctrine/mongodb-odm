@@ -464,7 +464,7 @@ class ClassMetadataTest extends BaseTest
         $class    = $this->dm->getClassMetadata(User::class);
         $document = new stdClass();
 
-        $this->assertInstanceOf('\stdClass', $document);
+        $this->assertInstanceOf(stdClass::class, $document);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected document class "Documents\User"; found: "stdClass"');

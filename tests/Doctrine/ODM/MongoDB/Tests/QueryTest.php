@@ -316,7 +316,7 @@ class QueryTest extends BaseTest
     {
         $identifier = new ObjectId();
 
-        $qb    = $this->dm->createQueryBuilder(__NAMESPACE__ . '\EmbedTest')
+        $qb    = $this->dm->createQueryBuilder(EmbedTest::class)
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.pet.owner.$id')->equals((string) $identifier);
         $query = $qb->getQuery();
