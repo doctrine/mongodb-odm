@@ -62,30 +62,28 @@ use function trigger_deprecation;
  *      fieldName?: string,
  *      name?: string,
  *      strategy?: string,
- *      notSaved?: bool,
  *      association?: int,
  *      id?: bool,
  *      collectionClass?: class-string,
- *      cascade?: list<string>,
+ *      cascade?: list<string>|string,
  *      embedded?: bool,
  *      orphanRemoval?: bool,
  *      options?: array<string, mixed>,
  *      nullable?: bool,
  *      reference?: bool,
  *      storeAs?: string,
- *      targetDocument?: class-string,
+ *      targetDocument?: class-string|null,
  *      mappedBy?: string|null,
  *      inversedBy?: string|null,
  *      discriminatorField?: string,
  *      defaultDiscriminatorValue?: string,
  *      discriminatorMap?: array<string, class-string>,
  *      repositoryMethod?: string|null,
- *      sort?: array<string, string>,
+ *      sort?: array<string, string|int>,
  *      limit?: int|null,
  *      skip?: int|null,
  *      version?: bool,
  *      lock?: bool,
- *      notSaved?: bool,
  *      inherited?: string,
  *      declared?: class-string
  * }
@@ -105,21 +103,21 @@ use function trigger_deprecation;
  *      association?: int,
  *      id?: bool,
  *      collectionClass?: class-string,
- *      cascade?: list<string>,
+ *      cascade?: list<string>|string,
  *      embedded?: bool,
  *      orphanRemoval?: bool,
  *      options?: array<string, mixed>,
  *      nullable?: bool,
  *      reference?: bool,
  *      storeAs?: string,
- *      targetDocument?: class-string,
+ *      targetDocument?: class-string|null,
  *      mappedBy?: string|null,
  *      inversedBy?: string|null,
  *      discriminatorField?: string,
  *      defaultDiscriminatorValue?: string,
  *      discriminatorMap?: array<string, class-string>,
  *      repositoryMethod?: string|null,
- *      sort?: array<string, string>,
+ *      sort?: array<string, string|int>,
  *      limit?: int|null,
  *      skip?: int|null,
  *      version?: bool,
@@ -128,7 +126,7 @@ use function trigger_deprecation;
  *      inherited?: string,
  *      declared?: class-string
  * }
- * @psalm-type AssociationMappingField = array{
+ * @psalm-type AssociationFieldMapping = array{
  *      type: string,
  *      fieldName: string,
  *      name: string,
@@ -139,13 +137,12 @@ use function trigger_deprecation;
  *      isCascadeDetach: bool,
  *      isOwningSide: bool,
  *      isInverseSide: bool,
- *      targetDocument: class-string,
+ *      targetDocument: class-string|null,
  *      association: int,
  *      strategy?: string,
- *      notSaved?: bool,
  *      id?: bool,
  *      collectionClass?: class-string,
- *      cascade?: list<string>,
+ *      cascade?: list<string>|string,
  *      embedded?: bool,
  *      orphanRemoval?: bool,
  *      options?: array<string, mixed>,
@@ -158,7 +155,7 @@ use function trigger_deprecation;
  *      defaultDiscriminatorValue?: string,
  *      discriminatorMap?: array<string, class-string>,
  *      repositoryMethod?: string|null,
- *      sort?: array<string, string>,
+ *      sort?: array<string, string|int>,
  *      limit?: int|null,
  *      skip?: int|null,
  *      version?: bool,
@@ -535,7 +532,7 @@ use function trigger_deprecation;
      * Keys are field names and values are mapping definitions.
      *
      * @var array<string, mixed>
-     * @psalm-var array<string, AssociationMappingField>
+     * @psalm-var array<string, AssociationFieldMapping>
      */
     public $associationMappings = [];
 
@@ -1535,7 +1532,7 @@ use function trigger_deprecation;
     /**
      * Map a collection of document references.
      *
-     * @psalm-param FieldMapping $mapping
+     * @psalm-param FieldMappingConfig $mapping
      */
     public function mapManyReference(array $mapping): void
     {
@@ -1569,7 +1566,7 @@ use function trigger_deprecation;
      *
      * @internal
      *
-     * @psalm-param FieldMapping $mapping
+     * @psalm-param AssociationFieldMapping $mapping
      *
      * @throws MappingException
      */

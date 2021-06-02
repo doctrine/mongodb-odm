@@ -287,7 +287,7 @@ class QueryTest extends BaseTest
             ->updateOne(User::class)
             ->field('nullTest')
             ->type('null')
-            ->unsetField('nullTest');
+            ->unsetField();
         $query = $qb->getQuery();
         $query->execute();
 

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MongoDB\BSON\Binary;
@@ -119,10 +120,18 @@ class GH852Document
     /** @ODM\Field(type="string") */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument=GH852Document::class, cascade="all") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH852Document::class, cascade="all")
+     *
+     * @var GH852Document
+     */
     public $refOne;
 
-    /** @ODM\ReferenceMany(targetDocument=GH852Document::class, cascade="all") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH852Document::class, cascade="all")
+     *
+     * @var Collection<int, GH852Document>
+     */
     public $refMany;
 
     public function __construct()

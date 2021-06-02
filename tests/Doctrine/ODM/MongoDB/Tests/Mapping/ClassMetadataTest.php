@@ -16,7 +16,9 @@ use Documents\Account;
 use Documents\Address;
 use Documents\Album;
 use Documents\Bars\Bar;
+use Documents\CmsGroup;
 use Documents\CmsUser;
+use Documents\CustomRepository\Repository;
 use Documents\SpecialUser;
 use Documents\User;
 use Documents\UserName;
@@ -154,7 +156,7 @@ class ClassMetadataTest extends BaseTest
         $cm->mapManyEmbedded(
             [
                 'fieldName' => 'groups',
-                'targetDocument' => 'CmsGroup',
+                'targetDocument' => CmsGroup::class,
             ]
         );
 
@@ -236,7 +238,7 @@ class ClassMetadataTest extends BaseTest
     {
         $cm = new ClassMetadata(CmsUser::class);
         $cm->mapField(['fieldName' => 'name', 'type' => Type::STRING]);
-        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => 'CmsUser']);
+        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => CmsUser::class]);
 
         $this->assertEquals('one', $cm->fieldMappings['name']['type']);
     }
@@ -244,7 +246,7 @@ class ClassMetadataTest extends BaseTest
     public function testDuplicateFieldAndAssocationMapping2()
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => 'CmsUser']);
+        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => CmsUser::class]);
         $cm->mapField(['fieldName' => 'name', 'columnName' => 'name', 'type' => 'string']);
 
         $this->assertEquals('string', $cm->fieldMappings['name']['type']);
@@ -416,16 +418,16 @@ class ClassMetadataTest extends BaseTest
 
     public function testSetCustomRepositoryClass()
     {
-        $cm            = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ClassMetadataTest');
+        $cm            = new ClassMetadata(self::class);
         $cm->namespace = 'Doctrine\ODM\MongoDB\Tests\Mapping';
 
-        $cm->setCustomRepositoryClass('TestCustomRepositoryClass');
+        $cm->setCustomRepositoryClass(Repository::class);
 
-        $this->assertEquals('TestCustomRepositoryClass', $cm->customRepositoryClassName);
+        $this->assertEquals(Repository::class, $cm->customRepositoryClassName);
 
-        $cm->setCustomRepositoryClass('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass');
+        $cm->setCustomRepositoryClass(TestCustomRepositoryClass::class);
 
-        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass', $cm->customRepositoryClassName);
+        $this->assertEquals(TestCustomRepositoryClass::class, $cm->customRepositoryClassName);
     }
 
     public function testEmbeddedAssociationsAlwaysCascade()
@@ -636,9 +638,19 @@ class ClassMetadataTest extends BaseTest
 
         $mapping = [
             'fieldName' => 'assoc',
+            'name' => 'assoc',
             'reference' => true,
             'type' => 'one',
             'storeAs' => ClassMetadata::REFERENCE_STORE_AS_ID,
+            'isCascadeRemove' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeMerge' => false,
+            'isCascadeDetach' => false,
+            'isOwningSide' => false,
+            'isInverseSide' => false,
+            'targetDocument' => null,
+            'association' => ClassMetadata::REFERENCE_ONE,
         ];
 
         $cm->addInheritedAssociationMapping($mapping);

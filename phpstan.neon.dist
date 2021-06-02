@@ -1,11 +1,17 @@
 includes:
   - phpstan-baseline.neon
+  - vendor/phpstan/phpstan-phpunit/extension.neon
 
 parameters:
   level: 5
   paths:
-    - %rootDir%/../../../benchmark
-    - %rootDir%/../../../lib
+    - benchmark
+    - lib
+    - tests
   excludes_analyse:
     - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php
     - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php
+    - tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures/User.php
+    - tests/Hydrators/
+    - tests/PersistentCollections/
+    - tests/Proxies/
