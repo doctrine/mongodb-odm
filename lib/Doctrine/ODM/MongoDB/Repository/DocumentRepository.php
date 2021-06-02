@@ -49,7 +49,10 @@ class DocumentRepository implements ObjectRepository, Selectable
     /** @var UnitOfWork */
     protected $uow;
 
-    /** @var ClassMetadata */
+    /**
+     * @var ClassMetadata
+     * @psalm-var ClassMetadata<T>
+     */
     protected $class;
 
     /**
@@ -140,7 +143,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             }
 
             $document = $this->getDocumentPersister()->load($criteria);
-            if ($document) {
+            if ($document !== null) {
                 $this->uow->lock($document, $lockMode, $lockVersion);
             }
 

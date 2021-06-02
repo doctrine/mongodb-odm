@@ -359,6 +359,11 @@ final class UnitOfWork implements PropertyChangedListener
      * Set the document persister instance to use for the given document name
      *
      * @internal
+     *
+     * @psalm-param class-string<T> $documentName
+     * @psalm-param Persisters\DocumentPersister<T> $persister
+     *
+     * @template T of object
      */
     public function setDocumentPersister(string $documentName, Persisters\DocumentPersister $persister): void
     {
@@ -619,6 +624,11 @@ final class UnitOfWork implements PropertyChangedListener
      * If the document is already fully MANAGED (has been fetched from the database before)
      * and any changes to its properties are detected, then a reference to the document is stored
      * there to mark it for an update.
+     *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $document
+     *
+     * @template T of object
      */
     public function computeChangeSet(ClassMetadata $class, object $document): void
     {
@@ -636,6 +646,11 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Used to do the common work of computeChangeSet and recomputeSingleDocumentChangeSet
+     *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $document
+     *
+     * @template T of object
      */
     private function computeOrRecomputeChangeSet(ClassMetadata $class, object $document, bool $recompute = false): void
     {
@@ -1028,7 +1043,12 @@ final class UnitOfWork implements PropertyChangedListener
      * because this method is invoked during a commit cycle then the change sets are added.
      * whereby changes detected in this method prevail.
      *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $document
+     *
      * @throws InvalidArgumentException If the passed document is not MANAGED.
+     *
+     * @template T of object
      */
     public function recomputeSingleDocumentChangeSet(ClassMetadata $class, object $document): void
     {
@@ -1051,7 +1071,12 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $document
+     *
      * @throws InvalidArgumentException If there is something wrong with document's identifier.
+     *
+     * @template T of object
      */
     private function persistNew(ClassMetadata $class, object $document): void
     {
@@ -1099,6 +1124,11 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes all document insertions for documents of the specified type.
+     *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T[] $documents
+     *
+     * @template T of object
      */
     private function executeInserts(ClassMetadata $class, array $documents, array $options = []): void
     {
@@ -1118,6 +1148,11 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes all document upserts for documents of the specified type.
+     *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T[] $documents
+     *
+     * @template T of object
      */
     private function executeUpserts(ClassMetadata $class, array $documents, array $options = []): void
     {
@@ -1137,6 +1172,11 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes all document updates for documents of the specified type.
+     *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T[] $documents
+     *
+     * @template T of object
      */
     private function executeUpdates(ClassMetadata $class, array $documents, array $options = []): void
     {
@@ -1162,6 +1202,11 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes all document deletions for documents of the specified type.
+     *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T[] $documents
+     *
+     * @template T of object
      */
     private function executeDeletions(ClassMetadata $class, array $documents, array $options = []): void
     {
@@ -1208,7 +1253,12 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $document
+     *
      * @throws InvalidArgumentException
+     *
+     * @template T of object
      */
     public function scheduleForInsert(ClassMetadata $class, object $document): void
     {
@@ -1241,7 +1291,12 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $document
+     *
      * @throws InvalidArgumentException
+     *
+     * @template T of object
      */
     public function scheduleForUpsert(ClassMetadata $class, object $document): void
     {
@@ -1523,8 +1578,13 @@ final class UnitOfWork implements PropertyChangedListener
      * @internal
      *
      * @param mixed $id Document identifier
+     * @psalm-param ClassMetadata<T> $class
+     *
+     * @psalm-return T
      *
      * @throws InvalidArgumentException If the class does not have an identifier.
+     *
+     * @template T of object
      */
     public function getById($id, ClassMetadata $class): object
     {
@@ -1544,10 +1604,14 @@ final class UnitOfWork implements PropertyChangedListener
      * @internal
      *
      * @param mixed $id Document identifier
+     * @psalm-param ClassMetadata<T> $class
      *
      * @return mixed The found document or FALSE.
+     * @psalm-return T|false
      *
      * @throws InvalidArgumentException If the class does not have an identifier.
+     *
+     * @template T of object
      */
     public function tryGetById($id, ClassMetadata $class)
     {
