@@ -220,57 +220,12 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM95Test.php
 
         -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$birthdate\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/HydratorTest.php
-
-        -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$embedMany\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/HydratorTest.php
-
-        -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$embedOne\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/HydratorTest.php
-
-        -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$id\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/HydratorTest.php
-
-        -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$name\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/HydratorTest.php
-
-        -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$referenceMany\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/HydratorTest.php
-
-        -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$referenceOne\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/HydratorTest.php
-
-        -
-            message: "#^Access to an undefined property ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:\\$title\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/HydratorTest.php
-
-        -
             message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:mapField\\(\\)\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
 
         -
             message: "#^Access to an undefined property Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\ClassMetadataTest\\>\\:\\:\\$namespace\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
-
-        -
-            message: "#^Call to an undefined method ProxyManager\\\\Proxy\\\\GhostObjectInterface\\:\\:getName\\(\\)\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
 

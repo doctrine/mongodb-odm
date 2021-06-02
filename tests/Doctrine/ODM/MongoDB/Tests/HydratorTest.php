@@ -196,7 +196,7 @@ class HydrationClosureUser
     /**
      * @ODM\ReferenceOne(targetDocument=HydrationClosureReferenceOne::class)
      *
-     * @var HydrationClosureReferenceOne
+     * @var HydrationClosureReferenceOne|null
      */
     public $referenceOne;
 
