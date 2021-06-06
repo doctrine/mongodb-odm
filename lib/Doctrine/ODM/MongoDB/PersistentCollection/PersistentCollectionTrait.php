@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -21,6 +22,10 @@ use function spl_object_hash;
 
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
+ *
+ * @psalm-import-type FieldMapping from ClassMetadata
+ * @template TKey of array-key
+ * @template T of object
  */
 trait PersistentCollectionTrait
 {
@@ -28,18 +33,21 @@ trait PersistentCollectionTrait
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
      *
-     * @var array
+     * @var array<TKey, T>
      */
     private $snapshot = [];
 
     /**
-     * Collection's owning entity
+     * Collection's owning document
      *
      * @var object|null
      */
     private $owner;
 
-    /** @var array|null */
+    /**
+     * @var array|null
+     * @psalm-var FieldMapping|null
+     */
     private $mapping;
 
     /**
@@ -60,7 +68,7 @@ trait PersistentCollectionTrait
     /**
      * The wrapped Collection instance.
      *
-     * @var BaseCollection
+     * @var BaseCollection<TKey, T>
      */
     private $coll;
 
@@ -130,6 +138,7 @@ trait PersistentCollectionTrait
             return;
         }
 
+        /** @psalm-var array<TKey, T> $newObjects */
         $newObjects = [];
 
         if ($this->isDirty) {
@@ -164,7 +173,7 @@ trait PersistentCollectionTrait
     /**
      * Marks this collection as changed/dirty.
      */
-    private function changed()
+    private function changed(): void
     {
         if ($this->isDirty) {
             return;
@@ -681,7 +690,7 @@ trait PersistentCollectionTrait
      * 2. New collection is not dirty, if reused on other document nothing
      * changes.
      * 3. Snapshot leads to invalid diffs being generated.
-     * 4. Lazy loading grabs entities from old owner object.
+     * 4. Lazy loading grabs documents from old owner object.
      * 5. New collection is connected to old owner and leads to duplicate keys.
      */
     public function __clone()
@@ -730,11 +739,10 @@ trait PersistentCollectionTrait
      * Actual logic for removing element by its key.
      *
      * @param mixed $offset
-     * @param bool  $arrayAccess
      *
-     * @return bool
+     * @return bool|T|null
      */
-    private function doRemove($offset, $arrayAccess)
+    private function doRemove($offset, bool $arrayAccess)
     {
         $this->initialize();
         if ($arrayAccess) {
@@ -758,9 +766,8 @@ trait PersistentCollectionTrait
      *
      * @param mixed $offset
      * @param mixed $value
-     * @param bool  $arrayAccess
      */
-    private function doSet($offset, $value, $arrayAccess)
+    private function doSet($offset, $value, bool $arrayAccess): void
     {
         $arrayAccess ? $this->coll->offsetSet($offset, $value) : $this->coll->set($offset, $value);
 
@@ -777,10 +784,8 @@ trait PersistentCollectionTrait
      *
      * Embedded documents are automatically considered as "orphan removal enabled" because they might have references
      * that require to trigger cascade remove operations.
-     *
-     * @return bool
      */
-    private function isOrphanRemovalEnabled()
+    private function isOrphanRemovalEnabled(): bool
     {
         if ($this->mapping === null) {
             return false;
@@ -795,10 +800,8 @@ trait PersistentCollectionTrait
 
     /**
      * Checks whether collection owner needs to be scheduled for dirty change in case the collection is modified.
-     *
-     * @return bool
      */
-    private function needsSchedulingForSynchronization()
+    private function needsSchedulingForSynchronization(): bool
     {
         return $this->owner && $this->dm && ! empty($this->mapping['isOwningSide'])
             && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify();

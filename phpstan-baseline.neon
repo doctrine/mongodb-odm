@@ -228,3 +228,27 @@ parameters:
             message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:writeOptions\\(\\) should return PHPUnit\\\\Framework\\\\Constraint\\\\Constraint but returns PHPUnit\\\\Framework\\\\Constraint\\\\ArraySubset\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Access to offset '.+' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
+            count: 12
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getMapping\\(\\) should return array\\('type' \\=\\> string, 'fieldName' \\=\\> string, 'name' \\=\\> string, 'isCascadeRemove' \\=\\> bool, 'isCascadePersist' \\=\\> bool, 'isCascadeRefresh' \\=\\> bool, 'isCascadeMerge' \\=\\> bool, 'isCascadeDetach' \\=\\> bool, \\.\\.\\.\\) but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$mapping has unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping as its type\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$mapping \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\) does not accept array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|int\\|string\\|null\\>\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php

@@ -42,7 +42,19 @@ class PersistentCollectionTest extends BaseTest
         $unserialized = unserialize($serialized);
         assert($unserialized instanceof PersistentCollection);
 
-        $unserialized->setOwner($owner, ['targetDocument' => stdClass::class]);
+        $unserialized->setOwner($owner, [
+            'type' => ClassMetadata::ONE,
+            'name' => 'name',
+            'fieldName' => 'fieldName',
+            'isCascadeRemove' => false,
+            'isCascadePersist' => false,
+            'isCascadeRefresh' => false,
+            'isCascadeMerge' => false,
+            'isCascadeDetach' => false,
+            'isOwningSide' => false,
+            'isInverseSide' => false,
+            'targetDocument' => stdClass::class,
+        ]);
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage(
             'No DocumentManager is associated with this PersistentCollection, ' .
@@ -274,9 +286,10 @@ class PersistentCollectionTest extends BaseTest
     public function testOffsetGetIsForwarded()
     {
         $collection = $this->getMockCollection();
-        $collection->expects($this->once())->method('offsetGet')->willReturn(2);
+        $object     = new stdClass();
+        $collection->expects($this->once())->method('offsetGet')->willReturn($object);
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
-        $this->assertSame(2, $pcoll[0]);
+        $this->assertSame($object, $pcoll[0]);
     }
 
     public function testOffsetUnsetIsForwarded()
@@ -302,12 +315,12 @@ class PersistentCollectionTest extends BaseTest
         $collection = $this->getMockCollection();
         $collection->expects($this->exactly(2))->method('offsetSet');
         $pcoll    = new PersistentCollection($collection, $this->dm, $this->uow);
-        $pcoll[]  = 1;
-        $pcoll[1] = 2;
+        $pcoll[]  = new stdClass();
+        $pcoll[1] = new stdClass();
         $collection->expects($this->once())->method('add');
-        $pcoll->add(3);
+        $pcoll->add(new stdClass());
         $collection->expects($this->once())->method('set');
-        $pcoll->set(3, 4);
+        $pcoll->set(3, new stdClass());
     }
 
     public function testIsEmptyIsForwardedWhenCollectionIsInitialized()
