@@ -418,6 +418,7 @@ class EmbeddedTest extends BaseTest
 
         $check = $this->dm->getDocumentCollection(User::class)->findOne();
         $this->assertEmpty($check['phonenumbers']);
+        $this->assertNull($check['addressNullable']);
         $this->assertArrayNotHasKey('address', $check);
     }
 
