@@ -230,11 +230,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
 
         -
-            message: "#^Function mongodb\\\\bson\\\\tophp invoked with 1 parameter, 2 required\\.$#"
-            count: 2
-            path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
-
-        -
             message: "#^Access to an undefined property Documents\\\\CmsArticle\\:\\:\\$title\\.$#"
             count: 4
             path: tests/Doctrine/ODM/MongoDB/Tests/Persisters/PersistenceBuilderTest.php

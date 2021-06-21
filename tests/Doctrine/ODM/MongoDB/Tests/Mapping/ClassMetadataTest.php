@@ -67,7 +67,6 @@ class ClassMetadataTest extends BaseTest
         $cm->setVersioned(true);
         $cm->setVersionField('version');
         $validatorJson = '{ "$and": [ { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\\\.com$", "options": "" } } } } ] }';
-        /** @psalm-suppress TooFewArguments */
         $cm->setValidator(toPHP(fromJSON($validatorJson)));
         $cm->setValidationAction(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN);
         $cm->setValidationLevel(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF);
@@ -100,7 +99,6 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals('lock', $cm->lockField);
         $this->assertEquals(true, $cm->isVersioned);
         $this->assertEquals('version', $cm->versionField);
-        /** @psalm-suppress TooFewArguments */
         $this->assertEquals(toPHP(fromJSON($validatorJson)), $cm->getValidator());
         $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $cm->getValidationAction());
         $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF, $cm->getValidationLevel());
