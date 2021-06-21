@@ -17,11 +17,14 @@ class EcommerceTest extends BaseTest
     {
         parent::setUp();
 
-        $currencies = ['USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125];
+        $currencies  = [];
+        $multipliers = ['USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125];
 
-        foreach ($currencies as $name => &$multiplier) {
-            $multiplier = new Currency($name, $multiplier);
-            $this->dm->persist($multiplier);
+        foreach ($multipliers as $currencyName => $multiplier) {
+            $currency = new Currency($currencyName, $multiplier);
+            $this->dm->persist($currency);
+
+            $currencies[$currencyName] = $currency;
         }
 
         $product = new ConfigurableProduct('T-Shirt');

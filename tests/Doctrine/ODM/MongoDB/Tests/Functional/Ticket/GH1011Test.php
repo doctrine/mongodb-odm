@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1011Test extends BaseTest
@@ -33,7 +34,9 @@ class GH1011Test extends BaseTest
         $doc->embeds   = new ArrayCollection();
         $doc->embeds->add(new GH1011Embedded('test2'));
         $this->uow->computeChangeSets();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc->embeds);
         $this->assertTrue($this->uow->isCollectionScheduledForUpdate($doc->embeds));
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $oldCollection);
         $this->assertFalse($this->uow->isCollectionScheduledForDeletion($oldCollection));
     }
 }

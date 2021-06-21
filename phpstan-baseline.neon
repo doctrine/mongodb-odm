@@ -90,16 +90,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
 
         -
-            message: "#^Parameter \\#1 \\$object of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:detach\\(\\) expects object, float\\|int given\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
-
-        -
-            message: "#^Parameter \\#2 \\$currency of class Documents\\\\Ecommerce\\\\Money constructor expects Documents\\\\Ecommerce\\\\Currency, int given\\.$#"
-            count: 6
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
-
-        -
             message: "#^Cannot call method getCount\\(\\) on array\\|int\\|object\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FindAndModifyTest.php
@@ -153,11 +143,6 @@ parameters:
             message: "#^Cannot call method toArray\\(\\) on array\\|int\\|object\\.$#"
             count: 2
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryTest.php
-
-        -
-            message: "#^Parameter \\#1 \\$coll of method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:isCollectionScheduledForUpdate\\(\\) expects Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\PersistentCollectionInterface, Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<mixed, mixed\\> given\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1011Test.php
 
         -
             message: "#^Comparison operation \"\\<\" between \\(array\\|float\\|int\\) and 0 results in an error\\.$#"
@@ -228,11 +213,6 @@ parameters:
             message: "#^Access to an undefined property Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\ClassMetadataTest\\>\\:\\:\\$namespace\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
-
-        -
-            message: "#^Access to an undefined property Documents\\\\CmsArticle\\:\\:\\$title\\.$#"
-            count: 4
-            path: tests/Doctrine/ODM/MongoDB/Tests/Persisters/PersistenceBuilderTest.php
 
         -
             message: "#^Parameter \\#1 \\$primer of method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Builder\\:\\:prime\\(\\) expects bool\\|\\(callable\\(\\)\\: mixed\\), 1 given\\.$#"

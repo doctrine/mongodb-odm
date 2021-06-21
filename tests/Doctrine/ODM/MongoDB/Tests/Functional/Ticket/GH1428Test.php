@@ -28,7 +28,7 @@ class GH1428Test extends BaseTest
             $this->dm->flush();
             $this->assertTrue(true);
         } catch (Notice $ex) {
-            $this->fail($ex);
+            $this->fail($ex->getMessage());
         }
     }
 }
