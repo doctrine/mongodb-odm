@@ -101,6 +101,8 @@ class DocumentRepository implements ObjectRepository, Selectable
      *
      * @param mixed $id Identifier.
      *
+     * @psalm-return T|null
+     *
      * @throws MappingException
      * @throws LockException
      */
@@ -155,6 +157,8 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds all documents in the repository.
+     *
+     * {@inheritDoc}
      */
     public function findAll(): array
     {
@@ -164,8 +168,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Finds documents by a set of criteria.
      *
-     * @param int|null $limit
-     * @param int|null $offset
+     * {@inheritDoc}
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
@@ -175,14 +178,20 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Finds a single document by a set of criteria.
      *
-     * @param array      $criteria
-     * @param array|null $sort
+     * @param array<string, mixed>|null $sort
+     * @param array<string, mixed>      $criteria
+     *
+     * @return object|null The object.
+     * @psalm-return T|null
      */
     public function findOneBy(array $criteria, ?array $sort = null): ?object
     {
         return $this->getDocumentPersister()->load($criteria, null, [], 0, $sort);
     }
 
+    /**
+     * @psalm-return class-string<T>
+     */
     public function getDocumentName(): string
     {
         return $this->documentName;
@@ -193,11 +202,17 @@ class DocumentRepository implements ObjectRepository, Selectable
         return $this->dm;
     }
 
+    /**
+     * @psalm-return ClassMetadata<T>
+     */
     public function getClassMetadata(): ClassMetadata
     {
         return $this->class;
     }
 
+    /**
+     * @psalm-return class-string<T>
+     */
     public function getClassName(): string
     {
         return $this->getDocumentName();
@@ -207,7 +222,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Selects all elements from a selectable that match the expression and
      * returns a new collection containing these elements.
      *
-     * @see Selectable::matching()
+     * {@inheritDoc}
      */
     public function matching(Criteria $criteria): ArrayCollection
     {
