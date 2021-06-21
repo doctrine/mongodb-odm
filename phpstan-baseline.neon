@@ -245,21 +245,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
 
         -
-            message: "#^Call to an undefined method MongoDB\\\\Collection\\:\\:expects\\(\\)\\.$#"
-            count: 14
-            path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
-
-        -
             message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:writeOptions\\(\\) should return PHPUnit\\\\Framework\\\\Constraint\\\\Constraint but returns PHPUnit\\\\Framework\\\\Constraint\\\\ArraySubset\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
-
-        -
-            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'DateTimeImmutable' and null will always evaluate to false\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Types/DateImmutableTypeTest.php
-
-        -
-            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'DateTime' and null will always evaluate to false\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Types/DateTypeTest.php

@@ -126,10 +126,11 @@ class DateTypeTest extends TestCase
             $return = null;
             eval($type->closureToPHP());
 
+            /** @var DateTime */
             return $return;
         })($input);
 
-        $this->assertInstanceOf('DateTime', $return);
+        $this->assertInstanceOf(DateTime::class, $return);
         $this->assertTimestampEquals($output, $return);
     }
 

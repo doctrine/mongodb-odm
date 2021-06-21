@@ -126,10 +126,11 @@ class DateImmutableTypeTest extends TestCase
             $return = null;
             eval($type->closureToPHP());
 
+            /** @var DateTimeImmutable */
             return $return;
         })($input);
 
-        $this->assertInstanceOf('DateTimeImmutable', $return);
+        $this->assertInstanceOf(DateTimeImmutable::class, $return);
         $this->assertTimestampEquals($output, $return);
     }
 
