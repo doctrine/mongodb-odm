@@ -28,7 +28,7 @@ class PersistentCollectionTest extends BaseTest
         $collection->expects($this->once())
             ->method('slice')
             ->with($start, $limit)
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $pCollection = new PersistentCollection($collection, $this->dm, $this->uow);
         $pCollection->slice($start, $limit);
     }
@@ -42,7 +42,7 @@ class PersistentCollectionTest extends BaseTest
         $unserialized = unserialize($serialized);
         assert($unserialized instanceof PersistentCollection);
 
-        $unserialized->setOwner($owner, ['targetDocument' => '\stdClass']);
+        $unserialized->setOwner($owner, ['targetDocument' => stdClass::class]);
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage(
             'No DocumentManager is associated with this PersistentCollection, ' .

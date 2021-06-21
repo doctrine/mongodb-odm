@@ -181,20 +181,24 @@ class SchemaManagerTest extends BaseTest
         }
 
         foreach ($this->documentBuckets as $class => $bucket) {
-            $bucket->getFilesCollection()
-                ->expects($this->any())
+            $filesCollection = $bucket->getFilesCollection();
+            assert($filesCollection instanceof Collection && $filesCollection instanceof MockObject);
+
+            $chunksCollection = $bucket->getChunksCollection();
+            assert($chunksCollection instanceof Collection && $chunksCollection instanceof MockObject);
+
+            $filesCollection
                 ->method('listIndexes')
                 ->willReturn([]);
-            $bucket->getFilesCollection()
+            $filesCollection
                 ->expects($this->atLeastOnce())
                 ->method('createIndex')
                 ->with(['filename' => 1, 'uploadDate' => 1], $this->writeOptions($expectedWriteOptions));
 
-            $bucket->getChunksCollection()
-                ->expects($this->any())
+            $chunksCollection
                 ->method('listIndexes')
                 ->willReturn([]);
-            $bucket->getChunksCollection()
+            $chunksCollection
                 ->expects($this->atLeastOnce())
                 ->method('createIndex')
                 ->with(['files_id' => 1, 'n' => 1], $this->writeOptions(['unique' => true] + $expectedWriteOptions));
@@ -234,27 +238,31 @@ class SchemaManagerTest extends BaseTest
 
         $fileBucket = $this->dm->getClassMetadata(File::class)->getBucketName();
         foreach ($this->documentBuckets as $class => $bucket) {
+            $filesCollection = $bucket->getFilesCollection();
+            assert($filesCollection instanceof Collection && $filesCollection instanceof MockObject);
+
+            $chunksCollection = $bucket->getChunksCollection();
+            assert($chunksCollection instanceof Collection && $chunksCollection instanceof MockObject);
+
             if ($class === $fileBucket) {
-                $bucket->getFilesCollection()
-                    ->expects($this->any())
+                $filesCollection
                     ->method('listIndexes')
                     ->willReturn([]);
-                $bucket->getFilesCollection()
+                $filesCollection
                     ->expects($this->once())
                     ->method('createIndex')
                     ->with(['filename' => 1, 'uploadDate' => 1], $this->writeOptions($expectedWriteOptions));
 
-                $bucket->getChunksCollection()
-                    ->expects($this->any())
+                $chunksCollection
                     ->method('listIndexes')
                     ->willReturn([]);
-                $bucket->getChunksCollection()
+                $chunksCollection
                     ->expects($this->once())
                     ->method('createIndex')
                     ->with(['files_id' => 1, 'n' => 1], $this->writeOptions(['unique' => true] + $expectedWriteOptions));
             } else {
-                $bucket->getFilesCollection()->expects($this->never())->method('createIndex');
-                $bucket->getChunksCollection()->expects($this->never())->method('createIndex');
+                $filesCollection->expects($this->never())->method('createIndex');
+                $chunksCollection->expects($this->never())->method('createIndex');
             }
         }
 
@@ -286,7 +294,7 @@ class SchemaManagerTest extends BaseTest
         $collection
             ->expects($this->once())
             ->method('listIndexes')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator([]))));
+            ->willReturn(new IndexInfoIteratorIterator(new ArrayIterator([])));
         $collection
             ->expects($this->once())
             ->method('createIndex')
@@ -317,7 +325,7 @@ class SchemaManagerTest extends BaseTest
         $collection
             ->expects($this->once())
             ->method('listIndexes')
-            ->will($this->returnValue(new IndexInfoIteratorIterator(new ArrayIterator($indexes))));
+            ->willReturn(new IndexInfoIteratorIterator(new ArrayIterator($indexes)));
         $collection
             ->expects($this->once())
             ->method('createIndex')
@@ -426,7 +434,7 @@ EOT;
         $expectedValidatorBson = fromJSON($expectedValidatorJson);
         $expectedValidator     = toPHP($expectedValidatorBson, []);
         $database
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('command')
             ->with(
                 [
@@ -455,7 +463,7 @@ EOT;
         $class    = $this->dm->getClassMetadata(CmsArticle::class);
         $database = $this->documentDatabases[$this->getDatabaseName($class)];
         $database
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('command')
             ->with(
                 [
@@ -657,18 +665,24 @@ EOT;
 
         $fileBucketName = $this->dm->getClassMetadata(File::class)->getBucketName();
         foreach ($this->documentBuckets as $bucketName => $bucket) {
+            $filesCollection = $bucket->getFilesCollection();
+            assert($filesCollection instanceof Collection && $filesCollection instanceof MockObject);
+
+            $chunksCollection = $bucket->getChunksCollection();
+            assert($chunksCollection instanceof Collection && $chunksCollection instanceof MockObject);
+
             if ($bucketName === $fileBucketName) {
-                $bucket->getFilesCollection()
+                $filesCollection
                     ->expects($this->once())
                     ->method('drop')
                     ->with($this->writeOptions($expectedWriteOptions));
-                $bucket->getChunksCollection()
+                $chunksCollection
                     ->expects($this->once())
                     ->method('drop')
                     ->with($this->writeOptions($expectedWriteOptions));
             } else {
-                $bucket->getFilesCollection()->expects($this->never())->method('drop');
-                $bucket->getChunksCollection()->expects($this->never())->method('drop');
+                $filesCollection->expects($this->never())->method('drop');
+                $chunksCollection->expects($this->never())->method('drop');
             }
         }
 
@@ -1098,8 +1112,8 @@ EOT;
     private function getMockBucket()
     {
         $mock = $this->createMock(Bucket::class);
-        $mock->expects($this->any())->method('getFilesCollection')->willReturn($this->getMockCollection());
-        $mock->expects($this->any())->method('getChunksCollection')->willReturn($this->getMockCollection());
+        $mock->method('getFilesCollection')->willReturn($this->getMockCollection());
+        $mock->method('getChunksCollection')->willReturn($this->getMockCollection());
 
         return $mock;
     }

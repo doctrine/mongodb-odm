@@ -390,7 +390,7 @@ class QueryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\ReferenceUser');
+        $qb = $this->dm->createQueryBuilder(ReferenceUser::class);
 
         $referencedUsersQuery = $qb
             ->field('indirectlyReferencedUsers.user.id')->equals(new ObjectId($referencedUser->getId()))

@@ -129,7 +129,10 @@ class DateImmutableTypeTest extends TestCase
             return $return;
         })($input);
 
-        $this->assertInstanceOf('DateTimeImmutable', $return);
+        // @phpstan-ignore-next-line
+        assert($return instanceof DateTimeImmutable);
+
+        $this->assertInstanceOf(DateTimeImmutable::class, $return);
         $this->assertTimestampEquals($output, $return);
     }
 

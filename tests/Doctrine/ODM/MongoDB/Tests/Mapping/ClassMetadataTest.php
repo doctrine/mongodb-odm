@@ -12,6 +12,8 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use DoctrineGlobal_Article;
+use DoctrineGlobal_User;
 use Documents\Account;
 use Documents\Address;
 use Documents\Album;
@@ -139,13 +141,13 @@ class ClassMetadataTest extends BaseTest
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 
-        $cm = new ClassMetadata('DoctrineGlobal_Article');
+        $cm = new ClassMetadata(DoctrineGlobal_Article::class);
         $cm->mapManyEmbedded([
             'fieldName' => 'author',
-            'targetDocument' => 'DoctrineGlobal_User',
+            'targetDocument' => DoctrineGlobal_User::class,
         ]);
 
-        $this->assertEquals('DoctrineGlobal_User', $cm->fieldMappings['author']['targetDocument']);
+        $this->assertEquals(DoctrineGlobal_User::class, $cm->fieldMappings['author']['targetDocument']);
     }
 
     public function testMapManyToManyJoinTableDefaults()
@@ -182,11 +184,11 @@ class ClassMetadataTest extends BaseTest
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 
-        $cm = new ClassMetadata('DoctrineGlobal_User');
-        $cm->setDiscriminatorMap(['descr' => 'DoctrineGlobal_Article', 'foo' => 'DoctrineGlobal_User']);
+        $cm = new ClassMetadata(DoctrineGlobal_User::class);
+        $cm->setDiscriminatorMap(['descr' => DoctrineGlobal_Article::class, 'foo' => DoctrineGlobal_User::class]);
 
-        $this->assertEquals('DoctrineGlobal_Article', $cm->discriminatorMap['descr']);
-        $this->assertEquals('DoctrineGlobal_User', $cm->discriminatorMap['foo']);
+        $this->assertEquals(DoctrineGlobal_Article::class, $cm->discriminatorMap['descr']);
+        $this->assertEquals(DoctrineGlobal_User::class, $cm->discriminatorMap['foo']);
     }
 
     /**
@@ -196,16 +198,16 @@ class ClassMetadataTest extends BaseTest
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 
-        $cm = new ClassMetadata('DoctrineGlobal_User');
-        $cm->setSubclasses(['DoctrineGlobal_Article']);
+        $cm = new ClassMetadata(DoctrineGlobal_User::class);
+        $cm->setSubclasses([DoctrineGlobal_Article::class]);
 
-        $this->assertEquals('DoctrineGlobal_Article', $cm->subClasses[0]);
+        $this->assertEquals(DoctrineGlobal_Article::class, $cm->subClasses[0]);
     }
 
     public function testDuplicateFieldMapping()
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $a1 = ['reference' => true, 'type' => 'many', 'fieldName' => 'name', 'targetDocument' => 'stdClass'];
+        $a1 = ['reference' => true, 'type' => 'many', 'fieldName' => 'name', 'targetDocument' => stdClass::class];
         $a2 = ['type' => 'string', 'fieldName' => 'name'];
 
         $cm->mapField($a1);
@@ -309,7 +311,7 @@ class ClassMetadataTest extends BaseTest
             'fieldName' => 'assocWithTargetDocument',
             'reference' => true,
             'type' => 'one',
-            'targetDocument' => 'stdClass',
+            'targetDocument' => stdClass::class,
         ]);
 
         $cm->mapField([
@@ -464,7 +466,7 @@ class ClassMetadataTest extends BaseTest
         $class    = $this->dm->getClassMetadata(User::class);
         $document = new stdClass();
 
-        $this->assertInstanceOf('\stdClass', $document);
+        $this->assertInstanceOf(stdClass::class, $document);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected document class "Documents\User"; found: "stdClass"');

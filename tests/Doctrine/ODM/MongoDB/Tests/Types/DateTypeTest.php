@@ -129,7 +129,10 @@ class DateTypeTest extends TestCase
             return $return;
         })($input);
 
-        $this->assertInstanceOf('DateTime', $return);
+        // @phpstan-ignore-next-line
+        assert($return instanceof DateTime);
+
+        $this->assertInstanceOf(DateTime::class, $return);
         $this->assertTimestampEquals($output, $return);
     }
 

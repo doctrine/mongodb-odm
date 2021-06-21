@@ -274,18 +274,18 @@ class AtomicSetTest extends BaseTest
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
-        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertEquals('start', $user->inception[0]->value);
         $this->assertNotNull($user->inception[0]->one);
-        $this->assertEquals($user->inception[0]->one->value, 'start.one');
+        $this->assertEquals('start.one', $user->inception[0]->one->value);
         $this->assertCount(2, $user->inception[0]->one->many);
-        $this->assertEquals($user->inception[0]->one->many[0]->value, 'start.one.many.0');
-        $this->assertEquals($user->inception[0]->one->many[1]->value, 'start.one.many.1');
+        $this->assertEquals('start.one.many.0', $user->inception[0]->one->many[0]->value);
+        $this->assertEquals('start.one.many.1', $user->inception[0]->one->many[1]->value);
         $this->assertNotNull($user->inception[0]->one->one);
-        $this->assertEquals($user->inception[0]->one->one->value, 'start.one.one');
+        $this->assertEquals('start.one.one', $user->inception[0]->one->one->value);
         $this->assertCount(1, $user->inception[0]->one->one->many);
-        $this->assertEquals($user->inception[0]->one->one->many[0]->value, 'start.one.one.many.0');
+        $this->assertEquals('start.one.one.many.0', $user->inception[0]->one->one->many[0]->value);
         $this->assertCount(1, $user->inception[0]->one->one->many[0]->many);
-        $this->assertEquals($user->inception[0]->one->one->many[0]->many[0]->value, 'start.one.one.many.0.many.0');
+        $this->assertEquals('start.one.one.many.0.many.0', $user->inception[0]->one->one->many[0]->many[0]->value);
 
         unset($user->inception[0]->one->many[0]);
         $user->inception[0]->one->many[]               = new AtomicSetInception('start.one.many.2');
@@ -297,24 +297,24 @@ class AtomicSetTest extends BaseTest
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
-        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertEquals('start', $user->inception[0]->value);
         $this->assertNotNull($user->inception[0]->one);
-        $this->assertEquals($user->inception[0]->one->value, 'start.one');
+        $this->assertEquals('start.one', $user->inception[0]->one->value);
         $this->assertCount(2, $user->inception[0]->one->many);
         /* Note: Since the "start.one.many" collection uses a pushAll strategy,
          * "start.one.many.1" is reindexed at 0 after fetching. Before the last
          * flush (when we unset "start.one.many.0"), it would still have been
          * accessible via index 1.
          */
-        $this->assertEquals($user->inception[0]->one->many[0]->value, 'start.one.many.1');
-        $this->assertEquals($user->inception[0]->one->many[1]->value, 'start.one.many.2');
+        $this->assertEquals('start.one.many.1', $user->inception[0]->one->many[0]->value);
+        $this->assertEquals('start.one.many.2', $user->inception[0]->one->many[1]->value);
         $this->assertNotNull($user->inception[0]->one->one);
-        $this->assertEquals($user->inception[0]->one->one->value, 'start.one.one');
+        $this->assertEquals('start.one.one', $user->inception[0]->one->one->value);
         $this->assertCount(1, $user->inception[0]->one->one->many);
-        $this->assertEquals($user->inception[0]->one->one->many[0]->value, 'start.one.one.many.0');
+        $this->assertEquals('start.one.one.many.0', $user->inception[0]->one->one->many[0]->value);
         $this->assertCount(2, $user->inception[0]->one->one->many[0]->many);
-        $this->assertEquals($user->inception[0]->one->one->many[0]->many[0]->value, 'start.one.one.many.0.many.0');
-        $this->assertEquals($user->inception[0]->one->one->many[0]->many[1]->value, 'start.one.one.many.0.many.1');
+        $this->assertEquals('start.one.one.many.0.many.0', $user->inception[0]->one->one->many[0]->many[0]->value);
+        $this->assertEquals('start.one.one.many.0.many.1', $user->inception[0]->one->one->many[0]->many[1]->value);
     }
 
     public function testUpdatingNestedCollectionWhileDeletingParent()
@@ -332,14 +332,14 @@ class AtomicSetTest extends BaseTest
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
-        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertEquals('start', $user->inception[0]->value);
         $this->assertCount(2, $user->inception[0]->many);
-        $this->assertEquals($user->inception[0]->many[0]->value, 'start.many.0');
+        $this->assertEquals('start.many.0', $user->inception[0]->many[0]->value);
         $this->assertCount(1, $user->inception[0]->many[0]->many);
-        $this->assertEquals($user->inception[0]->many[0]->many[0]->value, 'start.many.0.many.0');
-        $this->assertEquals($user->inception[0]->many[1]->value, 'start.many.1');
+        $this->assertEquals('start.many.0.many.0', $user->inception[0]->many[0]->many[0]->value);
+        $this->assertEquals('start.many.1', $user->inception[0]->many[1]->value);
         $this->assertCount(1, $user->inception[0]->many[0]->many);
-        $this->assertEquals($user->inception[0]->many[1]->many[0]->value, 'start.many.1.many.0');
+        $this->assertEquals('start.many.1.many.0', $user->inception[0]->many[1]->many[0]->value);
 
         $user->inception[0]->many[0]->many[0]->value = 'start.many.0.many.0-changed';
         $user->inception[0]->many[0]->many[1]        = new AtomicSetInception('start.many.0.many.1');
@@ -354,13 +354,13 @@ class AtomicSetTest extends BaseTest
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
-        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertEquals('start', $user->inception[0]->value);
         $this->assertCount(2, $user->inception[0]->many);
-        $this->assertEquals($user->inception[0]->many[0]->value, 'start.many.0');
+        $this->assertEquals('start.many.0', $user->inception[0]->many[0]->value);
         $this->assertCount(0, $user->inception[0]->many[0]->many);
-        $this->assertEquals($user->inception[0]->many[1]->value, 'start.many.1');
+        $this->assertEquals('start.many.1', $user->inception[0]->many[1]->value);
         $this->assertCount(1, $user->inception[0]->many[1]->many);
-        $this->assertEquals($user->inception[0]->many[1]->many[0]->value, 'start.many.1.many.0-new');
+        $this->assertEquals('start.many.1.many.0-new', $user->inception[0]->many[1]->many[0]->value);
     }
 
     public function testAtomicRefMany()
