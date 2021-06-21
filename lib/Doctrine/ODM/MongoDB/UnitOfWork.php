@@ -618,7 +618,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             $value = $refProp->getValue($document);
             if (
-                (isset($mapping['association']) && $mapping['type'] === 'many')
+                (isset($mapping['association']) && $mapping['type'] === ClassMetadata::MANY)
                 && $value !== null && ! ($value instanceof PersistentCollectionInterface)
             ) {
                 // If $actualData[$name] is not a Collection then use an ArrayCollection.
@@ -769,7 +769,7 @@ final class UnitOfWork implements PropertyChangedListener
                 }
 
                 // if relationship is a embed-one, schedule orphan removal to trigger cascade remove operations
-                if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === 'one') {
+                if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::ONE) {
                     if ($orgValue !== null) {
                         $this->scheduleOrphanRemoval($orgValue);
                     }
@@ -779,7 +779,7 @@ final class UnitOfWork implements PropertyChangedListener
                 }
 
                 // if owning side of reference-one relationship
-                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === 'one' && $class->fieldMappings[$propName]['isOwningSide']) {
+                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::ONE && $class->fieldMappings[$propName]['isOwningSide']) {
                     if ($orgValue !== null && $class->fieldMappings[$propName]['orphanRemoval']) {
                         $this->scheduleOrphanRemoval($orgValue);
                     }
@@ -805,7 +805,7 @@ final class UnitOfWork implements PropertyChangedListener
                 }
 
                 // if embed-many or reference-many relationship
-                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'many') {
+                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::MANY) {
                     $changeSet[$propName] = [$orgValue, $actualValue];
                     /* If original collection was exchanged with a non-empty value
                      * and $set will be issued, there is no need to $unset it first
@@ -1006,7 +1006,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             // Handle "set" strategy for multi-level hierarchy
             $pathKey = ! isset($assoc['strategy']) || CollectionHelper::isList($assoc['strategy']) ? $count : $key;
-            $path    = $assoc['type'] === 'many' ? $assoc['name'] . '.' . $pathKey : $assoc['name'];
+            $path    = $assoc['type'] === ClassMetadata::MANY ? $assoc['name'] . '.' . $pathKey : $assoc['name'];
 
             $count++;
 
@@ -1962,7 +1962,7 @@ final class UnitOfWork implements PropertyChangedListener
                 } else {
                     $assoc2 = $class->associationMappings[$name];
 
-                    if ($assoc2['type'] === 'one') {
+                    if ($assoc2['type'] === ClassMetadata::ONE) {
                         $other = $prop->getValue($document);
 
                         if ($other === null) {
@@ -2052,12 +2052,12 @@ final class UnitOfWork implements PropertyChangedListener
             $assocField = $assoc['fieldName'];
             $prevClass  = $this->dm->getClassMetadata(get_class($prevManagedCopy));
 
-            if ($assoc['type'] === 'one') {
+            if ($assoc['type'] === ClassMetadata::ONE) {
                 $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
             } else {
                 $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
 
-                if ($assoc['type'] === 'many' && isset($assoc['mappedBy'])) {
+                if ($assoc['type'] === ClassMetadata::MANY && isset($assoc['mappedBy'])) {
                     $class->reflFields[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
                 }
             }

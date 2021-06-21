@@ -182,7 +182,7 @@ final class PersistenceBuilder
                 }
 
             // @ReferenceMany, @EmbedMany
-            } elseif (isset($mapping['association']) && $mapping['type'] === 'many' && $new) {
+            } elseif (isset($mapping['association']) && $mapping['type'] === ClassMetadata::MANY && $new) {
                 if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForUpdate($new)) {
                     $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
                 } elseif (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($new)) {

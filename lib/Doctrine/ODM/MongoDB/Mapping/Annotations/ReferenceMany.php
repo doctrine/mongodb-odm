@@ -15,7 +15,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 final class ReferenceMany extends AbstractField
 {
     /** @var string */
-    public $type = 'many';
+    public $type = ClassMetadata::MANY;
 
     /** @var bool */
     public $reference = true;

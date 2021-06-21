@@ -300,25 +300,25 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlRoot->{'embed-one'})) {
             foreach ($xmlRoot->{'embed-one'} as $embed) {
-                $this->addEmbedMapping($metadata, $embed, 'one');
+                $this->addEmbedMapping($metadata, $embed, ClassMetadata::ONE);
             }
         }
 
         if (isset($xmlRoot->{'embed-many'})) {
             foreach ($xmlRoot->{'embed-many'} as $embed) {
-                $this->addEmbedMapping($metadata, $embed, 'many');
+                $this->addEmbedMapping($metadata, $embed, ClassMetadata::MANY);
             }
         }
 
         if (isset($xmlRoot->{'reference-many'})) {
             foreach ($xmlRoot->{'reference-many'} as $reference) {
-                $this->addReferenceMapping($metadata, $reference, 'many');
+                $this->addReferenceMapping($metadata, $reference, ClassMetadata::MANY);
             }
         }
 
         if (isset($xmlRoot->{'reference-one'})) {
             foreach ($xmlRoot->{'reference-one'} as $reference) {
-                $this->addReferenceMapping($metadata, $reference, 'one');
+                $this->addReferenceMapping($metadata, $reference, ClassMetadata::ONE);
             }
         }
 
@@ -379,7 +379,7 @@ class XmlDriver extends FileDriver
     private function addEmbedMapping(ClassMetadata $class, SimpleXMLElement $embed, string $type): void
     {
         $attributes      = $embed->attributes();
-        $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type === ClassMetadata::ONE ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping         = [
             'type'            => $type,
             'embedded'        => true,
@@ -428,7 +428,7 @@ class XmlDriver extends FileDriver
         }
 
         $attributes      = $reference->attributes();
-        $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type === ClassMetadata::ONE ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping         = [
             'cascade'          => $cascade,
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ((string) $attributes['orphan-removal'] === 'true') : false,
@@ -746,7 +746,7 @@ class XmlDriver extends FileDriver
         }
 
         $xmlRoot->metadata->addAttribute('field', 'metadata');
-        $this->addEmbedMapping($class, $xmlRoot->metadata, 'one');
+        $this->addEmbedMapping($class, $xmlRoot->metadata, ClassMetadata::ONE);
     }
 }
 

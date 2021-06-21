@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+
 /**
  * Embeds a single document
  *
@@ -12,7 +14,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 final class EmbedOne extends AbstractField
 {
     /** @var string */
-    public $type = 'one';
+    public $type = ClassMetadata::ONE;
 
     /** @var bool */
     public $embedded = true;

@@ -139,11 +139,11 @@ final class ReferencePrimer
                 continue;
             }
 
-            if ($mapping['type'] === 'one' && $fieldValue instanceof GhostObjectInterface && ! $fieldValue->isProxyInitialized()) {
+            if ($mapping['type'] === ClassMetadata::ONE && $fieldValue instanceof GhostObjectInterface && ! $fieldValue->isProxyInitialized()) {
                 $refClass                                    = $this->dm->getClassMetadata(get_class($fieldValue));
                 $id                                          = $this->uow->getDocumentIdentifier($fieldValue);
                 $groupedIds[$refClass->name][serialize($id)] = $id;
-            } elseif ($mapping['type'] === 'many' && $fieldValue instanceof PersistentCollectionInterface) {
+            } elseif ($mapping['type'] === ClassMetadata::MANY && $fieldValue instanceof PersistentCollectionInterface) {
                 $this->addManyReferences($fieldValue, $groupedIds);
             }
         }
