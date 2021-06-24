@@ -10,13 +10,18 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionTrait;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
+ *
+ * @template TKey of array-key
+ * @template T of object
+ * @template-implements PersistentCollectionInterface<TKey,T>
  */
 final class PersistentCollection implements PersistentCollectionInterface
 {
+    /** @use PersistentCollectionTrait<TKey, T> */
     use PersistentCollectionTrait;
 
     /**
-     * @param BaseCollection $coll
+     * @param BaseCollection<TKey, T> $coll
      */
     public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
     {
