@@ -453,6 +453,7 @@ class AtomicSetTest extends BaseTest
         $firstChapter->name = 'First chapter A';
 
         // Developers commonly attempt to replace the contents of an EmbedMany with a new ArrayCollection like this:
+        /** @var ArrayCollection<int, Chapter> $replacementChapters */
         $replacementChapters = new ArrayCollection();
         $replacementChapters->add($firstChapter);
         $replacementChapters->add(new Chapter('Second chapter B'));
@@ -478,9 +479,10 @@ class AtomicSetTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $book                = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
-        $firstChapter        = $book->identifiedChapters->first();
-        $firstChapter->name  = 'First chapter A';
+        $book               = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
+        $firstChapter       = $book->identifiedChapters->first();
+        $firstChapter->name = 'First chapter A';
+        /** @var ArrayCollection<int, IdentifiedChapter> $replacementChapters */
         $replacementChapters = new ArrayCollection();
         $replacementChapters->add($firstChapter);
         $replacementChapters->add(new IdentifiedChapter('Second chapter B'));
