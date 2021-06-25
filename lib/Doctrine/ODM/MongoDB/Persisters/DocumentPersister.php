@@ -71,6 +71,8 @@ use function trigger_deprecation;
  * @internal
  *
  * @template T of object
+ *
+ * @psalm-import-type CommitOptions from UnitOfWork
  */
 final class DocumentPersister
 {
@@ -202,6 +204,8 @@ final class DocumentPersister
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
+     * @psalm-param CommitOptions $options
+     *
      * @throws DriverException
      */
     public function executeInserts(array $options = []): void
@@ -258,6 +262,8 @@ final class DocumentPersister
      * Queued documents with an ID are upserted individually.
      *
      * If no upserts are queued, invoking this method is a NOOP.
+     *
+     * @psalm-param CommitOptions $options
      */
     public function executeUpserts(array $options = []): void
     {
@@ -354,6 +360,8 @@ final class DocumentPersister
     /**
      * Updates the already persisted document if it has any new changesets.
      *
+     * @psalm-param CommitOptions $options
+     *
      * @throws LockException
      */
     public function update(object $document, array $options = []): void
@@ -416,6 +424,8 @@ final class DocumentPersister
 
     /**
      * Removes document from mongo
+     *
+     * @psalm-param CommitOptions $options
      *
      * @throws LockException
      */
@@ -1506,6 +1516,9 @@ final class DocumentPersister
         return array_merge(['_id' => $id], $shardKeyQueryPart);
     }
 
+    /**
+     * @psalm-param CommitOptions $options
+     */
     private function getWriteOptions(array $options = []): array
     {
         $defaultOptions  = $this->dm->getConfiguration()->getDefaultCommitOptions();

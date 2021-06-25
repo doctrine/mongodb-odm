@@ -48,6 +48,8 @@ use function sprintf;
  *
  *     $config = new Configuration();
  *     $dm = DocumentManager::create(new Connection(), $config);
+ *
+ * @psalm-import-type CommitOptions from UnitOfWork
  */
 class DocumentManager implements ObjectManager
 {
@@ -300,6 +302,11 @@ class DocumentManager implements ObjectManager
      * Returns the metadata for a class.
      *
      * @param string $className The class name.
+     * @psalm-param class-string<T> $className
+     *
+     * @psalm-return ClassMetadata<T>
+     *
+     * @template T of object
      */
     public function getClassMetadata($className): ClassMetadata
     {
@@ -582,6 +589,7 @@ class DocumentManager implements ObjectManager
      * database.
      *
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
+     * @psalm-param CommitOptions $options
      *
      * @throws MongoDBException
      */
@@ -702,6 +710,8 @@ class DocumentManager implements ObjectManager
      * Closes the DocumentManager. All documents that are currently managed
      * by this DocumentManager become detached. The DocumentManager may no longer
      * be used after it is closed.
+     *
+     * @return void
      */
     public function close()
     {

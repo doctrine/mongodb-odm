@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use DoctrineGlobal_Article;
@@ -636,22 +637,12 @@ class ClassMetadataTest extends BaseTest
     {
         $cm = new ClassMetadata('stdClass');
 
-        $mapping = [
+        $mapping = ClassMetadataTestUtil::getFieldMapping([
             'fieldName' => 'assoc',
-            'name' => 'assoc',
             'reference' => true,
             'type' => 'one',
             'storeAs' => ClassMetadata::REFERENCE_STORE_AS_ID,
-            'isCascadeRemove' => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeMerge' => false,
-            'isCascadeDetach' => false,
-            'isOwningSide' => false,
-            'isInverseSide' => false,
-            'targetDocument' => null,
-            'association' => ClassMetadata::REFERENCE_ONE,
-        ];
+        ]);
 
         $cm->addInheritedAssociationMapping($mapping);
 
