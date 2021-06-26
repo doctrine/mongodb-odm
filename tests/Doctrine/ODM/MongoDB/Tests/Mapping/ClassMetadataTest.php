@@ -418,8 +418,7 @@ class ClassMetadataTest extends BaseTest
 
     public function testSetCustomRepositoryClass()
     {
-        $cm            = new ClassMetadata(self::class);
-        $cm->namespace = 'Doctrine\ODM\MongoDB\Tests\Mapping';
+        $cm = new ClassMetadata(self::class);
 
         $cm->setCustomRepositoryClass(Repository::class);
 

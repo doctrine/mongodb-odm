@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Article;
 use Documents\CmsComment;
@@ -18,6 +19,7 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
 use function array_values;
+use function assert;
 use function get_class;
 use function iterator_to_array;
 use function strtotime;
@@ -396,7 +398,11 @@ class QueryTest extends BaseTest
             ->field('indirectlyReferencedUsers.user.id')->equals(new ObjectId($referencedUser->getId()))
             ->getQuery();
 
-        $referencedUsers = iterator_to_array($referencedUsersQuery->execute(), false);
+        $referencedUsersIterator = $referencedUsersQuery->execute();
+
+        assert($referencedUsersIterator instanceof Iterator);
+
+        $referencedUsers = iterator_to_array($referencedUsersIterator, false);
 
         $this->assertCount(1, $referencedUsers);
         $this->assertSame($user, $referencedUsers[0]);
