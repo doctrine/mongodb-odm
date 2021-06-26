@@ -2751,6 +2751,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
         } else {
             if ($document === null) {
+                /** @psalm-var T $document */
                 $document = $class->newInstance();
             }
 
