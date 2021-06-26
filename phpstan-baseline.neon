@@ -50,11 +50,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/FacetTest.php
 
         -
-            message: "#^Call to an undefined method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\MatchStage\\:\\:connectFromField\\(\\)\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/GraphLookupTest.php
-
-        -
             message: "#^Class Documents\\\\Account does not have a constructor and must be instantiated without any parameters\\.$#"
             count: 4
             path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
