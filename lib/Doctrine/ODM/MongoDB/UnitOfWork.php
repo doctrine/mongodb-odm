@@ -1357,6 +1357,10 @@ final class UnitOfWork implements PropertyChangedListener
             unset($this->documentUpdates[$oid]);
         }
 
+        if (isset($this->documentUpserts[$oid])) {
+            unset($this->documentUpserts[$oid]);
+        }
+
         if (isset($this->documentDeletions[$oid])) {
             return;
         }
