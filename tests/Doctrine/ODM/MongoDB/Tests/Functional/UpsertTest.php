@@ -59,7 +59,7 @@ class UpsertTest extends BaseTest
         $this->dm->clear();
 
         $upsertResult = $this->dm->find(UpsertTestUser::class, $test->id);
-        assert($upsertResult instanceof $upsertResult);
+        assert($upsertResult instanceof UpsertTestUser);
         self::assertNotNull($upsertResult->nullableField);
         self::assertNotNull($upsertResult->nullableReferenceOne);
         self::assertNotNull($upsertResult->nullableEmbedOne);
