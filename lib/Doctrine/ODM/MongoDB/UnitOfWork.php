@@ -25,6 +25,7 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Driver\WriteConcern;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
 use UnexpectedValueException;
@@ -46,6 +47,20 @@ use function sprintf;
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
+ *
+ * @psalm-import-type FieldMapping from ClassMetadata
+ * @psalm-import-type AssociationFieldMapping from ClassMetadata
+ * @psalm-type ChangeSet = array{
+ *      0: mixed,
+ *      1: mixed
+ * }
+ * @psalm-type Hints = array<int, mixed>
+ * @psalm-type CommitOptions array{
+ *      fsync?: bool,
+ *      safe?: int,
+ *      w?: int,
+ *      writeConcern?: WriteConcern
+ * }
  */
 final class UnitOfWork implements PropertyChangedListener
 {
@@ -86,6 +101,7 @@ final class UnitOfWork implements PropertyChangedListener
      * we always take the root class name of the hierarchy.
      *
      * @var array
+     * @psalm-var array<class-string, array<string, object>>
      */
     private $identityMap = [];
 
@@ -93,7 +109,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Map of all identifiers of managed documents.
      * Keys are object ids (spl_object_hash).
      *
-     * @var array
+     * @var array<string, mixed>
      */
     private $documentIdentifiers = [];
 
@@ -106,7 +122,7 @@ final class UnitOfWork implements PropertyChangedListener
      *           A value will only really be copied if the value in the document is modified
      *           by the user.
      *
-     * @var array
+     * @var array<string, array<string, mixed>>
      */
     private $originalDocumentData = [];
 
@@ -115,6 +131,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Filled at the beginning of a commit of the UnitOfWork and cleaned at the end.
      *
      * @var array
+     * @psalm-var array<string, array<string, ChangeSet>>
      */
     private $documentChangeSets = [];
 
@@ -123,6 +140,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Keys are object ids (spl_object_hash).
      *
      * @var array
+     * @psalm-var array<string, self::STATE_*>
      */
     private $documentStates = [];
 
@@ -134,34 +152,35 @@ final class UnitOfWork implements PropertyChangedListener
      * policy of DEFERRED_EXPLICIT.
      *
      * @var array
+     * @psalm-var array<class-string, array<string, object>>
      */
     private $scheduledForSynchronization = [];
 
     /**
      * A list of all pending document insertions.
      *
-     * @var array
+     * @var array<string, object>
      */
     private $documentInsertions = [];
 
     /**
      * A list of all pending document updates.
      *
-     * @var array
+     * @var array<string, object>
      */
     private $documentUpdates = [];
 
     /**
      * A list of all pending document upserts.
      *
-     * @var array
+     * @var array<string, object>
      */
     private $documentUpserts = [];
 
     /**
      * A list of all pending document deletions.
      *
-     * @var array
+     * @var array<string, object>
      */
     private $documentDeletions = [];
 
@@ -169,6 +188,7 @@ final class UnitOfWork implements PropertyChangedListener
      * All pending collection deletions.
      *
      * @var array
+     * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
      */
     private $collectionDeletions = [];
 
@@ -176,6 +196,7 @@ final class UnitOfWork implements PropertyChangedListener
      * All pending collection updates.
      *
      * @var array
+     * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
      */
     private $collectionUpdates = [];
 
@@ -183,6 +204,7 @@ final class UnitOfWork implements PropertyChangedListener
      * A list of documents related to collections scheduled for update or deletion
      *
      * @var array
+     * @psalm-var array<string, array<string, PersistentCollectionInterface<array-key, object>>>
      */
     private $hasScheduledCollections = [];
 
@@ -191,7 +213,7 @@ final class UnitOfWork implements PropertyChangedListener
      * At the end of the UnitOfWork all these collections will make new snapshots
      * of their data.
      *
-     * @var array
+     * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
      */
     private $visitedCollections = [];
 
@@ -212,7 +234,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Additional documents that are scheduled for removal.
      *
-     * @var array
+     * @var array<string, object>
      */
     private $orphanRemovals = [];
 
@@ -227,13 +249,14 @@ final class UnitOfWork implements PropertyChangedListener
      * The document persister instances used to persist document instances.
      *
      * @var array
+     * @psalm-var array<class-string, Persisters\DocumentPersister>
      */
     private $persisters = [];
 
     /**
      * The collection persister instance used to persist changes to collections.
      *
-     * @var Persisters\CollectionPersister
+     * @var Persisters\CollectionPersister|null
      */
     private $collectionPersister;
 
@@ -248,6 +271,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Array of parent associations between embedded documents.
      *
      * @var array
+     * @psalm-var array<string, array{0: FieldMapping, 1: object|null, 2: string}>
      */
     private $parentAssociations = [];
 
@@ -262,7 +286,7 @@ final class UnitOfWork implements PropertyChangedListener
      * collisions in case already managed object is lost due to GC (so now it won't). Embedded documents
      * found during doDetach are removed from the registry, to empty it altogether clear() can be utilized.
      *
-     * @var array
+     * @var array<string, object>
      */
     private $embeddedDocumentsRegistry = [];
 
@@ -300,6 +324,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Sets the parent association for a given embedded document.
      *
      * @internal
+     *
+     * @psalm-param FieldMapping $mapping
      */
     public function setParentAssociation(object $document, array $mapping, ?object $parent, string $propertyPath): void
     {
@@ -314,6 +340,8 @@ final class UnitOfWork implements PropertyChangedListener
      *     <code>
      *     list($mapping, $parent, $propertyPath) = $this->getParentAssociation($embeddedDocument);
      *     </code>
+     *
+     * @psalm-return array{0: FieldMapping, 1: object|null, 2: string}|null
      */
     public function getParentAssociation(object $document): ?array
     {
@@ -382,6 +410,7 @@ final class UnitOfWork implements PropertyChangedListener
      * 3) All document deletions
      *
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
+     * @psalm-param CommitOptions $options
      */
     public function commit(array $options = []): void
     {
@@ -466,6 +495,10 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Groups a list of scheduled documents by their class.
+     *
+     * @param array<string, object> $documents
+     *
+     * @psalm-return array<class-string, array{0: ClassMetadata<object>, 1: array<string, object>}>
      */
     private function getClassesForCommitAction(array $documents, bool $includeEmbedded = false): array
     {
@@ -544,6 +577,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Gets the changeset for a document.
      *
      * @return array array('property' => array(0 => mixed, 1 => mixed))
+     * @psalm-return array<string, ChangeSet>
      */
     public function getDocumentChangeSet(object $document): array
     {
@@ -556,6 +590,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Sets the changeset for a document.
      *
      * @internal
+     *
+     * @psalm-param array<string, ChangeSet> $changeset
      */
     public function setDocumentChangeSet(object $document, array $changeset): void
     {
@@ -567,7 +603,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getDocumentActualData(object $document): array
     {
@@ -922,6 +958,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Computes the changes of an association.
      *
      * @param mixed $value The value of the association.
+     * @psalm-param AssociationFieldMapping $assoc
      *
      * @throws InvalidArgumentException
      */
@@ -1127,6 +1164,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @psalm-param ClassMetadata<T> $class
      * @psalm-param T[] $documents
+     * @psalm-param CommitOptions $options
      *
      * @template T of object
      */
@@ -1151,6 +1189,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @psalm-param ClassMetadata<T> $class
      * @psalm-param T[] $documents
+     * @psalm-param CommitOptions $options
      *
      * @template T of object
      */
@@ -1175,6 +1214,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @psalm-param ClassMetadata<T> $class
      * @psalm-param T[] $documents
+     * @psalm-param CommitOptions $options
      *
      * @template T of object
      */
@@ -1205,6 +1245,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @psalm-param ClassMetadata<T> $class
      * @psalm-param T[] $documents
+     * @psalm-param CommitOptions $options
      *
      * @template T of object
      */
@@ -1672,6 +1713,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Checks whether an identifier exists in the identity map.
      *
      * @internal
+     *
+     * @param mixed $id
      */
     public function containsId($id, string $rootClassName): bool
     {
@@ -1704,6 +1747,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * NOTE: This method always considers documents that are not yet known to
      * this UnitOfWork as NEW.
+     *
+     * @param array<string, object> $visited
      *
      * @throws InvalidArgumentException
      * @throws MongoDBException
@@ -1764,7 +1809,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      */
-    public function remove(object $document)
+    public function remove(object $document): void
     {
         $visited = [];
         $this->doRemove($document, $visited);
@@ -1775,6 +1820,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * This method is internally called during delete() cascades as it tracks
      * the already visited documents to prevent infinite recursions.
+     *
+     * @param array<string, object> $visited
      *
      * @throws MongoDBException
      */
@@ -1826,6 +1873,9 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes a merge operation on a document.
+     *
+     * @param array<string, object> $visited
+     * @psalm-param AssociationFieldMapping|null $assoc
      *
      * @throws InvalidArgumentException If the entity instance is NEW.
      * @throws LockException If the document uses optimistic locking through a
@@ -2035,6 +2085,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes a detach operation on the given document.
+     *
+     * @param array<string, object> $visited
      */
     private function doDetach(object $document, array &$visited): void
     {
@@ -2086,6 +2138,8 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Executes a refresh operation on a document.
      *
+     * @param array<string, object> $visited
+     *
      * @throws InvalidArgumentException If the document is not MANAGED.
      */
     private function doRefresh(object $document, array &$visited): void
@@ -2112,6 +2166,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades a refresh operation to associated documents.
+     *
+     * @param array<string, object> $visited
      */
     private function cascadeRefresh(object $document, array &$visited): void
     {
@@ -2143,6 +2199,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades a detach operation to associated documents.
+     *
+     * @param array<string, object> $visited
      */
     private function cascadeDetach(object $document, array &$visited): void
     {
@@ -2170,6 +2228,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades a merge operation to associated documents.
+     *
+     * @param array<string, object> $visited
      */
     private function cascadeMerge(object $document, object $managedCopy, array &$visited): void
     {
@@ -2202,6 +2262,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades the save operation to associated documents.
+     *
+     * @param array<string, object> $visited
      */
     private function cascadePersist(object $document, array &$visited): void
     {
@@ -2260,6 +2322,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Cascades the delete operation to associated documents.
+     *
+     * @param array<string, object> $visited
      */
     private function cascadeRemove(object $document, array &$visited): void
     {
@@ -2408,6 +2472,14 @@ final class UnitOfWork implements PropertyChangedListener
      *  2) clones collection, sets owner, updates document's property and, if necessary, updates originalData
      *  3) NOP if state is OK
      * Returned collection should be used from now on (only important with 2nd point)
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
+     * @psalm-param T $document
+     * @psalm-param ClassMetadata<T> $class
+     *
+     * @psalm-return PersistentCollectionInterface<array-key, object>
+     *
+     * @template T of object
      */
     private function fixPersistentCollectionOwnership(PersistentCollectionInterface $coll, object $document, ClassMetadata $class, string $propName): PersistentCollectionInterface
     {
@@ -2437,6 +2509,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Schedules a complete collection for removal when this UnitOfWork commits.
      *
      * @internal
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function scheduleCollectionDeletion(PersistentCollectionInterface $coll): void
     {
@@ -2454,6 +2528,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Checks whether a PersistentCollection is scheduled for deletion.
      *
      * @internal
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function isCollectionScheduledForDeletion(PersistentCollectionInterface $coll): bool
     {
@@ -2464,6 +2540,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Unschedules a collection from being deleted when this UnitOfWork commits.
      *
      * @internal
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function unscheduleCollectionDeletion(PersistentCollectionInterface $coll): void
     {
@@ -2485,6 +2563,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Schedules a collection for update when this UnitOfWork commits.
      *
      * @internal
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function scheduleCollectionUpdate(PersistentCollectionInterface $coll): void
     {
@@ -2509,6 +2589,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Unschedules a collection from being updated when this UnitOfWork commits.
      *
      * @internal
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function unscheduleCollectionUpdate(PersistentCollectionInterface $coll): void
     {
@@ -2530,6 +2612,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Checks whether a PersistentCollection is scheduled for update.
      *
      * @internal
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function isCollectionScheduledForUpdate(PersistentCollectionInterface $coll): bool
     {
@@ -2543,6 +2627,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @internal
      *
      * @return PersistentCollectionInterface[]
+     * @psalm-return array<PersistentCollectionInterface<array-key, object>>
      */
     public function getVisitedCollections(object $document): array
     {
@@ -2557,6 +2642,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @internal
      *
      * @return PersistentCollectionInterface[]
+     * @psalm-return array<string, PersistentCollectionInterface<array-key, object>>
      */
     public function getScheduledCollections(object $document): array
     {
@@ -2586,6 +2672,8 @@ final class UnitOfWork implements PropertyChangedListener
      * If the collection is nested within atomic collection, it is immediately
      * unscheduled and atomic one is scheduled for update instead. This makes
      * calculating update data way easier.
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
      */
     private function scheduleCollectionOwner(PersistentCollectionInterface $coll): void
     {
@@ -2651,7 +2739,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @param array|null $data
+     * @param FieldMapping              $mapping
+     * @param array<string, mixed>|null $data
      */
     public function getClassNameForAssociation(array $mapping, $data): string
     {
@@ -2688,7 +2777,9 @@ final class UnitOfWork implements PropertyChangedListener
      * Creates a document. Used for reconstitution of documents during hydration.
      *
      * @psalm-param class-string<T> $className
+     * @psalm-param array<string, mixed> $data
      * @psalm-param T|null $document
+     * @psalm-param Hints $hints
      *
      * @psalm-return T
      *
@@ -2733,6 +2824,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $oid = null;
         if ($isManagedObject) {
+            /** @psalm-var T $document */
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_hash($document);
             if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
@@ -2751,6 +2843,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
         } else {
             if ($document === null) {
+                /** @psalm-var T $document */
                 $document = $class->newInstance();
             }
 
@@ -2775,6 +2868,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Initializes (loads) an uninitialized persistent collection of a document.
      *
      * @internal
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $collection
      */
     public function loadCollection(PersistentCollectionInterface $collection): void
     {
@@ -2790,6 +2885,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Gets the identity map of the UnitOfWork.
      *
      * @internal
+     *
+     * @psalm-return array<class-string, array<string, object>>
      */
     public function getIdentityMap(): array
     {
@@ -2800,7 +2897,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Gets the original data of a document. The original data is the data that was
      * present at the time the document was reconstituted from the database.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getOriginalDocumentData(object $document): array
     {
@@ -2811,6 +2908,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * @internal
+     *
+     * @param array<string, mixed> $data
      */
     public function setOriginalDocumentData(object $document, array $data): void
     {
@@ -2881,7 +2980,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @param mixed $id The identifier values.
+     * @param mixed                $id   The identifier values.
+     * @param array<string, mixed> $data
      */
     public function registerManaged(object $document, $id, array $data): void
     {
@@ -2904,7 +3004,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      */
-    public function clearDocumentChangeSet(string $oid)
+    public function clearDocumentChangeSet(string $oid): void
     {
         $this->documentChangeSets[$oid] = [];
     }
@@ -2939,6 +3039,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the currently scheduled document insertions in this UnitOfWork.
+     *
+     * @psalm-return array<string, object>
      */
     public function getScheduledDocumentInsertions(): array
     {
@@ -2947,6 +3049,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the currently scheduled document upserts in this UnitOfWork.
+     *
+     * @psalm-return array<string, object>
      */
     public function getScheduledDocumentUpserts(): array
     {
@@ -2955,6 +3059,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the currently scheduled document updates in this UnitOfWork.
+     *
+     * @psalm-return array<string, object>
      */
     public function getScheduledDocumentUpdates(): array
     {
@@ -2963,6 +3069,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     /**
      * Gets the currently scheduled document deletions in this UnitOfWork.
+     *
+     * @psalm-return array<string, object>
      */
     public function getScheduledDocumentDeletions(): array
     {
@@ -2973,6 +3081,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Get the currently scheduled complete collection deletions
      *
      * @internal
+     *
+     * @psalm-return array<string, PersistentCollectionInterface<array-key, object>>
      */
     public function getScheduledCollectionDeletions(): array
     {
@@ -2983,6 +3093,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Gets the currently scheduled collection inserts, updates and deletes.
      *
      * @internal
+     *
+     * @psalm-return array<string, PersistentCollectionInterface<array-key, object>>
      */
     public function getScheduledCollectionUpdates(): array
     {

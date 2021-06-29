@@ -42,19 +42,9 @@ class PersistentCollectionTest extends BaseTest
         $unserialized = unserialize($serialized);
         assert($unserialized instanceof PersistentCollection);
 
-        $unserialized->setOwner($owner, [
-            'type' => ClassMetadata::ONE,
-            'name' => 'name',
-            'fieldName' => 'fieldName',
-            'isCascadeRemove' => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeMerge' => false,
-            'isCascadeDetach' => false,
-            'isOwningSide' => false,
-            'isInverseSide' => false,
+        $unserialized->setOwner($owner, ClassMetadataTestUtil::getFieldMapping([
             'targetDocument' => stdClass::class,
-        ]);
+        ]));
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage(
             'No DocumentManager is associated with this PersistentCollection, ' .

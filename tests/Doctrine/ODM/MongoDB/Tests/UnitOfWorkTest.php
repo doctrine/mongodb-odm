@@ -129,11 +129,12 @@ class UnitOfWorkTest extends BaseTest
         $c = new ParentAssociationTest('c');
         $d = new ParentAssociationTest('c');
 
-        $this->uow->setParentAssociation($b, ['name' => 'b'], $a, 'b');
-        $this->uow->setParentAssociation($c, ['name' => 'c'], $b, 'b.c');
-        $this->uow->setParentAssociation($d, ['name' => 'd'], $c, 'b.c.d');
+        $this->uow->setParentAssociation($b, ClassMetadataTestUtil::getFieldMapping(['name' => 'b']), $a, 'b');
+        $this->uow->setParentAssociation($c, ClassMetadataTestUtil::getFieldMapping(['name' => 'c']), $b, 'b.c');
+        $mappingD = ClassMetadataTestUtil::getFieldMapping(['name' => 'c']);
+        $this->uow->setParentAssociation($d, $mappingD, $c, 'b.c.d');
 
-        $this->assertEquals([['name' => 'd'], $c, 'b.c.d'], $this->uow->getParentAssociation($d));
+        $this->assertEquals([$mappingD, $c, 'b.c.d'], $this->uow->getParentAssociation($d));
     }
 
     /**
@@ -451,11 +452,11 @@ class UnitOfWorkTest extends BaseTest
 
     public function testGetClassNameForAssociation()
     {
-        $mapping = [
+        $mapping = ClassMetadataTestUtil::getFieldMapping([
             'discriminatorField' => 'type',
             'discriminatorMap' => ['forum_user' => ForumUser::class],
             'targetDocument' => User::class,
-        ];
+        ]);
         $data    = ['type' => 'forum_user'];
 
         $this->assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
@@ -463,7 +464,7 @@ class UnitOfWorkTest extends BaseTest
 
     public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap()
     {
-        $mapping = ['targetDocument' => User::class];
+        $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
         $data    = ['type' => 'forum_user'];
 
         $userClassMetadata                     = new ClassMetadata(ForumUser::class);
@@ -476,7 +477,7 @@ class UnitOfWorkTest extends BaseTest
 
     public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData()
     {
-        $mapping = ['targetDocument' => User::class];
+        $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
         $this->assertEquals(User::class, $this->uow->getClassNameForAssociation($mapping, null));
     }
 

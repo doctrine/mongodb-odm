@@ -252,3 +252,9 @@ parameters:
             message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$mapping \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\) does not accept array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|int\\|string\\|null\\>\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # There is no way to define a generic array as attribute
+        -
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:getById\\(\\) should return T of object but returns object\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php

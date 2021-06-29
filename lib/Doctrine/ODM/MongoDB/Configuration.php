@@ -44,6 +44,8 @@ use function trim;
  *
  *     $config = new Configuration();
  *     $dm = DocumentManager::create(new Connection(), $config);
+ *
+ * @psalm-import-type CommitOptions from UnitOfWork
  */
 class Configuration
 {
@@ -82,6 +84,25 @@ class Configuration
      * Array of attributes for this configuration instance.
      *
      * @var array
+     * @psalm-var array{
+     *      autoGenerateHydratorClasses?: self::AUTOGENERATE_*,
+     *      autoGeneratePersistentCollectionClasses?: self::AUTOGENERATE_*,
+     *      defaultCommitOptions?: CommitOptions,
+     *      defaultDocumentRepositoryClassName?: string,
+     *      documentNamespaces?: array<string, string>,
+     *      filters?: array<string, array{
+     *          class: string,
+     *          parameters: array<string, mixed>
+     *      }>,
+     *      hydratorDir?: string,
+     *      hydratorNamespace?: string,
+     *      metadataCacheImpl?: Cache,
+     *      metadataDriverImpl?: MappingDriver,
+     *      persistentCollectionFactory?: PersistentCollectionFactory,
+     *      persistentCollectionGenerator?: PersistentCollectionGenerator,
+     *      persistentCollectionDir?: string,
+     *      repositoryFactory?: RepositoryFactory
+     * }
      */
     private $attributes = [];
 
@@ -124,6 +145,8 @@ class Configuration
 
     /**
      * Retrieves the list of registered document namespace aliases.
+     *
+     * @return array<string, string>
      */
     public function getDocumentNamespaces(): array
     {
@@ -132,6 +155,8 @@ class Configuration
 
     /**
      * Set the document alias map
+     *
+     * @param array<string, string> $documentNamespaces
      */
     public function setDocumentNamespaces(array $documentNamespaces): void
     {
@@ -151,6 +176,8 @@ class Configuration
 
     /**
      * Add a new default annotation driver with a correctly configured annotation reader.
+     *
+     * @param string[] $paths
      */
     public function newDefaultAnnotationDriver(array $paths = []): AnnotationDriver
     {
@@ -287,6 +314,8 @@ class Configuration
     /**
      * Gets an int flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
+     *
+     * @psalm-return self::AUTOGENERATE_*
      */
     public function getAutoGenerateHydratorClasses(): int
     {
@@ -296,6 +325,8 @@ class Configuration
     /**
      * Sets an int flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
+     *
+     * @psalm-param self::AUTOGENERATE_* $mode
      */
     public function setAutoGenerateHydratorClasses(int $mode): void
     {
@@ -325,6 +356,8 @@ class Configuration
     /**
      * Gets a integer flag that indicates how and when persistent collection
      * classes should be generated.
+     *
+     * @psalm-return self::AUTOGENERATE_*
      */
     public function getAutoGeneratePersistentCollectionClasses(): int
     {
@@ -334,6 +367,8 @@ class Configuration
     /**
      * Sets a integer flag that indicates how and when persistent collection
      * classes should be generated.
+     *
+     * @psalm-param self::AUTOGENERATE_* $mode
      */
     public function setAutoGeneratePersistentCollectionClasses(int $mode): void
     {
@@ -381,6 +416,9 @@ class Configuration
         return $this->attributes['classMetadataFactoryName'];
     }
 
+    /**
+     * @psalm-return CommitOptions
+     */
     public function getDefaultCommitOptions(): array
     {
         if (! isset($this->attributes['defaultCommitOptions'])) {
@@ -390,6 +428,9 @@ class Configuration
         return $this->attributes['defaultCommitOptions'];
     }
 
+    /**
+     * @psalm-param CommitOptions $defaultCommitOptions
+     */
     public function setDefaultCommitOptions(array $defaultCommitOptions): void
     {
         $this->attributes['defaultCommitOptions'] = $defaultCommitOptions;
@@ -397,6 +438,9 @@ class Configuration
 
     /**
      * Add a filter to the list of possible filters.
+     *
+     * @param array<string, mixed> $parameters
+     * @psalm-param class-string $className
      */
     public function addFilter(string $name, string $className, array $parameters = []): void
     {
@@ -413,6 +457,9 @@ class Configuration
             : null;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getFilterParameters(string $name): array
     {
         return isset($this->attributes['filters'][$name])
