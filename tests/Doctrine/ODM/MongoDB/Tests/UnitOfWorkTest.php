@@ -115,7 +115,7 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->scheduleForDelete($user);
         $this->assertFalse($this->uow->isScheduledForDelete($user));
     }
-    
+
     public function testScheduleForDeleteShouldUnregisterScheduledUpserts()
     {
         $class    = $this->dm->getClassMetadata(ForumUser::class);
