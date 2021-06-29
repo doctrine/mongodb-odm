@@ -22,6 +22,7 @@ class ReferenceEmbeddedDocumentsTest extends BaseTest
 
         $project = $this->dm->find(Project::class, $project->getId());
 
+        /** @var ArrayCollection<int, SubProject> $subProjects */
         $subProjects = new ArrayCollection();
         $subProject1 = new SubProject('Sub Project #1');
         $subProject2 = new SubProject('Sub Project #2');

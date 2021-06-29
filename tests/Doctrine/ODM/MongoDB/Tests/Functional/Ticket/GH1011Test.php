@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -20,6 +21,7 @@ class GH1011Test extends BaseTest
         $doc->embeds->clear();
         $doc->embeds->add(new GH1011Embedded('test2'));
         $this->uow->computeChangeSets();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc->embeds);
         $this->assertTrue($this->uow->isCollectionScheduledForUpdate($doc->embeds));
         $this->assertFalse($this->uow->isCollectionScheduledForDeletion($doc->embeds));
     }
@@ -47,7 +49,11 @@ class GH1011Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument=GH1011Embedded::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH1011Embedded::class, strategy="set")
+     *
+     * @var Collection<int, GH1011Embedded>
+     */
     public $embeds;
 
     public function __construct()
