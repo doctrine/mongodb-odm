@@ -116,6 +116,24 @@ class UnitOfWorkTest extends BaseTest
         $this->assertFalse($this->uow->isScheduledForDelete($user));
     }
 
+    public function testScheduleForDeleteShouldUnregisterScheduledUpserts()
+    {
+        $class    = $this->dm->getClassMetadata(ForumUser::class);
+        $user     = new ForumUser();
+        $user->id = new ObjectId();
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
+        $this->assertFalse($this->uow->isScheduledForUpsert($user));
+        $this->assertFalse($this->uow->isScheduledForDelete($user));
+        $this->uow->scheduleForUpsert($class, $user);
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
+        $this->assertTrue($this->uow->isScheduledForUpsert($user));
+        $this->assertFalse($this->uow->isScheduledForDelete($user));
+        $this->uow->scheduleForDelete($user);
+        $this->assertFalse($this->uow->isScheduledForInsert($user));
+        $this->assertFalse($this->uow->isScheduledForUpsert($user));
+        $this->assertTrue($this->uow->isScheduledForDelete($user));
+    }
+
     public function testThrowsOnPersistOfMappedSuperclass()
     {
         $this->expectException(MongoDBException::class);
