@@ -48,6 +48,8 @@ class MatchStage extends Stage
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
+     *
+     * @return static
      */
     public function addAnd($expression, ...$expressions): self
     {
@@ -67,6 +69,8 @@ class MatchStage extends Stage
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
+     *
+     * @return static
      */
     public function addNor($expression, ...$expressions): self
     {
@@ -86,6 +90,8 @@ class MatchStage extends Stage
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
+     *
+     * @return static
      */
     public function addOr($expression, ...$expressions): self
     {
@@ -99,6 +105,8 @@ class MatchStage extends Stage
      *
      * @see Expr::all()
      * @see https://docs.mongodb.com/manual/reference/operator/all/
+     *
+     * @return static
      */
     public function all(array $values): self
     {
@@ -117,6 +125,8 @@ class MatchStage extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/elemMatch/
      *
      * @param array|Expr $expression
+     *
+     * @return static
      */
     public function elemMatch($expression): self
     {
@@ -131,6 +141,8 @@ class MatchStage extends Stage
      * @see Expr::equals()
      *
      * @param mixed $value
+     *
+     * @return static
      */
     public function equals($value): self
     {
@@ -144,6 +156,8 @@ class MatchStage extends Stage
      *
      * @see Expr::exists()
      * @see https://docs.mongodb.com/manual/reference/operator/exists/
+     *
+     * @return static
      */
     public function exists(bool $bool): self
     {
@@ -165,6 +179,8 @@ class MatchStage extends Stage
      * Set the current field for building the expression.
      *
      * @see Expr::field()
+     *
+     * @return static
      */
     public function field(string $field): self
     {
@@ -183,6 +199,8 @@ class MatchStage extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/geoIntersects/
      *
      * @param array|Geometry $geometry
+     *
+     * @return static
      */
     public function geoIntersects($geometry): self
     {
@@ -199,6 +217,8 @@ class MatchStage extends Stage
      *
      * @see Expr::geoWithin()
      * @see https://docs.mongodb.com/manual/reference/operator/geoWithin/
+     *
+     * @return static
      */
     public function geoWithin(Geometry $geometry): self
     {
@@ -218,6 +238,8 @@ class MatchStage extends Stage
      *
      * @see Expr::geoWithinBox()
      * @see https://docs.mongodb.com/manual/reference/operator/box/
+     *
+     * @return static
      */
     public function geoWithinBox(float $x1, float $y1, float $x2, float $y2): self
     {
@@ -234,6 +256,8 @@ class MatchStage extends Stage
      *
      * @see Expr::geoWithinCenter()
      * @see https://docs.mongodb.com/manual/reference/operator/center/
+     *
+     * @return static
      */
     public function geoWithinCenter(float $x, float $y, float $radius): self
     {
@@ -249,6 +273,8 @@ class MatchStage extends Stage
      *
      * @see Expr::geoWithinCenterSphere()
      * @see https://docs.mongodb.com/manual/reference/operator/centerSphere/
+     *
+     * @return static
      */
     public function geoWithinCenterSphere(float $x, float $y, float $radius): self
     {
@@ -275,6 +301,8 @@ class MatchStage extends Stage
      * @param array $point2    Second point of the polygon
      * @param array $point3    Third point of the polygon
      * @param array ...$points Additional points of the polygon
+     *
+     * @return static
      */
     public function geoWithinPolygon($point1, $point2, $point3, ...$points): self
     {
@@ -300,6 +328,8 @@ class MatchStage extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/gt/
      *
      * @param mixed $value
+     *
+     * @return static
      */
     public function gt($value): self
     {
@@ -315,6 +345,8 @@ class MatchStage extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/gte/
      *
      * @param mixed $value
+     *
+     * @return static
      */
     public function gte($value): self
     {
@@ -328,6 +360,8 @@ class MatchStage extends Stage
      *
      * @see Expr::in()
      * @see https://docs.mongodb.com/manual/reference/operator/in/
+     *
+     * @return static
      */
     public function in(array $values): self
     {
@@ -336,6 +370,9 @@ class MatchStage extends Stage
         return $this;
     }
 
+    /**
+     * @return static
+     */
     public function includesReferenceTo(object $document): self
     {
         $this->query->includesReferenceTo($document);
@@ -350,6 +387,8 @@ class MatchStage extends Stage
      *
      * @see Expr::language()
      * @see https://docs.mongodb.com/manual/reference/operator/text/
+     *
+     * @return static
      */
     public function language(string $language): self
     {
@@ -365,6 +404,8 @@ class MatchStage extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/lte/
      *
      * @param mixed $value
+     *
+     * @return static
      */
     public function lt($value): self
     {
@@ -380,6 +421,8 @@ class MatchStage extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/lte/
      *
      * @param mixed $value
+     *
+     * @return static
      */
     public function lte($value): self
     {
@@ -396,6 +439,8 @@ class MatchStage extends Stage
      *
      * @param float|int $divisor
      * @param float|int $remainder
+     *
+     * @return static
      */
     public function mod($divisor, $remainder = 0): self
     {
@@ -414,6 +459,8 @@ class MatchStage extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/not/
      *
      * @param array|Expr $expression
+     *
+     * @return static
      */
     public function not($expression): self
     {
@@ -429,6 +476,8 @@ class MatchStage extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/ne/
      *
      * @param mixed $value
+     *
+     * @return static
      */
     public function notEqual($value): self
     {
@@ -442,6 +491,8 @@ class MatchStage extends Stage
      *
      * @see Expr::notIn()
      * @see https://docs.mongodb.com/manual/reference/operator/nin/
+     *
+     * @return static
      */
     public function notIn(array $values): self
     {
@@ -460,6 +511,8 @@ class MatchStage extends Stage
      *
      * @param mixed $start
      * @param mixed $end
+     *
+     * @return static
      */
     public function range($start, $end): self
     {
@@ -468,6 +521,9 @@ class MatchStage extends Stage
         return $this;
     }
 
+    /**
+     * @return static
+     */
     public function references(object $document): self
     {
         $this->query->references($document);
@@ -480,6 +536,8 @@ class MatchStage extends Stage
      *
      * @see Expr::size()
      * @see https://docs.mongodb.com/manual/reference/operator/size/
+     *
+     * @return static
      */
     public function size(int $size): self
     {
@@ -497,6 +555,8 @@ class MatchStage extends Stage
      *
      * @see Expr::text()
      * @see https://docs.mongodb.com/master/reference/operator/query/text/
+     *
+     * @return static
      */
     public function text(string $search): self
     {
@@ -512,6 +572,8 @@ class MatchStage extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/type/
      *
      * @param int|string $type
+     *
+     * @return static
      */
     public function type($type): self
     {
