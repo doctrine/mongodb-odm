@@ -24,7 +24,7 @@ class EnsureShardingTest extends BaseTest
         $this->skipTestIfNotSharded(ShardedOne::class);
     }
 
-    public function testEnsureShardingForNewCollection()
+    public function testEnsureShardingForNewCollection(): void
     {
         $class = ShardedOne::class;
         $this->dm->getSchemaManager()->ensureDocumentIndexes($class);
@@ -39,7 +39,7 @@ class EnsureShardingTest extends BaseTest
         $this->assertTrue($stats['sharded']);
     }
 
-    public function testEnsureShardingForNewCollectionWithoutCreatingIndexes()
+    public function testEnsureShardingForNewCollectionWithoutCreatingIndexes(): void
     {
         $class = ShardedOne::class;
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
@@ -53,7 +53,7 @@ class EnsureShardingTest extends BaseTest
         $this->assertTrue($stats['sharded']);
     }
 
-    public function testEnsureShardingForCollectionWithDocuments()
+    public function testEnsureShardingForCollectionWithDocuments(): void
     {
         $class = ShardedOne::class;
 
@@ -70,7 +70,7 @@ class EnsureShardingTest extends BaseTest
         $this->assertTrue($stats['sharded']);
     }
 
-    public function testEnsureShardingForCollectionWithDocumentsThrowsIndexError()
+    public function testEnsureShardingForCollectionWithDocumentsThrowsIndexError(): void
     {
         $class = ShardedOne::class;
 
@@ -89,7 +89,7 @@ class EnsureShardingTest extends BaseTest
         $this->assertFalse($stats['sharded']);
     }
 
-    public function testEnsureShardingForCollectionWithShardingEnabled()
+    public function testEnsureShardingForCollectionWithShardingEnabled(): void
     {
         $class = ShardedOneWithDifferentKey::class;
         $this->dm->getSchemaManager()->ensureDocumentIndexes($class);
@@ -103,7 +103,7 @@ class EnsureShardingTest extends BaseTest
         $this->assertTrue($stats['sharded']);
     }
 
-    public function testEnsureDocumentShardingWithShardByReference()
+    public function testEnsureDocumentShardingWithShardByReference(): void
     {
         $class = ShardedByUser::class;
 

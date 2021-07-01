@@ -17,12 +17,12 @@ use const DIRECTORY_SEPARATOR;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function loadDriver()
+    protected function loadDriver(): XmlDriver
     {
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }
 
-    public function testSetShardKeyOptionsByAttributes()
+    public function testSetShardKeyOptionsByAttributes(): void
     {
         $class   = new ClassMetadata(stdClass::class);
         $driver  = $this->loadDriver();

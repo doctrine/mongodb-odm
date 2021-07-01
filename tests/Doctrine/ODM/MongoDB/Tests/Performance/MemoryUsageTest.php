@@ -28,7 +28,7 @@ class MemoryUsageTest extends BaseTest
     /**
      * [jwage: Memory increased by 14.09 kb]
      */
-    public function testMemoryUsage()
+    public function testMemoryUsage(): void
     {
         $memoryUsage = [];
         for ($i = 0; $i < 100; $i++) {
@@ -59,7 +59,7 @@ class MemoryUsageTest extends BaseTest
         echo sprintf('Memory increased by %s', $this->formatMemory($increase)) . PHP_EOL;
     }
 
-    private function formatMemory($size)
+    private function formatMemory($size): string
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
 

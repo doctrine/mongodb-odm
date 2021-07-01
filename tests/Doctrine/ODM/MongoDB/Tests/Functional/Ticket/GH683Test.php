@@ -14,7 +14,7 @@ use function get_class;
 
 class GH683Test extends BaseTest
 {
-    public function testEmbedOne()
+    public function testEmbedOne(): void
     {
         $parent       = new ParentDocument();
         $parent->name = 'Parent';
@@ -34,7 +34,7 @@ class GH683Test extends BaseTest
         $this->assertInstanceOf(get_class($sub1), $parent->embedOne);
     }
 
-    public function testEmbedMany()
+    public function testEmbedMany(): void
     {
         $parent       = new ParentDocument();
         $parent->name = 'Parent';

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 /** FIXME: reflection chokes if this class doesn't have a doc comment */
@@ -16,7 +17,7 @@ class CommentRepository extends DocumentRepository
             ->current();
     }
 
-    public function findManyComments()
+    public function findManyComments(): Iterator
     {
         return $this->getDocumentPersister()->loadAll();
     }

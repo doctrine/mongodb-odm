@@ -14,7 +14,7 @@ class GH1232Test extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testRemoveDoesNotCauseErrors()
+    public function testRemoveDoesNotCauseErrors(): void
     {
         $post = new GH1232Post();
         $this->dm->persist($post);

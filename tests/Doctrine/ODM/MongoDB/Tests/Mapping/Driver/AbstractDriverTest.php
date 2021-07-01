@@ -32,7 +32,7 @@ abstract class AbstractDriverTest extends TestCase
         unset($this->driver);
     }
 
-    public function testDriver()
+    public function testDriver(): void
     {
         $classMetadata = new ClassMetadata(User::class);
         $this->driver->loadMetadataForClass(User::class, $classMetadata);
@@ -295,7 +295,7 @@ abstract class AbstractDriverTest extends TestCase
         ], $classMetadata->fieldMappings['count']);
     }
 
-    public function testPartialFilterExpressions()
+    public function testPartialFilterExpressions(): void
     {
         $classMetadata = new ClassMetadata(PartialFilterDocument::class);
         $this->driver->loadMetadataForClass(PartialFilterDocument::class, $classMetadata);
@@ -333,7 +333,7 @@ abstract class AbstractDriverTest extends TestCase
         ], $classMetadata->getIndexes());
     }
 
-    public function testCollectionPrimers()
+    public function testCollectionPrimers(): void
     {
         $classMetadata = new ClassMetadata(PrimedCollectionDocument::class);
         $this->driver->loadMetadataForClass(PrimedCollectionDocument::class, $classMetadata);
@@ -395,7 +395,7 @@ abstract class AbstractDriverTest extends TestCase
         ], $classMetadata->fieldMappings['inverseMappedBy']);
     }
 
-    public function testNullableFieldsMapping()
+    public function testNullableFieldsMapping(): void
     {
         $classMetadata = new ClassMetadata(NullableFieldsDocument::class);
         $this->driver->loadMetadataForClass(NullableFieldsDocument::class, $classMetadata);

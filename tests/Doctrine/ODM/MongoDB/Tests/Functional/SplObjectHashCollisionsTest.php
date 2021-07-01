@@ -16,7 +16,7 @@ class SplObjectHashCollisionsTest extends BaseTest
     /**
      * @dataProvider provideParentAssociationsIsCleared
      */
-    public function testParentAssociationsIsCleared($f)
+    public function testParentAssociationsIsCleared($f): void
     {
         $d         = new SplColDoc();
         $d->one    = new SplColEmbed('d.one.v1');
@@ -34,7 +34,7 @@ class SplObjectHashCollisionsTest extends BaseTest
     /**
      * @dataProvider provideParentAssociationsIsCleared
      */
-    public function testParentAssociationsLeftover($f, $leftover)
+    public function testParentAssociationsLeftover($f, $leftover): void
     {
         $d         = new SplColDoc();
         $d->one    = new SplColEmbed('d.one.v1');
@@ -51,7 +51,7 @@ class SplObjectHashCollisionsTest extends BaseTest
         $this->expectCount('embeddedDocumentsRegistry', $leftover);
     }
 
-    public function provideParentAssociationsIsCleared()
+    public function provideParentAssociationsIsCleared(): array
     {
         return [
             [
@@ -75,7 +75,7 @@ class SplObjectHashCollisionsTest extends BaseTest
         ];
     }
 
-    private function expectCount($prop, $expected)
+    private function expectCount($prop, $expected): void
     {
         $ro = new ReflectionObject($this->uow);
         $rp = $ro->getProperty($prop);

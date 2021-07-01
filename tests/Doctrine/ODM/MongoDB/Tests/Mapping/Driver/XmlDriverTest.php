@@ -25,7 +25,7 @@ class XmlDriverTest extends AbstractDriverTest
         $this->driver = new XmlDriver(__DIR__ . '/fixtures/xml');
     }
 
-    public function testDriverShouldReturnOptionsForCustomIdGenerator()
+    public function testDriverShouldReturnOptionsForCustomIdGenerator(): void
     {
         $classMetadata = new ClassMetadata(UserCustomIdGenerator::class);
         $this->driver->loadMetadataForClass(UserCustomIdGenerator::class, $classMetadata);
@@ -50,7 +50,7 @@ class XmlDriverTest extends AbstractDriverTest
         ], $classMetadata->fieldMappings['id']);
     }
 
-    public function testDriverShouldParseNonStringAttributes()
+    public function testDriverShouldParseNonStringAttributes(): void
     {
         $classMetadata = new ClassMetadata(UserNonStringOptions::class);
         $this->driver->loadMetadataForClass(UserNonStringOptions::class, $classMetadata);
@@ -66,7 +66,7 @@ class XmlDriverTest extends AbstractDriverTest
         $this->assertSame(2, $profileMapping['skip']);
     }
 
-    public function testInvalidPartialFilterExpressions()
+    public function testInvalidPartialFilterExpressions(): void
     {
         $classMetadata = new ClassMetadata(InvalidPartialFilterDocument::class);
 
@@ -76,7 +76,7 @@ class XmlDriverTest extends AbstractDriverTest
         $this->driver->loadMetadataForClass(InvalidPartialFilterDocument::class, $classMetadata);
     }
 
-    public function testAlsoLoadFieldMapping()
+    public function testAlsoLoadFieldMapping(): void
     {
         $classMetadata = new ClassMetadata(AlsoLoadDocument::class);
         $this->driver->loadMetadataForClass(AlsoLoadDocument::class, $classMetadata);
@@ -99,7 +99,7 @@ class XmlDriverTest extends AbstractDriverTest
         ], $classMetadata->fieldMappings['createdAt']);
     }
 
-    public function testValidationMapping()
+    public function testValidationMapping(): void
     {
         $classMetadata = new ClassMetadata(SchemaValidatedDocument::class);
         $this->driver->loadMetadataForClass($classMetadata->name, $classMetadata);
@@ -128,7 +128,7 @@ EOT;
         $this->assertEquals($expectedValidator, $classMetadata->getValidator());
     }
 
-    public function testWrongValueForValidationSchemaShouldThrowException()
+    public function testWrongValueForValidationSchemaShouldThrowException(): void
     {
         $classMetadata = new ClassMetadata(SchemaInvalidDocument::class);
         $this->expectException(MappingException::class);

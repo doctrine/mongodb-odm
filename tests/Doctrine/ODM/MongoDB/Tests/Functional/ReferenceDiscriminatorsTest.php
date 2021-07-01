@@ -22,7 +22,7 @@ class ReferenceDiscriminatorsTest extends BaseTest
     /**
      * This test demonstrates a CommentableAction being published to activity streams.
      */
-    public function testReferenceDiscriminators()
+    public function testReferenceDiscriminators(): void
     {
         $this->dm->persist($commentableAction           = new CommentableAction('actionType'));
         $this->dm->persist($groupMainActivityStreamItem = new GroupMainActivityStreamItem($commentableAction, 'groupId'));
@@ -49,7 +49,7 @@ class ReferenceDiscriminatorsTest extends BaseTest
      * This tests demonstrates a race condition between two requests which are
      * both publishing a CommentableAction to activity streams.
      */
-    public function testReferenceDiscriminatorsRaceCondition()
+    public function testReferenceDiscriminatorsRaceCondition(): void
     {
         $this->dm->persist($commentableAction1           = new CommentableAction('actionType'));
         $this->dm->persist($groupMainActivityStreamItem1 = new GroupMainActivityStreamItem($commentableAction1, 'groupId'));
@@ -132,7 +132,7 @@ class CommentableAction extends Action
         $this->comments = $comments;
     }
 
-    public function getComments()
+    public function getComments(): array
     {
         return $this->comments;
     }
@@ -157,7 +157,7 @@ abstract class ActivityStreamItem
         return $this->id;
     }
 
-    public function getAction()
+    public function getAction(): Action
     {
         return $this->action;
     }

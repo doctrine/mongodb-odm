@@ -12,14 +12,14 @@ class CountTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testCountStage()
+    public function testCountStage(): void
     {
         $countStage = new Count($this->getTestAggregationBuilder(), 'document_count');
 
         $this->assertSame(['$count' => 'document_count'], $countStage->getExpression());
     }
 
-    public function testCountFromBuilder()
+    public function testCountFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->count('document_count');

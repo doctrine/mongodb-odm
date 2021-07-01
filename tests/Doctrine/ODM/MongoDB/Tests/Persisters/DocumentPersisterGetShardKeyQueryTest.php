@@ -19,7 +19,7 @@ use function get_class;
 
 class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 {
-    public function testGetShardKeyQueryScalars()
+    public function testGetShardKeyQueryScalars(): void
     {
         $o         = new ShardedByScalars();
         $o->int    = 1;
@@ -39,7 +39,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         );
     }
 
-    public function testGetShardKeyQueryObjects()
+    public function testGetShardKeyQueryObjects(): void
     {
         $o       = new ShardedByObjects();
         $o->oid  = '54ca2c4c81fec698130041a7';
@@ -68,7 +68,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         );
     }
 
-    public function testShardById()
+    public function testShardById(): void
     {
         $o             = new ShardedById();
         $o->identifier = new ObjectId();
@@ -83,7 +83,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $this->assertSame(['_id' => $o->identifier], $shardKeyQuery);
     }
 
-    public function testShardByReference()
+    public function testShardByReference(): void
     {
         $o = new ShardedByReferenceOne();
 

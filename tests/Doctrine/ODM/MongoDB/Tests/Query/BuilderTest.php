@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Documents\Feature;
 use Documents\User;
+use Generator;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
 use InvalidArgumentException;
@@ -24,14 +25,14 @@ use ReflectionProperty;
 
 class BuilderTest extends BaseTest
 {
-    public function testPrimeRequiresBooleanOrCallable()
+    public function testPrimeRequiresBooleanOrCallable(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->dm->createQueryBuilder(User::class)
             ->field('groups')->prime(1);
     }
 
-    public function testReferencesGoesThroughDiscriminatorMap()
+    public function testReferencesGoesThroughDiscriminatorMap(): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -74,7 +75,7 @@ class BuilderTest extends BaseTest
         );
     }
 
-    public function testReferencesThrowsSpecializedExceptionForDiscriminatedDocuments()
+    public function testReferencesThrowsSpecializedExceptionForDiscriminatedDocuments(): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -89,7 +90,7 @@ class BuilderTest extends BaseTest
             ->getQuery();
     }
 
-    public function testReferencesThrowsSpecializedExceptionForConflictingMappings()
+    public function testReferencesThrowsSpecializedExceptionForConflictingMappings(): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -104,7 +105,7 @@ class BuilderTest extends BaseTest
             ->getQuery();
     }
 
-    public function testIncludesReferenceToGoesThroughDiscriminatorMap()
+    public function testIncludesReferenceToGoesThroughDiscriminatorMap(): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -153,7 +154,7 @@ class BuilderTest extends BaseTest
         );
     }
 
-    public function testIncludesReferenceToThrowsSpecializedExceptionForDiscriminatedDocuments()
+    public function testIncludesReferenceToThrowsSpecializedExceptionForDiscriminatedDocuments(): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -168,7 +169,7 @@ class BuilderTest extends BaseTest
             ->getQuery();
     }
 
-    public function testIncludesReferenceToThrowsSpecializedExceptionForConflictingMappings()
+    public function testIncludesReferenceToThrowsSpecializedExceptionForConflictingMappings(): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -186,7 +187,7 @@ class BuilderTest extends BaseTest
     /**
      * @dataProvider provideArrayUpdateOperatorsOnReferenceMany
      */
-    public function testArrayUpdateOperatorsOnReferenceMany($class, $field)
+    public function testArrayUpdateOperatorsOnReferenceMany($class, $field): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -200,7 +201,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $q1['newObj']['$addToSet'][$field]);
     }
 
-    public function provideArrayUpdateOperatorsOnReferenceMany()
+    public function provideArrayUpdateOperatorsOnReferenceMany(): Generator
     {
         yield [ChildA::class, 'featureFullMany'];
         yield [ChildB::class, 'featureSimpleMany'];
@@ -210,7 +211,7 @@ class BuilderTest extends BaseTest
     /**
      * @dataProvider provideArrayUpdateOperatorsOnReferenceOne
      */
-    public function testArrayUpdateOperatorsOnReferenceOne($class, $field)
+    public function testArrayUpdateOperatorsOnReferenceOne($class, $field): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -224,14 +225,14 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $q1['newObj']['$set'][$field]);
     }
 
-    public function provideArrayUpdateOperatorsOnReferenceOne()
+    public function provideArrayUpdateOperatorsOnReferenceOne(): Generator
     {
         yield [ChildA::class, 'featureFull'];
         yield [ChildB::class, 'featureSimple'];
         yield [ChildC::class, 'featurePartial'];
     }
 
-    public function testThatOrAcceptsAnotherQuery()
+    public function testThatOrAcceptsAnotherQuery(): void
     {
         $qb = $this->getTestQueryBuilder();
         $qb->addOr($qb->expr()->field('firstName')->equals('Kris'));
@@ -245,7 +246,7 @@ class BuilderTest extends BaseTest
         ], $qb->getQueryArray());
     }
 
-    public function testThatAndAcceptsAnotherQuery()
+    public function testThatAndAcceptsAnotherQuery(): void
     {
         $qb = $this->getTestQueryBuilder();
         $qb->addAnd($qb->expr()->field('hits')->gte(1));
@@ -259,7 +260,7 @@ class BuilderTest extends BaseTest
         ], $qb->getQueryArray());
     }
 
-    public function testThatNorAcceptsAnotherQuery()
+    public function testThatNorAcceptsAnotherQuery(): void
     {
         $qb = $this->getTestQueryBuilder();
         $qb->addNor($qb->expr()->field('firstName')->equals('Kris'));
@@ -273,7 +274,7 @@ class BuilderTest extends BaseTest
         ], $qb->getQueryArray());
     }
 
-    public function testAddElemMatch()
+    public function testAddElemMatch(): void
     {
         $qb = $this->getTestQueryBuilder();
         $qb->field('phonenumbers')->elemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
@@ -285,7 +286,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
     }
 
-    public function testAddNot()
+    public function testAddNot(): void
     {
         $qb = $this->getTestQueryBuilder();
         $qb->field('username')->not($qb->expr()->in(['boo']));
@@ -299,7 +300,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
     }
 
-    public function testFindQuery()
+    public function testFindQuery(): void
     {
         $qb       = $this->getTestQueryBuilder()
             ->where("function() { return this.username == 'boo' }");
@@ -307,7 +308,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
     }
 
-    public function testUpsertUpdateQuery()
+    public function testUpsertUpdateQuery(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
@@ -321,7 +322,7 @@ class BuilderTest extends BaseTest
         $this->assertTrue($qb->debug('upsert'));
     }
 
-    public function testMultipleUpdateQuery()
+    public function testMultipleUpdateQuery(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateMany()
@@ -334,7 +335,7 @@ class BuilderTest extends BaseTest
         $this->assertTrue($qb->debug('multiple'));
     }
 
-    public function testComplexUpdateQuery()
+    public function testComplexUpdateQuery(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
@@ -351,7 +352,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
-    public function testIncUpdateQuery()
+    public function testIncUpdateQuery(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
@@ -367,7 +368,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
-    public function testUnsetField()
+    public function testUnsetField(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
@@ -383,7 +384,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
-    public function testSetOnInsert()
+    public function testSetOnInsert(): void
     {
         $createDate = new DateTime();
         $qb         = $this->getTestQueryBuilder()
@@ -403,7 +404,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
-    public function testDateRange()
+    public function testDateRange(): void
     {
         $start = new DateTime('1985-09-01 01:00:00');
         $end   = new DateTime('1985-09-04');
@@ -419,14 +420,14 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
     }
 
-    public function testQueryIsIterable()
+    public function testQueryIsIterable(): void
     {
         $qb    = $this->getTestQueryBuilder();
         $query = $qb->getQuery();
         $this->assertInstanceOf(IteratorAggregate::class, $query);
     }
 
-    public function testDeepClone()
+    public function testDeepClone(): void
     {
         $qb = $this->getTestQueryBuilder();
 
@@ -443,7 +444,7 @@ class BuilderTest extends BaseTest
     /**
      * @dataProvider provideProxiedExprMethods
      */
-    public function testProxiedExprMethods($method, array $args = [])
+    public function testProxiedExprMethods($method, array $args = []): void
     {
         $expr = $this->getMockExpr();
         $expr
@@ -459,7 +460,7 @@ class BuilderTest extends BaseTest
         $this->assertSame($qb, $qb->$method(...$args));
     }
 
-    public function provideProxiedExprMethods()
+    public function provideProxiedExprMethods(): array
     {
         return [
             'field()' => ['field', ['fieldName']],
@@ -521,7 +522,7 @@ class BuilderTest extends BaseTest
         ];
     }
 
-    public function providePoint()
+    public function providePoint(): array
     {
         $coordinates = [0, 0];
         $json        = ['type' => 'Point', 'coordinates' => $coordinates];
@@ -536,7 +537,7 @@ class BuilderTest extends BaseTest
     /**
      * @dataProvider provideSelectProjections
      */
-    public function testSelect(array $args, array $expected)
+    public function testSelect(array $args, array $expected): void
     {
         $qb = $this->getTestQueryBuilder();
         $qb->select(...$args);
@@ -544,7 +545,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->debug('select'));
     }
 
-    public function provideSelectProjections()
+    public function provideSelectProjections(): array
     {
         return $this->provideProjections(true);
     }
@@ -552,7 +553,7 @@ class BuilderTest extends BaseTest
     /**
      * @dataProvider provideExcludeProjections
      */
-    public function testExclude(array $args, array $expected)
+    public function testExclude(array $args, array $expected): void
     {
         $qb = $this->getTestQueryBuilder();
         $qb->exclude(...$args);
@@ -560,7 +561,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->debug('select'));
     }
 
-    public function provideExcludeProjections()
+    public function provideExcludeProjections(): array
     {
         return $this->provideProjections(false);
     }
@@ -572,7 +573,7 @@ class BuilderTest extends BaseTest
      *
      * @return array
      */
-    private function provideProjections(bool $include)
+    private function provideProjections(bool $include): array
     {
         $project = $include ? 1 : 0;
 
@@ -596,7 +597,7 @@ class BuilderTest extends BaseTest
         ];
     }
 
-    public function testSelectSliceWithCount()
+    public function testSelectSliceWithCount(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->selectSlice('tags', 10);
@@ -606,7 +607,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->debug('select'));
     }
 
-    public function testSelectSliceWithSkipAndLimit()
+    public function testSelectSliceWithSkipAndLimit(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->selectSlice('tags', -5, 5);
@@ -616,7 +617,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->debug('select'));
     }
 
-    public function testSelectElemMatchWithArray()
+    public function testSelectElemMatchWithArray(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->selectElemMatch('addresses', ['state' => 'ny']);
@@ -626,7 +627,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->debug('select'));
     }
 
-    public function testSelectElemMatchWithExpr()
+    public function testSelectElemMatchWithExpr(): void
     {
         $qb = $this->getTestQueryBuilder();
         $qb->selectElemMatch('addresses', $qb->expr()->field('state')->equals('ny'));
@@ -636,7 +637,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->debug('select'));
     }
 
-    public function testSelectMeta()
+    public function testSelectMeta(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->selectMeta('score', 'textScore');
@@ -646,7 +647,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->debug('select'));
     }
 
-    public function testSetReadPreference()
+    public function testSetReadPreference(): void
     {
         $qb = $this->getTestQueryBuilder();
         $qb->setReadPreference(new ReadPreference('secondary', [['dc' => 'east']]));
@@ -657,7 +658,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals([['dc' => 'east']], $readPreference->getTagSets());
     }
 
-    public function testSortWithFieldNameAndDefaultOrder()
+    public function testSortWithFieldNameAndDefaultOrder(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort('foo');
@@ -668,7 +669,7 @@ class BuilderTest extends BaseTest
     /**
      * @dataProvider provideSortOrders
      */
-    public function testSortWithFieldNameAndOrder($order, $expectedOrder)
+    public function testSortWithFieldNameAndOrder($order, $expectedOrder): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort('foo', $order);
@@ -676,7 +677,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals(['foo' => $expectedOrder], $qb->debug('sort'));
     }
 
-    public function provideSortOrders()
+    public function provideSortOrders(): array
     {
         return [
             [1, 1],
@@ -688,7 +689,7 @@ class BuilderTest extends BaseTest
         ];
     }
 
-    public function testSortWithArrayOfFieldNameAndOrderPairs()
+    public function testSortWithArrayOfFieldNameAndOrderPairs(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort(['foo' => 1, 'bar' => -1]);
@@ -696,7 +697,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals(['foo' => 1, 'bar' => -1], $qb->debug('sort'));
     }
 
-    public function testSortMetaDoesProjectMissingField()
+    public function testSortMetaDoesProjectMissingField(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->select('score')
@@ -709,7 +710,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals(['score' => ['$meta' => 'textScore']], $qb->debug('sort'));
     }
 
-    public function testSortMetaDoesNotProjectExistingField()
+    public function testSortMetaDoesNotProjectExistingField(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sortMeta('score', 'textScore');
@@ -721,7 +722,7 @@ class BuilderTest extends BaseTest
     /**
      * @dataProvider provideCurrentDateOptions
      */
-    public function testCurrentDateUpdateQuery($type)
+    public function testCurrentDateUpdateQuery($type): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
@@ -739,7 +740,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
-    public static function provideCurrentDateOptions()
+    public static function provideCurrentDateOptions(): array
     {
         return [
             ['date'],
@@ -747,7 +748,7 @@ class BuilderTest extends BaseTest
         ];
     }
 
-    public function testCurrentDateInvalidType()
+    public function testCurrentDateInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->getTestQueryBuilder()
@@ -755,7 +756,7 @@ class BuilderTest extends BaseTest
             ->field('lastUpdated')->currentDate('notADate');
     }
 
-    public function testBitAndUpdateQuery()
+    public function testBitAndUpdateQuery(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
@@ -773,7 +774,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
-    public function testBitOrUpdateQuery()
+    public function testBitOrUpdateQuery(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
@@ -791,7 +792,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
-    public function testBitXorUpdateQuery()
+    public function testBitXorUpdateQuery(): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
@@ -809,7 +810,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getNewObj());
     }
 
-    public function testNonRewindable()
+    public function testNonRewindable(): void
     {
         $query = $this->getTestQueryBuilder()
             ->setRewindable(false)
@@ -818,7 +819,7 @@ class BuilderTest extends BaseTest
         $this->assertInstanceOf(UnrewindableIterator::class, $query->execute());
     }
 
-    private function getTestQueryBuilder()
+    private function getTestQueryBuilder(): Builder
     {
         return new Builder($this->dm, User::class);
     }

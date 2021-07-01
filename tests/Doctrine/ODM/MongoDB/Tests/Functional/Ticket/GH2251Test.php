@@ -14,7 +14,7 @@ class GH2251Test extends BaseTest
      * @testWith ["groups"]
      *           ["groupsSimple"]
      */
-    public function testElemMatchQuery(string $fieldName)
+    public function testElemMatchQuery(string $fieldName): void
     {
         $builder = $this->dm->createQueryBuilder(User::class);
 

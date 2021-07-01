@@ -10,7 +10,7 @@ use MongoDB\Driver\Exception\CommandException;
 
 class GH1344Test extends BaseTest
 {
-    public function testGeneratingIndexesDoesNotThrowException()
+    public function testGeneratingIndexesDoesNotThrowException(): void
     {
         $indexes = $this->dm->getSchemaManager()->getDocumentIndexes(GH1344Main::class);
         self::assertCount(4, $indexes);
@@ -22,7 +22,7 @@ class GH1344Test extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes(GH1344Main::class);
     }
 
-    public function testGeneratingIndexesWithTooLongIndexNameThrowsExceptionBeforeMongoDB42()
+    public function testGeneratingIndexesWithTooLongIndexNameThrowsExceptionBeforeMongoDB42(): void
     {
         $this->skipOnMongoDB42('Index name restrictions were removed in MongoDB 4.2.');
 
@@ -34,7 +34,7 @@ class GH1344Test extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes(GH1344LongIndexName::class);
     }
 
-    public function testGeneratingIndexesWithLongIndexNameDoesNotThrowExceptionAfterMongoDB42()
+    public function testGeneratingIndexesWithLongIndexNameDoesNotThrowExceptionAfterMongoDB42(): void
     {
         $this->requireMongoDB42('Index name length is limited before MongoDB 4.2.');
 

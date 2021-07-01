@@ -14,7 +14,7 @@ use function get_class;
 
 class GH999Test extends BaseTest
 {
-    public function testModifyingInFlushHandler()
+    public function testModifyingInFlushHandler(): void
     {
         $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH999Listener());
 
@@ -31,7 +31,7 @@ class GH999Test extends BaseTest
 
 class GH999Listener
 {
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         $dm = $args->getDocumentManager();
 
@@ -67,13 +67,13 @@ class GH999Document
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
     /** @ODM\PostUpdate */
-    public function postUpdate()
+    public function postUpdate(): void
     {
         throw new Exception('Did not expect postUpdate to be called when persisting a new document');
     }

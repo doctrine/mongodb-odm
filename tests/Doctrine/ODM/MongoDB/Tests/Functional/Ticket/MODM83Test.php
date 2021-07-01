@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -15,7 +16,7 @@ class MODM83Test extends BaseTest
     /** @var MODM83EventListener */
     private $listener;
 
-    private function getDocumentManager()
+    private function getDocumentManager(): ?DocumentManager
     {
         $this->listener = new MODM83EventListener();
         $evm            = $this->dm->getEventManager();
@@ -28,7 +29,7 @@ class MODM83Test extends BaseTest
         return $this->dm;
     }
 
-    public function testDocumentWithEmbeddedDocumentNotUpdated()
+    public function testDocumentWithEmbeddedDocumentNotUpdated(): void
     {
         $dm = $this->getDocumentManager();
 

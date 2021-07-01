@@ -11,7 +11,7 @@ use function get_class;
 
 class GH774Test extends BaseTest
 {
-    public function testUpsert()
+    public function testUpsert(): void
     {
         $id = (string) new ObjectId();
 
@@ -28,7 +28,7 @@ class GH774Test extends BaseTest
         $this->assertEquals('test', $thread->permalink);
     }
 
-    protected function createMetadataDriverImpl()
+    protected function createMetadataDriverImpl(): XmlDriver
     {
         return new XmlDriver(__DIR__ . '/GH774');
     }

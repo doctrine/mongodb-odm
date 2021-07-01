@@ -23,7 +23,7 @@ class Tag
         $this->name = $name;
     }
 
-    public function addBlogPost(BlogPost $blogPost)
+    public function addBlogPost(BlogPost $blogPost): void
     {
         $this->blogPosts[] = $blogPost;
     }

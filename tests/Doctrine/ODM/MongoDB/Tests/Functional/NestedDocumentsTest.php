@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
@@ -14,7 +15,7 @@ use function is_string;
 
 class NestedDocumentsTest extends BaseTest
 {
-    public function testSimple()
+    public function testSimple(): void
     {
         $product        = new Product();
         $product->title = 'Product';
@@ -68,7 +69,7 @@ class NestedDocumentsTest extends BaseTest
         $this->assertNotEquals($product->title, $order->product->title);
     }
 
-    public function testNestedCategories()
+    public function testNestedCategories(): void
     {
         $category = new Category('Root');
         $child1   = $category->addChild('Child 1');
@@ -97,7 +98,7 @@ class NestedDocumentsTest extends BaseTest
         $this->assertCount(2, $category->getChildren());
     }
 
-    public function testNestedReference()
+    public function testNestedReference(): void
     {
         $test   = new Hierarchy('Root');
         $child1 = $test->addChild('Child 1');
@@ -161,7 +162,7 @@ class Hierarchy
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -197,7 +198,7 @@ class Hierarchy
         return $child;
     }
 
-    public function getChildren()
+    public function getChildren(): array
     {
         return $this->children;
     }
@@ -218,7 +219,7 @@ class BaseCategory
         $this->children = new ArrayCollection();
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -254,7 +255,7 @@ class BaseCategory
         return $child;
     }
 
-    public function getChildren()
+    public function getChildren(): Collection
     {
         return $this->children;
     }

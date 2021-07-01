@@ -12,7 +12,7 @@ use function assert;
 
 class GH1418Test extends BaseTest
 {
-    public function testManualHydrateAndMerge()
+    public function testManualHydrateAndMerge(): void
     {
         $document = new GH1418Document();
         $this->dm->getHydratorFactory()->hydrate($document, [
@@ -40,7 +40,7 @@ class GH1418Test extends BaseTest
         $this->assertEquals(2, $document->embedMany->first()->id);
     }
 
-    public function testReadDocumentAndManage()
+    public function testReadDocumentAndManage(): void
     {
         $document     = new GH1418Document();
         $document->id = 1;

@@ -45,7 +45,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->user2 = $this->dm->find(get_class($user1), $user2->id);
     }
 
-    public function testClonePersistentCollectionAndReuse()
+    public function testClonePersistentCollectionAndReuse(): void
     {
         $user1 = $this->user1;
 
@@ -59,7 +59,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->assertCount(2, $user1->groups);
     }
 
-    public function testClonePersistentCollectionAndShare()
+    public function testClonePersistentCollectionAndShare(): void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
@@ -76,7 +76,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->assertCount(2, $user2->groups);
     }
 
-    public function testCloneThenDirtyPersistentCollection()
+    public function testCloneThenDirtyPersistentCollection(): void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
@@ -97,7 +97,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->assertCount(2, $user1->groups);
     }
 
-    public function testNotCloneAndPassAroundFlush()
+    public function testNotCloneAndPassAroundFlush(): void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;

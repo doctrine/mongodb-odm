@@ -38,31 +38,31 @@ abstract class BaseEmployee
         return $this->id;
     }
 
-    public function setId($val)
+    public function setId($val): BaseEmployee
     {
         $this->id = $val;
 
         return $this;
     }
 
-    public function getChanges()
+    public function getChanges(): int
     {
         return $this->changes;
     }
 
-    public function incrementChanges($num)
+    public function incrementChanges($num): BaseEmployee
     {
         $this->changes += $num;
 
         return $this;
     }
 
-    public function getNotes()
+    public function getNotes(): array
     {
         return $this->notes;
     }
 
-    public function addNote($note)
+    public function addNote($note): BaseEmployee
     {
         $this->notes[] = $note;
 
@@ -74,7 +74,7 @@ abstract class BaseEmployee
         return $this->name;
     }
 
-    public function setName($val)
+    public function setName($val): BaseEmployee
     {
         $this->name = $val;
 
@@ -86,7 +86,7 @@ abstract class BaseEmployee
         return $this->salary;
     }
 
-    public function setSalary($val)
+    public function setSalary($val): BaseEmployee
     {
         $this->salary = $val;
 
@@ -98,7 +98,7 @@ abstract class BaseEmployee
         return $this->started;
     }
 
-    public function setStarted($val)
+    public function setStarted($val): BaseEmployee
     {
         $this->started = $val;
 
@@ -110,7 +110,7 @@ abstract class BaseEmployee
         return $this->left;
     }
 
-    public function setLeft($val)
+    public function setLeft($val): BaseEmployee
     {
         $this->left = $val;
 
@@ -122,7 +122,7 @@ abstract class BaseEmployee
         return $this->address;
     }
 
-    public function setAddress($val)
+    public function setAddress($val): BaseEmployee
     {
         $this->address = $val;
 

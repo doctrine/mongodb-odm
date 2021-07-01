@@ -17,7 +17,7 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
     /**
      * This test demonstrates a document without discriminator being treated with defaultDiscriminatorValue
      */
-    public function testLoadDocumentWithDefaultValue()
+    public function testLoadDocumentWithDefaultValue(): void
     {
         // Create referenced document without discriminator value
         $this->dm->persist($firstChildWithoutDiscriminator  = new ChildDocumentWithoutDiscriminator('firstWithoutDiscriminator'));
@@ -44,7 +44,7 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
     /**
      * This test ensures that a discriminatorValue is stored in the database and overrides the default
      */
-    public function testLoadDocumentWithDifferentChild()
+    public function testLoadDocumentWithDifferentChild(): void
     {
         $this->dm->persist($firstChildWithDiscriminator  = new ChildDocumentWithDiscriminatorComplex('firstWithDiscriminator', 'veryComplex'));
         $this->dm->persist($secondChildWithDiscriminator = new ChildDocumentWithDiscriminatorSimple('secondWithDiscriminator'));

@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH426Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $form           = new GH426Form();
         $form->fields[] = new GH426Field($form);

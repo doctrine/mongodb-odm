@@ -26,7 +26,7 @@ class Account
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -36,7 +36,7 @@ class Account
         return $this->name;
     }
 
-    public function setUser($user)
+    public function setUser($user): void
     {
         $this->user = $user;
     }
@@ -46,7 +46,7 @@ class Account
         return $this->user;
     }
 
-    public function setUserDbRef($userDbRef)
+    public function setUserDbRef($userDbRef): void
     {
         $this->userDbRef = $userDbRef;
     }

@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class LifecycleTest extends BaseTest
 {
-    public function testEventOnDoubleFlush()
+    public function testEventOnDoubleFlush(): void
     {
         $parent = new ParentObject('parent', new ChildObject('child'), new ChildEmbeddedObject('child embedded'));
         $this->dm->persist($parent);
@@ -33,7 +33,7 @@ class LifecycleTest extends BaseTest
         $this->assertEquals('changed', $parent->getChildEmbedded()->getName());
     }
 
-    public function testEventEmptyFlush()
+    public function testEventEmptyFlush(): void
     {
         $parent = new ParentObject('parent', new ChildObject('child'), new ChildEmbeddedObject('child embedded'));
 
@@ -86,13 +86,13 @@ class ParentObject
     }
 
     /** @ODM\PrePersist @ODM\PreUpdate */
-    public function prePersistPreUpdate()
+    public function prePersistPreUpdate(): void
     {
         $this->children = [$this->child];
     }
 
     /** @ODM\PreUpdate */
-    public function preUpdate()
+    public function preUpdate(): void
     {
         $this->childEmbedded->setName('changed');
     }
@@ -102,12 +102,12 @@ class ParentObject
         return $this->children;
     }
 
-    public function getChildEmbedded()
+    public function getChildEmbedded(): ChildEmbeddedObject
     {
         return $this->childEmbedded;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -149,7 +149,7 @@ class ChildEmbeddedObject
         $this->name = $name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }

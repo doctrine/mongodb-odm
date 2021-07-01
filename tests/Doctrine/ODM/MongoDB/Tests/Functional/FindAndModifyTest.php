@@ -9,7 +9,7 @@ use Documents\User;
 
 class FindAndModifyTest extends BaseTest
 {
-    public function testFindAndModify()
+    public function testFindAndModify(): void
     {
         $coll = $this->dm->getDocumentCollection(User::class);
         $docs = [['count' => 0], ['count' => 0]];
@@ -42,7 +42,7 @@ class FindAndModifyTest extends BaseTest
         $this->assertEquals(1, $this->dm->getDocumentCollection(User::class)->count());
     }
 
-    public function testFindAndModifyAlt()
+    public function testFindAndModifyAlt(): void
     {
         $doc = new User();
         $doc->setUsername('jwage');

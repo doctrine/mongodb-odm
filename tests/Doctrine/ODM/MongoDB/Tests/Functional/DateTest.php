@@ -17,7 +17,7 @@ use const PHP_INT_SIZE;
 
 class DateTest extends BaseTest
 {
-    public function testDates()
+    public function testDates(): void
     {
         $user = new User();
         $user->setUsername('w00ting');
@@ -40,7 +40,7 @@ class DateTest extends BaseTest
     /**
      * @dataProvider provideEquivalentDates
      */
-    public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame($oldValue, $newValue)
+    public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame($oldValue, $newValue): void
     {
         $user = new User();
         $user->setCreatedAt($oldValue);
@@ -55,7 +55,7 @@ class DateTest extends BaseTest
         $this->assertEmpty($changeset);
     }
 
-    public function provideEquivalentDates()
+    public function provideEquivalentDates(): array
     {
         return [
             [new DateTime('1985-09-01 00:00:00'), new DateTime('1985-09-01 00:00:00')],
@@ -67,7 +67,7 @@ class DateTest extends BaseTest
         ];
     }
 
-    public function testDateInstanceValueChangeDoesCauseUpdateIfValueIsTheSame()
+    public function testDateInstanceValueChangeDoesCauseUpdateIfValueIsTheSame(): void
     {
         $user = new User();
         $user->setCreatedAt(new DateTime('1985-09-01'));
@@ -83,7 +83,7 @@ class DateTest extends BaseTest
         $this->assertNotEmpty($changeset);
     }
 
-    public function testOldDate()
+    public function testOldDate(): void
     {
         if (PHP_INT_SIZE === 4) {
             $this->expectException(InvalidArgumentException::class);

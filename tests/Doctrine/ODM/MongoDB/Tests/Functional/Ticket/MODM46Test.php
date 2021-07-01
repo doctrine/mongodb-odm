@@ -10,7 +10,7 @@ use MongoDB\BSON\ObjectId;
 
 class MODM46Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $a = [
             '_id' => new ObjectId(),

@@ -10,7 +10,7 @@ use MongoDB\BSON\Regex;
 
 class GH1294Test extends BaseTest
 {
-    public function testRegexSearchOnIdentifierWithUuidStrategy()
+    public function testRegexSearchOnIdentifierWithUuidStrategy(): void
     {
         $user1       = new GH1294User();
         $user1->id   = 'aaa111aaa';

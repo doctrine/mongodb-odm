@@ -30,7 +30,7 @@ class QueryExpressionVisitorTest extends BaseTest
     /**
      * @dataProvider provideComparisons
      */
-    public function testWalkComparison(Comparison $comparison, array $expectedQuery)
+    public function testWalkComparison(Comparison $comparison, array $expectedQuery): void
     {
         $expr = $this->visitor->dispatch($comparison);
 
@@ -38,7 +38,7 @@ class QueryExpressionVisitorTest extends BaseTest
         $this->assertEquals($expectedQuery, $expr->getQuery());
     }
 
-    public function provideComparisons()
+    public function provideComparisons(): array
     {
         $builder = new ExpressionBuilder();
 
@@ -56,14 +56,14 @@ class QueryExpressionVisitorTest extends BaseTest
         ];
     }
 
-    public function testWalkComparisonShouldThrowExceptionForUnsupportedOperator()
+    public function testWalkComparisonShouldThrowExceptionForUnsupportedOperator(): void
     {
         $comparison = new Comparison('field', 'invalidOp', new Value('value'));
         $this->expectException(RuntimeException::class);
         $this->visitor->dispatch($comparison);
     }
 
-    public function testWalkCompositeExpression()
+    public function testWalkCompositeExpression(): void
     {
         $builder = new ExpressionBuilder();
 
@@ -87,14 +87,14 @@ class QueryExpressionVisitorTest extends BaseTest
         $this->assertEquals($expectedQuery, $expr->getQuery());
     }
 
-    public function testWalkCompositeExpressionShouldThrowExceptionForUnsupportedComposite()
+    public function testWalkCompositeExpressionShouldThrowExceptionForUnsupportedComposite(): void
     {
         $compositeExpr = new CompositeExpression('invalidComposite', []);
         $this->expectException(RuntimeException::class);
         $this->visitor->dispatch($compositeExpr);
     }
 
-    public function testWalkValue()
+    public function testWalkValue(): void
     {
         $this->assertEquals('value', $this->visitor->walkValue(new Value('value')));
     }

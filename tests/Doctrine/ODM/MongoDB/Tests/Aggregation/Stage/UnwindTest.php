@@ -12,14 +12,14 @@ class UnwindTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testUnwindStage()
+    public function testUnwindStage(): void
     {
         $unwindStage = new Unwind($this->getTestAggregationBuilder(), 'fieldName');
 
         $this->assertSame(['$unwind' => 'fieldName'], $unwindStage->getExpression());
     }
 
-    public function testUnwindStageWithNewFields()
+    public function testUnwindStageWithNewFields(): void
     {
         $unwindStage = new Unwind($this->getTestAggregationBuilder(), 'fieldName');
         $unwindStage
@@ -29,7 +29,7 @@ class UnwindTest extends BaseTest
         $this->assertSame(['$unwind' => ['path' => 'fieldName', 'includeArrayIndex' => 'index', 'preserveNullAndEmptyArrays' => true]], $unwindStage->getExpression());
     }
 
-    public function testUnwindFromBuilder()
+    public function testUnwindFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->unwind('fieldName');
@@ -37,7 +37,7 @@ class UnwindTest extends BaseTest
         $this->assertSame([['$unwind' => 'fieldName']], $builder->getPipeline());
     }
 
-    public function testSubsequentUnwindStagesArePreserved()
+    public function testSubsequentUnwindStagesArePreserved(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder

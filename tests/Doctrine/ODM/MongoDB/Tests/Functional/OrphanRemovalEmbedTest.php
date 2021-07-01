@@ -18,7 +18,7 @@ class OrphanRemovalEmbedTest extends BaseTest
     /**
      * Test unsetting an embedOne relationship
      */
-    public function testUnsettingEmbedOne()
+    public function testUnsettingEmbedOne(): void
     {
         $profile          = new OrphanRemovalCascadeProfile();
         $address          = new OrphanRemovalCascadeAddress();
@@ -40,7 +40,7 @@ class OrphanRemovalEmbedTest extends BaseTest
     /**
      * Test Collection::remove() method on an embedMany relationship
      */
-    public function testRemoveEmbedMany()
+    public function testRemoveEmbedMany(): void
     {
         $profile1          = new OrphanRemovalCascadeProfile();
         $address1          = new OrphanRemovalCascadeAddress();
@@ -75,7 +75,7 @@ class OrphanRemovalEmbedTest extends BaseTest
     /**
      * Test Collection::clear() method on an embedMany relationship
      */
-    public function testClearEmbedMany()
+    public function testClearEmbedMany(): void
     {
         $profile1          = new OrphanRemovalCascadeProfile();
         $address1          = new OrphanRemovalCascadeAddress();
@@ -104,7 +104,7 @@ class OrphanRemovalEmbedTest extends BaseTest
     /**
      * Test clearing and adding on an embedMany relationship
      */
-    public function testClearAndAddEmbedMany()
+    public function testClearAndAddEmbedMany(): void
     {
         $profile1          = new OrphanRemovalCascadeProfile();
         $address1          = new OrphanRemovalCascadeAddress();

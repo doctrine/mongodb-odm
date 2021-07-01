@@ -40,7 +40,7 @@ class ProfileNotify implements NotifyPropertyChanged
         $this->listeners[] = $listener;
     }
 
-    private function propertyChanged($propName, $oldValue, $newValue)
+    private function propertyChanged($propName, $oldValue, $newValue): void
     {
         foreach ($this->listeners as $listener) {
             $listener->propertyChanged($this, $propName, $oldValue, $newValue);
@@ -52,7 +52,7 @@ class ProfileNotify implements NotifyPropertyChanged
         return $this->profileId;
     }
 
-    public function setFirstName($firstName)
+    public function setFirstName($firstName): void
     {
         $this->propertyChanged('firstName', $this->firstName, $firstName);
         $this->firstName = $firstName;
@@ -63,7 +63,7 @@ class ProfileNotify implements NotifyPropertyChanged
         return $this->firstName;
     }
 
-    public function setLastName($lastName)
+    public function setLastName($lastName): void
     {
         $this->propertyChanged('lastName', $this->lastName, $lastName);
         $this->lastName = $lastName;
@@ -74,7 +74,7 @@ class ProfileNotify implements NotifyPropertyChanged
         return $this->lastName;
     }
 
-    public function setImage(File $image)
+    public function setImage(File $image): void
     {
         $this->propertyChanged('image', $this->image, $image);
         $this->image = $image;
@@ -85,7 +85,7 @@ class ProfileNotify implements NotifyPropertyChanged
         return $this->image;
     }
 
-    public function getImages()
+    public function getImages(): ProfileNotifyImagesCollection
     {
         return $this->images;
     }
@@ -93,7 +93,7 @@ class ProfileNotify implements NotifyPropertyChanged
 
 class ProfileNotifyImagesCollection extends ArrayCollection
 {
-    public function move($i, $j)
+    public function move($i, $j): void
     {
         $tmp = $this->get($i);
         $this->set($i, $this->get($j));

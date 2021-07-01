@@ -11,7 +11,7 @@ use function explode;
 
 class AlsoLoadTest extends BaseTest
 {
-    public function testPropertyAlsoLoadDoesNotInterfereWithBasicHydration()
+    public function testPropertyAlsoLoadDoesNotInterfereWithBasicHydration(): void
     {
         $document = [
             'foo' => 'foo',
@@ -29,7 +29,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertNull($document->baz, '"baz" gets its own null value and ignores "zip" and "bar"');
     }
 
-    public function testPropertyAlsoLoadMayOverwriteDefaultPropertyValue()
+    public function testPropertyAlsoLoadMayOverwriteDefaultPropertyValue(): void
     {
         $document = ['zip' => 'zip'];
 
@@ -41,7 +41,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertEquals('zip', $document->zip, '"zip" is hydrated normally');
     }
 
-    public function testPropertyAlsoLoadShortCircuitsAfterFirstFieldIsFound()
+    public function testPropertyAlsoLoadShortCircuitsAfterFirstFieldIsFound(): void
     {
         $document = [
             'bar' => null,
@@ -58,7 +58,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertEquals('zip', $document->zip, '"zip" is hydrated normally');
     }
 
-    public function testPropertyAlsoLoadChecksMultipleFields()
+    public function testPropertyAlsoLoadChecksMultipleFields(): void
     {
         $document = ['zip' => 'zip'];
 
@@ -71,7 +71,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertEquals('zip', $document->zip, '"zip" is hydrated normally');
     }
 
-    public function testPropertyAlsoLoadBeatsMethodAlsoLoad()
+    public function testPropertyAlsoLoadBeatsMethodAlsoLoad(): void
     {
         $document = [
             'testNew' => 'testNew',
@@ -87,7 +87,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertEquals('testOld', $document->testOld, '"testOld" is hydrated normally');
     }
 
-    public function testMethodAlsoLoadDoesNotInterfereWithBasicHydration()
+    public function testMethodAlsoLoadDoesNotInterfereWithBasicHydration(): void
     {
         $document = [
             'firstName' => 'Jonathan',
@@ -103,7 +103,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertEquals('Kris Wallsmith', $document->name, '"name" is hydrated normally');
     }
 
-    public function testMethodAlsoLoadMayOverwriteDefaultPropertyValue()
+    public function testMethodAlsoLoadMayOverwriteDefaultPropertyValue(): void
     {
         $document = ['testOld' => null];
 
@@ -115,7 +115,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertNull($document->testOld, '"testOld" is hydrated normally"');
     }
 
-    public function testMethodAlsoLoadShortCircuitsAfterFirstFieldIsFound()
+    public function testMethodAlsoLoadShortCircuitsAfterFirstFieldIsFound(): void
     {
         $document = [
             'name' => 'Jonathan Wage',
@@ -138,7 +138,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertEquals('testOlder', $document->testOlder, '"testOlder" is hydrated normally');
     }
 
-    public function testMethodAlsoLoadChecksMultipleFields()
+    public function testMethodAlsoLoadChecksMultipleFields(): void
     {
         $document = [
             'fullName' => 'Kris Wallsmith',
@@ -159,7 +159,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertEquals('testOlder', $document->testOlder, '"testOlder" is hydrated normally');
     }
 
-    public function testNotSaved()
+    public function testNotSaved(): void
     {
         $document            = new AlsoLoadDocument();
         $document->baz       = 'baz';
@@ -178,7 +178,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertArrayNotHasKey('baz', $document, '"baz" was not saved');
     }
 
-    public function testMethodAlsoLoadParentInheritance()
+    public function testMethodAlsoLoadParentInheritance(): void
     {
         $document = [
             'buzz' => 'buzz',
@@ -195,7 +195,7 @@ class AlsoLoadTest extends BaseTest
         $this->assertEquals('test', $document->test, '"test" is hydrated normally, since "testOldest" was missing and parent method was overridden');
     }
 
-    public function testMethodAlsoLoadGrandparentInheritance()
+    public function testMethodAlsoLoadGrandparentInheritance(): void
     {
         $document = [
             'buzz' => 'buzz',
@@ -269,7 +269,7 @@ class AlsoLoadDocument
     public $testOlder;
 
     /** @ODM\AlsoLoad({"name", "fullName"}) */
-    public function populateFirstAndLastName($name)
+    public function populateFirstAndLastName($name): void
     {
         [$this->firstName, $this->lastName] = explode(' ', $name);
     }
@@ -288,7 +288,7 @@ class AlsoLoadChild extends AlsoLoadDocument
     public $fizz;
 
     /** @ODM\AlsoLoad("buzz") */
-    public function populateFizz($fizz)
+    public function populateFizz($fizz): void
     {
         $this->fizz = $fizz;
     }

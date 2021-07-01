@@ -13,7 +13,7 @@ use Documents\Functional\EmbeddedTestLevel2;
 
 class MODM140Test extends BaseTest
 {
-    public function testInsertingNestedEmbeddedCollections()
+    public function testInsertingNestedEmbeddedCollections(): void
     {
         $category       = new Category();
         $category->name = 'My Category';
@@ -44,7 +44,7 @@ class MODM140Test extends BaseTest
         $this->assertEquals(2, $category->posts->get(1)->versions->count());
     }
 
-    public function testInsertingEmbeddedCollectionWithRefMany()
+    public function testInsertingEmbeddedCollectionWithRefMany(): void
     {
         $comment = new Comment();
 
@@ -66,7 +66,7 @@ class MODM140Test extends BaseTest
         $this->assertEquals(1, $category->posts->get(0)->comments->count());
     }
 
-    public function testAddingAnotherEmbeddedDocument()
+    public function testAddingAnotherEmbeddedDocument(): void
     {
         $test       = new EmbeddedTestLevel0();
         $test->name = 'test';

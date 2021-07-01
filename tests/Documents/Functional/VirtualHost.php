@@ -29,7 +29,7 @@ class VirtualHost
         return $this->vhostDirective;
     }
 
-    public function setVHostDirective($value)
+    public function setVHostDirective($value): VirtualHost
     {
         $this->vhostDirective = $value;
 

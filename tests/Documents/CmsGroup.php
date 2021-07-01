@@ -18,7 +18,7 @@ class CmsGroup
     /** @ODM\ReferenceMany(targetDocument=CmsUser::class) */
     public $users;
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -28,7 +28,7 @@ class CmsGroup
         return $this->name;
     }
 
-    public function addUser(CmsUser $user)
+    public function addUser(CmsUser $user): void
     {
         $this->users[] = $user;
     }

@@ -12,7 +12,7 @@ use function get_class;
 
 class GH1117Test extends BaseTest
 {
-    public function testAddOnUninitializedCollection()
+    public function testAddOnUninitializedCollection(): void
     {
         $doc = new GH1117Document();
         $doc->embeds->add(new GH1117EmbeddedDocument('one'));

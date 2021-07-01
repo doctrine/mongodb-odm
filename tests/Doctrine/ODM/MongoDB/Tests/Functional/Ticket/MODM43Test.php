@@ -13,7 +13,7 @@ use function explode;
 
 class MODM43Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $person = [
             '_id' => new ObjectId(),
@@ -39,7 +39,7 @@ class Person
     public $lastName;
 
     /** @ODM\PreLoad */
-    public function preLoad(PreLoadEventArgs $e)
+    public function preLoad(PreLoadEventArgs $e): void
     {
         $data =& $e->getData();
         if (! isset($data['name'])) {

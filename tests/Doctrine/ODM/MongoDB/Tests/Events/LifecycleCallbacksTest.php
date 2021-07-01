@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 
 class LifecycleCallbacksTest extends BaseTest
 {
-    private function createUser($name = 'jon', $fullName = 'Jonathan H. Wage')
+    private function createUser($name = 'jon', $fullName = 'Jonathan H. Wage'): User
     {
         $user                = new User();
         $user->name          = $name;
@@ -24,7 +24,7 @@ class LifecycleCallbacksTest extends BaseTest
         return $user;
     }
 
-    public function testPreUpdateChangingValue()
+    public function testPreUpdateChangingValue(): void
     {
         $user = $this->createUser();
         $this->dm->clear();
@@ -43,7 +43,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertInstanceOf(DateTime::class, $user->profile->updatedAt);
     }
 
-    public function testPreAndPostPersist()
+    public function testPreAndPostPersist(): void
     {
         $user = $this->createUser();
         $this->assertTrue($user->prePersist);
@@ -53,7 +53,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->postPersist);
     }
 
-    public function testPreUpdate()
+    public function testPreUpdate(): void
     {
         $user                = $this->createUser();
         $user->name          = 'jwage';
@@ -67,7 +67,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->postUpdate);
     }
 
-    public function testPreFlush()
+    public function testPreFlush(): void
     {
         $user                = $this->createUser();
         $user->name          = 'jwage';
@@ -78,7 +78,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->preFlush);
     }
 
-    public function testPreLoadAndPostLoad()
+    public function testPreLoadAndPostLoad(): void
     {
         $user = $this->createUser();
         $this->dm->clear();
@@ -91,7 +91,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->postLoad);
     }
 
-    public function testPreAndPostRemove()
+    public function testPreAndPostRemove(): void
     {
         $user = $this->createUser();
 
@@ -108,7 +108,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->postRemove);
     }
 
-    public function testEmbedManyEvent()
+    public function testEmbedManyEvent(): void
     {
         $user             = new User();
         $user->name       = 'jon';
@@ -154,7 +154,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($profile->postRemove);
     }
 
-    public function testMultipleLevelsOfEmbedded()
+    public function testMultipleLevelsOfEmbedded(): void
     {
         $user                   = $this->createUser();
         $profile                = new Profile();
@@ -212,7 +212,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profiles[0]->postRemove);
     }
 
-    public function testReferences()
+    public function testReferences(): void
     {
         $user  = $this->createUser();
         $user2 = $this->createUser('maciej', 'Maciej Malarz');
@@ -227,7 +227,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertFalse($user2->postUpdate);
     }
 
-    public function testEventsNotFiredForInverseSide()
+    public function testEventsNotFiredForInverseSide(): void
     {
         $customer = new Customer();
         $cart     = new Cart();
@@ -311,57 +311,57 @@ abstract class BaseDocument
     public $preFlush    = false;
 
     /** @ODM\PrePersist */
-    public function prePersist(Event\LifecycleEventArgs $e)
+    public function prePersist(Event\LifecycleEventArgs $e): void
     {
         $this->prePersist = true;
         $this->createdAt  = new DateTime();
     }
 
     /** @ODM\PostPersist */
-    public function postPersist(Event\LifecycleEventArgs $e)
+    public function postPersist(Event\LifecycleEventArgs $e): void
     {
         $this->postPersist = true;
     }
 
     /** @ODM\PreUpdate */
-    public function preUpdate(Event\PreUpdateEventArgs $e)
+    public function preUpdate(Event\PreUpdateEventArgs $e): void
     {
         $this->preUpdate = true;
         $this->updatedAt = new DateTime();
     }
 
     /** @ODM\PostUpdate */
-    public function postUpdate(Event\LifecycleEventArgs $e)
+    public function postUpdate(Event\LifecycleEventArgs $e): void
     {
         $this->postUpdate = true;
     }
 
     /** @ODM\PreRemove */
-    public function preRemove(Event\LifecycleEventArgs $e)
+    public function preRemove(Event\LifecycleEventArgs $e): void
     {
         $this->preRemove = true;
     }
 
     /** @ODM\PostRemove */
-    public function postRemove(Event\LifecycleEventArgs $e)
+    public function postRemove(Event\LifecycleEventArgs $e): void
     {
         $this->postRemove = true;
     }
 
     /** @ODM\PreLoad */
-    public function preLoad(Event\PreLoadEventArgs $e)
+    public function preLoad(Event\PreLoadEventArgs $e): void
     {
         $this->preLoad = true;
     }
 
     /** @ODM\PostLoad */
-    public function postLoad(Event\LifecycleEventArgs $e)
+    public function postLoad(Event\LifecycleEventArgs $e): void
     {
         $this->postLoad = true;
     }
 
     /** @ODM\PreFlush */
-    public function preFlush(Event\PreFlushEventArgs $e)
+    public function preFlush(Event\PreFlushEventArgs $e): void
     {
         $this->preFlush = true;
     }

@@ -29,7 +29,7 @@ use const DOCTRINE_MONGODB_DATABASE;
 
 class QueryTest extends BaseTest
 {
-    public function testSelectAndSelectSliceOnSameField()
+    public function testSelectAndSelectSliceOnSameField(): void
     {
         $qb = $this->dm->createQueryBuilder(Person::class)
             ->exclude('comments')
@@ -44,7 +44,7 @@ class QueryTest extends BaseTest
         $query->execute();
     }
 
-    public function testThatOrAcceptsAnotherQuery()
+    public function testThatOrAcceptsAnotherQuery(): void
     {
         $kris  = new Person('Kris');
         $chris = new Person('Chris');
@@ -74,7 +74,7 @@ class QueryTest extends BaseTest
         $this->assertCount(2, $users->toArray());
     }
 
-    public function testReferences()
+    public function testReferences(): void
     {
         $kris = new Person('Kris');
         $jon  = new Person('Jon');
@@ -102,7 +102,7 @@ class QueryTest extends BaseTest
         $this->assertSame($kris, $query->getSingleResult());
     }
 
-    public function testReferencesStoreAsId()
+    public function testReferencesStoreAsId(): void
     {
         $kris = new Person('Kris');
         $jon  = new Person('Jon');
@@ -128,7 +128,7 @@ class QueryTest extends BaseTest
         $this->assertSame($kris, $query->getSingleResult());
     }
 
-    public function testReferencesStoreAsDbRef()
+    public function testReferencesStoreAsDbRef(): void
     {
         $kris = new Person('Kris');
         $jon  = new Person('Jon');
@@ -155,7 +155,7 @@ class QueryTest extends BaseTest
         $this->assertSame($kris, $query->getSingleResult());
     }
 
-    public function testIncludesReferenceToWithStoreAsDbRefWithDb()
+    public function testIncludesReferenceToWithStoreAsDbRefWithDb(): void
     {
         $kris = new Person('Kris');
         $jon  = new Person('Jon');
@@ -187,7 +187,7 @@ class QueryTest extends BaseTest
         $this->assertSame($jon, $query->getSingleResult());
     }
 
-    public function testIncludesReferenceToWithStoreAsId()
+    public function testIncludesReferenceToWithStoreAsId(): void
     {
         $kris   = new Person('Kris');
         $jon    = new Person('Jon');
@@ -216,7 +216,7 @@ class QueryTest extends BaseTest
         $this->assertSame($jon, $query->getSingleResult());
     }
 
-    public function testIncludesReferenceToWithStoreAsDbRef()
+    public function testIncludesReferenceToWithStoreAsDbRef(): void
     {
         $kris = new Person('Kris');
         $jon  = new Person('Jon');
@@ -247,7 +247,7 @@ class QueryTest extends BaseTest
         $this->assertSame($jon, $query->getSingleResult());
     }
 
-    public function testQueryIdIn()
+    public function testQueryIdIn(): void
     {
         $user = new User();
         $user->setUsername('jwage');
@@ -264,7 +264,7 @@ class QueryTest extends BaseTest
         $this->assertCount(1, $results);
     }
 
-    public function testEmbeddedSet()
+    public function testEmbeddedSet(): void
     {
         $qb = $this->dm->createQueryBuilder(User::class)
             ->insert()
@@ -274,7 +274,7 @@ class QueryTest extends BaseTest
         $this->assertEquals(['testInt' => 0, 'intfields' => ['intone' => 1, 'inttwo' => 2]], $qb->getNewObj());
     }
 
-    public function testElemMatch()
+    public function testElemMatch(): void
     {
         $refId = '000000000000000000000001';
 
@@ -289,7 +289,7 @@ class QueryTest extends BaseTest
         $this->assertEquals($expectedQuery, $query->debug('query'));
     }
 
-    public function testQueryWithMultipleEmbeddedDocuments()
+    public function testQueryWithMultipleEmbeddedDocuments(): void
     {
         $qb    = $this->dm->createQueryBuilder(EmbedTest::class)
             ->find()
@@ -298,7 +298,7 @@ class QueryTest extends BaseTest
         $this->assertEquals(['eO.eO.e1.eO.n' => 'Foo'], $query->debug('query'));
     }
 
-    public function testQueryWithMultipleEmbeddedDocumentsAndReference()
+    public function testQueryWithMultipleEmbeddedDocumentsAndReference(): void
     {
         $identifier = new ObjectId();
 
@@ -312,7 +312,7 @@ class QueryTest extends BaseTest
         $this->assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO.$id']);
     }
 
-    public function testQueryWithMultipleEmbeddedDocumentsAndReferenceUsingDollarSign()
+    public function testQueryWithMultipleEmbeddedDocumentsAndReferenceUsingDollarSign(): void
     {
         $identifier = new ObjectId();
 
@@ -326,7 +326,7 @@ class QueryTest extends BaseTest
         $this->assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO.$id']);
     }
 
-    public function testSelectVsSingleCollectionInheritance()
+    public function testSelectVsSingleCollectionInheritance(): void
     {
         $p = new SubProject('SubProject');
         $this->dm->persist($p);
@@ -343,7 +343,7 @@ class QueryTest extends BaseTest
         $this->assertEquals('SubProject', $test->getName());
     }
 
-    public function testEmptySelectVsSingleCollectionInheritance()
+    public function testEmptySelectVsSingleCollectionInheritance(): void
     {
         $p = new SubProject('SubProject');
         $this->dm->persist($p);
@@ -360,7 +360,7 @@ class QueryTest extends BaseTest
         $this->assertEquals('SubProject', $test->getName());
     }
 
-    public function testDiscriminatorFieldNotAddedWithoutHydration()
+    public function testDiscriminatorFieldNotAddedWithoutHydration(): void
     {
         $p = new SubProject('SubProject');
         $this->dm->persist($p);
@@ -376,7 +376,7 @@ class QueryTest extends BaseTest
         $this->assertEquals(['_id', 'name'], array_keys($test));
     }
 
-    public function testExcludeVsSingleCollectionInheritance()
+    public function testExcludeVsSingleCollectionInheritance(): void
     {
         $p = new SubProject('SubProject');
         $this->dm->persist($p);
@@ -393,7 +393,7 @@ class QueryTest extends BaseTest
         $this->assertNull($test->getName());
     }
 
-    public function testReadOnly()
+    public function testReadOnly(): void
     {
         $p      = new Person('Maciej');
         $p->pet = new Pet('Blackie', $p);
@@ -412,7 +412,7 @@ class QueryTest extends BaseTest
         $this->assertFalse($this->uow->isInIdentityMap($readOnly->pet));
     }
 
-    public function testConstructorShouldThrowExceptionForInvalidType()
+    public function testConstructorShouldThrowExceptionForInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
@@ -421,7 +421,7 @@ class QueryTest extends BaseTest
     /**
      * @dataProvider provideQueryTypesThatDoNotReturnAnIterator
      */
-    public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator($type, $method)
+    public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator($type, $method): void
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->never())->method($method);
@@ -432,7 +432,7 @@ class QueryTest extends BaseTest
         $query->getIterator();
     }
 
-    public function provideQueryTypesThatDoNotReturnAnIterator()
+    public function provideQueryTypesThatDoNotReturnAnIterator(): array
     {
         return [
             [Query::TYPE_FIND_AND_UPDATE, 'findOneAndUpdate'],
@@ -444,7 +444,7 @@ class QueryTest extends BaseTest
         ];
     }
 
-    public function testFindAndModifyOptionsAreRenamed()
+    public function testFindAndModifyOptionsAreRenamed(): void
     {
         $queryArray = [
             'type' => Query::TYPE_FIND_AND_REMOVE,
@@ -462,7 +462,7 @@ class QueryTest extends BaseTest
         $query->execute();
     }
 
-    public function testCountOptionInheritance()
+    public function testCountOptionInheritance(): void
     {
         $nearest            = new ReadPreference('nearest');
         $secondaryPreferred = new ReadPreference('secondaryPreferred');
@@ -490,7 +490,7 @@ class QueryTest extends BaseTest
         $this->assertSame(100, $query->execute());
     }
 
-    public function testFindOptionInheritance()
+    public function testFindOptionInheritance(): void
     {
         $nearest            = new ReadPreference('nearest');
         $secondaryPreferred = new ReadPreference('secondaryPreferred');

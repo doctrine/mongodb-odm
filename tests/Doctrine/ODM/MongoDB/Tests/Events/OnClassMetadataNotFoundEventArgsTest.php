@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class OnClassMetadataNotFoundEventArgsTest extends TestCase
 {
-    public function testEventArgsMutability()
+    public function testEventArgsMutability(): void
     {
         $documentManager = $this->createMock(DocumentManager::class);
 

@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH389Test extends BaseTest
 {
-    public function testDiscriminatorEmptyEmbeddedDocument()
+    public function testDiscriminatorEmptyEmbeddedDocument(): void
     {
         //Create root document (with empty embedded document)
         $rootDocument = new RootDocument();
@@ -50,7 +50,7 @@ class RootDocument
         return $this->id;
     }
 
-    public function getEmptyEmbeddedDocument()
+    public function getEmptyEmbeddedDocument(): EmptyEmbeddedDocument
     {
         return $this->emptyEmbeddedDocument;
     }

@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM76Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $c1 = new MODM76C();
         $c2 = new MODM76C();

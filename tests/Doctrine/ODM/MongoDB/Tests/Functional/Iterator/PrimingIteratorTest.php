@@ -21,7 +21,7 @@ final class PrimingIteratorTest extends BaseTest
 {
     private $callbackCalls = [];
 
-    public function testPrimerIsCalledOnceForEveryField()
+    public function testPrimerIsCalledOnceForEveryField(): void
     {
         $primer   = new ReferencePrimer($this->dm, $this->uow);
         $class    = $this->dm->getClassMetadata(User::class);

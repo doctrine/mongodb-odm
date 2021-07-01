@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH467Test extends BaseTest
 {
-    public function testMergeDocumentWithUnsetCollectionFields()
+    public function testMergeDocumentWithUnsetCollectionFields(): void
     {
         $doc = new GH467Document();
 

@@ -21,7 +21,7 @@ class Profile
     /** @ODM\ReferenceOne(targetDocument=File::class, cascade={"all"}) */
     private $image;
 
-    public function setProfileId($profileId)
+    public function setProfileId($profileId): void
     {
         $this->profileId = $profileId;
     }
@@ -31,7 +31,7 @@ class Profile
         return $this->profileId;
     }
 
-    public function setFirstName($firstName)
+    public function setFirstName($firstName): void
     {
         $this->firstName = $firstName;
     }
@@ -41,7 +41,7 @@ class Profile
         return $this->firstName;
     }
 
-    public function setLastName($lastName)
+    public function setLastName($lastName): void
     {
         $this->lastName = $lastName;
     }
@@ -51,7 +51,7 @@ class Profile
         return $this->lastName;
     }
 
-    public function setImage(File $image)
+    public function setImage(File $image): void
     {
         $this->image = $image;
     }

@@ -10,7 +10,7 @@ use MongoDB\BSON\ObjectId;
 
 class ReadOnlyDocumentTest extends BaseTest
 {
-    public function testCanBeInserted()
+    public function testCanBeInserted(): void
     {
         $rod = new ReadOnlyDocument('yay');
         $this->dm->persist($rod);
@@ -22,7 +22,7 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->assertSame('yay', $rod->value);
     }
 
-    public function testCanBeUpserted()
+    public function testCanBeUpserted(): void
     {
         $rod     = new ReadOnlyDocument('yay');
         $rod->id = new ObjectId();
@@ -35,7 +35,7 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->assertSame('yay', $rod->value);
     }
 
-    public function testCanBeRemoved()
+    public function testCanBeRemoved(): void
     {
         $rod = new ReadOnlyDocument('yay');
         $this->dm->persist($rod);
@@ -51,7 +51,7 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->assertNull($rod);
     }
 
-    public function testChangingValueDoesNotProduceChangeSet()
+    public function testChangingValueDoesNotProduceChangeSet(): void
     {
         $rod = new ReadOnlyDocument('yay');
         $this->dm->persist($rod);
@@ -61,7 +61,7 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->assertEmpty($this->uow->getDocumentChangeSet($rod));
     }
 
-    public function testCantBeUpdated()
+    public function testCantBeUpdated(): void
     {
         $rod = new ReadOnlyDocument('yay');
         $this->dm->persist($rod);

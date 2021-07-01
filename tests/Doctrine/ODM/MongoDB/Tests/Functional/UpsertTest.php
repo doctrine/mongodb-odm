@@ -15,7 +15,7 @@ class UpsertTest extends BaseTest
      *
      * Embedded document with provided id should not be upserted.
      */
-    public function testUpsertEmbedManyDoesNotCreateObject()
+    public function testUpsertEmbedManyDoesNotCreateObject(): void
     {
         $test     = new UpsertTestUser();
         $test->id = (string) new ObjectId();

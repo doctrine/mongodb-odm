@@ -67,7 +67,7 @@ abstract class BaseTest extends TestCase
         }
     }
 
-    protected function getConfiguration()
+    protected function getConfiguration(): Configuration
     {
         $config = new Configuration();
 
@@ -108,7 +108,7 @@ abstract class BaseTest extends TestCase
         return AnnotationDriver::create(__DIR__ . '/../../../../Documents');
     }
 
-    protected function createTestDocumentManager()
+    protected function createTestDocumentManager(): DocumentManager
     {
         $config = $this->getConfiguration();
         $client = new Client(getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
@@ -123,7 +123,7 @@ abstract class BaseTest extends TestCase
         return $result['version'];
     }
 
-    protected function skipTestIfNotSharded($className)
+    protected function skipTestIfNotSharded($className): void
     {
         $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
 
@@ -134,7 +134,7 @@ abstract class BaseTest extends TestCase
         $this->markTestSkipped('Test skipped because server does not support sharding');
     }
 
-    protected function skipTestIfSharded($className)
+    protected function skipTestIfSharded($className): void
     {
         $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
 
@@ -145,7 +145,7 @@ abstract class BaseTest extends TestCase
         $this->markTestSkipped('Test does not apply on sharded clusters');
     }
 
-    protected function requireVersion($installedVersion, $requiredVersion, $operator, $message)
+    protected function requireVersion($installedVersion, $requiredVersion, $operator, $message): void
     {
         if (! version_compare($installedVersion, $requiredVersion, $operator)) {
             return;
@@ -154,12 +154,12 @@ abstract class BaseTest extends TestCase
         $this->markTestSkipped($message);
     }
 
-    protected function skipOnMongoDB42($message)
+    protected function skipOnMongoDB42($message): void
     {
         $this->requireVersion($this->getServerVersion(), '4.2.0', '>=', $message);
     }
 
-    protected function requireMongoDB42($message)
+    protected function requireMongoDB42($message): void
     {
         $this->requireVersion($this->getServerVersion(), '4.2.0', '<', $message);
     }

@@ -17,7 +17,7 @@ class NestedCollectionsTest extends BaseTest
     /**
      * @dataProvider provideStrategy
      */
-    public function testStrategy($field)
+    public function testStrategy($field): void
     {
         $doc         = new DocWithNestedCollections();
         $privateBook = new Phonebook('Private');
@@ -66,7 +66,7 @@ class NestedCollectionsTest extends BaseTest
         $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
 
-    public function provideStrategy()
+    public function provideStrategy(): array
     {
         return [
             [ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET],

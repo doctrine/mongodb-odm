@@ -16,7 +16,7 @@ class RawTypeTest extends BaseTest
     /**
      * @dataProvider getTestRawTypeData
      */
-    public function testRawType($value)
+    public function testRawType($value): void
     {
         $test      = new RawType();
         $test->raw = $value;
@@ -28,7 +28,7 @@ class RawTypeTest extends BaseTest
         $this->assertEquals($value, $result['raw']);
     }
 
-    public function getTestRawTypeData()
+    public function getTestRawTypeData(): array
     {
         return [
             ['test'],

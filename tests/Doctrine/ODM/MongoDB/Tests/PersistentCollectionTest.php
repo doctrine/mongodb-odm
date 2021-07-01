@@ -21,7 +21,7 @@ use function unserialize;
 
 class PersistentCollectionTest extends BaseTest
 {
-    public function testSlice()
+    public function testSlice(): void
     {
         [$start, $limit] = [0, 25];
         $collection      = $this->getMockCollection();
@@ -33,7 +33,7 @@ class PersistentCollectionTest extends BaseTest
         $pCollection->slice($start, $limit);
     }
 
-    public function testExceptionForGetTypeClassWithoutDocumentManager()
+    public function testExceptionForGetTypeClassWithoutDocumentManager(): void
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
         $owner      = new stdClass();
@@ -53,7 +53,7 @@ class PersistentCollectionTest extends BaseTest
         $unserialized->getTypeClass();
     }
 
-    public function testExceptionForGetTypeClassWithoutMapping()
+    public function testExceptionForGetTypeClassWithoutMapping(): void
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
@@ -70,7 +70,7 @@ class PersistentCollectionTest extends BaseTest
         $unserialized->getTypeClass();
     }
 
-    public function testGetTypeClassWorksAfterUnserialization()
+    public function testGetTypeClassWorksAfterUnserialization(): void
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
@@ -83,7 +83,7 @@ class PersistentCollectionTest extends BaseTest
         $this->assertInstanceOf(ClassMetadata::class, $unserialized->getTypeClass());
     }
 
-    public function testMongoDataIsPreservedDuringSerialization()
+    public function testMongoDataIsPreservedDuringSerialization(): void
     {
         $mongoData = [
             [
@@ -109,7 +109,7 @@ class PersistentCollectionTest extends BaseTest
         $this->assertCount(2, $unserialized->getMongoData());
     }
 
-    public function testSnapshotIsPreservedDuringSerialization()
+    public function testSnapshotIsPreservedDuringSerialization(): void
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
         $collection->add(new stdClass());
@@ -137,7 +137,7 @@ class PersistentCollectionTest extends BaseTest
      *
      * @dataProvider dataGetDeletedDocuments
      */
-    public function testGetDeletedDocuments(array $expected, array $snapshot, Closure $callback)
+    public function testGetDeletedDocuments(array $expected, array $snapshot, Closure $callback): void
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
@@ -151,7 +151,7 @@ class PersistentCollectionTest extends BaseTest
         $this->assertSame($expected, $collection->getDeletedDocuments());
     }
 
-    public static function dataGetDeletedDocuments()
+    public static function dataGetDeletedDocuments(): array
     {
         $one = new stdClass();
         $two = new stdClass();
@@ -211,7 +211,7 @@ class PersistentCollectionTest extends BaseTest
      *
      * @dataProvider dataGetInsertedDocuments
      */
-    public function testGetInsertedDocuments(array $expected, array $snapshot, Closure $callback)
+    public function testGetInsertedDocuments(array $expected, array $snapshot, Closure $callback): void
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
@@ -225,7 +225,7 @@ class PersistentCollectionTest extends BaseTest
         $this->assertSame($expected, $collection->getInsertedDocuments());
     }
 
-    public static function dataGetInsertedDocuments()
+    public static function dataGetInsertedDocuments(): array
     {
         $one = new stdClass();
         $two = new stdClass();
@@ -265,7 +265,7 @@ class PersistentCollectionTest extends BaseTest
         ];
     }
 
-    public function testOffsetExistsIsForwarded()
+    public function testOffsetExistsIsForwarded(): void
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('offsetExists')->willReturn(false);
@@ -273,7 +273,7 @@ class PersistentCollectionTest extends BaseTest
         $this->assertArrayNotHasKey(0, $pcoll);
     }
 
-    public function testOffsetGetIsForwarded()
+    public function testOffsetGetIsForwarded(): void
     {
         $collection = $this->getMockCollection();
         $object     = new stdClass();
@@ -282,7 +282,7 @@ class PersistentCollectionTest extends BaseTest
         $this->assertSame($object, $pcoll[0]);
     }
 
-    public function testOffsetUnsetIsForwarded()
+    public function testOffsetUnsetIsForwarded(): void
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('offsetUnset');
@@ -291,7 +291,7 @@ class PersistentCollectionTest extends BaseTest
         $this->assertTrue($pcoll->isDirty());
     }
 
-    public function testRemoveIsForwarded()
+    public function testRemoveIsForwarded(): void
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('remove')->willReturn(2);
@@ -300,7 +300,7 @@ class PersistentCollectionTest extends BaseTest
         $this->assertTrue($pcoll->isDirty());
     }
 
-    public function testOffsetSetIsForwarded()
+    public function testOffsetSetIsForwarded(): void
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->exactly(2))->method('offsetSet');
@@ -313,7 +313,7 @@ class PersistentCollectionTest extends BaseTest
         $pcoll->set(3, new stdClass());
     }
 
-    public function testIsEmptyIsForwardedWhenCollectionIsInitialized()
+    public function testIsEmptyIsForwardedWhenCollectionIsInitialized(): void
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('isEmpty')->willReturn(true);
@@ -322,7 +322,7 @@ class PersistentCollectionTest extends BaseTest
         $this->assertTrue($pcoll->isEmpty());
     }
 
-    public function testIsEmptyUsesCountWhenCollectionIsNotInitialized()
+    public function testIsEmptyUsesCountWhenCollectionIsNotInitialized(): void
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->never())->method('isEmpty');

@@ -17,7 +17,7 @@ class Employee extends BaseEmployee
         return $this->manager;
     }
 
-    public function setManager($val)
+    public function setManager($val): Employee
     {
         $this->manager = $val;
 

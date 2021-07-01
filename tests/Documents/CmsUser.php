@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -66,35 +67,35 @@ class CmsUser
     /**
      * Adds a phonenumber to the user.
      */
-    public function addPhonenumber(CmsPhonenumber $phone)
+    public function addPhonenumber(CmsPhonenumber $phone): void
     {
         $this->phonenumbers[] = $phone;
         $phone->setUser($this);
     }
 
-    public function getPhonenumbers()
+    public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
     }
 
-    public function addArticle(CmsArticle $article)
+    public function addArticle(CmsArticle $article): void
     {
         $this->articles[] = $article;
         $article->setAuthor($this);
     }
 
-    public function addGroup(CmsGroup $group)
+    public function addGroup(CmsGroup $group): void
     {
         $this->groups[] = $group;
         $group->addUser($this);
     }
 
-    public function getGroups()
+    public function getGroups(): Collection
     {
         return $this->groups;
     }
 
-    public function removePhonenumber($index)
+    public function removePhonenumber($index): bool
     {
         if (isset($this->phonenumbers[$index])) {
             $ph = $this->phonenumbers[$index];
@@ -112,7 +113,7 @@ class CmsUser
         return $this->address;
     }
 
-    public function setAddress(CmsAddress $address)
+    public function setAddress(CmsAddress $address): void
     {
         if ($this->address === $address) {
             return;
