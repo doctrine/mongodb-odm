@@ -23,9 +23,6 @@ abstract class Operator extends Stage
     /** @var Expr */
     protected $expr;
 
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(Builder $builder)
     {
         parent::__construct($builder);
