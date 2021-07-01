@@ -633,12 +633,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @param string $class
-     * @param string $writeConcern
+     * @param int|string $writeConcern
      *
      * @dataProvider dataProviderTestWriteConcern
      */
-    public function testExecuteInsertsRespectsWriteConcern($class, $writeConcern)
+    public function testExecuteInsertsRespectsWriteConcern(string $class, $writeConcern)
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
 
@@ -657,12 +656,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @param string $class
-     * @param string $writeConcern
+     * @param int|string $writeConcern
      *
      * @dataProvider dataProviderTestWriteConcern
      */
-    public function testExecuteUpsertsRespectsWriteConcern($class, $writeConcern)
+    public function testExecuteUpsertsRespectsWriteConcern(string $class, $writeConcern)
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
 
@@ -682,12 +680,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @param string $class
-     * @param string $writeConcern
+     * @param int|string $writeConcern
      *
      * @dataProvider dataProviderTestWriteConcern
      */
-    public function testRemoveRespectsWriteConcern($class, $writeConcern)
+    public function testRemoveRespectsWriteConcern(string $class, $writeConcern)
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
 

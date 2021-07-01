@@ -167,11 +167,7 @@ class GH1229Parent
         $this->reorderChildren($child->getOrder(), -1);
     }
 
-    /**
-     * @param int $starting
-     * @param int $change
-     */
-    public function reorderChildren($starting, $change)
+    public function reorderChildren(int $starting, int $change)
     {
         foreach ($this->children as $child) {
             if ($child->getOrder() < $starting) {
@@ -194,10 +190,7 @@ class GH1229Child
     /** @ODM\Field(type="int") */
     public $order = 0;
 
-    /**
-     * @param string $name
-     */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -211,11 +204,9 @@ class GH1229Child
     }
 
     /**
-     * @param int $order
-     *
      * @return $this
      */
-    public function setOrder($order)
+    public function setOrder(int $order)
     {
         $this->order = $order;
 

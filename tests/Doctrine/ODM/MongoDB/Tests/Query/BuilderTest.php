@@ -572,7 +572,7 @@ class BuilderTest extends BaseTest
      *
      * @return array
      */
-    private function provideProjections($include)
+    private function provideProjections(bool $include)
     {
         $project = $include ? 1 : 0;
 

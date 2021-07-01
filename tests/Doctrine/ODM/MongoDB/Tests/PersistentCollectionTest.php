@@ -137,7 +137,7 @@ class PersistentCollectionTest extends BaseTest
      *
      * @dataProvider dataGetDeletedDocuments
      */
-    public function testGetDeletedDocuments($expected, $snapshot, Closure $callback)
+    public function testGetDeletedDocuments(array $expected, array $snapshot, Closure $callback)
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 
@@ -211,7 +211,7 @@ class PersistentCollectionTest extends BaseTest
      *
      * @dataProvider dataGetInsertedDocuments
      */
-    public function testGetInsertedDocuments($expected, $snapshot, Closure $callback)
+    public function testGetInsertedDocuments(array $expected, array $snapshot, Closure $callback)
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
 

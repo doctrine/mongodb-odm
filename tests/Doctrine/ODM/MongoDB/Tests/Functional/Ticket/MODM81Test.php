@@ -87,10 +87,7 @@ class MODM81TestDocument
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }
@@ -106,7 +103,7 @@ class MODM81TestDocument
     /**
      * @param array $documents
      */
-    public function setEmbeddedDocuments($documents)
+    public function setEmbeddedDocuments(array $documents)
     {
         $this->embeddedDocuments = new ArrayCollection($documents);
     }
