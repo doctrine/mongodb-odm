@@ -274,7 +274,11 @@ class AlsoLoadDocument
         [$this->firstName, $this->lastName] = explode(' ', $name);
     }
 
-    /** @ODM\AlsoLoad({"testOld", "testOlder"}) */
+    /**
+     * @ODM\AlsoLoad ({"testOld", "testOlder"})
+     *
+     * @return void
+     */
     public function populateTest($test)
     {
         $this->test = $test;
@@ -293,7 +297,11 @@ class AlsoLoadChild extends AlsoLoadDocument
         $this->fizz = $fizz;
     }
 
-    /** @ODM\AlsoLoad("testOldest") */
+    /**
+     * @ODM\AlsoLoad ("testOldest")
+     *
+     * @return void
+     */
     public function populateTest($test)
     {
         $this->test = $test;
@@ -303,7 +311,11 @@ class AlsoLoadChild extends AlsoLoadDocument
 /** @ODM\Document */
 class AlsoLoadGrandchild extends AlsoLoadChild
 {
-    /** @ODM\AlsoLoad("testReallyOldest") */
+    /**
+     * @ODM\AlsoLoad ("testReallyOldest")
+     *
+     * @return void
+     */
     public function populateTest($test)
     {
         $this->test = $test;

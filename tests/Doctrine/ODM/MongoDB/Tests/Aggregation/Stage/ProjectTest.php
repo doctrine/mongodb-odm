@@ -54,7 +54,7 @@ class ProjectTest extends BaseTest
         $this->assertSame(['$project' => ['something' => ['$' . $operator => ['$expression1', '$expression2']]]], $projectStage->getExpression());
     }
 
-    public function provideAccumulators()
+    public function provideAccumulators(): array
     {
         $operators = ['avg', 'max', 'min', 'stdDevPop', 'stdDevSamp', 'sum'];
 

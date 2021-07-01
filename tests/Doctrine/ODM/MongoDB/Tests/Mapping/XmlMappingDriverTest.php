@@ -26,7 +26,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $class   = new ClassMetadata(stdClass::class);
         $driver  = $this->loadDriver();
-        $element = new SimpleXmlElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
+        $element = new SimpleXMLElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
 
         /** @uses XmlDriver::setShardKey */
         $m = new ReflectionMethod(get_class($driver), 'setShardKey');

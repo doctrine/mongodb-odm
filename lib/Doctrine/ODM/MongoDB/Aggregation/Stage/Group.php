@@ -80,6 +80,8 @@ class Group extends Operator
      * @see Expr::expression
      *
      * @param mixed|Expr $value
+     *
+     * @return static
      */
     public function expression($value)
     {
@@ -92,6 +94,8 @@ class Group extends Operator
      * Set the current field for building the expression.
      *
      * @see Expr::field
+     *
+     * @return static
      */
     public function field(string $fieldName)
     {

@@ -137,6 +137,9 @@ class ConfigurableProduct
         return null;
     }
 
+    /**
+     * @return Money|float|null
+     */
     public function getPrice()
     {
         return isset($this->selectedOption) ?

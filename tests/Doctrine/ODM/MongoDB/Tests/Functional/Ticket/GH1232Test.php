@@ -70,6 +70,9 @@ class GH1232Comment
 
 class GH1232CommentRepository extends DocumentRepository
 {
+    /**
+     * @return array|int|object|null
+     */
     public function getLongComments(GH1232Post $post)
     {
         return $this

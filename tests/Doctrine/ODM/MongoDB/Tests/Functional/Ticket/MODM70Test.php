@@ -137,7 +137,7 @@ class AvatarPart
         $this->color = $color;
     }
 
-    public function getColor()
+    public function getColor(): string
     {
         return $this->color;
     }

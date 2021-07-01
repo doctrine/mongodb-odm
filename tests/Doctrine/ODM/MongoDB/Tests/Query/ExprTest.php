@@ -12,6 +12,7 @@ use Documents\User;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class ExprTest extends BaseTest
 {
@@ -690,6 +691,9 @@ class ExprTest extends BaseTest
         return $expr;
     }
 
+    /**
+     * @return MockObject&Point
+     */
     private function getMockPoint($json)
     {
         $point = $this->getMockBuilder(Point::class)
@@ -703,6 +707,9 @@ class ExprTest extends BaseTest
         return $point;
     }
 
+    /**
+     * @return MockObject&Polygon
+     */
     private function getMockPolygon($json)
     {
         $point = $this->getMockBuilder(Polygon::class)

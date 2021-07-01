@@ -7,7 +7,11 @@ namespace Documents;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
-/** FIXME: reflection chokes if this class doesn't have a doc comment */
+/**
+ * FIXME: reflection chokes if this class doesn't have a doc comment
+ *
+ * @template-extends DocumentRepository<Comment>
+ */
 class CommentRepository extends DocumentRepository
 {
     public function findOneComment()

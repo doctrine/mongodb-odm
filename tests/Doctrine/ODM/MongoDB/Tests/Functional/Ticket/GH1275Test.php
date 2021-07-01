@@ -328,10 +328,10 @@ class Container
         $this->items->set($a, $itemB);
     }
 
-    public function move(Item $item, $move)
+    public function move(Item $item, $move): void
     {
         if ($move === 0) {
-            return $this;
+            return;
         }
 
         $currentPosition = $this->items->indexOf($item);

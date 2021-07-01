@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Client;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
@@ -103,6 +104,9 @@ abstract class BaseTest extends TestCase
         }
     }
 
+    /**
+     * @return MappingDriver
+     */
     protected function createMetadataDriverImpl()
     {
         return AnnotationDriver::create(__DIR__ . '/../../../../Documents');

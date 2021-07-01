@@ -21,6 +21,9 @@ class DropCommand extends AbstractCommand
     /** @var string[] */
     private $dropOrder = [self::INDEX, self::COLLECTION, self::DB];
 
+    /**
+     * @return void
+     */
     protected function configure()
     {
         parent::configure();

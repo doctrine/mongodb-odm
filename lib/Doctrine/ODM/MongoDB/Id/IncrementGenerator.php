@@ -33,6 +33,8 @@ class IncrementGenerator extends AbstractIdGenerator
 
     /**
      * @param string $collection
+     *
+     * @return void
      */
     public function setCollection($collection)
     {

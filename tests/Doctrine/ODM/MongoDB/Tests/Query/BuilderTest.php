@@ -21,6 +21,7 @@ use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\ReadPreference;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
 
 class BuilderTest extends BaseTest
@@ -824,6 +825,9 @@ class BuilderTest extends BaseTest
         return new Builder($this->dm, User::class);
     }
 
+    /**
+     * @return MockObject&Expr
+     */
     private function getMockExpr()
     {
         return $this->getMockBuilder(Expr::class)
@@ -831,6 +835,9 @@ class BuilderTest extends BaseTest
             ->getMock();
     }
 
+    /**
+     * @return MockObject&Geometry
+     */
     private function getMockGeometry()
     {
         return $this->getMockBuilder(Geometry::class)
@@ -838,6 +845,9 @@ class BuilderTest extends BaseTest
             ->getMock();
     }
 
+    /**
+     * @return MockObject&Point
+     */
     private function getMockPoint($json)
     {
         $point = $this->getMockBuilder(Point::class)

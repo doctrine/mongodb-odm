@@ -96,7 +96,7 @@ final class HydratingIterator implements Iterator
         return $this->iterator;
     }
 
-    private function hydrate($document)
+    private function hydrate($document): ?object
     {
         return $document !== null ? $this->unitOfWork->getOrCreateDocument($this->class->name, $document, $this->unitOfWorkHints) : null;
     }

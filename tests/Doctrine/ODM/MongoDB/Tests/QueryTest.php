@@ -20,6 +20,7 @@ use LogicException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
+use PHPUnit\Framework\MockObject\MockObject;
 use Traversable;
 
 use function array_keys;
@@ -549,6 +550,9 @@ class QueryTest extends BaseTest
         iterator_to_array($iterator);
     }
 
+    /**
+     * @return MockObject&Collection
+     */
     private function getMockCollection()
     {
         return $this->getMockBuilder(Collection::class)

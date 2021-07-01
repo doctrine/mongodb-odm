@@ -47,6 +47,8 @@ abstract class Operator extends Stage
      * @see Expr::abs
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function abs($number): self
     {
@@ -68,6 +70,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
+     *
+     * @return static
      */
     public function add($expression1, $expression2, ...$expressions): self
     {
@@ -84,6 +88,8 @@ abstract class Operator extends Stage
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
+     *
+     * @return static
      */
     public function addAnd($expression, ...$expressions): self
     {
@@ -100,6 +106,8 @@ abstract class Operator extends Stage
      *
      * @param array|Expr $expression
      * @param array|Expr ...$expressions
+     *
+     * @return static
      */
     public function addOr($expression, ...$expressions): self
     {
@@ -118,6 +126,8 @@ abstract class Operator extends Stage
      * @see Expr::allElementsTrue
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function allElementsTrue($expression): self
     {
@@ -136,6 +146,8 @@ abstract class Operator extends Stage
      * @see Expr::anyElementTrue
      *
      * @param array|Expr $expression
+     *
+     * @return static
      */
     public function anyElementTrue($expression): self
     {
@@ -157,6 +169,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $array
      * @param mixed|Expr $index
+     *
+     * @return static
      */
     public function arrayElemAt($array, $index): self
     {
@@ -175,6 +189,8 @@ abstract class Operator extends Stage
      * @see Expr::ceil
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function ceil($number): self
     {
@@ -194,6 +210,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function cmp($expression1, $expression2): self
     {
@@ -215,6 +233,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
+     *
+     * @return static
      */
     public function concat($expression1, $expression2, ...$expressions): self
     {
@@ -235,6 +255,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $array1
      * @param mixed|Expr $array2
      * @param mixed|Expr ...$arrays Additional expressions
+     *
+     * @return static
      */
     public function concatArrays($array1, $array2, ...$arrays): self
     {
@@ -255,6 +277,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $if
      * @param mixed|Expr $then
      * @param mixed|Expr $else
+     *
+     * @return static
      */
     public function cond($if, $then, $else): self
     {
@@ -275,6 +299,8 @@ abstract class Operator extends Stage
      *
      * @param string     $format
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function dateToString($format, $expression): self
     {
@@ -292,6 +318,8 @@ abstract class Operator extends Stage
      * @see Expr::dayOfMonth
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function dayOfMonth($expression): self
     {
@@ -310,6 +338,8 @@ abstract class Operator extends Stage
      * @see Expr::dayOfWeek
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function dayOfWeek($expression): self
     {
@@ -327,6 +357,8 @@ abstract class Operator extends Stage
      * @see Expr::dayOfYear
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function dayOfYear($expression): self
     {
@@ -346,6 +378,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function divide($expression1, $expression2): self
     {
@@ -362,6 +396,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function eq($expression1, $expression2): self
     {
@@ -380,6 +416,8 @@ abstract class Operator extends Stage
      * @see Expr::exp
      *
      * @param mixed|Expr $exponent
+     *
+     * @return static
      */
     public function exp($exponent): self
     {
@@ -395,6 +433,8 @@ abstract class Operator extends Stage
      * @see Expr::expression
      *
      * @param mixed|Expr $value
+     *
+     * @return static
      */
     public function expression($value)
     {
@@ -407,6 +447,8 @@ abstract class Operator extends Stage
      * Set the current field for building the expression.
      *
      * @see Expr::field
+     *
+     * @return static
      */
     public function field(string $fieldName)
     {
@@ -427,6 +469,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $input
      * @param mixed|Expr $as
      * @param mixed|Expr $cond
+     *
+     * @return static
      */
     public function filter($input, $as, $cond): self
     {
@@ -445,6 +489,8 @@ abstract class Operator extends Stage
      * @see Expr::floor
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function floor($number): self
     {
@@ -463,6 +509,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function gt($expression1, $expression2): self
     {
@@ -481,6 +529,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function gte($expression1, $expression2): self
     {
@@ -498,6 +548,8 @@ abstract class Operator extends Stage
      * @see Expr::hour
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function hour($expression): self
     {
@@ -517,6 +569,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $arrayExpression
+     *
+     * @return static
      */
     public function in($expression, $arrayExpression): self
     {
@@ -537,6 +591,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $searchExpression Can be any valid expression.
      * @param mixed|Expr $start            Optional. An integer, or a number that can be represented as integers (such as 2.0), that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param mixed|Expr $end              An integer, or a number that can be represented as integers (such as 2.0), that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     *
+     * @return static
      */
     public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): self
     {
@@ -556,6 +612,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr      $substringExpression Can be any valid expression as long as it resolves to a string.
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     *
+     * @return static
      */
     public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self
     {
@@ -575,6 +633,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr      $substringExpression Can be any valid expression as long as it resolves to a string.
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     *
+     * @return static
      */
     public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self
     {
@@ -596,6 +656,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $replacementExpression
+     *
+     * @return static
      */
     public function ifNull($expression, $replacementExpression): self
     {
@@ -613,6 +675,8 @@ abstract class Operator extends Stage
      * @see Expr::isArray
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isArray($expression): self
     {
@@ -630,6 +694,8 @@ abstract class Operator extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoDayOfWeek/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isoDayOfWeek($expression): self
     {
@@ -649,6 +715,8 @@ abstract class Operator extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isoWeek($expression): self
     {
@@ -668,6 +736,8 @@ abstract class Operator extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isoWeekYear($expression): self
     {
@@ -685,6 +755,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
      * @param mixed|Expr $in   The expression to evaluate.
+     *
+     * @return static
      */
     public function let($vars, $in): self
     {
@@ -701,6 +773,8 @@ abstract class Operator extends Stage
      * @see Expr::literal
      *
      * @param mixed|Expr $value
+     *
+     * @return static
      */
     public function literal($value): self
     {
@@ -720,6 +794,8 @@ abstract class Operator extends Stage
      * @see Expr::ln
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function ln($number): self
     {
@@ -742,6 +818,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $number
      * @param mixed|Expr $base
+     *
+     * @return static
      */
     public function log($number, $base): self
     {
@@ -762,6 +840,8 @@ abstract class Operator extends Stage
      * @see Expr::log10
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function log10($number): self
     {
@@ -780,6 +860,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function lt($expression1, $expression2): self
     {
@@ -798,6 +880,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function lte($expression1, $expression2): self
     {
@@ -816,6 +900,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $input An expression that resolves to an array.
      * @param string     $as    The variable name for the items in the input array. The in expression accesses each item in the input array by this variable.
      * @param mixed|Expr $in    The expression to apply to each item in the input array. The expression accesses the item by its variable name.
+     *
+     * @return static
      */
     public function map($input, $as, $in): self
     {
@@ -831,6 +917,8 @@ abstract class Operator extends Stage
      * @see Expr::meta
      *
      * @param mixed|Expr $metaDataKeyword
+     *
+     * @return static
      */
     public function meta($metaDataKeyword): self
     {
@@ -848,6 +936,8 @@ abstract class Operator extends Stage
      * @see Expr::millisecond
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function millisecond($expression): self
     {
@@ -865,6 +955,8 @@ abstract class Operator extends Stage
      * @see Expr::minute
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function minute($expression): self
     {
@@ -884,6 +976,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function mod($expression1, $expression2): self
     {
@@ -901,6 +995,8 @@ abstract class Operator extends Stage
      * @see Expr::month
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function month($expression): self
     {
@@ -920,6 +1016,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
+     *
+     * @return static
      */
     public function multiply($expression1, $expression2, ...$expressions): self
     {
@@ -938,6 +1036,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function ne($expression1, $expression2): self
     {
@@ -953,6 +1053,8 @@ abstract class Operator extends Stage
      * @see Expr::not
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function not($expression): self
     {
@@ -974,6 +1076,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $number
      * @param mixed|Expr $exponent
+     *
+     * @return static
      */
     public function pow($number, $exponent): self
     {
@@ -993,6 +1097,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $start An integer that specifies the start of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $end   An integer that specifies the exclusive upper limit of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $step  Optional. An integer that specifies the increment value. Can be any valid expression that resolves to a non-zero integer. Defaults to 1.
+     *
+     * @return static
      */
     public function range($start, $end, $step = 1): self
     {
@@ -1011,6 +1117,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $input        Can be any valid expression that resolves to an array.
      * @param mixed|Expr $initialValue The initial cumulative value set before in is applied to the first element of the input array.
      * @param mixed|Expr $in           A valid expression that $reduce applies to each element in the input array in left-to-right order. Wrap the input value with $reverseArray to yield the equivalent of applying the combining expression from right-to-left.
+     *
+     * @return static
      */
     public function reduce($input, $initialValue, $in): self
     {
@@ -1027,6 +1135,8 @@ abstract class Operator extends Stage
      * @see Expr::reverseArray
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function reverseArray($expression): self
     {
@@ -1045,6 +1155,8 @@ abstract class Operator extends Stage
      * @see Expr::second
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function second($expression): self
     {
@@ -1064,6 +1176,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function setDifference($expression1, $expression2): self
     {
@@ -1085,7 +1199,7 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
      *
-     * @return $this
+     * @return static
      */
     public function setEquals($expression1, $expression2, ...$expressions): self
     {
@@ -1106,6 +1220,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
+     *
+     * @return static
      */
     public function setIntersection($expression1, $expression2, ...$expressions): self
     {
@@ -1126,6 +1242,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function setIsSubset($expression1, $expression2): self
     {
@@ -1146,6 +1264,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
+     *
+     * @return static
      */
     public function setUnion($expression1, $expression2, ...$expressions): self
     {
@@ -1163,6 +1283,8 @@ abstract class Operator extends Stage
      * @see Expr::size
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function size($expression): self
     {
@@ -1180,6 +1302,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr      $array
      * @param mixed|Expr      $n
      * @param mixed|Expr|null $position
+     *
+     * @return static
      */
     public function slice($array, $n, $position = null): self
     {
@@ -1199,6 +1323,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $string    The string to be split. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $delimiter The delimiter to use when splitting the string expression. Can be any valid expression as long as it resolves to a string.
+     *
+     * @return static
      */
     public function split($string, $delimiter): self
     {
@@ -1218,6 +1344,8 @@ abstract class Operator extends Stage
      * @see Expr::sqrt
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function sqrt($expression): self
     {
@@ -1239,6 +1367,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function strcasecmp($expression1, $expression2): self
     {
@@ -1253,6 +1383,8 @@ abstract class Operator extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenBytes/
      *
      * @param mixed|Expr $string
+     *
+     * @return static
      */
     public function strLenBytes($string): self
     {
@@ -1267,6 +1399,8 @@ abstract class Operator extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenCP/
      *
      * @param mixed|Expr $string
+     *
+     * @return static
      */
     public function strLenCP($string): self
     {
@@ -1287,6 +1421,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $string
      * @param mixed|Expr $start
      * @param mixed|Expr $length
+     *
+     * @return static
      */
     public function substr($string, $start, $length): self
     {
@@ -1307,6 +1443,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      * @param mixed|Expr $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
+     *
+     * @return static
      */
     public function substrBytes($string, $start, $count): self
     {
@@ -1327,6 +1465,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      * @param mixed|Expr $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
+     *
+     * @return static
      */
     public function substrCP($string, $start, $count): self
     {
@@ -1346,6 +1486,8 @@ abstract class Operator extends Stage
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function subtract($expression1, $expression2): self
     {
@@ -1363,6 +1505,8 @@ abstract class Operator extends Stage
      * @see Expr::toLower
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toLower($expression): self
     {
@@ -1380,6 +1524,8 @@ abstract class Operator extends Stage
      * @see Expr::toUpper
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toUpper($expression): self
     {
@@ -1398,6 +1544,8 @@ abstract class Operator extends Stage
      * @see Expr::trunc
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function trunc($number): self
     {
@@ -1414,6 +1562,8 @@ abstract class Operator extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/type/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function type($expression): self
     {
@@ -1431,6 +1581,8 @@ abstract class Operator extends Stage
      * @see Expr::week
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function week($expression): self
     {
@@ -1448,6 +1600,8 @@ abstract class Operator extends Stage
      * @see Expr::year
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function year($expression): self
     {
@@ -1467,6 +1621,8 @@ abstract class Operator extends Stage
      * @param mixed|Expr      $inputs           An array of expressions that resolve to arrays. The elements of these input arrays combine to form the arrays of the output array.
      * @param bool|null       $useLongestLength A boolean which specifies whether the length of the longest array determines the number of arrays in the output array.
      * @param mixed|Expr|null $defaults         An array of default element values to use if the input arrays have different lengths. You must specify useLongestLength: true along with this field, or else $zip will return an error.
+     *
+     * @return static
      */
     public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self
     {

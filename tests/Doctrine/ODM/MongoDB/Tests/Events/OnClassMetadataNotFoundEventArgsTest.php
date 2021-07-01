@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class OnClassMetadataNotFoundEventArgsTest extends TestCase
 {
@@ -15,9 +16,9 @@ class OnClassMetadataNotFoundEventArgsTest extends TestCase
     {
         $documentManager = $this->createMock(DocumentManager::class);
 
-        $args = new OnClassMetadataNotFoundEventArgs('foo', $documentManager);
+        $args = new OnClassMetadataNotFoundEventArgs(stdClass::class, $documentManager);
 
-        $this->assertSame('foo', $args->getClassName());
+        $this->assertSame(stdClass::class, $args->getClassName());
         $this->assertSame($documentManager, $args->getObjectManager());
 
         $this->assertNull($args->getFoundMetadata());

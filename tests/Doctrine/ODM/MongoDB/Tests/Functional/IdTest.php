@@ -356,7 +356,7 @@ class IdTest extends BaseTest
         $this->dm->persist($user);
     }
 
-    private function createIdTestClass($type, $strategy)
+    private function createIdTestClass($type, $strategy): string
     {
         $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));
         $className      = sprintf(__NAMESPACE__ . '\\%s', $shortClassName);

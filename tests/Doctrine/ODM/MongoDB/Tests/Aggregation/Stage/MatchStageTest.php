@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 use GeoJson\Geometry\Geometry;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class MatchStageTest extends BaseTest
 {
@@ -117,6 +118,9 @@ class MatchStageTest extends BaseTest
         );
     }
 
+    /**
+     * @return MockObject&Geometry
+     */
     private function getMockGeometry()
     {
         return $this->getMockBuilder(Geometry::class)

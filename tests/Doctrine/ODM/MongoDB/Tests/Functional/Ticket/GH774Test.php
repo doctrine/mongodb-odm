@@ -28,7 +28,7 @@ class GH774Test extends BaseTest
         $this->assertEquals('test', $thread->permalink);
     }
 
-    protected function createMetadataDriverImpl(): XmlDriver
+    protected function createMetadataDriverImpl()
     {
         return new XmlDriver(__DIR__ . '/GH774');
     }
