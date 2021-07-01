@@ -31,7 +31,7 @@ class FilterTest extends BaseTest
         $groupB = new Group('groupB');
 
         $profile = new Profile();
-        $profile->setFirstname('Timothy');
+        $profile->setFirstName('Timothy');
 
         $tim = new User();
         $tim->setUsername('Tim');

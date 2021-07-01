@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use ReflectionMethod;
-use SimpleXmlElement;
+use SimpleXMLElement;
 use stdClass;
 
 use function get_class;

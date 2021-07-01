@@ -51,7 +51,7 @@ class DateTest extends BaseTest
         $user = $this->dm->getRepository(get_class($user))->findOneBy([]);
         $user->setCreatedAt($newValue);
         $this->dm->getUnitOfWork()->computeChangeSets();
-        $changeset = $this->dm->getUnitOfWork()->getDocumentChangeset($user);
+        $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);
         $this->assertEmpty($changeset);
     }
 
@@ -79,7 +79,7 @@ class DateTest extends BaseTest
         $user->getCreatedAt()->setTimestamp(time() - 3600);
 
         $this->dm->getUnitOfWork()->computeChangeSets();
-        $changeset = $this->dm->getUnitOfWork()->getDocumentChangeset($user);
+        $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);
         $this->assertNotEmpty($changeset);
     }
 
