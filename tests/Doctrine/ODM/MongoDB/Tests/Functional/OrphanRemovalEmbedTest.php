@@ -8,6 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+use function assert;
+
 /**
  * Test the orphan removal on embedded documents that contain references with cascade operations.
  */
@@ -138,20 +140,22 @@ class OrphanRemovalEmbedTest extends BaseTest
         $this->assertNotNull($this->getAddressRepository()->find($address3->id), 'Should have added address 3');
     }
 
-    /**
-     * @return DocumentRepository
-     */
-    private function getUserRepository()
+    private function getUserRepository(): DocumentRepository
     {
-        return $this->dm->getRepository(OrphanRemovalCascadeUser::class);
+        $repository = $this->dm->getRepository(OrphanRemovalCascadeUser::class);
+
+        assert($repository instanceof DocumentRepository);
+
+        return $repository;
     }
 
-    /**
-     * @return DocumentRepository
-     */
-    private function getAddressRepository()
+    private function getAddressRepository(): DocumentRepository
     {
-        return $this->dm->getRepository(OrphanRemovalCascadeAddress::class);
+        $repository = $this->dm->getRepository(OrphanRemovalCascadeAddress::class);
+
+        assert($repository instanceof DocumentRepository);
+
+        return $repository;
     }
 }
 

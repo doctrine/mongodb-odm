@@ -8,6 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+use function assert;
+
 class OrphanRemovalTest extends BaseTest
 {
     public function testOrphanRemoval()
@@ -279,20 +281,22 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
-    /**
-     * @return DocumentRepository
-     */
-    private function getUserRepository()
+    private function getUserRepository(): DocumentRepository
     {
-        return $this->dm->getRepository(OrphanRemovalUser::class);
+        $repository = $this->dm->getRepository(OrphanRemovalUser::class);
+
+        assert($repository instanceof DocumentRepository);
+
+        return $repository;
     }
 
-    /**
-     * @return DocumentRepository
-     */
-    private function getProfileRepository()
+    private function getProfileRepository(): DocumentRepository
     {
-        return $this->dm->getRepository(OrphanRemovalProfile::class);
+        $repository = $this->dm->getRepository(OrphanRemovalProfile::class);
+
+        assert($repository instanceof DocumentRepository);
+
+        return $repository;
     }
 }
 

@@ -20,7 +20,6 @@ use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\Persistence\ObjectManager;
-use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
 use Jean85\PrettyVersions;
 use MongoDB\Client;
@@ -573,7 +572,7 @@ class DocumentManager implements ObjectManager
      * @param string $className The name of the Document.
      * @psalm-param class-string<T> $className
      *
-     * @return ObjectRepository|DocumentRepository|GridFSRepository|ViewRepository  The repository.
+     * @return DocumentRepository|GridFSRepository|ViewRepository  The repository.
      * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      *
      * @template T of object
