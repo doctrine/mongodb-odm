@@ -1309,6 +1309,9 @@ use function trigger_deprecation;
         return $this->reflFields[$name];
     }
 
+    /**
+     * @psalm-return class-string<T>
+     */
     public function getName(): string
     {
         return $this->name;

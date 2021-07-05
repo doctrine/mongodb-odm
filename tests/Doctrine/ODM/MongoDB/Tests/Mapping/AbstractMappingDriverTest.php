@@ -707,13 +707,13 @@ class AbstractMappingDriverUser
         $metadata->mapOneReference([
             'fieldName' => 'address',
             'targetDocument' => Address::class,
-            'cascade' => [0 => 'remove'],
+            'cascade' => ['remove'],
         ]);
         $metadata->mapManyReference([
             'fieldName' => 'phonenumbers',
             'targetDocument' => Phonenumber::class,
             'collectionClass' => PhonenumberCollection::class,
-            'cascade' => [1 => 'persist'],
+            'cascade' => ['persist'],
             'discriminatorField' => 'discr',
             'discriminatorMap' => [
                 'home' => HomePhonenumber::class,
@@ -731,11 +731,11 @@ class AbstractMappingDriverUser
             'fieldName' => 'groups',
             'targetDocument' => Group::class,
             'cascade' => [
-                0 => 'remove',
-                1 => 'persist',
-                2 => 'refresh',
-                3 => 'merge',
-                4 => 'detach',
+                'remove',
+                'persist',
+                'refresh',
+                'merge',
+                'detach',
             ],
         ]);
         $metadata->mapOneEmbedded([

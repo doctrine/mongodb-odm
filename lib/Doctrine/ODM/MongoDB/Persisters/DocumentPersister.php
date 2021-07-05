@@ -120,6 +120,9 @@ final class DocumentPersister
     /** @var HydratorFactory */
     private $hydratorFactory;
 
+    /**
+     * @psalm-param ClassMetadata<T> $class
+     */
     public function __construct(
         PersistenceBuilder $pb,
         DocumentManager $dm,

@@ -39,8 +39,8 @@ class CreateCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $create = array_filter($this->createOrder, static function ($option) use ($input) {
-            return $input->getOption($option);
+        $create = array_filter($this->createOrder, static function (string $option) use ($input): bool {
+            return (bool) $input->getOption($option);
         });
 
         // Default to the full creation order if no options were specified
