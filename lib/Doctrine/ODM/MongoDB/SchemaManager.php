@@ -742,7 +742,7 @@ final class SchemaManager
         }
     }
 
-    private function runShardCollectionCommand(string $documentName, ?WriteConcern $writeConcern = null): array
+    private function runShardCollectionCommand(string $documentName, ?WriteConcern $writeConcern = null): void
     {
         $class    = $this->dm->getClassMetadata($documentName);
         $dbName   = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
@@ -765,7 +765,7 @@ final class SchemaManager
             $shardKeyPart[$fieldName] = $order;
         }
 
-        return $adminDb->command(
+        $adminDb->command(
             array_merge(
                 [
                     'shardCollection' => $dbName . '.' . $class->getCollection(),
@@ -773,7 +773,7 @@ final class SchemaManager
                 ],
                 $this->getWriteOptions(null, $writeConcern)
             )
-        )->toArray()[0];
+        );
     }
 
     private function ensureGridFSIndexes(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
