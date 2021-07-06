@@ -113,6 +113,8 @@ class GeoNear extends MatchStage
 
     /**
      * The maximum number of documents to return.
+     *
+     * @psalm-suppress InvalidReturnStatement, InvalidReturnType it should return Stage\Limit
      */
     public function limit(int $limit): self
     {

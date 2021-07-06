@@ -1743,6 +1743,8 @@ use function trigger_deprecation;
      */
     public function getIdentifierValues($object): array
     {
+        assert($this->identifier !== null);
+
         return [$this->identifier => $this->getIdentifierValue($object)];
     }
 

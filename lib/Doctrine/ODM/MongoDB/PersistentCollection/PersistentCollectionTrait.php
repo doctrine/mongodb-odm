@@ -319,7 +319,11 @@ trait PersistentCollectionTrait
         return $this->mapping;
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     *
+     * @psalm-suppress InvalidReturnType $this->mapping['targetDocument] is of type T
+     */
     public function getTypeClass()
     {
         if ($this->dm === null) {
@@ -740,7 +744,11 @@ trait PersistentCollectionTrait
      *
      * @param mixed $offset
      *
-     * @return bool|T|null
+     * @psalm-return (
+     *      $arrayAcess is 'false'
+     *      ? T|null
+     *      : T|null|true
+     * )
      */
     private function doRemove($offset, bool $arrayAccess)
     {

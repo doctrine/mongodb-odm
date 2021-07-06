@@ -14,6 +14,13 @@ interface PersistentCollectionFactory
 {
     /**
      * Creates specified persistent collection to work with given collection class.
+     *
+     * @param BaseCollection<TKey, T>|null $coll
+     *
+     * @return PersistentCollectionInterface<TKey, T>
+     *
+     * @template TKey of array-key
+     * @template T of object
      */
     public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null): PersistentCollectionInterface;
 }

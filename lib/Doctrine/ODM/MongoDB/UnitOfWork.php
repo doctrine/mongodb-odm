@@ -37,6 +37,7 @@ use function get_class;
 use function in_array;
 use function is_array;
 use function is_object;
+use function is_string;
 use function method_exists;
 use function preg_match;
 use function serialize;
@@ -2857,14 +2858,16 @@ final class UnitOfWork implements PropertyChangedListener
 
             if (! $class->isQueryResultDocument) {
                 $this->registerManaged($document, $id, $data);
-                $oid                                            = spl_object_hash($document);
-                $this->documentStates[$oid]                     = self::STATE_MANAGED;
+                $oid                        = spl_object_hash($document);
+                $this->documentStates[$oid] = self::STATE_MANAGED;
+                assert(is_string($serializedId));
                 $this->identityMap[$class->name][$serializedId] = $document;
             }
 
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
 
             if (! $class->isQueryResultDocument && ! $class->isView()) {
+                assert(is_string($oid));
                 $this->originalDocumentData[$oid] = $data;
             }
         }
