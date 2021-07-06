@@ -213,7 +213,7 @@ final class UnitOfWork implements PropertyChangedListener
      * At the end of the UnitOfWork all these collections will make new snapshots
      * of their data.
      *
-     * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
+     * @psalm-var array<string, array<PersistentCollectionInterface<array-key, object>>>
      */
     private $visitedCollections = [];
 

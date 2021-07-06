@@ -309,6 +309,7 @@ class DocumentManager implements ObjectManager
      */
     public function getClassMetadata($className): ClassMetadata
     {
+        /** @psalm-var ClassMetadata<T> $metadata */
         $metadata = $this->metadataFactory->getMetadataFor($className);
         assert($metadata instanceof ClassMetadata);
 
