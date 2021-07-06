@@ -1046,7 +1046,7 @@ final class DocumentPersister
                 continue;
             }
 
-            if (isset($key[0]) && $key[0] === '$' && is_array($value)) {
+            if (strpos((string) $key, '$') === 0 && is_array($value)) {
                 $preparedQuery[$key] = $this->prepareQueryOrNewObj($value, $isNewObj);
                 continue;
             }
@@ -1409,8 +1409,8 @@ final class DocumentPersister
             $value = get_object_vars($value);
         }
 
-        foreach ($value as $key => $value) {
-            if (isset($key[0]) && $key[0] === '$') {
+        foreach ($value as $key => $notUsedValue) {
+            if (strpos((string) $key, '$') === 0) {
                 return true;
             }
         }
