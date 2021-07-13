@@ -1218,7 +1218,7 @@ final class DocumentPersister
         }
 
         if (
-            $mapping['type'] === 'many' && CollectionHelper::isHash($mapping['strategy'])
+            $mapping['type'] === ClassMetadata::MANY && CollectionHelper::isHash($mapping['strategy'])
                 && isset($e[2])
         ) {
             $objectProperty       = $e[2];
@@ -1575,7 +1575,7 @@ final class DocumentPersister
                 throw new InvalidArgumentException(sprintf('Reference type %s is invalid.', $mapping['storeAs']));
         }
 
-        if ($mapping['type'] === 'many') {
+        if ($mapping['type'] === ClassMetadata::MANY) {
             return [[$fieldName, ['$elemMatch' => array_intersect_key($reference, $keys)]]];
         }
 

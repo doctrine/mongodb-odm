@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
@@ -14,7 +15,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 final class EmbedMany extends AbstractField
 {
     /** @var string */
-    public $type = 'many';
+    public $type = ClassMetadata::MANY;
 
     /** @var bool */
     public $embedded = true;

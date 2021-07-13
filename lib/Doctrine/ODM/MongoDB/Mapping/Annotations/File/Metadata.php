@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations\File;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * @Annotation
@@ -15,7 +16,7 @@ final class Metadata extends AbstractField
     public $name = 'metadata';
 
     /** @var string */
-    public $type = 'one';
+    public $type = ClassMetadata::ONE;
 
     /** @var bool */
     public $embedded = true;

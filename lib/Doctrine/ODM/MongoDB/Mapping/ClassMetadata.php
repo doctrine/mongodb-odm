@@ -231,12 +231,19 @@ use function trigger_deprecation;
      */
     public const DEFAULT_DISCRIMINATOR_FIELD = '_doctrine_class_name';
 
+    /**
+     * Association types
+     */
     public const REFERENCE_ONE  = 1;
     public const REFERENCE_MANY = 2;
     public const EMBED_ONE      = 3;
     public const EMBED_MANY     = 4;
-    public const MANY           = 'many';
-    public const ONE            = 'one';
+
+    /**
+     * Mapping types
+     */
+    public const MANY = 'many';
+    public const ONE  = 'one';
 
     /**
      * The types of storeAs references
@@ -1136,7 +1143,7 @@ use function trigger_deprecation;
                 continue;
             }
 
-            if (in_array($this->fieldMappings[$field]['type'], ['many', 'collection'])) {
+            if (in_array($this->fieldMappings[$field]['type'], [self::MANY, Type::COLLECTION])) {
                 throw MappingException::noMultiKeyShardKeys($this->getName(), $field);
             }
 
@@ -1456,7 +1463,7 @@ use function trigger_deprecation;
         }
 
         switch (true) {
-            case $mapping['type'] === 'many':
+            case $mapping['type'] === self::MANY:
                 $defaultStrategy   = CollectionHelper::DEFAULT_STRATEGY;
                 $allowedStrategies = [
                     self::STORAGE_STRATEGY_PUSH_ALL,
@@ -1468,7 +1475,7 @@ use function trigger_deprecation;
                 ];
                 break;
 
-            case $mapping['type'] === 'one':
+            case $mapping['type'] === self::ONE:
                 $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET];
                 break;
@@ -1491,7 +1498,7 @@ use function trigger_deprecation;
         }
 
         if (
-            isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
+            isset($mapping['reference']) && $mapping['type'] === self::MANY && $mapping['isOwningSide']
             && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])
         ) {
             throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
@@ -1506,7 +1513,7 @@ use function trigger_deprecation;
     public function mapOneEmbedded(array $mapping): void
     {
         $mapping['embedded'] = true;
-        $mapping['type']     = 'one';
+        $mapping['type']     = self::ONE;
         $this->mapField($mapping);
     }
 
@@ -1518,7 +1525,7 @@ use function trigger_deprecation;
     public function mapManyEmbedded(array $mapping): void
     {
         $mapping['embedded'] = true;
-        $mapping['type']     = 'many';
+        $mapping['type']     = self::MANY;
         $this->mapField($mapping);
     }
 
@@ -1530,7 +1537,7 @@ use function trigger_deprecation;
     public function mapOneReference(array $mapping): void
     {
         $mapping['reference'] = true;
-        $mapping['type']      = 'one';
+        $mapping['type']      = self::ONE;
         $this->mapField($mapping);
     }
 
@@ -1542,7 +1549,7 @@ use function trigger_deprecation;
     public function mapManyReference(array $mapping): void
     {
         $mapping['reference'] = true;
-        $mapping['type']      = 'many';
+        $mapping['type']      = self::MANY;
         $this->mapField($mapping);
     }
 
@@ -2223,7 +2230,7 @@ use function trigger_deprecation;
             throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);
         }
 
-        if ($this->isEmbeddedDocument && $mapping['type'] === 'many' && isset($mapping['strategy']) && CollectionHelper::isAtomic($mapping['strategy'])) {
+        if ($this->isEmbeddedDocument && $mapping['type'] === self::MANY && isset($mapping['strategy']) && CollectionHelper::isAtomic($mapping['strategy'])) {
             throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
         }
 
@@ -2241,19 +2248,19 @@ use function trigger_deprecation;
             );
         }
 
-        if (isset($mapping['reference']) && $mapping['type'] === 'one') {
+        if (isset($mapping['reference']) && $mapping['type'] === self::ONE) {
             $mapping['association'] = self::REFERENCE_ONE;
         }
 
-        if (isset($mapping['reference']) && $mapping['type'] === 'many') {
+        if (isset($mapping['reference']) && $mapping['type'] === self::MANY) {
             $mapping['association'] = self::REFERENCE_MANY;
         }
 
-        if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
+        if (isset($mapping['embedded']) && $mapping['type'] === self::ONE) {
             $mapping['association'] = self::EMBED_ONE;
         }
 
-        if (isset($mapping['embedded']) && $mapping['type'] === 'many') {
+        if (isset($mapping['embedded']) && $mapping['type'] === self::MANY) {
             $mapping['association'] = self::EMBED_MANY;
         }
 
