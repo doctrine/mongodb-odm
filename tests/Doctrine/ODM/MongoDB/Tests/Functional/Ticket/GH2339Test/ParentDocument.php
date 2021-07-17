@@ -16,24 +16,24 @@ class ParentDocument
     protected ObjectIdInterface $id;
 
     /**
-     * @ODM\EmbedMany(targetDocument=EmbeddedDocument::class)
+     * @ODM\EmbedMany(targetDocument=InlinedDocument::class)
      *
-     * @var EmbeddedDocument[]
+     * @var InlinedDocument[]
      */
-    protected array $embedded = [];
+    protected array $inlined = [];
 
     public function getId(): ObjectIdInterface
     {
         return $this->id;
     }
 
-    public function addEmbedded(EmbeddedDocument $document)
+    public function addInlined(InlinedDocument $document)
     {
-        $this->embedded[] = $document;
+        $this->inlined[] = $document;
     }
 
-    public function getEmbedded(): array
+    public function getInlined(): array
     {
-        return $this->embedded;
+        return $this->inlined;
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH2339Test\EmbeddedDocument;
+use Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH2339Test\InlinedDocument;
 use Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH2339Test\ParentDocument;
 
 use function phpversion;
@@ -24,10 +24,10 @@ class GH2339Test extends BaseTest
 
     public function testObjectIdInterfaceInEmbeddedDocuments()
     {
-        $parent   = new ParentDocument();
-        $embedded = new EmbeddedDocument();
+        $parent  = new ParentDocument();
+        $inlined = new InlinedDocument();
 
-        $parent->addEmbedded($embedded);
+        $parent->addInlined($inlined);
 
         $this->dm->persist($parent);
         $this->dm->flush();
@@ -36,7 +36,7 @@ class GH2339Test extends BaseTest
 
         $this->assertEquals($parent->getId(), $document->getId());
         $this->assertNotEmpty($document->getEmbedded());
-        $this->assertInstanceOf(EmbeddedDocument::class, $document->getEmbedded()[0]);
-        $this->assertEquals($embedded->getId(), $document->getEmbedded()[0]->getId());
+        $this->assertInstanceOf(InlinedDocument::class, $document->getEmbedded()[0]);
+        $this->assertEquals($inlined->getId(), $document->getEmbedded()[0]->getId());
     }
 }

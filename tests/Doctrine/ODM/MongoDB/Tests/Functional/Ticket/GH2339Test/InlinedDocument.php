@@ -10,7 +10,7 @@ use MongoDB\BSON\ObjectIdInterface;
 /**
  * @ODM\EmbeddedDocument
  */
-class EmbeddedDocument
+class InlinedDocument
 {
     /** @ODM\Id */
     protected ObjectIdInterface $id;
