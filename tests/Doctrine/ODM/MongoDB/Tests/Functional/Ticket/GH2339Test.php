@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use MongoDB\BSON\ObjectIdInterface;
+use Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH2339Test\EmbeddedDocument;
+use Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH2339Test\ParentDocument;
 use function phpversion;
 use function version_compare;
 
@@ -37,55 +37,5 @@ class GH2339Test extends BaseTest
         $this->assertNotEmpty($document->getEmbedded());
         $this->assertInstanceOf(EmbeddedDocument::class, $document->getEmbedded()[0]);
         $this->assertEquals($embedded->getId(), $document->getEmbedded()[0]->getId());
-    }
-}
-
-
-/**
- * @ODM\Document
- */
-class ParentDocument
-{
-    /**
-     * @ODM\Id
-     */
-    protected ObjectIdInterface $id;
-
-    /**
-     * @var EmbeddedDocument[]
-     *
-     * @ODM\EmbedMany(targetDocument=EmbeddedDocument::class)
-     */
-    protected array $embedded = [];
-
-    public function getId(): ObjectIdInterface
-    {
-        return $this->id;
-    }
-
-    public function addEmbedded(EmbeddedDocument $document)
-    {
-        $this->embedded[] = $document;
-    }
-
-    public function getEmbedded(): array
-    {
-        return $this->getEmbedded();
-    }
-}
-
-/**
- * @ODM\EmbeddedDocument
- */
-class EmbeddedDocument
-{
-    /**
-     * @ODM\Id
-     */
-    protected ObjectIdInterface $id;
-
-    public function getId(): ObjectIdInterface
-    {
-        return $this->id;
     }
 }
