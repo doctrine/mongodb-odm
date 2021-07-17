@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH2339Test;
 
-use Doctrine\ODM\MongoDB\Tests\Functional\Ticket\EmbeddedDocument;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MongoDB\BSON\ObjectIdInterface;
 
 /**
@@ -10,15 +12,13 @@ use MongoDB\BSON\ObjectIdInterface;
  */
 class ParentDocument
 {
-    /**
-     * @ODM\Id
-     */
+    /** @ODM\Id */
     protected ObjectIdInterface $id;
 
     /**
-     * @var EmbeddedDocument[]
-     *
      * @ODM\EmbedMany(targetDocument=EmbeddedDocument::class)
+     *
+     * @var EmbeddedDocument[]
      */
     protected array $embedded = [];
 
@@ -34,6 +34,6 @@ class ParentDocument
 
     public function getEmbedded(): array
     {
-        return $this->getEmbedded();
+        return $this->embedded;
     }
 }

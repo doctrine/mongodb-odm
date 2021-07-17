@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH2339Test\EmbeddedDocument;
 use Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH2339Test\ParentDocument;
+
 use function phpversion;
 use function version_compare;
 
@@ -23,7 +24,7 @@ class GH2339Test extends BaseTest
 
     public function testObjectIdInterfaceInEmbeddedDocuments()
     {
-        $parent = new ParentDocument();
+        $parent   = new ParentDocument();
         $embedded = new EmbeddedDocument();
 
         $parent->addEmbedded($embedded);
