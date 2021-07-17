@@ -13,15 +13,6 @@ use function version_compare;
 
 class GH2339Test extends BaseTest
 {
-    public function setUp(): void
-    {
-        if (version_compare((string) phpversion(), '8.0', '<')) {
-            self::markTestSkipped('PHP 8.0 is required to run this test');
-        }
-
-        parent::setUp();
-    }
-
     public function testObjectIdInterfaceInEmbeddedDocuments()
     {
         $parent  = new ParentDocument();
