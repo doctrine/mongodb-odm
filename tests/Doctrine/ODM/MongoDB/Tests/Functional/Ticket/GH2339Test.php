@@ -13,6 +13,15 @@ use function version_compare;
 
 class GH2339Test extends BaseTest
 {
+    public function setUp(): void
+    {
+        if (version_compare((string) phpversion(), '7.4', '<')) {
+            self::markTestSkipped('PHP 7.4 or higher is required to run this test');
+        }
+
+        parent::setUp();
+    }
+
     public function testObjectIdInterfaceInEmbeddedDocuments()
     {
         $parent  = new ParentDocument();
