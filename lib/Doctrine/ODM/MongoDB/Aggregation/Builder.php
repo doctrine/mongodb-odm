@@ -168,6 +168,14 @@ class Builder
     }
 
     /**
+     * Create a new Expr instance that can be used as an expression with the Builder
+     */
+    public function createExpr(): Expr
+    {
+        return new Expr($this->dm, $this->class);
+    }
+
+    /**
      * Executes the aggregation pipeline
      *
      * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
@@ -185,9 +193,14 @@ class Builder
         return $this->getAggregation($options)->getIterator();
     }
 
+    /**
+     * @return Expr
+     *
+     * @deprecated use createExpr instead
+     */
     public function expr(): Expr
     {
-        return new Expr($this->dm, $this->class);
+        return $this->createExpr();
     }
 
     /**

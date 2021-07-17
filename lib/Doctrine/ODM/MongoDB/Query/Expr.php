@@ -405,6 +405,19 @@ class Expr
     }
 
     /**
+     * Specify $expr criteria for the current field.
+     *
+     * @see Builder::exprOp()
+     * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
+     *
+     * @param array|Expr $expression
+     */
+    public function exprOp($expression): self
+    {
+        return $this->operator('$expr', $expression);
+    }
+
+    /**
      * Specify an equality match for the current field.
      *
      * @see Builder::equals()

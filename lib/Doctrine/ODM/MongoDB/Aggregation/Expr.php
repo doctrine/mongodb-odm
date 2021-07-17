@@ -331,6 +331,14 @@ class Expr
     }
 
     /**
+     * Returns a new expression object
+     */
+    public function createExpr(): self
+    {
+        return new static($this->dm, $this->class);
+    }
+
+    /**
      * Converts a date object to a string according to a user-specified format.
      *
      * The format string can be any string literal, containing 0 or more format
@@ -459,10 +467,25 @@ class Expr
 
     /**
      * Returns a new expression object
+     *
+     * @deprecated use createExpr instead
      */
     public function expr(): self
     {
-        return new static($this->dm, $this->class);
+        return $this->createExpr();
+    }
+
+    /**
+     * Specify $expr criteria for the current field.
+     *
+     * @see Builder::expr()
+     * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
+     *
+     * @param array|\Doctrine\ODM\MongoDB\Query\Expr $expression
+     */
+    public function exprOp($expression): self
+    {
+        return $this->operator('$expr', $expression);
     }
 
     /**
