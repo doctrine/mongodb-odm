@@ -367,6 +367,17 @@ class Builder
     }
 
     /**
+     * Create a new Expr instance that can be used as an expression with the Builder
+     */
+    public function createExpr(): Expr
+    {
+        $expr = new Expr($this->dm);
+        $expr->setClassMetadata($this->class);
+
+        return $expr;
+    }
+
+    /**
      * Sets the value of the current field to the current date, either as a date or a timestamp.
      *
      * @see Expr::currentDate()
@@ -493,13 +504,25 @@ class Builder
 
     /**
      * Create a new Expr instance that can be used as an expression with the Builder
+     *
+     * @deprecated use createExpr instead
      */
     public function expr(): Expr
     {
-        $expr = new Expr($this->dm);
-        $expr->setClassMetadata($this->class);
+        return $this->createExpr();
+    }
 
-        return $expr;
+    /**
+     * Specify $expr criteria for the current field.
+     *
+     * @see Expr::exprOp()
+     * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
+     */
+    public function exprOp($expression): self
+    {
+        $this->expr->exprOp($expression);
+
+        return $this;
     }
 
     /**
