@@ -189,8 +189,6 @@ class Builder
     }
 
     /**
-     * @return Expr
-     *
      * @deprecated use createExpr instead
      */
     public function expr(): Expr
