@@ -108,21 +108,12 @@ class MatchStage extends Stage
     }
 
     /**
-     * Specify $expr criteria for the current field.
-     *
-     * You can create a new expression using the {@link Builder::matchExpr()}
-     * method.
-     *
-     * @see Expr::expr()
-     * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
-     *
-     * @param array|Expr $expression
+     * Create a new Expr instance that can be used to build partial expressions
+     * for other operator methods.
      */
-    public function createExpr($expression): self
+    public function createExpr(): Expr
     {
-        $this->query->expr($expression);
-
-        return $this;
+        return $this->builder->matchExpr();
     }
 
     /**
@@ -171,21 +162,11 @@ class MatchStage extends Stage
     }
 
     /**
-     * Specify $expr criteria for the current field.
-     *
-     * You can create a new expression using the {@link Builder::matchExpr()}
-     * method.
-     *
-     * @see Expr::expr()
-     * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
-     *
-     * @param array|Expr $expression
-     *
      * @deprecated use createExpr instead
      */
-    public function expr($expression): self
+    public function expr(): Expr
     {
-        return $this->createExpr($expression);
+        return $this->createExpr();
     }
 
     /**
