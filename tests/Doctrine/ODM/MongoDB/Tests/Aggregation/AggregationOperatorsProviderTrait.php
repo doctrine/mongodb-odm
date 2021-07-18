@@ -192,6 +192,11 @@ trait AggregationOperatorsProviderTrait
                 'operator' => 'exp',
                 'args' => ['$field'],
             ],
+            'exprOp' => [
+                'expected' => ['$expr' => '$array'],
+                'operator' => 'expr',
+                'args' => ['$array'],
+            ],
             'filter' => [
                 'expected' => ['$filter' => ['input' => '$array', 'as' => '$as', 'cond' => '$cond']],
                 'operator' => 'filter',

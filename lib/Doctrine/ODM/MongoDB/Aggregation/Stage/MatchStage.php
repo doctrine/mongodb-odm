@@ -187,6 +187,8 @@ class MatchStage extends Stage
      *
      * @see Expr::exprOp()
      * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
+     *
+     * @param array|\Doctrine\ODM\MongoDB\Aggregation\Expr $expression
      */
     public function exprOp($expression): self
     {

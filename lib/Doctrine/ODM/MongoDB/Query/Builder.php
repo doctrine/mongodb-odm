@@ -507,6 +507,8 @@ class Builder
      *
      * @see Expr::exprOp()
      * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
+     *
+     * @param array|Expr $expression
      */
     public function exprOp($expression): self
     {
