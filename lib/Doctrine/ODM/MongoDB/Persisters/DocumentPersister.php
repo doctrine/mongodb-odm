@@ -1037,6 +1037,8 @@ final class DocumentPersister
         $preparedQuery = [];
 
         foreach ($query as $key => $value) {
+            $key = (string) $key;
+
             // Recursively prepare logical query clauses
             if (in_array($key, ['$and', '$or', '$nor'], true) && is_array($value)) {
                 foreach ($value as $k2 => $v2) {
@@ -1046,14 +1048,14 @@ final class DocumentPersister
                 continue;
             }
 
-            if (strpos((string) $key, '$') === 0 && is_array($value)) {
+            if (isset($key[0]) && $key[0] === '$' && is_array($value)) {
                 $preparedQuery[$key] = $this->prepareQueryOrNewObj($value, $isNewObj);
                 continue;
             }
 
-            $preparedQueryElements = $this->prepareQueryElement((string) $key, $value, null, true, $isNewObj);
+            $preparedQueryElements = $this->prepareQueryElement($key, $value, null, true, $isNewObj);
             foreach ($preparedQueryElements as [$preparedKey, $preparedValue]) {
-                $preparedValue               = $this->convertToDatabaseValue((string) $key, $preparedValue);
+                $preparedValue               = $this->convertToDatabaseValue($key, $preparedValue);
                 $preparedQuery[$preparedKey] = $preparedValue;
             }
         }
@@ -1410,7 +1412,9 @@ final class DocumentPersister
         }
 
         foreach ($value as $key => $notUsedValue) {
-            if (strpos((string) $key, '$') === 0) {
+            $key = (string) $key;
+
+            if (isset($key[0]) && $key[0] === '$') {
                 return true;
             }
         }
