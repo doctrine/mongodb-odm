@@ -484,7 +484,7 @@ class Expr
      * @see Builder::expr()
      * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
      *
-     * @param array|\Doctrine\ODM\MongoDB\Query\Expr $expression
+     * @param array|self $expression
      */
     public function exprOp($expression): self
     {
