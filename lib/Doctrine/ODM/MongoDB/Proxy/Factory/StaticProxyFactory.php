@@ -124,7 +124,7 @@ final class StaticProxyFactory implements ProxyFactory
     }
 
     /**
-     * @return string[]
+     * @return array<int, string>
      */
     private function skippedFieldsFqns(ClassMetadata $metadata): array
     {
