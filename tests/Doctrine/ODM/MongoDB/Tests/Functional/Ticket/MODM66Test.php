@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM66Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $b1 = new MODM52B('first');
         $a  = new MODM52A([$b1]);
@@ -34,7 +35,7 @@ class MODM66Test extends BaseTest
         ]);
     }
 
-    public function testRefresh()
+    public function testRefresh(): void
     {
         $b1 = new MODM52B('first');
         $a  = new MODM52A([$b1]);
@@ -75,7 +76,7 @@ class MODM52A
         $this->b = new ArrayCollection($b);
     }
 
-    public function getB()
+    public function getB(): Collection
     {
         return $this->b;
     }

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 
 class GH499Test extends BaseTest
 {
-    public function testSetRefMany()
+    public function testSetRefMany(): void
     {
         $a = new GH499Document(new ObjectId());
         $b = new GH499Document(new ObjectId());
@@ -50,22 +51,22 @@ class GH499Document
         $this->refMany = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getRefMany()
+    public function getRefMany(): Collection
     {
         return $this->refMany;
     }
 
-    public function addRef(GH499Document $doc)
+    public function addRef(GH499Document $doc): void
     {
         $this->refMany->set($doc->getId(), $doc);
     }
 
-    public function removeRef(GH499Document $doc)
+    public function removeRef(GH499Document $doc): void
     {
         $this->refMany->remove($doc->getId());
     }

@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class VersionTest extends BaseTest
 {
-    public function testVersioningWhenManipulatingEmbedMany()
+    public function testVersioningWhenManipulatingEmbedMany(): void
     {
         $expectedVersion  = 1;
         $doc              = new VersionedDocument();

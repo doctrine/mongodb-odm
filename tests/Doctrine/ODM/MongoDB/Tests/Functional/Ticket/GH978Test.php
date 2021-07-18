@@ -16,7 +16,7 @@ use Documents\Ecommerce\StockItem;
  */
 class GH978Test extends BaseTest
 {
-    public function testDetach()
+    public function testDetach(): void
     {
         $document = new ConfigurableProduct('foo bar');
         //option 1

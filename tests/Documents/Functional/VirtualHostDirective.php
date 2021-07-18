@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Documents\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 use function uniqid;
@@ -37,7 +38,7 @@ class VirtualHostDirective
         return $this->recId;
     }
 
-    public function setRecId($value = null)
+    public function setRecId($value = null): void
     {
         if (! $value) {
             $value = uniqid();
@@ -51,7 +52,7 @@ class VirtualHostDirective
         return $this->name;
     }
 
-    public function setName($value)
+    public function setName($value): void
     {
         $this->name = $value;
     }
@@ -61,12 +62,12 @@ class VirtualHostDirective
         return $this->value;
     }
 
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }
 
-    public function getDirectives()
+    public function getDirectives(): Collection
     {
         if (! $this->directives) {
             $this->directives = new ArrayCollection([]);
@@ -75,14 +76,14 @@ class VirtualHostDirective
         return $this->directives;
     }
 
-    public function setDirectives($value)
+    public function setDirectives($value): VirtualHostDirective
     {
         $this->directives = $value;
 
         return $this;
     }
 
-    public function addDirective(VirtualHostDirective $d)
+    public function addDirective(VirtualHostDirective $d): VirtualHostDirective
     {
         $this->getDirectives()->add($d);
 
@@ -105,7 +106,7 @@ class VirtualHostDirective
         return $this->hasDirective($name);
     }
 
-    public function removeDirective(VirtualHostDirective $d)
+    public function removeDirective(VirtualHostDirective $d): VirtualHostDirective
     {
         $this->getDirectives()->removeElement($d);
 

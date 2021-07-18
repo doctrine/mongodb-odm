@@ -12,7 +12,7 @@ use function get_class;
 
 class GH1132Test extends BaseTest
 {
-    public function testClonedPersistentCollectionCanBeClearedAndUsedInNewDocument()
+    public function testClonedPersistentCollectionCanBeClearedAndUsedInNewDocument(): void
     {
         $u = new User();
         $u->getPhonenumbers()->add(new Phonenumber('123456'));
@@ -33,7 +33,7 @@ class GH1132Test extends BaseTest
         $this->assertCount(0, $u2->getPhonenumbers());
     }
 
-    public function testClonedPersistentCollectionCanBeClearedAndUsedInManagedDocument()
+    public function testClonedPersistentCollectionCanBeClearedAndUsedInManagedDocument(): void
     {
         $u = new User();
         $u->getPhonenumbers()->add(new Phonenumber('123456'));
@@ -55,7 +55,7 @@ class GH1132Test extends BaseTest
         $this->assertCount(0, $u2->getPhonenumbers());
     }
 
-    public function testClonedPersistentCollectionUpdatesCorrectly()
+    public function testClonedPersistentCollectionUpdatesCorrectly(): void
     {
         $u = new User();
         $u->getPhonenumbers()->add(new Phonenumber('123456'));

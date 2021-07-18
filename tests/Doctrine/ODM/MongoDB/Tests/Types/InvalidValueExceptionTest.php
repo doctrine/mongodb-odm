@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class InvalidValueExceptionTest extends TestCase
 {
-    public function testCollectionDoesntAcceptObject()
+    public function testCollectionDoesntAcceptObject(): void
     {
         $t = Type::getType('collection');
         $this->expectException(MongoDBException::class);
@@ -21,7 +21,7 @@ class InvalidValueExceptionTest extends TestCase
         $t->convertToDatabaseValue(new ArrayCollection());
     }
 
-    public function testCollectionDoesntAcceptScalar()
+    public function testCollectionDoesntAcceptScalar(): void
     {
         $t = Type::getType('collection');
         $this->expectException(MongoDBException::class);
@@ -29,7 +29,7 @@ class InvalidValueExceptionTest extends TestCase
         $t->convertToDatabaseValue(true);
     }
 
-    public function testHashDoesntAcceptObject()
+    public function testHashDoesntAcceptObject(): void
     {
         $t = Type::getType('hash');
         $this->expectException(MongoDBException::class);
@@ -39,7 +39,7 @@ class InvalidValueExceptionTest extends TestCase
         $t->convertToDatabaseValue(new ArrayCollection());
     }
 
-    public function testHashDoesntAcceptScalar()
+    public function testHashDoesntAcceptScalar(): void
     {
         $t = Type::getType('hash');
         $this->expectException(MongoDBException::class);

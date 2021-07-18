@@ -51,10 +51,7 @@ class Option
         $this->stockItem = $stockItem;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -71,10 +68,7 @@ class Option
         return $this->money->getAmount();
     }
 
-    /**
-     * @return StockItem
-     */
-    public function getStockItem()
+    public function getStockItem(): StockItem
     {
         return $this->stockItem;
     }

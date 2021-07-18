@@ -28,7 +28,7 @@ class BrowseNode
         $this->children = new ArrayCollection();
     }
 
-    public function addChild(BrowseNode $child)
+    public function addChild(BrowseNode $child): void
     {
         $child->parent    = $this;
         $this->children[] = $child;

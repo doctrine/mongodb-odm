@@ -22,7 +22,7 @@ class CustomTypeTest extends BaseTest
         Type::addType('date_collection', DateCollectionType::class);
     }
 
-    public function testCustomTypeValueConversions()
+    public function testCustomTypeValueConversions(): void
     {
         $country                   = new Country();
         $country->nationalHolidays = [new DateTime(), new DateTime()];
@@ -37,7 +37,7 @@ class CustomTypeTest extends BaseTest
         $this->assertContainsOnly('DateTime', $country->nationalHolidays);
     }
 
-    public function testConvertToDatabaseValueExpectsArray()
+    public function testConvertToDatabaseValueExpectsArray(): void
     {
         $country                   = new Country();
         $country->nationalHolidays = new DateTime();

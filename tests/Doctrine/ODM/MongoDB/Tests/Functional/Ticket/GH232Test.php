@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH232Test extends BaseTest
 {
-    public function testReferencedDocumentInsideEmbeddedDocument()
+    public function testReferencedDocumentInsideEmbeddedDocument(): void
     {
         /* PARENT DOCUMENT */
         $product = new Product('Product');

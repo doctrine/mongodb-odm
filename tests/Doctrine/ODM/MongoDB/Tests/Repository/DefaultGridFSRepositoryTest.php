@@ -224,7 +224,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame(0, $bucket->getChunksCollection()->count());
     }
 
-    public function testUploadMetadataForFileWithoutMetadata()
+    public function testUploadMetadataForFileWithoutMetadata(): void
     {
         $uploadOptions           = new UploadOptions();
         $uploadOptions->metadata = new FileMetadata();
@@ -243,7 +243,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         }
     }
 
-    public function testUploadFileWithoutChunkSize()
+    public function testUploadFileWithoutChunkSize(): void
     {
         $file = $this->getRepository(FileWithoutChunkSize::class)->uploadFromFile(__FILE__);
         assert($file instanceof FileWithoutChunkSize);

@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH2157Test extends BaseTest
 {
-    public function testFacetDiscriminatorMapCreation()
+    public function testFacetDiscriminatorMapCreation(): void
     {
         $this->dm->persist(new GH2157FirstType());
         $this->dm->persist(new GH2157FirstType());

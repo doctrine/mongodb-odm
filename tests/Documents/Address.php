@@ -30,7 +30,7 @@ class Address
     /** @ODM\Field(name="testFieldName", type="string") */
     private $test;
 
-    public function setSubAddress(Address $subAddress)
+    public function setSubAddress(Address $subAddress): void
     {
         $this->subAddress = $subAddress;
     }
@@ -45,7 +45,7 @@ class Address
         return $this->address;
     }
 
-    public function setAddress($address)
+    public function setAddress($address): void
     {
         $this->address = $address;
     }
@@ -55,7 +55,7 @@ class Address
         return $this->city;
     }
 
-    public function setCity($city)
+    public function setCity($city): void
     {
         $this->city = $city;
     }
@@ -65,7 +65,7 @@ class Address
         return $this->state;
     }
 
-    public function setState($state)
+    public function setState($state): void
     {
         $this->state = $state;
     }
@@ -75,7 +75,7 @@ class Address
         return $this->zipcode;
     }
 
-    public function setZipcode($zipcode)
+    public function setZipcode($zipcode): void
     {
         $this->zipcode = $zipcode;
     }

@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1775Test extends BaseTest
 {
-    public function testProxyInitializationDoesNotLoseData()
+    public function testProxyInitializationDoesNotLoseData(): void
     {
         $image = new GH1775Image();
         $this->dm->persist($image);
@@ -106,7 +106,7 @@ class GH1775Post extends GH1775MetaDocument
         $this->images = new ArrayCollection($images);
     }
 
-    public function addReferences()
+    public function addReferences(): void
     {
         foreach ($this->blogs as $blog) {
             if ($blog->posts->contains($this)) {

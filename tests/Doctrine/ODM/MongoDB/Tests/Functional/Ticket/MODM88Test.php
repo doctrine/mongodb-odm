@@ -9,7 +9,7 @@ use Documents\Article;
 
 class MODM88Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $article = new Article();
         $article->setTitle('Test Title');

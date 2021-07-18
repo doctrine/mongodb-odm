@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH880Test extends BaseTest
 {
-    public function test880()
+    public function test880(): void
     {
         $docs   = [];
         $docs[] = new GH880Document('hello', 1);

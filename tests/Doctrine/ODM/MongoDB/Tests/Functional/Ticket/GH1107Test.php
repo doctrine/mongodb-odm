@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1107Test extends BaseTest
 {
-    public function testOverrideIdStrategy()
+    public function testOverrideIdStrategy(): void
     {
         $childObj       = new GH1107ChildClass();
         $childObj->name = 'ChildObject';

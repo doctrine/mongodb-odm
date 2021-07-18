@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 class GH628Test extends BaseTest
 {
-    public function testQueryBuilderShouldOnlyPrepareFirstPartOfRawFields()
+    public function testQueryBuilderShouldOnlyPrepareFirstPartOfRawFields(): void
     {
         $query = $this->dm->createQueryBuilder(GH628Document::class)
             ->field('foo.bar.baz')->equals(1)

@@ -20,13 +20,13 @@ class PreUpdateTestSeller
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
     /** @ODM\PreUpdate */
-    public function preUpdate()
+    public function preUpdate(): void
     {
     }
 }

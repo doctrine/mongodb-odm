@@ -12,12 +12,12 @@ class SpecialUser extends User
     /** @ODM\Field(type="collection") */
     private $rules = [];
 
-    public function setRules(array $rules)
+    public function setRules(array $rules): void
     {
         $this->rules = $rules;
     }
 
-    public function getRules()
+    public function getRules(): array
     {
         return $this->rules;
     }

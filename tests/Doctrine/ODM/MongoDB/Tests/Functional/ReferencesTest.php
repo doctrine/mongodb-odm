@@ -28,7 +28,7 @@ use function get_class;
 
 class ReferencesTest extends BaseTest
 {
-    public function testManyDeleteReference()
+    public function testManyDeleteReference(): void
     {
         $user = new User();
 
@@ -57,7 +57,7 @@ class ReferencesTest extends BaseTest
         $this->assertCount(0, $groups->toArray());
     }
 
-    public function testLazyLoadReference()
+    public function testLazyLoadReference(): void
     {
         $user    = new User();
         $profile = new Profile();
@@ -89,7 +89,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals('Wage', $profile->getLastName());
     }
 
-    public function testLazyLoadedWithNotifyPropertyChanged()
+    public function testLazyLoadedWithNotifyPropertyChanged(): void
     {
         $user    = new User();
         $profile = new ProfileNotify();
@@ -114,7 +114,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals('Malarz', $profile->getLastName());
     }
 
-    public function testOneEmbedded()
+    public function testOneEmbedded(): void
     {
         $address = new Address();
         $address->setAddress('6512 Mercomatic Ct.');
@@ -141,7 +141,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals($user->getAddress(), $user2->getAddress());
     }
 
-    public function testManyEmbedded()
+    public function testManyEmbedded(): void
     {
         $user = new User();
         $user->addPhonenumber(new Phonenumber('6155139185'));
@@ -159,7 +159,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals($user->getPhonenumbers()->toArray(), $user2->getPhonenumbers()->toArray());
     }
 
-    public function testOneReference()
+    public function testOneReference(): void
     {
         $account = new Account();
         $account->setName('Test Account');
@@ -182,7 +182,7 @@ class ReferencesTest extends BaseTest
         $this->assertInstanceOf(User::class, $user2);
     }
 
-    public function testManyReference()
+    public function testManyReference(): void
     {
         $user = new User();
         $user->addGroup(new Group('Group 1'));
@@ -238,7 +238,7 @@ class ReferencesTest extends BaseTest
         $this->assertCount(1, $groups);
     }
 
-    public function testFlushInitializesEmptyPersistentCollection()
+    public function testFlushInitializesEmptyPersistentCollection(): void
     {
         $user = new User();
 
@@ -259,7 +259,7 @@ class ReferencesTest extends BaseTest
         $this->assertCount(2, $user->getGroups()->toArray());
     }
 
-    public function testFlushInitializesNotEmptyPersistentCollection()
+    public function testFlushInitializesNotEmptyPersistentCollection(): void
     {
         $user = new User();
         $user->addGroup(new Group('Group'));
@@ -281,7 +281,7 @@ class ReferencesTest extends BaseTest
         $this->assertCount(3, $user->getGroups()->toArray());
     }
 
-    public function testManyReferenceWithAddToSetStrategy()
+    public function testManyReferenceWithAddToSetStrategy(): void
     {
         $user = new User();
         $user->addUniqueGroup($group1 = new Group('Group 1'));
@@ -340,7 +340,7 @@ class ReferencesTest extends BaseTest
         $this->assertCount(1, $groups);
     }
 
-    public function testSortReferenceManyOwningSide()
+    public function testSortReferenceManyOwningSide(): void
     {
         $user = new User();
         $user->addGroup(new Group('Group 1'));
@@ -365,7 +365,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals('Group 1', $groups[1]->getName());
     }
 
-    public function testDocumentNotFoundExceptionWithArrayId()
+    public function testDocumentNotFoundExceptionWithArrayId(): void
     {
         $test                   = new DocumentWithArrayReference();
         $test->referenceOne     = new DocumentWithArrayId();
@@ -396,7 +396,7 @@ class ReferencesTest extends BaseTest
         $test->referenceOne->initializeProxy();
     }
 
-    public function testDocumentNotFoundExceptionWithObjectId()
+    public function testDocumentNotFoundExceptionWithObjectId(): void
     {
         $profile = new Profile();
         $user    = new User();
@@ -427,7 +427,7 @@ class ReferencesTest extends BaseTest
         $profile->initializeProxy();
     }
 
-    public function testDocumentNotFoundExceptionWithMongoBinDataId()
+    public function testDocumentNotFoundExceptionWithMongoBinDataId(): void
     {
         $test                   = new DocumentWithMongoBinDataReference();
         $test->referenceOne     = new DocumentWithMongoBinDataId();
@@ -458,7 +458,7 @@ class ReferencesTest extends BaseTest
         $test->referenceOne->initializeProxy();
     }
 
-    public function testDocumentNotFoundEvent()
+    public function testDocumentNotFoundEvent(): void
     {
         $profile = new Profile();
         $user    = new User();
@@ -539,7 +539,7 @@ class DocumentNotFoundListener
         $this->closure = $closure;
     }
 
-    public function documentNotFound(DocumentNotFoundEventArgs $eventArgs)
+    public function documentNotFound(DocumentNotFoundEventArgs $eventArgs): void
     {
         $closure = $this->closure;
         $closure($eventArgs);

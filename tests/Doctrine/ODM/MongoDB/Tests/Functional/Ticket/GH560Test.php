@@ -16,7 +16,7 @@ class GH560Test extends BaseTest
     /**
      * @dataProvider provideDocumentIds
      */
-    public function testPersistListenersAreCalled($id)
+    public function testPersistListenersAreCalled($id): void
     {
         $listener = new GH560EventSubscriber([
             Events::prePersist,
@@ -41,7 +41,7 @@ class GH560Test extends BaseTest
     /**
      * @dataProvider provideDocumentIds
      */
-    public function testDocumentWithCustomIdStrategyIsSavedAndFoundFromDatabase($id)
+    public function testDocumentWithCustomIdStrategyIsSavedAndFoundFromDatabase($id): void
     {
         $doc = new GH560Document($id, 'test');
         $this->dm->persist($doc);
@@ -55,7 +55,7 @@ class GH560Test extends BaseTest
     /**
      * @dataProvider provideDocumentIds
      */
-    public function testUpdateListenersAreCalled($id)
+    public function testUpdateListenersAreCalled($id): void
     {
         $listener = new GH560EventSubscriber([
             Events::preUpdate,
@@ -80,7 +80,7 @@ class GH560Test extends BaseTest
         $this->assertEquals($called, $listener->called);
     }
 
-    public function provideDocumentIds()
+    public function provideDocumentIds(): array
     {
         return [
             [123456],
@@ -100,7 +100,7 @@ class GH560EventSubscriber implements EventSubscriber
         $this->events = $events;
     }
 
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return $this->events;
     }

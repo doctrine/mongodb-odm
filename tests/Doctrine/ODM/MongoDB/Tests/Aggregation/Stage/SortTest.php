@@ -15,7 +15,7 @@ class SortTest extends BaseTest
     /**
      * @dataProvider provideSortOptions
      */
-    public function testSortStage($expectedSort, $field, $order = null)
+    public function testSortStage($expectedSort, $field, $order = null): void
     {
         $sortStage = new Sort($this->getTestAggregationBuilder(), $field, $order);
 
@@ -25,7 +25,7 @@ class SortTest extends BaseTest
     /**
      * @dataProvider provideSortOptions
      */
-    public function testSortFromBuilder($expectedSort, $field, $order = null)
+    public function testSortFromBuilder($expectedSort, $field, $order = null): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->sort($field, $order);
@@ -33,7 +33,7 @@ class SortTest extends BaseTest
         $this->assertSame([['$sort' => $expectedSort]], $builder->getPipeline());
     }
 
-    public static function provideSortOptions()
+    public static function provideSortOptions(): array
     {
         return [
             'singleFieldSeparated' => [

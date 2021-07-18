@@ -17,7 +17,7 @@ use function in_array;
 
 class PreUpdateEventArgsTest extends BaseTest
 {
-    public function testChangeSetIsUpdated()
+    public function testChangeSetIsUpdated(): void
     {
         $this->dm->getEventManager()->addEventListener(Events::preUpdate, new ChangeSetIsUpdatedListener());
 
@@ -32,7 +32,7 @@ class PreUpdateEventArgsTest extends BaseTest
         $this->assertEquals('Changed', $a->getBody());
     }
 
-    public function testCollectionsAreInChangeSet()
+    public function testCollectionsAreInChangeSet(): void
     {
         $listener = new CollectionsAreInChangeSetListener($this);
         $this->dm->getEventManager()->addEventListener(Events::preUpdate, $listener);
@@ -65,7 +65,7 @@ class PreUpdateEventArgsTest extends BaseTest
 
 class ChangeSetIsUpdatedListener
 {
-    public function preUpdate(PreUpdateEventArgs $e)
+    public function preUpdate(PreUpdateEventArgs $e): void
     {
         $e->setNewValue('body', 'Changed');
     }
@@ -83,12 +83,12 @@ class CollectionsAreInChangeSetListener
         $this->phpunit = $phpunit;
     }
 
-    public function checkOnly(array $allowed)
+    public function checkOnly(array $allowed): void
     {
         $this->allowed = $allowed;
     }
 
-    public function preUpdate(PreUpdateEventArgs $e)
+    public function preUpdate(PreUpdateEventArgs $e): void
     {
         switch (get_class($e->getDocument())) {
             case Book::class:

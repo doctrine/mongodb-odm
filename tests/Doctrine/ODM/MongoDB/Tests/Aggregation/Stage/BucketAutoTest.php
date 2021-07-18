@@ -15,7 +15,7 @@ class BucketAutoTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testBucketAutoStage()
+    public function testBucketAutoStage(): void
     {
         $bucketStage = new BucketAuto($this->getTestAggregationBuilder(), $this->dm, new ClassMetadata(User::class));
         $bucketStage
@@ -36,7 +36,7 @@ class BucketAutoTest extends BaseTest
         ], $bucketStage->getExpression());
     }
 
-    public function testBucketAutoFromBuilder()
+    public function testBucketAutoFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->bucketAuto()
@@ -59,7 +59,7 @@ class BucketAutoTest extends BaseTest
         ], $builder->getPipeline());
     }
 
-    public function testBucketAutoSkipsUndefinedProperties()
+    public function testBucketAutoSkipsUndefinedProperties(): void
     {
         $bucketStage = new BucketAuto($this->getTestAggregationBuilder(), $this->dm, new ClassMetadata(User::class));
         $bucketStage
@@ -74,7 +74,7 @@ class BucketAutoTest extends BaseTest
         ], $bucketStage->getExpression());
     }
 
-    public function testFieldNameConversion()
+    public function testFieldNameConversion(): void
     {
         $builder = $this->dm->createAggregationBuilder(CmsComment::class);
 

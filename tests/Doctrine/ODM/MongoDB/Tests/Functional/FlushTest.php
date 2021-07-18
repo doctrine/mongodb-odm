@@ -22,7 +22,7 @@ class FlushTest extends BaseTest
      *
      * Each flush fetches and registers the relations of the known objects.
      */
-    public function testFlush()
+    public function testFlush(): void
     {
         $userA = new FriendUser('userA');
         $userB = new FriendUser('userB');
@@ -59,7 +59,7 @@ class FlushTest extends BaseTest
         $this->assertSize(1);
     }
 
-    protected function assertSize($size)
+    protected function assertSize($size): void
     {
         $this->assertEquals($size, $this->dm->getUnitOfWork()->size());
     }

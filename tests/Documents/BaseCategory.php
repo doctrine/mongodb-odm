@@ -20,7 +20,7 @@ abstract class BaseCategory
         $this->name = $name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -30,12 +30,12 @@ abstract class BaseCategory
         return $this->name;
     }
 
-    public function addChild(BaseCategory $child)
+    public function addChild(BaseCategory $child): void
     {
         $this->children[] = $child;
     }
 
-    public function getChildren()
+    public function getChildren(): array
     {
         return $this->children;
     }

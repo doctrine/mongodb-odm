@@ -11,7 +11,7 @@ use function array_search;
 
 class MODM70Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $avatar = new Avatar('Test', 1, [new AvatarPart('#000')]);
 
@@ -74,22 +74,22 @@ class Avatar
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
-    public function getSex()
+    public function getSex(): int
     {
         return $this->sex;
     }
 
-    public function setSex($sex)
+    public function setSex($sex): void
     {
         $this->sex = $sex;
     }
@@ -99,17 +99,17 @@ class Avatar
         return $this->avatarParts;
     }
 
-    public function addAvatarPart($part)
+    public function addAvatarPart($part): void
     {
         $this->avatarParts[] = $part;
     }
 
-    public function setAvatarParts($parts)
+    public function setAvatarParts($parts): void
     {
         $this->avatarParts = $parts;
     }
 
-    public function removeAvatarPart($part)
+    public function removeAvatarPart($part): void
     {
         $key = array_search($this->avatarParts, $part);
         if ($key === false) {
@@ -137,12 +137,12 @@ class AvatarPart
         $this->color = $color;
     }
 
-    public function getColor()
+    public function getColor(): string
     {
         return $this->color;
     }
 
-    public function setColor($color)
+    public function setColor($color): void
     {
         $this->color = $color;
     }

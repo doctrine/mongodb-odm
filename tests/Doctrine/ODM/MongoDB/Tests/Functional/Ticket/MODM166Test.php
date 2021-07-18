@@ -27,7 +27,7 @@ class MODM166Test extends BaseTest
         $evm->addEventListener(Events::onFlush, $this->listener);
     }
 
-    public function testUpdateCollectionDuringOnFlushAndRecomputSingleDocumentChangeSet()
+    public function testUpdateCollectionDuringOnFlushAndRecomputSingleDocumentChangeSet(): void
     {
         // create a test document
         $test = new User();
@@ -57,7 +57,7 @@ class MODM166Test extends BaseTest
 
 class MODM166EventListener
 {
-    public function onFlush(OnFlushEventArgs $eventArgs)
+    public function onFlush(OnFlushEventArgs $eventArgs): void
     {
         $documentManager = $eventArgs->getDocumentManager();
         $unitOfWork      = $documentManager->getUnitOfWork();

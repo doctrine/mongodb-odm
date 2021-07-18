@@ -13,7 +13,7 @@ use function get_class;
 
 class IdentifiersTest extends BaseTest
 {
-    public function testGetIdentifierValue()
+    public function testGetIdentifierValue(): void
     {
         $user = new User();
         $user->setUsername('jwage');
@@ -43,7 +43,7 @@ class IdentifiersTest extends BaseTest
         $this->assertTrue($test->getUser()->isProxyInitialized());
     }
 
-    public function testIdentifiersAreSet()
+    public function testIdentifiersAreSet(): void
     {
         $user = new User();
         $user->setUsername('jwage');
@@ -55,7 +55,7 @@ class IdentifiersTest extends BaseTest
         $this->assertNotSame('', $user->getId());
     }
 
-    public function testIdentityMap()
+    public function testIdentityMap(): void
     {
         $user = new User();
         $user->setUsername('jwage');

@@ -12,12 +12,12 @@ class Manager extends BaseEmployee
     /** @ODM\ReferenceMany(targetDocument=Project::class) */
     private $projects = [];
 
-    public function getProjects()
+    public function getProjects(): array
     {
         return $this->projects;
     }
 
-    public function addProject(Project $project)
+    public function addProject(Project $project): void
     {
         $this->projects[] = $project;
     }

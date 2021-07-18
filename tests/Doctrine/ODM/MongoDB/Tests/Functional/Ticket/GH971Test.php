@@ -10,7 +10,7 @@ use InvalidArgumentException;
 
 class GH971Test extends BaseTest
 {
-    public function testUpdateOfInheritedDocumentUsingFindAndUpdate()
+    public function testUpdateOfInheritedDocumentUsingFindAndUpdate(): void
     {
         $name     = 'Ferrari';
         $features = [
@@ -40,7 +40,7 @@ class GH971Test extends BaseTest
         $this->assertCount(1, $results);
     }
 
-    public function testUpsertThrowsExceptionWithIndecisiveDiscriminator()
+    public function testUpsertThrowsExceptionWithIndecisiveDiscriminator(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -55,7 +55,7 @@ class GH971Test extends BaseTest
             ->getQuery()->execute();
     }
 
-    public function testUpsertWillUseProvidedDiscriminator()
+    public function testUpsertWillUseProvidedDiscriminator(): void
     {
         $this->dm->createQueryBuilder(Bicycle::class)
             ->findAndUpdate()

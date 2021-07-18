@@ -17,7 +17,7 @@ class Address
         return $this->street;
     }
 
-    public function setStreet($street)
+    public function setStreet($street): void
     {
         $this->street = $street;
     }

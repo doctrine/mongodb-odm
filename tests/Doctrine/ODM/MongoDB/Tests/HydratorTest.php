@@ -14,7 +14,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 class HydratorTest extends BaseTest
 {
-    public function testHydrator()
+    public function testHydrator(): void
     {
         $class = $this->dm->getClassMetadata(HydrationClosureUser::class);
 
@@ -50,7 +50,7 @@ class HydratorTest extends BaseTest
         $this->assertEquals('jon', $user->embedMany[0]->name);
     }
 
-    public function testHydrateProxyWithMissingAssociations()
+    public function testHydrateProxyWithMissingAssociations(): void
     {
         $user = $this->dm->getReference(HydrationClosureUser::class, 1);
         $this->assertInstanceOf(GhostObjectInterface::class, $user);
@@ -71,7 +71,7 @@ class HydratorTest extends BaseTest
         $this->assertInstanceOf(PersistentCollection::class, $user->embedMany);
     }
 
-    public function testReadOnly()
+    public function testReadOnly(): void
     {
         $class = $this->dm->getClassMetadata(HydrationClosureUser::class);
 
@@ -91,7 +91,7 @@ class HydratorTest extends BaseTest
         $this->assertFalse($this->uow->isInIdentityMap($user->embedMany[0]));
     }
 
-    public function testEmbedOneWithWrongType()
+    public function testEmbedOneWithWrongType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -104,7 +104,7 @@ class HydratorTest extends BaseTest
         ]);
     }
 
-    public function testEmbedManyWithWrongType()
+    public function testEmbedManyWithWrongType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -117,7 +117,7 @@ class HydratorTest extends BaseTest
         ]);
     }
 
-    public function testEmbedManyWithWrongElementType()
+    public function testEmbedManyWithWrongElementType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -134,7 +134,7 @@ class HydratorTest extends BaseTest
         $user->embedMany->initialize();
     }
 
-    public function testReferenceOneWithWrongType()
+    public function testReferenceOneWithWrongType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -147,7 +147,7 @@ class HydratorTest extends BaseTest
         ]);
     }
 
-    public function testReferenceManyWithWrongType()
+    public function testReferenceManyWithWrongType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -160,7 +160,7 @@ class HydratorTest extends BaseTest
         ]);
     }
 
-    public function testReferenceManyWithWrongElementType()
+    public function testReferenceManyWithWrongElementType(): void
     {
         $user = new HydrationClosureUser();
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -13,7 +14,7 @@ class GH1346Test extends BaseTest
     /**
      * @group GH1346Test
      */
-    public function testPublicProperty()
+    public function testPublicProperty(): void
     {
         $referenced1    = new GH1346ReferencedDocument();
         $referenced2    = new GH1346ReferencedDocument();
@@ -62,12 +63,12 @@ class GH1346Document
         return $this->id;
     }
 
-    public function addReference($otherReference)
+    public function addReference($otherReference): void
     {
         $this->references->add($otherReference);
     }
 
-    public function getReferences()
+    public function getReferences(): Collection
     {
         return $this->references;
     }
@@ -84,7 +85,7 @@ class GH1346ReferencedDocument
     /** @ODM\Id */
     protected $id;
 
-    public function setTest($test)
+    public function setTest($test): void
     {
         $this->test = $test;
     }

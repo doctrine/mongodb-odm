@@ -19,9 +19,6 @@ class MatchStage extends Stage
     /** @var Expr */
     protected $query;
 
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(Builder $builder)
     {
         parent::__construct($builder);

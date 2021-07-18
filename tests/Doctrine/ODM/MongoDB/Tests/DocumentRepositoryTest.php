@@ -20,7 +20,7 @@ use const DOCTRINE_MONGODB_DATABASE;
 
 class DocumentRepositoryTest extends BaseTest
 {
-    public function testMatchingAcceptsCriteriaWithNullWhereExpression()
+    public function testMatchingAcceptsCriteriaWithNullWhereExpression(): void
     {
         $repository = $this->dm->getRepository(User::class);
         $criteria   = new Criteria();
@@ -29,7 +29,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertInstanceOf(Collection::class, $repository->matching($criteria));
     }
 
-    public function testFindByRefOneFull()
+    public function testFindByRefOneFull(): void
     {
         $user    = new User();
         $account = new Account('name');
@@ -48,7 +48,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['account' => $account]));
     }
 
-    public function testFindByRefOneWithoutTargetDocumentFull()
+    public function testFindByRefOneWithoutTargetDocumentFull(): void
     {
         $user    = new User();
         $account = new Account('name');
@@ -71,7 +71,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($account, $this->dm->getRepository(Account::class)->findOneBy(['user' => $user]));
     }
 
-    public function testFindByRefOneWithoutTargetDocumentStoredAsDbRef()
+    public function testFindByRefOneWithoutTargetDocumentStoredAsDbRef(): void
     {
         $user    = new User();
         $account = new Account('name');
@@ -93,7 +93,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($account, $this->dm->getRepository(Account::class)->findOneBy(['userDbRef' => $user]));
     }
 
-    public function testFindDiscriminatedByRefManyFull()
+    public function testFindDiscriminatedByRefManyFull(): void
     {
         $project   = new SubProject('mongodb-odm');
         $developer = new Developer('alcaeus', new ArrayCollection([$project]));
@@ -111,7 +111,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($developer, $this->dm->getRepository(Developer::class)->findOneBy(['projects' => $project]));
     }
 
-    public function testFindByRefOneSimple()
+    public function testFindByRefOneSimple(): void
     {
         $user    = new User();
         $account = new Account('name');
@@ -122,7 +122,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['accountSimple' => $account]));
     }
 
-    public function testFindByEmbedOne()
+    public function testFindByEmbedOne(): void
     {
         $user    = new User();
         $address = new Address();
@@ -133,7 +133,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['address' => $address]));
     }
 
-    public function testFindByRefManyFull()
+    public function testFindByRefManyFull(): void
     {
         $user  = new User();
         $group = new Group('group');
@@ -159,7 +159,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['groups' => $group]));
     }
 
-    public function testFindByRefManySimple()
+    public function testFindByRefManySimple(): void
     {
         $user  = new User();
         $group = new Group('group');
@@ -170,7 +170,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['groupsSimple' => $group]));
     }
 
-    public function testFindByEmbedMany()
+    public function testFindByEmbedMany(): void
     {
         $user        = new User();
         $phonenumber = new Phonenumber('12345678');
@@ -180,7 +180,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['phonenumbers' => $phonenumber]));
     }
 
-    public function testFindOneByWithSort()
+    public function testFindOneByWithSort(): void
     {
         $george = new User();
         $george->setUsername('George');

@@ -11,7 +11,7 @@ use MongoDB\BSON\UTCDateTime;
 
 class MODM56Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $parent = new MODM56Parent('Parent');
         $this->dm->persist($parent);
@@ -55,7 +55,7 @@ class MODM56Parent
     }
 
     /** @ODM\PreUpdate */
-    public function preUpdate()
+    public function preUpdate(): void
     {
         $this->updatedAt = new DateTime();
     }

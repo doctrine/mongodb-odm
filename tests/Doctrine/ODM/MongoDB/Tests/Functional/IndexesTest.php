@@ -10,7 +10,7 @@ use MongoDB\Driver\Exception\BulkWriteException;
 
 class IndexesTest extends BaseTest
 {
-    private function uniqueTest($class)
+    private function uniqueTest($class): void
     {
         $this->dm->getSchemaManager()->ensureDocumentIndexes($class);
 
@@ -34,7 +34,7 @@ class IndexesTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testEmbeddedIndexes()
+    public function testEmbeddedIndexes(): void
     {
         $class   = $this->dm->getClassMetadata(DocumentWithEmbeddedIndexes::class);
         $sm      = $this->dm->getSchemaManager();
@@ -53,7 +53,7 @@ class IndexesTest extends BaseTest
         $this->assertEquals(1, $indexes[3]['keys']['embeddedSecondary.embeddedMany.name']);
     }
 
-    public function testDiscriminatedEmbeddedIndexes()
+    public function testDiscriminatedEmbeddedIndexes(): void
     {
         $class   = $this->dm->getClassMetadata(DocumentWithIndexInDiscriminatedEmbeds::class);
         $sm      = $this->dm->getSchemaManager();
@@ -69,7 +69,7 @@ class IndexesTest extends BaseTest
         $this->assertEquals(1, $indexes[2]['keys']['embedded.value']);
     }
 
-    public function testDiscriminatorIndexes()
+    public function testDiscriminatorIndexes(): void
     {
         $class   = $this->dm->getClassMetadata(DocumentWithDiscriminatorIndex::class);
         $sm      = $this->dm->getSchemaManager();
@@ -79,7 +79,7 @@ class IndexesTest extends BaseTest
         $this->assertEquals(1, $indexes[0]['keys']['type']);
     }
 
-    public function testMultipleIndexAnnotations()
+    public function testMultipleIndexAnnotations(): void
     {
         $class   = $this->dm->getClassMetadata(DocumentWithMultipleIndexAnnotations::class);
         $sm      = $this->dm->getSchemaManager();
@@ -101,7 +101,7 @@ class IndexesTest extends BaseTest
         $this->assertEquals(true, $indexes[2]['options']['sparse']);
     }
 
-    public function testIndexDefinitions()
+    public function testIndexDefinitions(): void
     {
         $class   = $this->dm->getClassMetadata(UniqueOnFieldTest::class);
         $indexes = $class->getIndexes();
@@ -192,42 +192,42 @@ class IndexesTest extends BaseTest
         $this->assertEquals('test', $indexes[0]['options']['name']);
     }
 
-    public function testUniqueIndexOnField()
+    public function testUniqueIndexOnField(): void
     {
         $this->expectException(BulkWriteException::class);
         $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(UniqueOnFieldTest::class);
     }
 
-    public function testUniqueIndexOnDocument()
+    public function testUniqueIndexOnDocument(): void
     {
         $this->expectException(BulkWriteException::class);
         $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(UniqueOnDocumentTest::class);
     }
 
-    public function testIndexesOnDocument()
+    public function testIndexesOnDocument(): void
     {
         $this->expectException(BulkWriteException::class);
         $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(IndexesOnDocumentTest::class);
     }
 
-    public function testMultipleFieldsUniqueIndexOnDocument()
+    public function testMultipleFieldsUniqueIndexOnDocument(): void
     {
         $this->expectException(BulkWriteException::class);
         $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(MultipleFieldsUniqueIndexTest::class);
     }
 
-    public function testMultipleFieldIndexes()
+    public function testMultipleFieldIndexes(): void
     {
         $this->expectException(BulkWriteException::class);
         $this->expectExceptionMessage('duplicate key error');
         $this->uniqueTest(MultipleFieldIndexes::class);
     }
 
-    public function testPartialIndexCreation()
+    public function testPartialIndexCreation(): void
     {
         $className = PartialIndexOnDocumentTest::class;
         $this->dm->getSchemaManager()->ensureDocumentIndexes($className);

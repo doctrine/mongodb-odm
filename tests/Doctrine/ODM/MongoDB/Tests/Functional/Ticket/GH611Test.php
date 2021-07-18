@@ -9,7 +9,7 @@ use MongoDB\BSON\ObjectId;
 
 class GH611Test extends BaseTest
 {
-    public function testPreparationofEmbeddedDocumentValues()
+    public function testPreparationofEmbeddedDocumentValues(): void
     {
         $documentId = (string) (new ObjectId());
 

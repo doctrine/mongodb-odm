@@ -10,7 +10,7 @@ use Documents\Bars\Location;
 
 class SimpleTest extends BaseTest
 {
-    public function testSimple()
+    public function testSimple(): void
     {
         $bar = new Bar("Jon's Pub");
         $bar->addLocation(new Location('West Nashville'));

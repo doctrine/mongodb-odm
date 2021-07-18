@@ -14,7 +14,7 @@ abstract class BaseDocument
     /** @ODM\Field(type="string") */
     protected $inheritedProperty;
 
-    public function setInheritedProperty($value)
+    public function setInheritedProperty($value): void
     {
         $this->inheritedProperty = $value;
     }
@@ -25,7 +25,7 @@ abstract class BaseDocument
     }
 
     /** @ODM\PrePersist */
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->persisted = true;
     }

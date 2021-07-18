@@ -33,6 +33,8 @@ class GenerateProxiesCommand extends Console\Command\Command
 {
     /**
      * @see Console\Command\Command
+     *
+     * @return void
      */
     protected function configure()
     {

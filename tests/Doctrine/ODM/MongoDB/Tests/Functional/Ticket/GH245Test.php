@@ -11,7 +11,7 @@ use function get_class;
 
 class GH245Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $order     = new GH245Order();
         $order->id = 1;

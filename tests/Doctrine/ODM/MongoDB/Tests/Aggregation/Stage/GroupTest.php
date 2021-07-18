@@ -18,7 +18,7 @@ class GroupTest extends BaseTest
     /**
      * @dataProvider provideProxiedExprMethods
      */
-    public function testProxiedExprMethods($method, $args = [])
+    public function testProxiedExprMethods($method, $args = []): void
     {
         $args = $this->resolveArgs($args);
 
@@ -29,7 +29,7 @@ class GroupTest extends BaseTest
             ->with(...$args);
 
         $stage = new class ($this->getTestAggregationBuilder()) extends Group {
-            public function setExpr(Expr $expr)
+            public function setExpr(Expr $expr): void
             {
                 $this->expr = $expr;
             }
@@ -39,7 +39,7 @@ class GroupTest extends BaseTest
         $this->assertSame($stage, $stage->$method(...$args));
     }
 
-    public function provideProxiedExprMethods()
+    public function provideProxiedExprMethods(): array
     {
         return [
             'addToSet()' => ['addToSet', ['$field']],
@@ -67,7 +67,7 @@ class GroupTest extends BaseTest
         ];
     }
 
-    public function testGroupStage()
+    public function testGroupStage(): void
     {
         $groupStage = new Group($this->getTestAggregationBuilder());
         $groupStage
@@ -79,7 +79,7 @@ class GroupTest extends BaseTest
         $this->assertSame(['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]], $groupStage->getExpression());
     }
 
-    public function testGroupFromBuilder()
+    public function testGroupFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder
@@ -92,7 +92,7 @@ class GroupTest extends BaseTest
         $this->assertSame([['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]]], $builder->getPipeline());
     }
 
-    public function testGroupWithOperatorInId()
+    public function testGroupWithOperatorInId(): void
     {
         $groupStage = new Group($this->getTestAggregationBuilder());
         $groupStage

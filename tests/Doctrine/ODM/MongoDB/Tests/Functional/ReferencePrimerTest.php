@@ -38,7 +38,7 @@ use function func_get_args;
 
 class ReferencePrimerTest extends BaseTest
 {
-    public function testPrimeReferencesShouldRequireReferenceMapping()
+    public function testPrimeReferencesShouldRequireReferenceMapping(): void
     {
         $user = new User();
 
@@ -53,7 +53,7 @@ class ReferencePrimerTest extends BaseTest
             ->toArray();
     }
 
-    public function testPrimeReferencesShouldRequireOwningSideReferenceMapping()
+    public function testPrimeReferencesShouldRequireOwningSideReferenceMapping(): void
     {
         $user = new User();
 
@@ -71,7 +71,7 @@ class ReferencePrimerTest extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testFieldPrimingCanBeToggled()
+    public function testFieldPrimingCanBeToggled(): void
     {
         $this->dm->createQueryBuilder(User::class)
             ->field('account')
@@ -79,7 +79,7 @@ class ReferencePrimerTest extends BaseTest
             ->prime(false);
     }
 
-    public function testPrimeReferencesWithDBRefObjects()
+    public function testPrimeReferencesWithDBRefObjects(): void
     {
         $user = new User();
         $user->addGroup(new Group());
@@ -110,7 +110,7 @@ class ReferencePrimerTest extends BaseTest
         }
     }
 
-    public function testPrimeReferencesWithSimpleReferences()
+    public function testPrimeReferencesWithSimpleReferences(): void
     {
         $user1 = new User();
         $user2 = new User();
@@ -145,7 +145,7 @@ class ReferencePrimerTest extends BaseTest
         }
     }
 
-    public function testPrimeReferencesNestedInNamedEmbeddedReference()
+    public function testPrimeReferencesNestedInNamedEmbeddedReference(): void
     {
         $root = new EmbedNamed();
 
@@ -208,7 +208,7 @@ class ReferencePrimerTest extends BaseTest
         }
     }
 
-    public function testPrimeReferencesWithDifferentStoreAsReferences()
+    public function testPrimeReferencesWithDifferentStoreAsReferences(): void
     {
         $referenceUser = new ReferenceUser();
         $this->dm->persist($referenceUser);
@@ -288,7 +288,7 @@ class ReferencePrimerTest extends BaseTest
         }
     }
 
-    public function testPrimeReferencesWithDiscriminatedReferenceMany()
+    public function testPrimeReferencesWithDiscriminatedReferenceMany(): void
     {
         $group   = new Group();
         $project = new Project('foo');
@@ -317,7 +317,7 @@ class ReferencePrimerTest extends BaseTest
         }
     }
 
-    public function testPrimeReferencesWithDiscriminatedReferenceOne()
+    public function testPrimeReferencesWithDiscriminatedReferenceOne(): void
     {
         $agent         = new Agent();
         $agent->server = new GuestServer();
@@ -336,7 +336,7 @@ class ReferencePrimerTest extends BaseTest
         }
     }
 
-    public function testPrimeReferencesIgnoresInitializedProxyObjects()
+    public function testPrimeReferencesIgnoresInitializedProxyObjects(): void
     {
         $user = new User();
         $user->addGroup(new Group());
@@ -368,7 +368,7 @@ class ReferencePrimerTest extends BaseTest
         $this->assertEquals(0, $invoked, 'Primer was not invoked when all references were already managed.');
     }
 
-    public function testPrimeReferencesInvokesPrimer()
+    public function testPrimeReferencesInvokesPrimer(): void
     {
         $group1  = new Group();
         $group2  = new Group();
@@ -407,7 +407,7 @@ class ReferencePrimerTest extends BaseTest
         $this->assertEquals($groupIds, $invokedArgs[1][2]);
     }
 
-    public function testPrimeReferencesInFindAndModifyResult()
+    public function testPrimeReferencesInFindAndModifyResult(): void
     {
         $group = new Group();
         $user  = new User();
@@ -437,7 +437,7 @@ class ReferencePrimerTest extends BaseTest
         }
     }
 
-    public function testPrimeEmbeddedReferenceOneLevelDeep()
+    public function testPrimeEmbeddedReferenceOneLevelDeep(): void
     {
         $user1 = new User();
         $user2 = new User();
@@ -468,7 +468,7 @@ class ReferencePrimerTest extends BaseTest
         $this->assertInstanceOf(Phonenumber::class, $phonenumber);
     }
 
-    public function testPrimeEmbeddedReferenceTwoLevelsDeep()
+    public function testPrimeEmbeddedReferenceTwoLevelsDeep(): void
     {
         $product = new ConfigurableProduct('Bundle');
 
@@ -522,7 +522,7 @@ class ReferencePrimerTest extends BaseTest
         $this->assertTrue($currency->isProxyInitialized());
     }
 
-    public function testPrimeReferencesInReferenceMany()
+    public function testPrimeReferencesInReferenceMany(): void
     {
         $commentAuthor = new User();
         $this->dm->persist($commentAuthor);
@@ -550,7 +550,7 @@ class ReferencePrimerTest extends BaseTest
         $this->assertTrue($comment->author->isProxyInitialized());
     }
 
-    public function testPrimeReferencesInReferenceManyWithRepositoryMethodEager()
+    public function testPrimeReferencesInReferenceManyWithRepositoryMethodEager(): void
     {
         $commentAuthor = new User();
         $this->dm->persist($commentAuthor);

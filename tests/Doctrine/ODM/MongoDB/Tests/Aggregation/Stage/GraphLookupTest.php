@@ -25,7 +25,7 @@ class GraphLookupTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testGraphLookupStage()
+    public function testGraphLookupStage(): void
     {
         $graphLookupStage = new GraphLookup($this->getTestAggregationBuilder(), 'employees', $this->dm, new ClassMetadata(User::class));
         $graphLookupStage
@@ -49,7 +49,7 @@ class GraphLookupTest extends BaseTest
         );
     }
 
-    public function testGraphLookupFromBuilder()
+    public function testGraphLookupFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->graphLookup('employees')
@@ -75,7 +75,7 @@ class GraphLookupTest extends BaseTest
         );
     }
 
-    public function testGraphLookupWithMatch()
+    public function testGraphLookupWithMatch(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->graphLookup('employees')
@@ -108,7 +108,7 @@ class GraphLookupTest extends BaseTest
         );
     }
 
-    public function provideEmployeeAggregations()
+    public function provideEmployeeAggregations(): array
     {
         return [
             'owningSide' => [
@@ -150,7 +150,7 @@ class GraphLookupTest extends BaseTest
     /**
      * @dataProvider provideEmployeeAggregations
      */
-    public function testGraphLookupWithEmployees(Closure $addGraphLookupStage, array $expectedFields)
+    public function testGraphLookupWithEmployees(Closure $addGraphLookupStage, array $expectedFields): void
     {
         $this->insertEmployeeTestData();
 
@@ -183,7 +183,7 @@ class GraphLookupTest extends BaseTest
         }
     }
 
-    public function provideTravellerAggregations()
+    public function provideTravellerAggregations(): array
     {
         return [
             'owningSide' => [
@@ -220,7 +220,7 @@ class GraphLookupTest extends BaseTest
     /**
      * @dataProvider provideTravellerAggregations
      */
-    public function testGraphLookupWithTraveller(Closure $addGraphLookupStage, array $expectedFields)
+    public function testGraphLookupWithTraveller(Closure $addGraphLookupStage, array $expectedFields): void
     {
         $this->insertTravellerTestData();
 
@@ -246,7 +246,7 @@ class GraphLookupTest extends BaseTest
         $this->assertCount(3, $result);
     }
 
-    public function testGraphLookupToShardedCollectionThrowsException()
+    public function testGraphLookupToShardedCollectionThrowsException(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
@@ -255,7 +255,7 @@ class GraphLookupTest extends BaseTest
             ->graphLookup(ShardedOne::class);
     }
 
-    public function testGraphLookupWithUnmappedFields()
+    public function testGraphLookupWithUnmappedFields(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
@@ -282,7 +282,7 @@ class GraphLookupTest extends BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testGraphLookupWithconnectFromFieldToDifferentTargetClass()
+    public function testGraphLookupWithconnectFromFieldToDifferentTargetClass(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
@@ -294,7 +294,7 @@ class GraphLookupTest extends BaseTest
                 ->alias('targets');
     }
 
-    private function insertEmployeeTestData()
+    private function insertEmployeeTestData(): void
     {
         $dev    = new Employee('Dev');
         $eliot  = new Employee('Eliot', $dev);
@@ -308,7 +308,7 @@ class GraphLookupTest extends BaseTest
         $this->dm->flush();
     }
 
-    private function insertTravellerTestData()
+    private function insertTravellerTestData(): void
     {
         $jfk = new Airport('JFK');
         $bos = new Airport('BOS');

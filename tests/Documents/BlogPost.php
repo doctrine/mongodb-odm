@@ -61,19 +61,19 @@ class BlogPost
         return $this->name;
     }
 
-    public function addTag(Tag $tag)
+    public function addTag(Tag $tag): void
     {
         $tag->addBlogPost($this); // synchronously updating inverse side
         $this->tags[] = $tag;
     }
 
-    public function addComment(Comment $comment)
+    public function addComment(Comment $comment): void
     {
         $comment->parent  = $this;
         $this->comments[] = $comment;
     }
 
-    public function setUser(?User $user = null)
+    public function setUser(?User $user = null): void
     {
         $this->user = $user;
     }

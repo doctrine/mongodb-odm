@@ -18,7 +18,7 @@ use Documents\User;
 
 class RemoveTest extends BaseTest
 {
-    public function testRemove()
+    public function testRemove(): void
     {
         $account = new Account();
         $account->setName('Jon Test Account');
@@ -41,7 +41,7 @@ class RemoveTest extends BaseTest
         $this->assertNull($user);
     }
 
-    public function testUnsetFromEmbeddedCollection()
+    public function testUnsetFromEmbeddedCollection(): void
     {
         $userRepository = $this->dm->getRepository(User::class);
 
@@ -67,7 +67,7 @@ class RemoveTest extends BaseTest
         $this->assertCount(2, $user->getGroups());
     }
 
-    public function testUnsetFromReferencedCollectionWithCascade()
+    public function testUnsetFromReferencedCollectionWithCascade(): void
     {
         $developerRepository = $this->dm->getRepository(Developer::class);
         $projectRepository   = $this->dm->getRepository(Project::class);
@@ -124,7 +124,7 @@ class RemoveTest extends BaseTest
         $this->assertNull($project2);
     }
 
-    public function testUnsetFromReferencedCollectionWithoutCascade()
+    public function testUnsetFromReferencedCollectionWithoutCascade(): void
     {
         $articleRepository = $this->dm->getRepository(CmsArticle::class);
         $commentRepository = $this->dm->getRepository(CmsComment::class);
@@ -183,7 +183,7 @@ class RemoveTest extends BaseTest
         $this->assertNotNull($comment2);
     }
 
-    public function testUnsetFromReferencedCollectionWithCascadeAndMappedBy()
+    public function testUnsetFromReferencedCollectionWithCascadeAndMappedBy(): void
     {
         $blogPostRepository = $this->dm->getRepository(BlogPost::class);
         $commentRepository  = $this->dm->getRepository(Comment::class);

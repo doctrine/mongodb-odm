@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -17,7 +18,7 @@ class LifecycleListenersTest extends BaseTest
     /** @var MyEventListener */
     private $listener;
 
-    private function getDocumentManager()
+    private function getDocumentManager(): ?DocumentManager
     {
         $this->listener = new MyEventListener();
         $evm            = $this->dm->getEventManager();
@@ -36,7 +37,7 @@ class LifecycleListenersTest extends BaseTest
         return $this->dm;
     }
 
-    public function testLifecycleListeners()
+    public function testLifecycleListeners(): void
     {
         $dm = $this->getDocumentManager();
 
@@ -116,7 +117,7 @@ class LifecycleListenersTest extends BaseTest
         $this->listener->called = [];
     }
 
-    public function testMultipleLevelsOfEmbeddedDocsPrePersist()
+    public function testMultipleLevelsOfEmbeddedDocsPrePersist(): void
     {
         $dm = $this->getDocumentManager();
 
@@ -152,7 +153,7 @@ class LifecycleListenersTest extends BaseTest
         $this->listener->called = [];
     }
 
-    public function testChangeToReferenceFieldTriggersEvents()
+    public function testChangeToReferenceFieldTriggersEvents(): void
     {
         $dm             = $this->getDocumentManager();
         $document       = new TestDocument();
@@ -188,7 +189,7 @@ class LifecycleListenersTest extends BaseTest
         $this->listener->called = [];
     }
 
-    public function testPostCollectionLoad()
+    public function testPostCollectionLoad(): void
     {
         $evm = $this->dm->getEventManager();
         $evm->addEventListener([Events::postCollectionLoad], new PostCollectionLoadEventListener($this));
@@ -239,7 +240,7 @@ class PostCollectionLoadEventListener
         $this->phpunit = $phpunit;
     }
 
-    public function postCollectionLoad(PostCollectionLoadEventArgs $e)
+    public function postCollectionLoad(PostCollectionLoadEventArgs $e): void
     {
         switch ($this->at++) {
             case 0:

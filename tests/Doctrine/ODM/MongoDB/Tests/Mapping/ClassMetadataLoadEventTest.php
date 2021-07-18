@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class ClassMetadataLoadEventTest extends BaseTest
 {
-    public function testEvent()
+    public function testEvent(): void
     {
         $metadataFactory = $this->dm->getMetadataFactory();
         $evm             = $this->dm->getEventManager();
@@ -20,7 +20,7 @@ class ClassMetadataLoadEventTest extends BaseTest
         $this->assertTrue($classMetadata->hasField('about'));
     }
 
-    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs): void
     {
         $classMetadata = $eventArgs->getClassMetadata();
         $field         = [

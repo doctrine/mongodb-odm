@@ -10,7 +10,7 @@ use InvalidArgumentException;
 
 class GH850Test extends BaseTest
 {
-    public function testPersistWrongReference()
+    public function testPersistWrongReference(): void
     {
         $d = new GH850Document();
         $this->dm->persist($d);

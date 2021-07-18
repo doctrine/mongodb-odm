@@ -21,7 +21,7 @@ class InsertPerformanceTest extends BaseTest
     /**
      * [jwage: 10000 objects in ~4 seconds]
      */
-    public function testInsertPerformance()
+    public function testInsertPerformance(): void
     {
         $s = microtime(true);
 

@@ -17,6 +17,9 @@ use function sprintf;
 
 class UpdateCommand extends AbstractCommand
 {
+    /**
+     * @return void
+     */
     protected function configure()
     {
         parent::configure();
@@ -67,11 +70,17 @@ class UpdateCommand extends AbstractCommand
         $sm->updateIndexes($maxTimeMs, $writeConcern);
     }
 
+    /**
+     * @return void
+     */
     protected function processDocumentValidator(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $sm->updateDocumentValidator($document, $maxTimeMs, $writeConcern);
     }
 
+    /**
+     * @return void
+     */
     protected function processValidators(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $sm->updateValidators($maxTimeMs, $writeConcern);

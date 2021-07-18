@@ -14,7 +14,7 @@ class GH1232Test extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testRemoveDoesNotCauseErrors()
+    public function testRemoveDoesNotCauseErrors(): void
     {
         $post = new GH1232Post();
         $this->dm->persist($post);
@@ -70,6 +70,9 @@ class GH1232Comment
 
 class GH1232CommentRepository extends DocumentRepository
 {
+    /**
+     * @return array|int|object|null
+     */
     public function getLongComments(GH1232Post $post)
     {
         return $this

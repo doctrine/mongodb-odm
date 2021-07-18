@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH665Test extends BaseTest
 {
-    public function testUseAddToSetStrategyOnEmbeddedDocument()
+    public function testUseAddToSetStrategyOnEmbeddedDocument(): void
     {
         $document = new GH665Document();
         $document->embeddedPushAll->add(new GH665Embedded('foo'));

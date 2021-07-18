@@ -31,7 +31,7 @@ class Chapter
     /**
      * @ODM\PostUpdate
      */
-    public function doThisAfterAnUpdate()
+    public function doThisAfterAnUpdate(): void
     {
         /* Do not do this at home, it is here only to see if nothing breaks,
          * field will not be updated in database with new value unless another

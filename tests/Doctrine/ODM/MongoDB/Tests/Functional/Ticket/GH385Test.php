@@ -9,7 +9,7 @@ use MongoDB\BSON\ObjectId;
 
 class GH385Test extends BaseTest
 {
-    public function testQueryBuilderShouldPrepareUnmappedFields()
+    public function testQueryBuilderShouldPrepareUnmappedFields(): void
     {
         $identifier = new ObjectId();
 

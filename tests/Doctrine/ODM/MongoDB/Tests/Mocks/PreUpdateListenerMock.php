@@ -12,7 +12,7 @@ use function spl_object_hash;
 
 class PreUpdateListenerMock implements EventSubscriber
 {
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             'onFlush',
@@ -20,7 +20,7 @@ class PreUpdateListenerMock implements EventSubscriber
         ];
     }
 
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         $uow = $args->getDocumentManager()->getUnitOfWork();
         foreach ($uow->getScheduledDocumentUpdates() as $document) {
@@ -28,7 +28,7 @@ class PreUpdateListenerMock implements EventSubscriber
         }
     }
 
-    public function preUpdate(PreUpdateEventArgs $args)
+    public function preUpdate(PreUpdateEventArgs $args): void
     {
         return;
     }

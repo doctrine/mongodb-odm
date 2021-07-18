@@ -1616,7 +1616,7 @@ class Builder
     /**
      * @param string[]|string|null $documentName an array of document names or just one.
      */
-    private function setDocumentName($documentName)
+    private function setDocumentName($documentName): void
     {
         if (is_array($documentName)) {
             $documentNames = $documentName;

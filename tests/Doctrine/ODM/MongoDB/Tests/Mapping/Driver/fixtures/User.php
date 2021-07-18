@@ -6,6 +6,8 @@ namespace TestDocuments;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Tests\Mapping\Phonenumber;
 
 class User
 {
@@ -43,7 +45,7 @@ class User
         return $this->id;
     }
 
-    public function setUsername($username)
+    public function setUsername($username): void
     {
         $this->username = $username;
     }
@@ -53,7 +55,7 @@ class User
         return $this->username;
     }
 
-    public function setPassword($password)
+    public function setPassword($password): void
     {
         $this->password = $password;
     }
@@ -63,12 +65,12 @@ class User
         return $this->password;
     }
 
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt($createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
@@ -78,12 +80,12 @@ class User
         return $this->address;
     }
 
-    public function setAddress(Address $address)
+    public function setAddress(Address $address): void
     {
         $this->address = $address;
     }
 
-    public function setProfile(Profile $profile)
+    public function setProfile(Profile $profile): void
     {
         $this->profile = $profile;
     }
@@ -93,7 +95,7 @@ class User
         return $this->profile;
     }
 
-    public function setAccount(Account $account)
+    public function setAccount(Account $account): void
     {
         $this->account = $account;
     }
@@ -103,22 +105,22 @@ class User
         return $this->account;
     }
 
-    public function getPhonenumbers()
+    public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
     }
 
-    public function addPhonenumber(Phonenumber $phonenumber)
+    public function addPhonenumber(Phonenumber $phonenumber): void
     {
         $this->phonenumbers[] = $phonenumber;
     }
 
-    public function getGroups()
+    public function getGroups(): Collection
     {
         return $this->groups;
     }
 
-    public function addGroup(Group $group)
+    public function addGroup(Group $group): void
     {
         $this->groups[] = $group;
     }

@@ -29,7 +29,7 @@ class CmsComment
     /** @ODM\Field(type="string", nullable=true) */
     public $nullableField;
 
-    public function setArticle(CmsArticle $article)
+    public function setArticle(CmsArticle $article): void
     {
         $this->article = $article;
     }

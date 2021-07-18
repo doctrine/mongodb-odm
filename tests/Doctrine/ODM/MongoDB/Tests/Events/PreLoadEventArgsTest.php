@@ -10,7 +10,7 @@ use Documents\Group;
 
 class PreLoadEventArgsTest extends BaseTest
 {
-    public function testGetData()
+    public function testGetData(): void
     {
         $document = new Group('test');
         $dm       = $this->dm;

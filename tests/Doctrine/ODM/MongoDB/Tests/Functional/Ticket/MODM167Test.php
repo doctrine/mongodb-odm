@@ -25,7 +25,7 @@ class MODM167Test extends BaseTest
         $evm->addEventListener(Events::onFlush, $this->listener);
     }
 
-    public function testDetatchNewDocumentDuringOnFlush()
+    public function testDetatchNewDocumentDuringOnFlush(): void
     {
         // create a test document
         $test = new User();
@@ -44,7 +44,7 @@ class MODM167Test extends BaseTest
 
 class MODM167EventListener
 {
-    public function onFlush(OnFlushEventArgs $eventArgs)
+    public function onFlush(OnFlushEventArgs $eventArgs): void
     {
         $documentManager = $eventArgs->getDocumentManager();
         $unitOfWork      = $documentManager->getUnitOfWork();

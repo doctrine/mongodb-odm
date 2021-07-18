@@ -10,35 +10,35 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class ValidationTest extends BaseTest
 {
-    public function testWrongTypeForValidationValidatorShouldThrowException()
+    public function testWrongTypeForValidationValidatorShouldThrowException(): void
     {
         $this->expectException(AnnotationException::class);
         $this->expectExceptionMessage('[Type Error] Attribute "validator" of @ODM\Validation declared on class Doctrine\ODM\MongoDB\Tests\Mapping\Annotations\WrongTypeForValidationValidator expects a(n) string, but got array.');
         $this->dm->getClassMetadata(WrongTypeForValidationValidator::class);
     }
 
-    public function testWrongTypeForValidationActionShouldThrowException()
+    public function testWrongTypeForValidationActionShouldThrowException(): void
     {
         $this->expectException(AnnotationException::class);
         $this->expectExceptionMessage('[Type Error] Attribute "action" of @ODM\Validation declared on class Doctrine\ODM\MongoDB\Tests\Mapping\Annotations\WrongTypeForValidationAction expects a(n) string, but got boolean.');
         $this->dm->getClassMetadata(WrongTypeForValidationAction::class);
     }
 
-    public function testWrongValueForValidationActionShouldThrowException()
+    public function testWrongValueForValidationActionShouldThrowException(): void
     {
         $this->expectException(AnnotationException::class);
         $this->expectExceptionMessageMatches('#^\[Enum Error\] Attribute "action" of @Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Annotations\\\\Validation declared on class Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\Annotations\\\\WrongValueForValidationAction accepts? only \[error, warn\], but got wrong\.$#');
         $this->dm->getClassMetadata(WrongValueForValidationAction::class);
     }
 
-    public function testWrongTypeForValidationLevelShouldThrowException()
+    public function testWrongTypeForValidationLevelShouldThrowException(): void
     {
         $this->expectException(AnnotationException::class);
         $this->expectExceptionMessage('[Type Error] Attribute "level" of @ODM\Validation declared on class Doctrine\ODM\MongoDB\Tests\Mapping\Annotations\WrongTypeForValidationLevel expects a(n) string, but got boolean.');
         $this->dm->getClassMetadata(WrongTypeForValidationLevel::class);
     }
 
-    public function testWrongValueForValidationLevelShouldThrowException()
+    public function testWrongValueForValidationLevelShouldThrowException(): void
     {
         $this->expectException(AnnotationException::class);
         $this->expectExceptionMessageMatches('#^\[Enum Error\] Attribute "level" of @Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Annotations\\\\Validation declared on class Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\Annotations\\\\WrongValueForValidationLevel accepts? only \[off, strict, moderate\], but got wrong\.$#');

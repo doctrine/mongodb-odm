@@ -81,7 +81,7 @@ class FunctionalTest extends BaseTest
         bcscale($this->initialScale);
     }
 
-    public function provideUpsertObjects()
+    public function provideUpsertObjects(): array
     {
         return [
             [UserUpsert::class, new ObjectId('4f18f593acee41d724000005'), 'user'],
@@ -93,7 +93,7 @@ class FunctionalTest extends BaseTest
     /**
      * @dataProvider provideUpsertObjects
      */
-    public function testUpsertObject($className, $id, $discriminator)
+    public function testUpsertObject($className, $id, $discriminator): void
     {
         $user           = new $className();
         $user->id       = (string) $id;
@@ -154,13 +154,13 @@ class FunctionalTest extends BaseTest
         $this->assertEquals('foo', $check['nullableField']);
     }
 
-    public function testInheritedAssociationMappings()
+    public function testInheritedAssociationMappings(): void
     {
         $class = $this->dm->getClassMetadata(UserUpsertChild::class);
         $this->assertTrue(isset($class->associationMappings['groups']));
     }
 
-    public function testNestedCategories()
+    public function testNestedCategories(): void
     {
         $root   = new Category('Root');
         $child1 = new SubCategory('Child 1');
@@ -182,7 +182,7 @@ class FunctionalTest extends BaseTest
         $this->assertEquals('Root Changed', $test['name']);
     }
 
-    public function testManyEmbedded()
+    public function testManyEmbedded(): void
     {
         $album = new Album('Jon');
         $album->addSong(new Song('Song #1'));
@@ -223,7 +223,7 @@ class FunctionalTest extends BaseTest
         $this->assertFalse(isset($test['songs']));
     }
 
-    public function testNewEmbedded()
+    public function testNewEmbedded(): void
     {
         $subAddress = new Address();
         $subAddress->setCity('Old Sub-City');
@@ -247,7 +247,7 @@ class FunctionalTest extends BaseTest
         $this->assertEquals('New City', $test['address']['city']);
     }
 
-    public function testPersistingNewDocumentWithOnlyOneReference()
+    public function testPersistingNewDocumentWithOnlyOneReference(): void
     {
         $server       = new GuestServer();
         $server->name = 'test';
@@ -272,7 +272,7 @@ class FunctionalTest extends BaseTest
         $this->assertEquals('server_guest', $test['server']['_doctrine_class_name']);
     }
 
-    public function testCollection()
+    public function testCollection(): void
     {
         $user = new User();
         $user->setUsername('joncolltest');
@@ -302,7 +302,7 @@ class FunctionalTest extends BaseTest
         $this->assertEquals(['ok', 'test'], $document->getLogs());
     }
 
-    public function testSameObjectValuesInCollection()
+    public function testSameObjectValuesInCollection(): void
     {
         $user = new User();
         $user->setUsername('testing');
@@ -316,7 +316,7 @@ class FunctionalTest extends BaseTest
         $this->assertCount(2, $user->getPhonenumbers());
     }
 
-    public function testIncrement()
+    public function testIncrement(): void
     {
         $user = new User();
         $user->setUsername('jon');
@@ -353,7 +353,7 @@ class FunctionalTest extends BaseTest
         $this->assertSame('9.99', $user->getDecimal128Count());
     }
 
-    public function testIncrementWithFloat()
+    public function testIncrementWithFloat(): void
     {
         $user = new User();
         $user->setUsername('jon');
@@ -385,7 +385,7 @@ class FunctionalTest extends BaseTest
         $this->assertSame(110.5, $user->getFloatCount());
     }
 
-    public function testIncrementSetsNull()
+    public function testIncrementSetsNull(): void
     {
         $user = new User();
         $user->setUsername('jon');
@@ -425,7 +425,7 @@ class FunctionalTest extends BaseTest
         $this->assertNull($user->getDecimal128Count());
     }
 
-    public function testTest()
+    public function testTest(): void
     {
         $employee = new Employee();
         $employee->setName('Employee');
@@ -473,7 +473,7 @@ class FunctionalTest extends BaseTest
         $this->assertEquals('Gave user 100k a year raise', $result['notes'][0]);
     }
 
-    public function testNotAnnotatedDocument()
+    public function testNotAnnotatedDocument(): void
     {
         $this->dm->getDocumentCollection(NotAnnotatedDocument::class)->drop();
 
@@ -489,7 +489,7 @@ class FunctionalTest extends BaseTest
         $this->assertFalse(isset($test->transientField));
     }
 
-    public function testNullFieldValuesAllowed()
+    public function testNullFieldValuesAllowed(): void
     {
         $this->dm->getDocumentCollection(NullFieldValues::class)->drop();
 
@@ -525,7 +525,7 @@ class FunctionalTest extends BaseTest
         $this->assertFalse(isset($test['transientField']));
     }
 
-    public function testSimplerEmbedAndReference()
+    public function testSimplerEmbedAndReference(): void
     {
         $class = $this->dm->getClassMetadata(SimpleEmbedAndReference::class);
         $this->assertEquals('many', $class->fieldMappings['embedMany']['type']);
@@ -534,7 +534,7 @@ class FunctionalTest extends BaseTest
         $this->assertEquals('one', $class->fieldMappings['referenceOne']['type']);
     }
 
-    public function testNotSavedFields()
+    public function testNotSavedFields(): void
     {
         $collection = $this->dm->getDocumentCollection(NotSaved::class);
         $collection->drop();
@@ -560,7 +560,7 @@ class FunctionalTest extends BaseTest
         $this->assertFalse(isset($notSaved['notSaved']));
     }
 
-    public function testTypeClassMissing()
+    public function testTypeClassMissing(): void
     {
         $project = new Project('Test Project');
         $this->dm->persist($project);
@@ -587,7 +587,7 @@ class FunctionalTest extends BaseTest
         $collection->getTypeClass();
     }
 
-    public function testTypeClass()
+    public function testTypeClass(): void
     {
         $bar = new Bar("Jon's Pub");
         $bar->addLocation(new Location('West Nashville'));
@@ -605,7 +605,7 @@ class FunctionalTest extends BaseTest
         $this->assertInstanceOf(ClassMetadata::class, $collection->getTypeClass());
     }
 
-    public function testFavoritesReference()
+    public function testFavoritesReference(): void
     {
         $project = new Project('Test Project');
         $this->dm->persist($project);
@@ -657,7 +657,7 @@ class FunctionalTest extends BaseTest
         $this->assertInstanceOf(Project::class, $user->getFavorite());
     }
 
-    public function testPreUpdate()
+    public function testPreUpdate(): void
     {
         $product       = new PreUpdateTestProduct();
         $product->name = 'Product';
@@ -704,7 +704,7 @@ class FunctionalTest extends BaseTest
         $this->assertEquals('Product2', $product->sellable->getProduct()->getName());
     }
 
-    public function testSameCollectionTest()
+    public function testSameCollectionTest(): void
     {
         $test1       = new SameCollection1();
         $test1->name = 'test1';
@@ -752,7 +752,7 @@ class FunctionalTest extends BaseTest
         $this->assertCount(2, $test);
     }
 
-    public function testNotSameCollectionThrowsException()
+    public function testNotSameCollectionThrowsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->dm->createQueryBuilder([
@@ -761,7 +761,7 @@ class FunctionalTest extends BaseTest
         ])->getQuery()->execute();
     }
 
-    public function testEmbeddedNesting()
+    public function testEmbeddedNesting(): void
     {
         $test       = new EmbeddedTestLevel0();
         $test->name = 'test';
@@ -796,7 +796,7 @@ class FunctionalTest extends BaseTest
         $this->assertCount(2, $check->level1[1]->level2);
     }
 
-    public function testEmbeddedInheritance()
+    public function testEmbeddedInheritance(): void
     {
         // create a level0b (inherits from level0)
         $test       = new EmbeddedTestLevel0b();
@@ -834,7 +834,7 @@ class FunctionalTest extends BaseTest
         $this->assertCount(1, $test->oneLevel1->level2);
     }
 
-    public function testModifyGroupsArrayDirectly()
+    public function testModifyGroupsArrayDirectly(): void
     {
         $account = new Account();
         $account->setName('Jon Test Account');
@@ -871,7 +871,7 @@ class FunctionalTest extends BaseTest
         $this->assertCount(1, $user->getGroups());
     }
 
-    public function testReplaceEntireGroupsArray()
+    public function testReplaceEntireGroupsArray(): void
     {
         $account = new Account();
         $account->setName('Jon Test Account');
@@ -912,7 +912,7 @@ class FunctionalTest extends BaseTest
         $this->assertCount(1, $user->getGroups());
     }
 
-    public function testFunctionalParentAssociations()
+    public function testFunctionalParentAssociations(): void
     {
         $a                    = new ParentAssociationTestA('a');
         $a->child             = new ParentAssociationTestB('b');

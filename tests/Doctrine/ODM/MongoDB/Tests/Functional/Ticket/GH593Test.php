@@ -26,7 +26,7 @@ class GH593Test extends BaseTest
         $filter->setParameter('value', false);
     }
 
-    public function testReferenceManyOwningSidePreparesFilterCriteria()
+    public function testReferenceManyOwningSidePreparesFilterCriteria(): void
     {
         $class = GH593User::class;
 
@@ -70,7 +70,7 @@ class GH593Test extends BaseTest
         $user1following[1]->initializeProxy();
     }
 
-    public function testReferenceManyInverseSidePreparesFilterCriteria()
+    public function testReferenceManyInverseSidePreparesFilterCriteria(): void
     {
         $class = GH593User::class;
 

@@ -10,12 +10,12 @@ use Exception;
 
 class ExceptionThrowingListenerMock implements EventSubscriber
 {
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return ['onFlush'];
     }
 
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         throw new Exception('This should not happen');
     }

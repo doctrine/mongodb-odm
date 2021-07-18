@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
@@ -11,7 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1572Test extends BaseTest
 {
-    public function testPersistentCollectionCount()
+    public function testPersistentCollectionCount(): void
     {
         $blog = new GH1572Blog();
         $this->dm->persist($blog);
@@ -75,7 +76,7 @@ class GH1572Post
 
 class GH1572PostRepository extends DocumentRepository
 {
-    public function getPostsForBlog($blog)
+    public function getPostsForBlog($blog): Iterator
     {
         return $this->createQueryBuilder()
             ->field('blog')

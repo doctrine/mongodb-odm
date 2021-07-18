@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -15,7 +16,7 @@ class MODM90Test extends BaseTest
     /** @var MODM90EventListener */
     private $listener;
 
-    private function getDocumentManager()
+    private function getDocumentManager(): ?DocumentManager
     {
         $this->listener = new MODM90EventListener();
         $evm            = $this->dm->getEventManager();
@@ -28,7 +29,7 @@ class MODM90Test extends BaseTest
         return $this->dm;
     }
 
-    public function testDocumentWithEmbeddedDocumentNotUpdatedOnFlush()
+    public function testDocumentWithEmbeddedDocumentNotUpdatedOnFlush(): void
     {
         $dm = $this->getDocumentManager();
 
@@ -55,7 +56,7 @@ class MODM90Test extends BaseTest
      * Ensures that the descriminator field is not unset if it's a
      * real property on the document.
      */
-    public function testDiscriminatorFieldValuePresentIfRealProperty()
+    public function testDiscriminatorFieldValuePresentIfRealProperty(): void
     {
         $dm = $this->getDocumentManager();
 

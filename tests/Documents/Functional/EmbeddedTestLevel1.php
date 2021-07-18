@@ -20,25 +20,25 @@ class EmbeddedTestLevel1
     public $postLoad   = false;
 
     /** @ODM\PreRemove */
-    public function onPreRemove()
+    public function onPreRemove(): void
     {
         $this->preRemove = true;
     }
 
     /** @ODM\PostRemove */
-    public function onPostRemove()
+    public function onPostRemove(): void
     {
         $this->postRemove = true;
     }
 
     /** @ODM\PreLoad */
-    public function onPreLoad()
+    public function onPreLoad(): void
     {
         $this->preLoad = true;
     }
 
     /** @ODM\PostLoad */
-    public function onPostLoad()
+    public function onPostLoad(): void
     {
         $this->postLoad = true;
     }

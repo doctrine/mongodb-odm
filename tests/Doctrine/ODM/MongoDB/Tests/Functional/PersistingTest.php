@@ -10,7 +10,7 @@ use Documents\User;
 
 class PersistingTest extends BaseTest
 {
-    public function testCascadeInsertUpdateAndRemove()
+    public function testCascadeInsertUpdateAndRemove(): void
     {
         $account = new Account();
         $account->setName('Jon Test Account');
@@ -33,7 +33,7 @@ class PersistingTest extends BaseTest
         $this->dm->clear();
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $user = new User();
         $user->setInheritedProperty('cool');
@@ -57,7 +57,7 @@ class PersistingTest extends BaseTest
         $this->assertEquals('cool', $user->getInheritedProperty());
     }
 
-    public function testDetach()
+    public function testDetach(): void
     {
         $user = new User();
         $user->setUsername('jon');

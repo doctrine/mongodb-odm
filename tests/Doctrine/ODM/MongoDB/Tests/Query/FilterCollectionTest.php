@@ -11,7 +11,7 @@ use InvalidArgumentException;
 
 class FilterCollectionTest extends BaseTest
 {
-    public function testEnable()
+    public function testEnable(): void
     {
         $filterCollection = $this->dm->getFilterCollection();
 
@@ -27,7 +27,7 @@ class FilterCollectionTest extends BaseTest
         $this->assertCount(0, $filterCollection->getEnabledFilters());
     }
 
-    public function testHasFilter()
+    public function testHasFilter(): void
     {
         $filterCollection = $this->dm->getFilterCollection();
 
@@ -38,7 +38,7 @@ class FilterCollectionTest extends BaseTest
     /**
      * @depends testEnable
      */
-    public function testIsEnabled()
+    public function testIsEnabled(): void
     {
         $filterCollection = $this->dm->getFilterCollection();
 
@@ -49,21 +49,21 @@ class FilterCollectionTest extends BaseTest
         $this->assertTrue($filterCollection->isEnabled('testFilter'));
     }
 
-    public function testGetFilterInvalidArgument()
+    public function testGetFilterInvalidArgument(): void
     {
         $filterCollection = $this->dm->getFilterCollection();
         $this->expectException(InvalidArgumentException::class);
         $filterCollection->getFilter('testFilter');
     }
 
-    public function testGetFilter()
+    public function testGetFilter(): void
     {
         $filterCollection = $this->dm->getFilterCollection();
         $filterCollection->enable('testFilter');
         $this->assertInstanceOf(Filter\Filter::class, $filterCollection->getFilter('testFilter'));
     }
 
-    public function testGetFilterCriteria()
+    public function testGetFilterCriteria(): void
     {
         $class            = $this->dm->getClassMetadata(User::class);
         $filterCollection = $this->dm->getFilterCollection();
@@ -79,7 +79,7 @@ class FilterCollectionTest extends BaseTest
         $this->assertSame(['username' => 'Tim'], $filterCollection->getFilterCriteria($class));
     }
 
-    public function testGetFilterCriteriaMergesCriteria()
+    public function testGetFilterCriteriaMergesCriteria(): void
     {
         $class            = $this->dm->getClassMetadata(User::class);
         $filterCollection = $this->dm->getFilterCollection();

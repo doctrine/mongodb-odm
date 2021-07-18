@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM65Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $user                               = new MODM65User();
         $user->socialNetworkUser            = new MODM65SocialNetworkUser();

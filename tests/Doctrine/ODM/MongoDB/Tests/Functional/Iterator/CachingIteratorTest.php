@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Exception;
+use Generator;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -16,7 +17,7 @@ class CachingIteratorTest extends TestCase
     /**
      * Sanity check for all following tests.
      */
-    public function testTraversingGeneratorConsumesIt()
+    public function testTraversingGeneratorConsumesIt(): void
     {
         $iterator = $this->getTraversable([1, 2, 3]);
         $this->assertSame([1, 2, 3], iterator_to_array($iterator));
@@ -25,7 +26,7 @@ class CachingIteratorTest extends TestCase
         $this->assertSame([1, 2, 3], iterator_to_array($iterator));
     }
 
-    public function testConstructorRewinds()
+    public function testConstructorRewinds(): void
     {
         $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
 
@@ -34,7 +35,7 @@ class CachingIteratorTest extends TestCase
         $this->assertSame(1, $iterator->current());
     }
 
-    public function testIteration()
+    public function testIteration(): void
     {
         $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
 
@@ -49,7 +50,7 @@ class CachingIteratorTest extends TestCase
         $this->assertFalse($iterator->valid());
     }
 
-    public function testIterationWithEmptySet()
+    public function testIterationWithEmptySet(): void
     {
         $iterator = new CachingIterator($this->getTraversable([]));
 
@@ -57,7 +58,7 @@ class CachingIteratorTest extends TestCase
         $this->assertFalse($iterator->valid());
     }
 
-    public function testPartialIterationDoesNotExhaust()
+    public function testPartialIterationDoesNotExhaust(): void
     {
         $traversable = $this->getTraversableThatThrows([1, 2, new Exception()]);
         $iterator    = new CachingIterator($traversable);
@@ -77,7 +78,7 @@ class CachingIteratorTest extends TestCase
         $this->assertTrue($iterator->valid());
     }
 
-    public function testRewindAfterPartialIteration()
+    public function testRewindAfterPartialIteration(): void
     {
         $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
 
@@ -90,13 +91,13 @@ class CachingIteratorTest extends TestCase
         $this->assertSame([1, 2, 3], iterator_to_array($iterator));
     }
 
-    public function testToArray()
+    public function testToArray(): void
     {
         $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
         $this->assertSame([1, 2, 3], $iterator->toArray());
     }
 
-    public function testToArrayAfterPartialIteration()
+    public function testToArrayAfterPartialIteration(): void
     {
         $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
 
@@ -109,14 +110,14 @@ class CachingIteratorTest extends TestCase
         $this->assertSame([1, 2, 3], $iterator->toArray());
     }
 
-    private function getTraversable($items)
+    private function getTraversable($items): Generator
     {
         foreach ($items as $item) {
             yield $item;
         }
     }
 
-    private function getTraversableThatThrows($items)
+    private function getTraversableThatThrows($items): Generator
     {
         foreach ($items as $item) {
             if ($item instanceof Exception) {

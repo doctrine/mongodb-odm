@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class EmbeddedReferenceTest extends BaseTest
 {
-    public function testReferencedDocumentInsideEmbeddedDocument()
+    public function testReferencedDocumentInsideEmbeddedDocument(): void
     {
         /* PARENT DOCUMENT */
         $offer = new Offer('My Offer');

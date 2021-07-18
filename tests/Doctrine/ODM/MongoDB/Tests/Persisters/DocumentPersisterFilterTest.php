@@ -12,7 +12,7 @@ use Documents\User;
 
 class DocumentPersisterFilterTest extends BaseTest
 {
-    public function testAddFilterToPreparedQuery()
+    public function testAddFilterToPreparedQuery(): void
     {
         $persister        = $this->uow->getDocumentPersister(User::class);
         $filterCollection = $this->dm->getFilterCollection();
@@ -35,7 +35,7 @@ class DocumentPersisterFilterTest extends BaseTest
         $this->assertSame($expectedCriteria, $persister->addFilterToPreparedQuery($preparedQuery));
     }
 
-    public function testFilterCrieriaShouldAndWithMappingCriteriaOwningSide()
+    public function testFilterCrieriaShouldAndWithMappingCriteriaOwningSide(): void
     {
         $blogPost = new BlogPost('Roger');
         $blogPost->addComment(new Comment('comment by normal user', new DateTime(), false));

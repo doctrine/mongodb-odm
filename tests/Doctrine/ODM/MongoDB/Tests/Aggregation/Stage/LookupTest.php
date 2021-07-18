@@ -20,7 +20,7 @@ class LookupTest extends BaseTest
         $this->insertTestData();
     }
 
-    public function testLookupStage()
+    public function testLookupStage(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -47,7 +47,7 @@ class LookupTest extends BaseTest
         $this->assertSame('alcaeus', $result[0]['user'][0]['username']);
     }
 
-    public function testLookupStageWithFieldNameTranslation()
+    public function testLookupStageWithFieldNameTranslation(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -70,7 +70,7 @@ class LookupTest extends BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testLookupStageWithClassName()
+    public function testLookupStageWithClassName(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -99,7 +99,7 @@ class LookupTest extends BaseTest
         $this->assertSame('alcaeus', $result[0]['user'][0]['username']);
     }
 
-    public function testLookupStageWithCollectionName()
+    public function testLookupStageWithCollectionName(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -127,7 +127,7 @@ class LookupTest extends BaseTest
         $this->assertCount(0, $result[0]['user']);
     }
 
-    public function testLookupStageReferenceMany()
+    public function testLookupStageReferenceMany(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -158,7 +158,7 @@ class LookupTest extends BaseTest
         $this->assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
-    public function testLookupStageReferenceManyStoreAsRef()
+    public function testLookupStageReferenceManyStoreAsRef(): void
     {
         $builder = $this->dm->createAggregationBuilder(ReferenceUser::class);
         $builder
@@ -189,7 +189,7 @@ class LookupTest extends BaseTest
         $this->assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
-    public function testLookupStageReferenceManyWithoutUnwindMongoDB34()
+    public function testLookupStageReferenceManyWithoutUnwindMongoDB34(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -217,7 +217,7 @@ class LookupTest extends BaseTest
         $this->assertSame('malarzm', $result[0]['users'][1]['username']);
     }
 
-    public function testLookupStageReferenceOneInverse()
+    public function testLookupStageReferenceOneInverse(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
         $builder
@@ -249,7 +249,7 @@ class LookupTest extends BaseTest
         $this->assertCount(1, $result[0]['simpleReferenceOneInverse']);
     }
 
-    public function testLookupStageReferenceManyInverse()
+    public function testLookupStageReferenceManyInverse(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
         $builder
@@ -281,7 +281,7 @@ class LookupTest extends BaseTest
         $this->assertCount(1, $result[0]['simpleReferenceManyInverse']);
     }
 
-    public function testLookupStageReferenceOneInverseStoreAsRef()
+    public function testLookupStageReferenceOneInverseStoreAsRef(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
         $builder
@@ -313,7 +313,7 @@ class LookupTest extends BaseTest
         $this->assertCount(1, $result[0]['embeddedReferenceOneInverse']);
     }
 
-    public function testLookupStageReferenceManyInverseStoreAsRef()
+    public function testLookupStageReferenceManyInverseStoreAsRef(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
         $builder
@@ -345,7 +345,7 @@ class LookupTest extends BaseTest
         $this->assertCount(1, $result[0]['embeddedReferenceManyInverse']);
     }
 
-    public function testLookupToShardedCollectionThrowsException()
+    public function testLookupToShardedCollectionThrowsException(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
@@ -356,7 +356,7 @@ class LookupTest extends BaseTest
                 ->foreignField('id');
     }
 
-    public function testLookupToShardedReferenceThrowsException()
+    public function testLookupToShardedReferenceThrowsException(): void
     {
         $builder = $this->dm->createAggregationBuilder(ShardedOne::class);
 
@@ -365,7 +365,7 @@ class LookupTest extends BaseTest
             ->lookup('user');
     }
 
-    private function insertTestData()
+    private function insertTestData(): void
     {
         $user1 = new User();
         $user1->setUsername('alcaeus');
@@ -392,7 +392,7 @@ class LookupTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testLookupStageAndDefaultAlias()
+    public function testLookupStageAndDefaultAlias(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
         $builder
@@ -415,7 +415,7 @@ class LookupTest extends BaseTest
         $this->assertCount(1, $result[0]['simpleReferenceOneInverse']);
     }
 
-    public function testLookupStageAndDefaultAliasOverride()
+    public function testLookupStageAndDefaultAliasOverride(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
         $builder

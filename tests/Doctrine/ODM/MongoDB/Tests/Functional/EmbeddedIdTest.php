@@ -11,7 +11,7 @@ use MongoDB\BSON\ObjectId;
 
 class EmbeddedIdTest extends BaseTest
 {
-    public function testEmbeddedIdsAreGenerated()
+    public function testEmbeddedIdsAreGenerated(): void
     {
         $test = new DefaultIdEmbeddedDocument();
 
@@ -20,7 +20,7 @@ class EmbeddedIdTest extends BaseTest
         $this->assertNotNull($test->id);
     }
 
-    public function testEmbeddedIdsAreNotOverwritten()
+    public function testEmbeddedIdsAreNotOverwritten(): void
     {
         $id       = (string) new ObjectId();
         $test     = new DefaultIdEmbeddedDocument();
@@ -31,7 +31,7 @@ class EmbeddedIdTest extends BaseTest
         $this->assertEquals($id, $test->id);
     }
 
-    public function testEmbedOneDocumentWithMissingIdentifier()
+    public function testEmbedOneDocumentWithMissingIdentifier(): void
     {
         $user           = new EmbeddedStrategyNoneIdTestUser();
         $user->embedOne = new DefaultIdStrategyNoneEmbeddedDocument();
@@ -44,7 +44,7 @@ class EmbeddedIdTest extends BaseTest
         $this->dm->persist($user);
     }
 
-    public function testEmbedManyDocumentWithMissingIdentifier()
+    public function testEmbedManyDocumentWithMissingIdentifier(): void
     {
         $user              = new EmbeddedStrategyNoneIdTestUser();
         $user->embedMany[] = new DefaultIdStrategyNoneEmbeddedDocument();

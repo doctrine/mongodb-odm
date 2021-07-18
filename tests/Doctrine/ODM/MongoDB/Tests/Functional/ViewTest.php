@@ -32,7 +32,7 @@ class ViewTest extends BaseTest
         $this->dm->clear();
     }
 
-    public function testViewAggregationPipeline()
+    public function testViewAggregationPipeline(): void
     {
         $repository = $this->dm->getRepository(UserName::class);
         assert($repository instanceof ViewRepository);
@@ -50,7 +50,7 @@ class ViewTest extends BaseTest
         $this->assertSame($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testQueryOnView()
+    public function testQueryOnView(): void
     {
         $results = $this->dm->createQueryBuilder(UserName::class)
             ->sort('username')
@@ -67,7 +67,7 @@ class ViewTest extends BaseTest
         $this->assertSame(UnitOfWork::STATE_MANAGED, $this->dm->getUnitOfWork()->getDocumentState($user));
     }
 
-    public function testViewReferences()
+    public function testViewReferences(): void
     {
         $alcaeus = $this->dm->getRepository(UserName::class)->findOneBy(['username' => 'alcaeus']);
         $this->assertInstanceOf(UserName::class, $alcaeus);

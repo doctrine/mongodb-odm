@@ -12,7 +12,7 @@ use function get_class;
 
 class GH944Test extends BaseTest
 {
-    public function testIssue()
+    public function testIssue(): void
     {
         $d = new GH944Document();
         $d->data->add(new GH944Embedded('1'));
@@ -55,7 +55,7 @@ class GH944Document
         $this->data = new ArrayCollection();
     }
 
-    public function removeByText($text)
+    public function removeByText($text): void
     {
         foreach ($this->data as $d) {
             if ($d->text !== $text) {

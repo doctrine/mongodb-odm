@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 
 class ConfigurationTest extends BaseTest
 {
-    public function testDefaultPersistentCollectionFactory()
+    public function testDefaultPersistentCollectionFactory(): void
     {
         $c       = new Configuration();
         $factory = $c->getPersistentCollectionFactory();
@@ -18,7 +18,7 @@ class ConfigurationTest extends BaseTest
         $this->assertSame($factory, $c->getPersistentCollectionFactory());
     }
 
-    public function testDefaultPersistentCollectionGenerator()
+    public function testDefaultPersistentCollectionGenerator(): void
     {
         $c = new Configuration();
         $c->setPersistentCollectionDir(__DIR__ . '/../../../../PersistentCollections');

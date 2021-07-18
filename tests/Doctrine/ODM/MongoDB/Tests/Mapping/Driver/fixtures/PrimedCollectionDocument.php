@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TestDocuments;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 class PrimedCollectionDocument
 {
@@ -25,12 +26,12 @@ class PrimedCollectionDocument
         return $this->id;
     }
 
-    public function getInverseMappedBy()
+    public function getInverseMappedBy(): Collection
     {
         return $this->inverseMappedBy;
     }
 
-    public function getReferences()
+    public function getReferences(): Collection
     {
         return $this->references;
     }

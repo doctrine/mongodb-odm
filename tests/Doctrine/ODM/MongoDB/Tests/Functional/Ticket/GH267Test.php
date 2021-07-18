@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH267Test extends BaseTest
 {
-    public function testNestedReferences()
+    public function testNestedReferences(): void
     {
         // Users
         $user1 = new GH267User('Tom Petty');
@@ -75,7 +75,7 @@ class GH267User
         $this->name = $name;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -85,7 +85,7 @@ class GH267User
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -95,7 +95,7 @@ class GH267User
         return $this->name;
     }
 
-    public function setCompany($company)
+    public function setCompany($company): void
     {
         $this->company = $company;
     }
@@ -120,7 +120,7 @@ class GH267Company
     /** @ODM\ReferenceMany(targetDocument=GH267User::class, mappedBy="company") */
     protected $users;
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -130,7 +130,7 @@ class GH267Company
         return $this->id;
     }
 
-    public function setUsers($users)
+    public function setUsers($users): void
     {
         $this->users = $users;
     }

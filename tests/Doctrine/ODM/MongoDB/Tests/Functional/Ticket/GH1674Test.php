@@ -11,7 +11,7 @@ use MongoDB\BSON\ObjectId;
 
 class GH1674Test extends BaseTest
 {
-    public function testElemMatchUsesCorrectMapping()
+    public function testElemMatchUsesCorrectMapping(): void
     {
         $builder = $this->dm->createQueryBuilder(GH1674Document::class);
         $builder

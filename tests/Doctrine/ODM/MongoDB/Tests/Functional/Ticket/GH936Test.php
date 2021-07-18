@@ -12,7 +12,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 class GH936Test extends BaseTest
 {
-    public function testRemoveCascadesThroughProxyDocuments()
+    public function testRemoveCascadesThroughProxyDocuments(): void
     {
         $listener = new GH936Listener();
         $this->dm->getEventManager()->addEventListener(Events::postRemove, $listener);
@@ -58,7 +58,7 @@ class GH936Listener
 {
     public $removed = [];
 
-    public function postRemove(LifecycleEventArgs $args)
+    public function postRemove(LifecycleEventArgs $args): void
     {
         $this->removed[] = $args->getDocument();
     }

@@ -20,7 +20,7 @@ class GH596Test extends BaseTest
         $filter->setParameter('value', false);
     }
 
-    public function testExpressionPreparationDoesNotInjectFilterCriteria()
+    public function testExpressionPreparationDoesNotInjectFilterCriteria(): void
     {
         $class = GH596Document::class;
 

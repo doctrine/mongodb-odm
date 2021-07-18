@@ -26,17 +26,17 @@ class Phonenumber
         return $this->phonenumber;
     }
 
-    public function setPhonenumber($phonenumber)
+    public function setPhonenumber($phonenumber): void
     {
         $this->phonenumber = $phonenumber;
     }
 
-    public function getLastCalledBy()
+    public function getLastCalledBy(): ?User
     {
         return $this->lastCalledBy;
     }
 
-    public function setLastCalledBy(?User $lastCalledBy = null)
+    public function setLastCalledBy(?User $lastCalledBy = null): void
     {
         $this->lastCalledBy = $lastCalledBy;
     }

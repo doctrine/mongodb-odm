@@ -11,7 +11,7 @@ use function get_class;
 
 class GH897Test extends BaseTest
 {
-    public function testRecomputeSingleDocumentChangesetForManagedDocumentWithoutChangeset()
+    public function testRecomputeSingleDocumentChangesetForManagedDocumentWithoutChangeset(): void
     {
         $documentA       = new GH897A();
         $documentA->name = 'a';
@@ -66,7 +66,7 @@ class GH897B
     public $dm;
 
     /** @ODM\PreFlush */
-    public function preFlush()
+    public function preFlush(): void
     {
         if (! $this->refOne instanceof GH897A) {
             return;

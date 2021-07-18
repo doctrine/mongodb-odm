@@ -15,7 +15,7 @@ class BinDataTest extends BaseTest
     /**
      * @dataProvider provideData
      */
-    public function testBinData($field, $data, $type)
+    public function testBinData($field, $data, $type): void
     {
         $test         = new BinDataTestUser();
         $test->$field = $data;
@@ -28,7 +28,7 @@ class BinDataTest extends BaseTest
         $this->assertEquals($data, $check[$field]->getData());
     }
 
-    public function provideData()
+    public function provideData(): array
     {
         return [
             ['bin', 'test', Binary::TYPE_GENERIC],

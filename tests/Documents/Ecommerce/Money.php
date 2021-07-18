@@ -39,7 +39,7 @@ class Money
         return $this->currency;
     }
 
-    public function setCurrency(Currency $currency)
+    public function setCurrency(Currency $currency): void
     {
         $this->currency = $currency;
     }

@@ -8,6 +8,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Phonebook;
 use Documents\Phonenumber;
@@ -36,7 +37,7 @@ class CommitImprovementTest extends BaseTest
         parent::tearDown();
     }
 
-    public function testInsertIncludesAllNestedCollections()
+    public function testInsertIncludesAllNestedCollections(): void
     {
         $user = new User();
         $user->setUsername('malarzm');
@@ -56,7 +57,7 @@ class CommitImprovementTest extends BaseTest
         $this->assertEquals('12345678', $user->getPhonebooks()->first()->getPhonenumbers()->first()->getPhonenumber());
     }
 
-    public function testCollectionsAreUpdatedJustAfterOwningDocument()
+    public function testCollectionsAreUpdatedJustAfterOwningDocument(): void
     {
         $user = new VersionedUser();
         $user->setUsername('malarzm');
@@ -91,7 +92,7 @@ class CommitImprovementTest extends BaseTest
      *  - if collection snapshot would be taken after post* events, collection
      *    wouldn't be dirty and wouldn't be updated in next flush
      */
-    public function testChangingCollectionInPostEventsHasNoIllEffects()
+    public function testChangingCollectionInPostEventsHasNoIllEffects(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(new PhonenumberMachine());
 
@@ -101,6 +102,7 @@ class CommitImprovementTest extends BaseTest
         $this->dm->flush();
 
         $this->assertCount(1, $user->getPhonenumbers()); // so we got a number on postPersist
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getPhonenumbers()); // so we got a number on postPersist
         $this->assertTrue($user->getPhonenumbers()->isDirty()); // but they should be dirty
 
         $collection = $this->dm->getDocumentCollection(get_class($user));
@@ -115,7 +117,7 @@ class CommitImprovementTest extends BaseTest
         $this->assertCount(1, $inDb['phonenumbers'], 'Collection changes from postUpdate should not be in database');
     }
 
-    public function testSchedulingCollectionDeletionAfterSchedulingForUpdate()
+    public function testSchedulingCollectionDeletionAfterSchedulingForUpdate(): void
     {
         $user = new User();
         $user->addPhonenumber(new Phonenumber('12345678'));
@@ -146,7 +148,7 @@ class PhonenumberMachine implements EventSubscriber
 
     private $numberId = 0;
 
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::postPersist,

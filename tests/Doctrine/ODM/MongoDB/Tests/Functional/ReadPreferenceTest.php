@@ -26,7 +26,7 @@ class ReadPreferenceTest extends BaseTest
         $this->dm->clear();
     }
 
-    public function testHintIsNotSetByDefault()
+    public function testHintIsNotSetByDefault(): void
     {
         $query = $this->dm->getRepository(User::class)
             ->createQueryBuilder()
@@ -44,7 +44,7 @@ class ReadPreferenceTest extends BaseTest
     /**
      * @dataProvider provideReadPreferenceHints
      */
-    public function testHintIsSetOnQuery($readPreference, array $tags = [])
+    public function testHintIsSetOnQuery($readPreference, array $tags = []): void
     {
         $this->skipTestIfSharded(User::class);
 
@@ -62,7 +62,7 @@ class ReadPreferenceTest extends BaseTest
         $this->assertReadPreferenceHint($readPreference, $user->getGroups()->getHints()[Query::HINT_READ_PREFERENCE], $tags);
     }
 
-    public function provideReadPreferenceHints()
+    public function provideReadPreferenceHints(): array
     {
         return [
             [ReadPreference::RP_PRIMARY, []],
@@ -71,7 +71,7 @@ class ReadPreferenceTest extends BaseTest
         ];
     }
 
-    public function testDocumentLevelReadPreferenceIsSetInCollection()
+    public function testDocumentLevelReadPreferenceIsSetInCollection(): void
     {
         $coll = $this->dm->getDocumentCollection(DocumentWithReadPreference::class);
 
@@ -79,7 +79,7 @@ class ReadPreferenceTest extends BaseTest
         $this->assertSame([['dc' => 'east']], $coll->getReadPreference()->getTagSets());
     }
 
-    public function testDocumentLevelReadPreferenceIsAppliedInQueryBuilder()
+    public function testDocumentLevelReadPreferenceIsAppliedInQueryBuilder(): void
     {
         $query = $this->dm->getRepository(DocumentWithReadPreference::class)
             ->createQueryBuilder()
@@ -88,7 +88,7 @@ class ReadPreferenceTest extends BaseTest
         $this->assertReadPreferenceHint(ReadPreference::RP_NEAREST, $query->getQuery()['readPreference'], [['dc' => 'east']]);
     }
 
-    public function testDocumentLevelReadPreferenceCanBeOverriddenInQueryBuilder()
+    public function testDocumentLevelReadPreferenceCanBeOverriddenInQueryBuilder(): void
     {
         $query = $this->dm->getRepository(DocumentWithReadPreference::class)
             ->createQueryBuilder()
@@ -98,7 +98,7 @@ class ReadPreferenceTest extends BaseTest
         $this->assertReadPreferenceHint(ReadPreference::RP_SECONDARY, $query->getQuery()['readPreference']);
     }
 
-    private function assertReadPreferenceHint($mode, $readPreference, array $tags = [])
+    private function assertReadPreferenceHint($mode, $readPreference, array $tags = []): void
     {
         $this->assertInstanceOf(ReadPreference::class, $readPreference);
         $this->assertEquals($mode, $readPreference->getMode());

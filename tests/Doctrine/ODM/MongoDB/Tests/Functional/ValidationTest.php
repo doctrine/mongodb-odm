@@ -16,7 +16,7 @@ use function MongoDB\BSON\toPHP;
 
 class ValidationTest extends BaseTest
 {
-    public function testCreateUpdateValidatedDocument()
+    public function testCreateUpdateValidatedDocument(): void
     {
         $this->requireVersion($this->getServerVersion(), '3.6.0', '<', 'MongoDB cannot perform JSON schema validation before version 3.6');
 

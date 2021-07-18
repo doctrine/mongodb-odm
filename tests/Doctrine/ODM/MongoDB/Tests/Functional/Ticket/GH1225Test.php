@@ -12,7 +12,7 @@ use function get_class;
 
 class GH1225Test extends BaseTest
 {
-    public function testRemoveAddEmbeddedDocToExistingDocumentWithPreUpdateHook()
+    public function testRemoveAddEmbeddedDocToExistingDocumentWithPreUpdateHook(): void
     {
         $doc = new GH1225Document();
         $doc->embeds->add(new GH1225EmbeddedDocument('foo'));
@@ -52,7 +52,7 @@ class GH1225Document
     /**
      * @ODM\PreUpdate
      */
-    public function exampleHook()
+    public function exampleHook(): void
     {
     }
 }

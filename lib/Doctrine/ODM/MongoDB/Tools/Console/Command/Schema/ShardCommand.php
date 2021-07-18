@@ -17,6 +17,9 @@ use function sprintf;
 
 class ShardCommand extends AbstractCommand
 {
+    /**
+     * @return void
+     */
     protected function configure()
     {
         parent::configure();

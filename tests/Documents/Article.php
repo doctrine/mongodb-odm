@@ -39,7 +39,7 @@ class Article
         return $this->title;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -49,7 +49,7 @@ class Article
         return $this->body;
     }
 
-    public function setBody($body)
+    public function setBody($body): void
     {
         $this->body = $body;
     }
@@ -59,17 +59,17 @@ class Article
         return $this->createdAt;
     }
 
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt($createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function addTag($tag)
+    public function addTag($tag): void
     {
         $this->tags[] = $tag;
     }
 
-    public function removeTag($tag)
+    public function removeTag($tag): void
     {
         if (! in_array($tag, $this->tags)) {
             return;
@@ -78,7 +78,7 @@ class Article
         unset($this->tags[array_search($tag, $this->tags)]);
     }
 
-    public function getTags()
+    public function getTags(): array
     {
         return $this->tags;
     }

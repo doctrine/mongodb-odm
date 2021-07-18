@@ -43,7 +43,7 @@ class GH1229Test extends BaseTest
     /**
      * @group m
      */
-    public function testMethodAWithoutClone()
+    public function testMethodAWithoutClone(): void
     {
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
         assert($firstParent instanceof GH1229Parent);
@@ -91,7 +91,7 @@ class GH1229Test extends BaseTest
     /**
      * @group m
      */
-    public function testMethodAWithClone()
+    public function testMethodAWithClone(): void
     {
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
         assert($firstParent instanceof GH1229Parent);
@@ -150,28 +150,24 @@ class GH1229Parent
     /**
      * @return GH1229Child[]
      */
-    public function getChildren()
+    public function getChildren(): array
     {
         return $this->children->toArray();
     }
 
-    public function addChild(GH1229Child $child)
+    public function addChild(GH1229Child $child): void
     {
         $child->setOrder(count($this->children));
         $this->children->add($child);
     }
 
-    public function removeChild(GH1229Child $child)
+    public function removeChild(GH1229Child $child): void
     {
         $this->children->removeElement($child);
         $this->reorderChildren($child->getOrder(), -1);
     }
 
-    /**
-     * @param int $starting
-     * @param int $change
-     */
-    public function reorderChildren($starting, $change)
+    public function reorderChildren(int $starting, int $change): void
     {
         foreach ($this->children as $child) {
             if ($child->getOrder() < $starting) {
@@ -194,28 +190,20 @@ class GH1229Child
     /** @ODM\Field(type="int") */
     public $order = 0;
 
-    /**
-     * @param string $name
-     */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    /**
-     * @return int
-     */
-    public function getOrder()
+    public function getOrder(): int
     {
         return $this->order;
     }
 
     /**
-     * @param int $order
-     *
      * @return $this
      */
-    public function setOrder($order)
+    public function setOrder(int $order): self
     {
         $this->order = $order;
 

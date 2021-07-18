@@ -6,6 +6,7 @@ namespace Documents;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 use function bcadd;
@@ -119,22 +120,22 @@ class User extends BaseDocument
         $this->createdAt        = new DateTime();
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
 
-    public function getLogs()
+    public function getLogs(): array
     {
         return $this->logs;
     }
 
-    public function setLogs($logs)
+    public function setLogs($logs): void
     {
         $this->logs = $logs;
     }
 
-    public function log($log)
+    public function log($log): void
     {
         $this->logs[] = $log;
     }
@@ -144,7 +145,7 @@ class User extends BaseDocument
         return $this->id;
     }
 
-    public function setUsername($username)
+    public function setUsername($username): void
     {
         $this->username = $username;
     }
@@ -154,7 +155,7 @@ class User extends BaseDocument
         return $this->username;
     }
 
-    public function setPassword($password)
+    public function setPassword($password): void
     {
         $this->password = $password;
     }
@@ -164,12 +165,12 @@ class User extends BaseDocument
         return $this->password;
     }
 
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt($createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
@@ -179,17 +180,17 @@ class User extends BaseDocument
         return $this->address;
     }
 
-    public function setAddress(?Address $address = null)
+    public function setAddress(?Address $address = null): void
     {
         $this->address = $address;
     }
 
-    public function removeAddress()
+    public function removeAddress(): void
     {
         $this->address = null;
     }
 
-    public function setProfile(Profile $profile)
+    public function setProfile(Profile $profile): void
     {
         $this->profile = $profile;
     }
@@ -199,7 +200,7 @@ class User extends BaseDocument
         return $this->profile;
     }
 
-    public function setProfileNotify(ProfileNotify $profile)
+    public function setProfileNotify(ProfileNotify $profile): void
     {
         $this->profileNotify = $profile;
     }
@@ -209,7 +210,7 @@ class User extends BaseDocument
         return $this->profileNotify;
     }
 
-    public function setAccount(Account $account)
+    public function setAccount(Account $account): void
     {
         $this->account = $account;
         $this->account->setUser($this);
@@ -220,7 +221,7 @@ class User extends BaseDocument
         return $this->account;
     }
 
-    public function setAccountSimple(Account $account)
+    public function setAccountSimple(Account $account): void
     {
         $this->accountSimple = $account;
         $this->accountSimple->setUser($this);
@@ -231,22 +232,22 @@ class User extends BaseDocument
         return $this->accountSimple;
     }
 
-    public function getPhonenumbers()
+    public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
     }
 
-    public function addPhonenumber(Phonenumber $phonenumber)
+    public function addPhonenumber(Phonenumber $phonenumber): void
     {
         $this->phonenumbers[] = $phonenumber;
     }
 
-    public function getSortedAscGroups()
+    public function getSortedAscGroups(): Collection
     {
         return $this->sortedAscGroups;
     }
 
-    public function getSortedDescGroups()
+    public function getSortedDescGroups(): Collection
     {
         return $this->sortedDescGroups;
     }
@@ -256,17 +257,17 @@ class User extends BaseDocument
         return $this->groups;
     }
 
-    public function setGroups($groups)
+    public function setGroups($groups): void
     {
         $this->groups = $groups;
     }
 
-    public function addGroup(Group $group)
+    public function addGroup(Group $group): void
     {
         $this->groups[] = $group;
     }
 
-    public function removeGroup($name)
+    public function removeGroup($name): bool
     {
         foreach ($this->groups as $key => $group) {
             if ($group->getName() === $name) {
@@ -279,7 +280,7 @@ class User extends BaseDocument
         return false;
     }
 
-    public function addGroupSimple(Group $group)
+    public function addGroupSimple(Group $group): void
     {
         $this->groupsSimple[] = $group;
     }
@@ -289,22 +290,22 @@ class User extends BaseDocument
         return $this->uniqueGroups;
     }
 
-    public function setUniqueGroups($groups)
+    public function setUniqueGroups($groups): void
     {
         $this->uniqueGroups = $groups;
     }
 
-    public function addUniqueGroup(Group $group)
+    public function addUniqueGroup(Group $group): void
     {
         $this->uniqueGroups[] = $group;
     }
 
-    public function getHits()
+    public function getHits(): int
     {
         return $this->hits;
     }
 
-    public function setHits($hits)
+    public function setHits($hits): void
     {
         $this->hits = $hits;
     }
@@ -314,7 +315,7 @@ class User extends BaseDocument
         return $this->count;
     }
 
-    public function setCount($count)
+    public function setCount($count): void
     {
         $this->count = $count;
     }
@@ -324,7 +325,7 @@ class User extends BaseDocument
         return $this->floatCount;
     }
 
-    public function setFloatCount($floatCount)
+    public function setFloatCount($floatCount): void
     {
         $this->floatCount = $floatCount;
     }
@@ -334,7 +335,7 @@ class User extends BaseDocument
         return $this->decimal128Count;
     }
 
-    public function setDecimal128Count($decimal128Count)
+    public function setDecimal128Count($decimal128Count): void
     {
         $this->decimal128Count = $decimal128Count;
     }
@@ -349,7 +350,7 @@ class User extends BaseDocument
         return $this->simpleReferenceManyInverse;
     }
 
-    public function incrementCount($num = null)
+    public function incrementCount($num = null): void
     {
         if ($num === null) {
             $this->count++;
@@ -358,7 +359,7 @@ class User extends BaseDocument
         }
     }
 
-    public function incrementFloatCount($num = null)
+    public function incrementFloatCount($num = null): void
     {
         if ($num === null) {
             $this->floatCount++;
@@ -367,22 +368,22 @@ class User extends BaseDocument
         }
     }
 
-    public function incrementDecimal128Count($num = null)
+    public function incrementDecimal128Count($num = null): void
     {
         $this->decimal128Count = bcadd($this->decimal128Count, $num ?? '1');
     }
 
-    public function setPosts($posts)
+    public function setPosts($posts): void
     {
         $this->posts = $posts;
     }
 
-    public function addPost(BlogPost $post)
+    public function addPost(BlogPost $post): void
     {
         $this->posts[] = $post;
     }
 
-    public function removePost($id)
+    public function removePost($id): bool
     {
         foreach ($this->posts as $key => $post) {
             if ($post->getId() === $id) {
@@ -395,27 +396,27 @@ class User extends BaseDocument
         return false;
     }
 
-    public function getPosts()
+    public function getPosts(): Collection
     {
         return $this->posts;
     }
 
-    public function setPhonenumbers($phonenumbers)
+    public function setPhonenumbers($phonenumbers): void
     {
         $this->phonenumbers = $phonenumbers;
     }
 
-    public function addPhonebook(Phonebook $phonebook)
+    public function addPhonebook(Phonebook $phonebook): void
     {
         $this->phonebooks->add($phonebook);
     }
 
-    public function getPhonebooks()
+    public function getPhonebooks(): Collection
     {
         return $this->phonebooks;
     }
 
-    public function removePhonebook(Phonebook $phonebook)
+    public function removePhonebook(Phonebook $phonebook): void
     {
         $this->phonebooks->removeElement($phonebook);
     }

@@ -19,7 +19,7 @@ class GH852Test extends BaseTest
     /**
      * @dataProvider provideIdGenerators
      */
-    public function testA(Closure $idGenerator)
+    public function testA(Closure $idGenerator): void
     {
         $parent       = new GH852Document();
         $parent->id   = $idGenerator('parent');
@@ -92,7 +92,7 @@ class GH852Test extends BaseTest
         $this->assertCount(4, $docs);
     }
 
-    public function provideIdGenerators()
+    public function provideIdGenerators(): array
     {
         $binDataType = Binary::TYPE_GENERIC;
 

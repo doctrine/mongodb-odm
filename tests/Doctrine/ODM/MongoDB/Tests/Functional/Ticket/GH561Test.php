@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH561Test extends BaseTest
 {
-    public function testPersistMainDocument()
+    public function testPersistMainDocument(): void
     {
         $embeddedDocument = new GH561EmbeddedDocument();
         $embeddedDocument->embeddedDocuments->add(new GH561AnotherEmbeddedDocument('foo'));

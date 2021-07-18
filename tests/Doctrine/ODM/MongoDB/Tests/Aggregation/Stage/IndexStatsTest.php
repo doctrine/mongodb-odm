@@ -13,14 +13,14 @@ class IndexStatsTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testIndexStatsStage()
+    public function testIndexStatsStage(): void
     {
         $indexStatsStage = new IndexStats($this->getTestAggregationBuilder());
 
         $this->assertEquals(['$indexStats' => new stdClass()], $indexStatsStage->getExpression());
     }
 
-    public function testIndexStatsFromBuilder()
+    public function testIndexStatsFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->indexStats();

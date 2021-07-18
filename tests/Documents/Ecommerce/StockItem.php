@@ -45,7 +45,7 @@ class StockItem
         $this->setInventory($inventory);
     }
 
-    public function setName($name)
+    public function setName($name): StockItem
     {
         $this->name = (string) $name;
 
@@ -57,7 +57,7 @@ class StockItem
         return $this->name;
     }
 
-    public function setCost(Money $cost)
+    public function setCost(Money $cost): void
     {
         $this->cost = $cost;
     }
@@ -67,7 +67,7 @@ class StockItem
         return $this->cost->getAmount();
     }
 
-    public function setInventory($inventory)
+    public function setInventory($inventory): StockItem
     {
         $this->inventory = (int) $inventory;
 

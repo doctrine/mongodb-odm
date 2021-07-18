@@ -12,7 +12,7 @@ use function get_class;
 
 class GH788Test extends BaseTest
 {
-    public function testDocumentWithDiscriminatorMap()
+    public function testDocumentWithDiscriminatorMap(): void
     {
         $listed       = new GH788DocumentListed();
         $listed->name = 'listed';
@@ -35,7 +35,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testEmbedManyWithExternalDiscriminatorMap()
+    public function testEmbedManyWithExternalDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -54,7 +54,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testEmbedManyWithInlineDiscriminatorMap()
+    public function testEmbedManyWithInlineDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -73,7 +73,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testEmbedManyWithNoTargetAndExternalDiscriminatorMap()
+    public function testEmbedManyWithNoTargetAndExternalDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -92,7 +92,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testEmbedOneWithExternalDiscriminatorMap()
+    public function testEmbedOneWithExternalDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -107,7 +107,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testEmbedOneWithInlineDiscriminatorMap()
+    public function testEmbedOneWithInlineDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -122,7 +122,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testEmbedOneWithNoTargetAndExternalDiscriminatorMap()
+    public function testEmbedOneWithNoTargetAndExternalDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -137,7 +137,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testRefManyWithExternalDiscriminatorMap()
+    public function testRefManyWithExternalDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -156,7 +156,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testRefManyWithInlineDiscriminatorMap()
+    public function testRefManyWithInlineDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -175,7 +175,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testRefManyWithNoTargetAndExternalDiscriminatorMap()
+    public function testRefManyWithNoTargetAndExternalDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -194,7 +194,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testRefOneWithExternalDiscriminatorMap()
+    public function testRefOneWithExternalDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -209,7 +209,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testRefOneWithInlineDiscriminatorMap()
+    public function testRefOneWithInlineDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 
@@ -224,7 +224,7 @@ class GH788Test extends BaseTest
         $this->dm->flush();
     }
 
-    public function testRefOneWithNoTargetAndExternalDiscriminatorMap()
+    public function testRefOneWithNoTargetAndExternalDiscriminatorMap(): void
     {
         $doc = new GH788Document();
 

@@ -25,13 +25,13 @@ class BasicInheritanceMappingTest extends BaseTest
         $this->factory->setConfiguration($this->dm->getConfiguration());
     }
 
-    public function testGetMetadataForTransientClassThrowsException()
+    public function testGetMetadataForTransientClassThrowsException(): void
     {
         $this->expectException(MappingException::class);
         $this->factory->getMetadataFor(TransientBaseClass::class);
     }
 
-    public function testGetMetadataForSubclassWithTransientBaseClass()
+    public function testGetMetadataForSubclassWithTransientBaseClass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass::class);
 
@@ -41,7 +41,7 @@ class BasicInheritanceMappingTest extends BaseTest
         $this->assertTrue(isset($class->fieldMappings['name']));
     }
 
-    public function testGetMetadataForSubclassWithMappedSuperclass()
+    public function testGetMetadataForSubclassWithMappedSuperclass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
@@ -63,7 +63,7 @@ class BasicInheritanceMappingTest extends BaseTest
     /**
      * @group DDC-388
      */
-    public function testSerializationWithPrivateFieldsFromMappedSuperclass()
+    public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
@@ -74,7 +74,7 @@ class BasicInheritanceMappingTest extends BaseTest
         $this->assertTrue(isset($class2->reflFields['mappedRelated1']));
     }
 
-    public function testReadPreferenceIsInherited()
+    public function testReadPreferenceIsInherited(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
@@ -82,7 +82,7 @@ class BasicInheritanceMappingTest extends BaseTest
         $this->assertEquals([['dc' => 'east']], $class->readPreferenceTags);
     }
 
-    public function testGridFSOptionsAreInherited()
+    public function testGridFSOptionsAreInherited(): void
     {
         $class = $this->factory->getMetadataFor(GridFSChildClass::class);
 

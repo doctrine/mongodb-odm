@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\EmbeddedDocument */
@@ -27,22 +28,22 @@ class Phonebook
         return $this->title;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
 
-    public function addPhonenumber(Phonenumber $phonenumber)
+    public function addPhonenumber(Phonenumber $phonenumber): void
     {
         $this->phonenumbers->add($phonenumber);
     }
 
-    public function getPhonenumbers()
+    public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
     }
 
-    public function removePhonenumber(Phonenumber $phonenumber)
+    public function removePhonenumber(Phonenumber $phonenumber): void
     {
         $this->phonenumbers->removeElement($phonenumber);
     }

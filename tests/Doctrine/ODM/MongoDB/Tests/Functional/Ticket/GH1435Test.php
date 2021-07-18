@@ -9,7 +9,7 @@ use MongoDB\BSON\ObjectId;
 
 class GH1435Test extends BaseTest
 {
-    public function testUpsert()
+    public function testUpsert(): void
     {
         $id = (string) new ObjectId();
 
@@ -26,7 +26,7 @@ class GH1435Test extends BaseTest
         $this->assertEquals('test', $document->name);
     }
 
-    public function testUpsertWithIncrement()
+    public function testUpsertWithIncrement(): void
     {
         $id = 10;
 
@@ -43,7 +43,7 @@ class GH1435Test extends BaseTest
         $this->assertEquals('test', $document->name);
     }
 
-    public function testUpdateWithIncrement()
+    public function testUpdateWithIncrement(): void
     {
         $document       = new GH1435DocumentIncrement();
         $document->name = 'test';

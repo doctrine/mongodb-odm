@@ -13,7 +13,7 @@ use function is_array;
 
 class MODM92Test extends BaseTest
 {
-    public function testDocumentWithEmbeddedDocuments()
+    public function testDocumentWithEmbeddedDocuments(): void
     {
         $embeddedDocuments = [new MODM92TestEmbeddedDocument('foo')];
 
@@ -65,7 +65,7 @@ class MODM92TestDocument
      *
      * @param array|Traversable $embeddedDocuments
      */
-    public function setEmbeddedDocuments($embeddedDocuments)
+    public function setEmbeddedDocuments($embeddedDocuments): void
     {
         $this->embeddedDocuments->clear();
 

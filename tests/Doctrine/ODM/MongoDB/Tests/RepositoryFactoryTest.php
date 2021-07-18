@@ -13,7 +13,7 @@ use function get_class;
 
 class RepositoryFactoryTest extends BaseTest
 {
-    public function testRepositoryFactoryCanBeReplaced()
+    public function testRepositoryFactoryCanBeReplaced(): void
     {
         $factory = $this->createMock(RepositoryFactory::class);
         $factory->expects($this->once())->method('getRepository');
@@ -25,7 +25,7 @@ class RepositoryFactoryTest extends BaseTest
         $dm->getRepository(User::class);
     }
 
-    public function testRepositoriesAreSameForSameClasses()
+    public function testRepositoriesAreSameForSameClasses(): void
     {
         $proxy = $this->dm->getPartialReference(User::class, 'abc');
         $this->assertSame(
@@ -34,7 +34,7 @@ class RepositoryFactoryTest extends BaseTest
         );
     }
 
-    public function testRepositoriesAreDifferentForDifferentDms()
+    public function testRepositoriesAreDifferentForDifferentDms(): void
     {
         $conf = $this->getConfiguration();
         $conf->setRepositoryFactory(new DefaultRepositoryFactory());

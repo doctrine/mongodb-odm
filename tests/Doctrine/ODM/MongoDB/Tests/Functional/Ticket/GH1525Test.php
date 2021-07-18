@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1525Test extends BaseTest
 {
-    public function testEmbedCloneTwoFlushesPerDocument()
+    public function testEmbedCloneTwoFlushesPerDocument(): void
     {
         $embedded = new GH1525Embedded('embedded');
 
@@ -43,7 +43,7 @@ class GH1525Test extends BaseTest
         }
     }
 
-    public function testEmbedCloneWithIdStrategyNoneOnParentAndEarlyPersist()
+    public function testEmbedCloneWithIdStrategyNoneOnParentAndEarlyPersist(): void
     {
         $uuidGen  = new UuidGenerator();
         $embedded = new GH1525Embedded('embedded');
@@ -68,7 +68,7 @@ class GH1525Test extends BaseTest
         }
     }
 
-    public function testEmbedCloneWithIdStrategyNoneOnParentAndLatePersist()
+    public function testEmbedCloneWithIdStrategyNoneOnParentAndLatePersist(): void
     {
         $uuidGen  = new UuidGenerator();
         $embedded = new GH1525Embedded('embedded');

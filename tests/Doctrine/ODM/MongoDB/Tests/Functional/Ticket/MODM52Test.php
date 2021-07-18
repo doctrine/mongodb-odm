@@ -11,7 +11,7 @@ use function count;
 
 class MODM52Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $emb = new MODM52Embedded([new MODM52Embedded(null, 'c1'), new MODM52Embedded(null, 'c2')], 'b');
         $doc = new MODM52Doc([$emb], 'a');
@@ -65,7 +65,7 @@ class MODM52Container
         return $this->items[$index];
     }
 
-    public function removeItem($i)
+    public function removeItem($i): void
     {
         unset($this->items[$i]);
     }

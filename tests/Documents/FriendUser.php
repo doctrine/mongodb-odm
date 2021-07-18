@@ -29,7 +29,7 @@ class FriendUser
         $this->myFriends     = new ArrayCollection();
     }
 
-    public function addFriend(FriendUser $user)
+    public function addFriend(FriendUser $user): void
     {
         $user->friendsWithMe[] = $this;
         $this->myFriends[]     = $user;

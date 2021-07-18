@@ -9,7 +9,7 @@ use MongoDB\BSON\ObjectId;
 
 class GH816Test extends BaseTest
 {
-    public function testPersistAfterDetachWithIdSet()
+    public function testPersistAfterDetachWithIdSet(): void
     {
         $d     = new GH816Document();
         $d->id = new ObjectId();
@@ -20,7 +20,7 @@ class GH816Test extends BaseTest
         $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
     }
 
-    public function testPersistAfterDetachWithTitleSet()
+    public function testPersistAfterDetachWithTitleSet(): void
     {
         $d        = new GH816Document();
         $d->title = 'Test';

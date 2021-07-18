@@ -13,7 +13,7 @@ use function spl_object_hash;
 
 class GH1017Test extends BaseTest
 {
-    public function testSPLObjectHashCollisionOnReplacingEmbeddedDoc()
+    public function testSPLObjectHashCollisionOnReplacingEmbeddedDoc(): void
     {
         $usedHashes = [];
         $owner      = new GH1017Document();

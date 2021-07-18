@@ -13,7 +13,7 @@ class BidirectionalInheritanceTest extends BaseTest
     /**
      * Test bi-directional reference "one to many", both owning sides and with inheritance maps.
      */
-    public function testOneToManyWithoutSides()
+    public function testOneToManyWithoutSides(): void
     {
         $tournament = new TournamentFootball('tournament_name');
 

@@ -12,7 +12,7 @@ class MODM160Test extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testEmbedManyInArrayMergeNew()
+    public function testEmbedManyInArrayMergeNew(): void
     {
         // create a test document
         $test       = new MODM160\EmbedManyInArrayLevel0();
@@ -32,7 +32,7 @@ class MODM160Test extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testEmbedManyInArrayCollectionMergeNew()
+    public function testEmbedManyInArrayCollectionMergeNew(): void
     {
         // create a test document
         $test       = new MODM160\EmbedManyInArrayCollectionLevel0();
@@ -52,7 +52,7 @@ class MODM160Test extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testEmbedOneMergeNew()
+    public function testEmbedOneMergeNew(): void
     {
         // create a test document
         $test       = new MODM160\EmbedOneLevel0();

@@ -15,7 +15,7 @@ class FacetTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testFacetStage()
+    public function testFacetStage(): void
     {
         $nestedBuilder = $this->getTestAggregationBuilder();
         $nestedBuilder->sortByCount('$tags');
@@ -35,7 +35,7 @@ class FacetTest extends BaseTest
         ], $facetStage->getExpression());
     }
 
-    public function testFacetFromBuilder()
+    public function testFacetFromBuilder(): void
     {
         $nestedBuilder = $this->getTestAggregationBuilder();
         $nestedBuilder->sortByCount('$tags');
@@ -57,7 +57,7 @@ class FacetTest extends BaseTest
         ], $builder->getPipeline());
     }
 
-    public function testFacetThrowsExceptionWithoutFieldName()
+    public function testFacetThrowsExceptionWithoutFieldName(): void
     {
         $facetStage = new Facet($this->getTestAggregationBuilder());
 
@@ -69,7 +69,7 @@ class FacetTest extends BaseTest
     /**
      * @psalm-suppress InvalidArgument on purpose to throw exception
      */
-    public function testFacetThrowsExceptionOnInvalidPipeline()
+    public function testFacetThrowsExceptionOnInvalidPipeline(): void
     {
         $facetStage = new Facet($this->getTestAggregationBuilder());
 

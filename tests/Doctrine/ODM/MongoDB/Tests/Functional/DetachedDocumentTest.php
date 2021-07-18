@@ -15,7 +15,7 @@ use function unserialize;
 
 class DetachedDocumentTest extends BaseTest
 {
-    public function testSimpleDetachMerge()
+    public function testSimpleDetachMerge(): void
     {
         $user           = new CmsUser();
         $user->name     = 'Roman';
@@ -40,7 +40,7 @@ class DetachedDocumentTest extends BaseTest
         $this->assertEquals('Roman B.', $user2->name);
     }
 
-    public function testSerializeUnserializeModifyMerge()
+    public function testSerializeUnserializeModifyMerge(): void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -90,7 +90,7 @@ class DetachedDocumentTest extends BaseTest
         $this->assertTrue($this->dm->contains($phonenumbers[1]));
     }
 
-    public function testMergeWithReference()
+    public function testMergeWithReference(): void
     {
         $cmsUser           = new CmsUser();
         $cmsUser->username = 'alcaeus';

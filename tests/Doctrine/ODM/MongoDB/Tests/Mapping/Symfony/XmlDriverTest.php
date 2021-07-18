@@ -13,12 +13,12 @@ use function array_flip;
  */
 class XmlDriverTest extends AbstractDriverTest
 {
-    protected function getFileExtension()
+    protected function getFileExtension(): string
     {
         return '.mongodb-odm.xml';
     }
 
-    protected function getDriver(array $paths = [])
+    protected function getDriver(array $paths = []): SimplifiedXmlDriver
     {
         return new SimplifiedXmlDriver(array_flip($paths));
     }

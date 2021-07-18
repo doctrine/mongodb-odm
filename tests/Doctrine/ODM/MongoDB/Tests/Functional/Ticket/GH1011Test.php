@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1011Test extends BaseTest
 {
-    public function testClearCollection()
+    public function testClearCollection(): void
     {
         $doc = new GH1011Document();
         $doc->embeds->add(new GH1011Embedded('test1'));
@@ -26,7 +26,7 @@ class GH1011Test extends BaseTest
         $this->assertFalse($this->uow->isCollectionScheduledForDeletion($doc->embeds));
     }
 
-    public function testReplaceCollection()
+    public function testReplaceCollection(): void
     {
         $doc = new GH1011Document();
         $doc->embeds->add(new GH1011Embedded('test1'));

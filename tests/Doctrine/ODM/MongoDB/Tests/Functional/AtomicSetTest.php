@@ -43,7 +43,7 @@ class AtomicSetTest extends BaseTest
         parent::tearDown();
     }
 
-    public function testAtomicInsertAndUpdate()
+    public function testAtomicInsertAndUpdate(): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
@@ -72,7 +72,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('87654321', $user->phonenumbers[1]->getPhonenumber());
     }
 
-    public function testAtomicUpsert()
+    public function testAtomicUpsert(): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->id             = new ObjectId();
@@ -91,7 +91,7 @@ class AtomicSetTest extends BaseTest
     /**
      * @dataProvider provideAtomicCollectionUnset
      */
-    public function testAtomicCollectionUnset($clearWith)
+    public function testAtomicCollectionUnset($clearWith): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
@@ -118,7 +118,7 @@ class AtomicSetTest extends BaseTest
         $this->assertCount(0, $user->phonenumbers);
     }
 
-    public function provideAtomicCollectionUnset()
+    public function provideAtomicCollectionUnset(): array
     {
         return [
             [null],
@@ -127,7 +127,7 @@ class AtomicSetTest extends BaseTest
         ];
     }
 
-    public function testAtomicCollectionClearAndUpdate()
+    public function testAtomicCollectionClearAndUpdate(): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
@@ -150,7 +150,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
     }
 
-    public function testAtomicCollectionReplacedAndUpdated()
+    public function testAtomicCollectionReplacedAndUpdated(): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
@@ -173,7 +173,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
     }
 
-    public function testAtomicSetArray()
+    public function testAtomicSetArray(): void
     {
         $user                       = new AtomicSetUser('Maciej');
         $user->phonenumbersArray[1] = new Phonenumber('12345678');
@@ -201,7 +201,7 @@ class AtomicSetTest extends BaseTest
         $this->assertFalse(isset($user->phonenumbersArray[1]));
     }
 
-    public function testAtomicCollectionWithAnotherNested()
+    public function testAtomicCollectionWithAnotherNested(): void
     {
         $user        = new AtomicSetUser('Maciej');
         $privateBook = new Phonebook('Private');
@@ -257,7 +257,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
 
-    public function testWeNeedToGoDeeper()
+    public function testWeNeedToGoDeeper(): void
     {
         $user                                          = new AtomicSetUser('Maciej');
         $user->inception[0]                            = new AtomicSetInception('start');
@@ -317,7 +317,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('start.one.one.many.0.many.1', $user->inception[0]->one->one->many[0]->many[1]->value);
     }
 
-    public function testUpdatingNestedCollectionWhileDeletingParent()
+    public function testUpdatingNestedCollectionWhileDeletingParent(): void
     {
         $user                                 = new AtomicSetUser('Jon');
         $user->inception[0]                   = new AtomicSetInception('start');
@@ -363,7 +363,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('start.many.1.many.0-new', $user->inception[0]->many[1]->many[0]->value);
     }
 
-    public function testAtomicRefMany()
+    public function testAtomicRefMany(): void
     {
         $malarzm = new AtomicSetUser('Maciej');
         $jmikola = new AtomicSetUser('Jeremy');
@@ -403,7 +403,7 @@ class AtomicSetTest extends BaseTest
         $this->dm->clear();
     }
 
-    public function testAtomicSetUpdatesAllNestedCollectionsInOneQuery()
+    public function testAtomicSetUpdatesAllNestedCollectionsInOneQuery(): void
     {
         // Create a book which has one chapter with one page.
         $chapter1 = new Chapter();
@@ -435,7 +435,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals(2, $book->chapters->first()->pages->count(), 'Two page objects are expected in the first chapter of the book.');
     }
 
-    public function testReplacementOfEmbedManyElements()
+    public function testReplacementOfEmbedManyElements(): void
     {
         // Create a book with a single chapter.
         $book = new Book();
@@ -470,7 +470,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('Second chapter B', $book->chapters[1]->name);
     }
 
-    public function testReplacementOfIdentifiedEmbedManyElements()
+    public function testReplacementOfIdentifiedEmbedManyElements(): void
     {
         $book = new Book();
         $book->identifiedChapters->add(new IdentifiedChapter('A'));
@@ -496,7 +496,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('Second chapter B', $book->identifiedChapters[1]->name);
     }
 
-    public function testOnlyEmbeddedDocumentUpdated()
+    public function testOnlyEmbeddedDocumentUpdated(): void
     {
         // Create a book with a single chapter.
         $book = new Book();
@@ -522,7 +522,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('First chapter A', $book->chapters[0]->name, 'The chapter title failed to update.');
     }
 
-    public function testUpdatedEmbeddedDocumentAndDirtyCollectionInside()
+    public function testUpdatedEmbeddedDocumentAndDirtyCollectionInside(): void
     {
         $book = new Book();
         $book->chapters->add(new Chapter('A'));
