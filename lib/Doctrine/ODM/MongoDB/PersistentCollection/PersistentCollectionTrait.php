@@ -319,7 +319,11 @@ trait PersistentCollectionTrait
         return $this->mapping;
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     *
+     * @psalm-suppress InvalidReturnType $this->mapping['targetDocument] is of type T
+     */
     public function getTypeClass()
     {
         if ($this->dm === null) {
@@ -367,6 +371,9 @@ trait PersistentCollectionTrait
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress InvalidReturnType doRemove() returns bool|T|null, but passing "false" as second parameter, makes
+     * it return T|null
      */
     public function remove($key)
     {

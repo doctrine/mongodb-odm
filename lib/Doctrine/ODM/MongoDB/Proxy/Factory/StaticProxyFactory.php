@@ -75,8 +75,9 @@ final class StaticProxyFactory implements ProxyFactory
                 ->proxyFactory
                 ->createProxy(
                     $metadata->getName(),
-                    static function () {
+                    static function (): bool {
                         // empty closure, serves its purpose, for now
+                        return true;
                     },
                     [
                         'skippedProperties' => $this->skippedFieldsFqns($metadata),

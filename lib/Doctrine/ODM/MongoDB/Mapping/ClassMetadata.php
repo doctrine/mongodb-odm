@@ -1740,6 +1740,8 @@ use function trigger_deprecation;
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
+     *
+     * @psalm-suppress InvalidArrayOffset $this->identifier could be null
      */
     public function getIdentifierValues($object): array
     {
