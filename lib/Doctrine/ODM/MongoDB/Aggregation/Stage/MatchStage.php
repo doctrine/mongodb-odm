@@ -108,6 +108,15 @@ class MatchStage extends Stage
     }
 
     /**
+     * Create a new Expr instance that can be used to build partial expressions
+     * for other operator methods.
+     */
+    public function createExpr(): Expr
+    {
+        return $this->builder->matchExpr();
+    }
+
+    /**
      * Specify $elemMatch criteria for the current field.
      *
      * You can create a new expression using the {@link Builder::matchExpr()}
@@ -153,12 +162,26 @@ class MatchStage extends Stage
     }
 
     /**
-     * Create a new Expr instance that can be used to build partial expressions
-     * for other operator methods.
+     * @deprecated use createExpr instead
      */
     public function expr(): Expr
     {
-        return $this->builder->matchExpr();
+        return $this->createExpr();
+    }
+
+    /**
+     * Specify $expr criteria for the current field.
+     *
+     * @see Expr::exprOp()
+     * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
+     *
+     * @param array|\Doctrine\ODM\MongoDB\Aggregation\Expr $expression
+     */
+    public function exprOp($expression): self
+    {
+        $this->query->exprOp($expression);
+
+        return $this;
     }
 
     /**
