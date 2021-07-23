@@ -233,3 +233,9 @@ parameters:
             message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:getById\\(\\) should return T of object but returns object\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
+
+        # That statement is never reached because DateTimeInterface is either DateTimeImmutable or DateTime
+        -
+            message: "#^Unreachable statement \\- code above always terminates\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Types/DateImmutableType.php
