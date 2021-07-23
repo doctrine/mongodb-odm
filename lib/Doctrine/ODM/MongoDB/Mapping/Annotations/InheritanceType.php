@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Attribute;
 use Doctrine\Common\Annotations\Annotation;
 
 /**
@@ -11,6 +12,7 @@ use Doctrine\Common\Annotations\Annotation;
  *
  * @Annotation
  */
+#[Attribute(Attribute::TARGET_CLASS)]
 final class InheritanceType extends Annotation
 {
 }

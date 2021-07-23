@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
-
-abstract class AbstractField extends Annotation
+abstract class AbstractField implements Annotation
 {
     /** @var string */
     public $name;
@@ -25,4 +23,20 @@ abstract class AbstractField extends Annotation
 
     /** @var bool */
     public $notSaved = false;
+
+    public function __construct(
+        ?string $name = null,
+        string $type = 'string',
+        bool $nullable = false,
+        array $options = [],
+        ?string $strategy = null,
+        bool $notSaved = false
+    ) {
+        $this->name     = $name;
+        $this->type     = $type;
+        $this->nullable = $nullable;
+        $this->options  = $options;
+        $this->strategy = $strategy;
+        $this->notSaved = $notSaved;
+    }
 }

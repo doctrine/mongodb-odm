@@ -12,6 +12,7 @@ Doctrine provides several different ways for specifying object
 document mapping metadata:
 
 -  Docblock Annotations
+-  Attributes
 -  XML
 -  Raw PHP Code
 

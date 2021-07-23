@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
-
-abstract class AbstractIndex extends Annotation
+abstract class AbstractIndex implements Annotation
 {
     /** @var string[] */
     public $keys = [];
@@ -34,4 +32,26 @@ abstract class AbstractIndex extends Annotation
 
     /** @var array */
     public $partialFilterExpression = [];
+
+    public function __construct(
+        array $keys = [],
+        ?string $name = null,
+        ?bool $background = null,
+        ?int $expireAfterSeconds = null,
+        $order = null,
+        bool $unique = false,
+        bool $sparse = false,
+        array $options = [],
+        array $partialFilterExpression = []
+    ) {
+        $this->keys                    = $keys;
+        $this->name                    = $name;
+        $this->background              = $background;
+        $this->expireAfterSeconds      = $expireAfterSeconds;
+        $this->order                   = $order;
+        $this->unique                  = $unique;
+        $this->sparse                  = $sparse;
+        $this->options                 = $options;
+        $this->partialFilterExpression = $partialFilterExpression;
+    }
 }

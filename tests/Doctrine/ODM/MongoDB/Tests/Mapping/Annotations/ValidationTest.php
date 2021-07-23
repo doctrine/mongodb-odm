@@ -7,19 +7,20 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Annotations;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use TypeError;
 
 class ValidationTest extends BaseTest
 {
     public function testWrongTypeForValidationValidatorShouldThrowException(): void
     {
-        $this->expectException(AnnotationException::class);
-        $this->expectExceptionMessage('[Type Error] Attribute "validator" of @ODM\Validation declared on class Doctrine\ODM\MongoDB\Tests\Mapping\Annotations\WrongTypeForValidationValidator expects a(n) string, but got array.');
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage('Argument #1 ($validator) must be of type ?string, array given');
         $this->dm->getClassMetadata(WrongTypeForValidationValidator::class);
     }
 
     public function testWrongTypeForValidationActionShouldThrowException(): void
     {
-        $this->expectException(AnnotationException::class);
+        $this->expectException(TypeError::class);
         $this->expectExceptionMessage('[Type Error] Attribute "action" of @ODM\Validation declared on class Doctrine\ODM\MongoDB\Tests\Mapping\Annotations\WrongTypeForValidationAction expects a(n) string, but got boolean.');
         $this->dm->getClassMetadata(WrongTypeForValidationAction::class);
     }

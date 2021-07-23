@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+use Attribute;
 
 /**
  * Must be set on a document class to instruct Doctrine to check for lifecycle
@@ -12,6 +12,7 @@ use Doctrine\Common\Annotations\Annotation;
  *
  * @Annotation
  */
-final class HasLifecycleCallbacks extends Annotation
+#[Attribute(Attribute::TARGET_CLASS)]
+final class HasLifecycleCallbacks implements Annotation
 {
 }

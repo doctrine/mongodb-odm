@@ -11,18 +11,23 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /**
  * @ODM\Document
  */
+#[ODM\Document]
 class CmsUser
 {
     /** @ODM\Id */
+    #[ODM\Id]
     public $id;
 
     /** @ODM\Field(type="string") */
+    #[ODM\Field(type: 'string')]
     public $status;
 
     /** @ODM\Field(type="string") */
+    #[ODM\Field(type: 'string')]
     public $username;
 
     /** @ODM\Field(type="string") */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     /** @ODM\ReferenceMany(targetDocument=CmsPhonenumber::class, mappedBy="user", cascade={"persist", "remove", "merge"}) */

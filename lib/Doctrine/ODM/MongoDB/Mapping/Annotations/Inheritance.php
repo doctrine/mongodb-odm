@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * Specifies inheritance mapping for a document
  *
  * @Annotation
+ * @NamedArgumentConstructor
  */
-final class Inheritance extends Annotation
+#[Attribute(Attribute::TARGET_CLASS)]
+final class Inheritance implements Annotation
 {
     /** @var string */
     public $type = 'NONE';
@@ -24,4 +27,19 @@ final class Inheritance extends Annotation
 
     /** @var string|null */
     public $defaultDiscriminatorValue;
+
+    /**
+     * @param string[] $discriminatorMap
+     */
+    public function __construct(
+        string $type = 'NONE',
+        array $discriminatorMap = [],
+        ?string $discriminatorField = null,
+        ?string $defaultDiscriminatorValue = null
+    ) {
+        $this->type                      = $type;
+        $this->discriminatorMap          = $discriminatorMap;
+        $this->discriminatorField        = $discriminatorField;
+        $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
+    }
 }
