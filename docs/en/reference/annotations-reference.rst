@@ -1266,7 +1266,7 @@ These documents can use all features regular documents can use but they will not
     $builder
         ->hydrate(\Documents\CompanyTransactions::class)
         ->group()
-            ->field('id')
+            ->field('_id')
             ->expression('$company')
             ->field('totalAmount')
             ->sum('$amount');
