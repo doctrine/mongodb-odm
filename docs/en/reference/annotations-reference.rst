@@ -1240,6 +1240,39 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
+@QueryResultDocument
+--------------------
+
+Marks the document as query result document used when hydrating the aggregation query results.
+These documents can use all features regular documents can use but they will not be persisted to the database.
+
+.. code-block:: php
+
+    <?php
+
+    namespace Documents;
+
+    /** @QueryResultDocument */
+    class CompanyTransactions
+    {
+        /** @ReferenceOne(targetDocument=Company::class, name="_id") */
+        private $company;
+
+        /** @Field(type="float") */
+        private $totalAmount;
+    }
+
+    $builder = $dm->createAggregationBuilder(\Documents\Transaction::class);
+    $builder
+        ->hydrate(\Documents\CompanyTransactions::class)
+        ->group()
+            ->field('_id')
+            ->expression('$company')
+            ->field('totalAmount')
+            ->sum('$amount');
+
+See :ref:`aggregation_builder_hydration` for more information.
+
 @ReadPreference
 ---------------
 

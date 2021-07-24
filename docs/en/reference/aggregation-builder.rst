@@ -114,6 +114,8 @@ aggregation pipeline and return a cursor for you to iterate over the results:
 If you instead want to look at the built aggregation pipeline, call the
 ``Builder::getPipeline()`` method.
 
+.. _aggregation_builder_hydration:
+
 Hydration
 ~~~~~~~~~
 
@@ -275,7 +277,7 @@ You can also pass expressions as arrays:
 This allows usage of any expression operators introduced by MongoDB, even
 if Doctrine ODM does not yet wrap it with convenience methods.
 
-You can see all available expression operators at MongoDB documentation 
+You can see all available expression operators at MongoDB documentation
 `here <https://docs.mongodb.com/manual/reference/operator/aggregation/>`_.
 
 $bucket
