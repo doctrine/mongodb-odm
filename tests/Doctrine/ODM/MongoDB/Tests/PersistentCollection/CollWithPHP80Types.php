@@ -9,9 +9,6 @@ use Doctrine\Common\Collections\Collection;
 
 class CollWithPHP80Types extends ArrayCollection
 {
-    /**
-     * @psalm-suppress ReservedWord
-     */
     public function mixed(mixed $param) : mixed
     {
         return $param;
