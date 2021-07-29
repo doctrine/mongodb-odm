@@ -14,12 +14,13 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class ReadPreference implements Annotation
 {
-    /** @var string|null */
+    /** @var string */
     public $value;
+
     /** @var string[][]|null */
     public $tags;
 
-    public function __construct(?string $value = null, ?array $tags = null)
+    public function __construct(string $value, ?array $tags = null)
     {
         $this->value = $value;
         $this->tags  = $tags;

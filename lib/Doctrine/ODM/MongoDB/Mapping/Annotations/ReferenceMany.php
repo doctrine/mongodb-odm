@@ -18,14 +18,11 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class ReferenceMany extends AbstractField
 {
-    /** @var string */
-    public $type = ClassMetadata::MANY;
-
     /** @var bool */
     public $reference = true;
 
     /** @var string */
-    public $storeAs = ClassMetadata::REFERENCE_STORE_AS_DB_REF;
+    public $storeAs;
 
     /** @var string|null */
     public $targetDocument;
@@ -55,10 +52,10 @@ final class ReferenceMany extends AbstractField
     public $repositoryMethod;
 
     /** @var array */
-    public $sort = [];
+    public $sort;
 
     /** @var array */
-    public $criteria = [];
+    public $criteria;
 
     /** @var int|null */
     public $limit;
@@ -67,13 +64,13 @@ final class ReferenceMany extends AbstractField
     public $skip;
 
     /** @var string */
-    public $strategy = CollectionHelper::DEFAULT_STRATEGY;
+    public $strategy;
 
     /** @var string|null */
     public $collectionClass;
 
     /** @var string[] */
-    public $prime = [];
+    public $prime;
 
     /**
      * @param array                $options
@@ -85,11 +82,10 @@ final class ReferenceMany extends AbstractField
      */
     public function __construct(
         ?string $name = null,
-        string $type = ClassMetadata::MANY,
         bool $nullable = false,
         array $options = [],
+        string $strategy = CollectionHelper::DEFAULT_STRATEGY,
         bool $notSaved = false,
-        bool $reference = true,
         string $storeAs = ClassMetadata::REFERENCE_STORE_AS_DB_REF,
         ?string $targetDocument = null,
         ?string $discriminatorField = null,
@@ -104,14 +100,11 @@ final class ReferenceMany extends AbstractField
         array $criteria = [],
         ?int $limit = null,
         ?int $skip = null,
-        string $strategy = CollectionHelper::DEFAULT_STRATEGY,
         ?string $collectionClass = null,
         array $prime = []
     ) {
-        parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
+        parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
 
-        $this->type                      = $type;
-        $this->reference                 = $reference;
         $this->storeAs                   = $storeAs;
         $this->targetDocument            = $targetDocument;
         $this->discriminatorField        = $discriminatorField;
@@ -126,7 +119,6 @@ final class ReferenceMany extends AbstractField
         $this->criteria                  = $criteria;
         $this->limit                     = $limit;
         $this->skip                      = $skip;
-        $this->strategy                  = $strategy;
         $this->collectionClass           = $collectionClass;
         $this->prime                     = $prime;
     }

@@ -13,13 +13,13 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Annotation
  * @NamedArgumentConstructor
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
+#[Attribute(Attribute::TARGET_CLASS)]
 final class DiscriminatorField implements Annotation
 {
-    /** @var string|null */
+    /** @var string */
     public $value;
 
-    public function __construct(?string $value = null)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }

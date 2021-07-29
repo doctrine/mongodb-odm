@@ -19,12 +19,6 @@ final class Id extends AbstractField
     /** @var bool */
     public $id = true;
 
-    /** @var string|null */
-    public $type;
-
-    /** @var string */
-    public $strategy = 'auto';
-
     public function __construct(
         ?string $name = null,
         ?string $type = null,
@@ -33,11 +27,6 @@ final class Id extends AbstractField
         ?string $strategy = 'auto',
         bool $notSaved = false
     ) {
-        $this->name     = $name;
-        $this->type     = $type;
-        $this->nullable = $nullable;
-        $this->options  = $options;
-        $this->strategy = $strategy;
-        $this->notSaved = $notSaved;
+        parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
     }
 }

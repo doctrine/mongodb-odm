@@ -26,10 +26,10 @@ final class File extends AbstractDocument
     public $repositoryClass;
 
     /** @var Index[] */
-    public $indexes = [];
+    public $indexes;
 
     /** @var bool bool */
-    public $readOnly = false;
+    public $readOnly;
 
     /** @var string|null */
     public $shardKey;

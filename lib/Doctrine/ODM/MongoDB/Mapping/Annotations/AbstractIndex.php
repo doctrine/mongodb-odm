@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 abstract class AbstractIndex implements Annotation
 {
     /** @var string[] */
-    public $keys = [];
+    public $keys;
 
     /** @var string */
     public $name;
@@ -22,16 +22,16 @@ abstract class AbstractIndex implements Annotation
     public $order;
 
     /** @var bool */
-    public $unique = false;
+    public $unique;
 
     /** @var bool */
-    public $sparse = false;
+    public $sparse;
 
     /** @var mixed[] */
-    public $options = [];
+    public $options;
 
     /** @var array */
-    public $partialFilterExpression = [];
+    public $partialFilterExpression;
 
     public function __construct(
         array $keys = [],

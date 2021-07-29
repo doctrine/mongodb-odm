@@ -17,14 +17,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class ReferenceOne extends AbstractField
 {
-    /** @var string */
-    public $type = ClassMetadata::ONE;
-
     /** @var bool */
     public $reference = true;
 
     /** @var string */
-    public $storeAs = ClassMetadata::REFERENCE_STORE_AS_DB_REF;
+    public $storeAs;
 
     /** @var string|null */
     public $targetDocument;
@@ -54,10 +51,10 @@ final class ReferenceOne extends AbstractField
     public $repositoryMethod;
 
     /** @var array */
-    public $sort = [];
+    public $sort;
 
     /** @var array */
-    public $criteria = [];
+    public $criteria;
 
     /** @var int|null */
     public $limit;
@@ -66,7 +63,6 @@ final class ReferenceOne extends AbstractField
     public $skip;
 
     /**
-     * @param array                $options
      * @param array|null           $discriminatorMap
      * @param string[]|string|null $cascade
      * @param array                $sort
@@ -78,8 +74,6 @@ final class ReferenceOne extends AbstractField
         array $options = [],
         ?string $strategy = null,
         bool $notSaved = false,
-        string $type = ClassMetadata::ONE,
-        bool $reference = true,
         string $storeAs = ClassMetadata::REFERENCE_STORE_AS_DB_REF,
         ?string $targetDocument = null,
         ?string $discriminatorField = null,
@@ -95,8 +89,8 @@ final class ReferenceOne extends AbstractField
         ?int $limit = null,
         ?int $skip = null
     ) {
-        parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
-        $this->reference                 = $reference;
+        parent::__construct($name, ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
+
         $this->storeAs                   = $storeAs;
         $this->targetDocument            = $targetDocument;
         $this->discriminatorField        = $discriminatorField;

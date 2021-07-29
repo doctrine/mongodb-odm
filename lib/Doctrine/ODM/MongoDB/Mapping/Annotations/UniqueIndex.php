@@ -16,16 +16,12 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class UniqueIndex extends AbstractIndex
 {
-    /** @var bool */
-    public $unique = true;
-
     public function __construct(
         array $keys = [],
         ?string $name = null,
         ?bool $background = null,
         ?int $expireAfterSeconds = null,
         $order = null,
-        bool $unique = true,
         bool $sparse = false,
         array $options = [],
         array $partialFilterExpression = []
@@ -36,7 +32,7 @@ final class UniqueIndex extends AbstractIndex
             $background,
             $expireAfterSeconds,
             $order,
-            $unique,
+            true,
             $sparse,
             $options,
             $partialFilterExpression

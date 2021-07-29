@@ -26,8 +26,12 @@ final class View extends AbstractDocument
     /** @var string|null */
     public $repositoryClass;
 
-    public function __construct(?string $db = null, ?string $view = null, ?string $rootClass = null, ?string $repositoryClass = null)
-    {
+    public function __construct(
+        ?string $db = null,
+        ?string $view = null,
+        ?string $rootClass = null,
+        ?string $repositoryClass = null
+    ) {
         $this->db              = $db;
         $this->view            = $view;
         $this->rootClass       = $rootClass;

@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 final class ShardKey implements Annotation
 {
     /** @var string[] */
-    public $keys = [];
+    public $keys;
 
     /** @var bool|null */
     public $unique;

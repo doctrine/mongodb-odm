@@ -6,27 +6,27 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 abstract class AbstractField implements Annotation
 {
-    /** @var string */
+    /** @var string|null */
     public $name;
 
-    /** @var string */
-    public $type = 'string';
+    /** @var string|null */
+    public $type;
 
     /** @var bool */
-    public $nullable = false;
+    public $nullable;
 
     /** @var mixed[] */
-    public $options = [];
+    public $options;
 
     /** @var string|null */
     public $strategy;
 
     /** @var bool */
-    public $notSaved = false;
+    public $notSaved;
 
     public function __construct(
         ?string $name = null,
-        string $type = 'string',
+        ?string $type = 'string',
         bool $nullable = false,
         array $options = [],
         ?string $strategy = null,

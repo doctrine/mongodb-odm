@@ -16,12 +16,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Metadata extends AbstractField
 {
-    /** @var string */
-    public $name = 'metadata';
-
-    /** @var string */
-    public $type = ClassMetadata::ONE;
-
     /** @var bool */
     public $embedded = true;
 
@@ -39,20 +33,17 @@ final class Metadata extends AbstractField
 
     public function __construct(
         ?string $name = 'metadata',
-        string $type = ClassMetadata::ONE,
         bool $nullable = false,
         array $options = [],
         ?string $strategy = null,
         bool $notSaved = false,
-        bool $embedded = true,
         ?string $targetDocument = null,
         ?string $discriminatorField = null,
         ?array $discriminatorMap = null,
         ?string $defaultDiscriminatorValue = null
     ) {
-        parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
+        parent::__construct($name, ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
 
-        $this->embedded                  = $embedded;
         $this->targetDocument            = $targetDocument;
         $this->discriminatorField        = $discriminatorField;
         $this->discriminatorMap          = $discriminatorMap;

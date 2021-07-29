@@ -18,9 +18,6 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class EmbedMany extends AbstractField
 {
-    /** @var string */
-    public $type = ClassMetadata::MANY;
-
     /** @var bool */
     public $embedded = true;
 
@@ -36,9 +33,6 @@ final class EmbedMany extends AbstractField
     /** @var string|null */
     public $defaultDiscriminatorValue;
 
-    /** @var string */
-    public $strategy = CollectionHelper::DEFAULT_STRATEGY;
-
     /** @var string|null */
     public $collectionClass;
 
@@ -46,19 +40,16 @@ final class EmbedMany extends AbstractField
         ?string $name = null,
         bool $nullable = false,
         array $options = [],
-        ?string $strategy = null,
+        string $strategy = CollectionHelper::DEFAULT_STRATEGY,
         bool $notSaved = false,
-        string $type = ClassMetadata::MANY,
-        bool $embedded = true,
         ?string $targetDocument = null,
         ?string $discriminatorField = null,
         ?array $discriminatorMap = null,
         ?string $defaultDiscriminatorValue = null,
         ?string $collectionClass = null
     ) {
-        parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
+        parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
 
-        $this->embedded                  = $embedded;
         $this->targetDocument            = $targetDocument;
         $this->discriminatorField        = $discriminatorField;
         $this->discriminatorMap          = $discriminatorMap;
