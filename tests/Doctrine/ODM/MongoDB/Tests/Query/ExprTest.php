@@ -12,10 +12,11 @@ use Documents\User;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class ExprTest extends BaseTest
 {
-    public function testSelectIsPrepared()
+    public function testSelectIsPrepared(): void
     {
         $qb    = $this->dm->createQueryBuilder(User::class)
             ->select('id');
@@ -24,7 +25,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['_id' => 1], $query->debug('select'));
     }
 
-    public function testInIsPrepared()
+    public function testInIsPrepared(): void
     {
         $ids = ['4f28aa84acee41388900000a'];
 
@@ -38,7 +39,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$in'][0]);
     }
 
-    public function testAllIsPrepared()
+    public function testAllIsPrepared(): void
     {
         $ids = ['4f28aa84acee41388900000a'];
 
@@ -52,7 +53,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$all'][0]);
     }
 
-    public function testNotEqualIsPrepared()
+    public function testNotEqualIsPrepared(): void
     {
         $id = '4f28aa84acee41388900000a';
 
@@ -66,7 +67,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($id, (string) $debug['groups.$id']['$ne']);
     }
 
-    public function testNotInIsPrepared()
+    public function testNotInIsPrepared(): void
     {
         $ids = ['4f28aa84acee41388900000a'];
 
@@ -80,7 +81,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($ids[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 
-    public function testAndIsPrepared()
+    public function testAndIsPrepared(): void
     {
         $ids = ['4f28aa84acee41388900000a'];
 
@@ -95,7 +96,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($ids[0], (string) $debug['$and'][0]['groups.$id']['$in'][0]);
     }
 
-    public function testOrIsPrepared()
+    public function testOrIsPrepared(): void
     {
         $ids = ['4f28aa84acee41388900000a'];
 
@@ -110,7 +111,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($ids[0], (string) $debug['$or'][0]['groups.$id']['$in'][0]);
     }
 
-    public function testMultipleQueryOperatorsArePrepared()
+    public function testMultipleQueryOperatorsArePrepared(): void
     {
         $all = ['4f28aa84acee41388900000a'];
         $in  = ['4f28aa84acee41388900000b'];
@@ -136,7 +137,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($nin[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 
-    public function testPrepareNestedDocuments()
+    public function testPrepareNestedDocuments(): void
     {
         $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('address.subAddress.subAddress.subAddress.test')->equals('test');
@@ -145,7 +146,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => 'test'], $debug);
     }
 
-    public function testPreparePositionalOperator()
+    public function testPreparePositionalOperator(): void
     {
         $qb = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
@@ -156,7 +157,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$set' => ['phonenumbers.$' => ['phonenumber' => 'bar']]], $qb->getNewObj());
     }
 
-    public function testSortIsPrepared()
+    public function testSortIsPrepared(): void
     {
         $qb    = $this->dm->createQueryBuilder(User::class)
             ->sort('id', 'desc');
@@ -171,7 +172,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => 1], $query['sort']);
     }
 
-    public function testNestedWithOperator()
+    public function testNestedWithOperator(): void
     {
         $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('address.subAddress.subAddress.subAddress.test')->notIn(['test']);
@@ -180,7 +181,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => ['$nin' => ['test']]], $query['query']);
     }
 
-    public function testNewObjectIsPrepared()
+    public function testNewObjectIsPrepared(): void
     {
         $qb    = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
@@ -190,7 +191,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$pop' => ['address.subAddress.subAddress.subAddress.testFieldName' => -1]], $query['newObj']);
     }
 
-    public function testReferencesUsesMinimalKeys()
+    public function testReferencesUsesMinimalKeys(): void
     {
         $profile = new Profile();
         $profile->setProfileId(new ObjectId());
@@ -206,7 +207,7 @@ class ExprTest extends BaseTest
         );
     }
 
-    public function testReferencesUsesAllKeys()
+    public function testReferencesUsesAllKeys(): void
     {
         $profile = new Profile();
         $profile->setProfileId(new ObjectId());
@@ -226,7 +227,7 @@ class ExprTest extends BaseTest
         );
     }
 
-    public function testReferencesUsesSomeKeys()
+    public function testReferencesUsesSomeKeys(): void
     {
         $profile = new Profile();
         $profile->setProfileId(new ObjectId());
@@ -245,7 +246,7 @@ class ExprTest extends BaseTest
         );
     }
 
-    public function testAddToSetWithValue()
+    public function testAddToSetWithValue(): void
     {
         $expr = $this->createExpr();
 
@@ -253,7 +254,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$addToSet' => ['a' => 1]], $expr->getNewObj());
     }
 
-    public function testAddToSetWithExpression()
+    public function testAddToSetWithExpression(): void
     {
         $expr     = $this->createExpr();
         $eachExpr = $this->createExpr();
@@ -263,7 +264,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$addToSet' => ['a' => ['$each' => [1, 2]]]], $expr->getNewObj());
     }
 
-    public function testLanguageWithText()
+    public function testLanguageWithText(): void
     {
         $expr = $this->createExpr();
         $expr->text('foo');
@@ -272,14 +273,14 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$text' => ['$search' => 'foo', '$language' => 'en']], $expr->getQuery());
     }
 
-    public function testLanguageRequiresTextOperator()
+    public function testLanguageRequiresTextOperator(): void
     {
         $expr = $this->createExpr();
         $this->expectException(BadMethodCallException::class);
         $expr->language('en');
     }
 
-    public function testCaseSensitiveWithText()
+    public function testCaseSensitiveWithText(): void
     {
         $expr = $this->createExpr();
         $expr->text('foo');
@@ -288,7 +289,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$text' => ['$search' => 'foo', '$caseSensitive' => true]], $expr->getQuery());
     }
 
-    public function testCaseSensitiveFalseRemovesOption()
+    public function testCaseSensitiveFalseRemovesOption(): void
     {
         $expr = $this->createExpr();
         $expr->text('foo');
@@ -298,14 +299,14 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
     }
 
-    public function testCaseSensitiveRequiresTextOperator()
+    public function testCaseSensitiveRequiresTextOperator(): void
     {
         $expr = $this->createExpr();
         $this->expectException(BadMethodCallException::class);
         $expr->caseSensitive(false);
     }
 
-    public function testDiacriticSensitiveWithText()
+    public function testDiacriticSensitiveWithText(): void
     {
         $expr = $this->createExpr();
         $expr->text('foo');
@@ -314,7 +315,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$text' => ['$search' => 'foo', '$diacriticSensitive' => true]], $expr->getQuery());
     }
 
-    public function testDiacriticSensitiveFalseRemovesOption()
+    public function testDiacriticSensitiveFalseRemovesOption(): void
     {
         $expr = $this->createExpr();
         $expr->text('foo');
@@ -324,14 +325,14 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
     }
 
-    public function testDiacriticSensitiveRequiresTextOperator()
+    public function testDiacriticSensitiveRequiresTextOperator(): void
     {
         $expr = $this->createExpr();
         $this->expectException(BadMethodCallException::class);
         $expr->diacriticSensitive(false);
     }
 
-    public function testOperatorWithCurrentField()
+    public function testOperatorWithCurrentField(): void
     {
         $expr = $this->createExpr();
         $expr->field('field');
@@ -340,7 +341,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['field' => ['$op' => 'value']], $expr->getQuery());
     }
 
-    public function testOperatorWithCurrentFieldWrapsEqualityCriteria()
+    public function testOperatorWithCurrentFieldWrapsEqualityCriteria(): void
     {
         $expr = $this->createExpr();
 
@@ -364,7 +365,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($expectedQuery, $expr->getQuery());
     }
 
-    public function testOperatorWithoutCurrentField()
+    public function testOperatorWithoutCurrentField(): void
     {
         $expr = $this->createExpr();
 
@@ -372,7 +373,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$op' => 'value'], $expr->getQuery());
     }
 
-    public function testOperatorWithoutCurrentFieldWrapsEqualityCriteria()
+    public function testOperatorWithoutCurrentFieldWrapsEqualityCriteria(): void
     {
         $expr = $this->createExpr();
         $this->assertSame($expr, $expr->equals(1));
@@ -396,7 +397,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$in' => [['x' => 1]], '$lt' => 2], $expr->getQuery());
     }
 
-    public function provideGeoJsonPoint()
+    public function provideGeoJsonPoint(): array
     {
         $json     = ['type' => 'Point', 'coordinates' => [1, 2]];
         $expected = ['$geometry' => $json];
@@ -410,7 +411,7 @@ class ExprTest extends BaseTest
     /**
      * @dataProvider provideGeoJsonPoint
      */
-    public function testNearWithGeoJsonPoint($point, array $expected)
+    public function testNearWithGeoJsonPoint($point, array $expected): void
     {
         $expr = $this->createExpr();
 
@@ -418,7 +419,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$near' => $expected], $expr->getQuery());
     }
 
-    public function testNearWithLegacyCoordinates()
+    public function testNearWithLegacyCoordinates(): void
     {
         $expr = $this->createExpr();
 
@@ -429,7 +430,7 @@ class ExprTest extends BaseTest
     /**
      * @dataProvider provideGeoJsonPoint
      */
-    public function testNearSphereWithGeoJsonPoint($point, array $expected)
+    public function testNearSphereWithGeoJsonPoint($point, array $expected): void
     {
         $expr = $this->createExpr();
 
@@ -437,7 +438,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$nearSphere' => $expected], $expr->getQuery());
     }
 
-    public function testNearSphereWithLegacyCoordinates()
+    public function testNearSphereWithLegacyCoordinates(): void
     {
         $expr = $this->createExpr();
 
@@ -445,7 +446,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$nearSphere' => [1, 2]], $expr->getQuery());
     }
 
-    public function testPullWithValue()
+    public function testPullWithValue(): void
     {
         $expr = $this->createExpr();
 
@@ -453,7 +454,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$pull' => ['a' => 1]], $expr->getNewObj());
     }
 
-    public function testPullWithExpression()
+    public function testPullWithExpression(): void
     {
         $expr       = $this->createExpr();
         $nestedExpr = $this->createExpr();
@@ -463,7 +464,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$pull' => ['a' => ['$gt' => 3]]], $expr->getNewObj());
     }
 
-    public function testPushWithValue()
+    public function testPushWithValue(): void
     {
         $expr = $this->createExpr();
 
@@ -471,7 +472,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$push' => ['a' => 1]], $expr->getNewObj());
     }
 
-    public function testPushWithExpression()
+    public function testPushWithExpression(): void
     {
         $expr      = $this->createExpr();
         $innerExpr = $this->createExpr();
@@ -494,7 +495,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($expectedNewObj, $expr->getNewObj());
     }
 
-    public function testPushWithExpressionShouldEnsureEachOperatorAppearsFirst()
+    public function testPushWithExpressionShouldEnsureEachOperatorAppearsFirst(): void
     {
         $expr      = $this->createExpr();
         $innerExpr = $this->createExpr();
@@ -517,7 +518,7 @@ class ExprTest extends BaseTest
         $this->assertSame($expectedNewObj, $expr->getNewObj());
     }
 
-    public function testPushWithPosition()
+    public function testPushWithPosition(): void
     {
         $expr      = $this->createExpr();
         $innerExpr = $this->createExpr();
@@ -541,7 +542,7 @@ class ExprTest extends BaseTest
     /**
      * @dataProvider provideGeoJsonPolygon
      */
-    public function testGeoIntersects($geometry, array $expected)
+    public function testGeoIntersects($geometry, array $expected): void
     {
         $expr = $this->createExpr();
 
@@ -549,7 +550,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$geoIntersects' => $expected], $expr->getQuery());
     }
 
-    public function provideGeoJsonPolygon()
+    public function provideGeoJsonPolygon(): array
     {
         $json = [
             'type' => 'Polygon',
@@ -567,7 +568,7 @@ class ExprTest extends BaseTest
     /**
      * @dataProvider provideGeoJsonPolygon
      */
-    public function testGeoWithin($geometry, array $expected)
+    public function testGeoWithin($geometry, array $expected): void
     {
         $expr = $this->createExpr();
 
@@ -575,7 +576,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$geoWithin' => $expected], $expr->getQuery());
     }
 
-    public function testGeoWithinBox()
+    public function testGeoWithinBox(): void
     {
         $expr = $this->createExpr();
 
@@ -583,7 +584,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$geoWithin' => ['$box' => [[1, 2], [3, 4]]]], $expr->getQuery());
     }
 
-    public function testGeoWithinCenter()
+    public function testGeoWithinCenter(): void
     {
         $expr = $this->createExpr();
 
@@ -591,7 +592,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$geoWithin' => ['$center' => [[1, 2], 3]]], $expr->getQuery());
     }
 
-    public function testGeoWithinCenterSphere()
+    public function testGeoWithinCenterSphere(): void
     {
         $expr = $this->createExpr();
 
@@ -599,7 +600,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$geoWithin' => ['$centerSphere' => [[1, 2], 3]]], $expr->getQuery());
     }
 
-    public function testGeoWithinPolygon()
+    public function testGeoWithinPolygon(): void
     {
         $expr          = $this->createExpr();
         $expectedQuery = ['$geoWithin' => ['$polygon' => [[0, 0], [1, 1], [1, 0]]]];
@@ -608,7 +609,7 @@ class ExprTest extends BaseTest
         $this->assertEquals($expectedQuery, $expr->getQuery());
     }
 
-    public function testSetWithAtomic()
+    public function testSetWithAtomic(): void
     {
         $expr = $this->createExpr();
 
@@ -616,7 +617,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$set' => ['a' => 1]], $expr->getNewObj());
     }
 
-    public function testSetWithoutAtomicWithTopLevelField()
+    public function testSetWithoutAtomicWithTopLevelField(): void
     {
         $expr = $this->createExpr();
 
@@ -624,7 +625,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['a' => 1], $expr->getNewObj());
     }
 
-    public function testSetWithoutAtomicWithNestedField()
+    public function testSetWithoutAtomicWithNestedField(): void
     {
         $expr = $this->createExpr();
 
@@ -632,7 +633,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['a' => ['b' => ['c' => 1]]], $expr->getNewObj());
     }
 
-    public function testText()
+    public function testText(): void
     {
         $expr = $this->createExpr();
 
@@ -641,7 +642,7 @@ class ExprTest extends BaseTest
         $this->assertNull($expr->getCurrentField());
     }
 
-    public function testWhere()
+    public function testWhere(): void
     {
         $expr = $this->createExpr();
 
@@ -650,7 +651,7 @@ class ExprTest extends BaseTest
         $this->assertNull($expr->getCurrentField());
     }
 
-    public function testIn()
+    public function testIn(): void
     {
         $expr = $this->createExpr();
 
@@ -658,7 +659,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$in' => ['value1', 'value2']], $expr->getQuery());
     }
 
-    public function testInWillStripKeysToYieldBsonArray()
+    public function testInWillStripKeysToYieldBsonArray(): void
     {
         $expr = $this->createExpr();
 
@@ -666,7 +667,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$in' => ['value1', 'value2']], $expr->getQuery());
     }
 
-    public function testNotIn()
+    public function testNotIn(): void
     {
         $expr = $this->createExpr();
 
@@ -674,7 +675,7 @@ class ExprTest extends BaseTest
         $this->assertEquals(['$nin' => ['value1', 'value2']], $expr->getQuery());
     }
 
-    public function testNotInWillStripKeysToYieldBsonArray()
+    public function testNotInWillStripKeysToYieldBsonArray(): void
     {
         $expr = $this->createExpr();
 
@@ -690,6 +691,9 @@ class ExprTest extends BaseTest
         return $expr;
     }
 
+    /**
+     * @return MockObject&Point
+     */
     private function getMockPoint($json)
     {
         $point = $this->getMockBuilder(Point::class)
@@ -703,6 +707,9 @@ class ExprTest extends BaseTest
         return $point;
     }
 
+    /**
+     * @return MockObject&Polygon
+     */
     private function getMockPolygon($json)
     {
         $point = $this->getMockBuilder(Polygon::class)

@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class PrePersistTest extends BaseTest
 {
-    public function testPrePersist()
+    public function testPrePersist(): void
     {
         $test = new PrePersistTestDocument();
         $this->dm->persist($test);
@@ -41,13 +41,13 @@ class PrePersistTestDocument
     public $field;
 
     /** @ODM\PrePersist */
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->prePersist++;
     }
 
     /** @ODM\PreUpdate */
-    public function preUpdate()
+    public function preUpdate(): void
     {
         $this->preUpdate++;
     }

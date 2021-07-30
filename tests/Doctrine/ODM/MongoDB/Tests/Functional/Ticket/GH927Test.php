@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH927Test extends BaseTest
 {
-    public function testInheritedClassHasAssociationMapping()
+    public function testInheritedClassHasAssociationMapping(): void
     {
         $parentMetadata = $this->dm->getClassMetadata(GH927Parent::class);
         $this->assertArrayHasKey('reference', $parentMetadata->associationMappings);

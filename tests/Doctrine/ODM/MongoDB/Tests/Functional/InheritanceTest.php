@@ -15,7 +15,7 @@ use Documents\User;
 
 class InheritanceTest extends BaseTest
 {
-    public function testCollectionPerClassInheritance()
+    public function testCollectionPerClassInheritance(): void
     {
         $profile = new Profile();
         $profile->setFirstName('Jon');
@@ -47,7 +47,7 @@ class InheritanceTest extends BaseTest
         $this->assertInstanceOf(SpecialUser::class, $user);
     }
 
-    public function testSingleCollectionInhertiance()
+    public function testSingleCollectionInhertiance(): void
     {
         $subProject = new SubProject('Sub Project');
         $this->dm->persist($subProject);
@@ -85,7 +85,7 @@ class InheritanceTest extends BaseTest
         $this->assertInstanceOf(OtherSubProject::class, $document);
     }
 
-    public function testPrePersistIsCalledFromMappedSuperClass()
+    public function testPrePersistIsCalledFromMappedSuperClass(): void
     {
         $user = new User();
         $user->setUsername('test');
@@ -94,7 +94,7 @@ class InheritanceTest extends BaseTest
         $this->assertTrue($user->persisted);
     }
 
-    public function testInheritanceProxy()
+    public function testInheritanceProxy(): void
     {
         $developer = new Developer('avalanche123');
 

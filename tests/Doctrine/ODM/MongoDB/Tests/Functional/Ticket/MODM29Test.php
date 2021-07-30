@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM29Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $collection = new ArrayCollection([
             new MODM29Embedded('0'),
@@ -64,7 +64,7 @@ class MODM29Doc
         $this->set($c);
     }
 
-    public function set($c)
+    public function set($c): void
     {
         $this->collection = $c;
     }
@@ -91,7 +91,7 @@ class MODM29Embedded
         return $this->val;
     }
 
-    public function set($val)
+    public function set($val): void
     {
         $this->val = $val;
     }

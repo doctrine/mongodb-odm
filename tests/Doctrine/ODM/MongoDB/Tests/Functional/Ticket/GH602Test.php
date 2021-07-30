@@ -15,7 +15,7 @@ use function iterator_to_array;
 
 class GH602Test extends BaseTest
 {
-    public function testReferenceManyOwningSidePreparesFilterCriteriaForDifferentClass()
+    public function testReferenceManyOwningSidePreparesFilterCriteriaForDifferentClass(): void
     {
         $thingClass = GH602Thing::class;
         $userClass  = GH602User::class;
@@ -61,7 +61,7 @@ class GH602Test extends BaseTest
         $user1likes[1]->initializeProxy();
     }
 
-    public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass()
+    public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass(): void
     {
         $thingClass = GH602Thing::class;
         $userClass  = GH602User::class;
@@ -92,7 +92,7 @@ class GH602Test extends BaseTest
         $this->assertEquals($user1->getId(), $thing1likedBy[0]->getId());
     }
 
-    private function enableDeletedFilter($class)
+    private function enableDeletedFilter($class): void
     {
         $this->dm->getFilterCollection()->enable('testFilter');
         $filter = $this->dm->getFilterCollection()->getFilter('testFilter');

@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MappedSuperclassTest extends BaseTest
 {
-    public function testCRUD()
+    public function testCRUD(): void
     {
         $e = new DocumentSubClass();
         $e->setId(1);
@@ -50,7 +50,7 @@ class MappedSuperclassBase
     /** @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class) */
     private $mappedRelated1;
 
-    public function setMapped1($val)
+    public function setMapped1($val): void
     {
         $this->mapped1 = $val;
     }
@@ -60,7 +60,7 @@ class MappedSuperclassBase
         return $this->mapped1;
     }
 
-    public function setMapped2($val)
+    public function setMapped2($val): void
     {
         $this->mapped2 = $val;
     }
@@ -70,7 +70,7 @@ class MappedSuperclassBase
         return $this->mapped2;
     }
 
-    public function setMappedRelated1($mappedRelated1)
+    public function setMappedRelated1($mappedRelated1): void
     {
         $this->mappedRelated1 = $mappedRelated1;
     }
@@ -90,7 +90,7 @@ class MappedSuperclassRelated1
     /** @ODM\Field(type="string") */
     private $name;
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -100,7 +100,7 @@ class MappedSuperclassRelated1
         return $this->name;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -120,7 +120,7 @@ class DocumentSubClass extends MappedSuperclassBase
     /** @ODM\Field(type="string") */
     private $name;
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -130,7 +130,7 @@ class DocumentSubClass extends MappedSuperclassBase
         return $this->name;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }

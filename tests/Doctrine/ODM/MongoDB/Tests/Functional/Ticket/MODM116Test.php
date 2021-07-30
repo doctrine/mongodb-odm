@@ -12,7 +12,7 @@ use function get_class;
 
 class MODM116Test extends BaseTest
 {
-    public function testIssue()
+    public function testIssue(): void
     {
         $parent = new MODM116Parent();
         $parent->setName('test');
@@ -61,7 +61,7 @@ class MODM116Parent
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -71,7 +71,7 @@ class MODM116Parent
         return $this->child;
     }
 
-    public function setChild(MODM116Child $child)
+    public function setChild(MODM116Child $child): void
     {
         $this->child = $child;
     }

@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1152Test extends BaseTest
 {
-    public function testParentAssociationsInPostLoad()
+    public function testParentAssociationsInPostLoad(): void
     {
         $listener = new GH1152Listener();
         $this->dm->getEventManager()->addEventListener(Events::postLoad, $listener);
@@ -54,7 +54,7 @@ class GH1152Child
 
 class GH1152Listener
 {
-    public function postLoad(LifecycleEventArgs $args)
+    public function postLoad(LifecycleEventArgs $args): void
     {
         $dm       = $args->getDocumentManager();
         $document = $args->getDocument();

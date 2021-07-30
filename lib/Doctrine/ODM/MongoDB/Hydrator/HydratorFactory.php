@@ -166,8 +166,8 @@ final class HydratorFactory
     /**
      * Generates hydrator classes for all given classes.
      *
-     * @param array  $classes The classes (ClassMetadata instances) for which to generate hydrators.
-     * @param string $toDir   The target directory of the hydrator classes. If not specified, the
+     * @param array       $classes The classes (ClassMetadata instances) for which to generate hydrators.
+     * @param string|null $toDir   The target directory of the hydrator classes. If not specified, the
      *                        directory configured on the Configuration of the DocumentManager used
      *                        by this factory is used.
      */

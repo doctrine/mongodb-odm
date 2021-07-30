@@ -11,7 +11,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 class GH520Test extends BaseTest
 {
-    public function testPrimeWithGetSingleResult()
+    public function testPrimeWithGetSingleResult(): void
     {
         $document      = new GH520Document();
         $document->ref = new GH520Document();
@@ -31,7 +31,7 @@ class GH520Test extends BaseTest
         $this->assertTrue($document->ref->isProxyInitialized());
     }
 
-    public function testPrimeWithGetSingleResultWillNotPrimeEntireResultSet()
+    public function testPrimeWithGetSingleResultWillNotPrimeEntireResultSet(): void
     {
         $document1 = new GH520Document();
         $document2 = new GH520Document();

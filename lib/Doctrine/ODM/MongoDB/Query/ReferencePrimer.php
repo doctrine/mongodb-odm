@@ -97,7 +97,7 @@ final class ReferencePrimer
      * @param array|Traversable $documents Documents containing references to prime
      * @param string            $fieldName Field name containing references to prime
      * @param array             $hints     UnitOfWork hints for priming queries
-     * @param callable          $primer    Optional primer callable
+     * @param callable|null     $primer    Optional primer callable
      *
      * @throws InvalidArgumentException If the mapped field is not the owning
      *                                   side of a reference relationship.

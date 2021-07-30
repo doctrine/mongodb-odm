@@ -10,7 +10,7 @@ use PHPUnit\Framework\Error\Notice;
 
 class GH1428Test extends BaseTest
 {
-    public function testShortNameLossOnReplacingMiddleEmbeddedDocOfNestedEmbedding()
+    public function testShortNameLossOnReplacingMiddleEmbeddedDocOfNestedEmbedding(): void
     {
         $owner          = new GH1428Document();
         $nestedEmbedded = new GH1428NestedEmbeddedDocument();

@@ -23,7 +23,7 @@ class SimpleReferenceUser
     /** @ODM\Field(type="string") */
     public $name;
 
-    public function setUser(User $user)
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }
@@ -33,7 +33,7 @@ class SimpleReferenceUser
         return $this->user;
     }
 
-    public function addUser(User $user)
+    public function addUser(User $user): void
     {
         $this->users[] = $user;
     }
@@ -43,7 +43,7 @@ class SimpleReferenceUser
         return $this->users;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }

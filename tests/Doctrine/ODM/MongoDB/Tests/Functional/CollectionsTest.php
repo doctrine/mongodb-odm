@@ -12,7 +12,7 @@ use Documents\Bars\Location;
 
 class CollectionsTest extends BaseTest
 {
-    public function testCollections()
+    public function testCollections(): void
     {
         $bar = new Bar("Jon's Pub");
         $bar->addLocation(new Location('West Nashville'));
@@ -79,7 +79,7 @@ class CollectionsTest extends BaseTest
         $this->assertSame($bar->getLocations(), $changeSet['locations'][1]);
     }
 
-    public function testCreateCollectionsBasic()
+    public function testCreateCollectionsBasic(): void
     {
         $sm = $this->dm->getSchemaManager();
         $sm->dropDocumentCollection(CollectionTestBasic::class);
@@ -97,7 +97,7 @@ class CollectionsTest extends BaseTest
         $this->assertCount(3, $data);
     }
 
-    public function testCreateCollectionsCapped()
+    public function testCreateCollectionsCapped(): void
     {
         $sm = $this->dm->getSchemaManager();
         $sm->dropDocumentCollection(CollectionTestCapped::class);

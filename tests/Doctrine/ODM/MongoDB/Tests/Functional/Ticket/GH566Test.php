@@ -12,7 +12,7 @@ use function iterator_to_array;
 
 class GH566Test extends BaseTest
 {
-    public function testFoo()
+    public function testFoo(): void
     {
         $class = GH566Document::class;
 

@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 
 class GH878Test extends BaseTest
 {
-    public function testSPLObjectHashCollisionOnDoubleMerge()
+    public function testSPLObjectHashCollisionOnDoubleMerge(): void
     {
         $document = $this->getPersistedButDetachedDocument();
 
@@ -39,10 +39,7 @@ class GH878Test extends BaseTest
         $this->assertEquals(UnitOfWork::STATE_NEW, $state);
     }
 
-    /**
-     * @return GH878Document
-     */
-    private function getPersistedButDetachedDocument()
+    private function getPersistedButDetachedDocument(): GH878Document
     {
         $document                = new GH878Document();
         $document->embeddedField = new GH878SubDocument();

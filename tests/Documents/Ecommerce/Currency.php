@@ -47,7 +47,7 @@ class Currency
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -57,7 +57,7 @@ class Currency
         return $this->multiplier;
     }
 
-    public function setMultiplier($multiplier)
+    public function setMultiplier($multiplier): void
     {
         $multiplier = (float) $multiplier;
         if (empty($multiplier) || $multiplier <= 0) {
@@ -69,7 +69,7 @@ class Currency
         $this->multiplier = $multiplier;
     }
 
-    public static function getAll()
+    public static function getAll(): array
     {
         return [
             self::USD,

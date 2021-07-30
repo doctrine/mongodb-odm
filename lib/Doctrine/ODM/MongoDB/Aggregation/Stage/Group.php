@@ -74,33 +74,6 @@ class Group extends Operator
     }
 
     /**
-     * Used to use an expression as field value. Can be any expression
-     *
-     * @see https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
-     * @see Expr::expression
-     *
-     * @param mixed|Expr $value
-     */
-    public function expression($value)
-    {
-        $this->expr->expression($value);
-
-        return $this;
-    }
-
-    /**
-     * Set the current field for building the expression.
-     *
-     * @see Expr::field
-     */
-    public function field(string $fieldName)
-    {
-        $this->expr->field($fieldName);
-
-        return $this;
-    }
-
-    /**
      * Returns the value that results from applying an expression to the first
      * document in a group of documents that share the same group by key. Only
      * meaningful when documents are in a defined order.

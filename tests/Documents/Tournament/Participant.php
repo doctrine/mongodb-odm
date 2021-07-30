@@ -32,7 +32,7 @@ class Participant
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -42,7 +42,7 @@ class Participant
         return $this->name;
     }
 
-    public function setTournament(Tournament $tournament)
+    public function setTournament(Tournament $tournament): void
     {
         $this->tournament = $tournament;
     }

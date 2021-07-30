@@ -86,20 +86,17 @@ class ReferenceUser
      */
     public $name;
 
-    public function setUser(User $user)
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }
 
-    /**
-     * @return User
-     */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function addUser(User $user)
+    public function addUser(User $user): void
     {
         $this->users[] = $user;
     }
@@ -112,20 +109,17 @@ class ReferenceUser
         return $this->users;
     }
 
-    public function setParentUser(User $parentUser)
+    public function setParentUser(User $parentUser): void
     {
         $this->parentUser = $parentUser;
     }
 
-    /**
-     * @return User
-     */
-    public function getParentUser()
+    public function getParentUser(): User
     {
         return $this->parentUser;
     }
 
-    public function addParentUser(User $parentUser)
+    public function addParentUser(User $parentUser): void
     {
         $this->parentUsers[] = $parentUser;
     }
@@ -138,20 +132,17 @@ class ReferenceUser
         return $this->parentUsers;
     }
 
-    public function setOtherUser(User $otherUser)
+    public function setOtherUser(User $otherUser): void
     {
         $this->otherUser = $otherUser;
     }
 
-    /**
-     * @return User
-     */
-    public function getOtherUser()
+    public function getOtherUser(): User
     {
         return $this->otherUser;
     }
 
-    public function addOtherUser(User $otherUser)
+    public function addOtherUser(User $otherUser): void
     {
         $this->otherUsers[] = $otherUser;
     }
@@ -164,20 +155,17 @@ class ReferenceUser
         return $this->otherUsers;
     }
 
-    public function setReferencedUser(User $referencedUser)
+    public function setReferencedUser(User $referencedUser): void
     {
         $this->referencedUser = $referencedUser;
     }
 
-    /**
-     * @return User
-     */
-    public function getreferencedUser()
+    public function getreferencedUser(): User
     {
         return $this->referencedUser;
     }
 
-    public function addReferencedUser(User $referencedUser)
+    public function addReferencedUser(User $referencedUser): void
     {
         $this->referencedUsers[] = $referencedUser;
     }
@@ -190,10 +178,7 @@ class ReferenceUser
         return $this->referencedUsers;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

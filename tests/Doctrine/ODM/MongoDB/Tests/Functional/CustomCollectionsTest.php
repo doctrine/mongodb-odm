@@ -21,21 +21,21 @@ use function get_class;
 
 class CustomCollectionsTest extends BaseTest
 {
-    public function testMappingNamespaceIsAdded()
+    public function testMappingNamespaceIsAdded(): void
     {
         $d  = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
         $this->assertSame(MyEmbedsCollection::class, $cm->fieldMappings['coll']['collectionClass']);
     }
 
-    public function testLeadingBackslashIsRemoved()
+    public function testLeadingBackslashIsRemoved(): void
     {
         $d  = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
         $this->assertSame(MyDocumentsCollection::class, $cm->fieldMappings['inverseRefMany']['collectionClass']);
     }
 
-    public function testCollectionClassHasToImplementCommonInterface()
+    public function testCollectionClassHasToImplementCommonInterface(): void
     {
         $cm = new ClassMetadata('stdClass');
 
@@ -52,7 +52,7 @@ class CustomCollectionsTest extends BaseTest
         ]);
     }
 
-    public function testGeneratedClassExtendsBaseCollection()
+    public function testGeneratedClassExtendsBaseCollection(): void
     {
         $coll  = new MyEmbedsCollection();
         $pcoll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create(
@@ -65,7 +65,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertSame($coll, $pcoll->unwrap());
     }
 
-    public function testEmbedMany()
+    public function testEmbedMany(): void
     {
         $d = new DocumentWithCustomCollection();
         $d->coll->add(new EmbeddedDocumentInCustomCollection('#1', true));
@@ -91,7 +91,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertCount(2, $d->boring);
     }
 
-    public function testReferenceMany()
+    public function testReferenceMany(): void
     {
         $d = new DocumentWithCustomCollection();
         $d->coll->add(new EmbeddedDocumentInCustomCollection('#1', true));
@@ -112,7 +112,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertCount(1, $d2->refMany->havingEmbeds());
     }
 
-    public function testInverseSideOfReferenceMany()
+    public function testInverseSideOfReferenceMany(): void
     {
         $d = new DocumentWithCustomCollection();
         $this->dm->persist($d);
@@ -128,7 +128,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertInstanceOf(MyDocumentsCollection::class, $d2->inverseRefMany);
     }
 
-    public function testModifyingCollectionByCustomMethod()
+    public function testModifyingCollectionByCustomMethod(): void
     {
         $d = new DocumentWithCustomCollection();
         $d->coll->add($e1 = new EmbeddedDocumentInCustomCollection('#1', true));
@@ -147,7 +147,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertEquals($e1, $d->coll[1]);
     }
 
-    public function testModifyingCollectionInChangeTrackingNotifyDocument()
+    public function testModifyingCollectionInChangeTrackingNotifyDocument(): void
     {
         $repository = $this->dm->getRepository(File::class);
         assert($repository instanceof GridFSRepository);
@@ -175,7 +175,7 @@ class CustomCollectionsTest extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testMethodWithVoidReturnType()
+    public function testMethodWithVoidReturnType(): void
     {
         $d = new DocumentWithCustomCollection();
         $this->dm->persist($d);
@@ -270,7 +270,7 @@ class MyEmbedsCollection extends ArrayCollection
         });
     }
 
-    public function move($i, $j)
+    public function move($i, $j): void
     {
         $tmp = $this->get($i);
         $this->set($i, $this->get($j));

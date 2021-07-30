@@ -25,7 +25,7 @@ class Product
         $this->features = new ArrayCollection();
     }
 
-    public function addFeature(Feature $feature)
+    public function addFeature(Feature $feature): void
     {
         $feature->product = $this;
         $this->features[] = $feature;

@@ -14,7 +14,7 @@ use function sprintf;
 
 class GH453Test extends BaseTest
 {
-    public function testHashWithStringKeys()
+    public function testHashWithStringKeys(): void
     {
         $hash = ['a' => 'x', 'b' => 'y', 'c' => 'z'];
 
@@ -45,7 +45,7 @@ class GH453Test extends BaseTest
         $this->assertBsonObjectAndValue($hash, $doc->id, 'hash');
     }
 
-    public function testHashWithNumericKeys()
+    public function testHashWithNumericKeys(): void
     {
         $hash = [0 => 'x', 1 => 'y', 2 => 'z'];
 
@@ -76,7 +76,7 @@ class GH453Test extends BaseTest
         $this->assertBsonObjectAndValue($hash, $doc->id, 'hash');
     }
 
-    public function testCollection()
+    public function testCollection(): void
     {
         $col = ['x', 'y', 'z'];
 
@@ -112,7 +112,7 @@ class GH453Test extends BaseTest
         $this->assertBsonArrayAndValue($col, $doc->id, 'colSet');
     }
 
-    public function testEmbedMany()
+    public function testEmbedMany(): void
     {
         $colPush     = new ArrayCollection([
             new GH453EmbeddedDocument(),
@@ -162,7 +162,7 @@ class GH453Test extends BaseTest
         $this->assertBsonArray($doc->id, 'embedManyAddToSet');
     }
 
-    public function testReferenceMany()
+    public function testReferenceMany(): void
     {
         $colPush     = new ArrayCollection([
             new GH453ReferencedDocument(),
@@ -239,17 +239,17 @@ class GH453Test extends BaseTest
         $this->assertBsonArray($doc->id, 'referenceManyAddToSet');
     }
 
-    private function assertBsonArray($documentId, $fieldName)
+    private function assertBsonArray($documentId, $fieldName): void
     {
         $this->assertBsonType(4, $documentId, $fieldName);
     }
 
-    private function assertBsonObject($documentId, $fieldName)
+    private function assertBsonObject($documentId, $fieldName): void
     {
         $this->assertBsonType(3, $documentId, $fieldName);
     }
 
-    private function assertBsonType($bsonType, $documentId, $fieldName)
+    private function assertBsonType($bsonType, $documentId, $fieldName): void
     {
         $criteria = ['_id' => $documentId];
 
@@ -263,17 +263,17 @@ class GH453Test extends BaseTest
         $this->assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
     }
 
-    private function assertBsonArrayAndValue($expectedValue, $documentId, $fieldName)
+    private function assertBsonArrayAndValue($expectedValue, $documentId, $fieldName): void
     {
         $this->assertBsonTypeAndValue(4, $expectedValue, $documentId, $fieldName);
     }
 
-    private function assertBsonObjectAndValue($expectedValue, $documentId, $fieldName)
+    private function assertBsonObjectAndValue($expectedValue, $documentId, $fieldName): void
     {
         $this->assertBsonTypeAndValue(3, $expectedValue, $documentId, $fieldName);
     }
 
-    private function assertBsonTypeAndValue($bsonType, $expectedValue, $documentId, $fieldName)
+    private function assertBsonTypeAndValue($bsonType, $expectedValue, $documentId, $fieldName): void
     {
         if ($bsonType === 4) {
             $expectedValue = array_values((array) $expectedValue);

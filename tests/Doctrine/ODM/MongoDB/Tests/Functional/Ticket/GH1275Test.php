@@ -14,7 +14,7 @@ use function array_map;
 
 class GH1275Test extends BaseTest
 {
-    public function testResortAtomicCollectionsFlipItems()
+    public function testResortAtomicCollectionsFlipItems(): void
     {
         $getNameCallback = static function (Item $item) {
             return $item->name;
@@ -55,7 +55,7 @@ class GH1275Test extends BaseTest
         );
     }
 
-    public function testResortAtomicCollections()
+    public function testResortAtomicCollections(): void
     {
         $getNameCallback = static function (Item $item) {
             return $item->name;
@@ -136,7 +136,7 @@ class GH1275Test extends BaseTest
         $this->assertCount(3, $container->items);
     }
 
-    public static function getCollectionStrategies()
+    public static function getCollectionStrategies(): array
     {
         return [
             'testResortWithStrategyAddToSet' => [ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET],
@@ -151,7 +151,7 @@ class GH1275Test extends BaseTest
     /**
      * @dataProvider getCollectionStrategies
      */
-    public function testResortEmbedManyCollection($strategy)
+    public function testResortEmbedManyCollection($strategy): void
     {
         $getNameCallback = static function (Element $element) {
             return $element->name;
@@ -309,7 +309,7 @@ class Container
         $this->atomicSetArray = new ArrayCollection();
     }
 
-    public function add(Item $item)
+    public function add(Item $item): void
     {
         $this->items->add($item);
         if ($this->items->count() !== 1) {
@@ -319,7 +319,7 @@ class Container
         $this->firstItem = $item;
     }
 
-    public function flip($a, $b)
+    public function flip($a, $b): void
     {
         $itemA = $this->items->get($a);
         $itemB = $this->items->get($b);
@@ -328,10 +328,10 @@ class Container
         $this->items->set($a, $itemB);
     }
 
-    public function move(Item $item, $move)
+    public function move(Item $item, $move): void
     {
         if ($move === 0) {
-            return $this;
+            return;
         }
 
         $currentPosition = $this->items->indexOf($item);

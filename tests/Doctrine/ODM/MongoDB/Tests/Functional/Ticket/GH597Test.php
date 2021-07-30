@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 
 class GH597Test extends BaseTest
 {
-    public function testEmbedManyGetsUnset()
+    public function testEmbedManyGetsUnset(): void
     {
         $post = new GH597Post();
         $this->dm->persist($post);
@@ -58,7 +59,7 @@ class GH597Test extends BaseTest
         $this->assertPostDocument($expectedDocument, $post);
     }
 
-    public function testReferenceManyGetsUnset()
+    public function testReferenceManyGetsUnset(): void
     {
         $post = new GH597Post();
         $this->dm->persist($post);
@@ -111,7 +112,7 @@ class GH597Test extends BaseTest
      *
      * @param array $expected
      */
-    private function assertPostDocument(array $expected, GH597Post $post)
+    private function assertPostDocument(array $expected, GH597Post $post): void
     {
         $collection = $this->dm->getDocumentCollection(GH597Post::class);
         $document   = $collection->findOne(['_id' => new ObjectId($post->getId())]);
@@ -142,12 +143,12 @@ class GH597Post
         return $this->id;
     }
 
-    public function getComments()
+    public function getComments(): Collection
     {
         return $this->comments;
     }
 
-    public function getReferenceMany()
+    public function getReferenceMany(): Collection
     {
         return $this->referenceMany;
     }

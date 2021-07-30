@@ -33,7 +33,7 @@ class ForumUser
         return $this->avatar;
     }
 
-    public function setAvatar(ForumAvatar $avatar)
+    public function setAvatar(ForumAvatar $avatar): void
     {
         $this->avatar = $avatar;
     }

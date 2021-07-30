@@ -44,7 +44,7 @@ class ConfigurableProduct
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): ConfigurableProduct
     {
         $name = (string) $name;
         if (empty($name)) {
@@ -64,7 +64,7 @@ class ConfigurableProduct
     /**
      * @param string|Option $name
      */
-    public function addOption($name, ?Money $price = null, ?StockItem $item = null)
+    public function addOption($name, ?Money $price = null, ?StockItem $item = null): void
     {
         if (! $name instanceof Option) {
             $name = (string) $name;
@@ -91,7 +91,7 @@ class ConfigurableProduct
         return $this->findOption($name);
     }
 
-    public function removeOption($name)
+    public function removeOption($name): ConfigurableProduct
     {
         $option = $this->findOption($name);
         if ($option === null) {
@@ -109,12 +109,12 @@ class ConfigurableProduct
         return $this;
     }
 
-    public function hasOption($name)
+    public function hasOption($name): bool
     {
         return $this->findOption($name) !== null;
     }
 
-    public function selectOption($name)
+    public function selectOption($name): ConfigurableProduct
     {
         $option = $this->findOption($name);
         if (! isset($option)) {
@@ -137,13 +137,16 @@ class ConfigurableProduct
         return null;
     }
 
+    /**
+     * @return Money|float|null
+     */
     public function getPrice()
     {
         return isset($this->selectedOption) ?
             $this->selectedOption->getPrice() : null;
     }
 
-    protected function getStockItems()
+    protected function getStockItems(): array
     {
         return array_map(static function ($option) {
             return $option->getStockItem();

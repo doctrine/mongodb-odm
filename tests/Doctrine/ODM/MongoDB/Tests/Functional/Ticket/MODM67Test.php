@@ -15,7 +15,7 @@ class MODM67Test extends BaseTest
     /** @var MODM67TestEventListener */
     private $listener;
 
-    private function getDocumentManager()
+    private function getDocumentManager(): ?DocumentManager
     {
         $this->listener = new MODM67TestEventListener($this->dm);
         $evm            = $this->dm->getEventManager();
@@ -30,7 +30,7 @@ class MODM67Test extends BaseTest
         return $this->dm;
     }
 
-    public function testDerivedClassListener()
+    public function testDerivedClassListener(): void
     {
         $dm = $this->getDocumentManager();
 
@@ -66,7 +66,7 @@ class MODM67TestEventListener
         $this->documentManager = $documentManager;
     }
 
-    public function prePersist(LifecycleEventArgs $eventArgs)
+    public function prePersist(LifecycleEventArgs $eventArgs): void
     {
         $document = $eventArgs->getDocument();
         if (! ($document instanceof MODM67EmbeddedObject)) {
@@ -76,7 +76,7 @@ class MODM67TestEventListener
         $document->prePersist = true;
     }
 
-    public function postPersist(LifecycleEventArgs $eventArgs)
+    public function postPersist(LifecycleEventArgs $eventArgs): void
     {
         $document = $eventArgs->getDocument();
         if (! ($document instanceof MODM67EmbeddedObject)) {
@@ -86,7 +86,7 @@ class MODM67TestEventListener
         $document->postPersist = true;
     }
 
-    public function preUpdate(LifecycleEventArgs $eventArgs)
+    public function preUpdate(LifecycleEventArgs $eventArgs): void
     {
         $document = $eventArgs->getDocument();
         if (! ($document instanceof MODM67EmbeddedObject)) {
@@ -96,7 +96,7 @@ class MODM67TestEventListener
         $document->preUpdate = true;
     }
 
-    public function postUpdate(LifecycleEventArgs $eventArgs)
+    public function postUpdate(LifecycleEventArgs $eventArgs): void
     {
         $document = $eventArgs->getDocument();
         if (! ($document instanceof MODM67EmbeddedObject)) {

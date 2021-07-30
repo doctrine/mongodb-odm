@@ -11,7 +11,7 @@ use function get_class;
 
 class GH977Test extends BaseTest
 {
-    public function testAutoRecompute()
+    public function testAutoRecompute(): void
     {
         $d         = new GH977TestDocument();
         $d->value1 = 'Value 1';
@@ -35,7 +35,7 @@ class GH977Test extends BaseTest
         $this->assertEquals('v1 has changed', $d->value2);
     }
 
-    public function testRefreshClearsChangeSet()
+    public function testRefreshClearsChangeSet(): void
     {
         $d         = new GH977TestDocument();
         $d->value1 = 'Value 1';

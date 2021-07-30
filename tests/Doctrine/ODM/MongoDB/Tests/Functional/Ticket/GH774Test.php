@@ -11,7 +11,7 @@ use function get_class;
 
 class GH774Test extends BaseTest
 {
-    public function testUpsert()
+    public function testUpsert(): void
     {
         $id = (string) new ObjectId();
 

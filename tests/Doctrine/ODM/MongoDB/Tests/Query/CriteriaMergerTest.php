@@ -14,12 +14,12 @@ class CriteriaMergerTest extends TestCase
     /**
      * @dataProvider provideMerge
      */
-    public function testMerge(array $args, array $merged)
+    public function testMerge(array $args, array $merged): void
     {
         $this->assertSame($merged, call_user_func_array([new CriteriaMerger(), 'merge'], $args));
     }
 
-    public function provideMerge()
+    public function provideMerge(): array
     {
         return [
             'no args' => [

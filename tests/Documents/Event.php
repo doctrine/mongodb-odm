@@ -26,7 +26,7 @@ class Event
         return $this->id;
     }
 
-    public function setUser(User $user)
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }
@@ -41,7 +41,7 @@ class Event
         return $this->title;
     }
 
-    public function setTitle($title)
+    public function setTitle($title): void
     {
         $this->title = $title;
     }
@@ -51,7 +51,7 @@ class Event
         return $this->type;
     }
 
-    public function setType($type)
+    public function setType($type): void
     {
         $this->type = $type;
     }

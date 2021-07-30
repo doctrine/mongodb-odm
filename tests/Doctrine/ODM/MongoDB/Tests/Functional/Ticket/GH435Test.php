@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH435Test extends BaseTest
 {
-    public function testOverridingFieldsType()
+    public function testOverridingFieldsType(): void
     {
         $parent = $this->dm->getClassMetadata(GH435Parent::class);
 

@@ -25,7 +25,7 @@ class PreUpdateTestProduct
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }

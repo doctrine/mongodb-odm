@@ -31,7 +31,7 @@ class Airport
         $this->connectionIds = new ArrayCollection();
     }
 
-    public function addConnection(Airport $airport)
+    public function addConnection(Airport $airport): void
     {
         if ($this->connections->contains($airport)) {
             return;

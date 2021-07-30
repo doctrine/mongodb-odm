@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Documents\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document(collection="favorites_user") */
@@ -24,7 +26,7 @@ class FavoritesUser
      *   }
      * )
      */
-    private $favorites = [];
+    private $favorites;
 
     /** @ODM\EmbedMany */
     private $embedded = [];
@@ -35,12 +37,17 @@ class FavoritesUser
     /** @ODM\EmbedOne */
     private $embed;
 
+    public function __construct()
+    {
+        $this->favorites = new ArrayCollection();
+    }
+
     public function getId()
     {
         return $this->id;
     }
 
-    public function setFavorite($favorite)
+    public function setFavorite($favorite): void
     {
         $this->favorite = $favorite;
     }
@@ -50,7 +57,7 @@ class FavoritesUser
         return $this->favorite;
     }
 
-    public function setEmbed($embed)
+    public function setEmbed($embed): void
     {
         $this->embed = $embed;
     }
@@ -60,7 +67,7 @@ class FavoritesUser
         return $this->embed;
     }
 
-    public function embed($document)
+    public function embed($document): void
     {
         $this->embedded[] = $document;
     }
@@ -75,17 +82,17 @@ class FavoritesUser
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
-    public function addFavorite($favorite)
+    public function addFavorite($favorite): void
     {
         $this->favorites[] = $favorite;
     }
 
-    public function getFavorites()
+    public function getFavorites(): Collection
     {
         return $this->favorites;
     }

@@ -12,7 +12,7 @@ use MongoDB\BSON\UTCDateTime;
 
 class ReplaceRootTest extends BaseTest
 {
-    public function testTypeConversion()
+    public function testTypeConversion(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
@@ -35,7 +35,7 @@ class ReplaceRootTest extends BaseTest
         );
     }
 
-    public function testTypeConversionWithDirectExpression()
+    public function testTypeConversionWithDirectExpression(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
@@ -60,7 +60,7 @@ class ReplaceRootTest extends BaseTest
         );
     }
 
-    public function testFieldNameConversion()
+    public function testFieldNameConversion(): void
     {
         $builder = $this->dm->createAggregationBuilder(CmsComment::class);
 
@@ -81,7 +81,7 @@ class ReplaceRootTest extends BaseTest
         );
     }
 
-    public function testFieldNameConversionWithDirectExpression()
+    public function testFieldNameConversionWithDirectExpression(): void
     {
         $builder = $this->dm->createAggregationBuilder(CmsComment::class);
 

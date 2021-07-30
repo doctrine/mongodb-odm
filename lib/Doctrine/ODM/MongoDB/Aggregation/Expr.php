@@ -44,9 +44,6 @@ class Expr
     /** @var array|null */
     private $switchBranch;
 
-    /**
-     * @inheritDoc
-     */
     public function __construct(DocumentManager $dm, ClassMetadataInterface $class)
     {
         assert($class instanceof ClassMetadata);

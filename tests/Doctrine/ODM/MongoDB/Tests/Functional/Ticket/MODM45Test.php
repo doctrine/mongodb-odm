@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM45Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $a = new MODM45A();
         $a->setB(new MODM45B());
@@ -43,7 +43,7 @@ class MODM45A
         return $this->b;
     }
 
-    public function setB($b)
+    public function setB($b): void
     {
         $this->b = $b;
     }
@@ -55,7 +55,7 @@ class MODM45B
     /** @ODM\Field(type="string") */
     protected $val;
 
-    public function setVal($val)
+    public function setVal($val): void
     {
         $this->val = $val;
     }

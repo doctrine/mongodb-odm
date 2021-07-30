@@ -30,7 +30,7 @@ class ResolveTargetDocumentListenerTest extends BaseTest
         $this->factory  = $this->dm->getMetadataFactory();
     }
 
-    public function testResolveTargetDocumentListenerCanResolveTargetDocument()
+    public function testResolveTargetDocumentListenerCanResolveTargetDocument(): void
     {
         $evm = $this->dm->getEventManager();
 
@@ -57,7 +57,7 @@ class ResolveTargetDocumentListenerTest extends BaseTest
         $this->assertSame(TargetDocument::class, $meta['embedMany']['targetDocument']);
     }
 
-    public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByInterfaceName()
+    public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByInterfaceName(): void
     {
         $this->listener->addResolveTargetDocument(ResolveTargetInterface::class, ResolveTargetDocument::class, []);
 
@@ -68,7 +68,7 @@ class ResolveTargetDocumentListenerTest extends BaseTest
         $this->assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
     }
 
-    public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByAbstractClassName()
+    public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByAbstractClassName(): void
     {
         $this->listener->addResolveTargetDocument(AbstractResolveTarget::class, ResolveTargetDocument::class, []);
 

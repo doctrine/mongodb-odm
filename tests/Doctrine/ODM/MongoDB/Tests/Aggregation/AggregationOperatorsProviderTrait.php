@@ -14,12 +14,12 @@ use function is_array;
 
 trait AggregationOperatorsProviderTrait
 {
-    public static function provideAllOperators()
+    public static function provideAllOperators(): array
     {
         return static::provideAccumulationOperators() + static::provideExpressionOperators();
     }
 
-    public static function provideAccumulationOperators()
+    public static function provideAccumulationOperators(): array
     {
         return [
             'addToSet' => [
@@ -85,7 +85,7 @@ trait AggregationOperatorsProviderTrait
         ];
     }
 
-    public static function provideExpressionOperators()
+    public static function provideExpressionOperators(): array
     {
         return [
             'abs' => [
