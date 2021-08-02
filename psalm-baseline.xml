@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.7.3@38c452ae584467e939d55377aaf83b5a26f19dd1">
+  <file src="lib/Doctrine/ODM/MongoDB/DocumentManager.php">
+    <ParamNameMismatch occurrences="8">
+      <code>$document</code>
+      <code>$document</code>
+      <code>$document</code>
+      <code>$document</code>
+      <code>$document</code>
+      <code>$document</code>
+      <code>$documentName</code>
+      <code>$documentName</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php">
+    <ParamNameMismatch occurrences="2">
+      <code>$fieldName</code>
+      <code>$fieldName</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/PersistentCollection/PersistentCollectionTrait.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$value</code>
+    </ParamNameMismatch>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Query/QueryExpressionVisitor.php">
+    <ParamNameMismatch occurrences="1">
+      <code>$compositeExpr</code>
+    </ParamNameMismatch>
+  </file>
+</files>

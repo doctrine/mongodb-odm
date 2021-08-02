@@ -16,6 +16,7 @@ use Documents\User;
 use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
 
 use function array_values;
@@ -97,6 +98,27 @@ class QueryTest extends BaseTest
         $this->assertNull($user);
 
         $qb->field('username')->not($qb->expr()->in(['1boo']));
+        $query = $qb->getQuery();
+        $user  = $query->getSingleResult();
+        $this->assertNotNull($user);
+    }
+
+    public function testNotAllowsRegex(): void
+    {
+        $user = new User();
+        $user->setUsername('boo');
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $qb = $this->dm->createQueryBuilder(User::class);
+        $qb->field('username')->not(new Regex('Boo', 'i'));
+        $query = $qb->getQuery();
+        $user  = $query->getSingleResult();
+        $this->assertNull($user);
+
+        $qb = $this->dm->createQueryBuilder(User::class);
+        $qb->field('username')->not(new Regex('Boo'));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
         $this->assertNotNull($user);
