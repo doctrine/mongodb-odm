@@ -29,6 +29,7 @@ class DateImmutableType extends DateType
             return DateTimeImmutable::createFromMutable($datetime);
         }
 
+        // @phpstan-ignore-next-line
         throw new RuntimeException(sprintf(
             '%s::getDateTime has returned an unsupported implementation of DateTimeInterface: %s',
             parent::class,
