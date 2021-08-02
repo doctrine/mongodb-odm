@@ -321,6 +321,18 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expected, $qb->getQueryArray());
     }
 
+    public function testFindWithHint(): void
+    {
+        $qb = $this->getTestQueryBuilder()
+            ->find(User::class)
+            ->hint('foo');
+
+        $expected = 'foo';
+
+        $this->assertEquals($expected, $qb->debug('hint'));
+        $this->assertEquals($expected, $qb->getQuery()->debug('hint'));
+    }
+
     public function testUpsertUpdateQuery()
     {
         $qb = $this->getTestQueryBuilder()
