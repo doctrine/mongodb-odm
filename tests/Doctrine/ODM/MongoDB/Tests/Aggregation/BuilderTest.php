@@ -16,6 +16,7 @@ use Documents\BlogTagAggregation;
 use Documents\CmsComment;
 use Documents\GuestServer;
 use Documents\Tag;
+use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
 use function array_keys;
@@ -197,6 +198,34 @@ class BuilderTest extends BaseTest
 
         $this->assertSame('baseball', $results[0]->tag->name);
         $this->assertSame(3, $results[0]->numPosts);
+    }
+
+    public function testAggregationBuilderResetHydration(): void
+    {
+        $this->insertTestData();
+
+        $builder = $this->dm->createAggregationBuilder(BlogPost::class)->hydrate(BlogTagAggregation::class);
+
+        $resultCursor = $builder
+            ->hydrate(null)
+            ->unwind('$tags')
+            ->group()
+            ->field('id')
+            ->expression('$tags')
+            ->field('numPosts')
+            ->sum(1)
+            ->sort('numPosts', 'desc')
+            ->getAggregation()
+            ->getIterator();
+
+        $this->assertInstanceOf(Iterator::class, $resultCursor);
+
+        $results = $resultCursor->toArray();
+        $this->assertCount(2, $results);
+        $this->assertIsArray($results[0]);
+        $this->assertInstanceOf(ObjectId::class, $results[0]['_id']['$id']);
+        $this->assertSame('Tag', $results[0]['_id']['$ref']);
+        $this->assertSame(3, $results[0]['numPosts']);
     }
 
     public function testGetAggregation()
