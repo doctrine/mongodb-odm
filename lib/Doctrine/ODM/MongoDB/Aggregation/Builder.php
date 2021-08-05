@@ -341,7 +341,7 @@ class Builder
     /**
      * Set which class to use when hydrating results as document class instances.
      */
-    public function hydrate(string $className): self
+    public function hydrate(?string $className): self
     {
         $this->hydrationClass = $className;
 
