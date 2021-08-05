@@ -17,4 +17,6 @@ use Doctrine\Common\Annotations\Annotation as BaseAnnotation;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class Indexes extends BaseAnnotation implements Annotation
 {
+    /** @var AbstractIndex[]|AbstractIndex */
+    public $value = [];
 }

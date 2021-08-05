@@ -9,7 +9,7 @@ abstract class AbstractIndex implements Annotation
     /** @var string[] */
     public $keys;
 
-    /** @var string */
+    /** @var string|null */
     public $name;
 
     /** @var bool|null */

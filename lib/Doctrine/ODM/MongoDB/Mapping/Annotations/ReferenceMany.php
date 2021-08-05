@@ -63,9 +63,6 @@ final class ReferenceMany extends AbstractField
     /** @var int|null */
     public $skip;
 
-    /** @var string */
-    public $strategy;
-
     /** @var string|null */
     public $collectionClass;
 
