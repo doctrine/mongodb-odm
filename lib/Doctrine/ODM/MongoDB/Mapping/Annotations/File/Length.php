@@ -15,8 +15,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Length extends AbstractField
 {
-    public function __construct(?string $name = 'length')
+    public function __construct()
     {
-        parent::__construct($name, 'int', false, [], null, true);
+        parent::__construct('length', 'int', false, [], null, true);
     }
 }

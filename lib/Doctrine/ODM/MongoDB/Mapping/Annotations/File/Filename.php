@@ -15,8 +15,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Filename extends AbstractField
 {
-    public function __construct(?string $name = 'filename')
+    public function __construct()
     {
-        parent::__construct($name, 'string', false, [], null, true);
+        parent::__construct('filename', 'string', false, [], null, true);
     }
 }

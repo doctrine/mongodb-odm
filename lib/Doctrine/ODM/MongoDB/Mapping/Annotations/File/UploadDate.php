@@ -15,8 +15,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class UploadDate extends AbstractField
 {
-    public function __construct(?string $name = 'uploadDate', string $type = 'date')
+    public function __construct()
     {
-        parent::__construct($name, $type, false, [], null, true);
+        parent::__construct('uploadDate', 'date', false, [], null, true);
     }
 }

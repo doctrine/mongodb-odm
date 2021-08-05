@@ -32,7 +32,6 @@ final class Metadata extends AbstractField
     public $defaultDiscriminatorValue;
 
     public function __construct(
-        ?string $name = 'metadata',
         bool $nullable = false,
         array $options = [],
         ?string $strategy = null,
@@ -42,7 +41,7 @@ final class Metadata extends AbstractField
         ?array $discriminatorMap = null,
         ?string $defaultDiscriminatorValue = null
     ) {
-        parent::__construct($name, ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
+        parent::__construct('metadata', ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
 
         $this->targetDocument            = $targetDocument;
         $this->discriminatorField        = $discriminatorField;
