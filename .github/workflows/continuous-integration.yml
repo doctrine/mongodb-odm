@@ -12,12 +12,10 @@ env:
 jobs:
   phpunit:
     name: "PHPUnit"
-    runs-on: "${{ matrix.os }}"
+    runs-on: "ubuntu-18.04"
 
     strategy:
       matrix:
-        os:
-          - "ubuntu-18.04"
         php-version:
           - "7.2"
           - "7.3"
@@ -35,13 +33,11 @@ jobs:
           - "highest"
         include:
           - deps: "lowest"
-            os: "ubuntu-16.04"
             php-version: "7.2"
             mongodb-version: "3.6"
             driver-version: "1.5.0"
             topology: "server"
           - topology: "sharded_cluster"
-            os: "ubuntu-18.04"
             php-version: "8.0"
             mongodb-version: "4.4"
             driver-version: "stable"
@@ -85,6 +81,12 @@ jobs:
         with:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--prefer-dist"
+
+      - name: "Upload composer.lock as build artifact"
+        uses: actions/upload-artifact@v2
+        with:
+          name: composer.lock
+          path: composer.lock
 
       - id: setup-mongodb
         uses: mongodb-labs/drivers-evergreen-tools@master

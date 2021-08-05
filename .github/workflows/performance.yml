@@ -54,6 +54,12 @@ jobs:
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
 
+      - name: "Upload composer.lock as build artifact"
+        uses: actions/upload-artifact@v2
+        with:
+          name: composer.lock
+          path: composer.lock
+
       # https://github.com/doctrine/.github/issues/3
       - name: "Run PHP_CodeSniffer"
         run: "vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate"

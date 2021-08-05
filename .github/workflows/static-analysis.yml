@@ -49,6 +49,12 @@ jobs:
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
 
+      - name: "Upload composer.lock as build artifact"
+        uses: actions/upload-artifact@v2
+        with:
+          name: composer.lock
+          path: composer.lock
+
       - name: "Run a static analysis with phpstan/phpstan"
         run: "vendor/bin/phpstan analyse --error-format=github"
 
@@ -74,6 +80,12 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
+
+      - name: "Upload composer.lock as build artifact"
+        uses: actions/upload-artifact@v2
+        with:
+          name: composer.lock
+          path: composer.lock
 
       - name: "Run a static analysis with vimeo/psalm"
         run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc) --php-version=${{ matrix.php-version }}"
