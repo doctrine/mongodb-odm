@@ -491,6 +491,30 @@ class QueryTest extends BaseTest
         $this->assertSame(100, $query->execute());
     }
 
+    public function testFindWithHint(): void
+    {
+        $cursor = $this->createMock(Traversable::class);
+
+        $collection = $this->getMockCollection();
+        $collection->expects($this->once())
+            ->method('find')
+            ->with(['foo' => 'bar'], ['hint' => 'foo'])
+            ->will($this->returnValue($cursor));
+
+        // Using QueryBuilder->find adds hint to the query array
+        $queryArray = [
+            'type' => Query::TYPE_FIND,
+            'query' => ['foo' => 'bar'],
+            'hint' => 'foo',
+        ];
+
+        $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, []);
+
+        /* Do not expect the same object returned by Collection::find(), since
+         * Query::makeIterator() wraps the return value with CachingIterator. */
+        $this->assertInstanceOf(Traversable::class, $query->execute());
+    }
+
     public function testFindOptionInheritance(): void
     {
         $nearest            = new ReadPreference('nearest');

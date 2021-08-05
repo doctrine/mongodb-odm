@@ -424,7 +424,7 @@ final class Query implements IteratorAggregate
 
         switch ($this->query['type']) {
             case self::TYPE_FIND:
-                $queryOptions = $this->getQueryOptions('select', 'sort', 'skip', 'limit', 'readPreference');
+                $queryOptions = $this->getQueryOptions('select', 'sort', 'skip', 'limit', 'readPreference', 'hint');
                 $queryOptions = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
 
                 $cursor = $this->collection->find(
