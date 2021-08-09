@@ -15,6 +15,8 @@ class AttributeDriver extends AnnotationDriver
      * Factory method for the Attribute Driver
      *
      * @param string[]|string $paths
+     *
+     * @return AttributeDriver
      */
     public static function create($paths = [], ?Reader $reader = null): AnnotationDriver
     {
