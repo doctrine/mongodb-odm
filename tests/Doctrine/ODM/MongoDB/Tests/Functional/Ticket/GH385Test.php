@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 

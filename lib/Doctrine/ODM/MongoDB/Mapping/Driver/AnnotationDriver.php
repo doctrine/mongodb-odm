@@ -218,8 +218,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 if ($annot instanceof ODM\Indexes) {
-                    // Setting the type to mixed is a workaround until https://github.com/doctrine/annotations/pull/209 is released.
-                    /** @var mixed $value */
                     $value = $annot->value;
                     foreach (is_array($value) ? $value : [$value] as $index) {
                         $indexes[] = $index;

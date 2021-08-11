@@ -4,12 +4,7 @@
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                         http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <mapped-superclass name="Doctrine\ODM\MongoDB\Tests\GH774AbstractThread" collection="threads">
-
-        <id type="string" strategy="NONE" />
-
-        <field name="permalink" type="string" />
-
-    </mapped-superclass>
+    <document name="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH774Thread" change-tracking-policy="DEFERRED_EXPLICIT">
+    </document>
 
 </doctrine-mongo-mapping>

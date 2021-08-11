@@ -4,17 +4,29 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-/** @Annotation */
-final class ShardKey extends Annotation
+/**
+ * @Annotation
+ * @NamedArgumentConstructor
+ */
+#[Attribute(Attribute::TARGET_CLASS)]
+final class ShardKey implements Annotation
 {
     /** @var string[] */
-    public $keys = [];
+    public $keys;
 
     /** @var bool|null */
     public $unique;
 
     /** @var int|null */
     public $numInitialChunks;
+
+    public function __construct(array $keys = [], ?bool $unique = null, ?int $numInitialChunks = null)
+    {
+        $this->keys             = $keys;
+        $this->unique           = $unique;
+        $this->numInitialChunks = $numInitialChunks;
+    }
 }

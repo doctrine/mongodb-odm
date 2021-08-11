@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+use Attribute;
+use Doctrine\Common\Annotations\Annotation as BaseAnnotation;
 
 /**
  * Specifies a list of indexes for a document
@@ -13,6 +14,9 @@ use Doctrine\Common\Annotations\Annotation;
  *
  * @Annotation
  */
-final class Indexes extends Annotation
+#[Attribute(Attribute::TARGET_CLASS)]
+final class Indexes extends BaseAnnotation implements Annotation
 {
+    /** @var AbstractIndex[]|AbstractIndex */
+    public $value = [];
 }

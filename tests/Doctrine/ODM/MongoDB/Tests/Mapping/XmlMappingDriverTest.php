@@ -7,8 +7,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use ReflectionMethod;
-use SimpleXMLElement;
+use SimpleXmlElement;
 use stdClass;
 
 use function get_class;
@@ -17,16 +18,16 @@ use const DIRECTORY_SEPARATOR;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function loadDriver(): XmlDriver
+    protected function loadDriver(): MappingDriver
     {
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }
 
-    public function testSetShardKeyOptionsByAttributes(): void
+    public function testSetShardKeyOptionsByAttributes()
     {
         $class   = new ClassMetadata(stdClass::class);
         $driver  = $this->loadDriver();
-        $element = new SimpleXMLElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
+        $element = new SimpleXmlElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
 
         /** @uses XmlDriver::setShardKey */
         $m = new ReflectionMethod(get_class($driver), 'setShardKey');
