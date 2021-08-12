@@ -12,6 +12,14 @@ use Doctrine\Common\Annotations\Reader;
 class AttributeDriver extends AnnotationDriver
 {
     /**
+     * @param string|string[]|null $paths
+     */
+    public function __construct($paths = null, ?Reader $reader = null)
+    {
+        parent::__construct($reader ?? new AttributeReader(), $paths);
+    }
+
+    /**
      * Factory method for the Attribute Driver
      *
      * @param string[]|string $paths
@@ -20,10 +28,6 @@ class AttributeDriver extends AnnotationDriver
      */
     public static function create($paths = [], ?Reader $reader = null): AnnotationDriver
     {
-        if ($reader === null) {
-            $reader = new AttributeReader();
-        }
-
-        return new self($reader, $paths);
+        return new self($paths, $reader);
     }
 }
