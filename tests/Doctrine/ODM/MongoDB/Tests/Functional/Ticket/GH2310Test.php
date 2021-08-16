@@ -9,20 +9,11 @@ use Documents74\GH2310Container;
 use Documents74\GH2310Embedded;
 use MongoDB\BSON\ObjectId;
 
-use function phpversion;
-use function version_compare;
-
+/**
+ * @requires PHP 7.4
+ */
 class GH2310Test extends BaseTest
 {
-    public function setUp(): void
-    {
-        if (version_compare((string) phpversion(), '7.4.0', '<')) {
-            self::markTestSkipped('PHP 7.4 is required to run this test');
-        }
-
-        parent::setUp();
-    }
-
     public function testFindWithNullableEmbeddedAfterUpsert(): void
     {
         $document = new GH2310Container((string) new ObjectId(), null);
