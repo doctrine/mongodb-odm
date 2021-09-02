@@ -68,14 +68,22 @@ class ShardKeyInheritanceMappingTest extends BaseTest
  */
 class ShardedSuperclass
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 }
 
 /** @ODM\Document */
 class ShardedSubclass extends ShardedSuperclass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }
 
@@ -86,7 +94,11 @@ class ShardedSubclass extends ShardedSuperclass
  */
 class ShardedSingleCollInheritance1
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }
 
@@ -112,7 +124,11 @@ class ShardedSingleCollInheritance3 extends ShardedSingleCollInheritance1
  */
 class ShardedCollectionPerClass1
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }
 

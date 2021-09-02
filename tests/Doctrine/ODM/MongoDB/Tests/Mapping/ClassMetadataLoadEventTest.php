@@ -36,11 +36,20 @@ class ClassMetadataLoadEventTest extends BaseTest
  */
 class LoadEventTestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
+    /** @var mixed */
     private $about;
 }

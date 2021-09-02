@@ -195,7 +195,11 @@ class Item
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /** @var Container */
@@ -216,7 +220,11 @@ class Element
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     public function __construct($name)

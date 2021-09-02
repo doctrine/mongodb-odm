@@ -41,10 +41,18 @@ class MappedSuperclassTest extends BaseTest
 /** @ODM\MappedSuperclass */
 class MappedSuperclassBase
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $mapped1;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $mapped2;
 
     /** @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class) */
@@ -87,7 +95,11 @@ class MappedSuperclassRelated1
     /** @ODM\Id(strategy="none") */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
     public function setName($name): void
@@ -117,7 +129,11 @@ class DocumentSubClass extends MappedSuperclassBase
     /** @ODM\Id(strategy="none") */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
     public function setName($name): void

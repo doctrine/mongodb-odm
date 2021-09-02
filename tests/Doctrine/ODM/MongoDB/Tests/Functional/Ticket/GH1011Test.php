@@ -65,7 +65,11 @@ class GH1011Document
 /** @ODM\EmbeddedDocument */
 class GH1011Embedded
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     public function __construct($name)

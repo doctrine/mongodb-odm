@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -599,13 +601,19 @@ abstract class AbstractMappingDriverTest extends BaseTest
 #[ODM\ReadPreference('primaryPreferred', tags: [['dc' => 'east'], ['dc' => 'west'], []])]
 class AbstractMappingDriverUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id()]
     public $identifier;
 
     /**
      * @ODM\Version
      * @ODM\Field(type="int")
+     *
+     * @var int|null
      */
     #[ODM\Version]
     #[ODM\Field(type: 'int')]
@@ -614,6 +622,8 @@ class AbstractMappingDriverUser
     /**
      * @ODM\Lock
      * @ODM\Field(type="int")
+     *
+     * @var int|null
      */
     #[ODM\Lock]
     #[ODM\Field(type: 'int')]
@@ -622,6 +632,8 @@ class AbstractMappingDriverUser
     /**
      * @ODM\Field(name="username", type="string")
      * @ODM\UniqueIndex(order="desc")
+     *
+     * @var string|null
      */
     #[ODM\Field(name: 'username', type: 'string')]
     #[ODM\UniqueIndex(order: 'desc')]
@@ -630,6 +642,8 @@ class AbstractMappingDriverUser
     /**
      * @ODM\Field(type="string")
      * @ODM\UniqueIndex(order="desc")
+     *
+     * @var string|null
      */
     #[ODM\Field(type: 'string')]
     #[ODM\UniqueIndex(order: 'desc')]
@@ -638,40 +652,74 @@ class AbstractMappingDriverUser
     /**
      * @ODM\Field(type="int")
      * @ODM\UniqueIndex(order="desc")
+     *
+     * @var int|null
      */
     #[ODM\Field(type: 'int')]
     #[ODM\UniqueIndex(order: 'desc')]
     public $mysqlProfileId;
 
-    /** @ODM\ReferenceOne(targetDocument=Address::class, cascade={"remove"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Address::class, cascade={"remove"})
+     *
+     * @var Address|null
+     */
     #[ODM\ReferenceOne(targetDocument: Address::class, cascade: ['remove'])]
     public $address;
 
-    /** @ODM\ReferenceMany(collectionClass=PhonenumberCollection::class, cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
+    /**
+     * @ODM\ReferenceMany(collectionClass=PhonenumberCollection::class, cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home")
+     *
+     * @var PhonenumberCollection
+     */
     #[ODM\ReferenceMany(collectionClass: PhonenumberCollection::class, cascade: ['persist'], discriminatorField: 'discr', discriminatorMap: ['home' => HomePhonenumber::class, 'work' => WorkPhonenumber::class], defaultDiscriminatorValue: 'home')]
     public $phonenumbers;
 
-    /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"})
+     *
+     * @var Collection<int, Group>
+     */
     #[ODM\ReferenceMany(targetDocument: Group::class, cascade: ['all'])]
     public $groups;
 
-    /** @ODM\ReferenceMany(targetDocument=Phonenumber::class, collectionClass=PhonenumberCollection::class, name="more_phone_numbers") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Phonenumber::class, collectionClass=PhonenumberCollection::class, name="more_phone_numbers")
+     *
+     * @var PhonenumberCollection
+     */
     #[ODM\ReferenceMany(targetDocument: Phonenumber::class, collectionClass: PhonenumberCollection::class, name: 'more_phone_numbers')]
     public $morePhoneNumbers;
 
-    /** @ODM\EmbedMany(targetDocument=Phonenumber::class, name="embedded_phone_number") */
+    /**
+     * @ODM\EmbedMany(targetDocument=Phonenumber::class, name="embedded_phone_number")
+     *
+     * @var Collection<int, Phonenumber>
+     */
     #[ODM\EmbedMany(targetDocument: Phonenumber::class, name: 'embedded_phone_number')]
     public $embeddedPhonenumber;
 
-    /** @ODM\EmbedMany(discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
+    /**
+     * @ODM\EmbedMany(discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home")
+     *
+     * @var Collection<int, HomePhonenumber|WorkPhonenumber>
+     */
     #[ODM\EmbedMany(discriminatorField: 'discr', discriminatorMap: ['home' => HomePhonenumber::class, 'work' => WorkPhonenumber::class], defaultDiscriminatorValue: 'home')]
     public $otherPhonenumbers;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     #[ODM\Field(type: 'date')]
     public $createdAt;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
     #[ODM\Field(type: 'collection')]
     public $roles = [];
 
@@ -818,6 +866,7 @@ class Phonenumber
 
 class InvalidMappingDocument
 {
+    /** @var string|null */
     public $id;
 }
 
@@ -827,34 +876,62 @@ class InvalidMappingDocument
 #[ODM\File(chunkSizeBytes: 12345)]
 class AbstractMappingDriverFile
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 
-    /** @ODM\File\Length */
+    /**
+     * @ODM\File\Length
+     *
+     * @var int|null
+     */
     #[ODM\File\Length]
     public $size;
 
-    /** @ODM\File\ChunkSize */
+    /**
+     * @ODM\File\ChunkSize
+     *
+     * @var int|null
+     */
     #[ODM\File\ChunkSize]
     public $chunkSize;
 
-    /** @ODM\File\Filename */
+    /**
+     * @ODM\File\Filename
+     *
+     * @var string|null
+     */
     #[ODM\File\Filename]
     public $name;
 
-    /** @ODM\File\Metadata(targetDocument=AbstractMappingDriverFileMetadata::class) */
+    /**
+     * @ODM\File\Metadata(targetDocument=AbstractMappingDriverFileMetadata::class)
+     *
+     * @var AbstractMappingDriverFileMetadata|null
+     */
     #[ODM\File\Metadata(targetDocument: AbstractMappingDriverFileMetadata::class)]
     public $metadata;
 
-    /** @ODM\File\UploadDate */
+    /**
+     * @ODM\File\UploadDate
+     *
+     * @var DateTime|null
+     */
     #[ODM\File\UploadDate]
     public $uploadDate;
 }
 
 class AbstractMappingDriverFileMetadata
 {
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     #[ODM\Field]
     public $contentType;
 }
@@ -865,7 +942,11 @@ class AbstractMappingDriverFileMetadata
 #[ODM\File(repositoryClass: AbstractMappingDriverGridFSRepository::class)]
 class AbstractMappingDriverFileWithCustomRepository
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 }
@@ -878,11 +959,19 @@ class AbstractMappingDriverGridFSRepository extends DefaultGridFSRepository
 #[ODM\MappedSuperclass]
 class AbstractMappingDriverSuperClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     protected $override;
 }
@@ -893,15 +982,27 @@ class AbstractMappingDriverSuperClass
 #[ODM\Document]
 class AbstractMappingDriverDuplicateDatabaseName extends AbstractMappingDriverSuperClass
 {
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     #[ODM\Field(type: 'int')]
     public $override;
 
-    /** @ODM\Field(type="string", name="baz") */
+    /**
+     * @ODM\Field(type="string", name="baz")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string', name: 'baz')]
     public $foo;
 
-    /** @ODM\Field(type="string", name="baz") */
+    /**
+     * @ODM\Field(type="string", name="baz")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string', name: 'baz')]
     public $bar;
 }
@@ -912,15 +1013,27 @@ class AbstractMappingDriverDuplicateDatabaseName extends AbstractMappingDriverSu
 #[ODM\Document]
 class AbstractMappingDriverDuplicateDatabaseNameNotSaved extends AbstractMappingDriverSuperClass
 {
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     #[ODM\Field(type: 'int')]
     public $override;
 
-    /** @ODM\Field(type="string", name="baz") */
+    /**
+     * @ODM\Field(type="string", name="baz")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'int', name: 'baz')]
     public $foo;
 
-    /** @ODM\Field(type="string", name="baz", notSaved=true) */
+    /**
+     * @ODM\Field(type="string", name="baz", notSaved=true)
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'int', name: 'baz', notSaved: true)]
     public $bar;
 }
@@ -931,11 +1044,19 @@ class AbstractMappingDriverDuplicateDatabaseNameNotSaved extends AbstractMapping
 #[ODM\View(rootClass: AbstractMappingDriverUser::class)]
 class AbstractMappingDriverViewWithoutRepository
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $name;
 }
@@ -946,11 +1067,19 @@ class AbstractMappingDriverViewWithoutRepository
 #[ODM\View(repositoryClass: DocumentRepository::class, rootClass: AbstractMappingDriverUser::class)]
 class AbstractMappingDriverViewWithWrongRepository
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $name;
 }
@@ -961,11 +1090,19 @@ class AbstractMappingDriverViewWithWrongRepository
 #[ODM\View(repositoryClass: AbstractMappingDriverViewRepository::class)]
 class AbstractMappingDriverViewWithoutRootClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $name;
 }
@@ -976,11 +1113,19 @@ class AbstractMappingDriverViewWithoutRootClass
 #[ODM\View(repositoryClass: AbstractMappingDriverViewRepository::class, rootClass: 'Doctrine\ODM\MongoDB\LolNo')]
 class AbstractMappingDriverViewWithNonExistingRootClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $name;
 }
@@ -995,11 +1140,19 @@ class AbstractMappingDriverViewWithNonExistingRootClass
 #[ODM\View(repositoryClass: AbstractMappingDriverViewRepository::class, rootClass: AbstractMappingDriverUser::class, view: 'user_name')]
 class AbstractMappingDriverView
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $name;
 }

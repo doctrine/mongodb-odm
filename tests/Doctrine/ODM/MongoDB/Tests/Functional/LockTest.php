@@ -561,7 +561,11 @@ abstract class AbstractVersionBase
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $title;
 
     /** @ODM\Lock @ODM\Field(type="int") */

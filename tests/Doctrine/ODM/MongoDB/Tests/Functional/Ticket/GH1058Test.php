@@ -67,7 +67,11 @@ class GH1058PersistDocument
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $value;
 
     public function getId()
@@ -87,7 +91,11 @@ class GH1058UpsertDocument
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $value;
 
     public function getId()

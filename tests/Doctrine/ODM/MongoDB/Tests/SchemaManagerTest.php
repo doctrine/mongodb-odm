@@ -46,6 +46,7 @@ use function MongoDB\BSON\toPHP;
 
 class SchemaManagerTest extends BaseTest
 {
+    /** @psalm-var list<class-string> */
     private $indexedClasses = [
         CmsAddress::class,
         CmsArticle::class,
@@ -57,6 +58,7 @@ class SchemaManagerTest extends BaseTest
         ShardedOneWithDifferentKey::class,
     ];
 
+    /** @psalm-var list<class-string> */
     private $views = [
         UserName::class,
     ];

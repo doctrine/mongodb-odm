@@ -248,7 +248,11 @@ class UniqueOnFieldTest
     /** @ODM\Field(type="string") @ODM\UniqueIndex() */
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $email;
 }
 
@@ -258,10 +262,18 @@ class UniqueOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $email;
 }
 
@@ -271,10 +283,18 @@ class IndexesOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $email;
 }
 
@@ -284,13 +304,25 @@ class PartialIndexOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $email;
 
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $counter;
 }
 
@@ -300,10 +332,18 @@ class MultipleFieldsUniqueIndexTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $email;
 }
 
@@ -316,7 +356,11 @@ class UniqueSparseOnFieldTest
     /** @ODM\Field(type="string") @ODM\UniqueIndex(sparse=true) */
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $email;
 }
 
@@ -326,10 +370,18 @@ class UniqueSparseOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $email;
 }
 
@@ -339,10 +391,18 @@ class SparseIndexesOnDocumentTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $email;
 }
 
@@ -352,10 +412,18 @@ class MultipleFieldsUniqueSparseIndexTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $email;
 }
 
@@ -378,7 +446,11 @@ class DocumentWithEmbeddedIndexes
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class) */
@@ -410,7 +482,11 @@ class DocumentWithMultipleIndexAnnotations
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 

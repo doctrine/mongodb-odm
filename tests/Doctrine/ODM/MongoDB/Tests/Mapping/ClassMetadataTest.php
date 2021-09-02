@@ -296,8 +296,13 @@ class ClassMetadataTest extends BaseTest
     public function testDefaultDiscriminatorField(): void
     {
         $object = new class {
+            /** @var object|null */
             public $assoc;
+
+            /** @var stdClass|null */
             public $assocWithTargetDocument;
+
+            /** @var object|null */
             public $assocWithDiscriminatorField;
         };
 
@@ -573,6 +578,7 @@ class ClassMetadataTest extends BaseTest
     public function testAtomicCollectionUpdateUsageInEmbeddedDocument(): void
     {
         $object = new class {
+            /** @var object[] */
             public $many;
         };
 
@@ -592,6 +598,7 @@ class ClassMetadataTest extends BaseTest
     public function testDefaultStorageStrategyOfEmbeddedDocumentFields(): void
     {
         $object = new class {
+            /** @var object[] */
             public $many;
         };
 
@@ -750,6 +757,7 @@ class ClassMetadataTest extends BaseTest
     public function testNoIncrementFieldsAllowedInShardKey(): void
     {
         $object = new class {
+            /** @var int|null */
             public $inc;
         };
 
@@ -767,6 +775,7 @@ class ClassMetadataTest extends BaseTest
     public function testNoCollectionsInShardKey(): void
     {
         $object = new class {
+            /** @var object[] */
             public $collection;
         };
 
@@ -783,6 +792,7 @@ class ClassMetadataTest extends BaseTest
     public function testNoEmbedManyInShardKey(): void
     {
         $object = new class {
+            /** @var object[] */
             public $embedMany;
         };
 
@@ -796,6 +806,7 @@ class ClassMetadataTest extends BaseTest
     public function testNoReferenceManyInShardKey(): void
     {
         $object = new class {
+            /** @var object[] */
             public $referenceMany;
         };
 
@@ -809,6 +820,7 @@ class ClassMetadataTest extends BaseTest
     public function testArbitraryFieldInGridFSFileThrowsException(): void
     {
         $object = new class {
+            /** @var string|null */
             public $contentType;
         };
 
@@ -846,18 +858,31 @@ class TestCustomRepositoryClass extends DocumentRepository
 
 class EmbedWithCascadeTest
 {
+    /** @var Address|null */
     public $address;
 }
 
 /** @ODM\Document */
 class EmbeddedAssociationsCascadeTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=Documents\Address::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Documents\Address::class)
+     *
+     * @var Address|null
+     */
     public $address;
 
-    /** @ODM\EmbedOne(targetDocument=Documents\Address::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Documents\Address::class)
+     *
+     * @var Address|null
+     */
     public $addresses;
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -98,22 +99,42 @@ abstract class AbstractResolveTarget implements ResolveTargetInterface
  */
 class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTargetInterface
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface::class)
+     *
+     * @var ResolveTargetInterface|null
+     */
     private $refOne;
 
-    /** @ODM\ReferenceMany(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface::class)
+     *
+     * @var Collection<int, TargetInterface>
+     */
     private $refMany;
 
-    /** @ODM\EmbedOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface::class)
+     *
+     * @var ResolveTargetInterface|null
+     */
     private $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface::class)
+     *
+     * @var Collection<int, TargetInterface>
+     */
     private $embedMany;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -124,7 +145,11 @@ class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTarg
  */
 class TargetDocument implements TargetInterface
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     public function getId()

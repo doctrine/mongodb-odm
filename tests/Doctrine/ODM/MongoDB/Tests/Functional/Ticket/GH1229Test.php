@@ -184,10 +184,18 @@ class GH1229Child
 {
     public const CLASSNAME = self::class;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $order = 0;
 
     public function __construct(string $name)

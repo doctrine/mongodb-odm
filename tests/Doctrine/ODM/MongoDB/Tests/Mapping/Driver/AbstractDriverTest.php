@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents\Account;
 use Documents\Address;
 use Documents\Group;
@@ -20,6 +21,7 @@ use TestDocuments\User;
 
 abstract class AbstractDriverTest extends TestCase
 {
+    /** @var MappingDriver|null */
     protected $driver;
 
     public function setUp(): void

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -9,19 +10,39 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class DoctrineGlobal_Article
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $headline;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $text;
 
-    /** @ODM\ReferenceMany(targetDocument=DoctrineGlobal_User::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=DoctrineGlobal_User::class)
+     *
+     * @var DoctrineGlobal_User|null
+     */
     protected $author;
 
-    /** @ODM\ReferenceMany(targetDocument=\DoctrineGlobal_User::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=\DoctrineGlobal_User::class)
+     *
+     * @var Collection<int, DoctrineGlobal_User>
+     */
     protected $editor;
 }
 
@@ -30,7 +51,11 @@ class DoctrineGlobal_Article
  */
 class DoctrineGlobal_User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**

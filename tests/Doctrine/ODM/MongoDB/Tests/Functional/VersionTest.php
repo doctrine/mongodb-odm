@@ -54,7 +54,11 @@ class VersionedDocument
     /** @ODM\Field(type="int", name="_version") @ODM\Version */
     public $version = 1;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class) */
@@ -71,7 +75,11 @@ class VersionedDocument
  */
 class VersionedEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $value;
 
     /** @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class) */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
 use Doctrine\ODM\MongoDB\Configuration;
@@ -25,6 +26,7 @@ use Documents\CmsPhonenumber;
 use Documents\CmsUser;
 use Documents\CustomRepository\Document;
 use Documents\CustomRepository\Repository;
+use Documents\Tournament\Participant;
 use Documents\Tournament\ParticipantSolo;
 use Documents\User;
 use InvalidArgumentException;
@@ -231,28 +233,56 @@ class DocumentManagerTest extends BaseTest
 /** @ODM\Document */
 class WrongSimpleRefDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Documents\Tournament\Participant::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Documents\Tournament\Participant::class, storeAs="id")
+     *
+     * @var Participant|null
+     */
     public $ref;
 }
 
 /** @ODM\Document */
 class ReferenceStoreAsDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="id")
+     *
+     * @var User|null
+     */
     public $ref1;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRef")
+     *
+     * @var Collection<int, User>
+     */
     public $ref2;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRefWithDb")
+     *
+     * @var Collection<int, User>
+     */
     public $ref3;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref")
+     *
+     * @var Collection<int, User>
+     */
     public $ref4;
 }

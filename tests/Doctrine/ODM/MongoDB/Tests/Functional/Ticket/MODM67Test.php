@@ -124,18 +124,38 @@ class MODM67DerivedClass
  */
 class MODM67EmbeddedObject
 {
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $numAccesses = 0;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $prePersist = false;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $postPersist = false;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $preUpdate = false;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $postUpdate = false;
 }

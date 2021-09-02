@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -896,7 +897,11 @@ class BuilderTest extends BaseTest
  */
 class ParentClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
@@ -905,16 +910,32 @@ class ParentClass
  */
 class ChildA extends ParentClass
 {
-    /** @ODM\ReferenceOne(targetDocument=Documents\Feature::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Documents\Feature::class)
+     *
+     * @var Feature|null
+     */
     public $featureFull;
 
-    /** @ODM\ReferenceMany(targetDocument=Documents\Feature::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Documents\Feature::class)
+     *
+     * @var Collection<int, Feature>
+     */
     public $featureFullMany;
 
-    /** @ODM\ReferenceOne(targetDocument=Documents\Feature::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Documents\Feature::class)
+     *
+     * @var Feature|null
+     */
     public $conflict;
 
-    /** @ODM\ReferenceMany(targetDocument=Documents\Feature::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Documents\Feature::class)
+     *
+     * @var Collection<int, Feature>
+     */
     public $conflictMany;
 }
 
@@ -923,16 +944,32 @@ class ChildA extends ParentClass
  */
 class ChildB extends ParentClass
 {
-    /** @ODM\ReferenceOne(targetDocument=Documents\Feature::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Documents\Feature::class, storeAs="id")
+     *
+     * @var Feature|null
+     */
     public $featureSimple;
 
-    /** @ODM\ReferenceMany(targetDocument=Documents\Feature::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Documents\Feature::class, storeAs="id")
+     *
+     * @var Collection<int, Feature>
+     */
     public $featureSimpleMany;
 
-    /** @ODM\ReferenceOne(targetDocument=Documents\Feature::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Documents\Feature::class, storeAs="id")
+     *
+     * @var Feature|null
+     */
     public $conflict;
 
-    /** @ODM\ReferenceMany(targetDocument=Documents\Feature::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Documents\Feature::class, storeAs="id")
+     *
+     * @var Collection<int, Feature>
+     */
     public $conflictMany;
 }
 
@@ -941,9 +978,17 @@ class ChildB extends ParentClass
  */
 class ChildC extends ParentClass
 {
-    /** @ODM\ReferenceOne(storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceOne(storeAs="dbRef")
+     *
+     * @var object|null
+     */
     public $featurePartial;
 
-    /** @ODM\ReferenceMany(storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceMany(storeAs="dbRef")
+     *
+     * @var Collection<int, object>
+     */
     public $featurePartialMany;
 }

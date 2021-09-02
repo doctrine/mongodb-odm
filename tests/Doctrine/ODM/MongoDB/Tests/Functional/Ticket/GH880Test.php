@@ -46,10 +46,18 @@ class GH880Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $status;
 
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $category;
 
     public function __construct($status = '', $category = 0)

@@ -40,7 +40,11 @@ class MODM52Test extends BaseTest
  */
 class MODM52Container
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $value;
 
     /** @ODM\EmbedMany(targetDocument=MODM52Embedded::class, strategy="set") */

@@ -178,7 +178,11 @@ class OrphanRemovalCascadeProfile
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /** @ODM\ReferenceOne(targetDocument=OrphanRemovalCascadeAddress::class, orphanRemoval=true, cascade={"all"}) */
@@ -194,6 +198,10 @@ class OrphanRemovalCascadeAddress
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }

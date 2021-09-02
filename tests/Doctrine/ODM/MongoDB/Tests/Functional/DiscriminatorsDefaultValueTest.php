@@ -133,7 +133,11 @@ abstract class ChildDocument
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $type;
 
     public function __construct($type)
@@ -210,7 +214,11 @@ class ChildDocumentWithDiscriminatorSimple extends ChildDocumentWithDiscriminato
 /** @ODM\Document(collection="discriminator_child") */
 class ChildDocumentWithDiscriminatorComplex extends ChildDocumentWithDiscriminatorSimple
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $value;
 
     public function __construct($type, $value)

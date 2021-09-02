@@ -101,7 +101,11 @@ class Action
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $type;
 
     public function __construct($type)
@@ -169,7 +173,11 @@ abstract class ActivityStreamItem
  */
 abstract class GroupActivityStreamItem extends ActivityStreamItem
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $groupId;
 
     public function __construct(Action $action, $groupId)
@@ -200,7 +208,11 @@ class GroupMembersActivityStreamItem extends GroupActivityStreamItem
  */
 abstract class UserActivityStreamItem extends ActivityStreamItem
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $userId;
 
     public function __construct(Action $action, $userId)

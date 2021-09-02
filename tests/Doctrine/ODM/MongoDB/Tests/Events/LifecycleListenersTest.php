@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use BadMethodCallException;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use PHPUnit\Framework\TestCase;
 
 use function get_class;
 
@@ -68,6 +71,7 @@ class LifecycleListenersTest extends BaseTest
         $this->listener->called = [];
 
         $document = $dm->find(TestDocument::class, $test->id);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
         $document->embedded->initialize();
         $called = [
             Events::preLoad => [TestDocument::class, TestEmbeddedDocument::class],
@@ -201,6 +205,7 @@ class LifecycleListenersTest extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->getRepository(get_class($document))->find($document->id);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
         $document->embedded->add(new TestEmbeddedDocument('For mock at 1'));
         // mock at 0, despite adding postCollectionLoad will have empty collection
         $document->embedded->initialize();
@@ -208,6 +213,7 @@ class LifecycleListenersTest extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->getRepository(get_class($document))->find($document->id);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
         $document->embedded->add(new TestEmbeddedDocument('Will not be seen'));
         // mock at 1, collection should have 1 element after
         $document->embedded->initialize();
@@ -216,6 +222,7 @@ class LifecycleListenersTest extends BaseTest
 
 class MyEventListener
 {
+    /** @psalm-var array<string, list<class-string>> */
     public $called = [];
 
     public function __call($method, $args)
@@ -232,7 +239,10 @@ class MyEventListener
  */
 class PostCollectionLoadEventListener
 {
+    /** @var int */
     private $at = 0;
+
+    /** @var TestCase */
     private $phpunit;
 
     public function __construct($phpunit)
@@ -259,32 +269,60 @@ class PostCollectionLoadEventListener
 /** @ODM\Document */
 class TestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=TestEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=TestEmbeddedDocument::class)
+     *
+     * @var Collection<int, TestEmbeddedDocument>
+     */
     public $embedded;
 
-    /** @ODM\EmbedOne(targetDocument=Image::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Image::class)
+     *
+     * @var Image|null
+     */
     public $image;
 
-    /** @ODM\ReferenceMany(targetDocument=TestProfile::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=TestProfile::class)
+     *
+     * @var Collection<int, TestProfile>|array<TestProfile>
+     */
     public $profiles;
 
-    /** @ODM\ReferenceOne(targetDocument=TestProfile::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=TestProfile::class)
+     *
+     * @var TestProfile|null
+     */
     public $profile;
 }
 
 /** @ODM\EmbeddedDocument */
 class TestEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name = '')
+    public function __construct(string $name = '')
     {
         $this->name = $name;
     }
@@ -294,13 +332,25 @@ class TestEmbeddedDocument
 /** @ODM\Document */
 class TestProfile
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument=Image::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Image::class)
+     *
+     * @var Image|null
+     */
     public $image;
 }
 
@@ -309,13 +359,21 @@ class TestProfile
  */
 class Image
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=Thumbnail::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Thumbnail::class)
+     *
+     * @var Collection<int, Thumbnail>|array<Thumbnail>
+     */
     public $thumbnails = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -326,10 +384,14 @@ class Image
  */
 class Thumbnail
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

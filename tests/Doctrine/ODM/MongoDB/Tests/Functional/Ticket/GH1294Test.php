@@ -43,8 +43,12 @@ class GH1294User
     /** @ODM\Id(strategy="UUID", type="string") */
     public $id;
 
-    /** @ODM\Field(type="string") */
-    public $name = false;
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
+    public $name = '';
 
     public function getId()
     {

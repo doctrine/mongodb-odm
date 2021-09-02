@@ -41,6 +41,10 @@ class MODM46A
 /** @ODM\EmbeddedDocument */
 class MODM46AB
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $value;
 }

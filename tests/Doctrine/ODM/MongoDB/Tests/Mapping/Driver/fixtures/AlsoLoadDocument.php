@@ -8,8 +8,10 @@ use DateTime;
 
 class AlsoLoadDocument
 {
+    /** @var string|null */
     protected $id;
 
+    /** @var DateTime */
     protected $createdAt;
 
     public function __construct()
@@ -17,7 +19,7 @@ class AlsoLoadDocument
         $this->createdAt = new DateTime();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

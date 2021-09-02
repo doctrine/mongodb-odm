@@ -118,7 +118,11 @@ class GH852Document
     /** @ODM\Id(strategy="NONE", type="custom_id") */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /**

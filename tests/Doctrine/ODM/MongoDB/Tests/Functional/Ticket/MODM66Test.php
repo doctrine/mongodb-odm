@@ -88,7 +88,11 @@ class MODM52B
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $value;
 
     public function __construct($v)

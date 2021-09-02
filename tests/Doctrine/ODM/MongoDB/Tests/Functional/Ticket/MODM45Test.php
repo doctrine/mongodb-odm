@@ -52,7 +52,11 @@ class MODM45A
 /** @ODM\EmbeddedDocument */
 class MODM45B
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $val;
 
     public function setVal($val): void

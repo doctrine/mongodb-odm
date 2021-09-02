@@ -73,8 +73,10 @@ class ChangeSetIsUpdatedListener
 
 class CollectionsAreInChangeSetListener
 {
+    /** @var list<class-string> */
     private $allowed;
 
+    /** @var PreUpdateEventArgsTest */
     private $phpunit;
 
     public function __construct(PreUpdateEventArgsTest $phpunit)

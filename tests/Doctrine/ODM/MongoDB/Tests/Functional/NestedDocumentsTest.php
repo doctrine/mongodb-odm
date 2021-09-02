@@ -146,7 +146,11 @@ class Hierarchy
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
     /** @ODM\ReferenceMany(targetDocument=Hierarchy::class) */
@@ -207,7 +211,11 @@ class Hierarchy
 /** @ODM\MappedSuperclass */
 class BaseCategory
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $name;
 
     /** @ODM\EmbedMany(targetDocument=ChildCategory::class) */
@@ -284,7 +292,11 @@ class Order
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $title;
 
     /** @ODM\EmbedOne(targetDocument=ProductBackup::class) */
@@ -297,7 +309,11 @@ class Product
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $title;
 }
 

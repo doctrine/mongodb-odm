@@ -76,7 +76,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $sameCollection1->id   = $ids[0];
         $sameCollection1->name = 'First entry in SameCollection1';
-        $sameCollection1->test = 1;
+        $sameCollection1->test = 'test';
         $this->dm->persist($sameCollection1);
         $this->dm->flush();
 

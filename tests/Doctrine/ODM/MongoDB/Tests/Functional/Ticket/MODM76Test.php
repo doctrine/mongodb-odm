@@ -34,7 +34,11 @@ class MODM76A
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $test = 'test';
 
     /** @ODM\EmbedMany(targetDocument=MODM76B::class) */
