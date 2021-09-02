@@ -58,7 +58,11 @@ class MODM48A
 /** @ODM\EmbeddedDocument */
 class MODM48B
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $val;
 
     public function setVal($val): void

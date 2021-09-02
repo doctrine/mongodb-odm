@@ -113,6 +113,10 @@ class UpsertTestUser
 /** @ODM\EmbeddedDocument */
 class UpsertTestUserEmbedded
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $test;
 }

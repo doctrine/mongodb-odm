@@ -132,7 +132,11 @@ class GH611Document
 /** @ODM\EmbeddedDocument */
 class GH611EmbeddedDocument
 {
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $id;
 
     /** @ODM\Field(name="n", type="string") */

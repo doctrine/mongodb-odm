@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use ArrayIterator;
 use BadMethodCallException;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -588,31 +589,67 @@ class QueryTest extends BaseTest
 /** @ODM\Document(collection="people") */
 class Person
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $firstName;
 
-    /** @ODM\ReferenceOne(storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceOne(storeAs="dbRefWithDb")
+     *
+     * @var Person|null
+     */
     public $bestFriend;
 
-    /** @ODM\ReferenceOne(storeAs="id", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class) */
+    /**
+     * @ODM\ReferenceOne(storeAs="id", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class)
+     *
+     * @var Person|null
+     */
     public $bestFriendSimple;
 
-    /** @ODM\ReferenceOne */
+    /**
+     * @ODM\ReferenceOne
+     *
+     * @var Person|null
+     */
     public $bestFriendPartial;
 
-    /** @ODM\ReferenceMany(storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceMany(storeAs="dbRefWithDb")
+     *
+     * @var DoctrineCollection<int, Person>|array<Person>
+     */
     public $friends = [];
 
-    /** @ODM\ReferenceMany(storeAs="id", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class) */
+    /**
+     * @ODM\ReferenceMany(storeAs="id", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class)
+     *
+     * @var DoctrineCollection<int, Person>|array<Person>
+     */
     public $friendsSimple = [];
 
-    /** @ODM\ReferenceMany */
+    /**
+     * @ODM\ReferenceMany
+     *
+     * @var DoctrineCollection<int, Person>|array<Person>
+     */
     public $friendsPartial = [];
 
-    /** @ODM\EmbedOne(targetDocument=Pet::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Pet::class)
+     *
+     * @var Pet|null
+     */
     public $pet;
 
     public function __construct($firstName)
@@ -624,13 +661,21 @@ class Person
 /** @ODM\EmbeddedDocument */
 class Pet
 {
-    /** @ODM\ReferenceOne(name="pO", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class) */
+    /**
+     * @ODM\ReferenceOne(name="pO", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class)
+     *
+     * @var Person|null
+     */
     public $owner;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name, Person $owner)
+    public function __construct(string $name, Person $owner)
     {
         $this->name  = $name;
         $this->owner = $owner;
@@ -640,18 +685,38 @@ class Pet
 /** @ODM\EmbeddedDocument */
 class EmbedTest
 {
-    /** @ODM\EmbedOne(name="eO", targetDocument=Doctrine\ODM\MongoDB\Tests\EmbedTest::class) */
+    /**
+     * @ODM\EmbedOne(name="eO", targetDocument=Doctrine\ODM\MongoDB\Tests\EmbedTest::class)
+     *
+     * @var EmbedTest|null
+     */
     public $embeddedOne;
 
-    /** @ODM\EmbedMany(name="e1", targetDocument=Doctrine\ODM\MongoDB\Tests\EmbedTest::class) */
+    /**
+     * @ODM\EmbedMany(name="e1", targetDocument=Doctrine\ODM\MongoDB\Tests\EmbedTest::class)
+     *
+     * @var DoctrineCollection<int, EmbedTest>
+     */
     public $embeddedMany;
 
-    /** @ODM\Field(name="n", type="string") */
+    /**
+     * @ODM\Field(name="n", type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\ReferenceOne(name="p", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class) */
+    /**
+     * @ODM\ReferenceOne(name="p", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class)
+     *
+     * @var Person|null
+     */
     public $person;
 
-    /** @ODM\EmbedOne(name="eP", targetDocument=Doctrine\ODM\MongoDB\Tests\Pet::class) */
+    /**
+     * @ODM\EmbedOne(name="eP", targetDocument=Doctrine\ODM\MongoDB\Tests\Pet::class)
+     *
+     * @var Pet|null
+     */
     public $pet;
 }

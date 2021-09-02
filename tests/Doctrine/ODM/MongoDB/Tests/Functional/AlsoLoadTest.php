@@ -247,10 +247,18 @@ class AlsoLoadDocument
     /** @ODM\Field(notSaved=true) */
     public $fullName;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $firstName;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $lastName;
 
     /**
@@ -288,7 +296,11 @@ class AlsoLoadDocument
 /** @ODM\Document */
 class AlsoLoadChild extends AlsoLoadDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $fizz;
 
     /** @ODM\AlsoLoad("buzz") */

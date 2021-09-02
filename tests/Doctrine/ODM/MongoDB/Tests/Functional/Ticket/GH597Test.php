@@ -157,7 +157,11 @@ class GH597Post
 /** @ODM\EmbeddedDocument */
 class GH597Comment
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $comment;
 
     public function __construct($comment)
@@ -173,7 +177,11 @@ class GH597ReferenceMany
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $field;
 
     public function __construct($field)

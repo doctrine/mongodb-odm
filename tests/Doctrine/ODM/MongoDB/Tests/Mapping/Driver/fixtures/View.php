@@ -6,7 +6,9 @@ namespace TestDocuments;
 
 class View
 {
+    /** @var string|null */
     public $name;
 
+    /** @var int|null */
     public $count;
 }

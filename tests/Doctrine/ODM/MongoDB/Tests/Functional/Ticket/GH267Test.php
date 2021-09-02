@@ -64,7 +64,11 @@ class GH267User
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $name;
 
     /** @ODM\ReferenceOne(name="company", targetDocument=GH267Company::class, inversedBy="users") */

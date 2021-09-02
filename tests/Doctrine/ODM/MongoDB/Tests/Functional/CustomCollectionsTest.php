@@ -241,10 +241,18 @@ class DocumentWithCustomCollection
  */
 class EmbeddedDocumentInCustomCollection
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $enabled;
 
     public function __construct($name, $enabled)

@@ -15,6 +15,7 @@ use function unserialize;
 
 class BasicInheritanceMappingTest extends BaseTest
 {
+    /** @var ClassMetadataFactory */
     private $factory;
 
     public function setUp(): void
@@ -94,17 +95,28 @@ class BasicInheritanceMappingTest extends BaseTest
 
 class TransientBaseClass
 {
+    /** @var mixed */
     private $transient1;
+
+    /** @var mixed */
     private $transient2;
 }
 
 /** @ODM\Document */
 class DocumentSubClass extends TransientBaseClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 }
 
@@ -114,24 +126,46 @@ class DocumentSubClass extends TransientBaseClass
  */
 class MappedSuperclassBase
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $mapped1;
-    /** @ODM\Field(type="string") */
+
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $mapped2;
 
-    /** @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class)
+     *
+     * @var MappedSuperclassRelated1|null
+     */
     private $mappedRelated1;
 
+    /** @var mixed */
     private $transient;
 }
 
 /** @ODM\Document */
 class DocumentSubClass2 extends MappedSuperclassBase
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 }
 
@@ -141,7 +175,11 @@ class DocumentSubClass2 extends MappedSuperclassBase
  */
 class GridFSParentClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }
 
@@ -150,6 +188,10 @@ class GridFSParentClass
  */
 class GridFSChildClass extends GridFSParentClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }

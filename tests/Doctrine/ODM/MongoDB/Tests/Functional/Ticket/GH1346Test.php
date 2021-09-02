@@ -79,7 +79,11 @@ class GH1346Document
  */
 class GH1346ReferencedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $test;
 
     /** @ODM\Id */

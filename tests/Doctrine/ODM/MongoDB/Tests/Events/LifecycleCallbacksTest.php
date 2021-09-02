@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -248,67 +249,132 @@ class LifecycleCallbacksTest extends BaseTest
 /** @ODM\Document */
 class User extends BaseDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=Profile::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Profile::class)
+     *
+     * @var Profile|null
+     */
     public $profile;
 
-    /** @ODM\EmbedMany(targetDocument=Profile::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Profile::class)
+     *
+     * @var Collection<int, Profile>|array<Profile>
+     */
     public $profiles = [];
 
-    /** @ODM\ReferenceMany(targetDocument=User::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=User::class)
+     *
+     * @var Collection<int, User>|array<User>
+     */
     public $friends = [];
 }
 
 /** @ODM\Document */
 class Cart extends BaseDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart")
+     *
+     * @var Customer|null
+     */
     public $customer;
 }
 
 /** @ODM\Document */
 class Customer extends BaseDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Cart::class, mappedBy="customer") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Cart::class, mappedBy="customer")
+     *
+     * @var Cart|null
+     */
     public $cart;
 }
 
 /** @ODM\EmbeddedDocument */
 class Profile extends BaseDocument
 {
-    /** @ODM\EmbedOne(targetDocument=Profile::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Profile::class)
+     *
+     * @var Profile|null
+     */
     public $profile;
 }
 
 /** @ODM\MappedSuperclass @ODM\HasLifecycleCallbacks */
 abstract class BaseDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime
+     */
     public $createdAt;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     public $updatedAt;
 
-    public $prePersist  = false;
+    /** @var bool */
+    public $prePersist = false;
+
+    /** @var bool */
     public $postPersist = false;
-    public $preUpdate   = false;
-    public $postUpdate  = false;
-    public $preRemove   = false;
-    public $postRemove  = false;
-    public $preLoad     = false;
-    public $postLoad    = false;
-    public $preFlush    = false;
+
+    /** @var bool */
+    public $preUpdate = false;
+
+    /** @var bool */
+    public $postUpdate = false;
+
+    /** @var bool */
+    public $preRemove = false;
+
+    /** @var bool */
+    public $postRemove = false;
+
+    /** @var bool */
+    public $preLoad = false;
+
+    /** @var bool */
+    public $postLoad = false;
+
+    /** @var bool */
+    public $preFlush = false;
 
     /** @ODM\PrePersist */
     public function prePersist(Event\LifecycleEventArgs $e): void

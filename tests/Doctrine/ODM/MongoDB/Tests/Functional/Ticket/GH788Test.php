@@ -335,7 +335,11 @@ class GH788DocumentListed extends GH788Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
@@ -347,7 +351,11 @@ class GH788DocumentUnlisted extends GH788DocumentListed
 /** @ODM\EmbeddedDocument */
 class GH788InlineEmbedListed
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
@@ -362,7 +370,11 @@ class GH788InlineRefListed
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
@@ -381,7 +393,11 @@ class GH788ExternEmbedListed
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
@@ -401,7 +417,11 @@ class GH788ExternRefListed
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 

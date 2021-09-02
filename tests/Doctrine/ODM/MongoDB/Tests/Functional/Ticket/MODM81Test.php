@@ -66,7 +66,11 @@ class MODM81TestDocument
     /** @ODM\Id */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $name;
 
     /**
@@ -108,7 +112,11 @@ class MODM81TestDocument
 /** @ODM\EmbeddedDocument */
 class MODM81TestEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $message;
 
     /** @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class) */

@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\ExpressionBuilder;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -17,7 +18,10 @@ use RuntimeException;
 
 class QueryExpressionVisitorTest extends BaseTest
 {
+    /** @var Builder */
     private $queryBuilder;
+
+    /** @var QueryExpressionVisitor */
     private $visitor;
 
     public function setUp(): void

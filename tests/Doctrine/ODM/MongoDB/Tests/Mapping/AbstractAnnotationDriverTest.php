@@ -266,7 +266,11 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
 #[ODM\Document]
 class ColumnWithoutType
 {
-     /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 }
@@ -275,15 +279,27 @@ class ColumnWithoutType
 #[ODM\MappedSuperclass]
 class AnnotationDriverTestSuper
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     protected $protected;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     private $private;
 }
@@ -292,7 +308,11 @@ class AnnotationDriverTestSuper
 #[ODM\Document]
 class AnnotationDriverTestParent extends AnnotationDriverTestSuper
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $foo;
 }
@@ -301,7 +321,11 @@ class AnnotationDriverTestParent extends AnnotationDriverTestSuper
 #[ODM\Document]
 class AnnotationDriverTestChild extends AnnotationDriverTestParent
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $bar;
 }
@@ -314,7 +338,11 @@ class AnnotationDriverTestChild extends AnnotationDriverTestParent
 #[ODM\ShardKey(keys: ['foo' => 'asc'])]
 class AnnotationDriverEmbeddedWithShardKey
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $foo;
 }
@@ -325,7 +353,11 @@ class AnnotationDriverEmbeddedWithShardKey
 #[ODM\Document(writeConcern: 'majority')]
 class AnnotationDriverTestWriteConcernMajority
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 }
@@ -336,7 +368,11 @@ class AnnotationDriverTestWriteConcernMajority
 #[ODM\Document(writeConcern: 0)]
 class AnnotationDriverTestWriteConcernUnacknowledged
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 }
@@ -345,7 +381,11 @@ class AnnotationDriverTestWriteConcernUnacknowledged
 #[ODM\Validation(validator: 'wrong')]
 class WrongValueForValidationValidator
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 }

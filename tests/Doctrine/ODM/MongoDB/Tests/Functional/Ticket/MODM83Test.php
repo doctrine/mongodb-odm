@@ -76,7 +76,11 @@ class MODM83TestDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /** @ODM\EmbedOne(targetDocument=MODM83TestEmbeddedDocument::class) */
@@ -86,7 +90,11 @@ class MODM83TestDocument
 /** @ODM\EmbeddedDocument */
 class MODM83TestEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
@@ -96,6 +104,10 @@ class MODM83OtherDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }

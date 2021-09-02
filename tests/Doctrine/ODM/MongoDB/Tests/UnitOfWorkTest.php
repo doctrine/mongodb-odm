@@ -553,9 +553,10 @@ class UnitOfWorkTest extends BaseTest
 
 class ParentAssociationTest
 {
+    /** @var string */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -567,17 +568,31 @@ class ParentAssociationTest
  */
 class NotifyChangedDocument implements NotifyPropertyChanged
 {
+    /** @var PropertyChangedListener[] */
     private $_listeners = [];
 
-    /** @ODM\Id(type="int", strategy="none") */
+    /**
+     * @ODM\Id(type="int", strategy="none")
+     *
+     * @var int|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $data;
 
-    /** @ODM\ReferenceMany(targetDocument=NotifyChangedRelatedItem::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=NotifyChangedRelatedItem::class)
+     *
+     * @var Collection<int, NotifyChangedRelatedItem>
+     */
     private $items;
 
+    /** @var mixed */
     private $transient; // not persisted
 
     public function __construct()
@@ -641,10 +656,18 @@ class NotifyChangedDocument implements NotifyPropertyChanged
 /** @ODM\Document */
 class NotifyChangedRelatedItem
 {
-    /** @ODM\Id(type="int", strategy="none") */
+    /**
+     * @ODM\Id(type="int", strategy="none")
+     *
+     * @var int|null
+     */
     private $id;
 
-    /** @ODM\ReferenceOne(targetDocument=NotifyChangedDocument::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=NotifyChangedDocument::class)
+     *
+     * @var NotifyChangedDocument|null
+     */
     private $owner;
 
     public function getId()
@@ -671,13 +694,21 @@ class NotifyChangedRelatedItem
 /** @ODM\Document */
 class ArrayTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="hash") */
+    /**
+     * @ODM\Field(type="hash")
+     *
+     * @var array<array-key, mixed>|null
+     */
     public $data;
 
-    public function __construct($data)
+    public function __construct(?array $data)
     {
         $this->data = $data;
     }
@@ -686,14 +717,22 @@ class ArrayTest
 /** @ODM\Document */
 class UowCustomIdDocument
 {
-    /** @ODM\Id(type="custom_id") */
+    /**
+     * @ODM\Id(type="custom_id")
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\EmbeddedDocument */
 class EmbeddedUpsertDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
@@ -705,9 +744,14 @@ class EmbeddedDocumentWithoutId
 /** @ODM\EmbeddedDocument */
 class EmbeddedDocumentWithId
 {
+    /** @var bool */
     public $preRemove = false;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\PreRemove */
@@ -720,23 +764,39 @@ class EmbeddedDocumentWithId
 /** @ODM\EmbeddedDocument */
 class EmbeddedDocumentWithIdStrategyNone
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document */
 class PersistRemovedEmbeddedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class)
+     *
+     * @var EmbeddedDocumentWithId
+     */
     public $embedded;
 }
 
 /** @ODM\MappedSuperclass */
 class MappedSuperclass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }

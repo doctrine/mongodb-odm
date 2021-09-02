@@ -97,7 +97,11 @@ class GH566Document
 /** @ODM\EmbeddedDocument */
 class GH566EmbeddedDocument
 {
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $sequence = 0;
 
     /** @ODM\ReferenceOne(targetDocument=GH566Document::class, cascade={"all"}, inversedBy="children") */

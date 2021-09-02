@@ -78,7 +78,11 @@ class MODM29Doc
 /** @ODM\EmbeddedDocument */
 class MODM29Embedded
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $val;
 
     public function __construct($val)

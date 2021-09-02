@@ -9,10 +9,13 @@ use Doctrine\Common\Collections\Collection;
 
 class PrimedCollectionDocument
 {
+    /** @var string|null */
     protected $id;
 
+    /** @var Collection<int, PrimedCollectionDocument> */
     protected $inverseMappedBy;
 
+    /** @var Collection<int, PrimedCollectionDocument> */
     protected $references;
 
     public function __construct()
@@ -21,7 +24,7 @@ class PrimedCollectionDocument
         $this->references      = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

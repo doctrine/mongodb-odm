@@ -6,10 +6,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Tools\GH297;
 
 trait AddressTrait
 {
-    /** @ODM\EmbedOne */
+    /**
+     * @ODM\EmbedOne
+     *
+     * @var Address|null
+     */
     private $address;
 
-    public function getAddress()
+    public function getAddress(): ?Address
     {
         return $this->address;
     }

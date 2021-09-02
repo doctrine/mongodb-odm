@@ -565,7 +565,11 @@ class CollectionPersisterUser
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $username;
 
     /** @ODM\EmbedMany(targetDocument=CollectionPersisterCategory::class) */
@@ -578,7 +582,11 @@ class CollectionPersisterUser
 /** @ODM\EmbeddedDocument */
 class CollectionPersisterCategory
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /** @ODM\EmbedMany(targetDocument=CollectionPersisterCategory::class) */
@@ -596,7 +604,11 @@ class CollectionPersisterPhonenumber
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $phonenumber;
 
     public function __construct($phonenumber)
@@ -611,7 +623,11 @@ class CollectionPersisterPost
   /** @ODM\Id */
     public $id;
 
-  /** @ODM\Field(type="string") */
+  /**
+   * @ODM\Field(type="string")
+   *
+   * @var string|null
+   */
     public $post;
 
   /** @ODM\EmbedMany(targetDocument=CollectionPersisterComment::class, strategy="set") */
@@ -630,10 +646,18 @@ class CollectionPersisterComment
   /** @ODM\Id */
     public $id;
 
-  /** @ODM\Field(type="string") */
+  /**
+   * @ODM\Field(type="string")
+   *
+   * @var string|null
+   */
     public $comment;
 
-  /** @ODM\Field(type="string") */
+  /**
+   * @ODM\Field(type="string")
+   *
+   * @var string|null
+   */
     public $by;
 
   /** @ODM\EmbedMany(targetDocument=CollectionPersisterComment::class, strategy="set") */
@@ -695,7 +719,11 @@ class CollectionPersisterNestedStructure
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $field;
 
     /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="addToSet") */

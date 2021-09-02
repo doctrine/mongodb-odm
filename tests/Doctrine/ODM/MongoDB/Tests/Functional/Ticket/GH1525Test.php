@@ -100,7 +100,11 @@ class GH1525Document
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /** @ODM\EmbedOne(targetDocument=GH1525Embedded::class) */
@@ -122,7 +126,11 @@ class GH1525DocumentIdStrategyNone
     /** @ODM\Id(strategy="NONE") */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /** @ODM\EmbedOne(targetDocument=GH1525Embedded::class) */
@@ -138,7 +146,11 @@ class GH1525DocumentIdStrategyNone
 /** @ODM\EmbeddedDocument */
 class GH1525Embedded
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     public function __construct($name)

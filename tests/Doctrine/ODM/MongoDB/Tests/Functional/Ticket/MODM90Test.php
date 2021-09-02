@@ -92,7 +92,11 @@ class MODM90TestDocument
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /**
@@ -111,14 +115,22 @@ class MODM90TestDocument
 /** @ODM\EmbeddedDocument */
 class MODM90TestEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
 /** @ODM\EmbeddedDocument */
 class MODM90Test2EmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /** @ODM\Field(type="string") The discriminator field is a real property */

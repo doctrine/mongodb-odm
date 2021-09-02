@@ -72,7 +72,11 @@ class GH944Document
  */
 class GH944Embedded
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $text;
 
     public function __construct($text)
