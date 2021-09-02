@@ -112,7 +112,11 @@ class MODM67TestEventListener
  */
 class MODM67DerivedClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=MODM67EmbeddedObject::class) */

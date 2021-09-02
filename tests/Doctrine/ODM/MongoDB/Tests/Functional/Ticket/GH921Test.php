@@ -67,7 +67,11 @@ class GH921Test extends BaseTest
 /** @ODM\Document */
 class GH921User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**
@@ -114,7 +118,11 @@ class GH921User
 /** @ODM\Document */
 class GH921Post
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**

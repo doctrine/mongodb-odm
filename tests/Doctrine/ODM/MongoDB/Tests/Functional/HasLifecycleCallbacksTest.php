@@ -110,7 +110,11 @@ class HasLifecycleCallbacksTest extends BaseTest
 /** @ODM\MappedSuperclass */
 abstract class HasLifecycleCallbacksSuper
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     public $invoked = [];
@@ -129,7 +133,11 @@ abstract class HasLifecycleCallbacksSuper
 /** @ODM\MappedSuperclass @ODM\HasLifecycleCallbacks */
 abstract class HasLifecycleCallbacksSuperAnnotated
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     public $invoked = [];

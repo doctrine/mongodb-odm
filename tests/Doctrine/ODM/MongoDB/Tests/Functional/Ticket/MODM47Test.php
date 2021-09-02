@@ -26,7 +26,11 @@ class MODM47Test extends BaseTest
 /** @ODM\Document */
 class MODM47A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

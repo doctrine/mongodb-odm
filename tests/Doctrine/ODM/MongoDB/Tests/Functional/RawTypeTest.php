@@ -46,7 +46,11 @@ class RawTypeTest extends BaseTest
 /** @ODM\Document */
 class RawType
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(type="raw") */

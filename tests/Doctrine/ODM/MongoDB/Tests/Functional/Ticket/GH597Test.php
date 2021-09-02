@@ -123,13 +123,25 @@ class GH597Test extends BaseTest
 /** @ODM\Document() */
 class GH597Post
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument=GH597Comment::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH597Comment::class)
+     *
+     * @var Collection<int, GH597Comment>
+     */
     public $comments;
 
-    /** @ODM\ReferenceMany(targetDocument=GH597ReferenceMany::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH597ReferenceMany::class, storeAs="id")
+     *
+     * @var Collection<int, GH597ReferenceMany>
+     */
     public $referenceMany;
 
     public function __construct()
@@ -174,7 +186,11 @@ class GH597Comment
 /** @ODM\Document */
 class GH597ReferenceMany
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

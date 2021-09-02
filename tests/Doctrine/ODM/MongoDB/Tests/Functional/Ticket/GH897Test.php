@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -44,7 +45,11 @@ class GH897Test extends BaseTest
 /** @ODM\Document */
 class GH897A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -58,7 +63,11 @@ class GH897A
 /** @ODM\Document @ODM\HasLifecycleCallbacks */
 class GH897B
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -68,9 +77,14 @@ class GH897B
      */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument=GH897A::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH897A::class)
+     *
+     * @var GH897A|null
+     */
     public $refOne;
 
+    /** @var DocumentManager|null */
     public $dm;
 
     /** @ODM\PreFlush */

@@ -68,7 +68,11 @@ class GH566Test extends BaseTest
 /** @ODM\Document */
 class GH566Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=GH566EmbeddedDocument::class) */

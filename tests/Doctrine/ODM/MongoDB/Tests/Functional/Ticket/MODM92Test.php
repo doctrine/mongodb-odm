@@ -42,7 +42,11 @@ class MODM92Test extends BaseTest
 /** @ODM\Document */
 class MODM92TestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     // Note: Test case fails with default "pushAll" strategy, but "set" works

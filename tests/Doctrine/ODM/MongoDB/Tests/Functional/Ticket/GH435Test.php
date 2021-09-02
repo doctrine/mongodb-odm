@@ -27,7 +27,11 @@ class GH435Test extends BaseTest
 /** @ODM\Document */
 class GH435Parent
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**

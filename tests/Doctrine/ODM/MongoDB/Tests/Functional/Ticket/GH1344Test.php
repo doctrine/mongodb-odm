@@ -49,7 +49,11 @@ class GH1344Test extends BaseTest
 /** @ODM\Document */
 class GH1344Main
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=GH1344Embedded::class) */
@@ -85,7 +89,11 @@ class GH1344EmbeddedNested
 /** @ODM\Document */
 class GH1344LongIndexName
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=GH1344LongIndexNameEmbedded::class) */

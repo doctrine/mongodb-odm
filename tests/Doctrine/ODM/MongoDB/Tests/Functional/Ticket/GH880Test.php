@@ -43,7 +43,11 @@ class GH880Test extends BaseTest
 /** @ODM\Document */
 class GH880Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

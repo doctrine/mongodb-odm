@@ -143,7 +143,11 @@ class NestedDocumentsTest extends BaseTest
 /** @ODM\Document */
 class Hierarchy
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**
@@ -272,7 +276,11 @@ class BaseCategory
 /** @ODM\Document */
 class Category extends BaseCategory
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     public function getId()
@@ -289,7 +297,11 @@ class ChildCategory extends BaseCategory
 /** @ODM\Document */
 class Order
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -306,7 +318,11 @@ class Order
 /** @ODM\Document */
 class Product
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

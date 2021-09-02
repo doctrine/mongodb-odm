@@ -45,7 +45,11 @@ class BinDataTest extends BaseTest
 /** @ODM\Document */
 class BinDataTestUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(type="bin") */

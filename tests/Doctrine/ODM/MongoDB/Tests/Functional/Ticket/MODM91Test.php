@@ -65,7 +65,11 @@ class MODM91EventListener
 /** @ODM\Document */
 class MODM91TestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

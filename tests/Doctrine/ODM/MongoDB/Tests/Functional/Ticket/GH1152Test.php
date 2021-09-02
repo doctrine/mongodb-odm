@@ -39,7 +39,11 @@ class GH1152Parent
 {
     public const CLASSNAME = self::class;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=GH1152Child::class) */

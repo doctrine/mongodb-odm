@@ -60,7 +60,11 @@ class EmbeddedReferenceTest extends BaseTest
 /** @ODM\Document */
 class Offer
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**
@@ -83,7 +87,11 @@ class Offer
 /** @ODM\EmbeddedDocument */
 class Link
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**
@@ -106,7 +114,11 @@ class Link
 /** @ODM\Document */
 class ReferencedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**

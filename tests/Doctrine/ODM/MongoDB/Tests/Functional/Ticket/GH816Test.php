@@ -38,7 +38,11 @@ class GH816Test extends BaseTest
  */
 class GH816Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     public $id;
 
     /**

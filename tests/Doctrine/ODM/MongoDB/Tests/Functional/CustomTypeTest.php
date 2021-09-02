@@ -110,7 +110,11 @@ class CustomTypeException extends Exception
 /** @ODM\Document */
 class Country
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(type="date_collection") */

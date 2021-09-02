@@ -56,10 +56,18 @@ class GH878Test extends BaseTest
 /** @ODM\Document */
 class GH878Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH878SubDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH878SubDocument::class)
+     *
+     * @var GH878SubDocument|null
+     */
     public $embeddedField;
 }
 
@@ -77,6 +85,10 @@ class GH878SubDocument
 /** @ODM\Document */
 class GH878OtherDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }

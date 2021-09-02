@@ -39,7 +39,11 @@ class GH499Test extends BaseTest
 /** @ODM\Document */
 class GH499Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /** @ODM\ReferenceMany(targetDocument=GH499Document::class, storeAs="id", strategy="set") */

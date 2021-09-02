@@ -29,7 +29,11 @@ class MODM43Test extends BaseTest
 /** @ODM\Document @ODM\HasLifecycleCallbacks */
 class Person
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

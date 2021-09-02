@@ -37,7 +37,11 @@ class GH1117Test extends BaseTest
  */
 class GH1117Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedMany(strategy="set", targetDocument=GH1117EmbeddedDocument::class) */

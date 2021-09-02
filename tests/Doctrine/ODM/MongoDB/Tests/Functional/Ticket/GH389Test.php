@@ -34,10 +34,18 @@ class GH389Test extends BaseTest
 /** @ODM\Document */
 class RootDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\EmbedOne(targetDocument=EmptyMappedSuperClass::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=EmptyMappedSuperClass::class)
+     *
+     * @var EmptyEmbeddedDocument
+     */
     protected $emptyEmbeddedDocument;
 
     public function __construct()
@@ -45,7 +53,7 @@ class RootDocument
         $this->emptyEmbeddedDocument = new EmptyEmbeddedDocument();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

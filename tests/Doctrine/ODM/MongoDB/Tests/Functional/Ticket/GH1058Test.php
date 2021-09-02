@@ -64,7 +64,11 @@ class GH1058Listener
 /** @ODM\Document */
 class GH1058PersistDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**
@@ -88,7 +92,11 @@ class GH1058PersistDocument
 /** @ODM\Document */
 class GH1058UpsertDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**

@@ -82,7 +82,11 @@ class DiscriminatorsDefaultValueTest extends BaseTest
 /** @ODM\Document(collection="discriminator_parent") */
 abstract class ParentDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     protected $referencedChild;
@@ -130,17 +134,21 @@ abstract class ParentDocument
 /** @ODM\Document(collection="discriminator_child") */
 abstract class ChildDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $type;
 
-    public function __construct($type)
+    public function __construct(string $type)
     {
         $this->type = $type;
     }

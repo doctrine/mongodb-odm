@@ -77,7 +77,11 @@ class GH1962Test extends BaseTest
  */
 class GH1962Superclass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
@@ -113,7 +117,11 @@ class GH1962BazDocument extends GH1962BarSuperclass
  */
 class GH1962SuperclassWithoutDiscriminatorMap
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 

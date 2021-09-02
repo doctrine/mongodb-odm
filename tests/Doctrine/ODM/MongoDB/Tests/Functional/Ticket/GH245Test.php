@@ -36,16 +36,28 @@ class GH245Test extends BaseTest
 /** @ODM\Document */
 class GH245Order
 {
-    /** @ODM\Id(strategy="NONE") */
+    /**
+     * @ODM\Id(strategy="NONE")
+     *
+     * @var int|null
+     */
     public $id;
 }
 
 /** @ODM\Document */
 class GH245OrderLog
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=GH245Order::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH245Order::class)
+     *
+     * @var GH245Order|null
+     */
     public $order;
 }

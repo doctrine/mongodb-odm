@@ -214,7 +214,11 @@ class AlsoLoadTest extends BaseTest
 /** @ODM\Document */
 class AlsoLoadDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

@@ -126,7 +126,11 @@ class CollectionsTest extends BaseTest
  */
 class CollectionTestCapped
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -142,7 +146,11 @@ class CollectionTestCapped
  */
 class CollectionTestBasic
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

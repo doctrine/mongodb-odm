@@ -38,7 +38,11 @@ class GH1225Test extends BaseTest
  */
 class GH1225Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=GH1225EmbeddedDocument::class) */

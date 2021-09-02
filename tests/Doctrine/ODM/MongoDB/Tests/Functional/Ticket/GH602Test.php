@@ -105,7 +105,11 @@ class GH602Test extends BaseTest
 /** @ODM\Document */
 class GH602User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(name="user_deleted", type="bool") */
@@ -133,7 +137,11 @@ class GH602User
 /** @ODM\Document */
 class GH602Thing
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(name="thing_deleted", type="bool") */

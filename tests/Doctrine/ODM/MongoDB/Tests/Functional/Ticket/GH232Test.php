@@ -40,7 +40,11 @@ class GH232Test extends BaseTest
 /** @ODM\Document */
 class Product
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**

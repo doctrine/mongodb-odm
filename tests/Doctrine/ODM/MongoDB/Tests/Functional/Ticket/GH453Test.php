@@ -300,7 +300,11 @@ class GH453Test extends BaseTest
 /** @ODM\Document */
 class GH453Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(type="hash") */
@@ -340,13 +344,21 @@ class GH453Document
 /** @ODM\EmbeddedDocument */
 class GH453EmbeddedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document */
 class GH453ReferencedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }

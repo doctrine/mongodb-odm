@@ -47,7 +47,11 @@ class GH1346Test extends BaseTest
  */
 class GH1346Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /** @ODM\ReferenceMany(targetDocument=GH1346ReferencedDocument::class) */
@@ -86,7 +90,11 @@ class GH1346ReferencedDocument
      */
     public $test;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     public function setTest($test): void

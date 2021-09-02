@@ -45,7 +45,11 @@ class GH1572Test extends BaseTest
 /** @ODM\Document */
 class GH1572Blog
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog") */
@@ -61,7 +65,11 @@ class GH1572Blog
 /** @ODM\Document(repositoryClass=GH1572PostRepository::class) */
 class GH1572Post
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceOne(targetDocument=GH1572Blog::class) */

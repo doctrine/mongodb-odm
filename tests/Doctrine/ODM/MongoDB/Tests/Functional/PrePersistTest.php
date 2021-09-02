@@ -31,10 +31,17 @@ class PrePersistTest extends BaseTest
 /** @ODM\Document @ODM\HasLifecycleCallbacks */
 class PrePersistTestDocument
 {
+    /** @var int */
     public $prePersist;
+
+    /** @var int */
     public $preUpdate;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

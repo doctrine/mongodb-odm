@@ -53,7 +53,11 @@ class MODM29Test extends BaseTest
 /** @ODM\Document */
 class MODM29Doc
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /** @ODM\EmbedMany(targetDocument=MODM29Embedded::class, strategy="set") */

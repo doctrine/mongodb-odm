@@ -33,13 +33,21 @@ class DatabasesTest extends BaseTest
 /** @ODM\Document(db="test_custom") */
 class CustomDatabaseTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }
 
 /** @ODM\Document() */
 class DefaultDatabaseTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }

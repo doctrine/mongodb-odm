@@ -65,7 +65,11 @@ class MODM66Test extends BaseTest
 /** @ODM\Document */
 class MODM52A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /** @ODM\ReferenceMany(targetDocument=MODM52B::class, cascade="all") */
@@ -85,7 +89,11 @@ class MODM52A
 /** @ODM\Document */
 class MODM52B
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**

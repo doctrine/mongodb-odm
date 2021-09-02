@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -191,7 +192,11 @@ class CustomCollectionsTest extends BaseTest
  */
 class DocumentWithCustomCollection
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -199,6 +204,8 @@ class DocumentWithCustomCollection
      *   collectionClass=MyEmbedsCollection::class,
      *   targetDocument=EmbeddedDocumentInCustomCollection::class
      * )
+     *
+     * @var MyEmbedsCollection
      */
     public $coll;
 
@@ -206,6 +213,8 @@ class DocumentWithCustomCollection
      * @ODM\EmbedMany(
      *   targetDocument=EmbeddedDocumentInCustomCollection::class
      * )
+     *
+     * @var Collection<int, EmbeddedDocumentInCustomCollection>
      */
     public $boring;
 
@@ -215,6 +224,8 @@ class DocumentWithCustomCollection
      *   orphanRemoval=true,
      *   targetDocument=DocumentWithCustomCollection::class
      * )
+     *
+     * @var MyDocumentsCollection
      */
     public $refMany;
 
@@ -224,6 +235,8 @@ class DocumentWithCustomCollection
      *   mappedBy="refMany",
      *   targetDocument=DocumentWithCustomCollection::class
      * )
+     *
+     * @var MyDocumentsCollection
      */
     public $inverseRefMany;
 
@@ -244,18 +257,18 @@ class EmbeddedDocumentInCustomCollection
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
     /**
      * @ODM\Field(type="bool")
      *
-     * @var bool|null
+     * @var bool
      */
     public $enabled;
 
-    public function __construct($name, $enabled)
+    public function __construct(string $name, bool $enabled)
     {
         $this->name    = $name;
         $this->enabled = $enabled;

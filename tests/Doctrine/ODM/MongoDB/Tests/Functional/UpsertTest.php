@@ -89,7 +89,11 @@ class UpsertTest extends BaseTest
 /** @ODM\Document */
 class UpsertTestUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(nullable=true) */

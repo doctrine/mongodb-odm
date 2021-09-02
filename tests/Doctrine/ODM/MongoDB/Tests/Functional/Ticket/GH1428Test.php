@@ -36,17 +36,29 @@ class GH1428Test extends BaseTest
 /** @ODM\Document */
 class GH1428Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1428EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1428EmbeddedDocument::class)
+     *
+     * @var GH1428EmbeddedDocument|null
+     */
     public $embedded;
 }
 
 /** @ODM\EmbeddedDocument */
 class GH1428EmbeddedDocument
 {
-    /** @ODM\EmbedOne(targetDocument=GH1428NestedEmbeddedDocument::class, name="shortNameThatDoesntExist") */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1428NestedEmbeddedDocument::class, name="shortNameThatDoesntExist")
+     *
+     * @var GH1428NestedEmbeddedDocument|null
+     */
     public $nestedEmbedded;
 }
 

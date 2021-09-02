@@ -42,13 +42,21 @@ class GH936Test extends BaseTest
 /** @ODM\Document */
 class GH936Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=GH936Document::class, cascade={"persist","remove"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH936Document::class, cascade={"persist","remove"})
+     *
+     * @var GH936Document|null
+     */
     public $ref;
 
-    public function __construct($ref = null)
+    public function __construct(?GH936Document $ref = null)
     {
         $this->ref = $ref;
     }
@@ -56,6 +64,7 @@ class GH936Document
 
 class GH936Listener
 {
+    /** @var object[] */
     public $removed = [];
 
     public function postRemove(LifecycleEventArgs $args): void

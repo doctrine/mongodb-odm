@@ -29,6 +29,7 @@ use function sprintf;
 
 class DocumentPersisterTest extends BaseTest
 {
+    /** @var class-string<DocumentPersisterTestDocument> */
     private $class;
 
     /** @var DocumentPersister */
@@ -780,10 +781,18 @@ class DocumentPersisterTest extends BaseTest
 /** @ODM\Document */
 class DocumentPersisterTestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     public $id;
 
-    /** @ODM\Field(name="dbName", type="string") */
+    /**
+     * @ODM\Field(name="dbName", type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /**
@@ -792,32 +801,62 @@ class DocumentPersisterTestDocument
      *     discriminatorField="type",
      *     name="associationName"
      * )
+     *
+     * @var AbstractDocumentPersisterTestDocumentAssociation|null
      */
     public $association;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="id")
+     *
+     * @var DocumentPersisterTestHashIdDocument|null
+     */
     public $simpleRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRef")
+     *
+     * @var DocumentPersisterTestHashIdDocument|null
+     */
     public $semiComplexRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRefWithDb")
+     *
+     * @var DocumentPersisterTestHashIdDocument|null
+     */
     public $complexRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="ref") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="ref")
+     *
+     * @var DocumentPersisterTestHashIdDocument|null
+     */
     public $embeddedRef;
 }
 
 /** @ODM\Document */
 class DocumentPersisterTestDocumentWithVersion
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="dbName", type="string") */
+    /**
+     * @ODM\Field(name="dbName", type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\Version @ODM\Field(type="int") */
+    /**
+     * @ODM\Version @ODM\Field(type="int")
+     *
+     * @var int
+     */
     public $revision = 1;
 }
 
@@ -832,10 +871,18 @@ class DocumentPersisterTestDocumentWithVersion
  */
 abstract class AbstractDocumentPersisterTestDocumentAssociation
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(name="nestedName") */
+    /**
+     * @ODM\EmbedOne(name="nestedName")
+     *
+     * @var object|null
+     */
     public $nested;
 
     /**
@@ -844,6 +891,8 @@ abstract class AbstractDocumentPersisterTestDocumentAssociation
      *     discriminatorField="type",
      *     name="associationName"
      * )
+     *
+     * @var AbstractDocumentPersisterTestDocumentAssociation|null
      */
     public $association;
 }
@@ -851,65 +900,114 @@ abstract class AbstractDocumentPersisterTestDocumentAssociation
 /** @ODM\EmbeddedDocument */
 class DocumentPersisterTestDocumentReference extends AbstractDocumentPersisterTestDocumentAssociation
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(name="nestedName") */
+    /**
+     * @ODM\ReferenceOne(name="nestedName")
+     *
+     * @var object|null
+     */
     public $nested;
 }
 
 /** @ODM\EmbeddedDocument */
 class DocumentPersisterTestDocumentEmbed extends AbstractDocumentPersisterTestDocumentAssociation
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(name="nestedName") */
+    /**
+     * @ODM\EmbedOne(name="nestedName")
+     *
+     * @var object|null
+     */
     public $nested;
 }
 
 /** @ODM\Document */
 class DocumentPersisterTestHashIdDocument
 {
-    /** @ODM\Id(strategy="none", options={"type"="hash"}) */
+    /**
+     * @ODM\Id(strategy="none", options={"type"="hash"})
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="id")
+     *
+     * @var DocumentPersisterTestDocument|null
+     */
     public $simpleRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRef")
+     *
+     * @var DocumentPersisterTestDocument|null
+     */
     public $semiComplexRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRefWithDb")
+     *
+     * @var DocumentPersisterTestDocument|null
+     */
     public $complexRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="ref") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="ref")
+     *
+     * @var DocumentPersisterTestDocument|null
+     */
     public $embeddedRef;
 }
 
 /** @ODM\Document(writeConcern="majority") */
 class DocumentPersisterWriteConcernMajority
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document(writeConcern=0) */
 class DocumentPersisterWriteConcernUnacknowledged
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document(writeConcern=1) */
 class DocumentPersisterWriteConcernAcknowledged
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 final class DocumentPersisterCustomTypedId
 {
+    /** @var string */
     private $value;
 
     private function __construct(string $value)
@@ -979,7 +1077,11 @@ final class DocumentPersisterCustomIdType extends Type
 /** @ODM\Document() */
 class DocumentPersisterTestDocumentWithCustomId
 {
-    /** @ODM\Id(strategy="NONE", type="DocumentPersisterCustomId") */
+    /**
+     * @ODM\Id(strategy="NONE", type="DocumentPersisterCustomId")
+     *
+     * @var DocumentPersisterCustomTypedId
+     */
     private $id;
 
     public function __construct(DocumentPersisterCustomTypedId $id)
@@ -996,10 +1098,18 @@ class DocumentPersisterTestDocumentWithCustomId
 /** @ODM\Document() */
 class DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId
 {
-    /** @ODM\Id() */
+    /**
+     * @ODM\Id()
+     *
+     * @var DocumentPersisterCustomTypedId
+     */
     private $id;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocumentWithCustomId::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocumentWithCustomId::class, storeAs="id")
+     *
+     * @var DocumentPersisterTestDocumentWithCustomId
+     */
     private $documentWithCustomId;
 
     public function __construct(DocumentPersisterTestDocumentWithCustomId $documentWithCustomId)

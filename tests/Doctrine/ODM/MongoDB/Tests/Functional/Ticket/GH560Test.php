@@ -91,7 +91,10 @@ class GH560Test extends BaseTest
 
 class GH560EventSubscriber implements EventSubscriber
 {
+    /** @var array<array{string, class-string}> */
     public $called;
+
+    /** @var string[] */
     public $events;
 
     public function __construct(array $events)
@@ -114,17 +117,21 @@ class GH560EventSubscriber implements EventSubscriber
 /** @ODM\Document */
 class GH560Document
 {
-    /** @ODM\Id(strategy="NONE") */
+    /**
+     * @ODM\Id(strategy="NONE")
+     *
+     * @var int|string|null
+     */
     public $id;
 
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    public function __construct($id, $name)
+    public function __construct($id, string $name)
     {
         $this->id   = $id;
         $this->name = $name;

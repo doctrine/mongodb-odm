@@ -19,9 +19,17 @@ class MODM72Test extends BaseTest
 /** @ODM\Document */
 class MODM72User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string", options={"test"="test"}) */
+    /**
+     * @ODM\Field(type="string", options={"test"="test"})
+     *
+     * @var string|null
+     */
     public $name;
 }

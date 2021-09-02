@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Issue;
 use Documents\User;
@@ -533,6 +537,7 @@ class LockTest extends BaseTest
 
         $d->issues->add(new Issue('oops', 'version mismatch'));
         $this->uow->scheduleCollectionUpdate($d->issues);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $d->issues);
         $this->expectException(LockException::class);
         $this->uow->getCollectionPersister()->update($d, [$d->issues], []);
     }
@@ -550,6 +555,7 @@ class LockTest extends BaseTest
             ['$set' => ['version' => 2]]
         );
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $d->issues);
         $this->expectException(LockException::class);
         $this->uow->getCollectionPersister()->delete($d, [$d->issues], []);
     }
@@ -558,7 +564,11 @@ class LockTest extends BaseTest
 /** @ODM\MappedSuperclass */
 abstract class AbstractVersionBase
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|string|null
+     */
     public $id;
 
     /**
@@ -568,31 +578,43 @@ abstract class AbstractVersionBase
      */
     public $title;
 
-    /** @ODM\Lock @ODM\Field(type="int") */
+    /**
+     * @ODM\Lock @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $locked;
 
-    /** @ODM\EmbedMany(targetDocument=Issue::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Issue::class)
+     *
+     * @var Collection<int, Issue>
+     */
     public $issues;
 
+    /** @var int|null */
     public $version;
 
-    public function __construct($title = null)
+    public function __construct(?string $title = null)
     {
         $this->issues = new ArrayCollection();
         $this->title  = $title;
     }
 
+    /**
+     * @return ObjectId|string|null
+     */
     public function getId()
     {
         return $this->id;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    public function getVersion()
+    public function getVersion(): ?int
     {
         return $this->version;
     }
@@ -608,40 +630,70 @@ class LockInt extends AbstractVersionBase
 /** @ODM\Document */
 class LockDate extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Field(type="date") */
+    /**
+     * @ODM\Version @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     public $version;
 }
 
 /** @ODM\Document */
 class LockDateImmutable extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Field(type="date_immutable") */
+    /**
+     * @ODM\Version @ODM\Field(type="date_immutable")
+     *
+     * @var DateTimeImmutable|null
+     */
     public $version;
 }
 
 /** @ODM\Document */
 class LockDecimal128 extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Field(type="decimal128") */
+    /**
+     * @ODM\Version @ODM\Field(type="decimal128")
+     *
+     * @var string|null
+     */
     public $version;
 }
 
 /** @ODM\Document */
 class InvalidLockDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Lock @ODM\Field(type="string") */
+    /**
+     * @ODM\Lock
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $lock;
 }
 
 /** @ODM\Document */
 class InvalidVersionDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Version @ODM\Field(type="string") */
+    /**
+     * @ODM\Version
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $version;
 }

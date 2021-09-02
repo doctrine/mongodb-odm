@@ -937,7 +937,11 @@ class FunctionalTest extends BaseTest
 /** @ODM\Document */
 class ParentAssociationTestA
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
     /**
      * @ODM\Field(type="string")

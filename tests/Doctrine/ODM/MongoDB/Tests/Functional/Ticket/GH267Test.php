@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -61,25 +62,33 @@ class GH267Test extends BaseTest
  */
 class GH267User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $name;
 
-    /** @ODM\ReferenceOne(name="company", targetDocument=GH267Company::class, inversedBy="users") */
+    /**
+     * @ODM\ReferenceOne(name="company", targetDocument=GH267Company::class, inversedBy="users")
+     *
+     * @var GH267Company|null
+     */
     protected $company;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function setId($id): void
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
@@ -89,22 +98,22 @@ class GH267User
         return $this->id;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setCompany($company): void
+    public function setCompany(GH267Company $company): void
     {
         $this->company = $company;
     }
 
-    public function getCompany()
+    public function getCompany(): ?GH267Company
     {
         return $this->company;
     }
@@ -118,10 +127,18 @@ class GH267User
  */
 class GH267Company
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument=GH267User::class, mappedBy="company") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH267User::class, mappedBy="company")
+     *
+     * @var Collection<int, GH267User>
+     */
     protected $users;
 
     public function setId($id): void
@@ -134,12 +151,18 @@ class GH267Company
         return $this->id;
     }
 
-    public function setUsers($users): void
+    /**
+     * @param Collection<int, GH267User> $users
+     */
+    public function setUsers(Collection $users): void
     {
         $this->users = $users;
     }
 
-    public function getUsers()
+    /**
+     * @return Collection<int, GH267User>
+     */
+    public function getUsers(): Collection
     {
         return $this->users;
     }

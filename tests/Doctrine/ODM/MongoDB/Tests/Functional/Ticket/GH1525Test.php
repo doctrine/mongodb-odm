@@ -97,7 +97,11 @@ class GH1525Test extends BaseTest
 /** @ODM\Document(collection="document_test") */
 class GH1525Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

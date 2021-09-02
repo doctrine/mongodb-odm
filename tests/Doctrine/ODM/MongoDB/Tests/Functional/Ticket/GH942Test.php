@@ -61,7 +61,11 @@ class GH942Document
 {
     public const CLASSNAME = self::class;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -82,7 +86,11 @@ class GH942DocumentParent
 {
     public const CLASSNAME = self::class;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
