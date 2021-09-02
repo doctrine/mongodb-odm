@@ -124,7 +124,11 @@ class MODM140Test extends BaseTest
 /** @ODM\Document */
 class Category
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**
@@ -178,7 +182,11 @@ class PostVersion
 /** @ODM\Document */
 class Comment
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**

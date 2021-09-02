@@ -55,7 +55,11 @@ class MappedSuperclassBase
      */
     private $mapped2;
 
-    /** @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class)
+     *
+     * @var MappedSuperclassRelated1|null
+     */
     private $mappedRelated1;
 
     public function setMapped1($val): void
@@ -92,7 +96,11 @@ class MappedSuperclassBase
 /** @ODM\Document */
 class MappedSuperclassRelated1
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var int|null
+     */
     private $id;
 
     /**
@@ -102,22 +110,22 @@ class MappedSuperclassRelated1
      */
     private $name;
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -126,7 +134,11 @@ class MappedSuperclassRelated1
 /** @ODM\Document */
 class DocumentSubClass extends MappedSuperclassBase
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var int|null
+     */
     private $id;
 
     /**
@@ -136,22 +148,22 @@ class DocumentSubClass extends MappedSuperclassBase
      */
     private $name;
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

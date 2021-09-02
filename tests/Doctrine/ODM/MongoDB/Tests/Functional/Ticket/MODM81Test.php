@@ -63,7 +63,11 @@ class MODM81Test extends BaseTest
 /** @ODM\Document */
 class MODM81TestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**

@@ -242,7 +242,11 @@ class IndexesTest extends BaseTest
 /** @ODM\Document */
 class UniqueOnFieldTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(type="string") @ODM\UniqueIndex() */
@@ -259,7 +263,11 @@ class UniqueOnFieldTest
 /** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc"}) */
 class UniqueOnDocumentTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -280,7 +288,11 @@ class UniqueOnDocumentTest
 /** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"})) */
 class IndexesOnDocumentTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -301,7 +313,11 @@ class IndexesOnDocumentTest
 /** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"},partialFilterExpression={"counter"={"$gt"=5}})) */
 class PartialIndexOnDocumentTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -329,7 +345,11 @@ class PartialIndexOnDocumentTest
 /** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}) */
 class MultipleFieldsUniqueIndexTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -350,7 +370,11 @@ class MultipleFieldsUniqueIndexTest
 /** @ODM\Document */
 class UniqueSparseOnFieldTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(type="string") @ODM\UniqueIndex(sparse=true) */
@@ -367,7 +391,11 @@ class UniqueSparseOnFieldTest
 /** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true}) */
 class UniqueSparseOnDocumentTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -388,7 +416,11 @@ class UniqueSparseOnDocumentTest
 /** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true})) */
 class SparseIndexesOnDocumentTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -409,7 +441,11 @@ class SparseIndexesOnDocumentTest
 /** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}, options={"sparse"=true}) */
 class MultipleFieldsUniqueSparseIndexTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -430,7 +466,11 @@ class MultipleFieldsUniqueSparseIndexTest
 /** @ODM\Document */
 class MultipleFieldIndexes
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(type="string") @ODM\UniqueIndex(name="test") */
@@ -443,7 +483,11 @@ class MultipleFieldIndexes
 /** @ODM\Document */
 class DocumentWithEmbeddedIndexes
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -467,7 +511,11 @@ class DocumentWithEmbeddedIndexes
  */
 class DocumentWithDiscriminatorIndex
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
@@ -479,7 +527,11 @@ class DocumentWithDiscriminatorIndex
  */
 class DocumentWithMultipleIndexAnnotations
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -517,7 +569,11 @@ class YetAnotherEmbeddedDocumentWithIndex
 /** @ODM\Document */
 class DocumentWithIndexInDiscriminatedEmbeds
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

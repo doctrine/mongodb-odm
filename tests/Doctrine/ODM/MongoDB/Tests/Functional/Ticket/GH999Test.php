@@ -46,7 +46,11 @@ class GH999Listener
 /** @ODM\Document @ODM\HasLifecycleCallbacks */
 class GH999Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**

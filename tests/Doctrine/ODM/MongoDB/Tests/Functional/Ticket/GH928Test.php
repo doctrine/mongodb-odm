@@ -36,6 +36,10 @@ class GH928Test extends BaseTest
 /** @ODM\Document */
 class GH928Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }

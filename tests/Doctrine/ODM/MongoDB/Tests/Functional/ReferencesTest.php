@@ -498,7 +498,11 @@ class ReferencesTest extends BaseTest
 /** @ODM\Document */
 class DocumentWithArrayReference
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceOne(targetDocument=DocumentWithArrayId::class) */
@@ -516,7 +520,11 @@ class DocumentWithArrayId
 /** @ODM\Document */
 class DocumentWithMongoBinDataReference
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceOne(targetDocument=DocumentWithMongoBinDataId::class) */

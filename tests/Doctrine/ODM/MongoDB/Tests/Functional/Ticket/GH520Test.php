@@ -66,7 +66,11 @@ class GH520Test extends BaseTest
 /** @ODM\Document */
 class GH520Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceOne(targetDocument=GH520Document::class, cascade={"persist"}) */

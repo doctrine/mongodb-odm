@@ -28,13 +28,21 @@ class MODM62Test extends BaseTest
 /** @ODM\Document(collection="modm62_users") */
 class MODM62Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
     public $b = ['ok'];
 
-    public function setB($b): void
+    public function setB(array $b): void
     {
         $this->b = $b;
     }

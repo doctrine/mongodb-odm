@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -244,19 +245,39 @@ class GH788Test extends BaseTest
 /** @ODM\Document */
 class GH788Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument=GH788ExternEmbedListed::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH788ExternEmbedListed::class)
+     *
+     * @var Collection<int, GH788ExternEmbedListed>
+     */
     public $externEmbedMany;
 
-    /** @ODM\EmbedOne(targetDocument=GH788ExternEmbedListed::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH788ExternEmbedListed::class)
+     *
+     * @var GH788ExternEmbedListed|null
+     */
     public $externEmbedOne;
 
-    /** @ODM\ReferenceMany(targetDocument=GH788ExternRefListed::class, cascade="all") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH788ExternRefListed::class, cascade="all")
+     *
+     * @var Collection<int, GH788ExternRefListed>
+     */
     public $externRefMany;
 
-    /** @ODM\ReferenceOne(targetDocument=GH788ExternRefListed::class, cascade="all") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH788ExternRefListed::class, cascade="all")
+     *
+     * @var GH788ExternRefListed
+     */
     public $externRefOne;
 
     /**
@@ -266,6 +287,8 @@ class GH788Document
      *     "b"=GH788InlineEmbedListed::class
      *   }
      * )
+     *
+     * @var Collection<int, GH788InlineEmbedListed>
      */
     public $inlineEmbedMany;
 
@@ -276,6 +299,8 @@ class GH788Document
      *     "b"=GH788InlineEmbedListed::class
      *   }
      * )
+     *
+     * @var GH788InlineEmbedListed|null
      */
     public $inlineEmbedOne;
 
@@ -287,6 +312,8 @@ class GH788Document
      *   },
      *   cascade="all"
      * )
+     *
+     * @var Collection<int, GH788InlineRefListed>
      */
     public $inlineRefMany;
 
@@ -298,19 +325,37 @@ class GH788Document
      *   },
      *   cascade="all"
      * )
+     *
+     * @var GH788InlineRefListed|null
      */
     public $inlineRefOne;
 
-    /** @ODM\EmbedMany */
+    /**
+     * @ODM\EmbedMany
+     *
+     * @var Collection<int, object>
+     */
     public $noTargetEmbedMany;
 
-    /** @ODM\EmbedOne */
+    /**
+     * @ODM\EmbedOne
+     *
+     * @var object|null
+     */
     public $noTargetEmbedOne;
 
-    /** @ODM\ReferenceMany(cascade="all") */
+    /**
+     * @ODM\ReferenceMany(cascade="all")
+     *
+     * @var Collection<int, object>
+     */
     public $noTargetRefMany;
 
-    /** @ODM\ReferenceOne(cascade="all") */
+    /**
+     * @ODM\ReferenceOne(cascade="all")
+     *
+     * @var object|null
+     */
     public $noTargetRefOne;
 
     public function __construct()
@@ -332,7 +377,11 @@ class GH788Document
  */
 class GH788DocumentListed extends GH788Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -367,7 +416,11 @@ class GH788InlineEmbedUnlisted extends GH788InlineEmbedListed
 /** @ODM\Document */
 class GH788InlineRefListed
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -390,7 +443,11 @@ class GH788InlineRefUnlisted extends GH788InlineRefListed
  */
 class GH788ExternEmbedListed
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -414,7 +471,11 @@ class GH788ExternEmbedUnlisted extends GH788ExternEmbedListed
  */
 class GH788ExternRefListed
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

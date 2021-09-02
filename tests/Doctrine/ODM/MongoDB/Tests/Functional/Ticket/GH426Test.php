@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -32,26 +33,50 @@ class GH426Test extends BaseTest
 /** @ODM\Document */
 class GH426Form
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceMany(targetDocument=GH426Field::class, mappedBy="form", cascade={"all"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH426Field::class, mappedBy="form", cascade={"all"})
+     *
+     * @var Collection<int, GH426Field>|array<GH426Field>
+     */
     public $fields = [];
 
-    /** @ODM\ReferenceOne(targetDocument=GH426Field::class, mappedBy="form", sort={"_id":1}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH426Field::class, mappedBy="form", sort={"_id":1})
+     *
+     * @var GH426Field|null
+     */
     public $firstField;
 
-    /** @ODM\ReferenceOne(targetDocument=GH426Field::class, mappedBy="form", sort={"_id":-1}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH426Field::class, mappedBy="form", sort={"_id":-1})
+     *
+     * @var GH426Field|null
+     */
     public $lastField;
 }
 
 /** @ODM\Document */
 class GH426Field
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(inversedBy="fields", discriminatorMap={"f":GH426Form::class}, discriminatorField="type", cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(inversedBy="fields", discriminatorMap={"f":GH426Form::class}, discriminatorField="type", cascade={"all"})
+     *
+     * @var GH426Form
+     */
     public $form;
 
     public function __construct(GH426Form $form)

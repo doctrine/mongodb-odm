@@ -42,7 +42,11 @@ class MODM116Test extends BaseTest
 /** @ODM\Document @ODM\InheritanceType("COLLECTION_PER_CLASS") **/
 class MODM116Parent
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -104,13 +105,25 @@ class GH1418Test extends BaseTest
 /** @ODM\Document */
 class GH1418Document
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var int|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1418Embedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1418Embedded::class)
+     *
+     * @var GH1418Embedded|null
+     */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument=GH1418Embedded::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH1418Embedded::class)
+     *
+     * @var Collection<int, GH1418Embedded>
+     */
     public $embedMany;
 }
 

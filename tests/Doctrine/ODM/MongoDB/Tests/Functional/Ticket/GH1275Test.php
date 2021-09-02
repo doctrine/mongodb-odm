@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -192,7 +193,11 @@ class GH1275Test extends BaseTest
  */
 class Item
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -217,7 +222,11 @@ class Item
  */
 class Element
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -238,7 +247,11 @@ class Element
  */
 class Container
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceMany(
@@ -247,6 +260,8 @@ class Container
      *     orphanRemoval="true",
      *     strategy="atomicSet"
      * )
+     *
+     * @var Collection<int, Item>
      */
     public $items;
 
@@ -255,6 +270,8 @@ class Container
      *     targetDocument=Item::class,
      *     cascade={"refresh"}
      * )
+     *
+     * @var Item
      */
     public $firstItem;
 
@@ -263,6 +280,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="addToSet"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $addToSet;
 
@@ -271,6 +290,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="set"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $set;
 
@@ -279,6 +300,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="setArray"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $setArray;
 
@@ -287,6 +310,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="pushAll"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $pushAll;
 
@@ -295,6 +320,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="atomicSet"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $atomicSet;
 
@@ -303,6 +330,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="atomicSetArray"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $atomicSetArray;
 

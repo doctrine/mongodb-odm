@@ -25,9 +25,17 @@ class GH628Test extends BaseTest
 /** @ODM\Document */
 class GH628Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="f", type="raw") */
+    /**
+     * @ODM\Field(name="f", type="raw")
+     *
+     * @var mixed
+     */
     public $foo;
 }

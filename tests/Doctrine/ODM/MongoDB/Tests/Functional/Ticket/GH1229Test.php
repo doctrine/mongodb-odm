@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -136,10 +137,18 @@ class GH1229Parent
 {
     public const CLASSNAME = self::class;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedMany(discriminatorField="_class") */
+    /**
+     * @ODM\EmbedMany(discriminatorField="_class")
+     *
+     * @var Collection<int, GH1229Child>
+     */
     protected $children;
 
     public function __construct()

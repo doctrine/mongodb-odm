@@ -84,7 +84,11 @@ class NestedCollectionsTest extends BaseTest
  */
 class DocWithNestedCollections
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class) */

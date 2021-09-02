@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -162,20 +163,36 @@ class OrphanRemovalEmbedTest extends BaseTest
 /** @ODM\Document */
 class OrphanRemovalCascadeUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=OrphanRemovalCascadeProfile::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=OrphanRemovalCascadeProfile::class)
+     *
+     * @var OrphanRemovalCascadeProfile|null
+     */
     public $profile;
 
-    /** @ODM\EmbedMany(targetDocument=OrphanRemovalCascadeProfile::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=OrphanRemovalCascadeProfile::class)
+     *
+     * @var Collection<int, OrphanRemovalCascadeProfile>|array<OrphanRemovalCascadeProfile>
+     */
     public $profileMany = [];
 }
 
 /** @ODM\EmbeddedDocument */
 class OrphanRemovalCascadeProfile
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -185,17 +202,29 @@ class OrphanRemovalCascadeProfile
      */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument=OrphanRemovalCascadeAddress::class, orphanRemoval=true, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=OrphanRemovalCascadeAddress::class, orphanRemoval=true, cascade={"all"})
+     *
+     * @var OrphanRemovalCascadeAddress|null
+     */
     public $address;
 
-    /** @ODM\ReferenceMany(targetDocument=OrphanRemovalCascadeAddress::class, orphanRemoval=true, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=OrphanRemovalCascadeAddress::class, orphanRemoval=true, cascade={"all"})
+     *
+     * @var Collection<int, OrphanRemovalCascadeAddress>
+     */
     public $addressMany;
 }
 
 /** @ODM\Document */
 class OrphanRemovalCascadeAddress
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

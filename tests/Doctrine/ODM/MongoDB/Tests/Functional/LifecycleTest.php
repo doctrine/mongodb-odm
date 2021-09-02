@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -54,37 +55,50 @@ class LifecycleTest extends BaseTest
 /** @ODM\Document @ODM\HasLifecycleCallbacks */
 class ParentObject
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\ReferenceMany(targetDocument=ChildObject::class, cascade="all") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=ChildObject::class, cascade="all")
+     *
+     * @var Collection<int, ChildObject>|array<ChildObject>
+     */
     private $children;
 
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     private $name;
 
-    /** @ODM\EmbedOne(targetDocument=ChildEmbeddedObject::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=ChildEmbeddedObject::class)
+     *
+     * @var ChildEmbeddedObject|null
+     */
     private $childEmbedded;
 
+    /** @var ChildObject */
     private $child;
 
-    public function __construct($name, ChildObject $child, ChildEmbeddedObject $childEmbedded)
+    public function __construct(string $name, ChildObject $child, ChildEmbeddedObject $childEmbedded)
     {
         $this->name          = $name;
         $this->child         = $child;
         $this->childEmbedded = $childEmbedded;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -101,7 +115,7 @@ class ParentObject
         $this->childEmbedded->setName('changed');
     }
 
-    public function getChildren()
+    public function getChildren(): Collection
     {
         return $this->children;
     }
@@ -111,7 +125,7 @@ class ParentObject
         return $this->childEmbedded;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -120,27 +134,31 @@ class ParentObject
 /** @ODM\Document */
 class ChildObject
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     private $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -152,21 +170,21 @@ class ChildEmbeddedObject
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     private $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

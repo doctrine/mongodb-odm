@@ -51,7 +51,11 @@ class GH1138Test extends BaseTest
 /** @ODM\Document */
 class GH1138Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

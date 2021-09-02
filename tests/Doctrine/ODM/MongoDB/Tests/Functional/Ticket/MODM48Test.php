@@ -33,7 +33,11 @@ class MODM48Test extends BaseTest
 /** @ODM\Document */
 class MODM48A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=MODM48B::class) */

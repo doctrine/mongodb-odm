@@ -29,6 +29,10 @@ class GH1964Test extends BaseTest
  */
 class GH1964Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }

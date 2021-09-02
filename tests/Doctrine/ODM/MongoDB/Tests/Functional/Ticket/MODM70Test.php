@@ -35,7 +35,11 @@ class MODM70Test extends BaseTest
  */
 class Avatar
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**

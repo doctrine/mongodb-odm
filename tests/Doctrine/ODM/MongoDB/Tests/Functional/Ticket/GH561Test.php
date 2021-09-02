@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -39,10 +40,18 @@ class GH561Test extends BaseTest
 /** @ODM\Document */
 class GH561Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument=GH561EmbeddedDocument::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH561EmbeddedDocument::class, strategy="set")
+     *
+     * @var Collection<int, GH561EmbeddedDocument>
+     */
     public $embeddedDocuments;
 
     public function __construct()
@@ -54,7 +63,11 @@ class GH561Document
 /** @ODM\EmbeddedDocument */
 class GH561EmbeddedDocument
 {
-    /** @ODM\EmbedMany(targetDocument=GH561AnotherEmbeddedDocument::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH561AnotherEmbeddedDocument::class, strategy="set")
+     *
+     * @var Collection<int, GH561AnotherEmbeddedDocument>
+     */
     public $embeddedDocuments;
 
     public function __construct()
@@ -69,11 +82,11 @@ class GH561AnotherEmbeddedDocument
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

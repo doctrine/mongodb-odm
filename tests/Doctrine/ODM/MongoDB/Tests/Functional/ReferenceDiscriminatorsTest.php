@@ -98,7 +98,11 @@ class ReferenceDiscriminatorsTest extends BaseTest
  */
 class Action
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**
@@ -145,7 +149,11 @@ class CommentableAction extends Action
 /** @ODM\MappedSuperclass */
 abstract class ActivityStreamItem
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /** @ODM\ReferenceOne(targetDocument=Action::class) */

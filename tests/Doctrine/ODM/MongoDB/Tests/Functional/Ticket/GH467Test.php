@@ -31,7 +31,11 @@ class GH467Test extends BaseTest
 /** @ODM\Document */
 class GH467Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(type="collection") */
@@ -47,13 +51,21 @@ class GH467Document
 /** @ODM\EmbeddedDocument */
 class GH467EmbeddedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document */
 class GH467ReferencedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }

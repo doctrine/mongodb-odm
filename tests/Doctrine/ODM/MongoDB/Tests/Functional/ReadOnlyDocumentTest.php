@@ -81,17 +81,21 @@ class ReadOnlyDocumentTest extends BaseTest
 /** @ODM\Document(readOnly=true) */
 class ReadOnlyDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     public $id;
 
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $value;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }

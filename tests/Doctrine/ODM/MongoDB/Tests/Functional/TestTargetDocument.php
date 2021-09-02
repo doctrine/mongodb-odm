@@ -22,7 +22,11 @@ class TargetDocumentTest extends BaseTest
 /** @ODM\Document */
 class TargetDocumentTestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\TargetDocumentTestReference::class) */
@@ -32,7 +36,11 @@ class TargetDocumentTestDocument
 /** @ODM\MappedSuperclass */
 abstract class AbstractTargetDocumentTestReference
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 

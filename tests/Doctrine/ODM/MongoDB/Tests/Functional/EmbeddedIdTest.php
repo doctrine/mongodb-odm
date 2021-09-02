@@ -61,7 +61,11 @@ class EmbeddedIdTest extends BaseTest
 /** @ODM\Document */
 class EmbeddedIdTestUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=DefaultIdEmbeddedDocument::class) */
@@ -74,7 +78,11 @@ class EmbeddedIdTestUser
 /** @ODM\Document */
 class EmbeddedStrategyNoneIdTestUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=DefaultIdStrategyNoneEmbeddedDocument::class) */
@@ -87,7 +95,11 @@ class EmbeddedStrategyNoneIdTestUser
 /** @ODM\EmbeddedDocument */
 class DefaultIdEmbeddedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 

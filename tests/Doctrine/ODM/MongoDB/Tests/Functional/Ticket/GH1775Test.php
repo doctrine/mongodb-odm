@@ -59,7 +59,11 @@ class GH1775Test extends BaseTest
 /** @ODM\MappedSuperclass */
 class GH1775MetaDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -73,7 +77,11 @@ class GH1775MetaDocument
 /** @ODM\Document */
 class GH1775Image
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     public function __construct()
@@ -84,7 +92,11 @@ class GH1775Image
 /** @ODM\Document */
 class GH1775Blog
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceMany(targetDocument=GH1775Post::class, inversedBy="blogs") */

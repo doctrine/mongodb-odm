@@ -54,7 +54,11 @@ class GH1017Test extends BaseTest
 /** @ODM\Document */
 class GH1017Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=GH1017EmbeddedDocument::class) */

@@ -103,9 +103,17 @@ class CustomFieldNameTest extends BaseTest
 /** @ODM\Document */
 class CustomFieldName
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="login", type="string") */
+    /**
+     * @ODM\Field(name="login", type="string")
+     *
+     * @var string|null
+     */
     public $username;
 }

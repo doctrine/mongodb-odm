@@ -83,6 +83,10 @@ class MODM52Embedded extends MODM52Container
 /** @ODM\Document */
 class MODM52Doc extends MODM52Container
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 }

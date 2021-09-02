@@ -58,7 +58,11 @@ class GH977Test extends BaseTest
 /** @ODM\Document */
 class GH977TestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

@@ -73,7 +73,11 @@ class MODM83EventListener
 /** @ODM\Document */
 class MODM83TestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -101,7 +105,11 @@ class MODM83TestEmbeddedDocument
 /** @ODM\Document */
 class MODM83OtherDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

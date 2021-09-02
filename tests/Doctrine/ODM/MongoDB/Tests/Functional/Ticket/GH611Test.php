@@ -122,7 +122,11 @@ class GH611Test extends BaseTest
 /** @ODM\Document */
 class GH611Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\EmbedOne(targetDocument=GH611EmbeddedDocument::class) */

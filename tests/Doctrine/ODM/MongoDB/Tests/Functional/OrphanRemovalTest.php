@@ -303,7 +303,11 @@ class OrphanRemovalTest extends BaseTest
 /** @ODM\Document */
 class OrphanRemovalUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true) */
@@ -322,7 +326,11 @@ class OrphanRemovalUser
 /** @ODM\Document */
 class OrphanRemovalProfile
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

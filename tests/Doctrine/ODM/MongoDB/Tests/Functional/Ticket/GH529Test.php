@@ -80,7 +80,11 @@ class GH529Test extends BaseTest
 /** @ODM\Document */
 class GH529AutoIdDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     public $id;
 }
 

@@ -87,7 +87,11 @@ class SplObjectHashCollisionsTest extends BaseTest
 /** @ODM\Document */
 class SplColDoc
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**

@@ -28,12 +28,18 @@ class MODM46Test extends BaseTest
 /** @ODM\Document */
 class MODM46A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
      * @ODM\EmbedOne(targetDocument=MODM46AB::class)
      * @ODM\AlsoLoad("c")
+     *
+     * @var MODM46AB|null
      */
     public $b;
 }

@@ -27,7 +27,11 @@ class GH850Test extends BaseTest
  */
 class GH850Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceOne */

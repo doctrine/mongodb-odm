@@ -27,23 +27,31 @@ class MODM45Test extends BaseTest
 /** @ODM\Document(collection="modm45_test") */
 class MODM45A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\EmbedOne(targetDocument=MODM45B::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=MODM45B::class)
+     *
+     * @var MODM45B|null
+     */
     protected $b;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getB()
+    public function getB(): ?MODM45B
     {
         return $this->b;
     }
 
-    public function setB($b): void
+    public function setB(MODM45B $b): void
     {
         $this->b = $b;
     }

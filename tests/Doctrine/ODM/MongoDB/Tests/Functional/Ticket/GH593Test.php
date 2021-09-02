@@ -103,7 +103,11 @@ class GH593Test extends BaseTest
 /** @ODM\Document */
 class GH593User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\Field(name="d", type="bool") */
