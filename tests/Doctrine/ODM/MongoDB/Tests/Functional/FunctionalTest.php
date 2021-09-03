@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -946,13 +947,18 @@ class ParentAssociationTestA
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
-    /** @ODM\EmbedOne */
+
+    /**
+     * @ODM\EmbedOne
+     *
+     * @var object|null
+     */
     public $child;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -967,10 +973,14 @@ class ParentAssociationTestB
      * @var string|null
      */
     public $name;
-    /** @ODM\EmbedMany */
+    /**
+     * @ODM\EmbedMany
+     *
+     * @var Collection<int, object>|array<object>
+     */
     public $children = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -982,11 +992,11 @@ class ParentAssociationTestC
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

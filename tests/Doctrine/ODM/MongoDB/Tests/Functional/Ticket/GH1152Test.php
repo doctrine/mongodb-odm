@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1152Test extends BaseTest
@@ -46,13 +47,22 @@ class GH1152Parent
      */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1152Child::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1152Child::class)
+     *
+     * @var GH1152Child|null
+     */
     public $child;
 }
 
-/** @ODM\EmbeddedDocument */
+/**
+ * @ODM\EmbeddedDocument
+ *
+ * @psalm-import-type FieldMapping from ClassMetadata
+ */
 class GH1152Child
 {
+    /** @psalm-var array{0: FieldMapping, 1: object|null, 2: string}|null */
     public $parentAssociation;
 }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -310,16 +311,32 @@ class OrphanRemovalUser
      */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true)
+     *
+     * @var OrphanRemovalProfile|null
+     */
     public $profile;
 
-    /** @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false)
+     *
+     * @var OrphanRemovalProfile|null
+     */
     public $profileNoOrphanRemoval;
 
-    /** @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true)
+     *
+     * @var Collection<int, OrphanRemovalProfile>|array<OrphanRemovalProfile>
+     */
     public $profileMany = [];
 
-    /** @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false)
+     *
+     * @var Collection<int, OrphanRemovalProfile>|array<OrphanRemovalProfile>
+     */
     public $profileManyNoOrphanRemoval = [];
 }
 

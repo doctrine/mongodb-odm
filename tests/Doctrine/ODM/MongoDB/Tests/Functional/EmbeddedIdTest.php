@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use InvalidArgumentException;
@@ -68,10 +69,18 @@ class EmbeddedIdTestUser
      */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=DefaultIdEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=DefaultIdEmbeddedDocument::class)
+     *
+     * @var DefaultIdEmbeddedDocument|null
+     */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument=DefaultIdEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=DefaultIdEmbeddedDocument::class)
+     *
+     * @var Collection<int, DefaultIdEmbeddedDocument>|array<DefaultIdEmbeddedDocument>
+     */
     public $embedMany = [];
 }
 
@@ -85,10 +94,18 @@ class EmbeddedStrategyNoneIdTestUser
      */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=DefaultIdStrategyNoneEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=DefaultIdStrategyNoneEmbeddedDocument::class)
+     *
+     * @var DefaultIdStrategyNoneEmbeddedDocument|null
+     */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument=DefaultIdStrategyNoneEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=DefaultIdStrategyNoneEmbeddedDocument::class)
+     *
+     * @var Collection<int, DefaultIdStrategyNoneEmbeddedDocument>|array<DefaultIdStrategyNoneEmbeddedDocument>
+     */
     public $embedMany = [];
 }
 
@@ -106,6 +123,10 @@ class DefaultIdEmbeddedDocument
 /** @ODM\EmbeddedDocument */
 class DefaultIdStrategyNoneEmbeddedDocument
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var string|null
+     */
     public $id;
 }

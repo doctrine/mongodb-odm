@@ -117,6 +117,10 @@ class Country
      */
     public $id;
 
-    /** @ODM\Field(type="date_collection") */
+    /**
+     * @ODM\Field(type="date_collection")
+     *
+     * @var DateTime[]|DateTime|null
+     */
     public $nationalHolidays;
 }

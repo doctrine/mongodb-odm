@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -47,10 +48,17 @@ class MODM52Container
      */
     public $value;
 
-    /** @ODM\EmbedMany(targetDocument=MODM52Embedded::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=MODM52Embedded::class, strategy="set")
+     *
+     * @var Collection<int, MODM52Embedded>|array<MODM52Embedded>
+     */
     public $items = [];
 
-    public function __construct($items = null, $value = null)
+    /**
+     * @param array<MODM52Embedded>|null $items
+     */
+    public function __construct(?array $items = null, ?string $value = null)
     {
         if ($items) {
             $this->items = $items;
@@ -59,17 +67,20 @@ class MODM52Container
         $this->value = $value;
     }
 
-    public function getItems()
+    /**
+     * @return Collection<int, MODM52Embedded>
+     */
+    public function getItems(): Collection
     {
         return $this->items;
     }
 
-    public function getItem($index)
+    public function getItem(int $index): MODM52Embedded
     {
         return $this->items[$index];
     }
 
-    public function removeItem($i): void
+    public function removeItem(int $i): void
     {
         unset($this->items[$i]);
     }

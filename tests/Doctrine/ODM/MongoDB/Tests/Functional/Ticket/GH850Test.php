@@ -34,6 +34,10 @@ class GH850Document
      */
     public $id;
 
-    /** @ODM\ReferenceOne */
+    /**
+     * @ODM\ReferenceOne
+     *
+     * @var object|string
+     */
     public $refs = '';
 }

@@ -73,6 +73,10 @@ class GH520Document
      */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=GH520Document::class, cascade={"persist"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH520Document::class, cascade={"persist"})
+     *
+     * @var GH520Document|null
+     */
     public $ref;
 }

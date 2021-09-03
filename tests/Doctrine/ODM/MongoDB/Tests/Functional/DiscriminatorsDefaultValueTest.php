@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -89,12 +90,16 @@ abstract class ParentDocument
      */
     protected $id;
 
+    /** @var ChildDocument|null */
     protected $referencedChild;
 
+    /** @var ChildDocument[] */
     protected $referencedChildren;
 
+    /** @var ChildDocument|null */
     protected $embeddedChild;
 
+    /** @var ChildDocument[]  */
     protected $embeddedChildren;
 
     public function __construct(array $children)
@@ -105,7 +110,7 @@ abstract class ParentDocument
         $this->embeddedChildren   = $children;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -168,16 +173,32 @@ abstract class ChildDocument
 /** @ODM\Document(collection="discriminator_parent") */
 class ParentDocumentWithoutDiscriminator extends ParentDocument
 {
-    /** @ODM\ReferenceOne(targetDocument=ChildDocumentWithoutDiscriminator::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=ChildDocumentWithoutDiscriminator::class)
+     *
+     * @var ChildDocumentWithDiscriminator|null
+     */
     protected $referencedChild;
 
-    /** @ODM\ReferenceMany(targetDocument=ChildDocumentWithoutDiscriminator::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=ChildDocumentWithoutDiscriminator::class)
+     *
+     * @var Collection<int, ChildDocumentWithDiscriminator>
+     */
     protected $referencedChildren;
 
-    /** @ODM\EmbedOne(targetDocument=ChildDocumentWithoutDiscriminator::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=ChildDocumentWithoutDiscriminator::class)
+     *
+     * @var ChildDocumentWithoutDiscriminator|null
+     */
     protected $embeddedChild;
 
-    /** @ODM\EmbedMany(targetDocument=ChildDocumentWithoutDiscriminator::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=ChildDocumentWithoutDiscriminator::class)
+     *
+     * @var Collection<int, ChildDocumentWithDiscriminator>
+     */
     protected $embeddedChildren;
 }
 
@@ -190,16 +211,32 @@ class ChildDocumentWithoutDiscriminator extends ChildDocument
 /** @ODM\Document(collection="discriminator_parent") */
 class ParentDocumentWithDiscriminator extends ParentDocument
 {
-    /** @ODM\ReferenceOne(targetDocument=ChildDocumentWithDiscriminator::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=ChildDocumentWithDiscriminator::class)
+     *
+     * @var ChildDocumentWithDiscriminator|null
+     */
     protected $referencedChild;
 
-    /** @ODM\ReferenceMany(targetDocument=ChildDocumentWithDiscriminator::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=ChildDocumentWithDiscriminator::class)
+     *
+     * @var Collection<int, ChildDocumentWithDiscriminator>
+     */
     protected $referencedChildren;
 
-    /** @ODM\EmbedOne(targetDocument=ChildDocumentWithDiscriminator::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=ChildDocumentWithDiscriminator::class)
+     *
+     * @var ChildDocumentWithDiscriminator|null
+     */
     protected $embeddedChild;
 
-    /** @ODM\EmbedMany(targetDocument=ChildDocumentWithDiscriminator::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=ChildDocumentWithDiscriminator::class)
+     *
+     * @var Collection<int, ChildDocumentWithDiscriminator>
+     */
     protected $embeddedChildren;
 }
 
@@ -225,17 +262,17 @@ class ChildDocumentWithDiscriminatorComplex extends ChildDocumentWithDiscriminat
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $value;
 
-    public function __construct($type, $value)
+    public function __construct(string $type, string $value)
     {
         parent::__construct($type);
         $this->value = $value;
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }

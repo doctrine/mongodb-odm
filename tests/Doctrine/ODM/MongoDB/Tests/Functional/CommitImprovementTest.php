@@ -144,8 +144,10 @@ class CommitImprovementTest extends BaseTest
 
 class PhonenumberMachine implements EventSubscriber
 {
+    /** @var string[] */
     private $numbers = ['12345678', '87654321'];
 
+    /** @var int */
     private $numberId = 0;
 
     public function getSubscribedEvents(): array

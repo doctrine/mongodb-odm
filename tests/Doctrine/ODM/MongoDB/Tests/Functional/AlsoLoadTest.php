@@ -224,31 +224,53 @@ class AlsoLoadDocument
     /**
      * @ODM\Field(type="string")
      * @ODM\AlsoLoad({"bar", "zip"})
+     *
+     * @var string|null
      */
     public $foo;
 
     /**
      * @ODM\Field(notSaved=true)
      * @ODM\AlsoLoad({"zip", "bar"})
+     *
+     * @var string|null
      */
     public $baz;
 
-    /** @ODM\Field(notSaved=true) */
+    /**
+     * @ODM\Field(notSaved=true)
+     *
+     * @var string|null
+     */
     public $bar;
 
-    /** @ODM\Field(notSaved=true) */
+    /**
+     * @ODM\Field(notSaved=true)
+     *
+     * @var string|null
+     */
     public $zip;
 
     /**
      * @ODM\Field(type="string")
      * @ODM\AlsoLoad("zip")
+     *
+     * @var string|null
      */
     public $zap = 'zap';
 
-    /** @ODM\Field(notSaved=true) */
+    /**
+     * @ODM\Field(notSaved=true)
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\Field(notSaved=true) */
+    /**
+     * @ODM\Field(notSaved=true)
+     *
+     * @var string|null
+     */
     public $fullName;
 
     /**
@@ -268,16 +290,30 @@ class AlsoLoadDocument
     /**
      * @ODM\Field(type="string")
      * @ODM\AlsoLoad("testNew")
+     *
+     * @var string|null
      */
     public $test = 'test';
 
-    /** @ODM\Field(notSaved=true) */
+    /**
+     * @ODM\Field(notSaved=true)
+     *
+     * @var string|null
+     */
     public $testNew;
 
-    /** @ODM\Field(notSaved=true) */
+    /**
+     * @ODM\Field(notSaved=true)
+     *
+     * @var string|null
+     */
     public $testOld;
 
-    /** @ODM\Field(notSaved=true) */
+    /**
+     * @ODM\Field(notSaved=true)
+     *
+     * @var string|null
+     */
     public $testOlder;
 
     /** @ODM\AlsoLoad({"name", "fullName"}) */
@@ -288,10 +324,8 @@ class AlsoLoadDocument
 
     /**
      * @ODM\AlsoLoad ({"testOld", "testOlder"})
-     *
-     * @return void
      */
-    public function populateTest($test)
+    public function populateTest(?string $test): void
     {
         $this->test = $test;
     }
@@ -308,17 +342,15 @@ class AlsoLoadChild extends AlsoLoadDocument
     public $fizz;
 
     /** @ODM\AlsoLoad("buzz") */
-    public function populateFizz($fizz): void
+    public function populateFizz(string $fizz): void
     {
         $this->fizz = $fizz;
     }
 
     /**
      * @ODM\AlsoLoad ("testOldest")
-     *
-     * @return void
      */
-    public function populateTest($test)
+    public function populateTest(?string $test): void
     {
         $this->test = $test;
     }
@@ -329,10 +361,8 @@ class AlsoLoadGrandchild extends AlsoLoadChild
 {
     /**
      * @ODM\AlsoLoad ("testReallyOldest")
-     *
-     * @return void
      */
-    public function populateTest($test)
+    public function populateTest(?string $test): void
     {
         $this->test = $test;
     }

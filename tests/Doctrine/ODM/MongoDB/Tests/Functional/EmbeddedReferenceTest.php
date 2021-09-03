@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -70,14 +71,18 @@ class Offer
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=Link::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Link::class)
+     *
+     * @var Collection<int, Link>
+     */
     public $links;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name  = $name;
         $this->links = new ArrayCollection();
@@ -97,14 +102,18 @@ class Link
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $url;
 
-    /** @ODM\ReferenceMany(targetDocument=ReferencedDocument::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=ReferencedDocument::class)
+     *
+     * @var Collection<int, ReferencedDocument>
+     */
     public $referencedDocuments;
 
-    public function __construct($url)
+    public function __construct(string $url)
     {
         $this->url                 = $url;
         $this->referencedDocuments = new ArrayCollection();

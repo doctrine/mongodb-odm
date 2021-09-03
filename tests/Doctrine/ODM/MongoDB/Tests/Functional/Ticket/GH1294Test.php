@@ -40,7 +40,11 @@ class GH1294Test extends BaseTest
 /** @ODM\Document */
 class GH1294User
 {
-    /** @ODM\Id(strategy="UUID", type="string") */
+    /**
+     * @ODM\Id(strategy="UUID", type="string")
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -50,7 +54,7 @@ class GH1294User
      */
     public $name = '';
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

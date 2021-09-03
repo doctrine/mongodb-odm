@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -107,17 +108,25 @@ class GH1525Document
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument=GH1525Embedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1525Embedded::class)
+     *
+     * @var GH1525Embedded|null
+     */
     public $embedded;
 
-    /** @ODM\EmbedMany(targetDocument=GH1525Embedded::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH1525Embedded::class)
+     *
+     * @var Collection<int, GH1525Embedded>
+     */
     public $embedMany;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name      = $name;
         $this->embedMany = new ArrayCollection();
@@ -127,20 +136,28 @@ class GH1525Document
 /** @ODM\Document(collection="document_test_with_auto_ids") */
 class GH1525DocumentIdStrategyNone
 {
-    /** @ODM\Id(strategy="NONE") */
+    /**
+     * @ODM\Id(strategy="NONE")
+     *
+     * @var string
+     */
     public $id;
 
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument=GH1525Embedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1525Embedded::class)
+     *
+     * @var GH1525Embedded|null
+     */
     public $embedded;
 
-    public function __construct($id, $name)
+    public function __construct(string $id, string $name)
     {
         $this->id   = $id;
         $this->name = $name;
@@ -153,11 +170,11 @@ class GH1525Embedded
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

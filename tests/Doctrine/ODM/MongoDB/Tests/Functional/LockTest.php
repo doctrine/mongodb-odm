@@ -623,7 +623,11 @@ abstract class AbstractVersionBase
 /** @ODM\Document */
 class LockInt extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Field(type="int") */
+    /**
+     * @ODM\Version @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $version;
 }
 

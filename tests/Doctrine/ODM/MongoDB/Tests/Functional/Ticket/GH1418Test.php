@@ -133,6 +133,8 @@ class GH1418Embedded
     /**
      * @ODM\Id(strategy="none", type="int")
      * @ODM\AlsoLoad("sourceId")
+     *
+     * @var int|null
      */
     public $id;
 

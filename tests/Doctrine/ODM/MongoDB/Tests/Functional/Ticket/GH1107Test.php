@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests\Persisters;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -25,7 +25,11 @@ class GH1107Test extends BaseTest
  */
 class GH1107ParentClass
 {
-    /** @ODM\Id(strategy="NONE") */
+    /**
+     * @ODM\Id(strategy="NONE")
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -39,6 +43,10 @@ class GH1107ParentClass
 /** @ODM\Document */
 class GH1107ChildClass extends GH1107ParentClass
 {
-    /** @ODM\Id(strategy="AUTO") */
+    /**
+     * @ODM\Id(strategy="AUTO")
+     *
+     * @var string|null
+     */
     public $id;
 }

@@ -110,7 +110,11 @@ class GH593User
      */
     public $id;
 
-    /** @ODM\Field(name="d", type="bool") */
+    /**
+     * @ODM\Field(name="d", type="bool")
+     *
+     * @var bool
+     */
     public $deleted = false;
 
     /**

@@ -69,12 +69,6 @@
 
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
         <exclude-pattern>*/tests/Documents/*</exclude-pattern>
-        <exclude-pattern>*/tests/Doctrine/ODM/MongoDB/Tests/Functional/*</exclude-pattern>
-        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
-        <exclude-pattern>*/tests/*</exclude-pattern>
         <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
     </rule>
 

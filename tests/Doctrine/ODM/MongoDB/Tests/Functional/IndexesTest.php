@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\Driver\Exception\BulkWriteException;
@@ -249,7 +250,12 @@ class UniqueOnFieldTest
      */
     public $id;
 
-    /** @ODM\Field(type="string") @ODM\UniqueIndex() */
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\UniqueIndex()
+     *
+     * @var string|null
+     */
     public $username;
 
     /**
@@ -377,7 +383,12 @@ class UniqueSparseOnFieldTest
      */
     public $id;
 
-    /** @ODM\Field(type="string") @ODM\UniqueIndex(sparse=true) */
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\UniqueIndex(sparse=true)
+     *
+     * @var string|null
+     */
     public $username;
 
     /**
@@ -473,10 +484,20 @@ class MultipleFieldIndexes
      */
     public $id;
 
-    /** @ODM\Field(type="string") @ODM\UniqueIndex(name="test") */
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\UniqueIndex(name="test")
+     *
+     * @var string|null
+     */
     public $username;
 
-    /** @ODM\Field(type="string") @ODM\Index(unique=true) */
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index(unique=true)
+     *
+     * @var string|null
+     */
     public $email;
 }
 
@@ -497,10 +518,18 @@ class DocumentWithEmbeddedIndexes
      */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class)
+     *
+     * @var EmbeddedDocumentWithIndexes|null
+     */
     public $embedded;
 
-    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class)
+     *
+     * @var EmbeddedDocumentWithIndexes|null
+     */
     public $embeddedSecondary;
 }
 
@@ -545,24 +574,43 @@ class DocumentWithMultipleIndexAnnotations
 /** @ODM\EmbeddedDocument */
 class EmbeddedDocumentWithIndexes
 {
-    /** @ODM\Field(type="string") @ODM\Index */
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=EmbeddedManyDocumentWithIndexes::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=EmbeddedManyDocumentWithIndexes::class)
+     *
+     * @var Collection<int, EmbeddedManyDocumentWithIndexes>
+     */
     public $embeddedMany;
 }
 
 /** @ODM\EmbeddedDocument */
 class EmbeddedManyDocumentWithIndexes
 {
-    /** @ODM\Field(type="string") @ODM\Index */
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index
+     *
+     * @var string|null
+     */
     public $name;
 }
 
 /** @ODM\EmbeddedDocument */
 class YetAnotherEmbeddedDocumentWithIndex
 {
-    /** @ODM\Field(type="string") @ODM\Index */
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index
+     *
+     * @var string|null
+     */
     public $value;
 }
 
@@ -582,6 +630,8 @@ class DocumentWithIndexInDiscriminatedEmbeds
      *   "d1"=EmbeddedDocumentWithIndexes::class,
      *   "d2"=YetAnotherEmbeddedDocumentWithIndex::class,
      * })
+     *
+     * @var EmbeddedDocumentWithIndexes|YetAnotherEmbeddedDocumentWithIndex|null
      */
     public $embedded;
 }

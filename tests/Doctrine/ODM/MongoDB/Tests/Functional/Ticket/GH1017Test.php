@@ -61,7 +61,11 @@ class GH1017Document
      */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1017EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1017EmbeddedDocument::class)
+     *
+     * @var GH1017EmbeddedDocument|null
+     */
     public $embedded;
 }
 

@@ -52,24 +52,52 @@ class BinDataTestUser
      */
     public $id;
 
-    /** @ODM\Field(type="bin") */
+    /**
+     * @ODM\Field(type="bin")
+     *
+     * @var string|null
+     */
     public $bin;
 
-    /** @ODM\Field(type="bin_func") */
+    /**
+     * @ODM\Field(type="bin_func")
+     *
+     * @var string|null
+     */
     public $binFunc;
 
-    /** @ODM\Field(type="bin_bytearray") */
+    /**
+     * @ODM\Field(type="bin_bytearray")
+     *
+     * @var string|null
+     */
     public $binByteArray;
 
-    /** @ODM\Field(type="bin_uuid") */
+    /**
+     * @ODM\Field(type="bin_uuid")
+     *
+     * @var string|null
+     */
     public $binUUID;
 
-    /** @ODM\Field(type="bin_uuid_rfc4122") */
+    /**
+     * @ODM\Field(type="bin_uuid_rfc4122")
+     *
+     * @var string|null
+     */
     public $binUUIDRFC4122;
 
-    /** @ODM\Field(type="bin_md5") */
+    /**
+     * @ODM\Field(type="bin_md5")
+     *
+     * @var string|null
+     */
     public $binMD5;
 
-    /** @ODM\Field(type="bin_custom") */
+    /**
+     * @ODM\Field(type="bin_custom")
+     *
+     * @var string|null
+     */
     public $binCustom;
 }

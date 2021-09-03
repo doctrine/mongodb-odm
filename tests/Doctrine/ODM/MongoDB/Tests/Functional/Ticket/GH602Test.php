@@ -112,7 +112,11 @@ class GH602User
      */
     public $id;
 
-    /** @ODM\Field(name="user_deleted", type="bool") */
+    /**
+     * @ODM\Field(name="user_deleted", type="bool")
+     *
+     * @var bool
+     */
     public $deleted = false;
 
     /**
@@ -144,10 +148,18 @@ class GH602Thing
      */
     public $id;
 
-    /** @ODM\Field(name="thing_deleted", type="bool") */
+    /**
+     * @ODM\Field(name="thing_deleted", type="bool")
+     *
+     * @var bool
+     */
     public $deleted = false;
 
-    /** @ODM\ReferenceMany(targetDocument=GH602User::class, mappedBy="likes") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH602User::class, mappedBy="likes")
+     *
+     * @var Collection<int, GH602User>
+     */
     public $likedBy;
 
     public function __construct()
@@ -156,7 +168,7 @@ class GH602Thing
     }
 
     /** Return the identifier without triggering Proxy initialization */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

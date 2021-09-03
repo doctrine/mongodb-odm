@@ -22,6 +22,7 @@ use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function assert;
 use function get_class;
@@ -388,6 +389,7 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
+        $this->assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier ' .
@@ -420,6 +422,7 @@ class ReferencesTest extends BaseTest
 
         $user    = $this->dm->find(get_class($user), $user->getId());
         $profile = $user->getProfile();
+        $this->assertInstanceOf(LazyLoadingInterface::class, $profile);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.'
@@ -450,6 +453,7 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
+        $this->assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier ' .
@@ -505,14 +509,22 @@ class DocumentWithArrayReference
      */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentWithArrayId::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentWithArrayId::class)
+     *
+     * @var DocumentWithArrayId|null
+     */
     public $referenceOne;
 }
 
 /** @ODM\Document */
 class DocumentWithArrayId
 {
-    /** @ODM\Id(strategy="none", options={"type"="hash"}) */
+    /**
+     * @ODM\Id(strategy="none", options={"type"="hash"})
+     *
+     * @var array<string, int>
+     */
     public $id;
 }
 
@@ -527,19 +539,28 @@ class DocumentWithMongoBinDataReference
      */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentWithMongoBinDataId::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentWithMongoBinDataId::class)
+     *
+     * @var DocumentWithMongoBinDataId|null
+     */
     public $referenceOne;
 }
 
 /** @ODM\Document */
 class DocumentWithMongoBinDataId
 {
-    /** @ODM\Id(strategy="none", options={"type"="bin"}) */
+    /**
+     * @ODM\Id(strategy="none", options={"type"="bin"})
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 class DocumentNotFoundListener
 {
+    /** @var Closure */
     private $closure;
 
     public function __construct(Closure $closure)

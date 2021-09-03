@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -60,20 +61,30 @@ class MODM29Doc
      */
     protected $id;
 
-    /** @ODM\EmbedMany(targetDocument=MODM29Embedded::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=MODM29Embedded::class, strategy="set")
+     *
+     * @var Collection<int, MODM29Embedded>
+     */
     protected $collection;
 
-    public function __construct($c)
+    public function __construct(Collection $c)
     {
         $this->set($c);
     }
 
-    public function set($c): void
+    /**
+     * @param Collection<int, MODM29Embedded> $c
+     */
+    public function set(Collection $c): void
     {
         $this->collection = $c;
     }
 
-    public function get()
+    /**
+     * @return Collection<int, MODM29Embedded>
+     */
+    public function get(): Collection
     {
         return $this->collection;
     }
@@ -85,21 +96,21 @@ class MODM29Embedded
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $val;
 
-    public function __construct($val)
+    public function __construct(string $val)
     {
         $this->set($val);
     }
 
-    public function get()
+    public function get(): string
     {
         return $this->val;
     }
 
-    public function set($val): void
+    public function set(string $val): void
     {
         $this->val = $val;
     }

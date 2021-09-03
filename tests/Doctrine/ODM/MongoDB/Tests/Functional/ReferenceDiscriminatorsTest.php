@@ -108,21 +108,21 @@ class Action
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $type;
 
-    public function __construct($type)
+    public function __construct(string $type)
     {
         $this->type = $type;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
@@ -131,10 +131,14 @@ class Action
 /** @ODM\Document */
 class CommentableAction extends Action
 {
-    /** @ODM\Field(type="collection") **/
+    /**
+     * @ODM\Field(type="collection") *
+     *
+     * @var array
+     */
     protected $comments = [];
 
-    public function __construct($type, array $comments = [])
+    public function __construct(string $type, array $comments = [])
     {
         parent::__construct($type);
         $this->comments = $comments;
@@ -156,7 +160,11 @@ abstract class ActivityStreamItem
      */
     protected $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Action::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Action::class)
+     *
+     * @var Action
+     */
     protected $action;
 
     public function __construct(Action $action)
@@ -164,7 +172,7 @@ abstract class ActivityStreamItem
         $this->action = $action;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -184,17 +192,17 @@ abstract class GroupActivityStreamItem extends ActivityStreamItem
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $groupId;
 
-    public function __construct(Action $action, $groupId)
+    public function __construct(Action $action, string $groupId)
     {
         parent::__construct($action);
         $this->groupId = $groupId;
     }
 
-    public function getGroupId()
+    public function getGroupId(): string
     {
         return $this->groupId;
     }
@@ -219,17 +227,17 @@ abstract class UserActivityStreamItem extends ActivityStreamItem
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $userId;
 
-    public function __construct(Action $action, $userId)
+    public function __construct(Action $action, string $userId)
     {
         parent::__construct($action);
         $this->userId = $userId;
     }
 
-    public function getUserId()
+    public function getUserId(): string
     {
         return $this->userId;
     }
