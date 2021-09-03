@@ -9,10 +9,18 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class Message
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
     public function __construct($name)

@@ -17,13 +17,25 @@ use function in_array;
  */
 class ConfigurableProduct
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $name;
 
-    /** @ODM\EmbedMany(targetDocument=Documents\Ecommerce\Option::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Documents\Ecommerce\Option::class)
+     *
+     * @var Collection<int, Option>|array<Option>
+     */
     protected $options = [];
 
     /** @var Option */

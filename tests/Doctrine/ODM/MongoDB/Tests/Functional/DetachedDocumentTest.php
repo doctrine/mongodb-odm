@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsArticle;
 use Documents\CmsPhonenumber;
@@ -54,6 +55,7 @@ class DetachedDocumentTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->assertTrue($this->dm->contains($user));
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->phonenumbers);
         $this->assertTrue($user->phonenumbers->isInitialized());
 
         $serialized = serialize($user);

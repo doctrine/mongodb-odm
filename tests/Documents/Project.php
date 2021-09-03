@@ -16,7 +16,11 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Project
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
     /**

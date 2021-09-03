@@ -9,29 +9,45 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class Account
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     private $name;
 
-    /** @ODM\ReferenceOne(storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceOne(storeAs="dbRefWithDb")
+     *
+     * @var User|CustomUser|null
+     */
     protected $user;
 
-    /** @ODM\ReferenceOne(storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceOne(storeAs="dbRef")
+     *
+     * @var User|null
+     */
     protected $userDbRef;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -46,12 +62,12 @@ class Account
         return $this->user;
     }
 
-    public function setUserDbRef($userDbRef): void
+    public function setUserDbRef(User $userDbRef): void
     {
         $this->userDbRef = $userDbRef;
     }
 
-    public function getUserDbRef()
+    public function getUserDbRef(): ?User
     {
         return $this->userDbRef;
     }

@@ -9,10 +9,18 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\File */
 class FileWithoutMetadata
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\File\Filename */
+    /**
+     * @ODM\File\Filename
+     *
+     * @var string|null
+     */
     private $filename;
 
     public function getId(): ?string

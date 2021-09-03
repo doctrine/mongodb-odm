@@ -10,10 +10,18 @@ use InvalidArgumentException;
 /** @ODM\EmbeddedDocument */
 class Money
 {
-    /** @ODM\Field(type="float") */
+    /**
+     * @ODM\Field(type="float")
+     *
+     * @var float|null
+     */
     protected $amount;
 
-    /** @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\Currency::class, cascade="all") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\Currency::class, cascade="all")
+     *
+     * @var Currency|null
+     */
     protected $currency;
 
     public function __construct($amount, Currency $currency)

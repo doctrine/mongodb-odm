@@ -9,7 +9,11 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document(collection="agents") */
 class Agent
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -17,6 +21,8 @@ class Agent
      * "server"=Server::class,
      * "server_guest"=GuestServer::class
      * })
+     *
+     * @var Server|GuestServer|null
      */
     public $server;
 }

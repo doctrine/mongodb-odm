@@ -76,8 +76,8 @@ final class LoadDocumentBench extends BaseBench
      */
     public function benchLoadEmbedMany()
     {
-        $this->loadDocument()->getPhonenumbers()->forAll(static function ($key, Phonenumber $element) {
-            return $element->getPhoneNumber();
+        $this->loadDocument()->getPhonenumbers()->forAll(static function (int $key, Phonenumber $element) {
+            return $element->getPhoneNumber() !== null;
         });
     }
 

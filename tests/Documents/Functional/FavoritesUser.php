@@ -7,14 +7,24 @@ namespace Documents\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Documents\Group;
+use Documents\Project;
 
 /** @ODM\Document(collection="favorites_user") */
 class FavoritesUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
     /**
@@ -25,16 +35,30 @@ class FavoritesUser
      *     "project"=Documents\Project::class
      *   }
      * )
+     *
+     * @var Collection<int, Group|Project>
      */
     private $favorites;
 
-    /** @ODM\EmbedMany */
+    /**
+     * @ODM\EmbedMany
+     *
+     * @var Collection<int, object>|array<object>
+     */
     private $embedded = [];
 
-    /** @ODM\ReferenceOne */
+    /**
+     * @ODM\ReferenceOne
+     *
+     * @var object|null
+     */
     private $favorite;
 
-    /** @ODM\EmbedOne */
+    /**
+     * @ODM\EmbedOne
+     *
+     * @var object|null
+     */
     private $embed;
 
     public function __construct()

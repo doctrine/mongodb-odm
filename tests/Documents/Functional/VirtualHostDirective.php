@@ -13,16 +13,32 @@ use function uniqid;
 /** @ODM\EmbeddedDocument */
 class VirtualHostDirective
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $recId;
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $name;
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $value;
-    /** @ODM\EmbedMany(targetDocument=Documents\Functional\VirtualHostDirective::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Documents\Functional\VirtualHostDirective::class)
+     *
+     * @var Collection<int, VirtualHostDirective>|null
+     */
     protected $directives;
 
-    public function __construct($name = '', $value = '')
+    public function __construct(string $name = '', string $value = '')
     {
         $this->name  = $name;
         $this->value = $value;

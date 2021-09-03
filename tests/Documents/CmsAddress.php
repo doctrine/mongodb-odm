@@ -14,19 +14,39 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class CmsAddress
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $country;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $zip;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $city;
 
-    /** @ODM\ReferenceOne(targetDocument=CmsUser::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=CmsUser::class)
+     *
+     * @var CmsUser|null
+     */
     public $user;
 
     public function getId()

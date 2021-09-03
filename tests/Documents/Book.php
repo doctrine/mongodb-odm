@@ -13,10 +13,19 @@ class Book
 {
     public const CLASSNAME = self::class;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="int") @ODM\Version */
+    /**
+     * @ODM\Field(type="int")
+     * @ODM\Version
+     *
+     * @var int|null
+     */
     public $version = 1;
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Documents\Tournament;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -13,13 +14,25 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Tournament
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     private $name;
 
-    /** @ODM\ReferenceMany(targetDocument=Participant::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Participant::class, cascade={"all"})
+     *
+     * @var Collection<int, Participant>|array<Participant>
+     */
     protected $participants = [];
 
     public function __construct($name)

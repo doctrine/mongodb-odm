@@ -16,13 +16,25 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 class UserName
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $username;
 
-    /** @ODM\ReferenceOne(targetDocument=ViewReference::class, name="_id", storeAs=ClassMetadata::REFERENCE_STORE_AS_ID, notSaved=true) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=ViewReference::class, name="_id", storeAs=ClassMetadata::REFERENCE_STORE_AS_ID, notSaved=true)
+     *
+     * @var ViewReference|null
+     */
     private $viewReference;
 
     public function getId(): ?string

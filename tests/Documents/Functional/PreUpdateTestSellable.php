@@ -11,18 +11,26 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class PreUpdateTestSellable
 {
-    /** @ODM\ReferenceOne(targetDocument=PreUpdateTestProduct::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=PreUpdateTestProduct::class)
+     *
+     * @var PreUpdateTestProduct|null
+     */
     public $product;
 
-    /** @ODM\ReferenceOne(targetDocument=PreUpdateTestSeller::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=PreUpdateTestSeller::class)
+     *
+     * @var PreUpdateTestSeller|null
+     */
     public $seller;
 
-    public function getProduct()
+    public function getProduct(): ?PreUpdateTestProduct
     {
         return $this->product;
     }
 
-    public function getSeller()
+    public function getSeller(): ?PreUpdateTestSeller
     {
         return $this->seller;
     }

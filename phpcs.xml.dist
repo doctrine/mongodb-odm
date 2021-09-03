@@ -67,11 +67,6 @@
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
-        <exclude-pattern>*/tests/Documents/*</exclude-pattern>
-        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
-    </rule>
-
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
         <!-- We do want to test generating collections without return types -->
         <exclude-pattern>*/tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/Coll*</exclude-pattern>
