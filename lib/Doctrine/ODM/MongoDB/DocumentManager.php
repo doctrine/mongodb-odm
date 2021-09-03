@@ -316,6 +316,8 @@ class DocumentManager implements ObjectManager
 
     /**
      * Returns the MongoDB instance for a class.
+     *
+     * @psalm-param class-string $className
      */
     public function getDocumentDatabase(string $className): Database
     {

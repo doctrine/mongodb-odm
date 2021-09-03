@@ -66,7 +66,7 @@ abstract class BaseEmployee
      */
     protected $address;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -102,7 +102,7 @@ abstract class BaseEmployee
         return $this;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -114,7 +114,7 @@ abstract class BaseEmployee
         return $this;
     }
 
-    public function getSalary()
+    public function getSalary(): ?float
     {
         return $this->salary;
     }
@@ -126,7 +126,7 @@ abstract class BaseEmployee
         return $this;
     }
 
-    public function getStarted()
+    public function getStarted(): ?DateTime
     {
         return $this->started;
     }
@@ -138,7 +138,7 @@ abstract class BaseEmployee
         return $this;
     }
 
-    public function getLeft()
+    public function getLeft(): ?DateTime
     {
         return $this->left;
     }
@@ -150,7 +150,7 @@ abstract class BaseEmployee
         return $this;
     }
 
-    public function getAddress()
+    public function getAddress(): ?Address
     {
         return $this->address;
     }

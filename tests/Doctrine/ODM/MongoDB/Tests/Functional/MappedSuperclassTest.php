@@ -67,7 +67,7 @@ class MappedSuperclassBase
         $this->mapped1 = $val;
     }
 
-    public function getMapped1()
+    public function getMapped1(): ?string
     {
         return $this->mapped1;
     }
@@ -77,7 +77,7 @@ class MappedSuperclassBase
         $this->mapped2 = $val;
     }
 
-    public function getMapped2()
+    public function getMapped2(): ?string
     {
         return $this->mapped2;
     }
@@ -87,7 +87,7 @@ class MappedSuperclassBase
         $this->mappedRelated1 = $mappedRelated1;
     }
 
-    public function getMappedRelated1()
+    public function getMappedRelated1(): ?MappedSuperclassRelated1
     {
         return $this->mappedRelated1;
     }

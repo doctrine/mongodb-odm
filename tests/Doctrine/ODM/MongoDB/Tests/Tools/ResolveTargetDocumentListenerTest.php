@@ -152,7 +152,7 @@ class TargetDocument implements TargetInterface
      */
     private $id;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

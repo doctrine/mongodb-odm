@@ -81,7 +81,7 @@ class CustomIdTest extends BaseTest
 
         $this->assertCount(2, $users);
 
-        $results = [];
+        $results = ['userId' => false];
         foreach ($users as $user) {
             if ($user->getId() === 'userId') {
                 $results['userId'] = true;

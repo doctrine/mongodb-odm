@@ -13,14 +13,14 @@ class Money
     /**
      * @ODM\Field(type="float")
      *
-     * @var float|null
+     * @var float
      */
     protected $amount;
 
     /**
      * @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\Currency::class, cascade="all")
      *
-     * @var Currency|null
+     * @var Currency
      */
     protected $currency;
 
@@ -37,12 +37,12 @@ class Money
         $this->setCurrency($currency);
     }
 
-    public function getAmount()
+    public function getAmount(): float
     {
         return $this->amount * $this->getCurrency()->getMultiplier();
     }
 
-    public function getCurrency()
+    public function getCurrency(): Currency
     {
         return $this->currency;
     }

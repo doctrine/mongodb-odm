@@ -118,7 +118,7 @@ class User
         return $this->phonenumbers;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->username;
     }

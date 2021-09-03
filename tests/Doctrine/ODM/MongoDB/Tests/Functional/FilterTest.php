@@ -157,7 +157,7 @@ class FilterTest extends BaseTest
         $this->assertEquals('John', $this->getJohnsUsernameWithFindOneBy());
     }
 
-    protected function getJohnsUsernameWithFindOneBy()
+    protected function getJohnsUsernameWithFindOneBy(): ?string
     {
         $john = $this->dm->getRepository(User::class)->findOneBy(['id' => $this->ids['john']]);
 
@@ -235,7 +235,7 @@ class FilterTest extends BaseTest
         $this->assertEquals('Timothy', $this->getProfileByReference());
     }
 
-    protected function getProfileByReference()
+    protected function getProfileByReference(): ?string
     {
         $tim = $this->dm->getRepository(User::class)->find($this->ids['tim']);
 

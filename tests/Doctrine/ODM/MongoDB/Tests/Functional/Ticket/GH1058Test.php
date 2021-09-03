@@ -78,7 +78,7 @@ class GH1058PersistDocument
      */
     private $value;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -106,7 +106,7 @@ class GH1058UpsertDocument
      */
     private $value;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

@@ -63,12 +63,12 @@ class Address
         $this->subAddress = $subAddress;
     }
 
-    public function getSubAddress()
+    public function getSubAddress(): ?Address
     {
         return $this->subAddress;
     }
 
-    public function getAddress()
+    public function getAddress(): ?string
     {
         return $this->address;
     }
@@ -78,7 +78,7 @@ class Address
         $this->address = $address;
     }
 
-    public function getCity()
+    public function getCity(): ?string
     {
         return $this->city;
     }
@@ -88,7 +88,7 @@ class Address
         $this->city = $city;
     }
 
-    public function getState()
+    public function getState(): ?string
     {
         return $this->state;
     }
@@ -98,7 +98,7 @@ class Address
         $this->state = $state;
     }
 
-    public function getZipcode()
+    public function getZipcode(): ?string
     {
         return $this->zipcode;
     }

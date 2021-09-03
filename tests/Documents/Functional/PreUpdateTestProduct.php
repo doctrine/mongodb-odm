@@ -32,7 +32,7 @@ class PreUpdateTestProduct
      */
     public $sellable;
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }

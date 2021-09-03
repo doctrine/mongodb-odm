@@ -72,7 +72,7 @@ class MODM45B
         $this->val = $val;
     }
 
-    public function getVal()
+    public function getVal(): ?string
     {
         return $this->val;
     }

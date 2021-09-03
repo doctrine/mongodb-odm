@@ -277,14 +277,14 @@ class EmbeddedDocumentInCustomCollection
 
 class MyEmbedsCollection extends ArrayCollection
 {
-    public function getByName($name)
+    public function getByName(string $name): MyEmbedsCollection
     {
         return $this->filter(static function ($item) use ($name) {
             return $item->name === $name;
         });
     }
 
-    public function getEnabled()
+    public function getEnabled(): MyEmbedsCollection
     {
         return $this->filter(static function ($item) {
             return $item->enabled;
@@ -305,7 +305,7 @@ class MyEmbedsCollection extends ArrayCollection
 
 class MyDocumentsCollection extends ArrayCollection
 {
-    public function havingEmbeds()
+    public function havingEmbeds(): MyDocumentsCollection
     {
         return $this->filter(static function ($item) {
             return $item->coll->count();

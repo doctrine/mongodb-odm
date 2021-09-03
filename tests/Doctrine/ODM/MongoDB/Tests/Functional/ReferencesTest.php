@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
 use Documents\Address;
@@ -206,6 +207,7 @@ class ReferencesTest extends BaseTest
         $user2 = $query->getSingleResult();
         assert($user2 instanceof User);
         $groups = $user2->getGroups();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
         $this->assertFalse($groups->isInitialized());
 
         $groups->count();
@@ -255,6 +257,7 @@ class ReferencesTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
         $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
         $this->assertCount(2, $user->getGroups());
         $this->assertCount(2, $user->getGroups()->toArray());
@@ -277,6 +280,7 @@ class ReferencesTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
         $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
         $this->assertCount(3, $user->getGroups());
         $this->assertCount(3, $user->getGroups()->toArray());
@@ -308,6 +312,7 @@ class ReferencesTest extends BaseTest
         assert($user2 instanceof User);
 
         $groups = $user2->getUniqueGroups();
+        $this->assertInstanceOf(PersistentCollection\PersistentCollectionInterface::class, $groups);
         $this->assertFalse($groups->isInitialized());
 
         $groups->count();
@@ -495,6 +500,7 @@ class ReferencesTest extends BaseTest
 
         $this->dm->getEventManager()->addEventListener(Events::documentNotFound, new DocumentNotFoundListener($closure));
 
+        $this->assertInstanceOf(LazyLoadingInterface::class, $profile);
         $profile->initializeProxy();
     }
 }

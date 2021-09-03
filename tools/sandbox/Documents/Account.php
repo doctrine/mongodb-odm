@@ -43,7 +43,7 @@ class Account
         return $this->name;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

@@ -16,7 +16,7 @@ class Address
      */
     private $street;
 
-    public function getStreet()
+    public function getStreet(): ?string
     {
         return $this->street;
     }

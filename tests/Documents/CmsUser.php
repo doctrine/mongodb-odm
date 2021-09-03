@@ -81,22 +81,22 @@ class CmsUser
         $this->groups       = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -145,7 +145,7 @@ class CmsUser
         return false;
     }
 
-    public function getAddress()
+    public function getAddress(): CmsAddress
     {
         return $this->address;
     }

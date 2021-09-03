@@ -54,6 +54,8 @@ class DateCollectionType extends Type
 
     /**
      * Method called by PersistenceBuilder
+     *
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value)
     {
@@ -74,6 +76,9 @@ class DateCollectionType extends Type
         return $value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToPHPValue($value)
     {
         if ($value === null) {

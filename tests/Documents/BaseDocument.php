@@ -24,7 +24,7 @@ abstract class BaseDocument
         $this->inheritedProperty = $value;
     }
 
-    public function getInheritedProperty()
+    public function getInheritedProperty(): ?string
     {
         return $this->inheritedProperty;
     }

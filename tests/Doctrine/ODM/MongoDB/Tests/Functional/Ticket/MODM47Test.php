@@ -46,7 +46,7 @@ class MODM47A
         $this->b = $c;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

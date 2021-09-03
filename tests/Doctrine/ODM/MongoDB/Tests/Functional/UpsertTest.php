@@ -38,7 +38,7 @@ class UpsertTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testUpsertDoesNotOverwriteNullableFieldsOnNull()
+    public function testUpsertDoesNotOverwriteNullableFieldsOnNull(): void
     {
         $test = new UpsertTestUser();
 
@@ -66,7 +66,7 @@ class UpsertTest extends BaseTest
         self::assertNotNull($upsertResult->nullableEmbedOne);
     }
 
-    public function testUpsertsWritesNullableFieldsOnInsert()
+    public function testUpsertsWritesNullableFieldsOnInsert(): void
     {
         $test = new UpsertTestUser();
         $this->dm->persist($test);

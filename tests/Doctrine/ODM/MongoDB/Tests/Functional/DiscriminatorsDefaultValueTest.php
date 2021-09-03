@@ -90,18 +90,21 @@ abstract class ParentDocument
      */
     protected $id;
 
-    /** @var ChildDocument|null */
+    /** @var ChildDocument */
     protected $referencedChild;
 
-    /** @var ChildDocument[] */
+    /** @var Collection<int, ChildDocument>|array<ChildDocument> */
     protected $referencedChildren;
 
-    /** @var ChildDocument|null */
+    /** @var ChildDocument */
     protected $embeddedChild;
 
-    /** @var ChildDocument[]  */
+    /** @var Collection<int, ChildDocument>|array<ChildDocument> */
     protected $embeddedChildren;
 
+    /**
+     * @param array{0: ChildDocument, 1: ChildDocument} $children
+     */
     public function __construct(array $children)
     {
         $this->referencedChild    = $children[0];
@@ -115,21 +118,27 @@ abstract class ParentDocument
         return $this->id;
     }
 
-    public function getReferencedChild()
+    public function getReferencedChild(): ChildDocument
     {
         return $this->referencedChild;
     }
 
+    /**
+     * @return Collection<int, ChildDocument>|array<ChildDocument>
+     */
     public function getReferencedChildren()
     {
         return $this->referencedChildren;
     }
 
-    public function getEmbeddedChild()
+    public function getEmbeddedChild(): ChildDocument
     {
         return $this->embeddedChild;
     }
 
+    /**
+     * @return Collection<int, ChildDocument>|array<ChildDocument>
+     */
     public function getEmbeddedChildren()
     {
         return $this->embeddedChildren;
@@ -158,12 +167,12 @@ abstract class ChildDocument
         $this->type = $type;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }

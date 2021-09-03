@@ -39,12 +39,12 @@ class StockItem
      */
     private $cost;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function __construct($name = null, $cost = null, $inventory = null)
+    public function __construct(?string $name = null, ?Money $cost = null, ?int $inventory = null)
     {
         if ($name !== null) {
             $this->setName($name);
@@ -61,14 +61,14 @@ class StockItem
         $this->setInventory($inventory);
     }
 
-    public function setName($name): StockItem
+    public function setName(string $name): StockItem
     {
-        $this->name = (string) $name;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -78,7 +78,7 @@ class StockItem
         $this->cost = $cost;
     }
 
-    public function getCost()
+    public function getCost(): float
     {
         return $this->cost->getAmount();
     }
@@ -90,7 +90,7 @@ class StockItem
         return $this;
     }
 
-    public function getInventory()
+    public function getInventory(): ?int
     {
         return $this->inventory;
     }

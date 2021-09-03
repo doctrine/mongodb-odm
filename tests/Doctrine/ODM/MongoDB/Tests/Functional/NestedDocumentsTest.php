@@ -112,8 +112,8 @@ class NestedDocumentsTest extends BaseTest
         $test = $this->dm->getRepository(Hierarchy::class)->findOneBy(['name' => 'Root']);
 
         $this->assertNotNull($test);
-        $child1 = $test->getChild('Child 1')->setName('Child 1 Changed');
-        $child2 = $test->getChild('Child 2')->setName('Child 2 Changed');
+        $test->getChild('Child 1')->setName('Child 1 Changed');
+        $test->getChild('Child 2')->setName('Child 2 Changed');
         $test->setName('Root Changed');
         $child3 = $test->addChild('Child 3');
         $this->dm->persist($child3);
@@ -184,6 +184,11 @@ class Hierarchy
         return $this->name;
     }
 
+    /**
+     * @param int|string $name
+     *
+     * @return Hierarchy|null
+     */
     public function getChild($name)
     {
         if (is_numeric($name)) {
@@ -199,6 +204,11 @@ class Hierarchy
         return null;
     }
 
+    /**
+     * @param string|Hierarchy $child
+     *
+     * @return Hierarchy
+     */
     public function addChild($child)
     {
         if (is_string($child)) {
@@ -210,7 +220,10 @@ class Hierarchy
         return $child;
     }
 
-    public function getChildren(): array
+    /**
+     * @return Collection<int, Hierarchy>|array<Hierarchy>
+     */
+    public function getChildren()
     {
         return $this->children;
     }
@@ -249,6 +262,11 @@ class BaseCategory
         return $this->name;
     }
 
+    /**
+     * @param string|int $name
+     *
+     * @return ChildCategory|null
+     */
     public function getChild($name)
     {
         if (is_numeric($name)) {
@@ -264,6 +282,11 @@ class BaseCategory
         return null;
     }
 
+    /**
+     * @param string|ChildCategory $child
+     *
+     * @return ChildCategory
+     */
     public function addChild($child)
     {
         if (is_string($child)) {
@@ -275,6 +298,9 @@ class BaseCategory
         return $child;
     }
 
+    /**
+     * @return Collection<int, ChildCategory>
+     */
     public function getChildren(): Collection
     {
         return $this->children;

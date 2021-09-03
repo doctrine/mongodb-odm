@@ -40,12 +40,15 @@ class Developer
         $this->projects = $projects ?? new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getProjects()
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getProjects(): Collection
     {
         return $this->projects;
     }

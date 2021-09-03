@@ -53,7 +53,7 @@ class Project
         $this->subProjects = $subProjects ?? new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

@@ -23,7 +23,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }
 
-    public function testSetShardKeyOptionsByAttributes()
+    public function testSetShardKeyOptionsByAttributes(): void
     {
         $class   = new ClassMetadata(stdClass::class);
         $driver  = $this->loadDriver();

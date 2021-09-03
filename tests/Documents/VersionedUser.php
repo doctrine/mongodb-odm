@@ -20,7 +20,7 @@ class VersionedUser extends User
      */
     protected $version;
 
-    public function getVersion()
+    public function getVersion(): ?int
     {
         return $this->version;
     }

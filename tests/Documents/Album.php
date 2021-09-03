@@ -38,7 +38,7 @@ class Album
         $this->songs = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -48,7 +48,7 @@ class Album
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
