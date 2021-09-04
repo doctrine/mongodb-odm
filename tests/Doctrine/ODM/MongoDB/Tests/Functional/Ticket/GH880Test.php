@@ -53,18 +53,18 @@ class GH880Document
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $status;
 
     /**
      * @ODM\Field(type="int")
      *
-     * @var int|null
+     * @var int
      */
     public $category;
 
-    public function __construct($status = '', $category = 0)
+    public function __construct(string $status = '', int $category = 0)
     {
         $this->status   = $status;
         $this->category = $category;

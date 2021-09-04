@@ -24,6 +24,8 @@ use const STR_PAD_LEFT;
 class TypeTest extends BaseTest
 {
     /**
+     * @param mixed $test
+     *
      * @dataProvider provideTypes
      */
     public function testConversion(Type $type, $test): void
@@ -62,6 +64,8 @@ class TypeTest extends BaseTest
     }
 
     /**
+     * @param mixed $test
+     *
      * @dataProvider provideTypesForIdempotent
      */
     public function testConversionIsIdempotent(Type $type, $test): void

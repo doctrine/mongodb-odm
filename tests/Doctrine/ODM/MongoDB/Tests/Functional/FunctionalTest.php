@@ -82,6 +82,9 @@ class FunctionalTest extends BaseTest
         bcscale($this->initialScale);
     }
 
+    /**
+     * @return array<array{class-string, ObjectId|string, string}>
+     */
     public function provideUpsertObjects(): array
     {
         return [
@@ -92,9 +95,11 @@ class FunctionalTest extends BaseTest
     }
 
     /**
+     * @param ObjectId|string $id
+     *
      * @dataProvider provideUpsertObjects
      */
-    public function testUpsertObject($className, $id, $discriminator): void
+    public function testUpsertObject(string $className, $id, string $discriminator): void
     {
         $user           = new $className();
         $user->id       = (string) $id;
@@ -277,8 +282,8 @@ class FunctionalTest extends BaseTest
     {
         $user = new User();
         $user->setUsername('joncolltest');
-        $user->log(['test']);
-        $user->log(['test']);
+        $user->log('test');
+        $user->log('test');
         $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
@@ -289,7 +294,7 @@ class FunctionalTest extends BaseTest
 
         $document = $this->dm->getRepository(User::class)->findOneBy(['username' => 'joncolltest']);
         $this->assertCount(2, $document->getLogs());
-        $document->log(['test']);
+        $document->log('test');
         $this->dm->flush();
         $this->dm->clear();
 

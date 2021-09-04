@@ -57,7 +57,7 @@ class MODM48A
         return $this->b;
     }
 
-    public function setB($b): void
+    public function setB(MODM48B $b): void
     {
         $this->b = $b;
     }
@@ -73,7 +73,7 @@ class MODM48B
      */
     public $val;
 
-    public function setVal($val): void
+    public function setVal(string $val): void
     {
         $this->val = $val;
     }

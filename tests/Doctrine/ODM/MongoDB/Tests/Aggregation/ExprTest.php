@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
 use BadMethodCallException;
+use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use LogicException;
@@ -14,9 +15,11 @@ class ExprTest extends BaseTest
     use AggregationOperatorsProviderTrait;
 
     /**
+     * @param array|Closure $args
+     *
      * @dataProvider provideAllOperators
      */
-    public function testGenericOperator($expected, $operator, $args): void
+    public function testGenericOperator(array $expected, string $operator, $args): void
     {
         $expr = $this->createExpr();
         $args = $this->resolveArgs($args);
@@ -26,9 +29,11 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param array|Closure $args
+     *
      * @dataProvider provideAllOperators
      */
-    public function testGenericOperatorWithField($expected, $operator, $args): void
+    public function testGenericOperatorWithField(array $expected, string $operator, $args): void
     {
         $expr = $this->createExpr();
         $args = $this->resolveArgs($args);

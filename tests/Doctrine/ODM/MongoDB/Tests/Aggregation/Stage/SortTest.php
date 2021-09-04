@@ -13,9 +13,11 @@ class SortTest extends BaseTest
     use AggregationTestTrait;
 
     /**
+     * @param string|array<string, string> $field
+     *
      * @dataProvider provideSortOptions
      */
-    public function testSortStage($expectedSort, $field, $order = null): void
+    public function testSortStage(array $expectedSort, $field, ?string $order = null): void
     {
         $sortStage = new Sort($this->getTestAggregationBuilder(), $field, $order);
 
@@ -23,9 +25,11 @@ class SortTest extends BaseTest
     }
 
     /**
+     * @param string|array<string, string> $field
+     *
      * @dataProvider provideSortOptions
      */
-    public function testSortFromBuilder($expectedSort, $field, $order = null): void
+    public function testSortFromBuilder(array $expectedSort, $field, ?string $order = null): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->sort($field, $order);

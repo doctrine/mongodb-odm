@@ -54,7 +54,7 @@ class VirtualHostDirective
         return $this->recId;
     }
 
-    public function setRecId($value = null): void
+    public function setRecId(?string $value = null): void
     {
         if (! $value) {
             $value = uniqid();
@@ -68,9 +68,9 @@ class VirtualHostDirective
         return $this->name;
     }
 
-    public function setName($value): void
+    public function setName(string $name): void
     {
-        $this->name = $value;
+        $this->name = $name;
     }
 
     public function getValue(): string
@@ -78,11 +78,14 @@ class VirtualHostDirective
         return $this->value;
     }
 
-    public function setValue($value): void
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }
 
+    /**
+     * @return Collection<int, VirtualHostDirective>
+     */
     public function getDirectives(): Collection
     {
         if (! $this->directives) {
@@ -92,7 +95,10 @@ class VirtualHostDirective
         return $this->directives;
     }
 
-    public function setDirectives($value): VirtualHostDirective
+    /**
+     * @param Collection<int, VirtualHostDirective> $value
+     */
+    public function setDirectives(Collection $value): VirtualHostDirective
     {
         $this->directives = $value;
 
@@ -117,7 +123,7 @@ class VirtualHostDirective
         return null;
     }
 
-    public function getDirective($name): ?VirtualHostDirective
+    public function getDirective(string $name): ?VirtualHostDirective
     {
         return $this->hasDirective($name);
     }

@@ -67,7 +67,7 @@ class MODM45B
      */
     protected $val;
 
-    public function setVal($val): void
+    public function setVal(string $val): void
     {
         $this->val = $val;
     }

@@ -132,7 +132,7 @@ class CmsUser
         return $this->groups;
     }
 
-    public function removePhonenumber($index): bool
+    public function removePhonenumber(int $index): bool
     {
         if (isset($this->phonenumbers[$index])) {
             $ph = $this->phonenumbers[$index];

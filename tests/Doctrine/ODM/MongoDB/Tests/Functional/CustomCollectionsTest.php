@@ -291,7 +291,7 @@ class MyEmbedsCollection extends ArrayCollection
         });
     }
 
-    public function move($i, $j): void
+    public function move(int $i, int $j): void
     {
         $tmp = $this->get($i);
         $this->set($i, $this->get($j));

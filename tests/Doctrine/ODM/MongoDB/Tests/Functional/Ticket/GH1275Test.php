@@ -152,7 +152,7 @@ class GH1275Test extends BaseTest
     /**
      * @dataProvider getCollectionStrategies
      */
-    public function testResortEmbedManyCollection($strategy): void
+    public function testResortEmbedManyCollection(string $strategy): void
     {
         $getNameCallback = static function (Element $element) {
             return $element->name;
@@ -203,14 +203,14 @@ class Item
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
     /** @var Container */
     protected $container;
 
-    public function __construct(Container $c, $name)
+    public function __construct(Container $c, string $name)
     {
         $this->container = $c;
         $this->name      = $name;
@@ -232,11 +232,11 @@ class Element
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -356,7 +356,7 @@ class Container
         $this->firstItem = $item;
     }
 
-    public function flip($a, $b): void
+    public function flip(int $a, int $b): void
     {
         $itemA = $this->items->get($a);
         $itemB = $this->items->get($b);
@@ -365,7 +365,7 @@ class Container
         $this->items->set($a, $itemB);
     }
 
-    public function move(Item $item, $move): void
+    public function move(Item $item, int $move): void
     {
         if ($move === 0) {
             return;

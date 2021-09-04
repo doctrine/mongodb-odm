@@ -225,7 +225,7 @@ class MyEventListener
     /** @psalm-var array<string, list<class-string>> */
     public $called = [];
 
-    public function __call($method, $args)
+    public function __call(string $method, array $args)
     {
         $document                = $args[0]->getDocument();
         $className               = get_class($document);
@@ -245,7 +245,7 @@ class PostCollectionLoadEventListener
     /** @var TestCase */
     private $phpunit;
 
-    public function __construct($phpunit)
+    public function __construct(TestCase $phpunit)
     {
         $this->phpunit = $phpunit;
     }

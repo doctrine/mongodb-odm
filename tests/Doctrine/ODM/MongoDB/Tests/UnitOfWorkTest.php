@@ -251,7 +251,7 @@ class UnitOfWorkTest extends BaseTest
     /**
      * @dataProvider getScheduleForUpdateWithArraysTests
      */
-    public function testScheduleForUpdateWithArrays($origData, $updateData, $shouldInUpdate): void
+    public function testScheduleForUpdateWithArrays(?array $origData, ?array $updateData, bool $shouldInUpdate): void
     {
         $arrayTest = new ArrayTest($origData);
         $this->uow->persist($arrayTest);
@@ -605,7 +605,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
@@ -615,7 +615,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         return $this->data;
     }
 
-    public function setData($data): void
+    public function setData(string $data): void
     {
         if ($data === $this->data) {
             return;
@@ -630,6 +630,9 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         return $this->items;
     }
 
+    /**
+     * @param mixed $value
+     */
     public function setTransient($value): void
     {
         if ($value === $this->transient) {
@@ -645,7 +648,11 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->_listeners[] = $listener;
     }
 
-    protected function onPropertyChanged($propName, $oldValue, $newValue): void
+    /**
+     * @param mixed $oldValue
+     * @param mixed $newValue
+     */
+    protected function onPropertyChanged(string $propName, $oldValue, $newValue): void
     {
         foreach ($this->_listeners as $listener) {
             $listener->propertyChanged($this, $propName, $oldValue, $newValue);
@@ -675,7 +682,7 @@ class NotifyChangedRelatedItem
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
@@ -685,7 +692,7 @@ class NotifyChangedRelatedItem
         return $this->owner;
     }
 
-    public function setOwner($owner): void
+    public function setOwner(NotifyChangedDocument $owner): void
     {
         $this->owner = $owner;
     }

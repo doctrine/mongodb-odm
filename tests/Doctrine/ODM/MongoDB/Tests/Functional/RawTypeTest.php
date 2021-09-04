@@ -14,6 +14,8 @@ use function get_class;
 class RawTypeTest extends BaseTest
 {
     /**
+     * @param mixed $value
+     *
      * @dataProvider getTestRawTypeData
      */
     public function testRawType($value): void

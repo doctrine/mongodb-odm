@@ -158,7 +158,7 @@ class PhonenumberMachine implements EventSubscriber
         ];
     }
 
-    public function __call($eventName, $args)
+    public function __call(string $eventName, array $args)
     {
         $document = $args[0]->getDocument();
         if (! ($document instanceof User)) {

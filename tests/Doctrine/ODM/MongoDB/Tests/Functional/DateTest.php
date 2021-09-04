@@ -38,6 +38,9 @@ class DateTest extends BaseTest
     }
 
     /**
+     * @param DateTime|UTCDateTime $oldValue
+     * @param DateTime|UTCDateTime $newValue
+     *
      * @dataProvider provideEquivalentDates
      */
     public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame($oldValue, $newValue): void
@@ -55,6 +58,9 @@ class DateTest extends BaseTest
         $this->assertEmpty($changeset);
     }
 
+    /**
+     * @return array<array{DateTime|UTCDateTime, DateTime|UTCDateTime}>
+     */
     public function provideEquivalentDates(): array
     {
         return [
@@ -76,6 +82,7 @@ class DateTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->findOneBy([]);
+        $this->assertInstanceOf(DateTime::class, $user->getCreatedAt());
         $user->getCreatedAt()->setTimestamp(time() - 3600);
 
         $this->dm->getUnitOfWork()->computeChangeSets();

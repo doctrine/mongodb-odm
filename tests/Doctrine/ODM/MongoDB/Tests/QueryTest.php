@@ -423,7 +423,7 @@ class QueryTest extends BaseTest
     /**
      * @dataProvider provideQueryTypesThatDoNotReturnAnIterator
      */
-    public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator($type, $method): void
+    public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator(int $type, string $method): void
     {
         $collection = $this->getMockCollection();
         $collection->expects($this->never())->method($method);
@@ -652,7 +652,7 @@ class Person
      */
     public $pet;
 
-    public function __construct($firstName)
+    public function __construct(string $firstName)
     {
         $this->firstName = $firstName;
     }

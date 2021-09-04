@@ -51,7 +51,7 @@ class Product
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
@@ -69,7 +69,7 @@ class Product
      */
     public $subproducts = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name        = $name;
         $this->subproducts = new ArrayCollection();

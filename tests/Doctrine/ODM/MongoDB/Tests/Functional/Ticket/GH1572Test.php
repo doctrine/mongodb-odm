@@ -101,7 +101,7 @@ class GH1572Post
 
 class GH1572PostRepository extends DocumentRepository
 {
-    public function getPostsForBlog($blog): Iterator
+    public function getPostsForBlog(GH1572Blog $blog): Iterator
     {
         return $this->createQueryBuilder()
             ->field('blog')

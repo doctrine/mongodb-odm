@@ -44,7 +44,7 @@ class ReadPreferenceTest extends BaseTest
     /**
      * @dataProvider provideReadPreferenceHints
      */
-    public function testHintIsSetOnQuery($readPreference, array $tags = []): void
+    public function testHintIsSetOnQuery(int $readPreference, array $tags = []): void
     {
         $this->skipTestIfSharded(User::class);
 
@@ -98,7 +98,7 @@ class ReadPreferenceTest extends BaseTest
         $this->assertReadPreferenceHint(ReadPreference::RP_SECONDARY, $query->getQuery()['readPreference']);
     }
 
-    private function assertReadPreferenceHint($mode, $readPreference, array $tags = []): void
+    private function assertReadPreferenceHint(int $mode, ReadPreference $readPreference, array $tags = []): void
     {
         $this->assertInstanceOf(ReadPreference::class, $readPreference);
         $this->assertEquals($mode, $readPreference->getMode());

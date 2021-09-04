@@ -55,7 +55,7 @@ class MODM91EventListener
     /** @var array<string, class-string[]>  */
     public $called = [];
 
-    public function __call($method, $args)
+    public function __call(string $method, array $args)
     {
         $document                = $args[0]->getDocument();
         $className               = get_class($document);

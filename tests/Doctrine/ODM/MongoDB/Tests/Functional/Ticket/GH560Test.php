@@ -14,6 +14,8 @@ use function get_class;
 class GH560Test extends BaseTest
 {
     /**
+     * @param int|string $id
+     *
      * @dataProvider provideDocumentIds
      */
     public function testPersistListenersAreCalled($id): void
@@ -39,6 +41,8 @@ class GH560Test extends BaseTest
     }
 
     /**
+     * @param int|string $id
+     *
      * @dataProvider provideDocumentIds
      */
     public function testDocumentWithCustomIdStrategyIsSavedAndFoundFromDatabase($id): void
@@ -53,6 +57,8 @@ class GH560Test extends BaseTest
     }
 
     /**
+     * @param int|string $id
+     *
      * @dataProvider provideDocumentIds
      */
     public function testUpdateListenersAreCalled($id): void
@@ -108,7 +114,7 @@ class GH560EventSubscriber implements EventSubscriber
         return $this->events;
     }
 
-    public function __call($eventName, $args)
+    public function __call(string $eventName, array $args)
     {
         $this->called[] = [$eventName, get_class($args[0]->getDocument())];
     }
@@ -131,6 +137,9 @@ class GH560Document
      */
     public $name;
 
+    /**
+     * @param int|string $id
+     */
     public function __construct($id, string $name)
     {
         $this->id   = $id;

@@ -55,12 +55,16 @@ class ProfileNotify implements NotifyPropertyChanged
         $this->images = new ProfileNotifyImagesCollection();
     }
 
-    public function addPropertyChangedListener(PropertyChangedListener $listener)
+    public function addPropertyChangedListener(PropertyChangedListener $listener): void
     {
         $this->listeners[] = $listener;
     }
 
-    private function propertyChanged($propName, $oldValue, $newValue): void
+    /**
+     * @param mixed $oldValue
+     * @param mixed $newValue
+     */
+    private function propertyChanged(string $propName, $oldValue, $newValue): void
     {
         foreach ($this->listeners as $listener) {
             $listener->propertyChanged($this, $propName, $oldValue, $newValue);
@@ -72,7 +76,7 @@ class ProfileNotify implements NotifyPropertyChanged
         return $this->profileId;
     }
 
-    public function setFirstName($firstName): void
+    public function setFirstName(string $firstName): void
     {
         $this->propertyChanged('firstName', $this->firstName, $firstName);
         $this->firstName = $firstName;
@@ -83,7 +87,7 @@ class ProfileNotify implements NotifyPropertyChanged
         return $this->firstName;
     }
 
-    public function setLastName($lastName): void
+    public function setLastName(string $lastName): void
     {
         $this->propertyChanged('lastName', $this->lastName, $lastName);
         $this->lastName = $lastName;
@@ -111,8 +115,17 @@ class ProfileNotify implements NotifyPropertyChanged
     }
 }
 
+/**
+ * @template TKey of array-key
+ * @template T
+ * @template-extends ArrayCollection<TKey, T>
+ */
 class ProfileNotifyImagesCollection extends ArrayCollection
 {
+    /**
+     * @param TKey $i
+     * @param TKey $j
+     */
     public function move($i, $j): void
     {
         $tmp = $this->get($i);

@@ -71,7 +71,7 @@ abstract class BaseEmployee
         return $this->id;
     }
 
-    public function setId($val): BaseEmployee
+    public function setId(string $val): BaseEmployee
     {
         $this->id = $val;
 
@@ -83,7 +83,7 @@ abstract class BaseEmployee
         return $this->changes;
     }
 
-    public function incrementChanges($num): BaseEmployee
+    public function incrementChanges(int $num): BaseEmployee
     {
         $this->changes += $num;
 
@@ -95,7 +95,7 @@ abstract class BaseEmployee
         return $this->notes;
     }
 
-    public function addNote($note): BaseEmployee
+    public function addNote(string $note): BaseEmployee
     {
         $this->notes[] = $note;
 
@@ -107,7 +107,7 @@ abstract class BaseEmployee
         return $this->name;
     }
 
-    public function setName($val): BaseEmployee
+    public function setName(string $val): BaseEmployee
     {
         $this->name = $val;
 
@@ -119,7 +119,7 @@ abstract class BaseEmployee
         return $this->salary;
     }
 
-    public function setSalary($val): BaseEmployee
+    public function setSalary(float $val): BaseEmployee
     {
         $this->salary = $val;
 
@@ -131,7 +131,7 @@ abstract class BaseEmployee
         return $this->started;
     }
 
-    public function setStarted($val): BaseEmployee
+    public function setStarted(DateTime $val): BaseEmployee
     {
         $this->started = $val;
 
@@ -143,7 +143,7 @@ abstract class BaseEmployee
         return $this->left;
     }
 
-    public function setLeft($val): BaseEmployee
+    public function setLeft(DateTime $val): BaseEmployee
     {
         $this->left = $val;
 
@@ -155,7 +155,7 @@ abstract class BaseEmployee
         return $this->address;
     }
 
-    public function setAddress($val): BaseEmployee
+    public function setAddress(Address $val): BaseEmployee
     {
         $this->address = $val;
 

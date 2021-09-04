@@ -16,7 +16,7 @@ class GH2002Test extends BaseTest
     /**
      * @dataProvider getValidReferenceData
      */
-    public function testBuildingReferenceCreatesCorrectStructure(array $expectedReference, $document): void
+    public function testBuildingReferenceCreatesCorrectStructure(array $expectedReference, object $document): void
     {
         $this->dm->persist($document);
 
@@ -61,7 +61,7 @@ class GH2002Test extends BaseTest
     /**
      * @dataProvider getInvalidReferenceData
      */
-    public function testBuildingReferenceForUnlistedClassCausesException(string $expectedExceptionMessage, $document): void
+    public function testBuildingReferenceForUnlistedClassCausesException(string $expectedExceptionMessage, object $document): void
     {
         $this->dm->persist($document);
 

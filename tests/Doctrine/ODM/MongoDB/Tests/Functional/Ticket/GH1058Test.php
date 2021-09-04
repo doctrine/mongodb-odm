@@ -83,7 +83,7 @@ class GH1058PersistDocument
         return $this->id;
     }
 
-    public function setValue($value): void
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }
@@ -120,7 +120,7 @@ class GH1058UpsertDocument
         $this->id = (string) new ObjectId();
     }
 
-    public function setValue($value): void
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }

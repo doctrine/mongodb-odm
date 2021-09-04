@@ -41,7 +41,7 @@ class MODM47A
     public $b = 'tmp';
 
     /** @ODM\AlsoLoad("c") */
-    public function renameC($c): void
+    public function renameC(string $c): void
     {
         $this->b = $c;
     }

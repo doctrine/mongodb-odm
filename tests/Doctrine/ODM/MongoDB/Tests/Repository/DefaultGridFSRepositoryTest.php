@@ -255,7 +255,10 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame(261120, $file->getChunkSize());
     }
 
-    private function getRepository($className = File::class): GridFSRepository
+    /**
+     * @param class-string $className
+     */
+    private function getRepository(string $className = File::class): GridFSRepository
     {
         $repository = $this->dm->getRepository($className);
 
@@ -264,7 +267,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         return $repository;
     }
 
-    private function uploadFile($filename, ?UploadOptions $uploadOptions = null): File
+    private function uploadFile(string $filename, ?UploadOptions $uploadOptions = null): File
     {
         $fileResource = fopen($filename, 'r');
 

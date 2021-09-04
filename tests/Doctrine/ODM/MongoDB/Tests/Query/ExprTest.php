@@ -409,6 +409,8 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param mixed $point
+     *
      * @dataProvider provideGeoJsonPoint
      */
     public function testNearWithGeoJsonPoint($point, array $expected): void
@@ -428,6 +430,8 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param mixed $point
+     *
      * @dataProvider provideGeoJsonPoint
      */
     public function testNearSphereWithGeoJsonPoint($point, array $expected): void
@@ -540,6 +544,8 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param mixed $geometry
+     *
      * @dataProvider provideGeoJsonPolygon
      */
     public function testGeoIntersects($geometry, array $expected): void
@@ -566,6 +572,8 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param mixed $geometry
+     *
      * @dataProvider provideGeoJsonPolygon
      */
     public function testGeoWithin($geometry, array $expected): void
@@ -694,7 +702,7 @@ class ExprTest extends BaseTest
     /**
      * @return MockObject&Point
      */
-    private function getMockPoint($json)
+    private function getMockPoint(array $json)
     {
         $point = $this->getMockBuilder(Point::class)
             ->disableOriginalConstructor()
@@ -710,7 +718,7 @@ class ExprTest extends BaseTest
     /**
      * @return MockObject&Polygon
      */
-    private function getMockPolygon($json)
+    private function getMockPolygon(array $json)
     {
         $point = $this->getMockBuilder(Polygon::class)
             ->disableOriginalConstructor()

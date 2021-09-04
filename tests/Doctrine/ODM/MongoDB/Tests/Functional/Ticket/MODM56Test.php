@@ -48,7 +48,7 @@ class MODM56Parent
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
@@ -66,7 +66,7 @@ class MODM56Parent
      */
     public $children = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

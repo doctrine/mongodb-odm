@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Group;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
@@ -16,9 +17,11 @@ class GroupTest extends BaseTest
     use AggregationOperatorsProviderTrait;
 
     /**
+     * @param Closure|array $args
+     *
      * @dataProvider provideProxiedExprMethods
      */
-    public function testProxiedExprMethods($method, $args = []): void
+    public function testProxiedExprMethods(string $method, $args = []): void
     {
         $args = $this->resolveArgs($args);
 
@@ -39,6 +42,9 @@ class GroupTest extends BaseTest
         $this->assertSame($stage, $stage->$method(...$args));
     }
 
+    /**
+     * @return array<array{string, string[]|Closure}>
+     */
     public function provideProxiedExprMethods(): array
     {
         return [

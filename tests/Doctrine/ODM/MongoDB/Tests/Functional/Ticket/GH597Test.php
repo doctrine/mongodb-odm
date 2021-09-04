@@ -172,11 +172,11 @@ class GH597Comment
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $comment;
 
-    public function __construct($comment)
+    public function __construct(string $comment)
     {
         $this->comment = $comment;
     }
@@ -196,11 +196,11 @@ class GH597ReferenceMany
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $field;
 
-    public function __construct($field)
+    public function __construct(string $field)
     {
         $this->field = $field;
     }

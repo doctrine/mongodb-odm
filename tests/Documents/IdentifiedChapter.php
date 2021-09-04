@@ -32,7 +32,7 @@ class IdentifiedChapter
      */
     public $pages;
 
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
         $this->name  = $name;
         $this->pages = new ArrayCollection();

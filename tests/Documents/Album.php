@@ -21,7 +21,7 @@ class Album
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     private $name;
 
@@ -32,7 +32,7 @@ class Album
      */
     private $songs;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name  = $name;
         $this->songs = new ArrayCollection();
@@ -43,7 +43,7 @@ class Album
         return $this->id;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

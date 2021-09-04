@@ -42,12 +42,12 @@ class CustomUser
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    public function setUsername($username): void
+    public function setUsername(string $username): void
     {
         $this->username = $username;
     }
@@ -57,7 +57,7 @@ class CustomUser
         return $this->username;
     }
 
-    public function setPassword($password): void
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }

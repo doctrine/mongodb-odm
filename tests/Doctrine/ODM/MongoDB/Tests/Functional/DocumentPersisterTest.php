@@ -123,7 +123,7 @@ class DocumentPersisterTest extends BaseTest
     /**
      * @dataProvider getTestPrepareFieldNameData
      */
-    public function testPrepareFieldName($fieldName, $expected): void
+    public function testPrepareFieldName(string $fieldName, string $expected): void
     {
         $this->assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
     }
@@ -172,9 +172,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithHashId($hashId): void
+    public function testPrepareQueryOrNewObjWithHashId(array $hashId): void
     {
         $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -186,9 +188,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithHashIdAndInOperators($hashId): void
+    public function testPrepareQueryOrNewObjWithHashIdAndInOperators(array $hashId): void
     {
         $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -379,9 +383,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithHashIdType($hashId): void
+    public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithHashIdType(array $hashId): void
     {
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -456,9 +462,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithHashIdType($hashId): void
+    public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithHashIdType(array $hashId): void
     {
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -570,9 +578,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithHashIdType($hashId): void
+    public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithHashIdType(array $hashId): void
     {
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -1067,6 +1077,9 @@ final class DocumentPersisterCustomIdType extends Type
         throw self::createException($value);
     }
 
+    /**
+     * @param mixed $value
+     */
     private static function createException($value): InvalidArgumentException
     {
         return new InvalidArgumentException(
