@@ -46,10 +46,14 @@ class GH499Document
      */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument=GH499Document::class, storeAs="id", strategy="set") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH499Document::class, storeAs="id", strategy="set")
+     *
+     * @var Collection<array-key, GH499Document>
+     */
     protected $refMany;
 
-    public function __construct($id = null)
+    public function __construct(?ObjectId $id = null)
     {
         $this->id      = (string) $id;
         $this->refMany = new ArrayCollection();
@@ -60,6 +64,9 @@ class GH499Document
         return $this->id;
     }
 
+    /**
+     * @return Collection<int, GH499Document>
+     */
     public function getRefMany(): Collection
     {
         return $this->refMany;

@@ -40,7 +40,11 @@ class MODM48A
      */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=MODM48B::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=MODM48B::class)
+     *
+     * @var MODM48B|null
+     */
     public $b;
 
     public function getId()

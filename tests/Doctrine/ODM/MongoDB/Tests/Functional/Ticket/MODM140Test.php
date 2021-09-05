@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Functional\EmbeddedTestLevel0;
@@ -138,7 +139,11 @@ class Category
      */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=Post::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Post::class)
+     *
+     * @var Collection<int, Post>
+     */
     public $posts;
 
     public function __construct()
@@ -150,10 +155,18 @@ class Category
 /** @ODM\EmbeddedDocument */
 class Post
 {
-    /** @ODM\EmbedMany(targetDocument=PostVersion::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=PostVersion::class)
+     *
+     * @var Collection<int, PostVersion>
+     */
     public $versions;
 
-    /** @ODM\ReferenceMany(targetDocument=Comment::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Comment::class)
+     *
+     * @var Collection<int, Comment>
+     */
     public $comments;
 
     public function __construct()
@@ -169,11 +182,11 @@ class PostVersion
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

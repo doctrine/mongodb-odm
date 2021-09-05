@@ -59,6 +59,7 @@ class MODM67Test extends BaseTest
 
 class MODM67TestEventListener
 {
+    /** @var DocumentManager */
     public $documentManager;
 
     public function __construct(DocumentManager $documentManager)
@@ -119,7 +120,11 @@ class MODM67DerivedClass
      */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=MODM67EmbeddedObject::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=MODM67EmbeddedObject::class)
+     *
+     * @var MODM67EmbeddedObject|null
+     */
     public $embedOne;
 }
 

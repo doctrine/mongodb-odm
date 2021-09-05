@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Traversable;
@@ -50,7 +51,11 @@ class MODM92TestDocument
     public $id;
 
     // Note: Test case fails with default "pushAll" strategy, but "set" works
-    /** @ODM\EmbedMany(targetDocument=MODM92TestEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=MODM92TestEmbeddedDocument::class)
+     *
+     * @var Collection<int, MODM92TestEmbeddedDocument>
+     */
     public $embeddedDocuments;
 
     public function __construct()
@@ -67,7 +72,7 @@ class MODM92TestDocument
      * by mapping array indexes (size URL's are required, cropMetadata is not).
      * Any invalid elements will be ignored.
      *
-     * @param array|Traversable $embeddedDocuments
+     * @param array<MODM92TestEmbeddedDocument>|Traversable<MODM92TestEmbeddedDocument> $embeddedDocuments
      */
     public function setEmbeddedDocuments($embeddedDocuments): void
     {
@@ -89,11 +94,11 @@ class MODM92TestEmbeddedDocument
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

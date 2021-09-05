@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -54,10 +55,18 @@ class Product
      */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=Price::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Price::class)
+     *
+     * @var Collection<int, Price>|array<Price>
+     */
     public $prices = [];
 
-    /** @ODM\EmbedMany(targetDocument=SubProduct::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=SubProduct::class)
+     *
+     * @var Collection<int, SubProduct>|array<SubProduct>
+     */
     public $subproducts = [];
 
     public function __construct($name)
@@ -70,7 +79,11 @@ class Product
 /** @ODM\EmbeddedDocument */
 class SubProduct
 {
-    /** @ODM\EmbedMany(targetDocument=Price::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Price::class)
+     *
+     * @var Collection<int, Price>|array<Price>
+     */
     public $prices = [];
 
     public function __construct()

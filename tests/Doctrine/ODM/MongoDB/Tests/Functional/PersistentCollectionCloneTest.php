@@ -12,7 +12,10 @@ use function get_class;
 
 class PersistentCollectionCloneTest extends BaseTest
 {
+    /** @var CmsUser|null */
     private $user1;
+
+    /** @var CmsUser|null */
     private $user2;
 
     public function setUp(): void

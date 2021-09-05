@@ -91,13 +91,21 @@ class GH529AutoIdDocument
 /** @ODM\Document */
 class GH529CustomIdDocument
 {
-    /** @ODM\Id(strategy="none", type="custom_id") */
+    /**
+     * @ODM\Id(strategy="none", type="custom_id")
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document */
 class GH529IntIdDocument
 {
-    /** @ODM\Id(strategy="none", type="int") */
+    /**
+     * @ODM\Id(strategy="none", type="int")
+     *
+     * @var float|int|null
+     */
     public $id;
 }

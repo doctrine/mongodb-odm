@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -38,13 +39,25 @@ class GH467Document
      */
     public $id;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var mixed[]
+     */
     public $col;
 
-    /** @ODM\EmbedMany(targetDocument=GH467EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH467EmbeddedDocument::class)
+     *
+     * @var Collection<int, GH467EmbeddedDocument>
+     */
     public $embedMany;
 
-    /** @ODM\ReferenceMany(targetDocument=GH467EmbeddedDocument::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH467EmbeddedDocument::class)
+     *
+     * @var Collection<int, GH467EmbeddedDocument>
+     */
     public $refMany;
 }
 

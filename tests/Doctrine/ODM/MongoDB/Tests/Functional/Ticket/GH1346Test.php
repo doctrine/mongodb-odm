@@ -54,7 +54,11 @@ class GH1346Document
      */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument=GH1346ReferencedDocument::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1346ReferencedDocument::class)
+     *
+     * @var Collection<int, GH1346ReferencedDocument>
+     */
     protected $references;
 
     public function __construct()
@@ -62,16 +66,19 @@ class GH1346Document
         $this->references = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function addReference($otherReference): void
+    public function addReference(GH1346ReferencedDocument $otherReference): void
     {
         $this->references->add($otherReference);
     }
 
+    /**
+     * @return Collection<int, GH1346ReferencedDocument>
+     */
     public function getReferences(): Collection
     {
         return $this->references;
@@ -86,7 +93,7 @@ class GH1346ReferencedDocument
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $test;
 
@@ -97,12 +104,12 @@ class GH1346ReferencedDocument
      */
     protected $id;
 
-    public function setTest($test): void
+    public function setTest(string $test): void
     {
         $this->test = $test;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

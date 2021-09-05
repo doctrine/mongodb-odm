@@ -99,19 +99,35 @@ class GH1775Blog
      */
     public $id;
 
-    /** @ODM\ReferenceMany(targetDocument=GH1775Post::class, inversedBy="blogs") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1775Post::class, inversedBy="blogs")
+     *
+     * @var Collection<int, GH1775Post>|array<GH1775Post>
+     */
     public $posts = [];
 }
 
 /** @ODM\Document */
 class GH1775Post extends GH1775MetaDocument
 {
-    /** @ODM\ReferenceMany(targetDocument=GH1775Image::class, storeAs=ClassMetadata::REFERENCE_STORE_AS_ID) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1775Image::class, storeAs=ClassMetadata::REFERENCE_STORE_AS_ID)
+     *
+     * @var Collection<int, GH1775Image>
+     */
     protected $images;
 
-    /** @ODM\ReferenceMany(targetDocument=GH1775Blog::class, mappedBy="posts") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1775Blog::class, mappedBy="posts")
+     *
+     * @var Collection<int, GH1775Blog>
+     */
     protected $blogs;
 
+    /**
+     * @param array<GH1775Blog>  $blogs
+     * @param array<GH1775Image> $images
+     */
     public function __construct(array $blogs, array $images)
     {
         $this->blogs  = new ArrayCollection($blogs);
@@ -130,7 +146,7 @@ class GH1775Post extends GH1775MetaDocument
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, GH1775Image>
      */
     public function getImages()
     {

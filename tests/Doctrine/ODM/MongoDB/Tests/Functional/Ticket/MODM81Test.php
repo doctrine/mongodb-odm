@@ -119,17 +119,25 @@ class MODM81TestEmbeddedDocument
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $message;
 
-    /** @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class)
+     *
+     * @var MODM81TestDocument
+     */
     public $refTodocument1;
 
-    /** @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class)
+     *
+     * @var MODM81TestDocument
+     */
     public $refTodocument2;
 
-    public function __construct($document1, $document2, $message)
+    public function __construct(MODM81TestDocument $document1, MODM81TestDocument $document2, string $message)
     {
         $this->refTodocument1 = $document1;
         $this->refTodocument2 = $document2;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -101,10 +102,18 @@ class SplColDoc
      */
     public $name;
 
-    /** @ODM\EmbedOne */
+    /**
+     * @ODM\EmbedOne
+     *
+     * @var object|null
+     */
     public $one;
 
-    /** @ODM\EmbedMany */
+    /**
+     * @ODM\EmbedMany
+     *
+     * @var Collection<int, object>|array<object>
+     */
     public $many = [];
 }
 
@@ -114,11 +123,11 @@ class SplColEmbed
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

@@ -81,7 +81,11 @@ class GH921User
      */
     private $name;
 
-    /** @ODM\ReferenceMany(targetDocument=GH921Post::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH921Post::class)
+     *
+     * @var Collection<int, GH921Post>
+     */
     private $posts;
 
     public function __construct()
@@ -89,17 +93,17 @@ class GH921User
         $this->posts = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -109,6 +113,9 @@ class GH921User
         $this->posts[] = $post;
     }
 
+    /**
+     * @return Collection<int, GH921Post>
+     */
     public function getPosts(): Collection
     {
         return $this->posts;
@@ -132,17 +139,17 @@ class GH921Post
      */
     private $name;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

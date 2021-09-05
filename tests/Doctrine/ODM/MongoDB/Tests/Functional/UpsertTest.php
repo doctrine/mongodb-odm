@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
@@ -96,16 +97,32 @@ class UpsertTestUser
      */
     public $id;
 
-    /** @ODM\Field(nullable=true) */
+    /**
+     * @ODM\Field(nullable=true)
+     *
+     * @var string|null
+     */
     public $nullableField;
 
-    /** @ODM\EmbedOne(targetDocument=UpsertTestUserEmbedded::class, nullable=true) */
+    /**
+     * @ODM\EmbedOne(targetDocument=UpsertTestUserEmbedded::class, nullable=true)
+     *
+     * @var UpsertTestUserEmbedded|null
+     */
     public $nullableEmbedOne;
 
-    /** @ODM\ReferenceOne(targetDocument=UpsertTestUser::class, cascade="persist", nullable=true) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=UpsertTestUser::class, cascade="persist", nullable=true)
+     *
+     * @var UpsertTestUser|null
+     */
     public $nullableReferenceOne;
 
-    /** @ODM\EmbedMany(targetDocument=UpsertTestUserEmbedded::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=UpsertTestUserEmbedded::class)
+     *
+     * @var Collection<int, UpsertTestUserEmbedded>
+     */
     public $embedMany;
 
     public function __construct()

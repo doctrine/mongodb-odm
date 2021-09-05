@@ -60,6 +60,7 @@ class MODM83Test extends BaseTest
 
 class MODM83EventListener
 {
+    /** @var array<string, class-string[]> */
     public $called = [];
 
     public function __call($method, $args)
@@ -87,7 +88,11 @@ class MODM83TestDocument
      */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument=MODM83TestEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=MODM83TestEmbeddedDocument::class)
+     *
+     * @var MODM83TestEmbeddedDocument|null
+     */
     public $embedded;
 }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -91,21 +92,45 @@ class DocWithNestedCollections
      */
     public $id;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $atomicSet;
 
-    /** @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $atomicSetArray;
 
-    /** @ODM\EmbedMany(strategy="set", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="set", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $set;
 
-    /** @ODM\EmbedMany(strategy="setArray", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="setArray", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $setArray;
 
-    /** @ODM\EmbedMany(strategy="pushAll", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="pushAll", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $pushAll;
 
-    /** @ODM\EmbedMany(strategy="addToSet", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="addToSet", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $addToSet;
 }

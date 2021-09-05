@@ -117,14 +117,13 @@ abstract class HasLifecycleCallbacksSuper
      */
     public $id;
 
+    /** @var string[] */
     public $invoked = [];
 
     /**
      * @ODM\PrePersist
-     *
-     * @return void
      */
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->invoked[] = 'super';
     }
@@ -140,14 +139,13 @@ abstract class HasLifecycleCallbacksSuperAnnotated
      */
     public $id;
 
+    /** @var string[] */
     public $invoked = [];
 
     /**
      * @ODM\PrePersist
-     *
-     * @return void
      */
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->invoked[] = 'super';
     }
@@ -178,10 +176,8 @@ class HasLifecycleCallbacksSubOverrideExtendsSuper extends HasLifecycleCallbacks
 {
     /**
      * @ODM\PrePersist
-     *
-     * @return void
      */
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->invoked[] = 'sub';
     }
@@ -192,10 +188,8 @@ class HasLifecycleCallbacksSubOverrideExtendsSuperAnnotated extends HasLifecycle
 {
     /**
      * @ODM\PrePersist
-     *
-     * @return void
      */
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->invoked[] = 'sub';
     }
@@ -206,10 +200,8 @@ class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuper extends HasLifecycle
 {
     /**
      * @ODM\PrePersist
-     *
-     * @return void
      */
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->invoked[] = 'sub';
     }
@@ -220,10 +212,8 @@ class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuperAnnotated extends Has
 {
     /**
      * @ODM\PrePersist
-     *
-     * @return void
      */
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->invoked[] = 'sub';
     }

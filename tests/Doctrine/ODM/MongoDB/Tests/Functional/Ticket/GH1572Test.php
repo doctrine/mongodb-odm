@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
@@ -52,13 +53,25 @@ class GH1572Blog
      */
     public $id;
 
-    /** @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog")
+     *
+     * @var Collection<int, GH1572Post>|array<GH1572Post>
+     */
     public $allPosts = [];
 
-    /** @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog", sort={"id"="asc"}, limit=2) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog", sort={"id"="asc"}, limit=2)
+     *
+     * @var Collection<int, GH1572Post>|array<GH1572Post>
+     */
     public $latestPosts = [];
 
-    /** @ODM\ReferenceMany(targetDocument=GH1572Post::class, repositoryMethod="getPostsForBlog") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1572Post::class, repositoryMethod="getPostsForBlog")
+     *
+     * @var Collection<int, GH1572Post>|array<GH1572Post>
+     */
     public $latestPostsRepositoryMethod = [];
 }
 
@@ -72,7 +85,11 @@ class GH1572Post
      */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=GH1572Blog::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH1572Blog::class)
+     *
+     * @var GH1572Blog
+     */
     public $blog;
 
     public function __construct(GH1572Blog $blog)

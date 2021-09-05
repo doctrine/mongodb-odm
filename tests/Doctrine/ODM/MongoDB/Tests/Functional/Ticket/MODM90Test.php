@@ -76,6 +76,7 @@ class MODM90Test extends BaseTest
 
 class MODM90EventListener
 {
+    /** @var array<string, class-string[]> */
     public $called = [];
 
     public function __call($method, $args)
@@ -112,6 +113,8 @@ class MODM90TestDocument
      *     "test2"=MODM90Test2EmbeddedDocument::class
      *   }
      *  )
+     *
+     * @var MODM90TestEmbeddedDocument|MODM90Test2EmbeddedDocument|null
      */
     public $embedded;
 }
@@ -137,6 +140,10 @@ class MODM90Test2EmbeddedDocument
      */
     public $name;
 
-    /** @ODM\Field(type="string") The discriminator field is a real property */
+    /**
+     * @ODM\Field(type="string") The discriminator field is a real property
+     *
+     * @var string
+     */
     public $type;
 }

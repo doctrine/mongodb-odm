@@ -56,25 +56,29 @@ class MODM116Parent
      */
     private $name;
 
-    /** @ODM\ReferenceOne(targetDocument=MODM116Child::class) **/
+    /**
+     * @ODM\ReferenceOne(targetDocument=MODM116Child::class) *
+     *
+     * @var MODM116Child|null
+     */
     private $child;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getChild()
+    public function getChild(): ?MODM116Child
     {
         return $this->child;
     }

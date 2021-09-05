@@ -48,6 +48,8 @@ class MODM65User
      *  },
      *  name="snu"
      * )
+     *
+     * @var MODM65SocialNetworkUser|null
      */
     public $socialNetworkUser;
 }

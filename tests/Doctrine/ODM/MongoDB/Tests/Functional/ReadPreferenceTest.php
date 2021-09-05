@@ -112,6 +112,10 @@ class ReadPreferenceTest extends BaseTest
  */
 class DocumentWithReadPreference
 {
-    /** @ODM\Id() */
+    /**
+     * @ODM\Id()
+     *
+     * @var string|null
+     */
     public $id;
 }

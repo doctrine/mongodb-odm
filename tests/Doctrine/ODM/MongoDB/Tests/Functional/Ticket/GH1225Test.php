@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -45,7 +46,11 @@ class GH1225Document
      */
     public $id;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=GH1225EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=GH1225EmbeddedDocument::class)
+     *
+     * @var Collection<int, GH1225EmbeddedDocument>
+     */
     public $embeds;
 
     public function __construct()
@@ -69,11 +74,11 @@ class GH1225EmbeddedDocument
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $value;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }

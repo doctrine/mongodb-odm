@@ -72,14 +72,24 @@ class MODM52A
      */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument=MODM52B::class, cascade="all") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=MODM52B::class, cascade="all")
+     *
+     * @var Collection<int, MODM52B>
+     */
     protected $b;
 
-    public function __construct($b)
+    /**
+     * @param array<MODM52B> $b
+     */
+    public function __construct(array $b)
     {
         $this->b = new ArrayCollection($b);
     }
 
+    /**
+     * @return Collection<int, MODM52B>
+     */
     public function getB(): Collection
     {
         return $this->b;
@@ -99,16 +109,16 @@ class MODM52B
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $value;
 
-    public function __construct($v)
+    public function __construct(string $v)
     {
         $this->value = $v;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

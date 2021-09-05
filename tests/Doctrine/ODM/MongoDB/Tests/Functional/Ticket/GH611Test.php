@@ -129,7 +129,11 @@ class GH611Document
      */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH611EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH611EmbeddedDocument::class)
+     *
+     * @var GH611EmbeddedDocument|null
+     */
     public $embedded;
 }
 
@@ -139,14 +143,18 @@ class GH611EmbeddedDocument
     /**
      * @ODM\Field(type="int")
      *
-     * @var int|null
+     * @var int
      */
     public $id;
 
-    /** @ODM\Field(name="n", type="string") */
+    /**
+     * @ODM\Field(name="n", type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($id, $name)
+    public function __construct(int $id, string $name)
     {
         $this->id   = $id;
         $this->name = $name;

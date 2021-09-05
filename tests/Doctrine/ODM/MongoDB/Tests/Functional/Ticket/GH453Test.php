@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -307,37 +308,81 @@ class GH453Document
      */
     public $id;
 
-    /** @ODM\Field(type="hash") */
+    /**
+     * @ODM\Field(type="hash")
+     *
+     * @var array<string>
+     */
     public $hash;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
     public $colPush;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
     public $colSet;
 
-    /** @ODM\EmbedMany(strategy="pushAll")) */
+    /**
+     * @ODM\EmbedMany(strategy="pushAll"))
+     *
+     * @var Collection<int, GH453EmbeddedDocument>
+     */
     public $embedManyPush;
 
-    /** @ODM\EmbedMany(strategy="set") */
+    /**
+     * @ODM\EmbedMany(strategy="set")
+     *
+     * @var Collection<int, object>
+     */
     public $embedManySet;
 
-    /** @ODM\EmbedMany(strategy="setArray") */
+    /**
+     * @ODM\EmbedMany(strategy="setArray")
+     *
+     * @var Collection<int, object>
+     */
     public $embedManySetArray;
 
-    /** @ODM\EmbedMany(strategy="addToSet") */
+    /**
+     * @ODM\EmbedMany(strategy="addToSet")
+     *
+     * @var Collection<int, object>
+     */
     public $embedManyAddToSet;
 
-    /** @ODM\ReferenceMany(strategy="pushAll")) */
+    /**
+     * @ODM\ReferenceMany(strategy="pushAll"))
+     *
+     * @var Collection<int, GH453ReferencedDocument>
+     */
     public $referenceManyPush;
 
-    /** @ODM\ReferenceMany(strategy="set") */
+    /**
+     * @ODM\ReferenceMany(strategy="set")
+     *
+     * @var Collection<int, object>
+     */
     public $referenceManySet;
 
-    /** @ODM\ReferenceMany(strategy="setArray") */
+    /**
+     * @ODM\ReferenceMany(strategy="setArray")
+     *
+     * @var Collection<int, object>
+     */
     public $referenceManySetArray;
 
-    /** @ODM\ReferenceMany(strategy="addToSet") */
+    /**
+     * @ODM\ReferenceMany(strategy="addToSet")
+     *
+     * @var Collection<int, object>
+     */
     public $referenceManyAddToSet;
 }
 

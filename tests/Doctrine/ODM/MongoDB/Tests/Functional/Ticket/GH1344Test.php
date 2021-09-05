@@ -56,10 +56,18 @@ class GH1344Main
      */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1344Embedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1344Embedded::class)
+     *
+     * @var GH1344Embedded|null
+     */
     public $embedded1;
 
-    /** @ODM\EmbedOne(targetDocument=GH1344Embedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1344Embedded::class)
+     *
+     * @var GH1344Embedded|null
+     */
     public $embedded2;
 }
 
@@ -69,10 +77,18 @@ class GH1344Main
  */
 class GH1344Embedded
 {
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     public $property;
 
-    /** @ODM\EmbedOne(targetDocument=GH1344EmbeddedNested::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1344EmbeddedNested::class)
+     *
+     * @var GH1344EmbeddedNested|null
+     */
     public $embedded;
 }
 
@@ -82,7 +98,11 @@ class GH1344Embedded
  */
 class GH1344EmbeddedNested
 {
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     public $property;
 }
 
@@ -96,7 +116,11 @@ class GH1344LongIndexName
      */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1344LongIndexNameEmbedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1344LongIndexNameEmbedded::class)
+     *
+     * @var GH1344LongIndexNameEmbedded|null
+     */
     public $embedded1;
 }
 
@@ -106,6 +130,10 @@ class GH1344LongIndexName
  */
 class GH1344LongIndexNameEmbedded
 {
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     public $property;
 }

@@ -153,29 +153,33 @@ class Hierarchy
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     private $name;
 
-    /** @ODM\ReferenceMany(targetDocument=Hierarchy::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Hierarchy::class)
+     *
+     * @var Collection<int, Hierarchy>|array<Hierarchy>
+     */
     private $children = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -218,25 +222,29 @@ class BaseCategory
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $name;
 
-    /** @ODM\EmbedMany(targetDocument=ChildCategory::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=ChildCategory::class)
+     *
+     * @var Collection<int, ChildCategory>
+     */
     protected $children;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name     = $name;
         $this->children = new ArrayCollection();
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -283,7 +291,7 @@ class Category extends BaseCategory
      */
     protected $id;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -311,7 +319,11 @@ class Order
      */
     public $title;
 
-    /** @ODM\EmbedOne(targetDocument=ProductBackup::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=ProductBackup::class)
+     *
+     * @var ProductBackup|null
+     */
     public $product;
 }
 

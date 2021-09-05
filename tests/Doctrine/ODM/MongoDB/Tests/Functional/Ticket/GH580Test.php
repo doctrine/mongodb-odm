@@ -72,6 +72,11 @@ class GH580Document
      */
     public $id;
 
-    /** @ODM\Field(type="string") @ODM\Index(unique=true) */
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index(unique=true)
+     *
+     * @var string|null
+     */
     public $name;
 }

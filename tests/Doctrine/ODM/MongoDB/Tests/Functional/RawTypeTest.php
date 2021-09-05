@@ -53,6 +53,10 @@ class RawType
      */
     public $id;
 
-    /** @ODM\Field(type="raw") */
+    /**
+     * @ODM\Field(type="raw")
+     *
+     * @var mixed
+     */
     public $raw;
 }

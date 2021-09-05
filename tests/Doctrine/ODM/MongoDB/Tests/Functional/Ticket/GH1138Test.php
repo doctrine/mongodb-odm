@@ -68,7 +68,10 @@ class GH1138Document
 
 class GH1138Listener
 {
+    /** @var int */
     public $inserts = 0;
+
+    /** @var int */
     public $updates = 0;
 
     public function onFlush(OnFlushEventArgs $args): void

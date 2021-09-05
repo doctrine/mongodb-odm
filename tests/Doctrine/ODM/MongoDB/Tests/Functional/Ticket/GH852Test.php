@@ -115,7 +115,11 @@ class GH852Test extends BaseTest
 /** @ODM\Document */
 class GH852Document
 {
-    /** @ODM\Id(strategy="NONE", type="custom_id") */
+    /**
+     * @ODM\Id(strategy="NONE", type="custom_id")
+     *
+     * @var Binary|array<string, mixed>
+     */
     public $id;
 
     /**
