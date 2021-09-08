@@ -66,6 +66,8 @@ abstract class BsonFilter
      * Gets the criteria array to add to a query.
      *
      * If there is no criteria for the class, an empty array should be returned.
+     *
+     * @param ClassMetadata<object> $class Target document metadata.
      */
     abstract public function addFilterCriteria(ClassMetadata $class): array;
 }
