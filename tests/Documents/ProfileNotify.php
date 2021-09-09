@@ -12,19 +12,39 @@ use Doctrine\Persistence\PropertyChangedListener;
 /** @ODM\Document @ODM\ChangeTrackingPolicy("NOTIFY") */
 class ProfileNotify implements NotifyPropertyChanged
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $profileId;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     private $firstName;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     private $lastName;
 
-    /** @ODM\ReferenceOne(targetDocument=File::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=File::class, cascade={"all"})
+     *
+     * @var File|null
+     */
     private $image;
 
-    /** @ODM\ReferenceMany(targetDocument=File::class, cascade={"all"}, collectionClass=ProfileNotifyImagesCollection::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=File::class, cascade={"all"}, collectionClass=ProfileNotifyImagesCollection::class)
+     *
+     * @var ProfileNotifyImagesCollection
+     */
     private $images;
 
     /** @var PropertyChangedListener[] */

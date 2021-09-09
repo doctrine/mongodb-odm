@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -14,17 +15,41 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class CmsArticle
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $topic;
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $title;
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $text;
-    /** @ODM\ReferenceOne(targetDocument=CmsUser::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=CmsUser::class)
+     *
+     * @var CmsUser|null
+     */
     public $user;
-    /** @ODM\ReferenceMany(targetDocument=CmsComment::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=CmsComment::class)
+     *
+     * @var Collection<int, CmsComment>
+     */
     public $comments;
 
     public function setAuthor(CmsUser $author): void

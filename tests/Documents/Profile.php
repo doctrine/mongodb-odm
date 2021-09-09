@@ -9,16 +9,32 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class Profile
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $profileId;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     private $firstName;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     private $lastName;
 
-    /** @ODM\ReferenceOne(targetDocument=File::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=File::class, cascade={"all"})
+     *
+     * @var File|null
+     */
     private $image;
 
     public function setProfileId($profileId): void

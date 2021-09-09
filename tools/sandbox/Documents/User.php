@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 use function md5;
@@ -12,22 +13,46 @@ use function md5;
 /** @ODM\Document(collection="users") */
 class User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $password;
 
-    /** @ODM\EmbedOne(targetDocument=Address::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Address::class)
+     *
+     * @var Address|null
+     */
     protected $address;
 
-    /** @ODM\ReferenceOne(targetDocument=Account::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Account::class)
+     *
+     * @var Account|null
+     */
     protected $account;
 
-    /** @ODM\EmbedMany(targetDocument=Phonenumber::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Phonenumber::class)
+     *
+     * @var Collection<int, Phonenumber>
+     */
     protected $phonenumbers;
 
     public function __construct()
@@ -35,63 +60,66 @@ class User
         $this->phonenumbers = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setUsername($username)
+    public function setUsername(string $username)
     {
         $this->username = $username;
     }
 
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    public function setPassword($password)
+    public function setPassword(string $password): void
     {
         $this->password = md5($password);
     }
 
-    public function checkPassword($password)
+    public function checkPassword(string $password): bool
     {
         return $this->password === md5($password);
     }
 
-    public function setAddress(Address $address)
+    public function setAddress(Address $address): void
     {
         $this->address = $address;
     }
 
-    public function getAddress()
+    public function getAddress(): ?Address
     {
         return $this->address;
     }
 
-    public function setAccount(Account $account)
+    public function setAccount(Account $account): void
     {
         $this->account = $account;
     }
 
-    public function getAccount()
+    public function getAccount(): ?Account
     {
         return $this->account;
     }
 
-    public function addPhonenumber(Phonenumber $phonenumber)
+    public function addPhonenumber(Phonenumber $phonenumber): void
     {
         $this->phonenumbers[] = $phonenumber;
     }
 
-    public function getPhonenumbers()
+    /**
+     * @return Collection<int, Phonenumber>
+     */
+    public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
     }
 
     public function __toString()
     {
-        return $this->username;
+        return (string) $this->username;
     }
 }

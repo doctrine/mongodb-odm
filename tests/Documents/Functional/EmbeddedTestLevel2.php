@@ -9,13 +9,24 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument @ODM\HasLifecycleCallbacks */
 class EmbeddedTestLevel2
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    public $preRemove  = false;
+    /** @var bool */
+    public $preRemove = false;
+
+    /** @var bool */
     public $postRemove = false;
-    public $preLoad    = false;
-    public $postLoad   = false;
+
+    /** @var bool */
+    public $preLoad = false;
+
+    /** @var bool */
+    public $postLoad = false;
 
     /** @ODM\PreRemove */
     public function onPreRemove(): void

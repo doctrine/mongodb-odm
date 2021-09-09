@@ -14,19 +14,46 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class CmsComment
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
-    /** @ODM\Field */
+
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     public $topic;
-    /** @ODM\Field */
+
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     public $text;
-    /** @ODM\ReferenceOne(targetDocument=CmsArticle::class) */
+
+    /**
+     * @ODM\ReferenceOne(targetDocument=CmsArticle::class)
+     *
+     * @var CmsArticle|null
+     */
     public $article;
 
-    /** @ODM\Field(name="ip", type="string") */
+    /**
+     * @ODM\Field(name="ip", type="string")
+     *
+     * @var string|null
+     */
     public $authorIp;
 
-    /** @ODM\Field(type="string", nullable=true) */
+    /**
+     * @ODM\Field(type="string", nullable=true)
+     *
+     * @var string|null
+     */
     public $nullableField;
 
     public function setArticle(CmsArticle $article): void

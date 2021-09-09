@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsGroup;
 use Documents\CmsUser;
@@ -110,6 +111,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $user2->groups = $user1->groups;
         $user2->groups->add($group3);
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user1->groups);
         $this->assertCount(1, $user1->groups->getInsertDiff());
 
         $this->dm->persist($group3);

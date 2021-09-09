@@ -17,25 +17,53 @@ use function bcadd;
  */
 class User extends BaseDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $username;
 
-    /** @ODM\Field(type="bin_md5") */
+    /**
+     * @ODM\Field(type="bin_md5")
+     *
+     * @var string|null
+     */
     protected $password;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime
+     */
     protected $createdAt;
 
-    /** @ODM\EmbedOne(targetDocument=Address::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Address::class)
+     *
+     * @var Address|null
+     */
     protected $address;
 
-    /** @ODM\EmbedOne(targetDocument=Address::class, nullable=true) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Address::class, nullable=true)
+     *
+     * @var Address|null
+     */
     protected $addressNullable;
 
-    /** @ODM\ReferenceOne(targetDocument=Profile::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Profile::class, cascade={"all"})
+     *
+     * @var Profile|null
+     */
     protected $profile;
 
     /**
@@ -45,70 +73,158 @@ class User extends BaseDocument
      */
     protected $profileNotify;
 
-    /** @ODM\EmbedMany(targetDocument=Phonenumber::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Phonenumber::class)
+     *
+     * @var Collection<int, Phonenumber>
+     */
     protected $phonenumbers;
 
-    /** @ODM\EmbedMany(targetDocument=Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     protected $phonebooks;
 
-    /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"})
+     *
+     * @var Collection<int, Group>
+     */
     protected $groups;
 
-    /** @ODM\ReferenceMany(targetDocument=Group::class, storeAs="id", cascade={"all"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Group::class, storeAs="id", cascade={"all"})
+     *
+     * @var Collection<int, Group>
+     */
     protected $groupsSimple;
 
-    /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}, strategy="addToSet") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}, strategy="addToSet")
+     *
+     * @var Collection<int, Group>
+     */
     protected $uniqueGroups;
 
-    /** @ODM\ReferenceMany(targetDocument=Group::class, name="groups", notSaved=true, sort={"name"="asc"}, strategy="setArray") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Group::class, name="groups", notSaved=true, sort={"name"="asc"}, strategy="setArray")
+     *
+     * @var Collection<int, Group>
+     */
     protected $sortedAscGroups;
 
-    /** @ODM\ReferenceMany(targetDocument=Group::class, name="groups", notSaved=true, sort={"name"="desc"}, strategy="setArray") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Group::class, name="groups", notSaved=true, sort={"name"="desc"}, strategy="setArray")
+     *
+     * @var Collection<int, Group>
+     */
     protected $sortedDescGroups;
 
-    /** @ODM\ReferenceOne(targetDocument=Account::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Account::class, cascade={"all"})
+     *
+     * @var Account|null
+     */
     protected $account;
 
-    /** @ODM\ReferenceOne(targetDocument=Account::class, storeAs="id", cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Account::class, storeAs="id", cascade={"all"})
+     *
+     * @var Account|null
+     */
     protected $accountSimple;
 
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     protected $hits = 0;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $nullTest;
 
-    /** @ODM\Field(type="int", strategy="increment") */
+    /**
+     * @ODM\Field(type="int", strategy="increment")
+     *
+     * @var int|null
+     */
     protected $count;
 
-    /** @ODM\Field(type="float", strategy="increment") */
+    /**
+     * @ODM\Field(type="float", strategy="increment")
+     *
+     * @var float|null
+     */
     protected $floatCount;
 
-    /** @ODM\Field(type="decimal128", strategy="increment") */
+    /**
+     * @ODM\Field(type="decimal128", strategy="increment")
+     *
+     * @var string|null
+     */
     protected $decimal128Count;
 
-    /** @ODM\ReferenceMany(targetDocument=BlogPost::class, mappedBy="user", nullable=true) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=BlogPost::class, mappedBy="user", nullable=true)
+     *
+     * @var Collection<int, BlogPost>
+     */
     protected $posts;
 
-    /** @ODM\ReferenceOne(targetDocument=SimpleReferenceUser::class, mappedBy="user") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=SimpleReferenceUser::class, mappedBy="user")
+     *
+     * @var SimpleReferenceUser|null
+     */
     protected $simpleReferenceOneInverse;
 
-    /** @ODM\ReferenceMany(targetDocument=SimpleReferenceUser::class, mappedBy="users") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=SimpleReferenceUser::class, mappedBy="users")
+     *
+     * @var Collection<int, SimpleReferenceUser>
+     */
     protected $simpleReferenceManyInverse;
 
-    /** @ODM\ReferenceOne(targetDocument=ReferenceUser::class, mappedBy="referencedUser") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=ReferenceUser::class, mappedBy="referencedUser")
+     *
+     * @var ReferenceUser|null
+     */
     protected $embeddedReferenceOneInverse;
 
-    /** @ODM\ReferenceMany(targetDocument=ReferenceUser::class, mappedBy="referencedUsers") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=ReferenceUser::class, mappedBy="referencedUsers")
+     *
+     * @var Collection<int, ReferenceUser>
+     */
     protected $embeddedReferenceManyInverse;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var array<string[]>
+     */
     private $logs = [];
 
-    /** @ODM\ReferenceOne(storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceOne(storeAs="dbRefWithDb")
+     *
+     * @var object|null
+     */
     protected $referenceToAnything;
 
-    /** @ODM\ReferenceOne(storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceOne(storeAs="dbRef")
+     *
+     * @var object|null
+     */
     protected $referenceToAnythingWithoutDb;
 
     public function __construct()
@@ -237,6 +353,9 @@ class User extends BaseDocument
         return $this->accountSimple;
     }
 
+    /**
+     * @return Collection<int, Phonenumber>
+     */
     public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
@@ -391,7 +510,7 @@ class User extends BaseDocument
     public function removePost($id): bool
     {
         foreach ($this->posts as $key => $post) {
-            if ($post->getId() === $id) {
+            if ($post->id === $id) {
                 unset($this->posts[$key]);
 
                 return true;

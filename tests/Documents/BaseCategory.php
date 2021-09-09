@@ -4,18 +4,27 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\MappedSuperclass(repositoryClass="Documents\BaseCategoryRepository") */
 abstract class BaseCategory
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $name;
 
-     /** @ODM\EmbedMany(targetDocument=SubCategory::class) */
+     /**
+      * @ODM\EmbedMany(targetDocument=SubCategory::class)
+      *
+      * @var Collection<int, SubCategory>|array<SubCategory>
+      */
     protected $children = [];
 
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
         $this->name = $name;
     }

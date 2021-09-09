@@ -4,33 +4,66 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\MappedSuperclass */
 abstract class BaseEmployee
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="int", strategy="increment") */
+    /**
+     * @ODM\Field(type="int", strategy="increment")
+     *
+     * @var int
+     */
     protected $changes = 0;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
     protected $notes = [];
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $name;
 
-    /** @ODM\Field(type="float") */
+    /**
+     * @ODM\Field(type="float")
+     *
+     * @var float|null
+     */
     protected $salary;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     protected $started;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     protected $left;
 
-    /** @ODM\EmbedOne(targetDocument=Address::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Address::class)
+     *
+     * @var Address|null
+     */
     protected $address;
 
     public function getId()

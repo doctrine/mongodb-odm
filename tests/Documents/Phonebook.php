@@ -11,13 +11,21 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class Phonebook
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     private $title;
 
-    /** @ODM\EmbedMany(targetDocument=Phonenumber::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Phonenumber::class)
+     *
+     * @var Collection<int, Phonenumber>
+     */
     private $phonenumbers;
 
-    public function __construct($title)
+    public function __construct(string $title)
     {
         $this->title        = $title;
         $this->phonenumbers = new ArrayCollection();

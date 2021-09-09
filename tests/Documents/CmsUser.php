@@ -14,32 +14,64 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 #[ODM\Document]
 class CmsUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $status;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     #[ODM\Field(type: 'string')]
     public $name;
 
-    /** @ODM\ReferenceMany(targetDocument=CmsPhonenumber::class, mappedBy="user", cascade={"persist", "remove", "merge"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=CmsPhonenumber::class, mappedBy="user", cascade={"persist", "remove", "merge"})
+     *
+     * @var Collection<int, CmsPhonenumber>
+     */
     public $phonenumbers;
 
-    /** @ODM\ReferenceMany(targetDocument=CmsArticle::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=CmsArticle::class)
+     *
+     * @var Collection<int, CmsArticle>
+     */
     public $articles;
 
-    /** @ODM\ReferenceOne(targetDocument=CmsAddress::class, cascade={"persist"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=CmsAddress::class, cascade={"persist"})
+     *
+     * @var CmsAddress
+     */
     public $address;
 
-    /** @ODM\ReferenceMany(targetDocument=CmsGroup::class, cascade={"persist", "merge"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=CmsGroup::class, cascade={"persist", "merge"})
+     *
+     * @var Collection<int, CmsGroup>
+     */
     public $groups;
 
     public function __construct()

@@ -19,13 +19,25 @@ class Currency
     public const EURO = 'EURO';
     public const JPN  = 'JPN';
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $name;
 
-    /** @ODM\Field(type="float") */
+    /**
+     * @ODM\Field(type="float")
+     *
+     * @var float|null
+     */
     protected $multiplier;
 
     public function __construct($name, $multiplier = 1)

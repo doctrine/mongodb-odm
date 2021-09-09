@@ -12,7 +12,11 @@ use InvalidArgumentException;
  */
 class Option
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**
