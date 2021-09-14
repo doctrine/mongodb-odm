@@ -132,7 +132,7 @@ class GH602User
     }
 
     /** Return the identifier without triggering Proxy initialization */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

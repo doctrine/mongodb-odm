@@ -10,13 +10,14 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Documents\CmsUser;
+use Generator;
 use stdClass;
 
 use function get_class;
 
 abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
 {
-    public function testFieldInheritance()
+    public function testFieldInheritance(): void
     {
         // @TODO: This can be a generic test for all drivers
         $super  = $this->dm->getClassMetadata(AnnotationDriverTestSuper::class);
@@ -71,7 +72,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-268
      */
-    public function testLoadMetadataForNonDocumentThrowsException()
+    public function testLoadMetadataForNonDocumentThrowsException(): void
     {
         $cm               = new ClassMetadata('stdClass');
         $reader           = new AnnotationReader();
@@ -84,7 +85,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-268
      */
-    public function testColumnWithMissingTypeDefaultsToString()
+    public function testColumnWithMissingTypeDefaultsToString(): void
     {
         $cm               = new ClassMetadata(ColumnWithoutType::class);
         $reader           = new AnnotationReader();
@@ -97,7 +98,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-318
      */
-    public function testGetAllClassNamesIsIdempotent()
+    public function testGetAllClassNamesIsIdempotent(): void
     {
         $annotationDriver = $this->loadDriverForCMSDocuments();
         $original         = $annotationDriver->getAllClassNames();
@@ -111,7 +112,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-318
      */
-    public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances()
+    public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances(): void
     {
         $annotationDriver = $this->loadDriverForCMSDocuments();
         $original         = $annotationDriver->getAllClassNames();
@@ -125,7 +126,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-318
      */
-    public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate()
+    public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate(): void
     {
         $annotationDriver = $this->loadDriverForCMSDocuments();
         $classes          = $annotationDriver->getAllClassNames();
@@ -136,7 +137,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-318
      */
-    public function testGetClassNamesReturnsOnlyTheAppropriateClasses()
+    public function testGetClassNamesReturnsOnlyTheAppropriateClasses(): void
     {
         $extraneousClassName = ColumnWithoutType::class;
 
@@ -146,14 +147,14 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertNotContains($extraneousClassName, $classes);
     }
 
-    public function testEmbeddedClassCantHaveShardKey()
+    public function testEmbeddedClassCantHaveShardKey(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Embedded document can\'t have shard key');
         $this->dm->getClassMetadata(AnnotationDriverEmbeddedWithShardKey::class);
     }
 
-    public function testDocumentAnnotationCanSpecifyWriteConcern()
+    public function testDocumentAnnotationCanSpecifyWriteConcern(): void
     {
         $cm = $this->dm->getClassMetadata(AnnotationDriverTestWriteConcernMajority::class);
         $this->assertEquals('majority', $cm->writeConcern);
@@ -168,7 +169,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @dataProvider provideClassCanBeMappedByOneAbstractDocument
      */
-    public function testClassCanBeMappedByOneAbstractDocument(object $wrong, string $messageRegExp)
+    public function testClassCanBeMappedByOneAbstractDocument(object $wrong, string $messageRegExp): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessageMatches($messageRegExp);
@@ -180,7 +181,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver->loadMetadataForClass(get_class($wrong), $cm);
     }
 
-    public function provideClassCanBeMappedByOneAbstractDocument()
+    public function provideClassCanBeMappedByOneAbstractDocument(): ?Generator
     {
         yield [
             /**
@@ -243,7 +244,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         ];
     }
 
-    public function testWrongValueForValidationValidatorShouldThrowException()
+    public function testWrongValueForValidationValidatorShouldThrowException(): void
     {
         $annotationDriver = $this->loadDriver();
         $classMetadata    = new ClassMetadata(WrongValueForValidationValidator::class);
@@ -252,7 +253,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver->loadMetadataForClass($classMetadata->name, $classMetadata);
     }
 
-    protected function loadDriverForCMSDocuments()
+    protected function loadDriverForCMSDocuments(): AnnotationDriver
     {
         $annotationDriver = $this->loadDriver();
         self::assertInstanceOf(AnnotationDriver::class, $annotationDriver);

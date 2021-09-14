@@ -40,7 +40,7 @@ class Tournament
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -50,7 +50,7 @@ class Tournament
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }

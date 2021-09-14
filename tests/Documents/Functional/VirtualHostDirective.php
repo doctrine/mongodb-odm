@@ -44,12 +44,12 @@ class VirtualHostDirective
         $this->value = $value;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name . ' ' . $this->value;
     }
 
-    public function getRecId()
+    public function getRecId(): ?string
     {
         return $this->recId;
     }
@@ -63,7 +63,7 @@ class VirtualHostDirective
         $this->recId = $value;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -73,7 +73,7 @@ class VirtualHostDirective
         $this->name = $value;
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }

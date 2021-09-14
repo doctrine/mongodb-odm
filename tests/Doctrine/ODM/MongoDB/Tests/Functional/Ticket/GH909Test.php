@@ -26,6 +26,7 @@ class GH909Test extends BaseTest
 
         $groups = $user->getGroups();
         $this->assertCount(2, $groups);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
         $this->assertTrue($groups->isInitialized());
 
         $user->addGroup(new Group('Group C'));

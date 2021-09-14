@@ -51,12 +51,12 @@ class Article
      */
     private $tags = [];
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -66,21 +66,27 @@ class Article
         $this->title = $title;
     }
 
-    public function getBody()
+    public function getBody(): ?string
     {
         return $this->body;
     }
 
-    public function setBody($body): void
+    public function setBody(string $body): void
     {
         $this->body = $body;
     }
 
+    /**
+     * @return DateTimeInterface|UTCDateTime|string|null
+     */
     public function getCreatedAt()
     {
         return $this->createdAt;
     }
 
+    /**
+     * @param DateTimeInterface|UTCDateTime|string|null $createdAt
+     */
     public function setCreatedAt($createdAt): void
     {
         $this->createdAt = $createdAt;

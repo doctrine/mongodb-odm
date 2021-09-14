@@ -60,11 +60,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomFieldNameTest.php
 
         -
-            message: "#^Offset 'userId' does not exist on array\\(\\)\\|array\\('ids' \\=\\> array\\<int, mixed\\>&nonEmpty, \\?'userId' \\=\\> true\\)\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomIdTest.php
-
-        -
             message: "#^Cannot call method current\\(\\) on array\\|int\\|object\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
@@ -229,3 +224,9 @@ parameters:
             message: "#^Unreachable statement \\- code above always terminates\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/Types/DateImmutableType.php
+
+        # See https://github.com/phpstan/phpstan/issues/5512
+        -
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\My.*Collection\\:\\:.*\\(\\) should return Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\My.*Collection but returns Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<\\(int\\|string\\), mixed\\>\\.$#"
+            count: 3
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomCollectionsTest.php

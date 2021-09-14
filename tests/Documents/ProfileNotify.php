@@ -67,7 +67,7 @@ class ProfileNotify implements NotifyPropertyChanged
         }
     }
 
-    public function getProfileId()
+    public function getProfileId(): ?string
     {
         return $this->profileId;
     }
@@ -78,7 +78,7 @@ class ProfileNotify implements NotifyPropertyChanged
         $this->firstName = $firstName;
     }
 
-    public function getFirstName()
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
@@ -89,7 +89,7 @@ class ProfileNotify implements NotifyPropertyChanged
         $this->lastName = $lastName;
     }
 
-    public function getLastName()
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
@@ -100,7 +100,7 @@ class ProfileNotify implements NotifyPropertyChanged
         $this->image = $image;
     }
 
-    public function getImage()
+    public function getImage(): ?File
     {
         return $this->image;
     }

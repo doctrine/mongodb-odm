@@ -86,7 +86,7 @@ class EcommerceTest extends BaseTest
         $this->assertCount(2, $product->getOptions());
     }
 
-    protected function getProduct()
+    protected function getProduct(): ConfigurableProduct
     {
         $products = $this->dm->getRepository(ConfigurableProduct::class)
             ->createQueryBuilder()

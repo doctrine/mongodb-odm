@@ -61,7 +61,7 @@ class CmsComment
         $this->article = $article;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return self::class . '[id=' . $this->id . ']';
     }

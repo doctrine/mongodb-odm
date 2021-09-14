@@ -14,6 +14,9 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
  */
 class CommentRepository extends DocumentRepository
 {
+    /**
+     * @return Comment|false
+     */
     public function findOneComment()
     {
         return $this->getDocumentPersister()

@@ -37,7 +37,7 @@ class Event
      */
     private $type;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -47,12 +47,12 @@ class Event
         $this->user = $user;
     }
 
-    public function getUser()
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -62,7 +62,7 @@ class Event
         $this->title = $title;
     }
 
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }

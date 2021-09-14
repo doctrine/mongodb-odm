@@ -66,7 +66,7 @@ class FavoritesUser
         $this->favorites = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -76,46 +76,55 @@ class FavoritesUser
         $this->favorite = $favorite;
     }
 
-    public function getFavorite()
+    public function getFavorite(): ?object
     {
         return $this->favorite;
     }
 
-    public function setEmbed($embed): void
+    public function setEmbed(object $embed): void
     {
         $this->embed = $embed;
     }
 
-    public function getEmbed()
+    public function getEmbed(): ?object
     {
         return $this->embed;
     }
 
-    public function embed($document): void
+    public function embed(object $document): void
     {
         $this->embedded[] = $document;
     }
 
+    /**
+     * @return Collection<int, object>|array<object>
+     */
     public function getEmbedded()
     {
         return $this->embedded;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
+    /**
+     * @param Group|Project $favorite
+     */
     public function addFavorite($favorite): void
     {
         $this->favorites[] = $favorite;
     }
 
+    /**
+     * @return Collection<int, Group|Project>
+     */
     public function getFavorites(): Collection
     {
         return $this->favorites;

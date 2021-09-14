@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -30,7 +31,7 @@ class ReferenceUser
     /**
      * @ODM\ReferenceMany(targetDocument=User::class, storeAs="id")
      *
-     * @var User[]
+     * @var Collection<int, User>|array<User>
      */
     public $users = [];
 
@@ -44,7 +45,7 @@ class ReferenceUser
     /**
      * @ODM\ReferenceMany(targetDocument=User::class, storeAs="dbRef")
      *
-     * @var User[]
+     * @var Collection<int, User>|array<User>
      */
     public $parentUsers = [];
 
@@ -58,7 +59,7 @@ class ReferenceUser
     /**
      * @ODM\ReferenceMany(targetDocument=User::class, storeAs="dbRefWithDb")
      *
-     * @var User[]
+     * @var Collection<int, User>|array<User>
      */
     public $otherUsers = [];
 
@@ -72,14 +73,14 @@ class ReferenceUser
     /**
      * @ODM\ReferenceMany(targetDocument=User::class, storeAs="ref")
      *
-     * @var User[]
+     * @var Collection<int, User>|array<User>
      */
     public $referencedUsers = [];
 
     /**
      * @ODM\EmbedMany(targetDocument=Documents\IndirectlyReferencedUser::class)
      *
-     * @var IndirectlyReferencedUser[]
+     * @var Collection<int, IndirectlyReferencedUser>|array<IndirectlyReferencedUser>
      */
     public $indirectlyReferencedUsers = [];
 
@@ -106,7 +107,7 @@ class ReferenceUser
     }
 
     /**
-     * @return User[]
+     * @return Collection<int, User>|array<User>
      */
     public function getUsers()
     {
@@ -129,7 +130,7 @@ class ReferenceUser
     }
 
     /**
-     * @return User[]
+     * @return Collection<int, User>|array<User>
      */
     public function getParentUsers()
     {
@@ -152,7 +153,7 @@ class ReferenceUser
     }
 
     /**
-     * @return User[]
+     * @return Collection<int, User>|array<User>
      */
     public function getOtherUsers()
     {
@@ -175,7 +176,7 @@ class ReferenceUser
     }
 
     /**
-     * @return User[]
+     * @return Collection<int, User>|array<User>
      */
     public function getReferencedUsers()
     {

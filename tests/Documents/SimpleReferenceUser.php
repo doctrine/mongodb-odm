@@ -55,17 +55,20 @@ class SimpleReferenceUser
         $this->users[] = $user;
     }
 
+    /**
+     * @return Collection<int, User>|array<User>
+     */
     public function getUsers()
     {
         return $this->users;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }

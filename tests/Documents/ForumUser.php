@@ -31,17 +31,20 @@ class ForumUser
      */
     public $avatar;
 
+    /**
+     * @return int|ObjectId|null
+     */
     public function getId()
     {
         return $this->id;
     }
 
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    public function getAvatar()
+    public function getAvatar(): ?ForumAvatar
     {
         return $this->avatar;
     }

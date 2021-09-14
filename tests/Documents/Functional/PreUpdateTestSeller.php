@@ -23,7 +23,7 @@ class PreUpdateTestSeller
      */
     public $name;
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }

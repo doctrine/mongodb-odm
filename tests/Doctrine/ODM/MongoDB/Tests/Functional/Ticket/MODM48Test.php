@@ -47,12 +47,12 @@ class MODM48A
      */
     public $b;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getB()
+    public function getB(): ?MODM48B
     {
         return $this->b;
     }
@@ -78,7 +78,7 @@ class MODM48B
         $this->val = $val;
     }
 
-    public function getVal()
+    public function getVal(): ?string
     {
         return $this->val;
     }

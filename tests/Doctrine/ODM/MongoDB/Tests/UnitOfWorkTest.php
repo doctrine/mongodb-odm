@@ -600,7 +600,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->items = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -610,7 +610,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->id = $id;
     }
 
-    public function getData()
+    public function getData(): ?string
     {
         return $this->data;
     }
@@ -670,7 +670,7 @@ class NotifyChangedRelatedItem
      */
     private $owner;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -680,7 +680,7 @@ class NotifyChangedRelatedItem
         $this->id = $id;
     }
 
-    public function getOwner()
+    public function getOwner(): ?NotifyChangedDocument
     {
         return $this->owner;
     }

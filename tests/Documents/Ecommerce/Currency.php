@@ -36,7 +36,7 @@ class Currency
     /**
      * @ODM\Field(type="float")
      *
-     * @var float|null
+     * @var float
      */
     protected $multiplier;
 
@@ -54,7 +54,7 @@ class Currency
         $this->setMultiplier($multiplier);
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -64,7 +64,7 @@ class Currency
         return $this->name;
     }
 
-    public function getMultiplier()
+    public function getMultiplier(): float
     {
         return $this->multiplier;
     }

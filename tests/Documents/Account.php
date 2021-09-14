@@ -52,11 +52,17 @@ class Account
         return $this->name;
     }
 
+    /**
+     * @param User|CustomUser $user
+     */
     public function setUser($user): void
     {
         $this->user = $user;
     }
 
+    /**
+     * @return CustomUser|User|null
+     */
     public function getUser()
     {
         return $this->user;

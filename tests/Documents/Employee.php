@@ -16,7 +16,7 @@ class Employee extends BaseEmployee
      */
     private $manager;
 
-    public function getManager()
+    public function getManager(): ?Manager
     {
         return $this->manager;
     }

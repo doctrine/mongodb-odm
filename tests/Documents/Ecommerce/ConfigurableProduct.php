@@ -41,24 +41,23 @@ class ConfigurableProduct
     /** @var Option */
     protected $selectedOption;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->setName($name);
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name): ConfigurableProduct
+    public function setName(string $name): ConfigurableProduct
     {
-        $name = (string) $name;
         if (empty($name)) {
             throw new InvalidArgumentException('Product name cannot be empty');
         }
@@ -68,6 +67,9 @@ class ConfigurableProduct
         return $this;
     }
 
+    /***
+     * @return Collection<int, Option>|array<Option>
+     */
     public function getOptions()
     {
         return $this->options;
@@ -98,12 +100,12 @@ class ConfigurableProduct
         $this->options[] = $name;
     }
 
-    public function getOption($name)
+    public function getOption(string $name): ?Option
     {
         return $this->findOption($name);
     }
 
-    public function removeOption($name): ConfigurableProduct
+    public function removeOption(string $name): ConfigurableProduct
     {
         $option = $this->findOption($name);
         if ($option === null) {
@@ -121,12 +123,12 @@ class ConfigurableProduct
         return $this;
     }
 
-    public function hasOption($name): bool
+    public function hasOption(string $name): bool
     {
         return $this->findOption($name) !== null;
     }
 
-    public function selectOption($name): ConfigurableProduct
+    public function selectOption(string $name): ConfigurableProduct
     {
         $option = $this->findOption($name);
         if (! isset($option)) {
@@ -138,7 +140,7 @@ class ConfigurableProduct
         return $this;
     }
 
-    protected function findOption($name)
+    protected function findOption(string $name): ?Option
     {
         foreach ($this->options as $option) {
             if ($name === $option->getName()) {
@@ -158,6 +160,9 @@ class ConfigurableProduct
             $this->selectedOption->getPrice() : null;
     }
 
+    /**
+     * @return StockItem[]
+     */
     protected function getStockItems(): array
     {
         return array_map(static function ($option) {

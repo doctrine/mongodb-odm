@@ -37,7 +37,7 @@ class CustomUser
      */
     protected $account;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -52,7 +52,7 @@ class CustomUser
         $this->username = $username;
     }
 
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
@@ -62,7 +62,7 @@ class CustomUser
         $this->password = $password;
     }
 
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -73,7 +73,7 @@ class CustomUser
         $this->account->setUser($this);
     }
 
-    public function getAccount()
+    public function getAccount(): ?Account
     {
         return $this->account;
     }

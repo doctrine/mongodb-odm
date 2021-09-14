@@ -150,7 +150,7 @@ class GH597Post
         $this->referenceMany = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -205,7 +205,7 @@ class GH597ReferenceMany
         $this->field = $field;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
