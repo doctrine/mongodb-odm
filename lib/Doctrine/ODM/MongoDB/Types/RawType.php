@@ -9,11 +9,17 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class RawType extends Type
 {
+    /**
+     * {@inheritDoc}
+     */
     public function convertToDatabaseValue($value)
     {
         return $value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToPHPValue($value)
     {
         return $value;

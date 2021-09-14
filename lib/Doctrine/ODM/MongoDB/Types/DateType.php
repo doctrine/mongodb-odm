@@ -84,6 +84,9 @@ class DateType extends Type implements Versionable
         return $datetime;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToDatabaseValue($value)
     {
         if ($value === null || $value instanceof UTCDateTime) {
@@ -95,6 +98,9 @@ class DateType extends Type implements Versionable
         return new UTCDateTime((int) $datetime->format('Uv'));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToPHPValue($value)
     {
         if ($value === null) {
@@ -114,6 +120,11 @@ class DateType extends Type implements Versionable
         return 'if ($value === null) { $return = null; } else { $return = \\' . static::class . '::getDateTime($value); }';
     }
 
+    /**
+     * @param mixed $current
+     *
+     * @return DateTimeInterface
+     */
     public function getNextVersion($current)
     {
         return new DateTime();

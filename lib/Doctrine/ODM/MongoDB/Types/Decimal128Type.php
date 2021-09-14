@@ -13,6 +13,9 @@ class Decimal128Type extends Type implements Incrementable, Versionable
 {
     use ClosureToPHP;
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
@@ -26,16 +29,27 @@ class Decimal128Type extends Type implements Incrementable, Versionable
         return $value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToPHPValue($value)
     {
         return $value !== null ? (string) $value : null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function diff($old, $new)
     {
         return bcsub($new, $old);
     }
 
+    /**
+     * @param mixed $current
+     *
+     * @return string
+     */
     public function getNextVersion($current)
     {
         if ($current === null) {

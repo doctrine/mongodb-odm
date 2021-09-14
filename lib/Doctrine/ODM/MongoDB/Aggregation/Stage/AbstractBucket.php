@@ -82,6 +82,11 @@ abstract class AbstractBucket extends Stage
      */
     abstract protected function getStageName(): string;
 
+    /**
+     * @param array|mixed|string $expression
+     *
+     * @return array|mixed|string
+     */
     private function convertExpression($expression)
     {
         if (is_array($expression)) {

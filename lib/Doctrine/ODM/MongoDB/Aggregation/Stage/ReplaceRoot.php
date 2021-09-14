@@ -50,6 +50,11 @@ class ReplaceRoot extends Operator
         ];
     }
 
+    /**
+     * @param array|string|mixed $expression
+     *
+     * @return array|string|mixed
+     */
     private function convertExpression($expression)
     {
         if (is_array($expression)) {

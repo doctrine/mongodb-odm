@@ -277,6 +277,11 @@ class GraphLookup extends Stage
         return $this;
     }
 
+    /**
+     * @param array|mixed|string $expression
+     *
+     * @return array|mixed|string
+     */
     private function convertExpression($expression)
     {
         if (is_array($expression)) {
@@ -290,12 +295,8 @@ class GraphLookup extends Stage
         return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
     }
 
-    private function convertTargetFieldName($fieldName)
+    private function convertTargetFieldName(string $fieldName): string
     {
-        if (is_array($fieldName)) {
-            return array_map([$this, 'convertTargetFieldName'], $fieldName);
-        }
-
         if (! $this->targetClass) {
             return $fieldName;
         }

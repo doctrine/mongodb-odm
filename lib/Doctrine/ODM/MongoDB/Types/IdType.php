@@ -12,6 +12,9 @@ use MongoDB\Driver\Exception\InvalidArgumentException;
  */
 class IdType extends Type
 {
+    /**
+     * {@inheritDoc}
+     */
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
@@ -29,6 +32,9 @@ class IdType extends Type
         return $value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToPHPValue($value)
     {
         return $value instanceof ObjectId ? (string) $value : $value;

@@ -256,6 +256,9 @@ abstract class Type
         return self::$typesMap;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         $e         = explode('\\', static::class);

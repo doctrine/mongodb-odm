@@ -35,6 +35,9 @@ use function trigger_deprecation;
  */
 class AnnotationDriver extends AbstractAnnotationDriver
 {
+    /**
+     * {@inheritDoc}
+     */
     public function isTransient($className)
     {
         $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
