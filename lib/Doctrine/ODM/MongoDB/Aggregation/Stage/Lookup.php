@@ -96,9 +96,6 @@ class Lookup extends Stage
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

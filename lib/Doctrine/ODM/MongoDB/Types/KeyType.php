@@ -12,9 +12,6 @@ use MongoDB\BSON\MinKey;
  */
 class KeyType extends Type
 {
-    /**
-     * {@inheritDoc}
-     */
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
@@ -24,9 +21,6 @@ class KeyType extends Type
         return $value ? new MaxKey() : new MinKey();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function convertToPHPValue($value)
     {
         if ($value === null) {

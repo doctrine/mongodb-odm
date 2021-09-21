@@ -27,9 +27,6 @@ class Out extends Stage
         $this->out($collection);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

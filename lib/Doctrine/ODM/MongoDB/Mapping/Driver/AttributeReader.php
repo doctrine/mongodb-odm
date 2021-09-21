@@ -25,9 +25,6 @@ final class AttributeReader implements Reader
         return $this->convertToAttributeInstances($class->getAttributes());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getClassAnnotation(ReflectionClass $class, $annotationName)
     {
         foreach ($this->getClassAnnotations($class) as $annotation) {
@@ -44,9 +41,6 @@ final class AttributeReader implements Reader
         return $this->convertToAttributeInstances($method->getAttributes());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getMethodAnnotation(ReflectionMethod $method, $annotationName)
     {
         foreach ($this->getMethodAnnotations($method) as $annotation) {
@@ -63,9 +57,6 @@ final class AttributeReader implements Reader
         return $this->convertToAttributeInstances($property->getAttributes());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getPropertyAnnotation(ReflectionProperty $property, $annotationName)
     {
         foreach ($this->getPropertyAnnotations($property) as $annotation) {

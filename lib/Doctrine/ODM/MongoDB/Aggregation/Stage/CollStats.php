@@ -47,9 +47,6 @@ class CollStats extends Stage
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         $collStats = [];

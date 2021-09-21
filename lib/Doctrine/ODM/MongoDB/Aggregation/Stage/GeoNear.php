@@ -52,9 +52,6 @@ class GeoNear extends MatchStage
         $this->near($x, $y);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         $geoNear = [

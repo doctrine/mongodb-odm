@@ -308,9 +308,6 @@ class MatchStage extends Stage
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

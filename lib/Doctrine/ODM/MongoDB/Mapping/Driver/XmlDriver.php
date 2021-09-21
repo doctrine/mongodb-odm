@@ -71,17 +71,11 @@ class XmlDriver extends FileDriver
         ],
     ];
 
-    /**
-     * {@inheritDoc}
-     */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         parent::__construct($locator, $fileExtension);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata)
     {
         assert($metadata instanceof ClassMetadata);
@@ -670,9 +664,6 @@ class XmlDriver extends FileDriver
         return [(string) $xmlReadPreference['mode'], $tags];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function loadMappingFile($file): array
     {
         $result = [];

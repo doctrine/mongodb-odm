@@ -201,9 +201,6 @@ CODE;
 
         return <<<CODE
 
-    /**
-     * {@inheritDoc}
-     */
     public function {$method->name}($parametersString){$this->getMethodReturnType($method)}
     {
         \$this->initialize();

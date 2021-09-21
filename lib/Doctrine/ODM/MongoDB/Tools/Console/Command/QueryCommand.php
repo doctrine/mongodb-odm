@@ -67,9 +67,6 @@ EOT
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $query = $input->getArgument('query');

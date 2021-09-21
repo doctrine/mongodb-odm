@@ -65,7 +65,6 @@ final class AlnumGenerator extends IncrementGenerator
         $this->chars = $chars;
     }
 
-    /** @inheritDoc */
     public function generate(DocumentManager $dm, object $document)
     {
         $id    = (string) parent::generate($dm, $document);

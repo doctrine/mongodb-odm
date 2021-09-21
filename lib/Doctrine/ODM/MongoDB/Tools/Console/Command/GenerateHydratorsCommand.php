@@ -56,9 +56,6 @@ EOT
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $filter = $input->getOption('filter');

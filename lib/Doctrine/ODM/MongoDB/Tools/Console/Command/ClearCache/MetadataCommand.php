@@ -36,9 +36,6 @@ EOT
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();

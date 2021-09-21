@@ -36,9 +36,6 @@ class ReplaceRoot extends Operator
         $this->expression = $expression;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         $expression = $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression();

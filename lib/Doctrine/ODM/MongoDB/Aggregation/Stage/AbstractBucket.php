@@ -57,9 +57,6 @@ abstract class AbstractBucket extends Stage
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         $stage = [

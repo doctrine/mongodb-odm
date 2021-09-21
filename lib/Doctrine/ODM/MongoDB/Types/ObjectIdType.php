@@ -11,9 +11,6 @@ use MongoDB\BSON\ObjectId;
  */
 class ObjectIdType extends Type
 {
-    /**
-     * {@inheritDoc}
-     */
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
@@ -27,9 +24,6 @@ class ObjectIdType extends Type
         return $value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function convertToPHPValue($value)
     {
         return $value !== null ? (string) $value : null;

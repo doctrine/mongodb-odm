@@ -177,9 +177,6 @@ class GraphLookup extends Stage
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         $restrictSearchWithMatch = $this->restrictSearchWithMatch->getExpression() ?: (object) [];

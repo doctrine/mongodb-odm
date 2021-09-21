@@ -51,7 +51,6 @@ class IncrementGenerator extends AbstractIdGenerator
         $this->startingId = $startingId;
     }
 
-    /** @inheritDoc */
     public function generate(DocumentManager $dm, object $document)
     {
         $className = get_class($document);

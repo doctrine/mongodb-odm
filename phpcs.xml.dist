@@ -66,6 +66,13 @@
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
+    <!-- If forces to add "@inheritDoc" because the analysis is per file -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>*/lib/*</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Functional/DocumentPersisterTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomTypeTest.php</exclude-pattern>
+    </rule>
+
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
         <!-- We do want to test generating collections without return types -->
         <exclude-pattern>*/tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/Coll*</exclude-pattern>

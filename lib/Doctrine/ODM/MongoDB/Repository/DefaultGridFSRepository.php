@@ -24,8 +24,6 @@ use const PATHINFO_BASENAME;
 class DefaultGridFSRepository extends DocumentRepository implements GridFSRepository
 {
     /**
-     * {@inheritDoc}
-     *
      * @see Bucket::openDownloadStream()
      */
     public function openDownloadStream($id)
@@ -38,8 +36,6 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @see Bucket::downloadToStream
      */
     public function downloadToStream($id, $destination): void
@@ -52,8 +48,6 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @see Bucket::openUploadStream
      */
     public function openUploadStream(string $filename, ?UploadOptions $uploadOptions = null)
@@ -64,8 +58,6 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @see Bucket::uploadFromStream
      */
     public function uploadFromStream(string $filename, $source, ?UploadOptions $uploadOptions = null)
@@ -78,9 +70,6 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         return $this->dm->getReference($this->getClassName(), $documentIdentifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function uploadFromFile(string $source, ?string $filename = null, ?UploadOptions $uploadOptions = null)
     {
         $resource = fopen($source, 'r');
