@@ -19,10 +19,15 @@ use function ltrim;
  * ResolveTargetDocumentListener
  *
  * Mechanism to overwrite document interfaces or classes specified as association targets.
+ *
+ * @psalm-import-type AssociationFieldMapping from ClassMetadata
  */
 class ResolveTargetDocumentListener implements EventSubscriber
 {
-    /** @var array */
+    /**
+     * @var array
+     * @psalm-var array<class-string, array{targetDocument: class-string}>
+     */
     private $resolveTargetDocuments = [];
 
     /**
@@ -38,11 +43,21 @@ class ResolveTargetDocumentListener implements EventSubscriber
 
     /**
      * Add a target-document class name to resolve to a new class name.
+     *
+     * @psalm-param array{targetDocument?: class-string} $mapping
      */
     public function addResolveTargetDocument(string $originalDocument, string $newDocument, array $mapping): void
     {
-        $mapping['targetDocument']                                    = ltrim($newDocument, '\\');
-        $this->resolveTargetDocuments[ltrim($originalDocument, '\\')] = $mapping;
+        $mapping['targetDocument']                                                = $this->getRealClassName($newDocument);
+        $this->resolveTargetDocuments[$this->getRealClassName($originalDocument)] = $mapping;
+    }
+
+    /**
+     * @psalm-return class-string
+     */
+    private function getRealClassName(string $className): string
+    {
+        return ltrim($className, '\\');
     }
 
     /**
@@ -79,6 +94,10 @@ class ResolveTargetDocumentListener implements EventSubscriber
         }
     }
 
+    /**
+     * @param ClassMetadata<object> $classMetadata
+     * @psalm-param AssociationFieldMapping $mapping
+     */
     private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
     {
         $newMapping              = $this->resolveTargetDocuments[$mapping['targetDocument']];

@@ -37,6 +37,8 @@ use const DIRECTORY_SEPARATOR;
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
  * type based on document's ClassMetadata
+ *
+ * @psalm-import-type Hints from UnitOfWork
  */
 final class HydratorFactory
 {
@@ -86,6 +88,7 @@ final class HydratorFactory
      * Array of instantiated document hydrators.
      *
      * @var array
+     * @psalm-var array<class-string, HydratorInterface>
      */
     private $hydrators = [];
 
@@ -121,6 +124,8 @@ final class HydratorFactory
 
     /**
      * Gets the hydrator object for the given document class.
+     *
+     * @psalm-param class-string $className
      */
     public function getHydratorFor(string $className): HydratorInterface
     {
@@ -166,10 +171,10 @@ final class HydratorFactory
     /**
      * Generates hydrator classes for all given classes.
      *
-     * @param array       $classes The classes (ClassMetadata instances) for which to generate hydrators.
-     * @param string|null $toDir   The target directory of the hydrator classes. If not specified, the
-     *                        directory configured on the Configuration of the DocumentManager used
-     *                        by this factory is used.
+     * @param ClassMetadata<object>[] $classes The classes (ClassMetadata instances) for which to generate hydrators.
+     * @param string|null             $toDir   The target directory of the hydrator classes. If not specified, the
+     *                                    directory configured on the Configuration of the DocumentManager used
+     *                                    by this factory is used.
      */
     public function generateHydratorClasses(array $classes, ?string $toDir = null): void
     {
@@ -182,6 +187,9 @@ final class HydratorFactory
         }
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, ?string $fileName): void
     {
         $code = '';
@@ -450,7 +458,10 @@ EOF
     /**
      * Hydrate array of MongoDB document data into the given document object.
      *
-     * @param array $hints Any hints to account for during reconstitution/lookup of the document.
+     * @param array<string, mixed> $data
+     * @psalm-param Hints $hints Any hints to account for during reconstitution/lookup of the document.
+     *
+     * @return array<string, mixed>
      */
     public function hydrate(object $document, array $data, array $hints = []): array
     {

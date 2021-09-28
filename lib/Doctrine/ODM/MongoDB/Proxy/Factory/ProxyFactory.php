@@ -10,7 +10,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 interface ProxyFactory
 {
     /**
-     * @param ClassMetadata[] $classes
+     * @param ClassMetadata<object>[] $classes
      */
     public function generateProxyClasses(array $classes): int;
 

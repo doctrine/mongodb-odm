@@ -21,7 +21,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * The list of DocumentRepository instances.
      *
-     * @var ObjectRepository[]
+     * @var ObjectRepository<object>[]
      */
     private $repositoryList = [];
 
@@ -102,6 +102,13 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
 
     /**
      * Instantiates requested repository.
+     *
+     * @param ClassMetadata<T> $metadata
+     * @psalm-param class-string<T> $repositoryClassName
+     *
+     * @return ObjectRepository<T>
+     *
+     * @template T of object
      */
     abstract protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata): ObjectRepository;
 }

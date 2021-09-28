@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use InvalidArgumentException;
 
 use function get_class;
@@ -12,18 +13,29 @@ use function sprintf;
 
 /**
  * Class that holds event arguments for a preUpdate event.
+ *
+ * @psalm-import-type ChangeSet from UnitOfWork
  */
 final class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /** @var array */
+    /**
+     * @var array
+     * @psalm-var array<string, ChangeSet>
+     */
     private $documentChangeSet;
 
+    /**
+     * @psalm-param array<string, ChangeSet> $changeSet
+     */
     public function __construct(object $document, DocumentManager $dm, array $changeSet)
     {
         parent::__construct($document, $dm);
         $this->documentChangeSet = $changeSet;
     }
 
+    /**
+     * @return array<string, ChangeSet>
+     */
     public function getDocumentChangeSet(): array
     {
         return $this->documentChangeSet;

@@ -124,7 +124,6 @@ class CreateCommand extends AbstractCommand
      */
     protected function processProxy(SchemaManager $sm)
     {
-        /** @var ClassMetadata[] $metadatas */
         $metadatas = $this->getMetadataFactory()->getAllMetadata();
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($metadatas);
     }

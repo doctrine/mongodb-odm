@@ -66,7 +66,6 @@ EOT
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         assert($dm instanceof DocumentManager);
 
-        /** @var ClassMetadata[] $metadatas */
         $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata): bool {
             return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
         });

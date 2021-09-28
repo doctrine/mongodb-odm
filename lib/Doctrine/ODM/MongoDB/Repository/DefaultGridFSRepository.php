@@ -16,6 +16,11 @@ use function pathinfo;
 
 use const PATHINFO_BASENAME;
 
+/**
+ * @template T of object
+ * @template-extends DocumentRepository<T>
+ * @template-implements GridFSRepository<T>
+ */
 class DefaultGridFSRepository extends DocumentRepository implements GridFSRepository
 {
     /**
@@ -88,6 +93,12 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         return $this->dm->getDocumentBucket($this->documentName);
     }
 
+    /**
+     * @psalm-return array{
+     *     chunkSizeBytes?: int,
+     *     metadata?: object
+     * }
+     */
     private function prepareOptions(?UploadOptions $uploadOptions = null): array
     {
         if ($uploadOptions === null) {
