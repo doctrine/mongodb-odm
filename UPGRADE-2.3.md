@@ -22,3 +22,13 @@ This does not apply to `@Indexes` which is deprecated and can't be used as
 Attribute. Use `@Index` and `@UniqueIndex` instead.
 
 `@Inheritance` annotation has been removed as it was never used.
+
+## Deprecated: Document Namespace Aliases
+
+Document namespace aliases are deprecated, use the magic ::class constant to abbreviate full class names
+in DocumentManager and DocumentRepository.
+
+```diff
+-  $documentManager->find('MyBundle:User', $id);
++  $documentManager->find(User::class, $id);
+```
