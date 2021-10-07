@@ -32,7 +32,7 @@ jobs:
         dependencies:
           - "highest"
         include:
-          - deps: "lowest"
+          - dependencies: "lowest"
             php-version: "7.2"
             mongodb-version: "3.6"
             driver-version: "1.5.0"
@@ -41,7 +41,7 @@ jobs:
             php-version: "8.0"
             mongodb-version: "4.4"
             driver-version: "stable"
-            deps: "highest"
+            dependencies: "highest"
           - topology: "server"
             php-version: "8.1"
             mongodb-version: "4.4"
