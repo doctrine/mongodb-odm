@@ -11,9 +11,12 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 final class PreLoadEventArgs extends LifecycleEventArgs
 {
-    /** @var array */
+    /** @var array<string, mixed> */
     private $data;
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(object $document, DocumentManager $dm, array &$data)
     {
         parent::__construct($document, $dm);
@@ -22,6 +25,8 @@ final class PreLoadEventArgs extends LifecycleEventArgs
 
     /**
      * Get the array of data to be loaded and hydrated.
+     *
+     * @return array<string, mixed>
      */
     public function &getData(): array
     {

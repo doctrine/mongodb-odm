@@ -39,6 +39,9 @@ final class HydratorException extends MongoDBException
         ));
     }
 
+    /**
+     * @param int|string $key
+     */
     public static function associationItemTypeMismatch(string $className, string $fieldName, $key, string $expectedType, string $actualType): self
     {
         return new self(sprintf(
