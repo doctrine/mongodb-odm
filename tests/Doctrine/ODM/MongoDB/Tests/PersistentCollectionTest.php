@@ -111,8 +111,9 @@ class PersistentCollectionTest extends BaseTest
 
     public function testSnapshotIsPreservedDuringSerialization(): void
     {
+        $obj        = new stdClass();
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
-        $collection->add(new stdClass());
+        $collection->add($obj);
         $collection->takeSnapshot();
 
         $this->assertCount(1, $collection->getSnapshot());
