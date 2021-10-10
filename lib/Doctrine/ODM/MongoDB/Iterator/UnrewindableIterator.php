@@ -16,10 +16,14 @@ use function sprintf;
  * Iterator for wrapping a Traversable/Cursor.
  *
  * @internal
+ *
+ * @template TKey
+ * @template TValue
+ * @template-implements Iterator<TKey, TValue>
  */
 final class UnrewindableIterator implements Iterator
 {
-    /** @var Generator|null */
+    /** @var Generator<TKey, TValue>|null */
     private $iterator;
 
     /** @var bool */
@@ -30,6 +34,8 @@ final class UnrewindableIterator implements Iterator
      * the wrapping Generator, which will execute up to its first yield statement.
      * Additionally, this mimics behavior of the SPL iterators and allows users
      * to omit an explicit call to rewind() before using the other methods.
+     *
+     * @param Traversable<TKey, TValue> $iterator
      */
     public function __construct(Traversable $iterator)
     {
@@ -115,6 +121,9 @@ final class UnrewindableIterator implements Iterator
         }
     }
 
+    /**
+     * @return Generator<TKey, TValue>
+     */
     private function getIterator(): Generator
     {
         if ($this->iterator === null) {
@@ -124,6 +133,11 @@ final class UnrewindableIterator implements Iterator
         return $this->iterator;
     }
 
+    /**
+     * @param Traversable<TKey, TValue> $traversable
+     *
+     * @return Generator<TKey, TValue>
+     */
     private function wrapTraversable(Traversable $traversable): Generator
     {
         foreach ($traversable as $key => $value) {

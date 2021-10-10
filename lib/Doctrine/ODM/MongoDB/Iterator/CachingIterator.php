@@ -21,13 +21,17 @@ use function reset;
  * those operations (e.g. MongoDB\Driver\Cursor).
  *
  * @internal
+ *
+ * @template TKey
+ * @template TValue
+ * @template-implements Iterator<TKey, TValue>
  */
 final class CachingIterator implements Iterator
 {
-    /** @var array */
+    /** @var array<TKey, TValue> */
     private $items = [];
 
-    /** @var Generator|null */
+    /** @var Generator<TKey, TValue>|null */
     private $iterator;
 
     /** @var bool */
@@ -42,6 +46,8 @@ final class CachingIterator implements Iterator
      * will execute up to its first yield statement. Additionally, this mimics
      * behavior of the SPL iterators and allows users to omit an explicit call
      * to rewind() before using the other methods.
+     *
+     * @param Traversable<TKey, TValue> $iterator
      */
     public function __construct(Traversable $iterator)
     {
@@ -129,6 +135,9 @@ final class CachingIterator implements Iterator
         $this->iterator = null;
     }
 
+    /**
+     * @return Generator<TKey, TValue>
+     */
     private function getIterator(): Generator
     {
         if ($this->iterator === null) {
@@ -152,6 +161,11 @@ final class CachingIterator implements Iterator
         $this->items[$key] = $this->getIterator()->current();
     }
 
+    /**
+     * @param Traversable<TKey, TValue> $traversable
+     *
+     * @return Generator<TKey, TValue>
+     */
     private function wrapTraversable(Traversable $traversable): Generator
     {
         foreach ($traversable as $key => $value) {
