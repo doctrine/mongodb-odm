@@ -40,6 +40,10 @@ final class File extends AbstractDocument
     /** @var int|null */
     public $chunkSizeBytes;
 
+    /**
+     * @param Index[]         $indexes
+     * @param string|int|null $writeConcern
+     */
     public function __construct(
         ?string $db = null,
         ?string $bucketName = null,

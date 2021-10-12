@@ -43,6 +43,7 @@ use function trim;
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
  * @method SimpleXMLElement getElement(string $className)
+ * @psalm-import-type FieldMappingConfig from ClassMetadata
  */
 class XmlDriver extends FileDriver
 {
@@ -331,6 +332,10 @@ class XmlDriver extends FileDriver
         }
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     * @psalm-param FieldMappingConfig $mapping
+     */
     private function addFieldMapping(ClassMetadata $class, array $mapping): void
     {
         if (isset($mapping['name'])) {
@@ -370,6 +375,9 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function addEmbedMapping(ClassMetadata $class, SimpleXMLElement $embed, string $type): void
     {
         $attributes      = $embed->attributes();
@@ -414,7 +422,10 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addReferenceMapping(ClassMetadata $class, $reference, string $type): void
+    /**
+     * @param ClassMetadata<object> $class
+     */
+    private function addReferenceMapping(ClassMetadata $class, ?SimpleXMLElement $reference, string $type): void
     {
         $cascade = array_keys((array) $reference->cascade);
         if (count($cascade) === 1) {
@@ -481,7 +492,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($attributes['also-load'])) {
-            $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
+            $mapping['alsoLoadFields'] = explode(',', (string) $attributes['also-load']);
         }
 
         if (isset($reference->{'prime'})) {
@@ -494,6 +505,9 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function addIndex(ClassMetadata $class, SimpleXMLElement $xmlIndex): void
     {
         $attributes = $xmlIndex->attributes();
@@ -556,6 +570,9 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
+    /**
+     * @return array<string, array<string, mixed>|scalar>
+     */
     private function getPartialFilterExpression(SimpleXMLElement $fields): array
     {
         $partialFilterExpression = [];
@@ -614,6 +631,9 @@ class XmlDriver extends FileDriver
         return preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function setShardKey(ClassMetadata $class, SimpleXMLElement $xmlShardkey): void
     {
         $attributes = $xmlShardkey->attributes();
@@ -645,6 +665,8 @@ class XmlDriver extends FileDriver
      * Parses <read-preference> to a format suitable for the underlying driver.
      *
      * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
+     *
+     * @psalm-return array{string, array<int, array<string, string>>|null}
      */
     private function transformReadPreference(SimpleXMLElement $xmlReadPreference): array
     {
@@ -714,6 +736,9 @@ class XmlDriver extends FileDriver
         }, $xmlErrors));
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function addGridFSMappings(ClassMetadata $class, SimpleXMLElement $xmlRoot): void
     {
         if (! $class->isFile) {

@@ -23,13 +23,13 @@ final class ReferenceOne extends AbstractField
     /** @var string */
     public $storeAs;
 
-    /** @var string|null */
+    /** @var class-string|null */
     public $targetDocument;
 
     /** @var string|null */
     public $discriminatorField;
 
-    /** @var string[]|null */
+    /** @var array<string, class-string>|null */
     public $discriminatorMap;
 
     /** @var string|null */
@@ -50,10 +50,10 @@ final class ReferenceOne extends AbstractField
     /** @var string|null */
     public $repositoryMethod;
 
-    /** @var array */
+    /** @var array<string, string|int> */
     public $sort;
 
-    /** @var array */
+    /** @var array<string, string> */
     public $criteria;
 
     /** @var int|null */
@@ -63,10 +63,11 @@ final class ReferenceOne extends AbstractField
     public $skip;
 
     /**
-     * @param array|null           $discriminatorMap
-     * @param string[]|string|null $cascade
-     * @param array                $sort
-     * @param array                $criteria
+     * @param class-string|null                $targetDocument
+     * @param array<string, class-string>|null $discriminatorMap
+     * @param string[]|string|null             $cascade
+     * @param array<string, string|int>        $sort
+     * @param array<string, string>            $criteria
      */
     public function __construct(
         ?string $name = null,

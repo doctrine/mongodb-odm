@@ -19,7 +19,7 @@ final class Document extends AbstractDocument
     /** @var string|null */
     public $db;
 
-    /** @var string|array|null */
+    /** @var string|array{name: string, capped?: bool, size?: int, max?: int}|null */
     public $collection;
 
     /** @var string|null */
@@ -38,9 +38,9 @@ final class Document extends AbstractDocument
     public $writeConcern;
 
     /**
-     * @param string|array|null $collection
-     * @param Index[]           $indexes
-     * @param int|string|null   $writeConcern
+     * @param string|array{name: string, capped?: bool, size?: int, max?: int}|null $collection
+     * @param Index[]                                                               $indexes
+     * @param int|string|null                                                       $writeConcern
      */
     public function __construct(
         ?string $db = null,

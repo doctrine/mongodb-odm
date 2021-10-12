@@ -230,3 +230,9 @@ parameters:
             message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\My.*Collection\\:\\:.*\\(\\) should return Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\My.*Collection but returns Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<\\(int\\|string\\), mixed\\>\\.$#"
             count: 3
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomCollectionsTest.php
+
+        # When iterating over SimpleXMLElement, we cannot know the key values
+        -
+            message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\(\\?'type' \\=\\> string, \\?'fieldName' \\=\\> string, \\?'name' \\=\\> string, \\?'strategy' \\=\\> string, \\?'association' \\=\\> int, \\?'id' \\=\\> bool, \\?'collectionClass' \\=\\> class\\-string, \\?'cascade' \\=\\> array\\<int, string\\>\\|string, \\.\\.\\.\\), array\\<int\\|string, \\(array\\<int, string\\>&nonEmpty\\)\\|bool\\|string\\> given\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
