@@ -6,30 +6,47 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 
 use function is_callable;
 use function iterator_to_array;
 
+/**
+ * @psalm-import-type Hints from UnitOfWork
+ * @template TKey
+ * @template TValue
+ * @template TDocument of object
+ * @template-implements Iterator<TKey, TValue>
+ */
 final class PrimingIterator implements Iterator
 {
-    /** @var \Iterator */
+    /** @var \Iterator<TKey, TValue> */
     private $iterator;
 
-    /** @var ClassMetadata */
+    /** @var ClassMetadata<TDocument> */
     private $class;
 
     /** @var ReferencePrimer */
     private $referencePrimer;
 
-    /** @var array */
+    /** @var array<string, callable|null> */
     private $primers;
 
-    /** @var array */
+    /**
+     * @var array<int, mixed>
+     * @psalm-var Hints
+     */
     private $unitOfWorkHints;
 
     /** @var bool */
     private $referencesPrimed = false;
 
+    /**
+     * @param \Iterator<TKey, TValue>      $iterator
+     * @param ClassMetadata<TDocument>     $class
+     * @param array<string, callable|null> $primers
+     * @psalm-param Hints $unitOfWorkHints
+     */
     public function __construct(\Iterator $iterator, ClassMetadata $class, ReferencePrimer $referencePrimer, array $primers, array $unitOfWorkHints = [])
     {
         $this->iterator        = $iterator;
