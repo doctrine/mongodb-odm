@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Generator;
+use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 
@@ -68,20 +69,18 @@ final class CachingIterator implements Iterator
     }
 
     /**
-     * @see http://php.net/iterator.current
-     *
-     * @return mixed
+     * @return TValue|false
      */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return current($this->items);
     }
 
     /**
-     * @see http://php.net/iterator.mixed
-     *
-     * @return mixed
+     * @return TKey|null
      */
+    #[ReturnTypeWillChange]
     public function key()
     {
         return key($this->items);

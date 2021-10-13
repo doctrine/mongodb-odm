@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use ReturnTypeWillChange;
 
 use function is_callable;
 use function iterator_to_array;
@@ -61,6 +62,10 @@ final class PrimingIterator implements Iterator
         return iterator_to_array($this);
     }
 
+    /**
+     * @return TValue|null
+     */
+    #[ReturnTypeWillChange]
     public function current()
     {
         $this->primeReferences();
@@ -73,6 +78,10 @@ final class PrimingIterator implements Iterator
         $this->iterator->next();
     }
 
+    /**
+     * @return TKey|null
+     */
+    #[ReturnTypeWillChange]
     public function key()
     {
         return $this->iterator->key();
