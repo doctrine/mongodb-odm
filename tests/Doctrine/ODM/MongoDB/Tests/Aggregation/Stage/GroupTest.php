@@ -42,9 +42,6 @@ class GroupTest extends BaseTest
         $this->assertSame($stage, $stage->$method(...$args));
     }
 
-    /**
-     * @return array<array{string, string[]|Closure}>
-     */
     public function provideProxiedExprMethods(): array
     {
         return [

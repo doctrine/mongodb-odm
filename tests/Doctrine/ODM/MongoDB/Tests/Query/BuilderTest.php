@@ -492,9 +492,6 @@ class BuilderTest extends BaseTest
         $this->assertSame($qb, $qb->$method(...$args));
     }
 
-    /**
-     * @return array<array{0: string, 1?: mixed[]}>
-     */
     public function provideProxiedExprMethods(): array
     {
         return [

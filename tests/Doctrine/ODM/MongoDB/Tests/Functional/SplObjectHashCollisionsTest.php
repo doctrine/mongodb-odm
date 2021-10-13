@@ -56,9 +56,6 @@ class SplObjectHashCollisionsTest extends BaseTest
         $this->expectCount('embeddedDocumentsRegistry', $leftover);
     }
 
-    /**
-     * @return array<array{callable(DocumentManager, object=): void, int}>
-     */
     public function provideParentAssociationsIsCleared(): array
     {
         return [

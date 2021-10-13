@@ -67,9 +67,6 @@ class NestedCollectionsTest extends BaseTest
         $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
 
-    /**
-     * @return array{array{string}}
-     */
     public function provideStrategy(): array
     {
         return [

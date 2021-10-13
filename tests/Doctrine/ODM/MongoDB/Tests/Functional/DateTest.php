@@ -58,9 +58,6 @@ class DateTest extends BaseTest
         $this->assertEmpty($changeset);
     }
 
-    /**
-     * @return array<array{DateTime|UTCDateTime, DateTime|UTCDateTime}>
-     */
     public function provideEquivalentDates(): array
     {
         return [

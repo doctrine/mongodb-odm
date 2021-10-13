@@ -121,9 +121,6 @@ class AtomicSetTest extends BaseTest
         $this->assertCount(0, $user->phonenumbers);
     }
 
-    /**
-     * @return array<array{array|ArrayCollection|null}>
-     */
     public function provideAtomicCollectionUnset(): array
     {
         return [

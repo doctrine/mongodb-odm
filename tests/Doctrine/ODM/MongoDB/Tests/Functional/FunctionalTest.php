@@ -82,9 +82,6 @@ class FunctionalTest extends BaseTest
         bcscale($this->initialScale);
     }
 
-    /**
-     * @return array<array{class-string, ObjectId|string, string}>
-     */
     public function provideUpsertObjects(): array
     {
         return [

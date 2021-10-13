@@ -28,9 +28,6 @@ class BinDataTest extends BaseTest
         $this->assertEquals($data, $check[$field]->getData());
     }
 
-    /**
-     * @return array<array{string, string, int}>
-     */
     public function provideData(): array
     {
         return [

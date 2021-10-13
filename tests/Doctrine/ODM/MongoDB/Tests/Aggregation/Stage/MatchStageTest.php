@@ -61,9 +61,6 @@ class MatchStageTest extends BaseTest
         $this->assertSame($stage, $stage->$method(...$args));
     }
 
-    /**
-     * @return array<array{string, mixed[]}>
-     */
     public function provideProxiedExprMethods(): array
     {
         return [
