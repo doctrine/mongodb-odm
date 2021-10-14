@@ -146,7 +146,7 @@ Here is a quick overview of the built-in mapping types:
 -  ``bin_func``
 -  ``bin_md5``
 -  ``bin_uuid``
--  ``boolean``
+-  ``bool``
 -  ``collection``
 -  ``custom_id``
 -  ``date``
