@@ -97,13 +97,16 @@ jobs:
         if: "${{ matrix.php-version == '8.1' }}"
         run: composer config minimum-stability dev
 
+      # This allows installing symfony/console 3.4 and 6
+      - name: "Remove phpbench/phpbench"
+        run: composer remove --no-update --dev phpbench/phpbench
+
       - name: "Configure Symfony v6@dev"
         if: "${{ matrix.symfony-version == '6' }}"
         run: |
           composer config minimum-stability dev
           # not yet ready for v6
           composer remove --no-update --dev vimeo/psalm
-          composer remove --no-update --dev phpbench/phpbench
           # update symfony deps
           composer require --no-update symfony/console:^6@dev
           composer require --no-update symfony/var-dumper:^6@dev
