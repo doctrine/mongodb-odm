@@ -389,7 +389,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($attributes['also-load'])) {
-            $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
+            $mapping['alsoLoadFields'] = explode(',', (string) $attributes['also-load']);
         }
 
         $this->addFieldMapping($class, $mapping);

@@ -449,7 +449,7 @@
       <xs:element name="partial-filter-expression" type="odm:partial-filter-expression" minOccurs="0" />
     </xs:choice>
 
-    <xs:attribute name="name" type="xs:NMTOKEN" />
+    <xs:attribute name="name" type="xs:string" />
     <xs:attribute name="drop-dups" type="xs:boolean" />
     <xs:attribute name="background" type="xs:boolean" />
     <xs:attribute name="unique" type="xs:boolean" />

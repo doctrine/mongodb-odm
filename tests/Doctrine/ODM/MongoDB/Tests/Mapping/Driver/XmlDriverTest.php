@@ -12,6 +12,7 @@ use TestDocuments\CustomIdGenerator;
 use TestDocuments\InvalidPartialFilterDocument;
 use TestDocuments\UserCustomIdGenerator;
 use TestDocuments\UserNonStringOptions;
+use TestDocuments\WildcardIndexDocument;
 
 class XmlDriverTest extends AbstractDriverTest
 {
@@ -69,6 +70,19 @@ class XmlDriverTest extends AbstractDriverTest
         $this->expectExceptionMessageMatches('#The mapping file .+ is invalid#');
 
         $this->driver->loadMetadataForClass(InvalidPartialFilterDocument::class, $classMetadata);
+    }
+
+    public function testWildcardIndexName(): void
+    {
+        $classMetadata = new ClassMetadata(WildcardIndexDocument::class);
+        $this->driver->loadMetadataForClass(WildcardIndexDocument::class, $classMetadata);
+
+        $this->assertSame([
+            [
+                'keys' => ['fieldA.$**' => 1],
+                'options' => ['name' => 'fieldA.$**_1'],
+            ],
+        ], $classMetadata->getIndexes());
     }
 
     public function testAlsoLoadFieldMapping()
