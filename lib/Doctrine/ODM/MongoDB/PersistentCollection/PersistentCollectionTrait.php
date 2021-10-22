@@ -11,6 +11,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use ReturnTypeWillChange;
+use Traversable;
 
 use function array_udiff;
 use function array_udiff_assoc;
@@ -461,8 +463,9 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
+    #[ReturnTypeWillChange]
     public function count()
     {
         // Workaround around not being able to directly count inverse collections anymore
@@ -496,8 +499,9 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @return Traversable
      */
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         $this->initialize();
@@ -611,8 +615,11 @@ trait PersistentCollectionTrait
     /* ArrayAccess implementation */
 
     /**
-     * @see containsKey()
+     * @param mixed $offset
+     *
+     * @return bool
      */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         $this->initialize();
@@ -621,8 +628,11 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @see get()
+     * @param mixed $offset
+     *
+     * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $this->initialize();
@@ -631,9 +641,12 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @see add()
-     * @see set()
+     * @param mixed $offset
+     * @param mixed $value
+     *
+     * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (! isset($offset)) {
@@ -646,8 +659,11 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @see remove()
+     * @param mixed $offset
+     *
+     * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->doRemove($offset, true);

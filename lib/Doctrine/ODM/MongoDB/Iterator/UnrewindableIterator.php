@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Generator;
 use LogicException;
+use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 
@@ -60,20 +61,18 @@ final class UnrewindableIterator implements Iterator
     }
 
     /**
-     * @see http://php.net/iterator.current
-     *
-     * @return mixed
+     * @return TValue|null
      */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->getIterator()->current();
     }
 
     /**
-     * @see http://php.net/iterator.mixed
-     *
-     * @return mixed
+     * @return TKey|null
      */
+    #[ReturnTypeWillChange]
     public function key()
     {
         if ($this->iterator) {

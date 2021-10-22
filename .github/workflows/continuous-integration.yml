@@ -42,6 +42,11 @@ jobs:
             mongodb-version: "4.4"
             driver-version: "stable"
             deps: "highest"
+          - topology: "server"
+            php-version: "8.1"
+            mongodb-version: "4.4"
+            driver-version: "alpha"
+            dependencies: "highest"
 
     steps:
       - name: "Checkout"
@@ -75,6 +80,11 @@ jobs:
 
       - name: "Show driver information"
         run: "php --ri mongodb"
+
+      # Remove this when laminas/laminas-code 4.5 is released
+      - name: "Use dev stability"
+        if: "${{ matrix.php-version == '8.1' }}"
+        run: composer config minimum-stability dev
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"

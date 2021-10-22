@@ -29,5 +29,12 @@
                 <file name="tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php"/>
             </errorLevel>
         </UndefinedConstant>
+
+        <UndefinedAttributeClass>
+            <errorLevel type="suppress">
+                <!-- Remove it when using PHP 8.1 for running Psalm -->
+                <referencedClass name="ReturnTypeWillChange" />
+            </errorLevel>
+        </UndefinedAttributeClass>
     </issueHandlers>
 </psalm>
