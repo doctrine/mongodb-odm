@@ -36,6 +36,9 @@ EOT
         );
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
