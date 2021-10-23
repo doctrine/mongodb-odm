@@ -57,9 +57,6 @@ abstract class AbstractBucket extends Stage
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         $stage = [
@@ -82,6 +79,11 @@ abstract class AbstractBucket extends Stage
      */
     abstract protected function getStageName(): string;
 
+    /**
+     * @param array|mixed|string $expression
+     *
+     * @return array|mixed|string
+     */
     private function convertExpression($expression)
     {
         if (is_array($expression)) {

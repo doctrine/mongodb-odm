@@ -57,7 +57,7 @@ EOT
     }
 
     /**
-     * @see Console\Command\Command
+     * @return int
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {

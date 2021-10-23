@@ -769,9 +769,6 @@ use function trigger_deprecation;
         return $this->reflClass;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isIdentifier($fieldName): bool
     {
         return $this->identifier === $fieldName;
@@ -788,8 +785,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
      */
@@ -809,9 +804,6 @@ use function trigger_deprecation;
         return [$this->identifier];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function hasField($fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
@@ -1604,8 +1596,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Checks whether the class has a mapped association (embed or reference) with the given field name.
      */
     public function hasAssociation($fieldName): bool
@@ -1614,8 +1604,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a single valued association.
      */
@@ -1625,8 +1613,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a collection valued association.
      */
@@ -1735,8 +1721,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
@@ -2054,34 +2038,22 @@ use function trigger_deprecation;
         $this->rootClass = $rootClass;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getFieldNames(): array
     {
         return array_keys($this->fieldMappings);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getAssociationNames(): array
     {
         return array_keys($this->associationMappings);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getTypeOfField($fieldName): ?string
     {
         return isset($this->fieldMappings[$fieldName]) ?
             $this->fieldMappings[$fieldName]['type'] : null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getAssociationTargetClass($assocName): ?string
     {
         if (! isset($this->associationMappings[$assocName])) {
@@ -2107,17 +2079,11 @@ use function trigger_deprecation;
         return $this->associationMappings[$assocName]['collectionClass'];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isAssociationInverseSide($assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getAssociationMappedByTargetField($assocName)
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');

@@ -48,9 +48,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata): void
     {
         assert($metadata instanceof ClassMetadata);

@@ -1436,6 +1436,8 @@ class Expr
      * returned unmodified.
      *
      * @param Expr|mixed $expression
+     *
+     * @return array|mixed
      */
     private static function convertExpression($expression, ClassMetadata $classMetadata)
     {

@@ -102,38 +102,32 @@ trait PersistentCollectionTrait
      */
     private $hints = [];
 
-    /** {@inheritdoc} */
     public function setDocumentManager(DocumentManager $dm)
     {
         $this->dm  = $dm;
         $this->uow = $dm->getUnitOfWork();
     }
 
-    /** {@inheritdoc} */
     public function setMongoData(array $mongoData)
     {
         $this->mongoData = $mongoData;
     }
 
-    /** {@inheritdoc} */
     public function getMongoData()
     {
         return $this->mongoData;
     }
 
-    /** {@inheritdoc} */
     public function setHints(array $hints)
     {
         $this->hints = $hints;
     }
 
-    /** {@inheritdoc} */
     public function getHints()
     {
         return $this->hints;
     }
 
-    /** {@inheritdoc} */
     public function initialize()
     {
         if ($this->initialized || ! $this->mapping) {
@@ -190,7 +184,6 @@ trait PersistentCollectionTrait
         $this->uow->scheduleForSynchronization($this->owner);
     }
 
-    /** {@inheritdoc} */
     public function isDirty()
     {
         if ($this->isDirty) {
@@ -210,20 +203,17 @@ trait PersistentCollectionTrait
         return false;
     }
 
-    /** {@inheritdoc} */
     public function setDirty($dirty)
     {
         $this->isDirty = $dirty;
     }
 
-    /** {@inheritdoc} */
     public function setOwner(object $document, array $mapping)
     {
         $this->owner   = $document;
         $this->mapping = $mapping;
     }
 
-    /** {@inheritdoc} */
     public function takeSnapshot()
     {
         if ($this->mapping !== null && CollectionHelper::isList($this->mapping['strategy'])) {
@@ -238,20 +228,17 @@ trait PersistentCollectionTrait
         $this->isDirty  = false;
     }
 
-    /** {@inheritdoc} */
     public function clearSnapshot()
     {
         $this->snapshot = [];
         $this->isDirty  = $this->coll->count() !== 0;
     }
 
-    /** {@inheritdoc} */
     public function getSnapshot()
     {
         return $this->snapshot;
     }
 
-    /** {@inheritdoc} */
     public function getDeleteDiff()
     {
         return array_udiff_assoc(
@@ -263,7 +250,6 @@ trait PersistentCollectionTrait
         );
     }
 
-    /** {@inheritdoc} */
     public function getDeletedDocuments()
     {
         $compare = static function ($a, $b) {
@@ -280,7 +266,6 @@ trait PersistentCollectionTrait
         ));
     }
 
-    /** {@inheritdoc} */
     public function getInsertDiff()
     {
         return array_udiff_assoc(
@@ -292,7 +277,6 @@ trait PersistentCollectionTrait
         );
     }
 
-    /** {@inheritdoc} */
     public function getInsertedDocuments()
     {
         $compare = static function ($a, $b) {
@@ -309,19 +293,16 @@ trait PersistentCollectionTrait
         ));
     }
 
-    /** {@inheritdoc} */
     public function getOwner(): ?object
     {
         return $this->owner;
     }
 
-    /** {@inheritdoc} */
     public function getMapping()
     {
         return $this->mapping;
     }
 
-    /** {@inheritdoc} */
     public function getTypeClass()
     {
         if ($this->dm === null) {
@@ -339,19 +320,16 @@ trait PersistentCollectionTrait
         return $this->dm->getClassMetadata($this->mapping['targetDocument']);
     }
 
-    /** {@inheritdoc} */
     public function setInitialized($bool)
     {
         $this->initialized = $bool;
     }
 
-    /** {@inheritdoc} */
     public function isInitialized()
     {
         return $this->initialized;
     }
 
-    /** {@inheritdoc} */
     public function first()
     {
         $this->initialize();
@@ -359,7 +337,6 @@ trait PersistentCollectionTrait
         return $this->coll->first();
     }
 
-    /** {@inheritdoc} */
     public function last()
     {
         $this->initialize();
@@ -367,17 +344,11 @@ trait PersistentCollectionTrait
         return $this->coll->last();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function remove($key)
     {
         return $this->doRemove($key, false);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function removeElement($element)
     {
         $this->initialize();
@@ -392,9 +363,6 @@ trait PersistentCollectionTrait
         return $removed;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function containsKey($key)
     {
         $this->initialize();
@@ -402,9 +370,6 @@ trait PersistentCollectionTrait
         return $this->coll->containsKey($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function contains($element)
     {
         $this->initialize();
@@ -412,9 +377,6 @@ trait PersistentCollectionTrait
         return $this->coll->contains($element);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function exists(Closure $p)
     {
         $this->initialize();
@@ -422,9 +384,6 @@ trait PersistentCollectionTrait
         return $this->coll->exists($p);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function indexOf($element)
     {
         $this->initialize();
@@ -432,9 +391,6 @@ trait PersistentCollectionTrait
         return $this->coll->indexOf($element);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function get($key)
     {
         $this->initialize();
@@ -442,9 +398,6 @@ trait PersistentCollectionTrait
         return $this->coll->get($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getKeys()
     {
         $this->initialize();
@@ -452,9 +405,6 @@ trait PersistentCollectionTrait
         return $this->coll->getKeys();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getValues()
     {
         $this->initialize();
@@ -474,25 +424,16 @@ trait PersistentCollectionTrait
         return $this->coll->count();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function set($key, $value)
     {
         $this->doSet($key, $value, false);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function add($element)
     {
         return $this->doAdd($element, false);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isEmpty()
     {
         return $this->initialized ? $this->coll->isEmpty() : $this->count() === 0;
@@ -509,9 +450,6 @@ trait PersistentCollectionTrait
         return $this->coll->getIterator();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function map(Closure $func)
     {
         $this->initialize();
@@ -519,9 +457,6 @@ trait PersistentCollectionTrait
         return $this->coll->map($func);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function filter(Closure $p)
     {
         $this->initialize();
@@ -529,9 +464,6 @@ trait PersistentCollectionTrait
         return $this->coll->filter($p);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function forAll(Closure $p)
     {
         $this->initialize();
@@ -539,9 +471,6 @@ trait PersistentCollectionTrait
         return $this->coll->forAll($p);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function partition(Closure $p)
     {
         $this->initialize();
@@ -549,9 +478,6 @@ trait PersistentCollectionTrait
         return $this->coll->partition($p);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function toArray()
     {
         $this->initialize();
@@ -559,9 +485,6 @@ trait PersistentCollectionTrait
         return $this->coll->toArray();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function clear()
     {
         if ($this->initialized && $this->isEmpty()) {
@@ -593,9 +516,6 @@ trait PersistentCollectionTrait
         $this->takeSnapshot();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function slice($offset, $length = null)
     {
         $this->initialize();
@@ -606,6 +526,8 @@ trait PersistentCollectionTrait
     /**
      * Called by PHP when this collection is serialized. Ensures that the
      * internal state of the collection can be reproduced after serialization
+     *
+     * @return string[]
      */
     public function __sleep()
     {
@@ -682,17 +604,11 @@ trait PersistentCollectionTrait
         return $this->coll->current();
     }
 
-    /**
-     * Moves the internal iterator position to the next element.
-     */
     public function next()
     {
         return $this->coll->next();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function unwrap()
     {
         return $this->coll;

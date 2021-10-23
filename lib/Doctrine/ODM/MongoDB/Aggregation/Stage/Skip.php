@@ -22,9 +22,6 @@ class Skip extends Stage
         $this->skip = $skip;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

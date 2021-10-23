@@ -28,9 +28,6 @@ class Unwind extends Stage
         $this->fieldName = $fieldName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         // Fallback behavior for MongoDB < 3.2

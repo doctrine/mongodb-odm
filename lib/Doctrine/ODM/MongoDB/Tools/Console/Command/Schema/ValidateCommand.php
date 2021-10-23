@@ -32,7 +32,7 @@ EOT
     }
 
     /**
-     * @see \Symfony\Component\Console\Command\Command
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

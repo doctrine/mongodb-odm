@@ -30,9 +30,6 @@ class ResolveTargetDocumentListener implements EventSubscriber
      */
     private $resolveTargetDocuments = [];
 
-    /**
-     * {@inheritDoc}
-     */
     public function getSubscribedEvents()
     {
         return [

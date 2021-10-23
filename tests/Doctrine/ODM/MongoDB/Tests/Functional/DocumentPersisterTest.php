@@ -1035,9 +1035,6 @@ final class DocumentPersisterCustomIdType extends Type
 {
     use ClosureToPHP;
 
-    /**
-     * {@inheritdoc}
-     */
     public function convertToDatabaseValue($value)
     {
         if ($value instanceof ObjectId) {
@@ -1051,9 +1048,6 @@ final class DocumentPersisterCustomIdType extends Type
         throw self::createException($value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function convertToPHPValue($value)
     {
         if ($value instanceof DocumentPersisterCustomTypedId) {

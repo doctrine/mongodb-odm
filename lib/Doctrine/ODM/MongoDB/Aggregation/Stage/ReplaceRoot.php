@@ -36,9 +36,6 @@ class ReplaceRoot extends Operator
         $this->expression = $expression;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         $expression = $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression();
@@ -50,6 +47,11 @@ class ReplaceRoot extends Operator
         ];
     }
 
+    /**
+     * @param array|string|mixed $expression
+     *
+     * @return array|string|mixed
+     */
     private function convertExpression($expression)
     {
         if (is_array($expression)) {

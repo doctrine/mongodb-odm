@@ -13,9 +13,6 @@ use function func_get_args;
  */
 class Project extends Operator
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

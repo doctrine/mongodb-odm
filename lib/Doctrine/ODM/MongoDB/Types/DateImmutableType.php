@@ -36,6 +36,11 @@ class DateImmutableType extends DateType
         ));
     }
 
+    /**
+     * @param mixed $current
+     *
+     * @return DateTimeInterface
+     */
     public function getNextVersion($current)
     {
         return new DateTimeImmutable();

@@ -157,8 +157,6 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds all documents in the repository.
-     *
-     * {@inheritDoc}
      */
     public function findAll(): array
     {
@@ -167,8 +165,6 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds documents by a set of criteria.
-     *
-     * {@inheritDoc}
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
