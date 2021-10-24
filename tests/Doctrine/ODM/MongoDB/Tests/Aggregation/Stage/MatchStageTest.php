@@ -42,7 +42,7 @@ class MatchStageTest extends BaseTest
     /**
      * @dataProvider provideProxiedExprMethods
      */
-    public function testProxiedExprMethods($method, array $args = []): void
+    public function testProxiedExprMethods(string $method, array $args = []): void
     {
         $expr = $this->getMockQueryExpr();
         $expr

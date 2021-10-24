@@ -44,7 +44,7 @@ class ProjectTest extends BaseTest
     /**
      * @dataProvider provideAccumulators
      */
-    public function testAccumulatorsWithMultipleArguments($operator): void
+    public function testAccumulatorsWithMultipleArguments(string $operator): void
     {
         $projectStage = new Project($this->getTestAggregationBuilder());
         $projectStage
@@ -66,7 +66,7 @@ class ProjectTest extends BaseTest
     /**
      * @dataProvider provideProxiedExprMethods
      */
-    public function testProxiedExprMethods($method, $args = []): void
+    public function testProxiedExprMethods(string $method, array $args = []): void
     {
         $expr = $this->getMockAggregationExpr();
         $expr
@@ -85,6 +85,9 @@ class ProjectTest extends BaseTest
         $this->assertSame($stage, $stage->$method(...$args));
     }
 
+    /**
+     * @return array<array{string, string[]}>
+     */
     public static function provideProxiedExprMethods(): array
     {
         return [

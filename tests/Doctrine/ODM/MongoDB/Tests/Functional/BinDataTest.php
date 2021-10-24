@@ -15,7 +15,7 @@ class BinDataTest extends BaseTest
     /**
      * @dataProvider provideData
      */
-    public function testBinData($field, $data, $type): void
+    public function testBinData(string $field, string $data, int $type): void
     {
         $test         = new BinDataTestUser();
         $test->$field = $data;

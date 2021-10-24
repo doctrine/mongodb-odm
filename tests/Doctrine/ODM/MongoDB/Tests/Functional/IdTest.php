@@ -163,9 +163,11 @@ class IdTest extends BaseTest
     }
 
     /**
+     * @param int|float $user2Id
+     *
      * @dataProvider provideEqualButNotIdenticalIds
      */
-    public function testEqualButNotIdenticalIds($user1Id, $user2Id): void
+    public function testEqualButNotIdenticalIds(string $user1Id, $user2Id): void
     {
         $this->assertNotSame($user1Id, $user2Id);
 
@@ -207,9 +209,12 @@ class IdTest extends BaseTest
     }
 
     /**
+     * @param mixed $id
+     * @param mixed $expected
+     *
      * @dataProvider getTestIdTypesAndStrategiesData
      */
-    public function testIdTypesAndStrategies($type, $strategy, $id = null, $expected = null, $expectedMongoType = null): void
+    public function testIdTypesAndStrategies(string $type, string $strategy, $id = null, $expected = null, ?string $expectedMongoType = null): void
     {
         $className = $this->createIdTestClass($type, $strategy);
 
@@ -306,7 +311,7 @@ class IdTest extends BaseTest
     /**
      * @dataProvider getTestBinIdsData
      */
-    public function testBinIds($type, $expectedMongoBinDataType, $id): void
+    public function testBinIds(string $type, int $expectedMongoBinDataType, string $id): void
     {
         $className = $this->createIdTestClass($type, 'none');
 
@@ -357,7 +362,7 @@ class IdTest extends BaseTest
         $this->dm->persist($user);
     }
 
-    private function createIdTestClass($type, $strategy): string
+    private function createIdTestClass(string $type, string $strategy): string
     {
         $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));
         $className      = sprintf(__NAMESPACE__ . '\\%s', $shortClassName);
@@ -559,7 +564,7 @@ class AlnumCharsUser
      */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -571,7 +576,7 @@ class CustomIdUser
     /**
      * @ODM\Id(strategy="none", nullable=true)
      *
-     * @var int|null
+     * @var int|string|null
      */
     public $id;
 

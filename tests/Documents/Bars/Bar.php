@@ -58,12 +58,18 @@ class Bar
         $this->locations[] = $location;
     }
 
+    /**
+     * @return Collection<int, Location>
+     */
     public function getLocations(): Collection
     {
         return $this->locations;
     }
 
-    public function setLocations($locations): void
+    /**
+     * @param Collection<int, Location> $locations
+     */
+    public function setLocations(Collection $locations): void
     {
         $this->locations = $locations;
     }

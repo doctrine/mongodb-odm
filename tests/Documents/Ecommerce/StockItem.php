@@ -83,9 +83,9 @@ class StockItem
         return $this->cost->getAmount();
     }
 
-    public function setInventory($inventory): StockItem
+    public function setInventory(int $inventory): StockItem
     {
-        $this->inventory = (int) $inventory;
+        $this->inventory = $inventory;
 
         return $this;
     }

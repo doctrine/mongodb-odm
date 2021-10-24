@@ -68,9 +68,9 @@ class MODM52Container
     }
 
     /**
-     * @return Collection<int, MODM52Embedded>
+     * @return Collection<int, MODM52Embedded>|array<MODM52Embedded>
      */
-    public function getItems(): Collection
+    public function getItems()
     {
         return $this->items;
     }

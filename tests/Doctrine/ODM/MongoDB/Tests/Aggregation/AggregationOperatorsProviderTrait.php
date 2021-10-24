@@ -613,6 +613,9 @@ trait AggregationOperatorsProviderTrait
         return new Expr($this->dm, new ClassMetadata(User::class));
     }
 
+    /**
+     * @param mixed $args
+     */
     protected function resolveArgs($args): array
     {
         if (is_array($args)) {

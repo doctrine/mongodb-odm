@@ -212,7 +212,7 @@ class PersistenceBuilderTest extends BaseTest
     /**
      * @dataProvider getDocumentsAndExpectedData
      */
-    public function testPrepareInsertData($document, array $expectedData): void
+    public function testPrepareInsertData(object $document, array $expectedData): void
     {
         $this->dm->persist($document);
         $this->uow->computeChangeSets();

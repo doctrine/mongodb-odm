@@ -120,14 +120,14 @@ class UnrewindableIteratorTest extends TestCase
         $iterator->toArray();
     }
 
-    private function getTraversable($items): Generator
+    private function getTraversable(array $items): Generator
     {
         foreach ($items as $item) {
             yield $item;
         }
     }
 
-    private function getTraversableThatThrows($items): Generator
+    private function getTraversableThatThrows(array $items): Generator
     {
         foreach ($items as $item) {
             if ($item instanceof Exception) {

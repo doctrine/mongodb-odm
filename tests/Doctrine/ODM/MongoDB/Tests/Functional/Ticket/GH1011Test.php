@@ -72,11 +72,11 @@ class GH1011Embedded
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

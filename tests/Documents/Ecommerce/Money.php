@@ -24,9 +24,8 @@ class Money
      */
     protected $currency;
 
-    public function __construct($amount, Currency $currency)
+    public function __construct(float $amount, Currency $currency)
     {
-        $amount = (float) $amount;
         if (empty($amount) || $amount <= 0) {
             throw new InvalidArgumentException(
                 'money amount cannot be empty, equal or less than 0'

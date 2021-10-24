@@ -71,7 +71,7 @@ class FavoritesUser
         return $this->id;
     }
 
-    public function setFavorite($favorite): void
+    public function setFavorite(object $favorite): void
     {
         $this->favorite = $favorite;
     }

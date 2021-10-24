@@ -19,7 +19,7 @@ abstract class BaseDocument
      */
     protected $inheritedProperty;
 
-    public function setInheritedProperty($value): void
+    public function setInheritedProperty(string $value): void
     {
         $this->inheritedProperty = $value;
     }

@@ -15,9 +15,11 @@ use function get_class;
 class SplObjectHashCollisionsTest extends BaseTest
 {
     /**
+     * @param callable(DocumentManager, object=): void $f
+     *
      * @dataProvider provideParentAssociationsIsCleared
      */
-    public function testParentAssociationsIsCleared($f): void
+    public function testParentAssociationsIsCleared(callable $f): void
     {
         $d         = new SplColDoc();
         $d->one    = new SplColEmbed('d.one.v1');
@@ -33,9 +35,11 @@ class SplObjectHashCollisionsTest extends BaseTest
     }
 
     /**
+     * @param callable(DocumentManager, object=): void $f
+     *
      * @dataProvider provideParentAssociationsIsCleared
      */
-    public function testParentAssociationsLeftover($f, $leftover): void
+    public function testParentAssociationsLeftover(callable $f, int $leftover): void
     {
         $d         = new SplColDoc();
         $d->one    = new SplColEmbed('d.one.v1');
@@ -56,19 +60,19 @@ class SplObjectHashCollisionsTest extends BaseTest
     {
         return [
             [
-                static function (DocumentManager $dm) {
+                static function (DocumentManager $dm): void {
                     $dm->clear();
                 },
                 0,
             ],
             [
-                static function (DocumentManager $dm, $doc) {
+                static function (DocumentManager $dm, $doc): void {
                     $dm->clear(get_class($doc));
                 },
                 1,
             ],
             [
-                static function (DocumentManager $dm, $doc) {
+                static function (DocumentManager $dm, $doc): void {
                     $dm->detach($doc);
                 },
                 1,
@@ -76,7 +80,7 @@ class SplObjectHashCollisionsTest extends BaseTest
         ];
     }
 
-    private function expectCount($prop, $expected): void
+    private function expectCount(string $prop, int $expected): void
     {
         $ro = new ReflectionObject($this->uow);
         $rp = $ro->getProperty($prop);

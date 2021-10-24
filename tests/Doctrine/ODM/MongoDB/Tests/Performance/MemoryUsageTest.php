@@ -59,7 +59,7 @@ class MemoryUsageTest extends BaseTest
         echo sprintf('Memory increased by %s', $this->formatMemory($increase)) . PHP_EOL;
     }
 
-    private function formatMemory($size): string
+    private function formatMemory(int $size): string
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
 

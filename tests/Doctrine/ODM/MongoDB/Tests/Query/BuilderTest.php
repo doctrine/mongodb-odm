@@ -188,9 +188,11 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param class-string $class
+     *
      * @dataProvider provideArrayUpdateOperatorsOnReferenceMany
      */
-    public function testArrayUpdateOperatorsOnReferenceMany($class, $field): void
+    public function testArrayUpdateOperatorsOnReferenceMany(string $class, string $field): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -212,9 +214,11 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param class-string $class
+     *
      * @dataProvider provideArrayUpdateOperatorsOnReferenceOne
      */
-    public function testArrayUpdateOperatorsOnReferenceOne($class, $field): void
+    public function testArrayUpdateOperatorsOnReferenceOne(string $class, string $field): void
     {
         $f = new Feature('Smarter references');
         $this->dm->persist($f);
@@ -472,7 +476,7 @@ class BuilderTest extends BaseTest
     /**
      * @dataProvider provideProxiedExprMethods
      */
-    public function testProxiedExprMethods($method, array $args = []): void
+    public function testProxiedExprMethods(string $method, array $args = []): void
     {
         $expr = $this->getMockExpr();
         $expr
@@ -695,9 +699,11 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param string|int $order
+     *
      * @dataProvider provideSortOrders
      */
-    public function testSortWithFieldNameAndOrder($order, $expectedOrder): void
+    public function testSortWithFieldNameAndOrder($order, int $expectedOrder): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort('foo', $order);
@@ -750,7 +756,7 @@ class BuilderTest extends BaseTest
     /**
      * @dataProvider provideCurrentDateOptions
      */
-    public function testCurrentDateUpdateQuery($type): void
+    public function testCurrentDateUpdateQuery(string $type): void
     {
         $qb = $this->getTestQueryBuilder()
             ->updateOne()
@@ -875,7 +881,7 @@ class BuilderTest extends BaseTest
     /**
      * @return MockObject&Point
      */
-    private function getMockPoint($json)
+    private function getMockPoint(array $json)
     {
         $point = $this->getMockBuilder(Point::class)
             ->disableOriginalConstructor()

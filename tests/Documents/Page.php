@@ -19,11 +19,11 @@ class Page
     /**
      * @ODM\Field(type="int")
      *
-     * @var int|null
+     * @var int
      */
     public $number;
 
-    public function __construct($number)
+    public function __construct(int $number)
     {
         $this->number = $number;
     }

@@ -44,7 +44,7 @@ class MappedSuperclassBase
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var int|string|null
      */
     private $mapped1;
 
@@ -62,17 +62,23 @@ class MappedSuperclassBase
      */
     private $mappedRelated1;
 
+    /**
+     * @param int|string $val
+     */
     public function setMapped1($val): void
     {
         $this->mapped1 = $val;
     }
 
-    public function getMapped1(): ?string
+    /**
+     * @return int|string|null
+     */
+    public function getMapped1()
     {
         return $this->mapped1;
     }
 
-    public function setMapped2($val): void
+    public function setMapped2(string $val): void
     {
         $this->mapped2 = $val;
     }
@@ -82,7 +88,7 @@ class MappedSuperclassBase
         return $this->mapped2;
     }
 
-    public function setMappedRelated1($mappedRelated1): void
+    public function setMappedRelated1(MappedSuperclassRelated1 $mappedRelated1): void
     {
         $this->mappedRelated1 = $mappedRelated1;
     }

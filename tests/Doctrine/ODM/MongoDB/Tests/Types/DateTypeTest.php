@@ -76,6 +76,8 @@ class DateTypeTest extends TestCase
     }
 
     /**
+     * @param mixed $value
+     *
      * @dataProvider provideInvalidDateValues
      */
     public function testConvertToDatabaseValueWithInvalidValues($value): void
@@ -97,9 +99,11 @@ class DateTypeTest extends TestCase
     }
 
     /**
+     * @param mixed $input
+     *
      * @dataProvider provideDatabaseToPHPValues
      */
-    public function testConvertToPHPValue($input, $output): void
+    public function testConvertToPHPValue($input, DateTime $output): void
     {
         $type   = Type::getType(Type::DATE);
         $return = $type->convertToPHPValue($input);
@@ -116,9 +120,11 @@ class DateTypeTest extends TestCase
     }
 
     /**
+     * @param mixed $input
+     *
      * @dataProvider provideDatabaseToPHPValues
      */
-    public function testClosureToPHP($input, $output): void
+    public function testClosureToPHP($input, DateTime $output): void
     {
         $type = Type::getType(Type::DATE);
 

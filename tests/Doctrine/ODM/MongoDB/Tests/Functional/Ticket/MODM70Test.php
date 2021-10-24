@@ -146,7 +146,7 @@ class AvatarPart
      */
     protected $color;
 
-    public function __construct($color = null)
+    public function __construct(string $color)
     {
         $this->color = $color;
     }
@@ -156,7 +156,7 @@ class AvatarPart
         return $this->color;
     }
 
-    public function setColor($color): void
+    public function setColor(string $color): void
     {
         $this->color = $color;
     }

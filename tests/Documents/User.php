@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Documents;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MongoDB\BSON\ObjectId;
 
 use function bcadd;
 
@@ -20,7 +22,7 @@ class User extends BaseDocument
     /**
      * @ODM\Id
      *
-     * @var string|null
+     * @var ObjectId|string|null
      */
     protected $id;
 
@@ -41,7 +43,7 @@ class User extends BaseDocument
     /**
      * @ODM\Field(type="date")
      *
-     * @var DateTime
+     * @var DateTimeInterface|string
      */
     protected $createdAt;
 
@@ -209,7 +211,7 @@ class User extends BaseDocument
     /**
      * @ODM\Field(type="collection")
      *
-     * @var array<string[]>
+     * @var string[]
      */
     private $logs = [];
 
@@ -239,6 +241,9 @@ class User extends BaseDocument
         $this->createdAt        = new DateTime();
     }
 
+    /**
+     * @param ObjectId|string $id
+     */
     public function setId($id): void
     {
         $this->id = $id;
@@ -249,22 +254,28 @@ class User extends BaseDocument
         return $this->logs;
     }
 
-    public function setLogs($logs): void
+    /**
+     * @param string[] $logs
+     */
+    public function setLogs(array $logs): void
     {
         $this->logs = $logs;
     }
 
-    public function log($log): void
+    public function log(string $log): void
     {
         $this->logs[] = $log;
     }
 
-    public function getId(): ?string
+    /**
+     * @return ObjectId|string|null
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setUsername($username): void
+    public function setUsername(string $username): void
     {
         $this->username = $username;
     }
@@ -274,7 +285,7 @@ class User extends BaseDocument
         return $this->username;
     }
 
-    public function setPassword($password): void
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
@@ -284,12 +295,18 @@ class User extends BaseDocument
         return $this->password;
     }
 
+    /**
+     * @param DateTimeInterface|string $createdAt
+     */
     public function setCreatedAt($createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt(): DateTime
+    /**
+     * @return DateTime|DateTimeInterface|string
+     */
+    public function getCreatedAt()
     {
         return $this->createdAt;
     }
@@ -429,7 +446,10 @@ class User extends BaseDocument
         return $this->uniqueGroups;
     }
 
-    public function setUniqueGroups($groups): void
+    /**
+     * @param Collection<int, Group> $groups
+     */
+    public function setUniqueGroups(Collection $groups): void
     {
         $this->uniqueGroups = $groups;
     }
@@ -444,7 +464,7 @@ class User extends BaseDocument
         return $this->hits;
     }
 
-    public function setHits($hits): void
+    public function setHits(int $hits): void
     {
         $this->hits = $hits;
     }
@@ -454,7 +474,7 @@ class User extends BaseDocument
         return $this->count;
     }
 
-    public function setCount($count): void
+    public function setCount(?int $count): void
     {
         $this->count = $count;
     }
@@ -464,7 +484,7 @@ class User extends BaseDocument
         return $this->floatCount;
     }
 
-    public function setFloatCount($floatCount): void
+    public function setFloatCount(?float $floatCount): void
     {
         $this->floatCount = $floatCount;
     }
@@ -474,7 +494,7 @@ class User extends BaseDocument
         return $this->decimal128Count;
     }
 
-    public function setDecimal128Count($decimal128Count): void
+    public function setDecimal128Count(?string $decimal128Count): void
     {
         $this->decimal128Count = $decimal128Count;
     }

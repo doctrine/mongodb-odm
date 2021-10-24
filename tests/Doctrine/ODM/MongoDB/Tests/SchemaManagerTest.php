@@ -748,7 +748,7 @@ EOT;
     /**
      * @dataProvider dataIsMongoIndexEquivalentToDocumentIndex
      */
-    public function testIsMongoIndexEquivalentToDocumentIndex($expected, $mongoIndex, $documentIndex): void
+    public function testIsMongoIndexEquivalentToDocumentIndex(bool $expected, array $mongoIndex, array $documentIndex): void
     {
         $defaultMongoIndex    = [
             'key' => ['foo' => 1, 'bar' => -1],
@@ -958,7 +958,7 @@ EOT;
     /**
      * @dataProvider dataIsMongoTextIndexEquivalentToDocumentIndex
      */
-    public function testIsMongoIndexEquivalentToDocumentIndexWithTextIndexes($expected, $mongoIndex, $documentIndex): void
+    public function testIsMongoIndexEquivalentToDocumentIndexWithTextIndexes(bool $expected, array $mongoIndex, array $documentIndex): void
     {
         $defaultMongoIndex    = [
             'key' => ['_fts' => 'text', '_ftsx' => 1],

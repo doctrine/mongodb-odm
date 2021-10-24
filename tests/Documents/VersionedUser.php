@@ -25,7 +25,7 @@ class VersionedUser extends User
         return $this->version;
     }
 
-    public function setVersion($version): void
+    public function setVersion(int $version): void
     {
         $this->version = $version;
     }

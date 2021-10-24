@@ -56,11 +56,11 @@ class GH999Document
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     private $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -75,7 +75,7 @@ class GH999Document
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

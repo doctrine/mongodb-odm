@@ -29,7 +29,7 @@ class Currency
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string
      */
     protected $name;
 
@@ -40,9 +40,11 @@ class Currency
      */
     protected $multiplier;
 
-    public function __construct($name, $multiplier = 1)
+    /**
+     * @param float|int $multiplier
+     */
+    public function __construct(string $name, $multiplier = 1)
     {
-        $name = (string) $name;
         if (! in_array($name, self::getAll())) {
             throw new InvalidArgumentException(
                 'Currency must be one of ' . implode(', ', self::getAll()) .
@@ -69,6 +71,9 @@ class Currency
         return $this->multiplier;
     }
 
+    /**
+     * @param float|int|string $multiplier
+     */
     public function setMultiplier($multiplier): void
     {
         $multiplier = (float) $multiplier;
@@ -81,6 +86,9 @@ class Currency
         $this->multiplier = $multiplier;
     }
 
+    /**
+     * @return string[]
+     */
     public static function getAll(): array
     {
         return [

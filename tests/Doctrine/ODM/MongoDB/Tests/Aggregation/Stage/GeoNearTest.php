@@ -38,9 +38,11 @@ class GeoNearTest extends BaseTest
     }
 
     /**
+     * @param mixed $value
+     *
      * @dataProvider provideOptionalSettings
      */
-    public function testOptionalSettings($field, $value): void
+    public function testOptionalSettings(string $field, $value): void
     {
         $geoNearStage = new GeoNear($this->getTestAggregationBuilder(), 0, 0);
 

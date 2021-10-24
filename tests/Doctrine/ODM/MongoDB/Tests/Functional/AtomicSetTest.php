@@ -90,6 +90,8 @@ class AtomicSetTest extends BaseTest
     }
 
     /**
+     * @param array|ArrayCollection|null $clearWith
+     *
      * @dataProvider provideAtomicCollectionUnset
      */
     public function testAtomicCollectionUnset($clearWith): void

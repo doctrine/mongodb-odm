@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use BadMethodCallException;
+use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Operator;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
@@ -17,9 +18,11 @@ class OperatorTest extends BaseTest
     use AggregationOperatorsProviderTrait;
 
     /**
+     * @param Closure|array $args
+     *
      * @dataProvider provideExpressionOperators
      */
-    public function testProxiedExpressionOperators($expected, $operator, $args): void
+    public function testProxiedExpressionOperators(array $expected, string $operator, $args): void
     {
         $stage = $this->getStubStage();
         $args  = $this->resolveArgs($args);

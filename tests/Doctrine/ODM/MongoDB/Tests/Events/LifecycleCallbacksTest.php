@@ -13,7 +13,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 
 class LifecycleCallbacksTest extends BaseTest
 {
-    private function createUser($name = 'jon', $fullName = 'Jonathan H. Wage'): User
+    private function createUser(string $name = 'jon', string $fullName = 'Jonathan H. Wage'): User
     {
         $user                = new User();
         $user->name          = $name;

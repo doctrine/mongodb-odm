@@ -533,9 +533,11 @@ class ClassMetadataTest extends BaseTest
     }
 
     /**
+     * @param mixed $value
+     *
      * @dataProvider provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort
      */
-    public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort($prop, $value): void
+    public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $prop, $value): void
     {
         $cm = new ClassMetadata('stdClass');
 
@@ -616,7 +618,7 @@ class ClassMetadataTest extends BaseTest
     /**
      * @dataProvider provideOwningAndInversedRefsNeedTargetDocument
      */
-    public function testOwningAndInversedRefsNeedTargetDocument($config): void
+    public function testOwningAndInversedRefsNeedTargetDocument(array $config): void
     {
         $config = array_merge($config, [
             'fieldName' => 'many',

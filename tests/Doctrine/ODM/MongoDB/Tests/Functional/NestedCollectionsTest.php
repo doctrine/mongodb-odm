@@ -18,7 +18,7 @@ class NestedCollectionsTest extends BaseTest
     /**
      * @dataProvider provideStrategy
      */
-    public function testStrategy($field): void
+    public function testStrategy(string $field): void
     {
         $doc         = new DocWithNestedCollections();
         $privateBook = new Phonebook('Private');

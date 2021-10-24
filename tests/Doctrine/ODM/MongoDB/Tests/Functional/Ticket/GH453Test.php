@@ -240,17 +240,26 @@ class GH453Test extends BaseTest
         $this->assertBsonArray($doc->id, 'referenceManyAddToSet');
     }
 
-    private function assertBsonArray($documentId, $fieldName): void
+    /**
+     * @param mixed $documentId
+     */
+    private function assertBsonArray($documentId, string $fieldName): void
     {
         $this->assertBsonType(4, $documentId, $fieldName);
     }
 
-    private function assertBsonObject($documentId, $fieldName): void
+    /**
+     * @param mixed $documentId
+     */
+    private function assertBsonObject($documentId, string $fieldName): void
     {
         $this->assertBsonType(3, $documentId, $fieldName);
     }
 
-    private function assertBsonType($bsonType, $documentId, $fieldName): void
+    /**
+     * @param mixed $documentId
+     */
+    private function assertBsonType(int $bsonType, $documentId, string $fieldName): void
     {
         $criteria = ['_id' => $documentId];
 
@@ -264,17 +273,29 @@ class GH453Test extends BaseTest
         $this->assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
     }
 
-    private function assertBsonArrayAndValue($expectedValue, $documentId, $fieldName): void
+    /**
+     * @param mixed $expectedValue
+     * @param mixed $documentId
+     */
+    private function assertBsonArrayAndValue($expectedValue, $documentId, string $fieldName): void
     {
         $this->assertBsonTypeAndValue(4, $expectedValue, $documentId, $fieldName);
     }
 
-    private function assertBsonObjectAndValue($expectedValue, $documentId, $fieldName): void
+    /**
+     * @param mixed $expectedValue
+     * @param mixed $documentId
+     */
+    private function assertBsonObjectAndValue($expectedValue, $documentId, string $fieldName): void
     {
         $this->assertBsonTypeAndValue(3, $expectedValue, $documentId, $fieldName);
     }
 
-    private function assertBsonTypeAndValue($bsonType, $expectedValue, $documentId, $fieldName): void
+    /**
+     * @param mixed $expectedValue
+     * @param mixed $documentId
+     */
+    private function assertBsonTypeAndValue(int $bsonType, $expectedValue, $documentId, string $fieldName): void
     {
         if ($bsonType === 4) {
             $expectedValue = array_values((array) $expectedValue);
@@ -339,21 +360,21 @@ class GH453Document
     /**
      * @ODM\EmbedMany(strategy="set")
      *
-     * @var Collection<int, object>
+     * @var Collection<int, GH453EmbeddedDocument>
      */
     public $embedManySet;
 
     /**
      * @ODM\EmbedMany(strategy="setArray")
      *
-     * @var Collection<int, object>
+     * @var Collection<int, GH453EmbeddedDocument>
      */
     public $embedManySetArray;
 
     /**
      * @ODM\EmbedMany(strategy="addToSet")
      *
-     * @var Collection<int, object>
+     * @var Collection<int, GH453EmbeddedDocument>
      */
     public $embedManyAddToSet;
 
@@ -367,21 +388,21 @@ class GH453Document
     /**
      * @ODM\ReferenceMany(strategy="set")
      *
-     * @var Collection<int, object>
+     * @var Collection<int, GH453ReferencedDocument>
      */
     public $referenceManySet;
 
     /**
      * @ODM\ReferenceMany(strategy="setArray")
      *
-     * @var Collection<int, object>
+     * @var Collection<int, GH453ReferencedDocument>
      */
     public $referenceManySetArray;
 
     /**
      * @ODM\ReferenceMany(strategy="addToSet")
      *
-     * @var Collection<int, object>
+     * @var Collection<int, GH453ReferencedDocument>
      */
     public $referenceManyAddToSet;
 }

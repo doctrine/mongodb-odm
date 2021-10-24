@@ -21,6 +21,8 @@ class IdTypeTest extends TestCase
     }
 
     /**
+     * @param mixed $value
+     *
      * @dataProvider provideInvalidObjectIdConstructorArguments
      */
     public function testConvertToDatabaseValueShouldGenerateObjectIds($value): void
