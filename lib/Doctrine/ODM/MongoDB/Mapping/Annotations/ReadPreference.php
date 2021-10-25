@@ -20,6 +20,9 @@ final class ReadPreference implements Annotation
     /** @var string[][]|null */
     public $tags;
 
+    /**
+     * @param string[][]|null $tags
+     */
     public function __construct(string $value, ?array $tags = null)
     {
         $this->value = $value;

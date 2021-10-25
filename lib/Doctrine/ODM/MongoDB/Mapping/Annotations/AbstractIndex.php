@@ -30,9 +30,15 @@ abstract class AbstractIndex implements Annotation
     /** @var mixed[] */
     public $options;
 
-    /** @var array */
+    /** @var array<string, mixed> */
     public $partialFilterExpression;
 
+    /**
+     * @param string[]             $keys
+     * @param string|int|null      $order
+     * @param mixed[]              $options
+     * @param array<string, mixed> $partialFilterExpression
+     */
     public function __construct(
         array $keys = [],
         ?string $name = null,

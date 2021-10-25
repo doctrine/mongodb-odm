@@ -19,6 +19,9 @@ final class EmbeddedDocument extends AbstractDocument
     /** @var Index[] */
     public $indexes;
 
+    /**
+     * @param Index[] $indexes
+     */
     public function __construct(array $indexes = [])
     {
         $this->indexes = $indexes;

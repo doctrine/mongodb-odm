@@ -86,7 +86,11 @@ use function trigger_deprecation;
  *      lock?: bool,
  *      inherited?: string,
  *      declared?: class-string,
- *      prime?: list<string>
+ *      prime?: list<string>,
+ *      sparse?: bool,
+ *      unique?: bool,
+ *      index?: bool,
+ *      criteria?: array<string, string>,
  * }
  * @psalm-type FieldMapping = array{
  *      type: string,
@@ -125,7 +129,11 @@ use function trigger_deprecation;
  *      notSaved?: bool,
  *      inherited?: string,
  *      declared?: class-string,
- *      prime?: list<string>
+ *      prime?: list<string>,
+ *      sparse?: bool,
+ *      unique?: bool,
+ *      index?: bool,
+ *      criteria?: array<string, string>,
  * }
  * @psalm-type AssociationFieldMapping = array{
  *      type: string,
@@ -164,7 +172,11 @@ use function trigger_deprecation;
  *      notSaved?: bool,
  *      inherited?: string,
  *      declared?: class-string,
- *      prime?: list<string>
+ *      prime?: list<string>,
+ *      sparse?: bool,
+ *      unique?: bool,
+ *      index?: bool,
+ *      criteria?: array<string, string>,
  * }
  * @psalm-type IndexKeys = array<string, mixed>
  * @psalm-type IndexOptions = array<string, mixed>

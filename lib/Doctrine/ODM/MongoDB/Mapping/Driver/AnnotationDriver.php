@@ -291,6 +291,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     * @param string[]              $keys
+     */
     private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []): void
     {
         $keys    = array_merge($keys, $index->keys);
@@ -313,6 +317,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
+     * @param ClassMetadata<object> $class
+     *
      * @throws MappingException
      */
     private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey): void

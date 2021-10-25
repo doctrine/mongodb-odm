@@ -30,7 +30,7 @@ final class ReferenceMany extends AbstractField
     /** @var string|null */
     public $discriminatorField;
 
-    /** @var string[]|null */
+    /** @var array<string, class-string>|null */
     public $discriminatorMap;
 
     /** @var string|null */
@@ -51,10 +51,10 @@ final class ReferenceMany extends AbstractField
     /** @var string|null */
     public $repositoryMethod;
 
-    /** @var array */
+    /** @var array<string, string|int> */
     public $sort;
 
-    /** @var array */
+    /** @var array<string, string> */
     public $criteria;
 
     /** @var int|null */
@@ -70,12 +70,11 @@ final class ReferenceMany extends AbstractField
     public $prime;
 
     /**
-     * @param array                $options
-     * @param array|null           $discriminatorMap
-     * @param string|string[]|null $cascade
-     * @param array                $sort
-     * @param array                $criteria
-     * @param array                $prime
+     * @param array<string, class-string>|null $discriminatorMap
+     * @param string[]|string|null             $cascade
+     * @param array<string, string|int>        $sort
+     * @param array<string, string>            $criteria
+     * @param string[]                         $prime
      */
     public function __construct(
         ?string $name = null,
