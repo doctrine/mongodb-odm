@@ -8,7 +8,6 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionFactory;
@@ -141,9 +140,9 @@ class Configuration
      */
     public function getDocumentNamespace(string $documentNamespaceAlias): string
     {
-        Deprecation::trigger(
+        trigger_deprecation(
             'doctrine/mongodb-odm',
-            'https://github.com/doctrine/mongodb-odm/pull/2374',
+            '2.3',
             'Document short namespace aliases such as "%s" are deprecated, use ::class constant instead.',
             $documentNamespaceAlias
         );
