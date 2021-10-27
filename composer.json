@@ -27,7 +27,6 @@
         "doctrine/annotations": "^1.12",
         "doctrine/cache": "^1.11 || ^2.0",
         "doctrine/collections": "^1.5",
-        "doctrine/deprecations": "^0.5.3",
         "doctrine/event-manager": "^1.0",
         "doctrine/instantiator": "^1.1",
         "doctrine/persistence": "^2.2",
