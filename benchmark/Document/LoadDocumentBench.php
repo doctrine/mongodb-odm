@@ -84,7 +84,7 @@ final class LoadDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchLoadReferenceOne()
+    public function benchLoadReferenceOne(): void
     {
         $this->loadDocument()->getAccount()->getName();
     }
@@ -92,7 +92,7 @@ final class LoadDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchLoadReferenceMany()
+    public function benchLoadReferenceMany(): void
     {
         $this->loadDocument()->getGroups()->forAll(static function (int $key, Group $group) {
             return $group->getName() !== null;

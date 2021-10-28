@@ -114,7 +114,7 @@ class GH560EventSubscriber implements EventSubscriber
         return $this->events;
     }
 
-    public function __call(string $eventName, array $args)
+    public function __call(string $eventName, array $args): void
     {
         $this->called[] = [$eventName, get_class($args[0]->getDocument())];
     }

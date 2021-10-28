@@ -1549,7 +1549,7 @@ final class DocumentPersister
         return $writeOptions;
     }
 
-    private function prepareReference(string $fieldName, $value, array $mapping, bool $inNewObj): array
+    private function prepareReference(string $fieldName, object $value, array $mapping, bool $inNewObj): array
     {
         $reference = $this->dm->createReference($value, $mapping);
         if ($inNewObj || $mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID) {

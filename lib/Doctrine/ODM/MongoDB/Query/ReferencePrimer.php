@@ -148,6 +148,7 @@ final class ReferencePrimer
             }
         }
 
+        /** @psalm-var class-string $className */
         foreach ($groupedIds as $className => $ids) {
             $refClass = $this->dm->getClassMetadata($className);
             call_user_func($primer, $this->dm, $refClass, array_values($ids), $hints);

@@ -591,7 +591,7 @@ use function trigger_deprecation;
      *
      * @see discriminatorField
      *
-     * @var mixed
+     * @psalm-var array<string, class-string>
      */
     public $discriminatorMap = [];
 

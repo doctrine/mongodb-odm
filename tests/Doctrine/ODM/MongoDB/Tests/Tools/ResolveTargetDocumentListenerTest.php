@@ -83,6 +83,9 @@ class ResolveTargetDocumentListenerTest extends BaseTest
 
 interface ResolveTargetInterface
 {
+    /**
+     * @return mixed
+     */
     public function getId();
 }
 

@@ -236,3 +236,17 @@ parameters:
             message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\(\\?'type' \\=\\> string, \\?'fieldName' \\=\\> string, \\?'name' \\=\\> string, \\?'strategy' \\=\\> string, \\?'association' \\=\\> int, \\?'id' \\=\\> bool, \\?'collectionClass' \\=\\> class\\-string, \\?'cascade' \\=\\> array\\<int, string\\>\\|string, \\.\\.\\.\\), array\\<int\\|string, \\(array\\<int, string\\>&nonEmpty\\)\\|bool\\|string\\> given\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
+
+        # This is handled by a try-catch block
+        -
+            message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+            paths:
+                - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
+                - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
+                - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Out.php
+
+        # $this->mapping['targetDocument'] is class-string<T>
+        -
+            message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php

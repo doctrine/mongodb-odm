@@ -15,3 +15,15 @@ parameters:
     - tests/Hydrators/
     - tests/PersistentCollections/
     - tests/Proxies/
+  # To be removed when reaching phpstan level 6
+  checkMissingVarTagTypehint: true
+  checkMissingTypehints: true
+
+# To be removed when reaching phpstan level 6
+rules:
+    - PHPStan\Rules\Constants\MissingClassConstantTypehintRule
+    - PHPStan\Rules\Functions\MissingFunctionParameterTypehintRule
+    - PHPStan\Rules\Functions\MissingFunctionReturnTypehintRule
+    - PHPStan\Rules\Methods\MissingMethodParameterTypehintRule
+    - PHPStan\Rules\Methods\MissingMethodReturnTypehintRule
+    - PHPStan\Rules\Properties\MissingPropertyTypehintRule

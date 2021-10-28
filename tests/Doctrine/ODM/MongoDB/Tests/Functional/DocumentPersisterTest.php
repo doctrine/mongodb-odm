@@ -645,6 +645,7 @@ class DocumentPersisterTest extends BaseTest
 
     /**
      * @param int|string $writeConcern
+     * @psalm-param class-string $class
      *
      * @dataProvider dataProviderTestWriteConcern
      */
@@ -668,6 +669,7 @@ class DocumentPersisterTest extends BaseTest
 
     /**
      * @param int|string $writeConcern
+     * @psalm-param class-string $class
      *
      * @dataProvider dataProviderTestWriteConcern
      */
@@ -692,6 +694,7 @@ class DocumentPersisterTest extends BaseTest
 
     /**
      * @param int|string $writeConcern
+     * @psalm-param class-string $class
      *
      * @dataProvider dataProviderTestWriteConcern
      */
