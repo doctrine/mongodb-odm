@@ -2749,6 +2749,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @param FieldMapping              $mapping
      * @param array<string, mixed>|null $data
+     *
+     * @psalm-return class-string
      */
     public function getClassNameForAssociation(array $mapping, $data): string
     {
@@ -2806,6 +2808,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         if ($discriminatorValue !== null) {
+            /** @psalm-var class-string<T> $className */
             $className =  $class->discriminatorMap[$discriminatorValue] ?? $discriminatorValue;
 
             $class = $this->dm->getClassMetadata($className);

@@ -67,7 +67,7 @@ class ConfigurableProduct
         return $this;
     }
 
-    /***
+    /**
      * @return Collection<int, Option>|array<Option>
      */
     public function getOptions()

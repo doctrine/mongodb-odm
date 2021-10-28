@@ -147,6 +147,8 @@ class GraphLookup extends Stage
      *
      * The from collection cannot be sharded and must be in the same database as
      * any other collections used in the operation.
+     *
+     * @psalm-param class-string|string $from
      */
     public function from(string $from): self
     {
