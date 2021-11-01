@@ -25,12 +25,6 @@ parameters:
             count: 1
             path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php
 
-        # Union types cannot be added yet
-        -
-            message: "#^Result of && is always false\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Query/Builder.php
-
         -
             message: "#DOCTRINE_MONGODB_DATABASE not found\\.$#"
             paths:
@@ -160,16 +154,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM88Test.php
 
         -
-            message: "#^Result of \\|\\| is always true\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM92Test.php
-
-        -
-            message: "#^Result of \\|\\| is always true\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM95Test.php
-
-        -
             message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:mapField\\(\\)\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
@@ -197,7 +181,7 @@ parameters:
 
         # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
         -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getMapping\\(\\) should return array\\('type' \\=\\> string, 'fieldName' \\=\\> string, 'name' \\=\\> string, 'isCascadeRemove' \\=\\> bool, 'isCascadePersist' \\=\\> bool, 'isCascadeRefresh' \\=\\> bool, 'isCascadeMerge' \\=\\> bool, 'isCascadeDetach' \\=\\> bool, \\.\\.\\.\\) but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\.$#"
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getMapping\\(\\) should return array\\{type\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\} but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
@@ -231,9 +215,59 @@ parameters:
             count: 3
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomCollectionsTest.php
 
+        # These classes are not final
+        -
+            message: "#^Unsafe call to private method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Expr\\:\\:convertExpression\\(\\) through static::\\.$#"
+            count: 3
+            path: lib/Doctrine/ODM/MongoDB/Query/Expr.php
+
+        -
+            message: "#^Unsafe call to private method Doctrine\\\\ODM\\\\MongoDB\\\\Types\\\\DateType\\:\\:craftDateTime\\(\\) through static::\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Types/DateType.php
+
+        # False positive, the exception is thrown
+        -
+            message: "#^Dead catch \\- MongoDB\\\\Driver\\\\Exception\\\\BulkWriteException is never thrown in the try block\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
+
+        # Properties are not covariant
+        -
+            message: "#^PHPDoc type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithDiscriminator\\:\\:\\$embeddedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$embeddedChildren\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+
+        -
+            message: "#^PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithDiscriminator\\:\\:\\$referencedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$referencedChildren\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+
+        -
+            message: "#^PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithoutDiscriminator\\:\\:\\$embeddedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$embeddedChildren\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+
+        -
+            message: "#^PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithoutDiscriminator\\:\\:\\$referencedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$referencedChildren\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+
+        # See https://github.com/phpstan/phpstan/issues/5860
+        -
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:getOrCreateDocument\\(\\) should return T of object but returns \\(Doctrine\\\\Persistence\\\\NotifyPropertyChanged&ProxyManager\\\\Proxy\\\\GhostObjectInterface&T of object\\)\\|\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface&T of object\\)\\|T of object\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
+
+        # 'strategy' offset is defined as nullable, but here there is no check here
+        -
+            message: "#^Offset 'strategy' does not exist on array\\{\\}\\|array\\{type\\?\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\}\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
+
         # When iterating over SimpleXMLElement, we cannot know the key values
         -
-            message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\(\\?'type' \\=\\> string, \\?'fieldName' \\=\\> string, \\?'name' \\=\\> string, \\?'strategy' \\=\\> string, \\?'association' \\=\\> int, \\?'id' \\=\\> bool, \\?'collectionClass' \\=\\> class\\-string, \\?'cascade' \\=\\> array\\<int, string\\>\\|string, \\.\\.\\.\\), array\\<int\\|string, \\(array\\<int, string\\>&nonEmpty\\)\\|bool\\|string\\> given\\.$#"
+            message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\<int\\|string, non\\-empty\\-array\\<int, string\\>\\|bool\\|string\\> given\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
@@ -250,3 +284,14 @@ parameters:
             message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+        -
+            message: "#Property .+ is never written, only read.#"
+            path: tests
+
+        -
+            message: "#Property .+ is never read, only written.#"
+            path: tests
+
+        -
+            message: "#Property .+ is unused.#"
+            path: tests

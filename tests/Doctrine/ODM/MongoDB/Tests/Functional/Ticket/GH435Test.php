@@ -37,7 +37,7 @@ class GH435Parent
     /**
      * @ODM\Field(type="int")
      *
-     * @var int|null
+     * @var int|string|null
      */
     protected $test;
 }

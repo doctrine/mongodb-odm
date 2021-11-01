@@ -38,7 +38,7 @@ class ConfigurableProduct
      */
     protected $options = [];
 
-    /** @var Option */
+    /** @var Option|null */
     protected $selectedOption;
 
     public function __construct(string $name)

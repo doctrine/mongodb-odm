@@ -592,7 +592,7 @@ abstract class AbstractVersionBase
      */
     public $issues;
 
-    /** @var int|null */
+    /** @var int|string|DateTime|DateTimeImmutable|null */
     public $version;
 
     public function __construct(?string $title = null)
@@ -614,7 +614,10 @@ abstract class AbstractVersionBase
         return $this->title;
     }
 
-    public function getVersion(): ?int
+    /**
+     * @return int|string|DateTime|DateTimeImmutable|null
+     */
+    public function getVersion()
     {
         return $this->version;
     }
