@@ -218,7 +218,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Selects all elements from a selectable that match the expression and
      * returns a new collection containing these elements.
      *
-     * @return ArrayCollection<int, T>
+     * @return ArrayCollection<array-key, T>
      */
     public function matching(Criteria $criteria): ArrayCollection
     {

@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Iterator;
 
 /**
- * @template TKey
  * @template TValue
- * @template-extends \Iterator<TKey, TValue>
+ * @template-extends \Iterator<mixed, TValue>
  */
 interface Iterator extends \Iterator
 {
     /**
-     * @psalm-return array<TKey, TValue>
+     * @psalm-return array<mixed, TValue>
      */
     public function toArray(): array;
 }
