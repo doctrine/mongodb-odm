@@ -256,10 +256,10 @@ trait PersistentCollectionTrait
     public function getDeletedDocuments()
     {
         $coll = $this->coll->toArray();
-        $loadedObjectsByOid = \array_combine(\array_map('spl_object_hash', $this->snapshot), $this->snapshot);
-        $newObjectsByOid = \array_combine(\array_map('spl_object_hash', $coll), $coll);
+        $loadedObjectsByOid = array_combine(array_map('spl_object_hash', $this->snapshot), $this->snapshot);
+        $newObjectsByOid = array_combine(array_map('spl_object_hash', $coll), $coll);
 
-        return array_values(\array_diff_key($loadedObjectsByOid, $newObjectsByOid));
+        return array_values(array_diff_key($loadedObjectsByOid, $newObjectsByOid));
     }
 
     /** {@inheritdoc} */
@@ -278,10 +278,10 @@ trait PersistentCollectionTrait
     public function getInsertedDocuments()
     {
         $coll = $this->coll->toArray();
-        $loadedObjectsByOid = \array_combine(\array_map('spl_object_hash', $this->snapshot), $this->snapshot);
-        $newObjectsByOid = \array_combine(\array_map('spl_object_hash', $coll), $coll);
+        $loadedObjectsByOid = array_combine(array_map('spl_object_hash', $this->snapshot), $this->snapshot);
+        $newObjectsByOid = array_combine(array_map('spl_object_hash', $coll), $coll);
 
-        return array_values(\array_diff_key($newObjectsByOid, $loadedObjectsByOid));
+        return array_values(array_diff_key($newObjectsByOid, $loadedObjectsByOid));
     }
 
     /** {@inheritdoc} */
