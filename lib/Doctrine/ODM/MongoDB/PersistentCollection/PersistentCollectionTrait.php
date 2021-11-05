@@ -255,18 +255,11 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getDeletedDocuments()
     {
-        $compare = static function ($a, $b) {
-            $compareA = is_object($a) ? spl_object_hash($a) : $a;
-            $compareb = is_object($b) ? spl_object_hash($b) : $b;
+        $coll = $this->coll->toArray();
+        $loadedObjectsByOid = \array_combine(\array_map('spl_object_hash', $this->snapshot), $this->snapshot);
+        $newObjectsByOid = \array_combine(\array_map('spl_object_hash', $coll), $coll);
 
-            return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
-        };
-
-        return array_values(array_udiff(
-            $this->snapshot,
-            $this->coll->toArray(),
-            $compare
-        ));
+        return array_values(\array_diff_key($loadedObjectsByOid, $newObjectsByOid));
     }
 
     /** {@inheritdoc} */
@@ -284,18 +277,11 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getInsertedDocuments()
     {
-        $compare = static function ($a, $b) {
-            $compareA = is_object($a) ? spl_object_hash($a) : $a;
-            $compareb = is_object($b) ? spl_object_hash($b) : $b;
+        $coll = $this->coll->toArray();
+        $loadedObjectsByOid = \array_combine(\array_map('spl_object_hash', $this->snapshot), $this->snapshot);
+        $newObjectsByOid = \array_combine(\array_map('spl_object_hash', $coll), $coll);
 
-            return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
-        };
-
-        return array_values(array_udiff(
-            $this->coll->toArray(),
-            $this->snapshot,
-            $compare
-        ));
+        return array_values(\array_diff_key($newObjectsByOid, $loadedObjectsByOid));
     }
 
     /** {@inheritdoc} */
