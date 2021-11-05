@@ -11,13 +11,14 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
-use function array_udiff;
+use function array_combine;
+use function array_diff_key;
+use function array_map;
 use function array_udiff_assoc;
 use function array_values;
 use function count;
 use function get_class;
 use function is_object;
-use function spl_object_hash;
 
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
@@ -255,9 +256,9 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getDeletedDocuments()
     {
-        $coll = $this->coll->toArray();
+        $coll               = $this->coll->toArray();
         $loadedObjectsByOid = array_combine(array_map('spl_object_hash', $this->snapshot), $this->snapshot);
-        $newObjectsByOid = array_combine(array_map('spl_object_hash', $coll), $coll);
+        $newObjectsByOid    = array_combine(array_map('spl_object_hash', $coll), $coll);
 
         return array_values(array_diff_key($loadedObjectsByOid, $newObjectsByOid));
     }
@@ -277,9 +278,9 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getInsertedDocuments()
     {
-        $coll = $this->coll->toArray();
+        $coll               = $this->coll->toArray();
         $loadedObjectsByOid = array_combine(array_map('spl_object_hash', $this->snapshot), $this->snapshot);
-        $newObjectsByOid = array_combine(array_map('spl_object_hash', $coll), $coll);
+        $newObjectsByOid    = array_combine(array_map('spl_object_hash', $coll), $coll);
 
         return array_values(array_diff_key($newObjectsByOid, $loadedObjectsByOid));
     }
