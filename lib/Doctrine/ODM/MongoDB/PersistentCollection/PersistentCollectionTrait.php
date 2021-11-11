@@ -19,7 +19,6 @@ use function array_values;
 use function count;
 use function get_class;
 use function is_object;
-use function spl_object_hash;
 
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
@@ -257,13 +256,9 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getDeletedDocuments()
     {
-        $callback = static function ($val) {
-            return is_object($val) ? spl_object_hash($val) : $val;
-        };
-
         $coll               = $this->coll->toArray();
-        $loadedObjectsByOid = array_combine(array_map($callback, $this->snapshot), $this->snapshot);
-        $newObjectsByOid    = array_combine(array_map($callback, $coll), $coll);
+        $loadedObjectsByOid = array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot);
+        $newObjectsByOid    = array_combine(array_map('spl_object_id', $coll), $coll);
 
         return array_values(array_diff_key($loadedObjectsByOid, $newObjectsByOid));
     }
@@ -283,13 +278,9 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getInsertedDocuments()
     {
-        $callback = static function ($val) {
-            return is_object($val) ? spl_object_hash($val) : $val;
-        };
-
         $coll               = $this->coll->toArray();
-        $newObjectsByOid    = array_combine(array_map($callback, $coll), $coll);
-        $loadedObjectsByOid = array_combine(array_map($callback, $this->snapshot), $this->snapshot);
+        $newObjectsByOid    = array_combine(array_map('spl_object_id', $coll), $coll);
+        $loadedObjectsByOid = array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot);
 
         return array_values(array_diff_key($newObjectsByOid, $loadedObjectsByOid));
     }
