@@ -11,13 +11,14 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
-use function array_udiff;
+use function array_combine;
+use function array_diff_key;
+use function array_map;
 use function array_udiff_assoc;
 use function array_values;
 use function count;
 use function get_class;
 use function is_object;
-use function spl_object_hash;
 
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
@@ -255,18 +256,11 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getDeletedDocuments()
     {
-        $compare = static function ($a, $b) {
-            $compareA = is_object($a) ? spl_object_hash($a) : $a;
-            $compareb = is_object($b) ? spl_object_hash($b) : $b;
+        $coll               = $this->coll->toArray();
+        $loadedObjectsByOid = array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot);
+        $newObjectsByOid    = array_combine(array_map('spl_object_id', $coll), $coll);
 
-            return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
-        };
-
-        return array_values(array_udiff(
-            $this->snapshot,
-            $this->coll->toArray(),
-            $compare
-        ));
+        return array_values(array_diff_key($loadedObjectsByOid, $newObjectsByOid));
     }
 
     /** {@inheritdoc} */
@@ -284,18 +278,11 @@ trait PersistentCollectionTrait
     /** {@inheritdoc} */
     public function getInsertedDocuments()
     {
-        $compare = static function ($a, $b) {
-            $compareA = is_object($a) ? spl_object_hash($a) : $a;
-            $compareb = is_object($b) ? spl_object_hash($b) : $b;
+        $coll               = $this->coll->toArray();
+        $newObjectsByOid    = array_combine(array_map('spl_object_id', $coll), $coll);
+        $loadedObjectsByOid = array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot);
 
-            return $compareA === $compareb ? 0 : ($compareA > $compareb ? 1 : -1);
-        };
-
-        return array_values(array_udiff(
-            $this->coll->toArray(),
-            $this->snapshot,
-            $compare
-        ));
+        return array_values(array_diff_key($newObjectsByOid, $loadedObjectsByOid));
     }
 
     /** {@inheritdoc} */
