@@ -14,14 +14,13 @@ use function iterator_to_array;
 
 /**
  * @psalm-import-type Hints from UnitOfWork
- * @template TKey
  * @template TValue
  * @template TDocument of object
- * @template-implements Iterator<TKey, TValue>
+ * @template-implements Iterator<TValue>
  */
 final class PrimingIterator implements Iterator
 {
-    /** @var \Iterator<TKey, TValue> */
+    /** @var \Iterator<mixed, TValue> */
     private $iterator;
 
     /** @var ClassMetadata<TDocument> */
@@ -43,7 +42,7 @@ final class PrimingIterator implements Iterator
     private $referencesPrimed = false;
 
     /**
-     * @param \Iterator<TKey, TValue>      $iterator
+     * @param \Iterator<mixed, TValue>     $iterator
      * @param ClassMetadata<TDocument>     $class
      * @param array<string, callable|null> $primers
      * @psalm-param Hints $unitOfWorkHints
@@ -79,7 +78,7 @@ final class PrimingIterator implements Iterator
     }
 
     /**
-     * @return TKey|null
+     * @return mixed
      */
     #[ReturnTypeWillChange]
     public function key()

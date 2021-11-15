@@ -18,13 +18,12 @@ use function sprintf;
  *
  * @internal
  *
- * @template TKey
  * @template TValue
- * @template-implements Iterator<TKey, TValue>
+ * @template-implements Iterator<TValue>
  */
 final class UnrewindableIterator implements Iterator
 {
-    /** @var Generator<TKey, TValue>|null */
+    /** @var Generator<mixed, TValue>|null */
     private $iterator;
 
     /** @var bool */
@@ -36,7 +35,7 @@ final class UnrewindableIterator implements Iterator
      * Additionally, this mimics behavior of the SPL iterators and allows users
      * to omit an explicit call to rewind() before using the other methods.
      *
-     * @param Traversable<TKey, TValue> $iterator
+     * @param Traversable<mixed, TValue> $iterator
      */
     public function __construct(Traversable $iterator)
     {
@@ -70,7 +69,7 @@ final class UnrewindableIterator implements Iterator
     }
 
     /**
-     * @return TKey|null
+     * @return mixed
      */
     #[ReturnTypeWillChange]
     public function key()
@@ -121,7 +120,7 @@ final class UnrewindableIterator implements Iterator
     }
 
     /**
-     * @return Generator<TKey, TValue>
+     * @return Generator<mixed, TValue>
      */
     private function getIterator(): Generator
     {
@@ -133,9 +132,9 @@ final class UnrewindableIterator implements Iterator
     }
 
     /**
-     * @param Traversable<TKey, TValue> $traversable
+     * @param Traversable<mixed, TValue> $traversable
      *
-     * @return Generator<TKey, TValue>
+     * @return Generator<mixed, TValue>
      */
     private function wrapTraversable(Traversable $traversable): Generator
     {

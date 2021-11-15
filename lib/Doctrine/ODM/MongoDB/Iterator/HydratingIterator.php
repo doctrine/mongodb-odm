@@ -19,14 +19,13 @@ use Traversable;
  *
  * @psalm-import-type Hints from UnitOfWork
  *
- * @template TKey
  * @template TValue
  * @template TDocument of object
- * @template-implements Iterator<TKey, TDocument>
+ * @template-implements Iterator<TValue>
  */
 final class HydratingIterator implements Iterator
 {
-    /** @var Generator<TKey, TValue>|null */
+    /** @var Generator<mixed, TValue>|null */
     private $iterator;
 
     /** @var UnitOfWork */
@@ -42,8 +41,8 @@ final class HydratingIterator implements Iterator
     private $unitOfWorkHints;
 
     /**
-     * @param Traversable<TKey, TValue> $traversable
-     * @param ClassMetadata<TDocument>  $class
+     * @param Traversable<mixed, TValue> $traversable
+     * @param ClassMetadata<TDocument>   $class
      * @psalm-param Hints $unitOfWorkHints
      */
     public function __construct(Traversable $traversable, UnitOfWork $unitOfWork, ClassMetadata $class, array $unitOfWorkHints = [])
@@ -69,7 +68,7 @@ final class HydratingIterator implements Iterator
     }
 
     /**
-     * @return TKey|null
+     * @return mixed
      */
     #[ReturnTypeWillChange]
     public function key()
@@ -102,7 +101,7 @@ final class HydratingIterator implements Iterator
     }
 
     /**
-     * @return Generator<TKey, TValue>
+     * @return Generator<mixed, TValue>
      */
     private function getIterator(): Generator
     {
@@ -124,9 +123,9 @@ final class HydratingIterator implements Iterator
     }
 
     /**
-     * @param Traversable<TKey, TValue> $traversable
+     * @param Traversable<mixed, TValue> $traversable
      *
-     * @return Generator<TKey, TValue>
+     * @return Generator<mixed, TValue>
      */
     private function wrapTraversable(Traversable $traversable): Generator
     {
