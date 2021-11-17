@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests\Repos;
+namespace Doctrine\ODM\MongoDB\Tests\Repository;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -256,7 +256,11 @@ class DefaultGridFSRepositoryTest extends BaseTest
     }
 
     /**
-     * @param class-string $className
+     * @param class-string<T> $className
+     *
+     * @return GridFSRepository<T>
+     *
+     * @template T of object
      */
     private function getRepository(string $className = File::class): GridFSRepository
     {

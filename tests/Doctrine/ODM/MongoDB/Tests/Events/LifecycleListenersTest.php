@@ -250,6 +250,9 @@ class PostCollectionLoadEventListener
         $this->phpunit = $phpunit;
     }
 
+    /**
+     * @param PostCollectionLoadEventArgs<int, TestEmbeddedDocument> $e
+     */
     public function postCollectionLoad(PostCollectionLoadEventArgs $e): void
     {
         switch ($this->at++) {

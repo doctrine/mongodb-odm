@@ -90,7 +90,7 @@ class AtomicSetTest extends BaseTest
     }
 
     /**
-     * @param array|ArrayCollection|null $clearWith
+     * @param mixed[]|ArrayCollection<int, mixed>|null $clearWith
      *
      * @dataProvider provideAtomicCollectionUnset
      */

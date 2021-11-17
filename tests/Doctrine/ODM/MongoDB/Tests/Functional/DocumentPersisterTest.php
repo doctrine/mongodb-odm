@@ -32,7 +32,7 @@ class DocumentPersisterTest extends BaseTest
     /** @var class-string<DocumentPersisterTestDocument> */
     private $class;
 
-    /** @var DocumentPersister */
+    /** @var DocumentPersister<DocumentPersisterTestDocument> */
     private $documentPersister;
 
     public function setUp(): void

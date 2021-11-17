@@ -87,6 +87,9 @@ class GH1232Comment
     public $post;
 }
 
+/**
+ * @template-extends DocumentRepository<GH1232Comment>
+ */
 class GH1232CommentRepository extends DocumentRepository
 {
     /**

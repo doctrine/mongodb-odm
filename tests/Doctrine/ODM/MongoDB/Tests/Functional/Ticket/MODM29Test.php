@@ -68,6 +68,9 @@ class MODM29Doc
      */
     protected $collection;
 
+    /**
+     * @param Collection<int, MODM29Embedded> $c
+     */
     public function __construct(Collection $c)
     {
         $this->set($c);

@@ -46,6 +46,9 @@ class Phonebook
         $this->phonenumbers->add($phonenumber);
     }
 
+    /**
+     * @return Collection<int, Phonenumber>
+     */
     public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;

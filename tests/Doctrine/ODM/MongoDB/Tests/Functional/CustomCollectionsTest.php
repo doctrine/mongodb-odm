@@ -205,7 +205,7 @@ class DocumentWithCustomCollection
      *   targetDocument=EmbeddedDocumentInCustomCollection::class
      * )
      *
-     * @var MyEmbedsCollection
+     * @var MyEmbedsCollection<int, EmbeddedDocumentInCustomCollection>
      */
     public $coll;
 
@@ -225,7 +225,7 @@ class DocumentWithCustomCollection
      *   targetDocument=DocumentWithCustomCollection::class
      * )
      *
-     * @var MyDocumentsCollection
+     * @var MyDocumentsCollection<int, DocumentWithCustomCollection>
      */
     public $refMany;
 
@@ -236,7 +236,7 @@ class DocumentWithCustomCollection
      *   targetDocument=DocumentWithCustomCollection::class
      * )
      *
-     * @var MyDocumentsCollection
+     * @var MyDocumentsCollection<int, DocumentWithCustomCollection>
      */
     public $inverseRefMany;
 
@@ -275,8 +275,16 @@ class EmbeddedDocumentInCustomCollection
     }
 }
 
+/**
+ * @template TKey of array-key
+ * @template TElement
+ * @template-extends ArrayCollection<TKey, TElement>
+ */
 class MyEmbedsCollection extends ArrayCollection
 {
+    /**
+     * @return MyEmbedsCollection<TKey, TElement>
+     */
     public function getByName(string $name): MyEmbedsCollection
     {
         return $this->filter(static function ($item) use ($name) {
@@ -284,6 +292,9 @@ class MyEmbedsCollection extends ArrayCollection
         });
     }
 
+    /**
+     * @return MyEmbedsCollection<TKey, TElement>
+     */
     public function getEnabled(): MyEmbedsCollection
     {
         return $this->filter(static function ($item) {
@@ -303,8 +314,16 @@ class MyEmbedsCollection extends ArrayCollection
     }
 }
 
+/**
+ * @template TKey of array-key
+ * @template TElement
+ * @template-extends ArrayCollection<TKey, TElement>
+ */
 class MyDocumentsCollection extends ArrayCollection
 {
+    /**
+     * @return MyDocumentsCollection<TKey, TElement>
+     */
     public function havingEmbeds(): MyDocumentsCollection
     {
         return $this->filter(static function ($item) {

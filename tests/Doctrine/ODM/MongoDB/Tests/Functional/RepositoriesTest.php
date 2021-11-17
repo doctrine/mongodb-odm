@@ -14,7 +14,7 @@ class RepositoriesTest extends BaseTest
     /** @var User */
     private $user;
 
-    /** @var DocumentRepository */
+    /** @var DocumentRepository<User> */
     private $repository;
 
     public function setUp(): void

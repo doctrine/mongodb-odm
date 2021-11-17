@@ -155,11 +155,17 @@ class GH597Post
         return $this->id;
     }
 
+    /**
+     * @return Collection<int, GH597Comment>
+     */
     public function getComments(): Collection
     {
         return $this->comments;
     }
 
+    /**
+     * @return Collection<int, GH597ReferenceMany>
+     */
     public function getReferenceMany(): Collection
     {
         return $this->referenceMany;

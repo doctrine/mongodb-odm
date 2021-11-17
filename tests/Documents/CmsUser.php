@@ -110,6 +110,9 @@ class CmsUser
         $phone->setUser($this);
     }
 
+    /**
+     * @return Collection<int, CmsPhonenumber>
+     */
     public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
@@ -127,6 +130,9 @@ class CmsUser
         $group->addUser($this);
     }
 
+    /**
+     * @return Collection<int, CmsGroup>
+     */
     public function getGroups(): Collection
     {
         return $this->groups;
