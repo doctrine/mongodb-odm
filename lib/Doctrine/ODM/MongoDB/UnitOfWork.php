@@ -271,7 +271,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Array of parent associations between embedded documents.
      *
      * @var array
-     * @psalm-var array<string, array{0: FieldMapping, 1: object|null, 2: string}>
+     * @psalm-var array<string, array{0: AssociationFieldMapping, 1: object|null, 2: string}>
      */
     private $parentAssociations = [];
 
@@ -341,7 +341,7 @@ final class UnitOfWork implements PropertyChangedListener
      *     list($mapping, $parent, $propertyPath) = $this->getParentAssociation($embeddedDocument);
      *     </code>
      *
-     * @psalm-return array{0: FieldMapping, 1: object|null, 2: string}|null
+     * @psalm-return array{0: AssociationFieldMapping, 1: object|null, 2: string}|null
      */
     public function getParentAssociation(object $document): ?array
     {
@@ -2749,6 +2749,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @param FieldMapping              $mapping
      * @param array<string, mixed>|null $data
+     *
+     * @psalm-return class-string
      */
     public function getClassNameForAssociation(array $mapping, $data): string
     {
@@ -2806,6 +2808,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         if ($discriminatorValue !== null) {
+            /** @psalm-var class-string<T> $className */
             $className =  $class->discriminatorMap[$discriminatorValue] ?? $discriminatorValue;
 
             $class = $this->dm->getClassMetadata($className);

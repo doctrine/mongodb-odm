@@ -298,9 +298,6 @@ abstract class AbstractMappingDriverTest extends BaseTest
      */
     public function testDiscriminator($class): ClassMetadata
     {
-        $this->assertTrue(isset($class->discriminatorField));
-        $this->assertTrue(isset($class->discriminatorMap));
-        $this->assertTrue(isset($class->defaultDiscriminatorValue));
         $this->assertEquals('discr', $class->discriminatorField);
         $this->assertEquals(['default' => AbstractMappingDriverUser::class], $class->discriminatorMap);
         $this->assertEquals('default', $class->defaultDiscriminatorValue);
@@ -970,7 +967,7 @@ class AbstractMappingDriverSuperClass
     /**
      * @ODM\Field(type="string")
      *
-     * @var string|null
+     * @var string|int|null
      */
     #[ODM\Field(type: 'string')]
     protected $override;

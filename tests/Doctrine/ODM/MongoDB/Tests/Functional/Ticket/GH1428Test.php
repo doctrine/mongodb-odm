@@ -6,10 +6,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use PHPUnit\Framework\Error\Notice;
 
 class GH1428Test extends BaseTest
 {
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testShortNameLossOnReplacingMiddleEmbeddedDocOfNestedEmbedding(): void
     {
         $owner          = new GH1428Document();
@@ -24,12 +26,7 @@ class GH1428Test extends BaseTest
         $owner->embedded                 = new GH1428EmbeddedDocument();
         $owner->embedded->nestedEmbedded = $nestedEmbedded;
 
-        try {
-            $this->dm->flush();
-            $this->assertTrue(true);
-        } catch (Notice $ex) {
-            $this->fail($ex->getMessage());
-        }
+        $this->dm->flush();
     }
 }
 

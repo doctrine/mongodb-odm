@@ -38,7 +38,7 @@ class ConfigurableProduct
      */
     protected $options = [];
 
-    /** @var Option */
+    /** @var Option|null */
     protected $selectedOption;
 
     public function __construct(string $name)
@@ -67,7 +67,7 @@ class ConfigurableProduct
         return $this;
     }
 
-    /***
+    /**
      * @return Collection<int, Option>|array<Option>
      */
     public function getOptions()

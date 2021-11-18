@@ -185,28 +185,28 @@ class ParentDocumentWithoutDiscriminator extends ParentDocument
     /**
      * @ODM\ReferenceOne(targetDocument=ChildDocumentWithoutDiscriminator::class)
      *
-     * @var ChildDocumentWithDiscriminator|null
+     * @var ChildDocumentWithDiscriminator
      */
     protected $referencedChild;
 
     /**
      * @ODM\ReferenceMany(targetDocument=ChildDocumentWithoutDiscriminator::class)
      *
-     * @var Collection<int, ChildDocumentWithDiscriminator>
+     * @var Collection<int, ChildDocumentWithDiscriminator>|array<ChildDocumentWithDiscriminator>
      */
     protected $referencedChildren;
 
     /**
      * @ODM\EmbedOne(targetDocument=ChildDocumentWithoutDiscriminator::class)
      *
-     * @var ChildDocumentWithoutDiscriminator|null
+     * @var ChildDocumentWithoutDiscriminator
      */
     protected $embeddedChild;
 
     /**
      * @ODM\EmbedMany(targetDocument=ChildDocumentWithoutDiscriminator::class)
      *
-     * @var Collection<int, ChildDocumentWithDiscriminator>
+     * @var Collection<int, ChildDocumentWithDiscriminator>|array<ChildDocumentWithDiscriminator>
      */
     protected $embeddedChildren;
 }
@@ -223,21 +223,21 @@ class ParentDocumentWithDiscriminator extends ParentDocument
     /**
      * @ODM\ReferenceOne(targetDocument=ChildDocumentWithDiscriminator::class)
      *
-     * @var ChildDocumentWithDiscriminator|null
+     * @var ChildDocumentWithDiscriminator
      */
     protected $referencedChild;
 
     /**
      * @ODM\ReferenceMany(targetDocument=ChildDocumentWithDiscriminator::class)
      *
-     * @var Collection<int, ChildDocumentWithDiscriminator>
+     * @var Collection<int, ChildDocumentWithDiscriminator>|array<ChildDocumentWithDiscriminator>
      */
     protected $referencedChildren;
 
     /**
      * @ODM\EmbedOne(targetDocument=ChildDocumentWithDiscriminator::class)
      *
-     * @var ChildDocumentWithDiscriminator|null
+     * @var ChildDocumentWithDiscriminator
      */
     protected $embeddedChild;
 

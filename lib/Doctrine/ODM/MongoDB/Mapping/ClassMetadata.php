@@ -64,6 +64,7 @@ use function trigger_deprecation;
  *      strategy?: string,
  *      association?: int,
  *      id?: bool,
+ *      isOwningSide?: bool,
  *      collectionClass?: class-string,
  *      cascade?: list<string>|string,
  *      embedded?: bool,
@@ -90,7 +91,11 @@ use function trigger_deprecation;
  *      sparse?: bool,
  *      unique?: bool,
  *      index?: bool,
+ *      index-name?: string,
  *      criteria?: array<string, string>,
+ *      alsoLoadFields?: list<string>,
+ *      order?: int|string,
+ *      background?: bool
  * }
  * @psalm-type FieldMapping = array{
  *      type: string,
@@ -103,7 +108,7 @@ use function trigger_deprecation;
  *      isCascadeDetach: bool,
  *      isOwningSide: bool,
  *      isInverseSide: bool,
- *      strategy: string,
+ *      strategy?: string,
  *      association?: int,
  *      id?: bool,
  *      collectionClass?: class-string,
@@ -134,9 +139,10 @@ use function trigger_deprecation;
  *      unique?: bool,
  *      index?: bool,
  *      criteria?: array<string, string>,
+ *      alsoLoadFields?: list<string>,
  * }
  * @psalm-type AssociationFieldMapping = array{
- *      type: string,
+ *      type?: string,
  *      fieldName: string,
  *      name: string,
  *      isCascadeRemove: bool,
@@ -148,7 +154,7 @@ use function trigger_deprecation;
  *      isInverseSide: bool,
  *      targetDocument: class-string|null,
  *      association: int,
- *      strategy: string,
+ *      strategy?: string,
  *      id?: bool,
  *      collectionClass?: class-string,
  *      cascade?: list<string>|string,
@@ -177,6 +183,7 @@ use function trigger_deprecation;
  *      unique?: bool,
  *      index?: bool,
  *      criteria?: array<string, string>,
+ *      alsoLoadFields?: list<string>,
  * }
  * @psalm-type IndexKeys = array<string, mixed>
  * @psalm-type IndexOptions = array<string, mixed>
@@ -591,7 +598,7 @@ use function trigger_deprecation;
      *
      * @see discriminatorField
      *
-     * @var mixed
+     * @psalm-var array<string, class-string>
      */
     public $discriminatorMap = [];
 
@@ -1456,7 +1463,7 @@ use function trigger_deprecation;
     /**
      * Validates the storage strategy of a mapping for consistency
      *
-     * @psalm-param FieldMapping $mapping
+     * @psalm-param FieldMappingConfig $mapping
      *
      * @throws MappingException
      */
