@@ -334,7 +334,7 @@ class PersistentCollectionTest extends BaseTest
     }
 
     /**
-     * @return Collection&MockObject
+     * @return Collection<int, object>&MockObject
      */
     private function getMockCollection()
     {

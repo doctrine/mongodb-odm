@@ -34,6 +34,9 @@ class Developer
      */
     private $projects;
 
+    /**
+     * @param Collection<int, Project>|null $projects
+     */
     public function __construct(string $name, ?Collection $projects = null)
     {
         $this->name     = $name;

@@ -99,6 +99,9 @@ class MODM81TestDocument
         $this->name = $name;
     }
 
+    /**
+     * @return Collection<int, MODM81TestEmbeddedDocument>
+     */
     public function getEmbeddedDocuments(): Collection
     {
         return $this->embeddedDocuments;

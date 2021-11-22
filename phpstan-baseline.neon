@@ -209,12 +209,6 @@ parameters:
             count: 1
             path: lib/Doctrine/ODM/MongoDB/Types/DateImmutableType.php
 
-        # See https://github.com/phpstan/phpstan/issues/5512
-        -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\My.*Collection\\:\\:.*\\(\\) should return Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\My.*Collection but returns Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<\\(int\\|string\\), mixed\\>\\.$#"
-            count: 3
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomCollectionsTest.php
-
         # These classes are not final
         -
             message: "#^Unsafe call to private method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Expr\\:\\:convertExpression\\(\\) through static::\\.$#"
@@ -253,6 +247,12 @@ parameters:
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
 
+        # Collection elements cannot be covariant, see https://github.com/doctrine/collections/pull/220
+        -
+            message: "#^Parameter \\#2 \\$projects of class Documents\\\\Developer constructor expects Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Documents\\\\Project\\>\\|null, Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<int, Documents\\\\SubProject\\> given\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
+
         # See https://github.com/phpstan/phpstan/issues/5860
         -
             message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:getOrCreateDocument\\(\\) should return T of object but returns \\(Doctrine\\\\Persistence\\\\NotifyPropertyChanged&ProxyManager\\\\Proxy\\\\GhostObjectInterface&T of object\\)\\|\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface&T of object\\)\\|T of object\\.$#"
@@ -284,6 +284,7 @@ parameters:
             message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
         -
             message: "#Property .+ is never written, only read.#"
             path: tests

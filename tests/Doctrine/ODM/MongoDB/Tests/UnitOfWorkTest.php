@@ -625,6 +625,9 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->data = $data;
     }
 
+    /**
+     * @return Collection<int, NotifyChangedRelatedItem>
+     */
     public function getItems(): Collection
     {
         return $this->items;

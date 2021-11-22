@@ -262,6 +262,8 @@ class ClassMetadataTest extends BaseTest
     }
 
     /**
+     * @param ClassMetadata<CmsUser> $cm
+     *
      * @dataProvider dataProviderMetadataClasses
      */
     public function testEmbeddedDocumentWithDiscriminator(ClassMetadata $cm): void
@@ -854,6 +856,9 @@ class ClassMetadataTest extends BaseTest
     }
 }
 
+/**
+ * @template-extends DocumentRepository<self>
+ */
 class TestCustomRepositoryClass extends DocumentRepository
 {
 }

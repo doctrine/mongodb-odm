@@ -141,6 +141,9 @@ class OrphanRemovalEmbedTest extends BaseTest
         $this->assertNotNull($this->getAddressRepository()->find($address3->id), 'Should have added address 3');
     }
 
+    /**
+     * @return DocumentRepository<OrphanRemovalCascadeUser>
+     */
     private function getUserRepository(): DocumentRepository
     {
         $repository = $this->dm->getRepository(OrphanRemovalCascadeUser::class);
@@ -150,6 +153,9 @@ class OrphanRemovalEmbedTest extends BaseTest
         return $repository;
     }
 
+    /**
+     * @return DocumentRepository<OrphanRemovalCascadeAddress>
+     */
     private function getAddressRepository(): DocumentRepository
     {
         $repository = $this->dm->getRepository(OrphanRemovalCascadeAddress::class);

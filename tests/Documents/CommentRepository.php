@@ -24,6 +24,9 @@ class CommentRepository extends DocumentRepository
             ->current();
     }
 
+    /**
+     * @return Iterator<Comment>
+     */
     public function findManyComments(): Iterator
     {
         return $this->getDocumentPersister()->loadAll();

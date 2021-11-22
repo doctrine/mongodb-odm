@@ -43,7 +43,7 @@ class ProfileNotify implements NotifyPropertyChanged
     /**
      * @ODM\ReferenceMany(targetDocument=File::class, cascade={"all"}, collectionClass=ProfileNotifyImagesCollection::class)
      *
-     * @var ProfileNotifyImagesCollection
+     * @var ProfileNotifyImagesCollection<int, File>
      */
     private $images;
 
@@ -109,6 +109,9 @@ class ProfileNotify implements NotifyPropertyChanged
         return $this->image;
     }
 
+    /**
+     * @return ProfileNotifyImagesCollection<int, File>
+     */
     public function getImages(): ProfileNotifyImagesCollection
     {
         return $this->images;
