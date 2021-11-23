@@ -305,10 +305,20 @@ final class SchemaManager
      */
     public function createCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
+        $singleInheritanceProcessed = [];
+
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
+            }
+
+            if ($class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+                if (in_array($class->collection, $singleInheritanceProcessed)) {
+                    continue;
+                }
+
+                $singleInheritanceProcessed[] = $class->collection;
             }
 
             $this->createDocumentCollection($class->name, $maxTimeMs, $writeConcern);
