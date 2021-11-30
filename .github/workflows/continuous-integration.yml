@@ -31,33 +31,22 @@ jobs:
           - "server"
         dependencies:
           - "highest"
-        symfony-version:
-          - "stable"
         include:
           - dependencies: "lowest"
             php-version: "7.2"
             mongodb-version: "3.6"
             driver-version: "1.5.0"
             topology: "server"
-            symfony-version: "stable"
           - topology: "sharded_cluster"
             php-version: "8.0"
             mongodb-version: "4.4"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "stable"
           - topology: "server"
             php-version: "8.1"
             mongodb-version: "4.4"
             driver-version: "alpha"
             dependencies: "highest"
-            symfony-version: "stable"
-          - topology: "server"
-            php-version: "8.0"
-            mongodb-version: "4.4"
-            driver-version: "stable"
-            dependencies: "highest"
-            symfony-version: "6"
 
     steps:
       - name: "Checkout"
@@ -100,17 +89,6 @@ jobs:
       # This allows installing symfony/console 3.4 and 6
       - name: "Remove phpbench/phpbench"
         run: composer remove --no-update --dev phpbench/phpbench
-
-      - name: "Configure Symfony v6@dev"
-        if: "${{ matrix.symfony-version == '6' }}"
-        run: |
-          composer config minimum-stability dev
-          # not yet ready for v6
-          composer remove --no-update --dev vimeo/psalm
-          # update symfony deps
-          composer require --no-update symfony/console:^6@dev
-          composer require --no-update symfony/var-dumper:^6@dev
-          composer require --no-update --dev symfony/cache:^6@dev
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
