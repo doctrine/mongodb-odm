@@ -6,5 +6,6 @@ namespace TestDocuments;
 
 class WildcardIndexDocument
 {
+    /** @var string|null */
     protected $id;
 }
