@@ -14,6 +14,7 @@ use TestDocuments\SchemaInvalidDocument;
 use TestDocuments\SchemaValidatedDocument;
 use TestDocuments\UserCustomIdGenerator;
 use TestDocuments\UserNonStringOptions;
+use TestDocuments\WildcardIndexDocument;
 
 use function MongoDB\BSON\fromJSON;
 use function MongoDB\BSON\toPHP;
@@ -74,6 +75,19 @@ class XmlDriverTest extends AbstractDriverTest
         $this->expectExceptionMessageMatches('#The mapping file .+ is invalid#');
 
         $this->driver->loadMetadataForClass(InvalidPartialFilterDocument::class, $classMetadata);
+    }
+
+    public function testWildcardIndexName(): void
+    {
+        $classMetadata = new ClassMetadata(WildcardIndexDocument::class);
+        $this->driver->loadMetadataForClass(WildcardIndexDocument::class, $classMetadata);
+
+        $this->assertSame([
+            [
+                'keys' => ['fieldA.$**' => 1],
+                'options' => ['name' => 'fieldA.$**_1'],
+            ],
+        ], $classMetadata->getIndexes());
     }
 
     public function testAlsoLoadFieldMapping(): void
