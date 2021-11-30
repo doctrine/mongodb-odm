@@ -36,6 +36,11 @@ class Decimal128Type extends Type implements Incrementable, Versionable
         return bcsub($new, $old);
     }
 
+    /**
+     * @param mixed $current
+     *
+     * @return string
+     */
     public function getNextVersion($current)
     {
         if ($current === null) {

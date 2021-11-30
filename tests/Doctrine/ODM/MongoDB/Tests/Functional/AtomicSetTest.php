@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -43,7 +44,7 @@ class AtomicSetTest extends BaseTest
         parent::tearDown();
     }
 
-    public function testAtomicInsertAndUpdate()
+    public function testAtomicInsertAndUpdate(): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
@@ -72,7 +73,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('87654321', $user->phonenumbers[1]->getPhonenumber());
     }
 
-    public function testAtomicUpsert()
+    public function testAtomicUpsert(): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->id             = new ObjectId();
@@ -89,9 +90,11 @@ class AtomicSetTest extends BaseTest
     }
 
     /**
+     * @param mixed[]|ArrayCollection<int, mixed>|null $clearWith
+     *
      * @dataProvider provideAtomicCollectionUnset
      */
-    public function testAtomicCollectionUnset($clearWith)
+    public function testAtomicCollectionUnset($clearWith): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
@@ -118,7 +121,7 @@ class AtomicSetTest extends BaseTest
         $this->assertCount(0, $user->phonenumbers);
     }
 
-    public function provideAtomicCollectionUnset()
+    public function provideAtomicCollectionUnset(): array
     {
         return [
             [null],
@@ -127,7 +130,7 @@ class AtomicSetTest extends BaseTest
         ];
     }
 
-    public function testAtomicCollectionClearAndUpdate()
+    public function testAtomicCollectionClearAndUpdate(): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
@@ -150,7 +153,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
     }
 
-    public function testAtomicCollectionReplacedAndUpdated()
+    public function testAtomicCollectionReplacedAndUpdated(): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');
@@ -173,7 +176,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
     }
 
-    public function testAtomicSetArray()
+    public function testAtomicSetArray(): void
     {
         $user                       = new AtomicSetUser('Maciej');
         $user->phonenumbersArray[1] = new Phonenumber('12345678');
@@ -201,7 +204,7 @@ class AtomicSetTest extends BaseTest
         $this->assertFalse(isset($user->phonenumbersArray[1]));
     }
 
-    public function testAtomicCollectionWithAnotherNested()
+    public function testAtomicCollectionWithAnotherNested(): void
     {
         $user        = new AtomicSetUser('Maciej');
         $privateBook = new Phonebook('Private');
@@ -257,7 +260,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
 
-    public function testWeNeedToGoDeeper()
+    public function testWeNeedToGoDeeper(): void
     {
         $user                                          = new AtomicSetUser('Maciej');
         $user->inception[0]                            = new AtomicSetInception('start');
@@ -274,18 +277,18 @@ class AtomicSetTest extends BaseTest
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
-        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertEquals('start', $user->inception[0]->value);
         $this->assertNotNull($user->inception[0]->one);
-        $this->assertEquals($user->inception[0]->one->value, 'start.one');
+        $this->assertEquals('start.one', $user->inception[0]->one->value);
         $this->assertCount(2, $user->inception[0]->one->many);
-        $this->assertEquals($user->inception[0]->one->many[0]->value, 'start.one.many.0');
-        $this->assertEquals($user->inception[0]->one->many[1]->value, 'start.one.many.1');
+        $this->assertEquals('start.one.many.0', $user->inception[0]->one->many[0]->value);
+        $this->assertEquals('start.one.many.1', $user->inception[0]->one->many[1]->value);
         $this->assertNotNull($user->inception[0]->one->one);
-        $this->assertEquals($user->inception[0]->one->one->value, 'start.one.one');
+        $this->assertEquals('start.one.one', $user->inception[0]->one->one->value);
         $this->assertCount(1, $user->inception[0]->one->one->many);
-        $this->assertEquals($user->inception[0]->one->one->many[0]->value, 'start.one.one.many.0');
+        $this->assertEquals('start.one.one.many.0', $user->inception[0]->one->one->many[0]->value);
         $this->assertCount(1, $user->inception[0]->one->one->many[0]->many);
-        $this->assertEquals($user->inception[0]->one->one->many[0]->many[0]->value, 'start.one.one.many.0.many.0');
+        $this->assertEquals('start.one.one.many.0.many.0', $user->inception[0]->one->one->many[0]->many[0]->value);
 
         unset($user->inception[0]->one->many[0]);
         $user->inception[0]->one->many[]               = new AtomicSetInception('start.one.many.2');
@@ -297,27 +300,27 @@ class AtomicSetTest extends BaseTest
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
-        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertEquals('start', $user->inception[0]->value);
         $this->assertNotNull($user->inception[0]->one);
-        $this->assertEquals($user->inception[0]->one->value, 'start.one');
+        $this->assertEquals('start.one', $user->inception[0]->one->value);
         $this->assertCount(2, $user->inception[0]->one->many);
         /* Note: Since the "start.one.many" collection uses a pushAll strategy,
          * "start.one.many.1" is reindexed at 0 after fetching. Before the last
          * flush (when we unset "start.one.many.0"), it would still have been
          * accessible via index 1.
          */
-        $this->assertEquals($user->inception[0]->one->many[0]->value, 'start.one.many.1');
-        $this->assertEquals($user->inception[0]->one->many[1]->value, 'start.one.many.2');
+        $this->assertEquals('start.one.many.1', $user->inception[0]->one->many[0]->value);
+        $this->assertEquals('start.one.many.2', $user->inception[0]->one->many[1]->value);
         $this->assertNotNull($user->inception[0]->one->one);
-        $this->assertEquals($user->inception[0]->one->one->value, 'start.one.one');
+        $this->assertEquals('start.one.one', $user->inception[0]->one->one->value);
         $this->assertCount(1, $user->inception[0]->one->one->many);
-        $this->assertEquals($user->inception[0]->one->one->many[0]->value, 'start.one.one.many.0');
+        $this->assertEquals('start.one.one.many.0', $user->inception[0]->one->one->many[0]->value);
         $this->assertCount(2, $user->inception[0]->one->one->many[0]->many);
-        $this->assertEquals($user->inception[0]->one->one->many[0]->many[0]->value, 'start.one.one.many.0.many.0');
-        $this->assertEquals($user->inception[0]->one->one->many[0]->many[1]->value, 'start.one.one.many.0.many.1');
+        $this->assertEquals('start.one.one.many.0.many.0', $user->inception[0]->one->one->many[0]->many[0]->value);
+        $this->assertEquals('start.one.one.many.0.many.1', $user->inception[0]->one->one->many[0]->many[1]->value);
     }
 
-    public function testUpdatingNestedCollectionWhileDeletingParent()
+    public function testUpdatingNestedCollectionWhileDeletingParent(): void
     {
         $user                                 = new AtomicSetUser('Jon');
         $user->inception[0]                   = new AtomicSetInception('start');
@@ -332,14 +335,14 @@ class AtomicSetTest extends BaseTest
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
-        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertEquals('start', $user->inception[0]->value);
         $this->assertCount(2, $user->inception[0]->many);
-        $this->assertEquals($user->inception[0]->many[0]->value, 'start.many.0');
+        $this->assertEquals('start.many.0', $user->inception[0]->many[0]->value);
         $this->assertCount(1, $user->inception[0]->many[0]->many);
-        $this->assertEquals($user->inception[0]->many[0]->many[0]->value, 'start.many.0.many.0');
-        $this->assertEquals($user->inception[0]->many[1]->value, 'start.many.1');
+        $this->assertEquals('start.many.0.many.0', $user->inception[0]->many[0]->many[0]->value);
+        $this->assertEquals('start.many.1', $user->inception[0]->many[1]->value);
         $this->assertCount(1, $user->inception[0]->many[0]->many);
-        $this->assertEquals($user->inception[0]->many[1]->many[0]->value, 'start.many.1.many.0');
+        $this->assertEquals('start.many.1.many.0', $user->inception[0]->many[1]->many[0]->value);
 
         $user->inception[0]->many[0]->many[0]->value = 'start.many.0.many.0-changed';
         $user->inception[0]->many[0]->many[1]        = new AtomicSetInception('start.many.0.many.1');
@@ -354,16 +357,16 @@ class AtomicSetTest extends BaseTest
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
         $this->assertCount(1, $user->inception);
-        $this->assertEquals($user->inception[0]->value, 'start');
+        $this->assertEquals('start', $user->inception[0]->value);
         $this->assertCount(2, $user->inception[0]->many);
-        $this->assertEquals($user->inception[0]->many[0]->value, 'start.many.0');
+        $this->assertEquals('start.many.0', $user->inception[0]->many[0]->value);
         $this->assertCount(0, $user->inception[0]->many[0]->many);
-        $this->assertEquals($user->inception[0]->many[1]->value, 'start.many.1');
+        $this->assertEquals('start.many.1', $user->inception[0]->many[1]->value);
         $this->assertCount(1, $user->inception[0]->many[1]->many);
-        $this->assertEquals($user->inception[0]->many[1]->many[0]->value, 'start.many.1.many.0-new');
+        $this->assertEquals('start.many.1.many.0-new', $user->inception[0]->many[1]->many[0]->value);
     }
 
-    public function testAtomicRefMany()
+    public function testAtomicRefMany(): void
     {
         $malarzm = new AtomicSetUser('Maciej');
         $jmikola = new AtomicSetUser('Jeremy');
@@ -403,12 +406,12 @@ class AtomicSetTest extends BaseTest
         $this->dm->clear();
     }
 
-    public function testAtomicSetUpdatesAllNestedCollectionsInOneQuery()
+    public function testAtomicSetUpdatesAllNestedCollectionsInOneQuery(): void
     {
         // Create a book which has one chapter with one page.
         $chapter1 = new Chapter();
         $chapter1->pages->add(new Page(1));
-        $book = new Book('title');
+        $book = new Book();
         $book->chapters->add($chapter1);
 
         $this->dm->persist($book);
@@ -435,7 +438,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals(2, $book->chapters->first()->pages->count(), 'Two page objects are expected in the first chapter of the book.');
     }
 
-    public function testReplacementOfEmbedManyElements()
+    public function testReplacementOfEmbedManyElements(): void
     {
         // Create a book with a single chapter.
         $book = new Book();
@@ -453,6 +456,7 @@ class AtomicSetTest extends BaseTest
         $firstChapter->name = 'First chapter A';
 
         // Developers commonly attempt to replace the contents of an EmbedMany with a new ArrayCollection like this:
+        /** @var ArrayCollection<int, Chapter> $replacementChapters */
         $replacementChapters = new ArrayCollection();
         $replacementChapters->add($firstChapter);
         $replacementChapters->add(new Chapter('Second chapter B'));
@@ -469,7 +473,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('Second chapter B', $book->chapters[1]->name);
     }
 
-    public function testReplacementOfIdentifiedEmbedManyElements()
+    public function testReplacementOfIdentifiedEmbedManyElements(): void
     {
         $book = new Book();
         $book->identifiedChapters->add(new IdentifiedChapter('A'));
@@ -478,9 +482,10 @@ class AtomicSetTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $book                = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
-        $firstChapter        = $book->identifiedChapters->first();
-        $firstChapter->name  = 'First chapter A';
+        $book               = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
+        $firstChapter       = $book->identifiedChapters->first();
+        $firstChapter->name = 'First chapter A';
+        /** @var ArrayCollection<int, IdentifiedChapter> $replacementChapters */
         $replacementChapters = new ArrayCollection();
         $replacementChapters->add($firstChapter);
         $replacementChapters->add(new IdentifiedChapter('Second chapter B'));
@@ -494,7 +499,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('Second chapter B', $book->identifiedChapters[1]->name);
     }
 
-    public function testOnlyEmbeddedDocumentUpdated()
+    public function testOnlyEmbeddedDocumentUpdated(): void
     {
         // Create a book with a single chapter.
         $book = new Book();
@@ -520,7 +525,7 @@ class AtomicSetTest extends BaseTest
         $this->assertEquals('First chapter A', $book->chapters[0]->name, 'The chapter title failed to update.');
     }
 
-    public function testUpdatedEmbeddedDocumentAndDirtyCollectionInside()
+    public function testUpdatedEmbeddedDocumentAndDirtyCollectionInside(): void
     {
         $book = new Book();
         $book->chapters->add(new Chapter('A'));
@@ -550,34 +555,71 @@ class AtomicSetTest extends BaseTest
  */
 class AtomicSetUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\Field(type="int") @ODM\Version */
+    /**
+     * @ODM\Field(type="int")
+     * @ODM\Version
+     *
+     * @var int
+     */
     public $version = 1;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $surname;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonenumber::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonenumber::class)
+     *
+     * @var Collection<int, Phonenumber>
+     */
     public $phonenumbers;
 
-    /** @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonenumber::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonenumber::class)
+     *
+     * @var Collection<int, Phonenumber>
+     */
     public $phonenumbersArray;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $phonebooks;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=AtomicSetInception::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=AtomicSetInception::class)
+     *
+     * @var Collection<int, AtomicSetInception>
+     */
     public $inception;
 
-    /** @ODM\ReferenceMany(strategy="atomicSetArray", targetDocument=AtomicSetUser::class) */
+    /**
+     * @ODM\ReferenceMany(strategy="atomicSetArray", targetDocument=AtomicSetUser::class)
+     *
+     * @var Collection<int, AtomicSetUser>|array<AtomicSetUser>
+     */
     public $friends;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name              = $name;
         $this->phonenumbers      = new ArrayCollection();
@@ -592,16 +634,28 @@ class AtomicSetUser
  */
 class AtomicSetInception
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $value;
 
-    /** @ODM\EmbedOne(targetDocument=AtomicSetInception::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=AtomicSetInception::class)
+     *
+     * @var AtomicSetInception|null
+     */
     public $one;
 
-    /** @ODM\EmbedMany(targetDocument=AtomicSetInception::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=AtomicSetInception::class)
+     *
+     * @var Collection<int, AtomicSetInception>
+     */
     public $many;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
         $this->many  = new ArrayCollection();

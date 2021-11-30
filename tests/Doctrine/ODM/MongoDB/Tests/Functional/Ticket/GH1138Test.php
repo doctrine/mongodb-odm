@@ -30,7 +30,7 @@ class GH1138Test extends BaseTest
         parent::tearDown();
     }
 
-    public function testUpdatingDocumentBeforeItsInsertionShouldNotEntailMultipleQueries()
+    public function testUpdatingDocumentBeforeItsInsertionShouldNotEntailMultipleQueries(): void
     {
         $listener = new GH1138Listener();
         $this->dm->getEventManager()->addEventListener(Events::onFlush, $listener);
@@ -51,19 +51,30 @@ class GH1138Test extends BaseTest
 /** @ODM\Document */
 class GH1138Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
 class GH1138Listener
 {
+    /** @var int */
     public $inserts = 0;
+
+    /** @var int */
     public $updates = 0;
 
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         $dm  = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();

@@ -26,7 +26,7 @@ class MemoryUsageTest extends BaseTest
     /**
      * Output for jwage "Memory increased by 14.09 kb"
      */
-    public function testMemoryUsage()
+    public function testMemoryUsage(): void
     {
         $memoryUsage = [];
         for ($i = 0; $i < 100; $i++) {
@@ -57,10 +57,13 @@ class MemoryUsageTest extends BaseTest
         echo sprintf('Memory increased by %s', $this->formatMemory($increase));
     }
 
-    private function formatMemory($size)
+    /**
+     * @param int|float $size
+     */
+    private function formatMemory($size): string
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
 
-        return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
+        return round($size / pow(1024, ($i = (int) floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
     }
 }

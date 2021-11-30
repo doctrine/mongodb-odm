@@ -14,9 +14,11 @@ use function get_class;
 class RawTypeTest extends BaseTest
 {
     /**
+     * @param mixed $value
+     *
      * @dataProvider getTestRawTypeData
      */
-    public function testRawType($value)
+    public function testRawType($value): void
     {
         $test      = new RawType();
         $test->raw = $value;
@@ -28,7 +30,7 @@ class RawTypeTest extends BaseTest
         $this->assertEquals($value, $result['raw']);
     }
 
-    public function getTestRawTypeData()
+    public function getTestRawTypeData(): array
     {
         return [
             ['test'],
@@ -46,9 +48,17 @@ class RawTypeTest extends BaseTest
 /** @ODM\Document */
 class RawType
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="raw") */
+    /**
+     * @ODM\Field(type="raw")
+     *
+     * @var mixed
+     */
     public $raw;
 }

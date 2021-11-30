@@ -12,7 +12,7 @@ use function get_class;
 
 class MODM116Test extends BaseTest
 {
-    public function testIssue()
+    public function testIssue(): void
     {
         $parent = new MODM116Parent();
         $parent->setName('test');
@@ -42,36 +42,48 @@ class MODM116Test extends BaseTest
 /** @ODM\Document @ODM\InheritanceType("COLLECTION_PER_CLASS") **/
 class MODM116Parent
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
-    /** @ODM\ReferenceOne(targetDocument=MODM116Child::class) **/
+    /**
+     * @ODM\ReferenceOne(targetDocument=MODM116Child::class) *
+     *
+     * @var MODM116Child|null
+     */
     private $child;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getChild()
+    public function getChild(): ?MODM116Child
     {
         return $this->child;
     }
 
-    public function setChild(MODM116Child $child)
+    public function setChild(MODM116Child $child): void
     {
         $this->child = $child;
     }

@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1775Test extends BaseTest
 {
-    public function testProxyInitializationDoesNotLoseData()
+    public function testProxyInitializationDoesNotLoseData(): void
     {
         $image = new GH1775Image();
         $this->dm->persist($image);
@@ -59,7 +59,11 @@ class GH1775Test extends BaseTest
 /** @ODM\MappedSuperclass */
 class GH1775MetaDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -73,7 +77,11 @@ class GH1775MetaDocument
 /** @ODM\Document */
 class GH1775Image
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     public function __construct()
@@ -84,29 +92,49 @@ class GH1775Image
 /** @ODM\Document */
 class GH1775Blog
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceMany(targetDocument=GH1775Post::class, inversedBy="blogs") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1775Post::class, inversedBy="blogs")
+     *
+     * @var Collection<int, GH1775Post>|array<GH1775Post>
+     */
     public $posts = [];
 }
 
 /** @ODM\Document */
 class GH1775Post extends GH1775MetaDocument
 {
-    /** @ODM\ReferenceMany(targetDocument=GH1775Image::class, storeAs=ClassMetadata::REFERENCE_STORE_AS_ID) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1775Image::class, storeAs=ClassMetadata::REFERENCE_STORE_AS_ID)
+     *
+     * @var Collection<int, GH1775Image>
+     */
     protected $images;
 
-    /** @ODM\ReferenceMany(targetDocument=GH1775Blog::class, mappedBy="posts") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1775Blog::class, mappedBy="posts")
+     *
+     * @var Collection<int, GH1775Blog>
+     */
     protected $blogs;
 
+    /**
+     * @param array<GH1775Blog>  $blogs
+     * @param array<GH1775Image> $images
+     */
     public function __construct(array $blogs, array $images)
     {
         $this->blogs  = new ArrayCollection($blogs);
         $this->images = new ArrayCollection($images);
     }
 
-    public function addReferences()
+    public function addReferences(): void
     {
         foreach ($this->blogs as $blog) {
             if ($blog->posts->contains($this)) {
@@ -118,7 +146,7 @@ class GH1775Post extends GH1775MetaDocument
     }
 
     /**
-     * @return Collection
+     * @return Collection<int, GH1775Image>
      */
     public function getImages()
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -27,7 +28,7 @@ use function unserialize;
 
 class IdTest extends BaseTest
 {
-    public function testUuidId()
+    public function testUuidId(): void
     {
         $user = new UuidUser('Jonathan H. Wage');
         $this->dm->persist($user);
@@ -49,7 +50,7 @@ class IdTest extends BaseTest
         $this->assertSame($check2, $check3);
     }
 
-    public function testAlnumIdChars()
+    public function testAlnumIdChars(): void
     {
         $user = new AlnumCharsUser('Jonathan H. Wage');
         $this->dm->persist($user);
@@ -72,7 +73,7 @@ class IdTest extends BaseTest
         $this->assertSame($check2, $check3);
     }
 
-    public function testCollectionId()
+    public function testCollectionId(): void
     {
         $user1            = new CollectionIdUser('Jonathan H. Wage');
         $reference1       = new ReferencedCollectionId('referenced 1');
@@ -88,11 +89,11 @@ class IdTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertEquals($user1->id, 1);
-        $this->assertEquals($user2->id, 2);
+        $this->assertEquals(1, $user1->id);
+        $this->assertEquals(2, $user2->id);
 
-        $this->assertEquals($reference1->id, 1);
-        $this->assertEquals($reference2->id, 2);
+        $this->assertEquals(1, $reference1->id);
+        $this->assertEquals(2, $reference2->id);
 
         $check1 = $this->dm->getRepository(CollectionIdUser::class)->findOneBy(['id' => $user1->id]);
         $check2 = $this->dm->getRepository(CollectionIdUser::class)->findOneBy(['id' => $user2->id]);
@@ -106,7 +107,7 @@ class IdTest extends BaseTest
         $this->assertNotNull($check);
     }
 
-    public function testCollectionIdWithStartingId()
+    public function testCollectionIdWithStartingId(): void
     {
         $user1 = new CollectionIdUserWithStartingId('Jonathan H. Wage');
         $user2 = new CollectionIdUserWithStartingId('Jonathan H. Wage');
@@ -116,11 +117,11 @@ class IdTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertEquals($user1->id, 10);
-        $this->assertEquals($user2->id, 11);
+        $this->assertEquals(10, $user1->id);
+        $this->assertEquals(11, $user2->id);
     }
 
-    public function testEmbeddedDocumentWithId()
+    public function testEmbeddedDocumentWithId(): void
     {
         $user1             = new CollectionIdUser('Jonathan H. Wage');
         $user1->embedded[] = new EmbeddedCollectionId('embedded #1');
@@ -134,17 +135,17 @@ class IdTest extends BaseTest
         $this->dm->persist($user2);
         $this->dm->flush();
 
-        $this->assertEquals($user1->id, 1);
-        $this->assertEquals($user2->id, 2);
+        $this->assertEquals(1, $user1->id);
+        $this->assertEquals(2, $user2->id);
 
-        $this->assertEquals($user1->embedded[0]->id, 1);
-        $this->assertEquals($user1->embedded[1]->id, 2);
+        $this->assertEquals(1, $user1->embedded[0]->id);
+        $this->assertEquals(2, $user1->embedded[1]->id);
 
-        $this->assertEquals($user2->embedded[0]->id, 3);
-        $this->assertEquals($user2->embedded[1]->id, 4);
+        $this->assertEquals(3, $user2->embedded[0]->id);
+        $this->assertEquals(4, $user2->embedded[1]->id);
     }
 
-    public function testIdGeneratorInstance()
+    public function testIdGeneratorInstance(): void
     {
         $class = $this->dm->getClassMetadata(UuidUser::class);
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
@@ -162,9 +163,11 @@ class IdTest extends BaseTest
     }
 
     /**
+     * @param int|float $user2Id
+     *
      * @dataProvider provideEqualButNotIdenticalIds
      */
-    public function testEqualButNotIdenticalIds($user1Id, $user2Id)
+    public function testEqualButNotIdenticalIds(string $user1Id, $user2Id): void
     {
         $this->assertNotSame($user1Id, $user2Id);
 
@@ -190,7 +193,7 @@ class IdTest extends BaseTest
         $this->assertSame($user2->id, $user2Id);
     }
 
-    public function provideEqualButNotIdenticalIds()
+    public function provideEqualButNotIdenticalIds(): array
     {
         /* MongoDB allows comparisons between different numeric types, so we
          * cannot test integer and floating point values (e.g. 123 and 123.0).
@@ -206,9 +209,12 @@ class IdTest extends BaseTest
     }
 
     /**
+     * @param mixed $id
+     * @param mixed $expected
+     *
      * @dataProvider getTestIdTypesAndStrategiesData
      */
-    public function testIdTypesAndStrategies($type, $strategy, $id = null, $expected = null, $expectedMongoType = null)
+    public function testIdTypesAndStrategies(string $type, string $strategy, $id = null, $expected = null, ?string $expectedMongoType = null): void
     {
         $className = $this->createIdTestClass($type, $strategy);
 
@@ -245,7 +251,7 @@ class IdTest extends BaseTest
         $this->assertEquals('changed', $object->test);
     }
 
-    public function getTestIdTypesAndStrategiesData()
+    public function getTestIdTypesAndStrategiesData(): array
     {
         $identifier = new ObjectId();
 
@@ -305,7 +311,7 @@ class IdTest extends BaseTest
     /**
      * @dataProvider getTestBinIdsData
      */
-    public function testBinIds($type, $expectedMongoBinDataType, $id)
+    public function testBinIds(string $type, int $expectedMongoBinDataType, string $id): void
     {
         $className = $this->createIdTestClass($type, 'none');
 
@@ -322,7 +328,7 @@ class IdTest extends BaseTest
         $this->assertEquals($expectedMongoBinDataType, $check['_id']->getType());
     }
 
-    public function getTestBinIdsData()
+    public function getTestBinIdsData(): array
     {
         return [
             ['bin', 0, 'test-data'],
@@ -334,7 +340,7 @@ class IdTest extends BaseTest
         ];
     }
 
-    public function testStrategyNoneAndNoIdThrowsException()
+    public function testStrategyNoneAndNoIdThrowsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -344,9 +350,8 @@ class IdTest extends BaseTest
         $this->dm->persist(new CustomIdUser('Maciej'));
     }
 
-    public function testStrategyAutoWithNotValidIdThrowsException()
+    public function testStrategyAutoWithNotValidIdThrowsException(): void
     {
-        $this->createIdTestClass('id', 'auto');
         $user     = new TestIdTypesIdAutoUser();
         $user->id = 1;
         $this->expectException(InvalidArgumentException::class);
@@ -357,7 +362,7 @@ class IdTest extends BaseTest
         $this->dm->persist($user);
     }
 
-    private function createIdTestClass($type, $strategy)
+    private function createIdTestClass(string $type, string $strategy): string
     {
         $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));
         $className      = sprintf(__NAMESPACE__ . '\\%s', $shortClassName);
@@ -392,13 +397,21 @@ class %s
 /** @ODM\Document */
 class UuidUser
 {
-    /** @ODM\Id(strategy="uuid", options={"salt"="test"}) */
+    /**
+     * @ODM\Id(strategy="uuid", options={"salt"="test"})
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="t", type="string") */
+    /**
+     * @ODM\Field(name="t", type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -407,19 +420,35 @@ class UuidUser
 /** @ODM\Document */
 class CollectionIdUser
 {
-    /** @ODM\Id(strategy="increment") */
+    /**
+     * @ODM\Id(strategy="increment")
+     *
+     * @var int|null
+     */
     public $id;
 
-    /** @ODM\Field(name="t", type="string") */
+    /**
+     * @ODM\Field(name="t", type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument=ReferencedCollectionId::class, cascade={"persist"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=ReferencedCollectionId::class, cascade={"persist"})
+     *
+     * @var ReferencedCollectionId|null
+     */
     public $reference;
 
-    /** @ODM\EmbedMany(targetDocument=EmbeddedCollectionId::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=EmbeddedCollectionId::class)
+     *
+     * @var Collection<int, EmbeddedCollectionId>|array<EmbeddedCollectionId>
+     */
     public $embedded = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -428,19 +457,35 @@ class CollectionIdUser
 /** @ODM\Document */
 class CollectionIdUserWithStartingId
 {
-    /** @ODM\Id(strategy="increment", options={"startingId"=10}) */
+    /**
+     * @ODM\Id(strategy="increment", options={"startingId"=10})
+     *
+     * @var int|null
+     */
     public $id;
 
-    /** @ODM\Field(name="t", type="string") */
+    /**
+     * @ODM\Field(name="t", type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument=ReferencedCollectionId::class, cascade={"persist"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=ReferencedCollectionId::class, cascade={"persist"})
+     *
+     * @var ReferencedCollectionId|null
+     */
     public $reference;
 
-    /** @ODM\EmbedMany(targetDocument=EmbeddedCollectionId::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=EmbeddedCollectionId::class)
+     *
+     * @var Collection<int, EmbeddedCollectionId>|array<EmbeddedCollectionId>
+     */
     public $embedded = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -449,18 +494,26 @@ class CollectionIdUserWithStartingId
 /** @ODM\Document */
 class ReferencedCollectionId
 {
-    /** @ODM\Id(strategy="increment") */
+    /**
+     * @ODM\Id(strategy="increment")
+     *
+     * @var int|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -469,18 +522,26 @@ class ReferencedCollectionId
 /** @ODM\EmbeddedDocument */
 class EmbeddedCollectionId
 {
-    /** @ODM\Id(strategy="increment") */
+    /**
+     * @ODM\Id(strategy="increment")
+     *
+     * @var int|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -489,13 +550,21 @@ class EmbeddedCollectionId
 /** @ODM\Document */
 class AlnumCharsUser
 {
-    /** @ODM\Id(strategy="alnum", options={"chars"="zyxwvutsrqponmlkjihgfedcba"}) */
+    /**
+     * @ODM\Id(strategy="alnum", options={"chars"="zyxwvutsrqponmlkjihgfedcba"})
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="t", type="string") */
+    /**
+     * @ODM\Field(name="t", type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -504,14 +573,33 @@ class AlnumCharsUser
 /** @ODM\Document */
 class CustomIdUser
 {
-    /** @ODM\Id(strategy="none",nullable=true) */
+    /**
+     * @ODM\Id(strategy="none", nullable=true)
+     *
+     * @var int|string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
+}
+
+/** @ODM\Document */
+class TestIdTypesIdAutoUser
+{
+    /**
+     * @ODM\Id(strategy="auto", options={"type"="id"})
+     *
+     * @var int|null
+     */
+    public $id;
 }

@@ -17,7 +17,11 @@ final class FileMetadata
      */
     private $owner;
 
-    /** @ODM\EmbedOne(targetDocument=Embedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Embedded::class)
+     *
+     * @var Embedded|null
+     */
     private $embedOne;
 
     public function __construct()

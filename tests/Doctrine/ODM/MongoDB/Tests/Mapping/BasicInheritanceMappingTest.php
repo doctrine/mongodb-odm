@@ -15,6 +15,7 @@ use function unserialize;
 
 class BasicInheritanceMappingTest extends BaseTest
 {
+    /** @var ClassMetadataFactory */
     private $factory;
 
     public function setUp(): void
@@ -25,13 +26,13 @@ class BasicInheritanceMappingTest extends BaseTest
         $this->factory->setConfiguration($this->dm->getConfiguration());
     }
 
-    public function testGetMetadataForTransientClassThrowsException()
+    public function testGetMetadataForTransientClassThrowsException(): void
     {
         $this->expectException(MappingException::class);
         $this->factory->getMetadataFor(TransientBaseClass::class);
     }
 
-    public function testGetMetadataForSubclassWithTransientBaseClass()
+    public function testGetMetadataForSubclassWithTransientBaseClass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass::class);
 
@@ -41,7 +42,7 @@ class BasicInheritanceMappingTest extends BaseTest
         $this->assertTrue(isset($class->fieldMappings['name']));
     }
 
-    public function testGetMetadataForSubclassWithMappedSuperclass()
+    public function testGetMetadataForSubclassWithMappedSuperclass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
@@ -63,7 +64,7 @@ class BasicInheritanceMappingTest extends BaseTest
     /**
      * @group DDC-388
      */
-    public function testSerializationWithPrivateFieldsFromMappedSuperclass()
+    public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
@@ -74,7 +75,7 @@ class BasicInheritanceMappingTest extends BaseTest
         $this->assertTrue(isset($class2->reflFields['mappedRelated1']));
     }
 
-    public function testReadPreferenceIsInherited()
+    public function testReadPreferenceIsInherited(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
@@ -82,7 +83,7 @@ class BasicInheritanceMappingTest extends BaseTest
         $this->assertEquals([['dc' => 'east']], $class->readPreferenceTags);
     }
 
-    public function testGridFSOptionsAreInherited()
+    public function testGridFSOptionsAreInherited(): void
     {
         $class = $this->factory->getMetadataFor(GridFSChildClass::class);
 
@@ -94,17 +95,28 @@ class BasicInheritanceMappingTest extends BaseTest
 
 class TransientBaseClass
 {
+    /** @var mixed */
     private $transient1;
+
+    /** @var mixed */
     private $transient2;
 }
 
 /** @ODM\Document */
 class DocumentSubClass extends TransientBaseClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 }
 
@@ -114,24 +126,46 @@ class DocumentSubClass extends TransientBaseClass
  */
 class MappedSuperclassBase
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $mapped1;
-    /** @ODM\Field(type="string") */
+
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $mapped2;
 
-    /** @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class)
+     *
+     * @var MappedSuperclassRelated1|null
+     */
     private $mappedRelated1;
 
+    /** @var mixed */
     private $transient;
 }
 
 /** @ODM\Document */
 class DocumentSubClass2 extends MappedSuperclassBase
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 }
 
@@ -141,7 +175,11 @@ class DocumentSubClass2 extends MappedSuperclassBase
  */
 class GridFSParentClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }
 
@@ -150,6 +188,10 @@ class GridFSParentClass
  */
 class GridFSChildClass extends GridFSParentClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }

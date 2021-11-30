@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use MongoDB\Driver\Exception\UnexpectedValueException;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -25,6 +26,8 @@ use function count;
 use function get_class;
 use function interface_exists;
 use function is_array;
+use function MongoDB\BSON\fromJSON;
+use function MongoDB\BSON\toPHP;
 use function trigger_deprecation;
 
 /**
@@ -45,9 +48,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata): void
     {
         assert($metadata instanceof ClassMetadata);
@@ -99,6 +99,25 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $metadata->setDefaultDiscriminatorValue($annot->value);
             } elseif ($annot instanceof ODM\ReadPreference) {
                 $metadata->setReadPreference($annot->value, $annot->tags ?? []);
+            } elseif ($annot instanceof ODM\Validation) {
+                if (isset($annot->validator)) {
+                    try {
+                        $validatorBson = fromJSON($annot->validator);
+                    } catch (UnexpectedValueException $e) {
+                        throw MappingException::schemaValidationError($e->getCode(), $e->getMessage(), $className, 'validator');
+                    }
+
+                    $validator = toPHP($validatorBson, []);
+                    $metadata->setValidator($validator);
+                }
+
+                if (isset($annot->action)) {
+                    $metadata->setValidationAction($annot->action);
+                }
+
+                if (isset($annot->level)) {
+                    $metadata->setValidationLevel($annot->level);
+                }
             }
         }
 
@@ -196,8 +215,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 if ($annot instanceof ODM\Indexes) {
-                    // Setting the type to mixed is a workaround until https://github.com/doctrine/annotations/pull/209 is released.
-                    /** @var mixed $value */
                     $value = $annot->value;
                     foreach (is_array($value) ? $value : [$value] as $index) {
                         $indexes[] = $index;
@@ -274,6 +291,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     * @param string[]              $keys
+     */
     private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []): void
     {
         $keys    = array_merge($keys, $index->keys);
@@ -296,6 +317,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
+     * @param ClassMetadata<object> $class
+     *
      * @throws MappingException
      */
     private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey): void
@@ -320,11 +343,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public static function create($paths = [], ?Reader $reader = null): AnnotationDriver
     {
-        if ($reader === null) {
-            $reader = new AnnotationReader();
-        }
-
-        return new self($reader, $paths);
+        return new self($reader ?? new AnnotationReader(), $paths);
     }
 }
 

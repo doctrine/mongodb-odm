@@ -12,7 +12,7 @@ use Documents\SubProject;
 
 class ReferenceEmbeddedDocumentsTest extends BaseTest
 {
-    public function testSavesEmbeddedDocumentsInReferencedDocument()
+    public function testSavesEmbeddedDocumentsInReferencedDocument(): void
     {
         $project = new Project('OpenSky');
 
@@ -22,6 +22,7 @@ class ReferenceEmbeddedDocumentsTest extends BaseTest
 
         $project = $this->dm->find(Project::class, $project->getId());
 
+        /** @var ArrayCollection<int, SubProject> $subProjects */
         $subProjects = new ArrayCollection();
         $subProject1 = new SubProject('Sub Project #1');
         $subProject2 = new SubProject('Sub Project #2');
@@ -54,13 +55,13 @@ class ReferenceEmbeddedDocumentsTest extends BaseTest
         $this->assertLastSubProject($subProjects->last());
     }
 
-    private function assertFirstSubProject(SubProject $project)
+    private function assertFirstSubProject(SubProject $project): void
     {
         $this->assertEquals('Sub Project #1', $project->getName());
         $this->assertEquals(2, $project->getIssues()->count());
     }
 
-    private function assertLastSubProject(SubProject $project)
+    private function assertLastSubProject(SubProject $project): void
     {
         $this->assertEquals('Sub Project #2', $project->getName());
         $this->assertEquals(2, $project->getIssues()->count());

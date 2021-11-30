@@ -22,6 +22,9 @@ abstract class AbstractCommand extends Command
     public const COLLECTION = 'collection';
     public const INDEX      = 'index';
 
+    /**
+     * @return void
+     */
     protected function configure()
     {
         parent::configure();
@@ -33,16 +36,34 @@ abstract class AbstractCommand extends Command
             ->addOption('journal', null, InputOption::VALUE_REQUIRED, 'An optional journal option for the write concern that will be used for all schema operations. Using this option without a w option will cause an exception to be thrown.');
     }
 
+    /**
+     * @return void
+     */
     abstract protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern);
 
+    /**
+     * @return void
+     */
     abstract protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern);
 
+    /**
+     * @return void
+     */
     abstract protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern);
 
+    /**
+     * @return void
+     */
     abstract protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern);
 
+    /**
+     * @return void
+     */
     abstract protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern);
 
+    /**
+     * @return void
+     */
     abstract protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern);
 
     /**

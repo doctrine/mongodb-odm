@@ -19,7 +19,7 @@ class GH1058Test extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testModifyingDuringOnFlushEventNewDocument()
+    public function testModifyingDuringOnFlushEventNewDocument(): void
     {
         $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());
         $document = new GH1058PersistDocument();
@@ -31,7 +31,7 @@ class GH1058Test extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testModifyingDuringOnFlushEventNewDocumentWithId()
+    public function testModifyingDuringOnFlushEventNewDocumentWithId(): void
     {
         $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());
         $document = new GH1058UpsertDocument();
@@ -44,7 +44,7 @@ class GH1058Test extends BaseTest
 
 class GH1058Listener
 {
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         $dm  = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
@@ -64,18 +64,26 @@ class GH1058Listener
 /** @ODM\Document */
 class GH1058PersistDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $value;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setValue($value)
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }
@@ -84,18 +92,26 @@ class GH1058PersistDocument
 /** @ODM\Document */
 class GH1058UpsertDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $value;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    final public function generateId()
+    final public function generateId(): void
     {
         if (isset($this->id)) {
             return;
@@ -104,7 +120,7 @@ class GH1058UpsertDocument
         $this->id = (string) new ObjectId();
     }
 
-    public function setValue($value)
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }

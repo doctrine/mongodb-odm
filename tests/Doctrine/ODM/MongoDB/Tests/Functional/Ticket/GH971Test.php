@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use InvalidArgumentException;
 
 class GH971Test extends BaseTest
 {
-    public function testUpdateOfInheritedDocumentUsingFindAndUpdate()
+    public function testUpdateOfInheritedDocumentUsingFindAndUpdate(): void
     {
         $name     = 'Ferrari';
         $features = [
@@ -40,7 +41,7 @@ class GH971Test extends BaseTest
         $this->assertCount(1, $results);
     }
 
-    public function testUpsertThrowsExceptionWithIndecisiveDiscriminator()
+    public function testUpsertThrowsExceptionWithIndecisiveDiscriminator(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -55,7 +56,7 @@ class GH971Test extends BaseTest
             ->getQuery()->execute();
     }
 
-    public function testUpsertWillUseProvidedDiscriminator()
+    public function testUpsertWillUseProvidedDiscriminator(): void
     {
         $this->dm->createQueryBuilder(Bicycle::class)
             ->findAndUpdate()
@@ -78,13 +79,25 @@ class GH971Test extends BaseTest
  */
 class Vehicle
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedMany */
+    /**
+     * @ODM\EmbedMany
+     *
+     * @var Collection<int, object>
+     */
     public $features;
 }
 

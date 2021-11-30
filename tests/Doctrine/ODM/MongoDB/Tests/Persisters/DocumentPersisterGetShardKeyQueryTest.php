@@ -19,7 +19,7 @@ use function get_class;
 
 class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 {
-    public function testGetShardKeyQueryScalars()
+    public function testGetShardKeyQueryScalars(): void
     {
         $o         = new ShardedByScalars();
         $o->int    = 1;
@@ -39,7 +39,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         );
     }
 
-    public function testGetShardKeyQueryObjects()
+    public function testGetShardKeyQueryObjects(): void
     {
         $o       = new ShardedByObjects();
         $o->oid  = '54ca2c4c81fec698130041a7';
@@ -68,7 +68,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         );
     }
 
-    public function testShardById()
+    public function testShardById(): void
     {
         $o             = new ShardedById();
         $o->identifier = new ObjectId();
@@ -83,7 +83,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $this->assertSame(['_id' => $o->identifier], $shardKeyQuery);
     }
 
-    public function testShardByReference()
+    public function testShardByReference(): void
     {
         $o = new ShardedByReferenceOne();
 
@@ -110,19 +110,39 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
  */
 class ShardedByScalars
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int
+     */
     public $int;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $string;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $bool;
 
-    /** @ODM\Field(type="float") */
+    /**
+     * @ODM\Field(type="float")
+     *
+     * @var float|null
+     */
     public $float;
 }
 
@@ -132,16 +152,32 @@ class ShardedByScalars
  */
 class ShardedByObjects
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="object_id") */
+    /**
+     * @ODM\Field(type="object_id")
+     *
+     * @var string|null
+     */
     public $oid;
 
-    /** @ODM\Field(type="bin") */
+    /**
+     * @ODM\Field(type="bin")
+     *
+     * @var string|null
+     */
     public $bin;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     public $date;
 }
 
@@ -151,7 +187,11 @@ class ShardedByObjects
  */
 class ShardedById
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     public $identifier;
 }
 
@@ -161,9 +201,17 @@ class ShardedById
  */
 class ShardedByReferenceOne
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class)
+     *
+     * @var User|null
+     */
     public $reference;
 }

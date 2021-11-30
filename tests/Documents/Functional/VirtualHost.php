@@ -10,20 +10,26 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class VirtualHost
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
-    /** @ODM\EmbedOne(targetDocument=Documents\Functional\VirtualHostDirective::class) */
+
+    /**
+     * @ODM\EmbedOne(targetDocument=Documents\Functional\VirtualHostDirective::class)
+     *
+     * @var VirtualHostDirective|null
+     */
     protected $vhostDirective;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @return Documents\Functional\VirtualHostDirective
-     */
-    public function getVHostDirective()
+    public function getVHostDirective(): VirtualHostDirective
     {
         if (! $this->vhostDirective) {
             $this->vhostDirective = new VirtualHostDirective('VirtualHost', '*:80');
@@ -32,7 +38,7 @@ class VirtualHost
         return $this->vhostDirective;
     }
 
-    public function setVHostDirective($value)
+    public function setVHostDirective(VirtualHostDirective $value): VirtualHost
     {
         $this->vhostDirective = $value;
 

@@ -17,6 +17,9 @@ use function sprintf;
 
 class UpdateCommand extends AbstractCommand
 {
+    /**
+     * @return void
+     */
     protected function configure()
     {
         parent::configure();
@@ -41,9 +44,13 @@ class UpdateCommand extends AbstractCommand
             if (is_string($class)) {
                 $this->processDocumentIndex($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 $output->writeln(sprintf('Updated <comment>index(es)</comment> for <info>%s</info>', $class));
+                $this->processDocumentValidator($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
+                $output->writeln(sprintf('Updated <comment>validation</comment> for <info>%s</info>', $class));
             } else {
                 $this->processIndex($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 $output->writeln('Updated <comment>indexes</comment> for <info>all classes</info>');
+                $this->processValidators($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
+                $output->writeln('Updated <comment>validation</comment> for <info>all classes</info>');
             }
         } catch (Throwable $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
@@ -61,6 +68,22 @@ class UpdateCommand extends AbstractCommand
     protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $sm->updateIndexes($maxTimeMs, $writeConcern);
+    }
+
+    /**
+     * @return void
+     */
+    protected function processDocumentValidator(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        $sm->updateDocumentValidator($document, $maxTimeMs, $writeConcern);
+    }
+
+    /**
+     * @return void
+     */
+    protected function processValidators(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        $sm->updateValidators($maxTimeMs, $writeConcern);
     }
 
     /**

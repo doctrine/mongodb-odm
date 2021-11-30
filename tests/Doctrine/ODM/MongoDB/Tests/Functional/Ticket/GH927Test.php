@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH927Test extends BaseTest
 {
-    public function testInheritedClassHasAssociationMapping()
+    public function testInheritedClassHasAssociationMapping(): void
     {
         $parentMetadata = $this->dm->getClassMetadata(GH927Parent::class);
         $this->assertArrayHasKey('reference', $parentMetadata->associationMappings);
@@ -22,10 +22,18 @@ class GH927Test extends BaseTest
 /** @ODM\Document */
 class GH927Parent
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH927Reference::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH927Reference::class)
+     *
+     * @var GH927Reference|null
+     */
     protected $reference;
 }
 
@@ -37,6 +45,10 @@ class GH927Child extends GH927Parent
 /** @ODM\Document */
 class GH927Reference
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 }

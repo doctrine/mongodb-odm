@@ -12,6 +12,7 @@ Doctrine provides several different ways for specifying object
 document mapping metadata:
 
 -  Docblock Annotations
+-  Attributes
 -  XML
 -  Raw PHP Code
 
@@ -145,7 +146,7 @@ Here is a quick overview of the built-in mapping types:
 -  ``bin_func``
 -  ``bin_md5``
 -  ``bin_uuid``
--  ``boolean``
+-  ``bool``
 -  ``collection``
 -  ``custom_id``
 -  ``date``

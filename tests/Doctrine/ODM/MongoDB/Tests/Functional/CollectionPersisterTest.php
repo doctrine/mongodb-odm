@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -37,6 +39,7 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->categories);
         $persister->delete($user, [$user->categories], []);
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -47,6 +50,7 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->phonenumbers);
         $persister->delete($user, [$user->phonenumbers], []);
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -107,9 +111,13 @@ class CollectionPersisterTest extends BaseTest
         $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
 
         $this->logger->clear();
+        $firstCategoryChildren = $user->categories[0]->children;
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren[1]->children);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->categories);
         $persister->delete(
             $user,
-            [$user->categories[0]->children, $user->categories[0]->children[1]->children, $user->categories],
+            [$firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories],
             []
         );
         $this->assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -562,29 +570,53 @@ class CollectionPersisterTest extends BaseTest
 /** @ODM\Document(collection="user_collection_persister_test") */
 class CollectionPersisterUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $username;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterCategory::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterCategory::class)
+     *
+     * @var Collection<int, CollectionPersisterCategory>|array<CollectionPersisterCategory>
+     */
     public $categories = [];
 
-    /** @ODM\ReferenceMany(targetDocument=CollectionPersisterPhonenumber::class, cascade={"persist"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=CollectionPersisterPhonenumber::class, cascade={"persist"})
+     *
+     * @var Collection<int, CollectionPersisterPhonenumber>|array<CollectionPersisterPhonenumber>
+     */
     public $phonenumbers = [];
 }
 
 /** @ODM\EmbeddedDocument */
 class CollectionPersisterCategory
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterCategory::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterCategory::class)
+     *
+     * @var Collection<int, CollectionPersisterCategory>|array<CollectionPersisterCategory>
+     */
     public $children = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -593,13 +625,21 @@ class CollectionPersisterCategory
 /** @ODM\Document(collection="phonenumber_collection_persister_test") */
 class CollectionPersisterPhonenumber
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $phonenumber;
 
-    public function __construct($phonenumber)
+    public function __construct(string $phonenumber)
     {
         $this->phonenumber = $phonenumber;
     }
@@ -608,16 +648,28 @@ class CollectionPersisterPhonenumber
 /** @ODM\Document(collection="post_collection_persister_test") */
 class CollectionPersisterPost
 {
-  /** @ODM\Id */
+  /**
+   * @ODM\Id
+   *
+   * @var string|null
+   */
     public $id;
 
-  /** @ODM\Field(type="string") */
+  /**
+   * @ODM\Field(type="string")
+   *
+   * @var string
+   */
     public $post;
 
-  /** @ODM\EmbedMany(targetDocument=CollectionPersisterComment::class, strategy="set") */
+  /**
+   * @ODM\EmbedMany(targetDocument=CollectionPersisterComment::class, strategy="set")
+   *
+   * @var Collection<array-key, CollectionPersisterComment>|array<CollectionPersisterComment>
+   */
     public $comments = [];
 
-    public function __construct($post)
+    public function __construct(string $post)
     {
         $this->comments = new ArrayCollection();
         $this->post     = $post;
@@ -627,19 +679,35 @@ class CollectionPersisterPost
 /** @ODM\EmbeddedDocument */
 class CollectionPersisterComment
 {
-  /** @ODM\Id */
+  /**
+   * @ODM\Id
+   *
+   * @var string|null
+   */
     public $id;
 
-  /** @ODM\Field(type="string") */
+  /**
+   * @ODM\Field(type="string")
+   *
+   * @var string
+   */
     public $comment;
 
-  /** @ODM\Field(type="string") */
+  /**
+   * @ODM\Field(type="string")
+   *
+   * @var string
+   */
     public $by;
 
-  /** @ODM\EmbedMany(targetDocument=CollectionPersisterComment::class, strategy="set") */
+  /**
+   * @ODM\EmbedMany(targetDocument=CollectionPersisterComment::class, strategy="set")
+   *
+   * @var Collection<array-key, CollectionPersisterComment>|array<CollectionPersisterComment>
+   */
     public $comments = [];
 
-    public function __construct($comment, $by)
+    public function __construct(string $comment, string $by)
     {
         $this->comments = new ArrayCollection();
         $this->comment  = $comment;
@@ -650,31 +718,67 @@ class CollectionPersisterComment
 /** @ODM\Document(collection="structure_collection_persister_test") */
 class CollectionPersisterStructure
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="addToSet") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="addToSet")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $addToSet;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="addToSet") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="addToSet")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $addToSet2;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="set")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $set;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="set")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $set2;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="setArray") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="setArray")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $setArray;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="setArray") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="setArray")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $setArray2;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="pushAll") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="pushAll")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $pushAll;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="pushAll") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="pushAll")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $pushAll2;
 
     public function __construct()
@@ -692,34 +796,74 @@ class CollectionPersisterStructure
 /** @ODM\EmbeddedDocument */
 class CollectionPersisterNestedStructure
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $field;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="addToSet") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="addToSet")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $addToSet;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="addToSet") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="addToSet")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $addToSet2;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="set")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $set;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="set")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $set2;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="setArray") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="setArray")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $setArray;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="setArray") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="setArray")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $setArray2;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="pushAll") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="pushAll")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $pushAll;
 
-    /** @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="pushAll") */
+    /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterNestedStructure::class, strategy="pushAll")
+     *
+     * @var Collection<int, CollectionPersisterNestedStructure>
+     */
     public $pushAll2;
 
     public function __construct(string $field)

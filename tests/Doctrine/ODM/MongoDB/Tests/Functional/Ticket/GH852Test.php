@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\Binary;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -18,7 +20,7 @@ class GH852Test extends BaseTest
     /**
      * @dataProvider provideIdGenerators
      */
-    public function testA(Closure $idGenerator)
+    public function testA(Closure $idGenerator): void
     {
         $parent       = new GH852Document();
         $parent->id   = $idGenerator('parent');
@@ -91,7 +93,7 @@ class GH852Test extends BaseTest
         $this->assertCount(4, $docs);
     }
 
-    public function provideIdGenerators()
+    public function provideIdGenerators(): array
     {
         $binDataType = Binary::TYPE_GENERIC;
 
@@ -113,16 +115,32 @@ class GH852Test extends BaseTest
 /** @ODM\Document */
 class GH852Document
 {
-    /** @ODM\Id(strategy="NONE", type="custom_id") */
+    /**
+     * @ODM\Id(strategy="NONE", type="custom_id")
+     *
+     * @var Binary|array<string, mixed>
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument=GH852Document::class, cascade="all") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH852Document::class, cascade="all")
+     *
+     * @var GH852Document
+     */
     public $refOne;
 
-    /** @ODM\ReferenceMany(targetDocument=GH852Document::class, cascade="all") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH852Document::class, cascade="all")
+     *
+     * @var Collection<int, GH852Document>
+     */
     public $refMany;
 
     public function __construct()

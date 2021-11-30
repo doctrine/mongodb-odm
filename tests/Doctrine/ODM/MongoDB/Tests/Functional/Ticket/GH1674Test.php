@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 
 class GH1674Test extends BaseTest
 {
-    public function testElemMatchUsesCorrectMapping()
+    public function testElemMatchUsesCorrectMapping(): void
     {
         $builder = $this->dm->createQueryBuilder(GH1674Document::class);
         $builder
@@ -36,10 +37,18 @@ class GH1674Test extends BaseTest
 /** @ODM\Document */
 class GH1674Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     protected $id;
 
-    /** @ODM\EmbedMany(targetDocument=GH1674Embedded::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH1674Embedded::class)
+     *
+     * @var Collection<int, GH1674Embedded>
+     */
     protected $embedded;
 
     public function __construct()
@@ -52,6 +61,10 @@ class GH1674Document
 /** @ODM\EmbeddedDocument */
 class GH1674Embedded
 {
-    /** @ODM\Field */
-    public $id = [];
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
+    public $id;
 }

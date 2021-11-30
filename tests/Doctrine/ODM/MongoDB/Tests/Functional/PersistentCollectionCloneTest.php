@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsGroup;
 use Documents\CmsUser;
@@ -12,7 +13,10 @@ use function get_class;
 
 class PersistentCollectionCloneTest extends BaseTest
 {
+    /** @var CmsUser|null */
     private $user1;
+
+    /** @var CmsUser|null */
     private $user2;
 
     public function setUp(): void
@@ -45,7 +49,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->user2 = $this->dm->find(get_class($user1), $user2->id);
     }
 
-    public function testClonePersistentCollectionAndReuse()
+    public function testClonePersistentCollectionAndReuse(): void
     {
         $user1 = $this->user1;
 
@@ -59,7 +63,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->assertCount(2, $user1->groups);
     }
 
-    public function testClonePersistentCollectionAndShare()
+    public function testClonePersistentCollectionAndShare(): void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
@@ -76,7 +80,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->assertCount(2, $user2->groups);
     }
 
-    public function testCloneThenDirtyPersistentCollection()
+    public function testCloneThenDirtyPersistentCollection(): void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
@@ -97,7 +101,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->assertCount(2, $user1->groups);
     }
 
-    public function testNotCloneAndPassAroundFlush()
+    public function testNotCloneAndPassAroundFlush(): void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
@@ -107,6 +111,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $user2->groups = $user1->groups;
         $user2->groups->add($group3);
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user1->groups);
         $this->assertCount(1, $user1->groups->getInsertDiff());
 
         $this->dm->persist($group3);

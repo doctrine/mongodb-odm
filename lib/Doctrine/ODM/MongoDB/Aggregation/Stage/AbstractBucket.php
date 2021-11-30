@@ -33,7 +33,7 @@ abstract class AbstractBucket extends Stage
     /** @var Bucket\AbstractOutput|null */
     protected $output;
 
-    /** @var Expr|array */
+    /** @var Expr|array|string */
     protected $groupBy;
 
     public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class)
@@ -48,7 +48,7 @@ abstract class AbstractBucket extends Stage
      * An expression to group documents by. To specify a field path, prefix the
      * field name with a dollar sign $ and enclose it in quotes.
      *
-     * @param array|Expr $expression
+     * @param array|Expr|string $expression
      */
     public function groupBy($expression): self
     {
@@ -57,9 +57,6 @@ abstract class AbstractBucket extends Stage
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         $stage = [
@@ -82,6 +79,11 @@ abstract class AbstractBucket extends Stage
      */
     abstract protected function getStageName(): string;
 
+    /**
+     * @param array|mixed|string $expression
+     *
+     * @return array|mixed|string
+     */
     private function convertExpression($expression)
     {
         if (is_array($expression)) {

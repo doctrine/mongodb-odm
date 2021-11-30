@@ -9,34 +9,42 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document(collection="accounts") */
 class Account
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return (string) $this->name;
+        return $this->name;
     }
 }

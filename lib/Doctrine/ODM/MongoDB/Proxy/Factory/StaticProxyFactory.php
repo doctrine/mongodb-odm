@@ -59,11 +59,6 @@ final class StaticProxyFactory implements ProxyFactory
         return $ghostObject;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param ClassMetadata[] $classes
-     */
     public function generateProxyClasses(array $classes): int
     {
         $concreteClasses = array_filter($classes, static function (ClassMetadata $metadata): bool {
@@ -87,6 +82,12 @@ final class StaticProxyFactory implements ProxyFactory
         return count($concreteClasses);
     }
 
+    /**
+     * @param ClassMetadata<T>     $metadata
+     * @param DocumentPersister<T> $documentPersister
+     *
+     * @template T of object
+     */
     private function createInitializer(
         ClassMetadata $metadata,
         DocumentPersister $documentPersister
@@ -107,6 +108,7 @@ final class StaticProxyFactory implements ProxyFactory
             $initializer         = null;
             $identifier          = $metadata->getIdentifierValue($ghostObject);
 
+            // @phpstan-ignore-next-line $ghostObject is of type T&GhostObjectInterface<T>
             if (! $documentPersister->load(['_id' => $identifier], $ghostObject)) {
                 $initializer = $originalInitializer;
 
@@ -124,7 +126,9 @@ final class StaticProxyFactory implements ProxyFactory
     }
 
     /**
-     * @return string[]
+     * @param ClassMetadata<object> $metadata
+     *
+     * @return array<int, string>
      */
     private function skippedFieldsFqns(ClassMetadata $metadata): array
     {

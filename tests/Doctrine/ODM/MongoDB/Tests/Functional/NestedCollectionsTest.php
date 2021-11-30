@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -17,7 +18,7 @@ class NestedCollectionsTest extends BaseTest
     /**
      * @dataProvider provideStrategy
      */
-    public function testStrategy($field)
+    public function testStrategy(string $field): void
     {
         $doc         = new DocWithNestedCollections();
         $privateBook = new Phonebook('Private');
@@ -66,7 +67,7 @@ class NestedCollectionsTest extends BaseTest
         $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
 
-    public function provideStrategy()
+    public function provideStrategy(): array
     {
         return [
             [ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET],
@@ -84,24 +85,52 @@ class NestedCollectionsTest extends BaseTest
  */
 class DocWithNestedCollections
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $atomicSet;
 
-    /** @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $atomicSetArray;
 
-    /** @ODM\EmbedMany(strategy="set", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="set", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $set;
 
-    /** @ODM\EmbedMany(strategy="setArray", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="setArray", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $setArray;
 
-    /** @ODM\EmbedMany(strategy="pushAll", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="pushAll", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $pushAll;
 
-    /** @ODM\EmbedMany(strategy="addToSet", targetDocument=Documents\Phonebook::class) */
+    /**
+     * @ODM\EmbedMany(strategy="addToSet", targetDocument=Documents\Phonebook::class)
+     *
+     * @var Collection<int, Phonebook>
+     */
     public $addToSet;
 }

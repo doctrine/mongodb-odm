@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
@@ -14,7 +15,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 class HydratorTest extends BaseTest
 {
-    public function testHydrator()
+    public function testHydrator(): void
     {
         $class = $this->dm->getClassMetadata(HydrationClosureUser::class);
 
@@ -50,7 +51,7 @@ class HydratorTest extends BaseTest
         $this->assertEquals('jon', $user->embedMany[0]->name);
     }
 
-    public function testHydrateProxyWithMissingAssociations()
+    public function testHydrateProxyWithMissingAssociations(): void
     {
         $user = $this->dm->getReference(HydrationClosureUser::class, 1);
         $this->assertInstanceOf(GhostObjectInterface::class, $user);
@@ -71,7 +72,7 @@ class HydratorTest extends BaseTest
         $this->assertInstanceOf(PersistentCollection::class, $user->embedMany);
     }
 
-    public function testReadOnly()
+    public function testReadOnly(): void
     {
         $class = $this->dm->getClassMetadata(HydrationClosureUser::class);
 
@@ -91,7 +92,7 @@ class HydratorTest extends BaseTest
         $this->assertFalse($this->uow->isInIdentityMap($user->embedMany[0]));
     }
 
-    public function testEmbedOneWithWrongType()
+    public function testEmbedOneWithWrongType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -104,7 +105,7 @@ class HydratorTest extends BaseTest
         ]);
     }
 
-    public function testEmbedManyWithWrongType()
+    public function testEmbedManyWithWrongType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -117,7 +118,7 @@ class HydratorTest extends BaseTest
         ]);
     }
 
-    public function testEmbedManyWithWrongElementType()
+    public function testEmbedManyWithWrongElementType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -134,7 +135,7 @@ class HydratorTest extends BaseTest
         $user->embedMany->initialize();
     }
 
-    public function testReferenceOneWithWrongType()
+    public function testReferenceOneWithWrongType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -147,7 +148,7 @@ class HydratorTest extends BaseTest
         ]);
     }
 
-    public function testReferenceManyWithWrongType()
+    public function testReferenceManyWithWrongType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -160,7 +161,7 @@ class HydratorTest extends BaseTest
         ]);
     }
 
-    public function testReferenceManyWithWrongElementType()
+    public function testReferenceManyWithWrongElementType(): void
     {
         $user = new HydrationClosureUser();
 
@@ -181,61 +182,117 @@ class HydratorTest extends BaseTest
 /** @ODM\Document */
 class HydrationClosureUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string", nullable=true) */
+    /**
+     * @ODM\Field(type="string", nullable=true)
+     *
+     * @var string|null
+     */
     public $title = 'Mr.';
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     public $birthdate;
 
-    /** @ODM\ReferenceOne(targetDocument=HydrationClosureReferenceOne::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=HydrationClosureReferenceOne::class)
+     *
+     * @var HydrationClosureReferenceOne|null
+     */
     public $referenceOne;
 
-    /** @ODM\ReferenceMany(targetDocument=HydrationClosureReferenceMany::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=HydrationClosureReferenceMany::class)
+     *
+     * @var Collection<int, HydrationClosureReferenceMany>|array<HydrationClosureReferenceMany>
+     */
     public $referenceMany = [];
 
-    /** @ODM\EmbedOne(targetDocument=HydrationClosureEmbedOne::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=HydrationClosureEmbedOne::class)
+     *
+     * @var HydrationClosureEmbedOne|null
+     */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument=HydrationClosureEmbedMany::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=HydrationClosureEmbedMany::class)
+     *
+     * @var Collection<int, HydrationClosureEmbedMany>|array<HydrationClosureReferenceMany>
+     */
     public $embedMany = [];
 }
 
 /** @ODM\Document */
 class HydrationClosureReferenceOne
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
 /** @ODM\Document */
 class HydrationClosureReferenceMany
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
 /** @ODM\EmbeddedDocument */
 class HydrationClosureEmbedMany
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
 /** @ODM\EmbeddedDocument */
 class HydrationClosureEmbedOne
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }

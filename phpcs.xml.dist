@@ -33,7 +33,6 @@
         <!-- Will cause BC breaks to method signatures - disabled for now -->
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint" />
-        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint" />
 
         <!-- Disabled to avoid class renaming - to be handled in a separate PR -->
@@ -59,22 +58,6 @@
         <exclude-pattern>lib/Doctrine/ODM/MongoDB/Events.php</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements">
-        <properties>
-            <property name="alwaysUsedPropertiesAnnotations" type="array" value="
-                @ODM\Id,
-                @ODM\Field,
-                @ODM\EmbedOne,
-                @ODM\EmbedMany,
-                @ODM\ReferenceOne,
-                @ODM\ReferenceMany
-            "/>
-        </properties>
-        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataFactoryTest.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php</exclude-pattern>
-    </rule>
-
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
@@ -83,14 +66,11 @@
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
+    <!-- If forces to add "@inheritDoc" because the analysis is per file -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>*/lib/*</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Functional/DocumentPersisterTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomTypeTest.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">

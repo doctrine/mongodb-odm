@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 
 class GH1435Test extends BaseTest
 {
-    public function testUpsert()
+    public function testUpsert(): void
     {
         $id = (string) new ObjectId();
 
@@ -26,7 +27,7 @@ class GH1435Test extends BaseTest
         $this->assertEquals('test', $document->name);
     }
 
-    public function testUpsertWithIncrement()
+    public function testUpsertWithIncrement(): void
     {
         $id = 10;
 
@@ -43,7 +44,7 @@ class GH1435Test extends BaseTest
         $this->assertEquals('test', $document->name);
     }
 
-    public function testUpdateWithIncrement()
+    public function testUpdateWithIncrement(): void
     {
         $document       = new GH1435DocumentIncrement();
         $document->name = 'test';
@@ -71,10 +72,18 @@ class GH1435Test extends BaseTest
  */
 class GH1435Document
 {
-    /** @ODM\Id() */
+    /**
+     * @ODM\Id()
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string", nullable=true) */
+    /**
+     * @ODM\Field(type="string", nullable=true)
+     *
+     * @var string|null
+     */
     public $name;
 }
 
@@ -83,9 +92,17 @@ class GH1435Document
  */
 class GH1435DocumentIncrement
 {
-    /** @ODM\Id(strategy="increment") */
+    /**
+     * @ODM\Id(strategy="increment")
+     *
+     * @var int|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string", nullable=true) */
+    /**
+     * @ODM\Field(type="string", nullable=true)
+     *
+     * @var string|null
+     */
     public $name;
 }

@@ -12,9 +12,6 @@ use stdClass;
  */
 class IndexStats extends Stage
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

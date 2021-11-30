@@ -30,10 +30,17 @@ use function is_array;
  *
  * This class is designed for inheritance and users can subclass this class to
  * write their own repositories with business-specific methods to locate documents.
+ *
+ * @template T of object
+ * @template-implements Selectable<int,T>
+ * @template-implements ObjectRepository<T>
  */
 class DocumentRepository implements ObjectRepository, Selectable
 {
-    /** @var string */
+    /**
+     * @var string
+     * @psalm-var class-string<T>
+     */
     protected $documentName;
 
     /** @var DocumentManager */
@@ -42,7 +49,10 @@ class DocumentRepository implements ObjectRepository, Selectable
     /** @var UnitOfWork */
     protected $uow;
 
-    /** @var ClassMetadata */
+    /**
+     * @var ClassMetadata
+     * @psalm-var ClassMetadata<T>
+     */
     protected $class;
 
     /**
@@ -51,6 +61,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * @param DocumentManager $dm            The DocumentManager to use.
      * @param UnitOfWork      $uow           The UnitOfWork to use.
      * @param ClassMetadata   $classMetadata The class metadata.
+     * @psalm-param ClassMetadata<T>   $classMetadata The class metadata.
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, ClassMetadata $classMetadata)
     {
@@ -89,6 +100,8 @@ class DocumentRepository implements ObjectRepository, Selectable
      * expected version may be specified.
      *
      * @param mixed $id Identifier.
+     *
+     * @psalm-return T|null
      *
      * @throws MappingException
      * @throws LockException
@@ -132,7 +145,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             }
 
             $document = $this->getDocumentPersister()->load($criteria);
-            if ($document) {
+            if ($document !== null) {
                 $this->uow->lock($document, $lockMode, $lockVersion);
             }
 
@@ -152,9 +165,6 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds documents by a set of criteria.
-     *
-     * @param int|null $limit
-     * @param int|null $offset
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
@@ -164,14 +174,20 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Finds a single document by a set of criteria.
      *
-     * @param array      $criteria
-     * @param array|null $sort
+     * @param array<string, mixed>|null $sort
+     * @param array<string, mixed>      $criteria
+     *
+     * @return object|null The object.
+     * @psalm-return T|null
      */
     public function findOneBy(array $criteria, ?array $sort = null): ?object
     {
         return $this->getDocumentPersister()->load($criteria, null, [], 0, $sort);
     }
 
+    /**
+     * @psalm-return class-string<T>
+     */
     public function getDocumentName(): string
     {
         return $this->documentName;
@@ -182,11 +198,17 @@ class DocumentRepository implements ObjectRepository, Selectable
         return $this->dm;
     }
 
+    /**
+     * @psalm-return ClassMetadata<T>
+     */
     public function getClassMetadata(): ClassMetadata
     {
         return $this->class;
     }
 
+    /**
+     * @psalm-return class-string<T>
+     */
     public function getClassName(): string
     {
         return $this->getDocumentName();
@@ -196,7 +218,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Selects all elements from a selectable that match the expression and
      * returns a new collection containing these elements.
      *
-     * @see Selectable::matching()
+     * @return ArrayCollection<array-key, T>
      */
     public function matching(Criteria $criteria): ArrayCollection
     {
@@ -221,12 +243,16 @@ class DocumentRepository implements ObjectRepository, Selectable
         }
 
         // @TODO: wrap around a specialized Collection for efficient count on large collections
+        /** @var Iterator<T> $iterator */
         $iterator = $queryBuilder->getQuery()->execute();
         assert($iterator instanceof Iterator);
 
         return new ArrayCollection($iterator->toArray());
     }
 
+    /**
+     * @psalm-return DocumentPersister<T>
+     */
     protected function getDocumentPersister(): DocumentPersister
     {
         return $this->uow->getDocumentPersister($this->documentName);

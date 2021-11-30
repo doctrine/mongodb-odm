@@ -17,36 +17,47 @@ use function in_array;
  */
 class ConfigurableProduct
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $name;
 
-    /** @ODM\EmbedMany(targetDocument=Documents\Ecommerce\Option::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Documents\Ecommerce\Option::class)
+     *
+     * @var Collection<int, Option>|array<Option>
+     */
     protected $options = [];
 
-    /** @var Documents\Option */
+    /** @var Option|null */
     protected $selectedOption;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->setName($name);
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): ConfigurableProduct
     {
-        $name = (string) $name;
         if (empty($name)) {
             throw new InvalidArgumentException('Product name cannot be empty');
         }
@@ -56,6 +67,9 @@ class ConfigurableProduct
         return $this;
     }
 
+    /**
+     * @return Collection<int, Option>|array<Option>
+     */
     public function getOptions()
     {
         return $this->options;
@@ -63,9 +77,8 @@ class ConfigurableProduct
 
     /**
      * @param string|Option $name
-     * @param float|null    $price
      */
-    public function addOption($name, $price = null, ?StockItem $item = null)
+    public function addOption($name, ?Money $price = null, ?StockItem $item = null): void
     {
         if (! $name instanceof Option) {
             $name = (string) $name;
@@ -87,12 +100,12 @@ class ConfigurableProduct
         $this->options[] = $name;
     }
 
-    public function getOption($name)
+    public function getOption(string $name): ?Option
     {
         return $this->findOption($name);
     }
 
-    public function removeOption($name)
+    public function removeOption(string $name): ConfigurableProduct
     {
         $option = $this->findOption($name);
         if ($option === null) {
@@ -110,12 +123,12 @@ class ConfigurableProduct
         return $this;
     }
 
-    public function hasOption($name)
+    public function hasOption(string $name): bool
     {
         return $this->findOption($name) !== null;
     }
 
-    public function selectOption($name)
+    public function selectOption(string $name): ConfigurableProduct
     {
         $option = $this->findOption($name);
         if (! isset($option)) {
@@ -127,7 +140,7 @@ class ConfigurableProduct
         return $this;
     }
 
-    protected function findOption($name)
+    protected function findOption(string $name): ?Option
     {
         foreach ($this->options as $option) {
             if ($name === $option->getName()) {
@@ -138,13 +151,19 @@ class ConfigurableProduct
         return null;
     }
 
+    /**
+     * @return Money|float|null
+     */
     public function getPrice()
     {
         return isset($this->selectedOption) ?
             $this->selectedOption->getPrice() : null;
     }
 
-    protected function getStockItems()
+    /**
+     * @return StockItem[]
+     */
+    protected function getStockItems(): array
     {
         return array_map(static function ($option) {
             return $option->getStockItem();

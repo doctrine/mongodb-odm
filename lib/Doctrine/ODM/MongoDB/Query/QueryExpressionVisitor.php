@@ -93,20 +93,20 @@ final class QueryExpressionVisitor extends ExpressionVisitor
      *
      * @see ExpressionVisitor::walkCompositeExpression()
      */
-    public function walkCompositeExpression(CompositeExpression $compositeExpr): Expr
+    public function walkCompositeExpression(CompositeExpression $expr): Expr
     {
-        if (! isset(self::$compositeMethods[$compositeExpr->getType()])) {
-            throw new RuntimeException('Unknown composite ' . $compositeExpr->getType());
+        if (! isset(self::$compositeMethods[$expr->getType()])) {
+            throw new RuntimeException('Unknown composite ' . $expr->getType());
         }
 
-        $method = self::$compositeMethods[$compositeExpr->getType()];
-        $expr   = $this->builder->expr();
+        $method     = self::$compositeMethods[$expr->getType()];
+        $outputExpr = $this->builder->expr();
 
-        foreach ($compositeExpr->getExpressionList() as $child) {
-            $expr->{$method}($this->dispatch($child));
+        foreach ($expr->getExpressionList() as $child) {
+            $outputExpr->{$method}($this->dispatch($child));
         }
 
-        return $expr;
+        return $outputExpr;
     }
 
     /**

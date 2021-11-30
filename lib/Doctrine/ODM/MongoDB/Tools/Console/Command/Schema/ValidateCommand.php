@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
-use Doctrine\Common\Cache\VoidCache;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,7 +17,7 @@ use function unserialize;
 class ValidateCommand extends Command
 {
     /**
-     * @see \Symfony\Component\Console\Command\Command
+     * @return void
      */
     protected function configure()
     {
@@ -33,14 +32,13 @@ EOT
     }
 
     /**
-     * @see \Symfony\Component\Console\Command\Command
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         assert($dm instanceof DocumentManager);
         $metadataFactory = $dm->getMetadataFactory();
-        $metadataFactory->setCacheDriver(new VoidCache());
 
         $errors = 0;
         foreach ($metadataFactory->getAllMetadata() as $meta) {

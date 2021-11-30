@@ -24,14 +24,16 @@ use const STR_PAD_LEFT;
 class TypeTest extends BaseTest
 {
     /**
+     * @param mixed $test
+     *
      * @dataProvider provideTypes
      */
-    public function testConversion(Type $type, $test)
+    public function testConversion(Type $type, $test): void
     {
         $this->assertEquals($test, $type->convertToPHPValue($type->convertToDatabaseValue($test)));
     }
 
-    public function provideTypes()
+    public function provideTypes(): array
     {
         return [
             'id' => [Type::getType(Type::ID), '507f1f77bcf86cd799439011'],
@@ -62,14 +64,16 @@ class TypeTest extends BaseTest
     }
 
     /**
+     * @param mixed $test
+     *
      * @dataProvider provideTypesForIdempotent
      */
-    public function testConversionIsIdempotent(Type $type, $test)
+    public function testConversionIsIdempotent(Type $type, $test): void
     {
         $this->assertEquals($test, $type->convertToDatabaseValue($test));
     }
 
-    public function provideTypesForIdempotent()
+    public function provideTypesForIdempotent(): array
     {
         return [
             'id' => [Type::getType(Type::ID), new ObjectId()],
@@ -88,7 +92,7 @@ class TypeTest extends BaseTest
         ];
     }
 
-    public function testConvertDatePreservesMilliseconds()
+    public function testConvertDatePreservesMilliseconds(): void
     {
         $date         = new DateTime();
         $expectedDate = clone $date;
@@ -100,7 +104,7 @@ class TypeTest extends BaseTest
         $this->assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
     }
 
-    public function testConvertDateImmutablePreservesMilliseconds()
+    public function testConvertDateImmutablePreservesMilliseconds(): void
     {
         $date = new DateTimeImmutable();
 
@@ -111,7 +115,7 @@ class TypeTest extends BaseTest
         $this->assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
     }
 
-    public function testConvertImmutableDate()
+    public function testConvertImmutableDate(): void
     {
         $date = new DateTimeImmutable('now');
 

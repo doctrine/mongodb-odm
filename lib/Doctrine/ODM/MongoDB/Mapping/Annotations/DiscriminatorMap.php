@@ -4,13 +4,26 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * Specify a map of discriminator values and classes
  *
  * @Annotation
+ * @NamedArgumentConstructor
  */
-final class DiscriminatorMap extends Annotation
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
+final class DiscriminatorMap implements Annotation
 {
+    /** @var array<string, class-string> */
+    public $value;
+
+    /**
+     * @param array<string, class-string> $value
+     */
+    public function __construct(array $value)
+    {
+        $this->value = $value;
+    }
 }

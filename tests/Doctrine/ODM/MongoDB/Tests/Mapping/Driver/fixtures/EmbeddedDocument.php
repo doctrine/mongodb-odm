@@ -6,5 +6,6 @@ namespace TestDocuments;
 
 class EmbeddedDocument
 {
+    /** @var string|null */
     public $name;
 }

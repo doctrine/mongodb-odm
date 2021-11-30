@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\Common\Annotations\Annotation;
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * Marks a method as a postLoad lifecycle callback
  *
  * @Annotation
+ * @NamedArgumentConstructor
  */
-final class PostLoad extends Annotation
+#[Attribute(Attribute::TARGET_METHOD)]
+final class PostLoad implements Annotation
 {
 }

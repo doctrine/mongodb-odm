@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                  http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+    <document name="TestDocuments\SchemaValidatedDocument">
+        <schema-validation action="warn" level="moderate">
+            {
+                "$jsonSchema": {
+                    "required": ["name"],
+                    "properties": {
+                        "name": {
+                            "bsonType": "string",
+                            "description": "must be a string and is required"
+                        }
+                    }
+                },
+                "$or": [
+                    { "phone": { "$type": "string" } },
+                    { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } } },
+                    { "status": { "$in": [ "Unknown", "Incomplete" ] } }
+                ]
+            }
+        </schema-validation>
+    </document>
+</doctrine-mongo-mapping>

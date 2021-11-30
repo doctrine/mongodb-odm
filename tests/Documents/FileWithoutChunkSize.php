@@ -4,28 +4,53 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use DateTime;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\File */
 class FileWithoutChunkSize
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\File\Filename */
+    /**
+     * @ODM\File\Filename
+     *
+     * @var string|null
+     */
     private $filename;
 
-    /** @ODM\File\ChunkSize */
+    /**
+     * @ODM\File\ChunkSize
+     *
+     * @var int|null
+     */
     private $chunkSize;
 
-    /** @ODM\File\Length */
+    /**
+     * @ODM\File\Length
+     *
+     * @var int|null
+     */
     private $length;
 
-    /** @ODM\File\UploadDate */
+    /**
+     * @ODM\File\UploadDate
+     *
+     * @var DateTime|null
+     */
     private $uploadDate;
 
-    /** @ODM\File\Metadata(targetDocument=FileMetadata::class) */
+    /**
+     * @ODM\File\Metadata(targetDocument=FileMetadata::class)
+     *
+     * @var FileMetadata|null
+     */
     private $metadata;
 
     public function getId(): ?string

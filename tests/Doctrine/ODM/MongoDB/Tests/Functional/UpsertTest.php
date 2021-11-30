@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
@@ -17,7 +18,7 @@ class UpsertTest extends BaseTest
      *
      * Embedded document with provided id should not be upserted.
      */
-    public function testUpsertEmbedManyDoesNotCreateObject()
+    public function testUpsertEmbedManyDoesNotCreateObject(): void
     {
         $test = new UpsertTestUser();
 
@@ -37,7 +38,7 @@ class UpsertTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testUpsertDoesNotOverwriteNullableFieldsOnNull()
+    public function testUpsertDoesNotOverwriteNullableFieldsOnNull(): void
     {
         $test = new UpsertTestUser();
 
@@ -65,7 +66,7 @@ class UpsertTest extends BaseTest
         self::assertNotNull($upsertResult->nullableEmbedOne);
     }
 
-    public function testUpsertsWritesNullableFieldsOnInsert()
+    public function testUpsertsWritesNullableFieldsOnInsert(): void
     {
         $test = new UpsertTestUser();
         $this->dm->persist($test);
@@ -89,19 +90,39 @@ class UpsertTest extends BaseTest
 /** @ODM\Document */
 class UpsertTestUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(nullable=true) */
+    /**
+     * @ODM\Field(nullable=true)
+     *
+     * @var string|null
+     */
     public $nullableField;
 
-    /** @ODM\EmbedOne(targetDocument=UpsertTestUserEmbedded::class, nullable=true) */
+    /**
+     * @ODM\EmbedOne(targetDocument=UpsertTestUserEmbedded::class, nullable=true)
+     *
+     * @var UpsertTestUserEmbedded|null
+     */
     public $nullableEmbedOne;
 
-    /** @ODM\ReferenceOne(targetDocument=UpsertTestUser::class, cascade="persist", nullable=true) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=UpsertTestUser::class, cascade="persist", nullable=true)
+     *
+     * @var UpsertTestUser|null
+     */
     public $nullableReferenceOne;
 
-    /** @ODM\EmbedMany(targetDocument=UpsertTestUserEmbedded::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=UpsertTestUserEmbedded::class)
+     *
+     * @var Collection<int, UpsertTestUserEmbedded>
+     */
     public $embedMany;
 
     public function __construct()
@@ -113,6 +134,10 @@ class UpsertTestUser
 /** @ODM\EmbeddedDocument */
 class UpsertTestUserEmbedded
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $test;
 }

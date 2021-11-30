@@ -11,18 +11,26 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class CmsPhonenumber
 {
-    /** @ODM\Id(strategy="NONE", type="custom_id") */
+    /**
+     * @ODM\Id(strategy="NONE", type="custom_id")
+     *
+     * @var int|string|null
+     */
     public $phonenumber;
 
-    /** @ODM\ReferenceOne(targetDocument=CmsUser::class, cascade={"merge"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=CmsUser::class, cascade={"merge"})
+     *
+     * @var CmsUser|null
+     */
     public $user;
 
-    public function setUser(CmsUser $user)
+    public function setUser(CmsUser $user): void
     {
         $this->user = $user;
     }
 
-    public function getUser()
+    public function getUser(): ?CmsUser
     {
         return $this->user;
     }

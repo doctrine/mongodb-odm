@@ -9,54 +9,70 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class Address
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $street;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $city;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $state;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $postalCode;
 
-    public function getStreet()
+    public function getStreet(): ?string
     {
         return $this->street;
     }
 
-    public function setStreet($street)
+    public function setStreet(string $street): void
     {
         $this->street = $street;
     }
 
-    public function getCity()
+    public function getCity(): ?string
     {
         return $this->city;
     }
 
-    public function setCity($city)
+    public function setCity(string $city): void
     {
         $this->city = $city;
     }
 
-    public function getState()
+    public function getState(): ?string
     {
         return $this->state;
     }
 
-    public function setState($state)
+    public function setState(string $state): void
     {
         $this->state = $state;
     }
 
-    public function getPostalCode()
+    public function getPostalCode(): ?string
     {
         return $this->postalCode;
     }
 
-    public function setPostalCode($postalCode)
+    public function setPostalCode(string $postalCode): void
     {
         $this->postalCode = $postalCode;
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -14,7 +15,7 @@ use function sprintf;
 
 class GH453Test extends BaseTest
 {
-    public function testHashWithStringKeys()
+    public function testHashWithStringKeys(): void
     {
         $hash = ['a' => 'x', 'b' => 'y', 'c' => 'z'];
 
@@ -45,7 +46,7 @@ class GH453Test extends BaseTest
         $this->assertBsonObjectAndValue($hash, $doc->id, 'hash');
     }
 
-    public function testHashWithNumericKeys()
+    public function testHashWithNumericKeys(): void
     {
         $hash = [0 => 'x', 1 => 'y', 2 => 'z'];
 
@@ -76,7 +77,7 @@ class GH453Test extends BaseTest
         $this->assertBsonObjectAndValue($hash, $doc->id, 'hash');
     }
 
-    public function testCollection()
+    public function testCollection(): void
     {
         $col = ['x', 'y', 'z'];
 
@@ -112,7 +113,7 @@ class GH453Test extends BaseTest
         $this->assertBsonArrayAndValue($col, $doc->id, 'colSet');
     }
 
-    public function testEmbedMany()
+    public function testEmbedMany(): void
     {
         $colPush     = new ArrayCollection([
             new GH453EmbeddedDocument(),
@@ -146,7 +147,7 @@ class GH453Test extends BaseTest
         $this->assertBsonArray($doc->id, 'embedManyAddToSet');
 
         // Check that the value is changed properly
-        unset($colPush[1], $colSet[1], $colSetArray[1], $colAddToSet['1']);
+        unset($colPush[1], $colSet[1], $colSetArray[1], $colAddToSet[1]);
         $doc                    = $this->dm->merge($doc);
         $doc->embedManyPush     = $colPush;
         $doc->embedManySet      = $colSet;
@@ -162,7 +163,7 @@ class GH453Test extends BaseTest
         $this->assertBsonArray($doc->id, 'embedManyAddToSet');
     }
 
-    public function testReferenceMany()
+    public function testReferenceMany(): void
     {
         $colPush     = new ArrayCollection([
             new GH453ReferencedDocument(),
@@ -239,17 +240,26 @@ class GH453Test extends BaseTest
         $this->assertBsonArray($doc->id, 'referenceManyAddToSet');
     }
 
-    private function assertBsonArray($documentId, $fieldName)
+    /**
+     * @param mixed $documentId
+     */
+    private function assertBsonArray($documentId, string $fieldName): void
     {
         $this->assertBsonType(4, $documentId, $fieldName);
     }
 
-    private function assertBsonObject($documentId, $fieldName)
+    /**
+     * @param mixed $documentId
+     */
+    private function assertBsonObject($documentId, string $fieldName): void
     {
         $this->assertBsonType(3, $documentId, $fieldName);
     }
 
-    private function assertBsonType($bsonType, $documentId, $fieldName)
+    /**
+     * @param mixed $documentId
+     */
+    private function assertBsonType(int $bsonType, $documentId, string $fieldName): void
     {
         $criteria = ['_id' => $documentId];
 
@@ -263,17 +273,29 @@ class GH453Test extends BaseTest
         $this->assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
     }
 
-    private function assertBsonArrayAndValue($expectedValue, $documentId, $fieldName)
+    /**
+     * @param mixed $expectedValue
+     * @param mixed $documentId
+     */
+    private function assertBsonArrayAndValue($expectedValue, $documentId, string $fieldName): void
     {
         $this->assertBsonTypeAndValue(4, $expectedValue, $documentId, $fieldName);
     }
 
-    private function assertBsonObjectAndValue($expectedValue, $documentId, $fieldName)
+    /**
+     * @param mixed $expectedValue
+     * @param mixed $documentId
+     */
+    private function assertBsonObjectAndValue($expectedValue, $documentId, string $fieldName): void
     {
         $this->assertBsonTypeAndValue(3, $expectedValue, $documentId, $fieldName);
     }
 
-    private function assertBsonTypeAndValue($bsonType, $expectedValue, $documentId, $fieldName)
+    /**
+     * @param mixed $expectedValue
+     * @param mixed $documentId
+     */
+    private function assertBsonTypeAndValue(int $bsonType, $expectedValue, $documentId, string $fieldName): void
     {
         if ($bsonType === 4) {
             $expectedValue = array_values((array) $expectedValue);
@@ -300,53 +322,109 @@ class GH453Test extends BaseTest
 /** @ODM\Document */
 class GH453Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="hash") */
+    /**
+     * @ODM\Field(type="hash")
+     *
+     * @var array<string>
+     */
     public $hash;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
     public $colPush;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
     public $colSet;
 
-    /** @ODM\EmbedMany(strategy="pushAll")) */
+    /**
+     * @ODM\EmbedMany(strategy="pushAll"))
+     *
+     * @var Collection<int, GH453EmbeddedDocument>
+     */
     public $embedManyPush;
 
-    /** @ODM\EmbedMany(strategy="set") */
+    /**
+     * @ODM\EmbedMany(strategy="set")
+     *
+     * @var Collection<int, GH453EmbeddedDocument>
+     */
     public $embedManySet;
 
-    /** @ODM\EmbedMany(strategy="setArray") */
+    /**
+     * @ODM\EmbedMany(strategy="setArray")
+     *
+     * @var Collection<int, GH453EmbeddedDocument>
+     */
     public $embedManySetArray;
 
-    /** @ODM\EmbedMany(strategy="addToSet") */
+    /**
+     * @ODM\EmbedMany(strategy="addToSet")
+     *
+     * @var Collection<int, GH453EmbeddedDocument>
+     */
     public $embedManyAddToSet;
 
-    /** @ODM\ReferenceMany(strategy="pushAll")) */
+    /**
+     * @ODM\ReferenceMany(strategy="pushAll"))
+     *
+     * @var Collection<int, GH453ReferencedDocument>
+     */
     public $referenceManyPush;
 
-    /** @ODM\ReferenceMany(strategy="set") */
+    /**
+     * @ODM\ReferenceMany(strategy="set")
+     *
+     * @var Collection<int, GH453ReferencedDocument>
+     */
     public $referenceManySet;
 
-    /** @ODM\ReferenceMany(strategy="setArray") */
+    /**
+     * @ODM\ReferenceMany(strategy="setArray")
+     *
+     * @var Collection<int, GH453ReferencedDocument>
+     */
     public $referenceManySetArray;
 
-    /** @ODM\ReferenceMany(strategy="addToSet") */
+    /**
+     * @ODM\ReferenceMany(strategy="addToSet")
+     *
+     * @var Collection<int, GH453ReferencedDocument>
+     */
     public $referenceManyAddToSet;
 }
 
 /** @ODM\EmbeddedDocument */
 class GH453EmbeddedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document */
 class GH453ReferencedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }

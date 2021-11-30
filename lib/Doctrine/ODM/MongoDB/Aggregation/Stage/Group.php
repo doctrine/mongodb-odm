@@ -15,9 +15,6 @@ class Group extends Operator
     /** @var Expr */
     protected $expr;
 
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(Builder $builder)
     {
         parent::__construct($builder);
@@ -25,9 +22,6 @@ class Group extends Operator
         $this->expr = $builder->expr();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [
@@ -69,33 +63,6 @@ class Group extends Operator
     public function avg($expression): self
     {
         $this->expr->avg($expression);
-
-        return $this;
-    }
-
-    /**
-     * Used to use an expression as field value. Can be any expression
-     *
-     * @see https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
-     * @see Expr::expression
-     *
-     * @param mixed|Expr $value
-     */
-    public function expression($value)
-    {
-        $this->expr->expression($value);
-
-        return $this;
-    }
-
-    /**
-     * Set the current field for building the expression.
-     *
-     * @see Expr::field
-     */
-    public function field(string $fieldName)
-    {
-        $this->expr->field($fieldName);
 
         return $this;
     }

@@ -25,21 +25,21 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
         );
     }
 
-    public function testNoReturnTypes()
+    public function testNoReturnTypes(): void
     {
         $class = $this->generator->loadClass(CollNoReturnType::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollNoReturnType(), $this->dm, $this->uow);
         $this->assertInstanceOf(CollNoReturnType::class, $coll);
     }
 
-    public function testWithReturnType()
+    public function testWithReturnType(): void
     {
         $class = $this->generator->loadClass(CollWithReturnType::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollWithReturnType(), $this->dm, $this->uow);
         $this->assertInstanceOf(CollWithReturnType::class, $coll);
     }
 
-    public function testWithNullableReturnType()
+    public function testWithNullableReturnType(): void
     {
         $class = $this->generator->loadClass(CollWithNullableReturnType::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollWithNullableReturnType(), $this->dm, $this->uow);
@@ -49,7 +49,7 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
     /**
      * @requires PHP 8.0
      */
-    public function testPHP80Types()
+    public function testPHP80Types(): void
     {
         $class = $this->generator->loadClass(CollWithPHP80Types::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollWithPHP80Types(), $this->dm, $this->uow);

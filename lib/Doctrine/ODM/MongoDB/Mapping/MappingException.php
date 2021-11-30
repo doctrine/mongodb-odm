@@ -271,4 +271,9 @@ final class MappingException extends BaseMappingException
     {
         return new self(sprintf('Root class "%s" for view "%s" could not be found.', $rootClass, $className));
     }
+
+    public static function schemaValidationError(int $errorCode, string $errorMessage, string $className, string $property): self
+    {
+        return new self(sprintf('The following schema validation error occurred while parsing the "%s" property of the "%s" class: "%s" (code %s).', $property, $className, $errorMessage, $errorCode));
+    }
 }

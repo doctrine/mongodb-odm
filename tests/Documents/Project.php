@@ -16,54 +16,79 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Project
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
-    /** @ODM\EmbedOne(targetDocument=Address::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Address::class)
+     *
+     * @var Address|null
+     */
     private $address;
 
-    /** @ODM\ReferenceMany(targetDocument=SubProject::class, cascade="all") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=SubProject::class, cascade="all")
+     *
+     * @var Collection<int, SubProject>
+     */
     private $subProjects;
 
-    public function __construct($name, ?Collection $subProjects = null)
+    /**
+     * @param Collection<int, SubProject>|null $subProjects
+     */
+    public function __construct(string $name, ?Collection $subProjects = null)
     {
         $this->name        = $name;
-        $this->subProjects = $subProjects ? $subProjects : new ArrayCollection();
+        $this->subProjects = $subProjects ?? new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function setAddress(Address $address)
+    public function setAddress(Address $address): void
     {
         $this->address = $address;
     }
 
-    public function getAddress()
+    public function getAddress(): ?Address
     {
         return $this->address;
     }
 
-    public function setSubProjects(Collection $subProjects)
+    /**
+     * @param Collection<int, SubProject> $subProjects
+     */
+    public function setSubProjects(Collection $subProjects): void
     {
         $this->subProjects = $subProjects;
     }
 
+    /**
+     * @return Collection<int, SubProject>
+     */
     public function getSubProjects()
     {
         return $this->subProjects;

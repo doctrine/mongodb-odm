@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -12,7 +13,10 @@ use function get_class;
 
 class MODM90Test extends BaseTest
 {
-    private function getDocumentManager()
+    /** @var MODM90EventListener */
+    private $listener;
+
+    private function getDocumentManager(): ?DocumentManager
     {
         $this->listener = new MODM90EventListener();
         $evm            = $this->dm->getEventManager();
@@ -25,7 +29,7 @@ class MODM90Test extends BaseTest
         return $this->dm;
     }
 
-    public function testDocumentWithEmbeddedDocumentNotUpdatedOnFlush()
+    public function testDocumentWithEmbeddedDocumentNotUpdatedOnFlush(): void
     {
         $dm = $this->getDocumentManager();
 
@@ -52,7 +56,7 @@ class MODM90Test extends BaseTest
      * Ensures that the descriminator field is not unset if it's a
      * real property on the document.
      */
-    public function testDiscriminatorFieldValuePresentIfRealProperty()
+    public function testDiscriminatorFieldValuePresentIfRealProperty(): void
     {
         $dm = $this->getDocumentManager();
 
@@ -66,15 +70,16 @@ class MODM90Test extends BaseTest
 
         $testDoc = $dm->find(MODM90TestDocument::class, $testDoc->id);
 
-        $this->assertEquals($testDoc->embedded->type, 'test2');
+        $this->assertEquals('test2', $testDoc->embedded->type);
     }
 }
 
 class MODM90EventListener
 {
+    /** @var array<string, class-string[]> */
     public $called = [];
 
-    public function __call($method, $args)
+    public function __call(string $method, array $args): void
     {
         $document                = $args[0]->getDocument();
         $className               = get_class($document);
@@ -85,10 +90,18 @@ class MODM90EventListener
 /** @ODM\Document */
 class MODM90TestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /**
@@ -100,6 +113,8 @@ class MODM90TestDocument
      *     "test2"=MODM90Test2EmbeddedDocument::class
      *   }
      *  )
+     *
+     * @var MODM90TestEmbeddedDocument|MODM90Test2EmbeddedDocument|null
      */
     public $embedded;
 }
@@ -107,16 +122,28 @@ class MODM90TestDocument
 /** @ODM\EmbeddedDocument */
 class MODM90TestEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
 /** @ODM\EmbeddedDocument */
 class MODM90Test2EmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\Field(type="string") The discriminator field is a real property */
+    /**
+     * @ODM\Field(type="string") The discriminator field is a real property
+     *
+     * @var string
+     */
     public $type;
 }

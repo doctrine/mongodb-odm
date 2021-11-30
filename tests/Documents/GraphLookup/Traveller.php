@@ -11,19 +11,35 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Traveller
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument=Airport::class, cascade={"persist"}, storeAs="ref") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Airport::class, cascade={"persist"}, storeAs="ref")
+     *
+     * @var Airport|null
+     */
     public $nearestAirport;
 
-    /** @ODM\ReferenceOne(targetDocument=Airport::class, cascade={"persist"}, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Airport::class, cascade={"persist"}, storeAs="id")
+     *
+     * @var Airport|null
+     */
     public $nearestAirportId;
 
-    public function __construct($name, Airport $nearestAirport)
+    public function __construct(string $name, Airport $nearestAirport)
     {
         $this->name             = $name;
         $this->nearestAirport   = $nearestAirport;

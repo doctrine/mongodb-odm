@@ -9,7 +9,7 @@ use Documents\CmsComment;
 
 class SortByCountTest extends BaseTest
 {
-    public function testFieldNameConversion()
+    public function testFieldNameConversion(): void
     {
         $builder = $this->dm->createAggregationBuilder(CmsComment::class);
         $builder->sortByCount('$authorIp');

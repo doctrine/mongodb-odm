@@ -11,6 +11,7 @@ use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
+use MongoDB\Driver\Exception\UnexpectedValueException;
 use SimpleXMLElement;
 
 use function array_keys;
@@ -29,6 +30,8 @@ use function iterator_to_array;
 use function libxml_clear_errors;
 use function libxml_get_errors;
 use function libxml_use_internal_errors;
+use function MongoDB\BSON\fromJSON;
+use function MongoDB\BSON\toPHP;
 use function next;
 use function preg_match;
 use function simplexml_load_file;
@@ -40,6 +43,7 @@ use function trim;
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
  * @method SimpleXMLElement getElement(string $className)
+ * @psalm-import-type FieldMappingConfig from ClassMetadata
  */
 class XmlDriver extends FileDriver
 {
@@ -68,17 +72,11 @@ class XmlDriver extends FileDriver
         ],
     ];
 
-    /**
-     * {@inheritDoc}
-     */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         parent::__construct($locator, $fileExtension);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata)
     {
         assert($metadata instanceof ClassMetadata);
@@ -195,6 +193,28 @@ class XmlDriver extends FileDriver
             $this->setShardKey($metadata, $xmlRoot->{'shard-key'}[0]);
         }
 
+        if (isset($xmlRoot->{'schema-validation'})) {
+            $xmlSchemaValidation = $xmlRoot->{'schema-validation'};
+
+            if (isset($xmlSchemaValidation['action'])) {
+                $metadata->setValidationAction((string) $xmlSchemaValidation['action']);
+            }
+
+            if (isset($xmlSchemaValidation['level'])) {
+                $metadata->setValidationLevel((string) $xmlSchemaValidation['level']);
+            }
+
+            $validatorJson = (string) $xmlSchemaValidation;
+            try {
+                $validatorBson = fromJSON($validatorJson);
+            } catch (UnexpectedValueException $e) {
+                throw MappingException::schemaValidationError($e->getCode(), $e->getMessage(), $className, 'schema-validation');
+            }
+
+            $validator = toPHP($validatorBson, []);
+            $metadata->setValidator($validator);
+        }
+
         if (isset($xmlRoot['read-only']) && (string) $xmlRoot['read-only'] === 'true') {
             $metadata->markReadOnly();
         }
@@ -275,25 +295,25 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlRoot->{'embed-one'})) {
             foreach ($xmlRoot->{'embed-one'} as $embed) {
-                $this->addEmbedMapping($metadata, $embed, 'one');
+                $this->addEmbedMapping($metadata, $embed, ClassMetadata::ONE);
             }
         }
 
         if (isset($xmlRoot->{'embed-many'})) {
             foreach ($xmlRoot->{'embed-many'} as $embed) {
-                $this->addEmbedMapping($metadata, $embed, 'many');
+                $this->addEmbedMapping($metadata, $embed, ClassMetadata::MANY);
             }
         }
 
         if (isset($xmlRoot->{'reference-many'})) {
             foreach ($xmlRoot->{'reference-many'} as $reference) {
-                $this->addReferenceMapping($metadata, $reference, 'many');
+                $this->addReferenceMapping($metadata, $reference, ClassMetadata::MANY);
             }
         }
 
         if (isset($xmlRoot->{'reference-one'})) {
             foreach ($xmlRoot->{'reference-one'} as $reference) {
-                $this->addReferenceMapping($metadata, $reference, 'one');
+                $this->addReferenceMapping($metadata, $reference, ClassMetadata::ONE);
             }
         }
 
@@ -312,6 +332,10 @@ class XmlDriver extends FileDriver
         }
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     * @psalm-param FieldMappingConfig $mapping
+     */
     private function addFieldMapping(ClassMetadata $class, array $mapping): void
     {
         if (isset($mapping['name'])) {
@@ -351,10 +375,13 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function addEmbedMapping(ClassMetadata $class, SimpleXMLElement $embed, string $type): void
     {
         $attributes      = $embed->attributes();
-        $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type === ClassMetadata::ONE ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping         = [
             'type'            => $type,
             'embedded'        => true,
@@ -395,7 +422,10 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    private function addReferenceMapping(ClassMetadata $class, $reference, string $type): void
+    /**
+     * @param ClassMetadata<object> $class
+     */
+    private function addReferenceMapping(ClassMetadata $class, ?SimpleXMLElement $reference, string $type): void
     {
         $cascade = array_keys((array) $reference->cascade);
         if (count($cascade) === 1) {
@@ -403,7 +433,7 @@ class XmlDriver extends FileDriver
         }
 
         $attributes      = $reference->attributes();
-        $defaultStrategy = $type === 'one' ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
+        $defaultStrategy = $type === ClassMetadata::ONE ? ClassMetadata::STORAGE_STRATEGY_SET : CollectionHelper::DEFAULT_STRATEGY;
         $mapping         = [
             'cascade'          => $cascade,
             'orphanRemoval'    => isset($attributes['orphan-removal']) ? ((string) $attributes['orphan-removal'] === 'true') : false,
@@ -462,7 +492,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($attributes['also-load'])) {
-            $mapping['alsoLoadFields'] = explode(',', $attributes['also-load']);
+            $mapping['alsoLoadFields'] = explode(',', (string) $attributes['also-load']);
         }
 
         if (isset($reference->{'prime'})) {
@@ -475,6 +505,9 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function addIndex(ClassMetadata $class, SimpleXMLElement $xmlIndex): void
     {
         $attributes = $xmlIndex->attributes();
@@ -537,6 +570,9 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
+    /**
+     * @return array<string, array<string, mixed>|scalar>
+     */
     private function getPartialFilterExpression(SimpleXMLElement $fields): array
     {
         $partialFilterExpression = [];
@@ -595,6 +631,9 @@ class XmlDriver extends FileDriver
         return preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function setShardKey(ClassMetadata $class, SimpleXMLElement $xmlShardkey): void
     {
         $attributes = $xmlShardkey->attributes();
@@ -626,6 +665,8 @@ class XmlDriver extends FileDriver
      * Parses <read-preference> to a format suitable for the underlying driver.
      *
      * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
+     *
+     * @psalm-return array{string, array<int, array<string, string>>|null}
      */
     private function transformReadPreference(SimpleXMLElement $xmlReadPreference): array
     {
@@ -645,9 +686,6 @@ class XmlDriver extends FileDriver
         return [(string) $xmlReadPreference['mode'], $tags];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function loadMappingFile($file): array
     {
         $result = [];
@@ -698,6 +736,9 @@ class XmlDriver extends FileDriver
         }, $xmlErrors));
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function addGridFSMappings(ClassMetadata $class, SimpleXMLElement $xmlRoot): void
     {
         if (! $class->isFile) {
@@ -721,7 +762,7 @@ class XmlDriver extends FileDriver
         }
 
         $xmlRoot->metadata->addAttribute('field', 'metadata');
-        $this->addEmbedMapping($class, $xmlRoot->metadata, 'one');
+        $this->addEmbedMapping($class, $xmlRoot->metadata, ClassMetadata::ONE);
     }
 }
 

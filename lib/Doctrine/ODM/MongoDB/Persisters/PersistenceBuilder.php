@@ -81,11 +81,11 @@ final class PersistenceBuilder
                 $insertData[$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
 
             // @ReferenceOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 $insertData[$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
 
             // @EmbedOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
+            } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 $insertData[$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
 
             // @ReferenceMany, @EmbedMany
@@ -165,7 +165,7 @@ final class PersistenceBuilder
                 $updateData[$operator][$mapping['name']] = $value;
 
             // @EmbedOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
+            } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 // If we have a new embedded document then lets set the whole thing
                 if ($this->uow->isScheduledForInsert($new)) {
                     $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
@@ -181,7 +181,7 @@ final class PersistenceBuilder
                 }
 
             // @ReferenceMany, @EmbedMany
-            } elseif (isset($mapping['association']) && $mapping['type'] === 'many') {
+            } elseif ($mapping['type'] === ClassMetadata::MANY) {
                 if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForUpdate($new)) {
                     $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
                 } elseif (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($new)) {
@@ -206,7 +206,7 @@ final class PersistenceBuilder
                 }
 
             // @ReferenceOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 $updateData['$set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
             }
         }
@@ -269,7 +269,7 @@ final class PersistenceBuilder
                 $updateData[$operator][$mapping['name']] = $value;
 
             // @EmbedOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
+            } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 // If we don't have a new value then do nothing on upsert
                 // If we have a new embedded document then lets set the whole thing
                 if ($this->uow->isScheduledForInsert($new)) {
@@ -285,7 +285,7 @@ final class PersistenceBuilder
                 }
 
             // @ReferenceOne
-            } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 $updateData['$set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
 
             // @ReferenceMany, @EmbedMany

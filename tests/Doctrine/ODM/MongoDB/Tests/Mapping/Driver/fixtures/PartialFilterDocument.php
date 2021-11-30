@@ -6,5 +6,6 @@ namespace TestDocuments;
 
 class PartialFilterDocument
 {
+    /** @var string|null */
     protected $id;
 }

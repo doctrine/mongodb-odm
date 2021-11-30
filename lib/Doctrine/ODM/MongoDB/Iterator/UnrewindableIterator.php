@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Generator;
 use LogicException;
+use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 
@@ -16,10 +17,13 @@ use function sprintf;
  * Iterator for wrapping a Traversable/Cursor.
  *
  * @internal
+ *
+ * @template TValue
+ * @template-implements Iterator<TValue>
  */
 final class UnrewindableIterator implements Iterator
 {
-    /** @var Generator|null */
+    /** @var Generator<mixed, TValue>|null */
     private $iterator;
 
     /** @var bool */
@@ -30,6 +34,8 @@ final class UnrewindableIterator implements Iterator
      * the wrapping Generator, which will execute up to its first yield statement.
      * Additionally, this mimics behavior of the SPL iterators and allows users
      * to omit an explicit call to rewind() before using the other methods.
+     *
+     * @param Traversable<mixed, TValue> $iterator
      */
     public function __construct(Traversable $iterator)
     {
@@ -54,20 +60,18 @@ final class UnrewindableIterator implements Iterator
     }
 
     /**
-     * @see http://php.net/iterator.current
-     *
-     * @return mixed
+     * @return TValue|null
      */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->getIterator()->current();
     }
 
     /**
-     * @see http://php.net/iterator.mixed
-     *
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function key()
     {
         if ($this->iterator) {
@@ -115,6 +119,9 @@ final class UnrewindableIterator implements Iterator
         }
     }
 
+    /**
+     * @return Generator<mixed, TValue>
+     */
     private function getIterator(): Generator
     {
         if ($this->iterator === null) {
@@ -124,6 +131,11 @@ final class UnrewindableIterator implements Iterator
         return $this->iterator;
     }
 
+    /**
+     * @param Traversable<mixed, TValue> $traversable
+     *
+     * @return Generator<mixed, TValue>
+     */
     private function wrapTraversable(Traversable $traversable): Generator
     {
         foreach ($traversable as $key => $value) {

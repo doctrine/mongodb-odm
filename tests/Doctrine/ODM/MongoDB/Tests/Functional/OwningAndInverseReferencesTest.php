@@ -16,12 +16,13 @@ use Documents\FriendUser;
 use Documents\Product;
 use Documents\Tag;
 
+use function assert;
 use function get_class;
 use function strtotime;
 
 class OwningAndInverseReferencesTest extends BaseTest
 {
-    public function testOneToOne()
+    public function testOneToOne(): void
     {
         // cart stores reference to customer
         // customer does not store reference to cart
@@ -64,7 +65,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertEquals('ok', $customer->cartTest);
     }
 
-    public function testOneToManyBiDirectional()
+    public function testOneToManyBiDirectional(): void
     {
         $product = new Product('Book');
         $product->addFeature(new Feature('Pages'));
@@ -79,16 +80,17 @@ class OwningAndInverseReferencesTest extends BaseTest
         $check = $this->dm->getDocumentCollection(Feature::class)->findOne();
         $this->assertArrayHasKey('product', $check);
 
-        $product  = $this->dm->createQueryBuilder(get_class($product))
+        $product = $this->dm->createQueryBuilder(get_class($product))
             ->getQuery()
             ->getSingleResult();
+        assert($product instanceof Product);
         $features = $product->features;
         $this->assertCount(2, $features);
         $this->assertEquals('Pages', $features[0]->name);
         $this->assertEquals('Cover', $features[1]->name);
     }
 
-    public function testOneToManySelfReferencing()
+    public function testOneToManySelfReferencing(): void
     {
         $node = new BrowseNode('Root');
         $node->addChild(new BrowseNode('Child 1'));
@@ -106,6 +108,7 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->field('children')->exists(false)
             ->getQuery()
             ->getSingleResult();
+        assert($root instanceof BrowseNode);
         $this->assertInstanceOf(BrowseNode::class, $root);
         $this->assertCount(2, $root->children);
 
@@ -118,7 +121,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertCount(2, $root->children);
     }
 
-    public function testManyToMany()
+    public function testManyToMany(): void
     {
         $baseballTag    = new Tag('baseball');
         $blogPost       = new BlogPost();
@@ -138,6 +141,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
+        assert($blogPost instanceof BlogPost);
         $this->assertCount(1, $blogPost->tags);
 
         $this->dm->clear();
@@ -150,7 +154,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertEquals('Test', $tag->blogPosts[0]->name);
     }
 
-    public function testManyToManySelfReferencing()
+    public function testManyToManySelfReferencing(): void
     {
         $jwage  = new FriendUser('jwage');
         $fabpot = new FriendUser('fabpot');
@@ -177,7 +181,7 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->field('name')->equals('fabpot')
             ->getQuery()
             ->getSingleResult();
-
+        assert($user instanceof FriendUser);
         $this->assertCount(1, $user->friendsWithMe);
         $this->assertEquals('jwage', $user->friendsWithMe[0]->name);
 
@@ -187,7 +191,7 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->field('name')->equals('romanb')
             ->getQuery()
             ->getSingleResult();
-
+        assert($user instanceof FriendUser);
         $this->assertCount(1, $user->friendsWithMe);
         $this->assertEquals('jwage', $user->friendsWithMe[0]->name);
 
@@ -197,7 +201,7 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->field('name')->equals('jwage')
             ->getQuery()
             ->getSingleResult();
-
+        assert($user instanceof FriendUser);
         $this->assertCount(2, $user->myFriends);
         $this->assertEquals('fabpot', $user->myFriends[0]->name);
         $this->assertEquals('romanb', $user->myFriends[1]->name);
@@ -209,7 +213,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->clear();
     }
 
-    public function testSortLimitAndSkipReferences()
+    public function testSortLimitAndSkipReferences(): void
     {
         $date1 = new DateTime();
         $date1->setTimestamp(strtotime('-20 seconds'));
@@ -228,6 +232,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
+        assert($blogPost instanceof BlogPost);
         $this->assertEquals('Comment 1', $blogPost->comments[0]->text);
         $this->assertEquals('Comment 2', $blogPost->comments[1]->text);
         $this->assertEquals('Test', $blogPost->comments[0]->parent->name);
@@ -238,6 +243,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $comment = $this->dm->createQueryBuilder(Comment::class)
             ->getQuery()
             ->getSingleResult();
+        assert($comment instanceof Comment);
         $this->assertEquals('Test', $comment->parent->getName());
 
         $this->dm->clear();
@@ -245,6 +251,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
+        assert($blogPost instanceof BlogPost);
         $this->assertEquals('Comment 1', $blogPost->firstComment->getText());
         $this->assertEquals('Comment 2', $blogPost->latestComment->getText());
         $this->assertCount(2, $blogPost->last5Comments);
@@ -258,6 +265,7 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
 
+        assert($blogPost instanceof BlogPost);
         $blogPost->addComment(new Comment('Comment 3 by admin', $date1, true));
         $blogPost->addComment(new Comment('Comment 4 by admin', $date2, true));
         $this->dm->flush();
@@ -266,6 +274,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
+        assert($blogPost instanceof BlogPost);
         $this->assertCount(2, $blogPost->adminComments);
         $this->assertEquals('Comment 4 by admin', $blogPost->adminComments[0]->getText());
         $this->assertEquals('Comment 3 by admin', $blogPost->adminComments[1]->getText());

@@ -10,15 +10,22 @@ use InvalidArgumentException;
 /** @ODM\EmbeddedDocument */
 class Money
 {
-    /** @ODM\Field(type="float") */
+    /**
+     * @ODM\Field(type="float")
+     *
+     * @var float
+     */
     protected $amount;
 
-    /** @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\Currency::class, cascade="all") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\Currency::class, cascade="all")
+     *
+     * @var Currency
+     */
     protected $currency;
 
-    public function __construct($amount, Currency $currency)
+    public function __construct(float $amount, Currency $currency)
     {
-        $amount = (float) $amount;
         if (empty($amount) || $amount <= 0) {
             throw new InvalidArgumentException(
                 'money amount cannot be empty, equal or less than 0'
@@ -29,17 +36,17 @@ class Money
         $this->setCurrency($currency);
     }
 
-    public function getAmount()
+    public function getAmount(): float
     {
         return $this->amount * $this->getCurrency()->getMultiplier();
     }
 
-    public function getCurrency()
+    public function getCurrency(): Currency
     {
         return $this->currency;
     }
 
-    public function setCurrency(Currency $currency)
+    public function setCurrency(Currency $currency): void
     {
         $this->currency = $currency;
     }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
@@ -26,6 +26,7 @@ use Documents\CmsPhonenumber;
 use Documents\CmsUser;
 use Documents\CustomRepository\Document;
 use Documents\CustomRepository\Repository;
+use Documents\Tournament\Participant;
 use Documents\Tournament\ParticipantSolo;
 use Documents\User;
 use InvalidArgumentException;
@@ -38,72 +39,72 @@ use function get_class;
 
 class DocumentManagerTest extends BaseTest
 {
-    public function testCustomRepository()
+    public function testCustomRepository(): void
     {
         $this->assertInstanceOf(Repository::class, $this->dm->getRepository(Document::class));
     }
 
-    public function testCustomRepositoryMappedsuperclass()
+    public function testCustomRepositoryMappedsuperclass(): void
     {
         $this->assertInstanceOf(BaseCategoryRepository::class, $this->dm->getRepository(BaseCategory::class));
     }
 
-    public function testCustomRepositoryMappedsuperclassChild()
+    public function testCustomRepositoryMappedsuperclassChild(): void
     {
         $this->assertInstanceOf(BaseCategoryRepository::class, $this->dm->getRepository(Category::class));
     }
 
-    public function testGetConnection()
+    public function testGetConnection(): void
     {
         $this->assertInstanceOf(Client::class, $this->dm->getClient());
     }
 
-    public function testGetMetadataFactory()
+    public function testGetMetadataFactory(): void
     {
         $this->assertInstanceOf(ClassMetadataFactory::class, $this->dm->getMetadataFactory());
     }
 
-    public function testGetConfiguration()
+    public function testGetConfiguration(): void
     {
         $this->assertInstanceOf(Configuration::class, $this->dm->getConfiguration());
     }
 
-    public function testGetUnitOfWork()
+    public function testGetUnitOfWork(): void
     {
         $this->assertInstanceOf(UnitOfWork::class, $this->dm->getUnitOfWork());
     }
 
-    public function testGetProxyFactory()
+    public function testGetProxyFactory(): void
     {
         $this->assertInstanceOf(ProxyFactory::class, $this->dm->getProxyFactory());
     }
 
-    public function testGetEventManager()
+    public function testGetEventManager(): void
     {
         $this->assertInstanceOf(EventManager::class, $this->dm->getEventManager());
     }
 
-    public function testGetSchemaManager()
+    public function testGetSchemaManager(): void
     {
         $this->assertInstanceOf(SchemaManager::class, $this->dm->getSchemaManager());
     }
 
-    public function testCreateQueryBuilder()
+    public function testCreateQueryBuilder(): void
     {
         $this->assertInstanceOf(QueryBuilder::class, $this->dm->createQueryBuilder());
     }
 
-    public function testCreateAggregationBuilder()
+    public function testCreateAggregationBuilder(): void
     {
         $this->assertInstanceOf(AggregationBuilder::class, $this->dm->createAggregationBuilder(BlogPost::class));
     }
 
-    public function testGetFilterCollection()
+    public function testGetFilterCollection(): void
     {
         $this->assertInstanceOf(FilterCollection::class, $this->dm->getFilterCollection());
     }
 
-    public function testGetPartialReference()
+    public function testGetPartialReference(): void
     {
         $id   = new ObjectId();
         $user = $this->dm->getPartialReference(CmsUser::class, $id);
@@ -112,14 +113,14 @@ class DocumentManagerTest extends BaseTest
         $this->assertNull($user->getName());
     }
 
-    public function testDocumentManagerIsClosedAccessor()
+    public function testDocumentManagerIsClosedAccessor(): void
     {
         $this->assertTrue($this->dm->isOpen());
         $this->dm->close();
         $this->assertFalse($this->dm->isOpen());
     }
 
-    public function dataMethodsAffectedByNoObjectArguments()
+    public function dataMethodsAffectedByNoObjectArguments(): array
     {
         return [
             ['persist'],
@@ -131,17 +132,15 @@ class DocumentManagerTest extends BaseTest
     }
 
     /**
-     * @param string $methodName
-     *
      * @dataProvider dataMethodsAffectedByNoObjectArguments
      */
-    public function testThrowsExceptionOnNonObjectValues($methodName)
+    public function testThrowsExceptionOnNonObjectValues(string $methodName): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->dm->$methodName(null);
     }
 
-    public function dataAffectedByErrorIfClosedException()
+    public function dataAffectedByErrorIfClosedException(): array
     {
         return [
             ['flush'],
@@ -153,11 +152,9 @@ class DocumentManagerTest extends BaseTest
     }
 
     /**
-     * @param string $methodName
-     *
      * @dataProvider dataAffectedByErrorIfClosedException
      */
-    public function testAffectedByErrorIfClosedException($methodName)
+    public function testAffectedByErrorIfClosedException(string $methodName): void
     {
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage('closed');
@@ -170,7 +167,7 @@ class DocumentManagerTest extends BaseTest
         }
     }
 
-    public function testCannotCreateDbRefWithoutId()
+    public function testCannotCreateDbRefWithoutId(): void
     {
         $d = new User();
         $this->expectException(RuntimeException::class);
@@ -181,7 +178,7 @@ class DocumentManagerTest extends BaseTest
         $this->dm->createReference($d, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF]);
     }
 
-    public function testCreateDbRefWithNonNullEmptyId()
+    public function testCreateDbRefWithNonNullEmptyId(): void
     {
         $phonenumber              = new CmsPhonenumber();
         $phonenumber->phonenumber = 0;
@@ -192,7 +189,7 @@ class DocumentManagerTest extends BaseTest
         $this->assertSame(['$ref' => 'CmsPhonenumber', '$id' => 0], $dbRef);
     }
 
-    public function testDisriminatedSimpleReferenceFails()
+    public function testDisriminatedSimpleReferenceFails(): void
     {
         $d = new WrongSimpleRefDocument();
         $r = new ParticipantSolo('Maciej');
@@ -206,7 +203,7 @@ class DocumentManagerTest extends BaseTest
         $this->dm->createReference($r, $class->associationMappings['ref']);
     }
 
-    public function testDifferentStoreAsDbReferences()
+    public function testDifferentStoreAsDbReferences(): void
     {
         $r = new User();
         $this->dm->persist($r);
@@ -231,56 +228,61 @@ class DocumentManagerTest extends BaseTest
         $this->assertCount(1, $dbRef);
         $this->assertArrayHasKey('id', $dbRef);
     }
-
-    /**
-     * @dataProvider dataInvalidTypeMap
-     */
-    public function testThrowsExceptionOnInvalidTypeMap(string $expectedMessage, Client $client): void
-    {
-        $this->expectException(MongoDBException::class);
-        $this->expectExceptionMessage($expectedMessage);
-        DocumentManager::create($client);
-    }
-
-    public function dataInvalidTypeMap(): array
-    {
-        $noTypeMap              = new Client();
-        $invalidDocumentTypeMap = new Client('mongodb://127.0.0.1', [], ['typeMap' => ['root' => 'array', 'document' => stdClass::class]]);
-        $invalidRootTypeMap     = new Client('mongodb://127.0.0.1', [], ['typeMap' => ['root' => stdClass::class, 'document' => 'array']]);
-
-        return [
-            'No typeMap' => ['Invalid typemap provided. Type "array" is required for "root".', $noTypeMap],
-            'Invalid document' => ['Invalid typemap provided. Type "array" is required for "document".', $invalidDocumentTypeMap],
-            'Invalid root' => ['Invalid typemap provided. Type "array" is required for "root".', $invalidRootTypeMap],
-        ];
-    }
 }
 
 /** @ODM\Document */
 class WrongSimpleRefDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Documents\Tournament\Participant::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Documents\Tournament\Participant::class, storeAs="id")
+     *
+     * @var Participant|null
+     */
     public $ref;
 }
 
 /** @ODM\Document */
 class ReferenceStoreAsDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="id")
+     *
+     * @var User|null
+     */
     public $ref1;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRef")
+     *
+     * @var Collection<int, User>
+     */
     public $ref2;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRefWithDb")
+     *
+     * @var Collection<int, User>
+     */
     public $ref3;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref")
+     *
+     * @var Collection<int, User>
+     */
     public $ref4;
 }

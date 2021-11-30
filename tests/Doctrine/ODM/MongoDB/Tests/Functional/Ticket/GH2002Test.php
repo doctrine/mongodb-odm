@@ -16,7 +16,7 @@ class GH2002Test extends BaseTest
     /**
      * @dataProvider getValidReferenceData
      */
-    public function testBuildingReferenceCreatesCorrectStructure(array $expectedReference, $document)
+    public function testBuildingReferenceCreatesCorrectStructure(array $expectedReference, object $document): void
     {
         $this->dm->persist($document);
 
@@ -28,7 +28,7 @@ class GH2002Test extends BaseTest
         self::assertArraySubset($expectedReference, $data['parentDocument']);
     }
 
-    public function getValidReferenceData()
+    public function getValidReferenceData(): array
     {
         return [
             'discriminatedDocument' => [
@@ -61,7 +61,7 @@ class GH2002Test extends BaseTest
     /**
      * @dataProvider getInvalidReferenceData
      */
-    public function testBuildingReferenceForUnlistedClassCausesException(string $expectedExceptionMessage, $document)
+    public function testBuildingReferenceForUnlistedClassCausesException(string $expectedExceptionMessage, object $document): void
     {
         $this->dm->persist($document);
 
@@ -73,7 +73,7 @@ class GH2002Test extends BaseTest
         $this->dm->getUnitOfWork()->getPersistenceBuilder()->prepareInsertData($document);
     }
 
-    public function getInvalidReferenceData()
+    public function getInvalidReferenceData(): array
     {
         return [
             'referenceWithPartialDiscriminatorMapUnlistedDocument' => [

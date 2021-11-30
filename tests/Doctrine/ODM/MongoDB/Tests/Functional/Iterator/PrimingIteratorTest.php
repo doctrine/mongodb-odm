@@ -19,9 +19,10 @@ use MongoDB\BSON\ObjectId;
 
 final class PrimingIteratorTest extends BaseTest
 {
+    /** @var class-string[] */
     private $callbackCalls = [];
 
-    public function testPrimerIsCalledOnceForEveryField()
+    public function testPrimerIsCalledOnceForEveryField(): void
     {
         $primer   = new ReferencePrimer($this->dm, $this->uow);
         $class    = $this->dm->getClassMetadata(User::class);

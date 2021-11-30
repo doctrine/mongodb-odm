@@ -9,55 +9,71 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document(collection="custom_users") */
 class CustomUser
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $username;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $password;
 
-    /** @ODM\ReferenceOne(targetDocument=Account::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Account::class, cascade={"all"})
+     *
+     * @var Account|null
+     */
     protected $account;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    public function setUsername($username)
+    public function setUsername(string $username): void
     {
         $this->username = $username;
     }
 
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    public function setPassword($password)
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
 
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    public function setAccount(Account $account)
+    public function setAccount(Account $account): void
     {
         $this->account = $account;
         $this->account->setUser($this);
     }
 
-    public function getAccount()
+    public function getAccount(): ?Account
     {
         return $this->account;
     }

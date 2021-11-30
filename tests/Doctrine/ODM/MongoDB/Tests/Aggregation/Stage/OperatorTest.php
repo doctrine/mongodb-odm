@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use BadMethodCallException;
+use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Operator;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
@@ -17,9 +18,11 @@ class OperatorTest extends BaseTest
     use AggregationOperatorsProviderTrait;
 
     /**
+     * @param Closure|array $args
+     *
      * @dataProvider provideExpressionOperators
      */
-    public function testProxiedExpressionOperators($expected, $operator, $args)
+    public function testProxiedExpressionOperators(array $expected, string $operator, $args): void
     {
         $stage = $this->getStubStage();
         $args  = $this->resolveArgs($args);
@@ -28,7 +31,7 @@ class OperatorTest extends BaseTest
         $this->assertSame($expected, $stage->getExpression());
     }
 
-    public function testExpression()
+    public function testExpression(): void
     {
         $stage = $this->getStubStage();
 
@@ -51,7 +54,7 @@ class OperatorTest extends BaseTest
         );
     }
 
-    public function testSwitch()
+    public function testSwitch(): void
     {
         $stage = $this->getStubStage();
 
@@ -76,7 +79,7 @@ class OperatorTest extends BaseTest
         );
     }
 
-    public function testCallingCaseWithoutSwitchThrowsException()
+    public function testCallingCaseWithoutSwitchThrowsException(): void
     {
         $stage = $this->getStubStage();
 
@@ -86,7 +89,7 @@ class OperatorTest extends BaseTest
         $stage->case('$field');
     }
 
-    public function testCallingThenWithoutCaseThrowsException()
+    public function testCallingThenWithoutCaseThrowsException(): void
     {
         $stage = $this->getStubStage();
 
@@ -96,7 +99,7 @@ class OperatorTest extends BaseTest
         $stage->then('$field');
     }
 
-    public function testCallingThenWithoutCaseAfterSuccessfulCaseThrowsException()
+    public function testCallingThenWithoutCaseAfterSuccessfulCaseThrowsException(): void
     {
         $stage = $this->getStubStage();
 
@@ -110,7 +113,7 @@ class OperatorTest extends BaseTest
         $stage->then('$field');
     }
 
-    public function testCallingDefaultWithoutSwitchThrowsException()
+    public function testCallingDefaultWithoutSwitchThrowsException(): void
     {
         $stage = $this->getStubStage();
 

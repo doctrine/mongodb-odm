@@ -10,7 +10,7 @@ use InvalidArgumentException;
 
 class GH850Test extends BaseTest
 {
-    public function testPersistWrongReference()
+    public function testPersistWrongReference(): void
     {
         $d = new GH850Document();
         $this->dm->persist($d);
@@ -27,9 +27,17 @@ class GH850Test extends BaseTest
  */
 class GH850Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne */
+    /**
+     * @ODM\ReferenceOne
+     *
+     * @var object|string
+     */
     public $refs = '';
 }

@@ -17,11 +17,14 @@ class EcommerceTest extends BaseTest
     {
         parent::setUp();
 
-        $currencies = ['USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125];
+        $currencies  = [];
+        $multipliers = ['USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125];
 
-        foreach ($currencies as $name => &$multiplier) {
-            $multiplier = new Currency($name, $multiplier);
-            $this->dm->persist($multiplier);
+        foreach ($multipliers as $currencyName => $multiplier) {
+            $currency = new Currency($currencyName, $multiplier);
+            $this->dm->persist($currency);
+
+            $currencies[$currencyName] = $currency;
         }
 
         $product = new ConfigurableProduct('T-Shirt');
@@ -40,7 +43,7 @@ class EcommerceTest extends BaseTest
         unset($currencies, $product);
     }
 
-    public function testEmbedding()
+    public function testEmbedding(): void
     {
         $product  = $this->getProduct();
         $price    =  $product->getOption('small')->getPrice(true);
@@ -58,7 +61,7 @@ class EcommerceTest extends BaseTest
         $this->assertEquals(12.99 * 2, $product->getOption('small')->getPrice());
     }
 
-    public function testMoneyDocumentsAvailableForReference()
+    public function testMoneyDocumentsAvailableForReference(): void
     {
         $product  = $this->getProduct();
         $price    =  $product->getOption('small')->getPrice(true);
@@ -68,7 +71,7 @@ class EcommerceTest extends BaseTest
         $this->assertEquals($currency, $this->dm->getRepository(Currency::class)->findOneBy(['name' => Currency::USD]));
     }
 
-    public function testRemoveOption()
+    public function testRemoveOption(): void
     {
         $product = $this->getProduct();
 
@@ -78,13 +81,12 @@ class EcommerceTest extends BaseTest
         $this->dm->flush();
         $this->dm->detach($product);
         unset($product);
-        $this->assertFalse(isset($product));
 
         $product = $this->getProduct();
         $this->assertCount(2, $product->getOptions());
     }
 
-    protected function getProduct()
+    protected function getProduct(): ConfigurableProduct
     {
         $products = $this->dm->getRepository(ConfigurableProduct::class)
             ->createQueryBuilder()

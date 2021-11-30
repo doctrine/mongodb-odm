@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -12,7 +13,10 @@ use function get_class;
 
 class MODM83Test extends BaseTest
 {
-    private function getDocumentManager()
+    /** @var MODM83EventListener */
+    private $listener;
+
+    private function getDocumentManager(): ?DocumentManager
     {
         $this->listener = new MODM83EventListener();
         $evm            = $this->dm->getEventManager();
@@ -25,7 +29,7 @@ class MODM83Test extends BaseTest
         return $this->dm;
     }
 
-    public function testDocumentWithEmbeddedDocumentNotUpdated()
+    public function testDocumentWithEmbeddedDocumentNotUpdated(): void
     {
         $dm = $this->getDocumentManager();
 
@@ -56,9 +60,10 @@ class MODM83Test extends BaseTest
 
 class MODM83EventListener
 {
+    /** @var array<string, class-string[]> */
     public $called = [];
 
-    public function __call($method, $args)
+    public function __call(string $method, array $args): void
     {
         $document                = $args[0]->getDocument();
         $className               = get_class($document);
@@ -69,29 +74,53 @@ class MODM83EventListener
 /** @ODM\Document */
 class MODM83TestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument=MODM83TestEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=MODM83TestEmbeddedDocument::class)
+     *
+     * @var MODM83TestEmbeddedDocument|null
+     */
     public $embedded;
 }
 
 /** @ODM\EmbeddedDocument */
 class MODM83TestEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
 /** @ODM\Document */
 class MODM83OtherDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }

@@ -42,7 +42,7 @@ class ShardKeyTest extends BaseTest
         parent::tearDown();
     }
 
-    public function testUpdateAfterSave()
+    public function testUpdateAfterSave(): void
     {
         $o = new ShardedOne();
         $this->dm->persist($o);
@@ -62,7 +62,7 @@ class ShardKeyTest extends BaseTest
         $this->assertEquals($o->key, $command->updates[0]->q->k);
     }
 
-    public function testUpsert()
+    public function testUpsert(): void
     {
         $o     = new ShardedOne();
         $o->id = new ObjectId();
@@ -79,7 +79,7 @@ class ShardKeyTest extends BaseTest
         $this->assertTrue($command->updates[0]->upsert);
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $o = new ShardedOne();
         $this->dm->persist($o);
@@ -96,7 +96,7 @@ class ShardKeyTest extends BaseTest
         $this->assertEquals($o->key, $command->deletes[0]->q->k);
     }
 
-    public function testRefresh()
+    public function testRefresh(): void
     {
         $o = new ShardedOne();
         $this->dm->persist($o);
@@ -112,7 +112,7 @@ class ShardKeyTest extends BaseTest
         $this->assertEquals($o->key, $command->filter->k);
     }
 
-    public function testUpdateWithShardKeyChangeException()
+    public function testUpdateWithShardKeyChangeException(): void
     {
         $o = new ShardedOne();
         $this->dm->persist($o);
@@ -123,7 +123,7 @@ class ShardKeyTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testUpdateWithUpsertTrue()
+    public function testUpdateWithUpsertTrue(): void
     {
         $o = new ShardedOne();
         $this->dm->persist($o);

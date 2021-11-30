@@ -12,7 +12,7 @@ class GeoNearTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testGeoNearStage()
+    public function testGeoNearStage(): void
     {
         $geoNearStage = new GeoNear($this->getTestAggregationBuilder(), 0, 0);
         $geoNearStage
@@ -24,7 +24,7 @@ class GeoNearTest extends BaseTest
         $this->assertSame(['$geoNear' => $stage], $geoNearStage->getExpression());
     }
 
-    public function testGeoNearFromBuilder()
+    public function testGeoNearFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder
@@ -38,9 +38,11 @@ class GeoNearTest extends BaseTest
     }
 
     /**
+     * @param mixed $value
+     *
      * @dataProvider provideOptionalSettings
      */
-    public function testOptionalSettings($field, $value)
+    public function testOptionalSettings(string $field, $value): void
     {
         $geoNearStage = new GeoNear($this->getTestAggregationBuilder(), 0, 0);
 
@@ -53,7 +55,7 @@ class GeoNearTest extends BaseTest
         $this->assertSame($value, $pipeline['$geoNear'][$field]);
     }
 
-    public static function provideOptionalSettings()
+    public static function provideOptionalSettings(): array
     {
         return [
             'distanceMultiplier' => ['distanceMultiplier', 15.0],
@@ -65,7 +67,7 @@ class GeoNearTest extends BaseTest
         ];
     }
 
-    public function testLimitDoesNotCreateExtraStage()
+    public function testLimitDoesNotCreateExtraStage(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder

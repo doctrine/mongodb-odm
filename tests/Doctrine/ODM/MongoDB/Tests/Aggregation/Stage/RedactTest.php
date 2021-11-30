@@ -12,7 +12,7 @@ class RedactTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testRedactStage()
+    public function testRedactStage(): void
     {
         $builder = $this->getTestAggregationBuilder();
 
@@ -27,7 +27,7 @@ class RedactTest extends BaseTest
         $this->assertSame(['$redact' => ['$cond' => ['if' => ['$lte' => ['$accessLevel', 3]], 'then' => '$$KEEP', 'else' => '$$REDACT']]], $redactStage->getExpression());
     }
 
-    public function testRedactFromBuilder()
+    public function testRedactFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder

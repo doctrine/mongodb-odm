@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 
 class GH816Test extends BaseTest
 {
-    public function testPersistAfterDetachWithIdSet()
+    public function testPersistAfterDetachWithIdSet(): void
     {
         $d     = new GH816Document();
         $d->id = new ObjectId();
@@ -20,7 +21,7 @@ class GH816Test extends BaseTest
         $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
     }
 
-    public function testPersistAfterDetachWithTitleSet()
+    public function testPersistAfterDetachWithTitleSet(): void
     {
         $d        = new GH816Document();
         $d->title = 'Test';
@@ -37,9 +38,17 @@ class GH816Test extends BaseTest
  */
 class GH816Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $title;
 }

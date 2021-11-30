@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\UTCDateTime;
 
 class MODM56Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $parent = new MODM56Parent('Parent');
         $this->dm->persist($parent);
@@ -37,25 +38,41 @@ class MODM56Test extends BaseTest
 /** @ODM\Document @ODM\HasLifecycleCallbacks */
 class MODM56Parent
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     public $updatedAt;
 
-    /** @ODM\EmbedMany(targetDocument=MODM56Child::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=MODM56Child::class)
+     *
+     * @var Collection<int, MODM56Child>|array<MODM56Child>
+     */
     public $children = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
     /** @ODM\PreUpdate */
-    public function preUpdate()
+    public function preUpdate(): void
     {
         $this->updatedAt = new DateTime();
     }
@@ -64,13 +81,21 @@ class MODM56Parent
 /** @ODM\EmbeddedDocument */
 class MODM56Child
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

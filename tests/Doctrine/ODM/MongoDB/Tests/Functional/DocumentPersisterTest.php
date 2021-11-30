@@ -29,9 +29,10 @@ use function sprintf;
 
 class DocumentPersisterTest extends BaseTest
 {
+    /** @var class-string<DocumentPersisterTestDocument> */
     private $class;
 
-    /** @var DocumentPersister */
+    /** @var DocumentPersister<DocumentPersisterTestDocument> */
     private $documentPersister;
 
     public function setUp(): void
@@ -51,7 +52,7 @@ class DocumentPersisterTest extends BaseTest
         $this->documentPersister = $this->uow->getDocumentPersister($this->class);
     }
 
-    public function testExecuteUpsertShouldNeverReplaceDocuments()
+    public function testExecuteUpsertShouldNeverReplaceDocuments(): void
     {
         $originalData = $this->dm->getDocumentCollection($this->class)->findOne();
 
@@ -66,7 +67,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($originalData, $updatedData);
     }
 
-    public function testExistsReturnsTrueForExistentDocuments()
+    public function testExistsReturnsTrueForExistentDocuments(): void
     {
         foreach (['a', 'b', 'c', 'd'] as $name) {
             $document = $this->documentPersister->load(['name' => $name]);
@@ -74,7 +75,7 @@ class DocumentPersisterTest extends BaseTest
         }
     }
 
-    public function testExistsReturnsFalseForNonexistentDocuments()
+    public function testExistsReturnsFalseForNonexistentDocuments(): void
     {
         $document     = new DocumentPersisterTestDocument();
         $document->id = new ObjectId();
@@ -82,7 +83,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertFalse($this->documentPersister->exists($document));
     }
 
-    public function testLoadPreparesCriteriaAndSort()
+    public function testLoadPreparesCriteriaAndSort(): void
     {
         $criteria = ['name' => ['$in' => ['a', 'b']]];
         $sort     = ['name' => -1];
@@ -93,7 +94,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals('b', $document->name);
     }
 
-    public function testLoadAllPreparesCriteriaAndSort()
+    public function testLoadAllPreparesCriteriaAndSort(): void
     {
         $criteria = ['name' => ['$in' => ['a', 'b']]];
         $sort     = ['name' => -1];
@@ -107,7 +108,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals('a', $documents[1]->name);
     }
 
-    public function testLoadAllWithSortLimitAndSkip()
+    public function testLoadAllWithSortLimitAndSkip(): void
     {
         $sort = ['name' => -1];
 
@@ -122,12 +123,12 @@ class DocumentPersisterTest extends BaseTest
     /**
      * @dataProvider getTestPrepareFieldNameData
      */
-    public function testPrepareFieldName($fieldName, $expected)
+    public function testPrepareFieldName(string $fieldName, string $expected): void
     {
         $this->assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
     }
 
-    public function getTestPrepareFieldNameData()
+    public function getTestPrepareFieldNameData(): array
     {
         return [
             ['name', 'dbName'],
@@ -143,7 +144,7 @@ class DocumentPersisterTest extends BaseTest
         ];
     }
 
-    public function testCurrentDateInQuery()
+    public function testCurrentDateInQuery(): void
     {
         $qb = $this->dm->createQueryBuilder(Article::class)
             ->updateMany()
@@ -155,7 +156,7 @@ class DocumentPersisterTest extends BaseTest
         );
     }
 
-    public function testExistsInQuery()
+    public function testExistsInQuery(): void
     {
         $qb = $this->dm->createQueryBuilder(Article::class)
             ->field('title')->exists(false)
@@ -171,9 +172,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithHashId($hashId)
+    public function testPrepareQueryOrNewObjWithHashId(array $hashId): void
     {
         $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -185,9 +188,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithHashIdAndInOperators($hashId)
+    public function testPrepareQueryOrNewObjWithHashIdAndInOperators(array $hashId): void
     {
         $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -221,7 +226,7 @@ class DocumentPersisterTest extends BaseTest
     /**
      * @dataProvider queryProviderForCustomTypeId
      */
-    public function testPrepareQueryOrNewObjWithCustomTypedId(array $expected, array $query)
+    public function testPrepareQueryOrNewObjWithCustomTypedId(array $expected, array $query): void
     {
         $class             = DocumentPersisterTestDocumentWithCustomId::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -237,7 +242,7 @@ class DocumentPersisterTest extends BaseTest
     /**
      * @dataProvider queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId
      */
-    public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId(Closure $getTestCase)
+    public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId(Closure $getTestCase): void
     {
         Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
 
@@ -252,7 +257,7 @@ class DocumentPersisterTest extends BaseTest
         );
     }
 
-    public function provideHashIdentifiers()
+    public function provideHashIdentifiers(): array
     {
         return [
             [['key' => 'value']],
@@ -261,7 +266,7 @@ class DocumentPersisterTest extends BaseTest
         ];
     }
 
-    public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithNormalIdType()
+    public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithNormalIdType(): void
     {
         $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -378,9 +383,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithHashIdType($hashId)
+    public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithHashIdType(array $hashId): void
     {
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -416,7 +423,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
-    public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithNormalIdType()
+    public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithNormalIdType(): void
     {
         $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -455,9 +462,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithHashIdType($hashId)
+    public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithHashIdType(array $hashId): void
     {
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -496,7 +505,7 @@ class DocumentPersisterTest extends BaseTest
     /**
      * @dataProvider queryProviderForComplexRefWithObjectValue
      */
-    public function testPrepareQueryOrNewObjWithComplexRefToTargetDocumentFieldWithObjectValue(array $expected, array $query)
+    public function testPrepareQueryOrNewObjWithComplexRefToTargetDocumentFieldWithObjectValue(array $expected, array $query): void
     {
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -510,27 +519,27 @@ class DocumentPersisterTest extends BaseTest
     public static function queryProviderForComplexRefWithObjectValue(): Generator
     {
         yield 'Direct comparison' => [
-            'expected' => ['complexRef.date' => new UTCDateTime('1590710400000')],
+            'expected' => ['complexRef.date' => new UTCDateTime(1590710400000)],
             'query' => ['complexRef.date' => DateTime::createFromFormat('U', '1590710400')],
         ];
 
         yield 'Operator with single value' => [
-            'expected' => ['complexRef.date' => ['$ne' => new UTCDateTime('1590710400000')]],
+            'expected' => ['complexRef.date' => ['$ne' => new UTCDateTime(1590710400000)]],
             'query' => ['complexRef.date' => ['$ne' => DateTime::createFromFormat('U', '1590710400')]],
         ];
 
         yield 'Operator with multiple values' => [
-            'expected' => ['complexRef.date' => ['$in' => [new UTCDateTime('1590710400000'), new UTCDateTime('1590796800000')]]],
+            'expected' => ['complexRef.date' => ['$in' => [new UTCDateTime(1590710400000), new UTCDateTime(1590796800000)]]],
             'query' => ['complexRef.date' => ['$in' => [DateTime::createFromFormat('U', '1590710400'), DateTime::createFromFormat('U', '1590796800')]]],
         ];
 
         yield 'Nested operator' => [
-            'expected' => ['complexRef.date' => ['$not' => ['$in' => [new UTCDateTime('1590710400000'), new UTCDateTime('1590796800000')]]]],
+            'expected' => ['complexRef.date' => ['$not' => ['$in' => [new UTCDateTime(1590710400000), new UTCDateTime(1590796800000)]]]],
             'query' => ['complexRef.date' => ['$not' => ['$in' => [DateTime::createFromFormat('U', '1590710400'), DateTime::createFromFormat('U', '1590796800')]]]],
         ];
     }
 
-    public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithNormalIdType()
+    public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithNormalIdType(): void
     {
         $class             = DocumentPersisterTestHashIdDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -569,9 +578,11 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<array-key, string> $hashId
+     *
      * @dataProvider provideHashIdentifiers
      */
-    public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithHashIdType($hashId)
+    public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithHashIdType(array $hashId): void
     {
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -610,7 +621,7 @@ class DocumentPersisterTest extends BaseTest
     /**
      * @return array
      */
-    public static function dataProviderTestWriteConcern()
+    public static function dataProviderTestWriteConcern(): array
     {
         return [
             'default' => [
@@ -633,12 +644,12 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @param string $class
-     * @param string $writeConcern
+     * @param int|string $writeConcern
+     * @psalm-param class-string $class
      *
      * @dataProvider dataProviderTestWriteConcern
      */
-    public function testExecuteInsertsRespectsWriteConcern($class, $writeConcern)
+    public function testExecuteInsertsRespectsWriteConcern(string $class, $writeConcern): void
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
 
@@ -657,12 +668,12 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @param string $class
-     * @param string $writeConcern
+     * @param int|string $writeConcern
+     * @psalm-param class-string $class
      *
      * @dataProvider dataProviderTestWriteConcern
      */
-    public function testExecuteUpsertsRespectsWriteConcern($class, $writeConcern)
+    public function testExecuteUpsertsRespectsWriteConcern(string $class, $writeConcern): void
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
 
@@ -682,12 +693,12 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
-     * @param string $class
-     * @param string $writeConcern
+     * @param int|string $writeConcern
+     * @psalm-param class-string $class
      *
      * @dataProvider dataProviderTestWriteConcern
      */
-    public function testRemoveRespectsWriteConcern($class, $writeConcern)
+    public function testRemoveRespectsWriteConcern(string $class, $writeConcern): void
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
 
@@ -708,7 +719,7 @@ class DocumentPersisterTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testDefaultWriteConcernIsRespected()
+    public function testDefaultWriteConcernIsRespected(): void
     {
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -729,7 +740,7 @@ class DocumentPersisterTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testDefaultWriteConcernIsRespectedBackwardCompatibility()
+    public function testDefaultWriteConcernIsRespectedBackwardCompatibility(): void
     {
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -750,7 +761,7 @@ class DocumentPersisterTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testVersionIncrementOnUpdateSuccess()
+    public function testVersionIncrementOnUpdateSuccess(): void
     {
         $testDocument = new DocumentPersisterTestDocumentWithVersion();
         $this->dm->persist($testDocument);
@@ -763,7 +774,7 @@ class DocumentPersisterTest extends BaseTest
         $this->assertEquals(2, $testDocument->revision);
     }
 
-    public function testNoVersionIncrementOnUpdateFailure()
+    public function testNoVersionIncrementOnUpdateFailure(): void
     {
         $class = DocumentPersisterTestDocumentWithVersion::class;
 
@@ -783,10 +794,18 @@ class DocumentPersisterTest extends BaseTest
 /** @ODM\Document */
 class DocumentPersisterTestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     public $id;
 
-    /** @ODM\Field(name="dbName", type="string") */
+    /**
+     * @ODM\Field(name="dbName", type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
     /**
@@ -795,32 +814,62 @@ class DocumentPersisterTestDocument
      *     discriminatorField="type",
      *     name="associationName"
      * )
+     *
+     * @var AbstractDocumentPersisterTestDocumentAssociation|null
      */
     public $association;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="id")
+     *
+     * @var DocumentPersisterTestHashIdDocument|null
+     */
     public $simpleRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRef")
+     *
+     * @var DocumentPersisterTestHashIdDocument|null
+     */
     public $semiComplexRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRefWithDb")
+     *
+     * @var DocumentPersisterTestHashIdDocument|null
+     */
     public $complexRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="ref") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="ref")
+     *
+     * @var DocumentPersisterTestHashIdDocument|null
+     */
     public $embeddedRef;
 }
 
 /** @ODM\Document */
 class DocumentPersisterTestDocumentWithVersion
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="dbName", type="string") */
+    /**
+     * @ODM\Field(name="dbName", type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\Version @ODM\Field(type="int") */
+    /**
+     * @ODM\Version @ODM\Field(type="int")
+     *
+     * @var int
+     */
     public $revision = 1;
 }
 
@@ -835,10 +884,18 @@ class DocumentPersisterTestDocumentWithVersion
  */
 abstract class AbstractDocumentPersisterTestDocumentAssociation
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(name="nestedName") */
+    /**
+     * @ODM\EmbedOne(name="nestedName")
+     *
+     * @var object|null
+     */
     public $nested;
 
     /**
@@ -847,6 +904,8 @@ abstract class AbstractDocumentPersisterTestDocumentAssociation
      *     discriminatorField="type",
      *     name="associationName"
      * )
+     *
+     * @var AbstractDocumentPersisterTestDocumentAssociation|null
      */
     public $association;
 }
@@ -854,65 +913,114 @@ abstract class AbstractDocumentPersisterTestDocumentAssociation
 /** @ODM\EmbeddedDocument */
 class DocumentPersisterTestDocumentReference extends AbstractDocumentPersisterTestDocumentAssociation
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(name="nestedName") */
+    /**
+     * @ODM\ReferenceOne(name="nestedName")
+     *
+     * @var object|null
+     */
     public $nested;
 }
 
 /** @ODM\EmbeddedDocument */
 class DocumentPersisterTestDocumentEmbed extends AbstractDocumentPersisterTestDocumentAssociation
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(name="nestedName") */
+    /**
+     * @ODM\EmbedOne(name="nestedName")
+     *
+     * @var object|null
+     */
     public $nested;
 }
 
 /** @ODM\Document */
 class DocumentPersisterTestHashIdDocument
 {
-    /** @ODM\Id(strategy="none", options={"type"="hash"}) */
+    /**
+     * @ODM\Id(strategy="none", options={"type"="hash"})
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="id")
+     *
+     * @var DocumentPersisterTestDocument|null
+     */
     public $simpleRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRef") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRef")
+     *
+     * @var DocumentPersisterTestDocument|null
+     */
     public $semiComplexRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRefWithDb") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRefWithDb")
+     *
+     * @var DocumentPersisterTestDocument|null
+     */
     public $complexRef;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="ref") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="ref")
+     *
+     * @var DocumentPersisterTestDocument|null
+     */
     public $embeddedRef;
 }
 
 /** @ODM\Document(writeConcern="majority") */
 class DocumentPersisterWriteConcernMajority
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document(writeConcern=0) */
 class DocumentPersisterWriteConcernUnacknowledged
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document(writeConcern=1) */
 class DocumentPersisterWriteConcernAcknowledged
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 final class DocumentPersisterCustomTypedId
 {
+    /** @var string */
     private $value;
 
     private function __construct(string $value)
@@ -966,6 +1074,9 @@ final class DocumentPersisterCustomIdType extends Type
         throw self::createException($value);
     }
 
+    /**
+     * @param mixed $value
+     */
     private static function createException($value): InvalidArgumentException
     {
         return new InvalidArgumentException(
@@ -982,7 +1093,11 @@ final class DocumentPersisterCustomIdType extends Type
 /** @ODM\Document() */
 class DocumentPersisterTestDocumentWithCustomId
 {
-    /** @ODM\Id(strategy="NONE", type="DocumentPersisterCustomId") */
+    /**
+     * @ODM\Id(strategy="NONE", type="DocumentPersisterCustomId")
+     *
+     * @var DocumentPersisterCustomTypedId
+     */
     private $id;
 
     public function __construct(DocumentPersisterCustomTypedId $id)
@@ -999,10 +1114,18 @@ class DocumentPersisterTestDocumentWithCustomId
 /** @ODM\Document() */
 class DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId
 {
-    /** @ODM\Id() */
+    /**
+     * @ODM\Id()
+     *
+     * @var DocumentPersisterCustomTypedId
+     */
     private $id;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocumentWithCustomId::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocumentWithCustomId::class, storeAs="id")
+     *
+     * @var DocumentPersisterTestDocumentWithCustomId
+     */
     private $documentWithCustomId;
 
     public function __construct(DocumentPersisterTestDocumentWithCustomId $documentWithCustomId)

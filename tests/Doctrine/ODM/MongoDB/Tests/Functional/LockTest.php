@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Issue;
 use Documents\User;
@@ -22,7 +26,7 @@ use function time;
 
 class LockTest extends BaseTest
 {
-    public function testOptimisticLockIntSetInitialVersion()
+    public function testOptimisticLockIntSetInitialVersion(): void
     {
         $article = new LockInt('Test LockInt');
         $this->dm->persist($article);
@@ -36,7 +40,7 @@ class LockTest extends BaseTest
         $this->assertEquals(2, $article->version);
     }
 
-    public function testOptimisticLockIntSetInitialVersionOnUpsert()
+    public function testOptimisticLockIntSetInitialVersionOnUpsert(): void
     {
         $id = new ObjectId();
 
@@ -55,7 +59,7 @@ class LockTest extends BaseTest
         $this->assertEquals(2, $article->version);
     }
 
-    public function testOptimisticLockingIntThrowsException()
+    public function testOptimisticLockingIntThrowsException(): void
     {
         $article = new LockInt('Test LockInt');
         $this->dm->persist($article);
@@ -72,7 +76,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testMultipleFlushesDoIncrementalUpdates()
+    public function testMultipleFlushesDoIncrementalUpdates(): void
     {
         $test = new LockInt();
 
@@ -86,7 +90,7 @@ class LockTest extends BaseTest
         }
     }
 
-    public function testLockDateSetsDefaultValue()
+    public function testLockDateSetsDefaultValue(): LockDate
     {
         $test        = new LockDate();
         $test->title = 'Testing';
@@ -108,7 +112,7 @@ class LockTest extends BaseTest
         return $test;
     }
 
-    public function testLockDateImmutableSetsDefaultValue()
+    public function testLockDateImmutableSetsDefaultValue(): LockDateImmutable
     {
         $test        = new LockDateImmutable();
         $test->title = 'Testing';
@@ -130,7 +134,7 @@ class LockTest extends BaseTest
         return $test;
     }
 
-    public function testLockDecimal128SetsDefaultValue()
+    public function testLockDecimal128SetsDefaultValue(): LockDecimal128
     {
         $test        = new LockDecimal128();
         $test->title = 'Testing';
@@ -152,7 +156,7 @@ class LockTest extends BaseTest
         return $test;
     }
 
-    public function testLockDateSetsDefaultValueOnUpsert()
+    public function testLockDateSetsDefaultValueOnUpsert(): LockDate
     {
         $id = new ObjectId();
 
@@ -178,7 +182,7 @@ class LockTest extends BaseTest
         return $test;
     }
 
-    public function testLockDateImmutableSetsDefaultValueOnUpsert()
+    public function testLockDateImmutableSetsDefaultValueOnUpsert(): LockDateImmutable
     {
         $id = new ObjectId();
 
@@ -204,7 +208,7 @@ class LockTest extends BaseTest
         return $test;
     }
 
-    public function testLockDecimal128SetsDefaultValueOnUpsert()
+    public function testLockDecimal128SetsDefaultValueOnUpsert(): LockDecimal128
     {
         $id = new ObjectId();
 
@@ -230,7 +234,7 @@ class LockTest extends BaseTest
         return $test;
     }
 
-    public function testLockDateThrowsException()
+    public function testLockDateThrowsException(): void
     {
         $article = new LockDate('Test LockInt');
         $this->dm->persist($article);
@@ -247,7 +251,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testLockDateImmutableThrowsException()
+    public function testLockDateImmutableThrowsException(): void
     {
         $article = new LockDateImmutable('Test LockInt');
         $this->dm->persist($article);
@@ -264,7 +268,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testLockDecimal128ThrowsException()
+    public function testLockDecimal128ThrowsException(): void
     {
         $article = new LockDecimal128('Test LockDecimal128');
         $this->dm->persist($article);
@@ -284,7 +288,7 @@ class LockTest extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testLockVersionedDocument()
+    public function testLockVersionedDocument(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -295,7 +299,7 @@ class LockTest extends BaseTest
         $this->dm->lock($article, LockMode::OPTIMISTIC, $article->version);
     }
 
-    public function testLockVersionedDocumentMissmatchThrowsException()
+    public function testLockVersionedDocumentMissmatchThrowsException(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -308,7 +312,7 @@ class LockTest extends BaseTest
         $this->dm->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
-    public function testLockUnversionedDocumentThrowsException()
+    public function testLockUnversionedDocumentThrowsException(): void
     {
         $user = new User();
         $user->setUsername('test');
@@ -322,7 +326,7 @@ class LockTest extends BaseTest
         $this->dm->lock($user, LockMode::OPTIMISTIC);
     }
 
-    public function testLockUnmanagedDocumentThrowsException()
+    public function testLockUnmanagedDocumentThrowsException(): void
     {
         $article = new LockInt();
 
@@ -332,7 +336,7 @@ class LockTest extends BaseTest
         $this->dm->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
-    public function testLockPessimisticWrite()
+    public function testLockPessimisticWrite(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -346,7 +350,7 @@ class LockTest extends BaseTest
         $this->assertEquals(LockMode::PESSIMISTIC_WRITE, $check['locked']);
     }
 
-    public function testLockPessimisticRead()
+    public function testLockPessimisticRead(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -360,7 +364,7 @@ class LockTest extends BaseTest
         $this->assertEquals(LockMode::PESSIMISTIC_READ, $check['locked']);
     }
 
-    public function testUnlock()
+    public function testUnlock(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -381,7 +385,7 @@ class LockTest extends BaseTest
         $this->assertNull($article->locked);
     }
 
-    public function testPessimisticReadLockThrowsExceptionOnRemove()
+    public function testPessimisticReadLockThrowsExceptionOnRemove(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -398,7 +402,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testPessimisticReadLockThrowsExceptionOnUpdate()
+    public function testPessimisticReadLockThrowsExceptionOnUpdate(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -415,7 +419,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testPessimisticWriteLockThrowExceptionOnRemove()
+    public function testPessimisticWriteLockThrowExceptionOnRemove(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -432,7 +436,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testPessimisticWriteLockThrowExceptionOnUpdate()
+    public function testPessimisticWriteLockThrowExceptionOnUpdate(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -449,7 +453,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testPessimisticWriteLockThrowExceptionOnRead()
+    public function testPessimisticWriteLockThrowExceptionOnRead(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -466,7 +470,7 @@ class LockTest extends BaseTest
         $article = $this->dm->find(LockInt::class, $article->id);
     }
 
-    public function testPessimisticReadLockFunctional()
+    public function testPessimisticReadLockFunctional(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -485,7 +489,7 @@ class LockTest extends BaseTest
         $this->assertEquals('test', $check['title']);
     }
 
-    public function testPessimisticWriteLockFunctional()
+    public function testPessimisticWriteLockFunctional(): void
     {
         $article        = new LockInt();
         $article->title = 'my article';
@@ -504,21 +508,21 @@ class LockTest extends BaseTest
         $this->assertEquals('test', $check['title']);
     }
 
-    public function testInvalidLockDocument()
+    public function testInvalidLockDocument(): void
     {
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage('Invalid lock field type string. Lock field must be int.');
         $this->dm->getClassMetadata(InvalidLockDocument::class);
     }
 
-    public function testInvalidVersionDocument()
+    public function testInvalidVersionDocument(): void
     {
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage('Type string does not implement Versionable interface.');
         $this->dm->getClassMetadata(InvalidVersionDocument::class);
     }
 
-    public function testUpdatingCollectionRespectsVersionNumber()
+    public function testUpdatingCollectionRespectsVersionNumber(): void
     {
         $d = new LockInt('test');
         $d->issues->add(new Issue('hi', 'ohai'));
@@ -533,11 +537,12 @@ class LockTest extends BaseTest
 
         $d->issues->add(new Issue('oops', 'version mismatch'));
         $this->uow->scheduleCollectionUpdate($d->issues);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $d->issues);
         $this->expectException(LockException::class);
         $this->uow->getCollectionPersister()->update($d, [$d->issues], []);
     }
 
-    public function testDeletingCollectionRespectsVersionNumber()
+    public function testDeletingCollectionRespectsVersionNumber(): void
     {
         $d = new LockInt('test');
         $d->issues->add(new Issue('hi', 'ohai'));
@@ -550,6 +555,7 @@ class LockTest extends BaseTest
             ['$set' => ['version' => 2]]
         );
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $d->issues);
         $this->expectException(LockException::class);
         $this->uow->getCollectionPersister()->delete($d, [$d->issues], []);
     }
@@ -558,34 +564,59 @@ class LockTest extends BaseTest
 /** @ODM\MappedSuperclass */
 abstract class AbstractVersionBase
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $title;
 
-    /** @ODM\Lock @ODM\Field(type="int") */
+    /**
+     * @ODM\Lock @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $locked;
 
-    /** @ODM\EmbedMany(targetDocument=Issue::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Issue::class)
+     *
+     * @var Collection<int, Issue>
+     */
     public $issues;
 
-    public function __construct($title = null)
+    /** @var int|string|DateTime|DateTimeImmutable|null */
+    public $version;
+
+    public function __construct(?string $title = null)
     {
         $this->issues = new ArrayCollection();
         $this->title  = $title;
     }
 
+    /**
+     * @return ObjectId|string|null
+     */
     public function getId()
     {
         return $this->id;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
+    /**
+     * @return int|string|DateTime|DateTimeImmutable|null
+     */
     public function getVersion()
     {
         return $this->version;
@@ -595,47 +626,81 @@ abstract class AbstractVersionBase
 /** @ODM\Document */
 class LockInt extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Field(type="int") */
+    /**
+     * @ODM\Version @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $version;
 }
 
 /** @ODM\Document */
 class LockDate extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Field(type="date") */
+    /**
+     * @ODM\Version @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     public $version;
 }
 
 /** @ODM\Document */
 class LockDateImmutable extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Field(type="date_immutable") */
+    /**
+     * @ODM\Version @ODM\Field(type="date_immutable")
+     *
+     * @var DateTimeImmutable|null
+     */
     public $version;
 }
 
 /** @ODM\Document */
 class LockDecimal128 extends AbstractVersionBase
 {
-    /** @ODM\Version @ODM\Field(type="decimal128") */
+    /**
+     * @ODM\Version @ODM\Field(type="decimal128")
+     *
+     * @var string|null
+     */
     public $version;
 }
 
 /** @ODM\Document */
 class InvalidLockDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Lock @ODM\Field(type="string") */
+    /**
+     * @ODM\Lock
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $lock;
 }
 
 /** @ODM\Document */
 class InvalidVersionDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Version @ODM\Field(type="string") */
+    /**
+     * @ODM\Version
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $version;
 }

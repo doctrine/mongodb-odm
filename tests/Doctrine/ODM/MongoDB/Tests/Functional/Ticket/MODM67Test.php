@@ -12,7 +12,10 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM67Test extends BaseTest
 {
-    private function getDocumentManager()
+    /** @var MODM67TestEventListener */
+    private $listener;
+
+    private function getDocumentManager(): ?DocumentManager
     {
         $this->listener = new MODM67TestEventListener($this->dm);
         $evm            = $this->dm->getEventManager();
@@ -27,7 +30,7 @@ class MODM67Test extends BaseTest
         return $this->dm;
     }
 
-    public function testDerivedClassListener()
+    public function testDerivedClassListener(): void
     {
         $dm = $this->getDocumentManager();
 
@@ -56,6 +59,7 @@ class MODM67Test extends BaseTest
 
 class MODM67TestEventListener
 {
+    /** @var DocumentManager */
     public $documentManager;
 
     public function __construct(DocumentManager $documentManager)
@@ -63,7 +67,7 @@ class MODM67TestEventListener
         $this->documentManager = $documentManager;
     }
 
-    public function prePersist(LifecycleEventArgs $eventArgs)
+    public function prePersist(LifecycleEventArgs $eventArgs): void
     {
         $document = $eventArgs->getDocument();
         if (! ($document instanceof MODM67EmbeddedObject)) {
@@ -73,7 +77,7 @@ class MODM67TestEventListener
         $document->prePersist = true;
     }
 
-    public function postPersist(LifecycleEventArgs $eventArgs)
+    public function postPersist(LifecycleEventArgs $eventArgs): void
     {
         $document = $eventArgs->getDocument();
         if (! ($document instanceof MODM67EmbeddedObject)) {
@@ -83,7 +87,7 @@ class MODM67TestEventListener
         $document->postPersist = true;
     }
 
-    public function preUpdate(LifecycleEventArgs $eventArgs)
+    public function preUpdate(LifecycleEventArgs $eventArgs): void
     {
         $document = $eventArgs->getDocument();
         if (! ($document instanceof MODM67EmbeddedObject)) {
@@ -93,7 +97,7 @@ class MODM67TestEventListener
         $document->preUpdate = true;
     }
 
-    public function postUpdate(LifecycleEventArgs $eventArgs)
+    public function postUpdate(LifecycleEventArgs $eventArgs): void
     {
         $document = $eventArgs->getDocument();
         if (! ($document instanceof MODM67EmbeddedObject)) {
@@ -109,10 +113,18 @@ class MODM67TestEventListener
  */
 class MODM67DerivedClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=MODM67EmbeddedObject::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=MODM67EmbeddedObject::class)
+     *
+     * @var MODM67EmbeddedObject|null
+     */
     public $embedOne;
 }
 
@@ -121,18 +133,38 @@ class MODM67DerivedClass
  */
 class MODM67EmbeddedObject
 {
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $numAccesses = 0;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $prePersist = false;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $postPersist = false;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $preUpdate = false;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool|null
+     */
     public $postUpdate = false;
 }

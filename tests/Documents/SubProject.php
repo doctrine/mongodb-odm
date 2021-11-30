@@ -10,15 +10,25 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class SubProject extends Project
 {
-    /** @ODM\EmbedMany(targetDocument=Issue::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Issue::class)
+     *
+     * @var Collection<int, Issue>
+     */
     private $issues;
 
-    public function getIssues()
+    /**
+     * @return Collection<int, Issue>
+     */
+    public function getIssues(): Collection
     {
         return $this->issues;
     }
 
-    public function setIssues(Collection $issues)
+    /**
+     * @param Collection<int, Issue> $issues
+     */
+    public function setIssues(Collection $issues): void
     {
         $this->issues = $issues;
     }

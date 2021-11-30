@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1962Test extends BaseTest
 {
-    public function testDiscriminatorMaps()
+    public function testDiscriminatorMaps(): void
     {
         $metadata = $this->dm->getClassMetadata(GH1962Superclass::class);
         self::assertCount(3, $metadata->discriminatorMap);
@@ -18,7 +18,7 @@ class GH1962Test extends BaseTest
         self::assertCount(2, $metadata->discriminatorMap);
     }
 
-    public function testFetchingDiscriminatedDocuments()
+    public function testFetchingDiscriminatedDocuments(): void
     {
         $foo = new GH1962FooDocument();
         $bar = new GH1962BarDocument();
@@ -39,7 +39,7 @@ class GH1962Test extends BaseTest
         self::assertCount(1, $this->dm->getRepository(GH1962BazDocument::class)->findAll());
     }
 
-    public function testFetchingDiscriminatedDocumentsWithoutDiscriminatorMap()
+    public function testFetchingDiscriminatedDocumentsWithoutDiscriminatorMap(): void
     {
         $foo = new GH1962FooDocumentWithoutDiscriminatorMap();
         $bar = new GH1962BarDocumentWithoutDiscriminatorMap();
@@ -77,7 +77,11 @@ class GH1962Test extends BaseTest
  */
 class GH1962Superclass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
@@ -113,7 +117,11 @@ class GH1962BazDocument extends GH1962BarSuperclass
  */
 class GH1962SuperclassWithoutDiscriminatorMap
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 

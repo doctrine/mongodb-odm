@@ -15,12 +15,18 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
-    /** @var string */
+    /**
+     * @var string
+     * @psalm-var class-string
+     */
     private $className;
 
-    /** @var ClassMetadata|null */
+    /** @var ClassMetadata<object>|null */
     private $foundMetadata;
 
+    /**
+     * @psalm-param class-string $className
+     */
     public function __construct(string $className, DocumentManager $dm)
     {
         $this->className = $className;
@@ -28,15 +34,18 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
         parent::__construct($dm);
     }
 
-    public function setFoundMetadata(?ClassMetadata $classMetadata = null)
+    /**
+     * @param ClassMetadata<object>|null $classMetadata
+     */
+    public function setFoundMetadata(?ClassMetadata $classMetadata = null): void
     {
         $this->foundMetadata = $classMetadata;
     }
 
     /**
-     * @return ClassMetadata|null
+     * @return ClassMetadata<object>|null
      */
-    public function getFoundMetadata()
+    public function getFoundMetadata(): ?ClassMetadata
     {
         return $this->foundMetadata;
     }
@@ -44,9 +53,9 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     /**
      * Retrieve class name for which a failed metadata fetch attempt was executed
      *
-     * @return string
+     * @psalm-return class-string
      */
-    public function getClassName()
+    public function getClassName(): string
     {
         return $this->className;
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -25,7 +26,7 @@ class GH593Test extends BaseTest
         $filter->setParameter('value', false);
     }
 
-    public function testReferenceManyOwningSidePreparesFilterCriteria()
+    public function testReferenceManyOwningSidePreparesFilterCriteria(): void
     {
         $class = GH593User::class;
 
@@ -69,7 +70,7 @@ class GH593Test extends BaseTest
         $user1following[1]->initializeProxy();
     }
 
-    public function testReferenceManyInverseSidePreparesFilterCriteria()
+    public function testReferenceManyInverseSidePreparesFilterCriteria(): void
     {
         $class = GH593User::class;
 
@@ -102,16 +103,32 @@ class GH593Test extends BaseTest
 /** @ODM\Document */
 class GH593User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="d", type="bool") */
+    /**
+     * @ODM\Field(name="d", type="bool")
+     *
+     * @var bool
+     */
     public $deleted = false;
 
-    /** @ODM\ReferenceMany(targetDocument=GH593User::class, inversedBy="followedBy", storeAs="id") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH593User::class, inversedBy="followedBy", storeAs="id")
+     *
+     * @var Collection<int, GH593User>
+     */
     public $following;
 
-    /** @ODM\ReferenceMany(targetDocument=GH593User::class, mappedBy="following") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH593User::class, mappedBy="following")
+     *
+     * @var Collection<int, GH593User>
+     */
     public $followedBy;
 
     public function __construct()
@@ -121,7 +138,7 @@ class GH593User
     }
 
     /** Return the identifier without triggering Proxy initialization */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

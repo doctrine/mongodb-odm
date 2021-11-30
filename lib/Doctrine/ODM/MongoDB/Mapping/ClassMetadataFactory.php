@@ -35,6 +35,10 @@ use function ucfirst;
  * to a document database.
  *
  * @internal
+ *
+ * @method ClassMetadata[] getAllMetadata()
+ * @method ClassMetadata[] getLoadedMetadata()
+ * @method ClassMetadata getMetadataFor($className)
  */
 final class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -63,11 +67,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->config = $config;
     }
 
-    public function getMetadataFor($className)
-    {
-        return parent::getMetadataFor($this->dm->getClassNameResolver()->getRealClass($className));
-    }
-
     /**
      * Lazy initialization of this stuff, especially the metadata driver,
      * since these are not needed at all when a metadata cache is active.
@@ -84,9 +83,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->initialized = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function onNotFoundMetadata($className)
     {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
@@ -100,17 +96,11 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $eventArgs->getFoundMetadata();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName): string
     {
         return $this->config->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function getDriver()
     {
         return $this->driver;
@@ -131,9 +121,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument && ! $class->isView();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []): void
     {
         assert($class instanceof ClassMetadata);
@@ -222,9 +209,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function newClassMetadataInstance($className): ClassMetadata
     {
         return new ClassMetadata($className);

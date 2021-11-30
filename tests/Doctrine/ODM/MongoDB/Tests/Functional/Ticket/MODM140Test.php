@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Functional\EmbeddedTestLevel0;
@@ -13,7 +14,7 @@ use Documents\Functional\EmbeddedTestLevel2;
 
 class MODM140Test extends BaseTest
 {
-    public function testInsertingNestedEmbeddedCollections()
+    public function testInsertingNestedEmbeddedCollections(): void
     {
         $category       = new Category();
         $category->name = 'My Category';
@@ -44,7 +45,7 @@ class MODM140Test extends BaseTest
         $this->assertEquals(2, $category->posts->get(1)->versions->count());
     }
 
-    public function testInsertingEmbeddedCollectionWithRefMany()
+    public function testInsertingEmbeddedCollectionWithRefMany(): void
     {
         $comment = new Comment();
 
@@ -66,7 +67,7 @@ class MODM140Test extends BaseTest
         $this->assertEquals(1, $category->posts->get(0)->comments->count());
     }
 
-    public function testAddingAnotherEmbeddedDocument()
+    public function testAddingAnotherEmbeddedDocument(): void
     {
         $test       = new EmbeddedTestLevel0();
         $test->name = 'test';
@@ -124,13 +125,25 @@ class MODM140Test extends BaseTest
 /** @ODM\Document */
 class Category
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=Post::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Post::class)
+     *
+     * @var Collection<int, Post>
+     */
     public $posts;
 
     public function __construct()
@@ -142,10 +155,18 @@ class Category
 /** @ODM\EmbeddedDocument */
 class Post
 {
-    /** @ODM\EmbedMany(targetDocument=PostVersion::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=PostVersion::class)
+     *
+     * @var Collection<int, PostVersion>
+     */
     public $versions;
 
-    /** @ODM\ReferenceMany(targetDocument=Comment::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Comment::class)
+     *
+     * @var Collection<int, Comment>
+     */
     public $comments;
 
     public function __construct()
@@ -158,10 +179,14 @@ class Post
 /** @ODM\EmbeddedDocument */
 class PostVersion
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -170,9 +195,17 @@ class PostVersion
 /** @ODM\Document */
 class Comment
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $content;
 }

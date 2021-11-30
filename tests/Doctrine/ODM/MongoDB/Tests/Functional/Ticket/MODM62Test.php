@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM62Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $test = new MODM62Document();
         $this->dm->persist($test);
@@ -28,13 +28,21 @@ class MODM62Test extends BaseTest
 /** @ODM\Document(collection="modm62_users") */
 class MODM62Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
     public $b = ['ok'];
 
-    public function setB($b)
+    public function setB(array $b): void
     {
         $this->b = $b;
     }

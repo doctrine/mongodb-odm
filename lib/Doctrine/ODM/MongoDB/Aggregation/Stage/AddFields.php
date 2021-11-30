@@ -9,9 +9,6 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 final class AddFields extends Operator
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

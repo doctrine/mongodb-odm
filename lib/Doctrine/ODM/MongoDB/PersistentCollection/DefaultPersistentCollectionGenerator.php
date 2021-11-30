@@ -114,7 +114,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
     /**
      * @param string|false $fileName Filename to write collection class code or false to eval it.
      */
-    private function generateCollectionClass(string $for, string $targetFqcn, $fileName)
+    private function generateCollectionClass(string $for, string $targetFqcn, $fileName): void
     {
         $exploded  = explode('\\', $targetFqcn);
         $class     = array_pop($exploded);
@@ -201,9 +201,6 @@ CODE;
 
         return <<<CODE
 
-    /**
-     * {@inheritDoc}
-     */
     public function {$method->name}($parametersString){$this->getMethodReturnType($method)}
     {
         \$this->initialize();

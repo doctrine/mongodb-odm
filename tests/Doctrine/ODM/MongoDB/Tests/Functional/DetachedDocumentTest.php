@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsArticle;
 use Documents\CmsPhonenumber;
@@ -15,7 +16,7 @@ use function unserialize;
 
 class DetachedDocumentTest extends BaseTest
 {
-    public function testSimpleDetachMerge()
+    public function testSimpleDetachMerge(): void
     {
         $user           = new CmsUser();
         $user->name     = 'Roman';
@@ -40,7 +41,7 @@ class DetachedDocumentTest extends BaseTest
         $this->assertEquals('Roman B.', $user2->name);
     }
 
-    public function testSerializeUnserializeModifyMerge()
+    public function testSerializeUnserializeModifyMerge(): void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -54,6 +55,7 @@ class DetachedDocumentTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
         $this->assertTrue($this->dm->contains($user));
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->phonenumbers);
         $this->assertTrue($user->phonenumbers->isInitialized());
 
         $serialized = serialize($user);
@@ -90,7 +92,7 @@ class DetachedDocumentTest extends BaseTest
         $this->assertTrue($this->dm->contains($phonenumbers[1]));
     }
 
-    public function testMergeWithReference()
+    public function testMergeWithReference(): void
     {
         $cmsUser           = new CmsUser();
         $cmsUser->username = 'alcaeus';

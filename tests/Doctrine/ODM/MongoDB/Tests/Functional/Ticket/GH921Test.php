@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH921Test extends BaseTest
 {
-    public function testPersistentCollectionCountAndIterationShouldBeConsistent()
+    public function testPersistentCollectionCountAndIterationShouldBeConsistent(): void
     {
         $user = new GH921User();
         $user->setName('smith');
@@ -27,6 +29,7 @@ class GH921Test extends BaseTest
         $this->dm->persist($postA);
         $this->dm->flush();
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getPosts());
         $this->assertFalse($user->getPosts()->isDirty(), 'A flushed collection should not be dirty');
         $this->assertTrue($user->getPosts()->isInitialized(), 'A flushed collection should be initialized');
         $this->assertCount(1, $user->getPosts());
@@ -34,6 +37,7 @@ class GH921Test extends BaseTest
 
         $this->dm->refresh($user);
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getPosts());
         $this->assertFalse($user->getPosts()->isDirty(), 'A refreshed collection should not be dirty');
         $this->assertFalse($user->getPosts()->isInitialized(), 'A refreshed collection should not be initialized');
         $this->assertCount(1, $user->getPosts());
@@ -45,6 +49,7 @@ class GH921Test extends BaseTest
         $user->addPost($postB);
         $this->dm->persist($postB);
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getPosts());
         $this->assertTrue($user->getPosts()->isDirty(), 'A refreshed collection then modified should be dirty');
         $this->assertFalse($user->getPosts()->isInitialized(), 'A refreshed collection then modified should not be initialized');
         $this->assertCount(2, $user->getPosts());
@@ -52,6 +57,7 @@ class GH921Test extends BaseTest
 
         $user->getPosts()->initialize();
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getPosts());
         $this->assertTrue($user->getPosts()->isDirty(), 'A dirty collection then initialized should remain dirty');
         $this->assertCount(2, $user->getPosts());
         $this->assertCount(2, $user->getPosts()->toArray());
@@ -61,13 +67,25 @@ class GH921Test extends BaseTest
 /** @ODM\Document */
 class GH921User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
-    /** @ODM\ReferenceMany(targetDocument=GH921Post::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH921Post::class)
+     *
+     * @var Collection<int, GH921Post>
+     */
     private $posts;
 
     public function __construct()
@@ -75,27 +93,30 @@ class GH921User
         $this->posts = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function addPost(GH921Post $post)
+    public function addPost(GH921Post $post): void
     {
         $this->posts[] = $post;
     }
 
-    public function getPosts()
+    /**
+     * @return Collection<int, GH921Post>
+     */
+    public function getPosts(): Collection
     {
         return $this->posts;
     }
@@ -104,23 +125,31 @@ class GH921User
 /** @ODM\Document */
 class GH921Post
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

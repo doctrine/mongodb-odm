@@ -11,12 +11,16 @@ use MongoDB\BSON\ObjectId;
 use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
 
+use function assert;
 use function current;
 use function end;
 
 class SimpleReferencesTest extends BaseTest
 {
+    /** @var User */
     private $user;
+
+    /** @var SimpleReferenceUser */
     private $test;
 
     public function setUp(): void
@@ -36,13 +40,13 @@ class SimpleReferencesTest extends BaseTest
         $this->dm->clear();
     }
 
-    public function testIndexes()
+    public function testIndexes(): void
     {
         $indexes = $this->dm->getSchemaManager()->getDocumentIndexes(SimpleReferenceUser::class);
         $this->assertEquals(['userId' => 1], $indexes[0]['keys']);
     }
 
-    public function testStorage()
+    public function testStorage(): void
     {
         $test = $this->dm->getDocumentCollection(SimpleReferenceUser::class)->findOne();
         $this->assertNotNull($test);
@@ -50,7 +54,7 @@ class SimpleReferencesTest extends BaseTest
         $this->assertInstanceOf(ObjectId::class, $test['users'][0]);
     }
 
-    public function testQuery()
+    public function testQuery(): void
     {
         $this->user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jwage']);
 
@@ -67,7 +71,7 @@ class SimpleReferencesTest extends BaseTest
         $this->assertEquals(['userId' => ['$in' => [new ObjectId($this->user->getId())]]], $qb->getQuery()->debug('query'));
     }
 
-    public function testProxy()
+    public function testProxy(): void
     {
         $this->user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jwage']);
 
@@ -78,17 +82,20 @@ class SimpleReferencesTest extends BaseTest
         $this->dm->clear();
 
         $test = $qb->getQuery()->getSingleResult();
+        assert($test instanceof SimpleReferenceUser);
 
         $this->assertNotNull($test);
-        $this->assertNotNull($test->getUser());
-        $this->assertInstanceOf(User::class, $test->getUser());
-        $this->assertInstanceOf(GhostObjectInterface::class, $test->getUser());
-        $this->assertFalse($test->getUser()->isProxyInitialized());
-        $this->assertEquals('jwage', $test->getUser()->getUsername());
-        $this->assertTrue($test->getUser()->isProxyInitialized());
+        $user = $test->getUser();
+        assert($user instanceof User && $user instanceof GhostObjectInterface);
+        $this->assertNotNull($user);
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(GhostObjectInterface::class, $user);
+        $this->assertFalse($user->isProxyInitialized());
+        $this->assertEquals('jwage', $user->getUsername());
+        $this->assertTrue($user->isProxyInitialized());
     }
 
-    public function testPersistentCollectionOwningSide()
+    public function testPersistentCollectionOwningSide(): void
     {
         $test  = $this->dm->getRepository(SimpleReferenceUser::class)->findOneBy([]);
         $users = $test->getUsers()->toArray();
@@ -97,21 +104,21 @@ class SimpleReferencesTest extends BaseTest
         $this->assertEquals('jwage', end($users)->getUsername());
     }
 
-    public function testPersistentCollectionInverseSide()
+    public function testPersistentCollectionInverseSide(): void
     {
         $user = $this->dm->getRepository(User::class)->findOneBy([]);
         $test = $user->getSimpleReferenceManyInverse()->toArray();
         $this->assertEquals('test', current($test)->getName());
     }
 
-    public function testOneInverseSide()
+    public function testOneInverseSide(): void
     {
         $user = $this->dm->getRepository(User::class)->findOneBy([]);
         $test = $user->getSimpleReferenceOneInverse();
         $this->assertEquals('test', $test->getName());
     }
 
-    public function testQueryForNonIds()
+    public function testQueryForNonIds(): void
     {
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('user')->equals(null);
@@ -126,7 +133,7 @@ class SimpleReferencesTest extends BaseTest
         $this->assertEquals(['userId' => ['$exists' => true]], $qb->getQueryArray());
     }
 
-    public function testRemoveDocumentByEmptyRefMany()
+    public function testRemoveDocumentByEmptyRefMany(): void
     {
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('users')->equals([]);

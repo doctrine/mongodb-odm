@@ -11,7 +11,7 @@ use MongoDB\BSON\ObjectId;
 
 class GH942Test extends BaseTest
 {
-    public function testDiscriminatorValueUsesClassNameIfMapIsNotDefined()
+    public function testDiscriminatorValueUsesClassNameIfMapIsNotDefined(): void
     {
         $doc       = new GH942Document();
         $doc->name = 'foo';
@@ -27,7 +27,7 @@ class GH942Test extends BaseTest
         $this->assertSame(GH942Document::CLASSNAME, $doc['type']);
     }
 
-    public function testDiscriminatorValueUsesClassNameIfNotInMap()
+    public function testDiscriminatorValueUsesClassNameIfNotInMap(): void
     {
         $parent       = new GH942DocumentParent();
         $parent->name = 'parent';
@@ -61,10 +61,18 @@ class GH942Document
 {
     public const CLASSNAME = self::class;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
@@ -78,10 +86,18 @@ class GH942DocumentParent
 {
     public const CLASSNAME = self::class;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 

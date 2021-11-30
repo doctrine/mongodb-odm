@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 use function iterator_to_array;
 
 class GH566Test extends BaseTest
 {
-    public function testFoo()
+    public function testFoo(): void
     {
         $class = GH566Document::class;
 
@@ -38,6 +40,10 @@ class GH566Test extends BaseTest
         ]);
 
         $this->dm->flush();
+
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc1->children);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc2->children);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc3->children);
 
         /* The inverse-side $children PersistentCollection on these documents
          * is already initialized by this point, so we need to either clear the
@@ -68,13 +74,25 @@ class GH566Test extends BaseTest
 /** @ODM\Document */
 class GH566Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH566EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH566EmbeddedDocument::class)
+     *
+     * @var GH566EmbeddedDocument|null
+     */
     public $version;
 
-    /** @ODM\EmbedMany(targetDocument=GH566EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH566EmbeddedDocument::class)
+     *
+     * @var Collection<int, GH566EmbeddedDocument>
+     */
     public $versions;
 
     /**
@@ -84,6 +102,8 @@ class GH566Document
      *      mappedBy="version.parent",
      *      sort={"version.sequence"="asc"}
      * )
+     *
+     * @var Collection<int, GH566Document>
      */
     public $children;
 
@@ -97,9 +117,17 @@ class GH566Document
 /** @ODM\EmbeddedDocument */
 class GH566EmbeddedDocument
 {
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     public $sequence = 0;
 
-    /** @ODM\ReferenceOne(targetDocument=GH566Document::class, cascade={"all"}, inversedBy="children") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH566Document::class, cascade={"all"}, inversedBy="children")
+     *
+     * @var GH566Document|null
+     */
     public $parent;
 }

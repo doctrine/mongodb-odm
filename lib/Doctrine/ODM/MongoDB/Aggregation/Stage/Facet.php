@@ -22,9 +22,6 @@ class Facet extends Stage
     /** @var string */
     private $field;
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

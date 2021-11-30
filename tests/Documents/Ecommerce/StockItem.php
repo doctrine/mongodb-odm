@@ -11,24 +11,40 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class StockItem
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
     private $inventory;
 
-    /** @ODM\EmbedOne(targetDocument=Documents\Ecommerce\Money::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Documents\Ecommerce\Money::class)
+     *
+     * @var Money|null
+     */
     private $cost;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function __construct($name = null, $cost = null, $inventory = null)
+    public function __construct(?string $name = null, ?Money $cost = null, ?int $inventory = null)
     {
         if ($name !== null) {
             $this->setName($name);
@@ -45,36 +61,36 @@ class StockItem
         $this->setInventory($inventory);
     }
 
-    public function setName($name)
+    public function setName(string $name): StockItem
     {
-        $this->name = (string) $name;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setCost(Money $cost)
+    public function setCost(Money $cost): void
     {
         $this->cost = $cost;
     }
 
-    public function getCost()
+    public function getCost(): float
     {
         return $this->cost->getAmount();
     }
 
-    public function setInventory($inventory)
+    public function setInventory(int $inventory): StockItem
     {
-        $this->inventory = (int) $inventory;
+        $this->inventory = $inventory;
 
         return $this;
     }
 
-    public function getInventory()
+    public function getInventory(): ?int
     {
         return $this->inventory;
     }

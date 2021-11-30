@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Group;
 use Documents\Phonenumber;
@@ -11,7 +12,7 @@ use Documents\User;
 
 class GH909Test extends BaseTest
 {
-    public function testManyReferenceAddAndPersist()
+    public function testManyReferenceAddAndPersist(): void
     {
         $user = new User();
         $user->addGroup(new Group('Group A'));
@@ -25,6 +26,7 @@ class GH909Test extends BaseTest
 
         $groups = $user->getGroups();
         $this->assertCount(2, $groups);
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
         $this->assertTrue($groups->isInitialized());
 
         $user->addGroup(new Group('Group C'));
@@ -49,7 +51,7 @@ class GH909Test extends BaseTest
         $this->assertTrue($groups->isInitialized());
     }
 
-    public function testManyEmbeddedAddAndPersist()
+    public function testManyEmbeddedAddAndPersist(): void
     {
         $user = new User();
         $user->addPhoneNumber(new Phonenumber('111-111-1111'));
@@ -62,6 +64,7 @@ class GH909Test extends BaseTest
         $user = $this->dm->find(User::class, $user->getId());
 
         $phoneNumbers = $user->getPhoneNumbers();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $phoneNumbers);
         $this->assertCount(2, $phoneNumbers);
         $this->assertTrue($phoneNumbers->isInitialized());
 

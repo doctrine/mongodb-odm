@@ -861,11 +861,11 @@ class Expr
      * @see Builder::not()
      * @see https://docs.mongodb.com/manual/reference/operator/not/
      *
-     * @param array|Expr|mixed $valueOrExpression
+     * @param array|Expr|mixed $expression
      */
-    public function not($valueOrExpression): self
+    public function not($expression): self
     {
-        return $this->operator('$not', $valueOrExpression);
+        return $this->operator('$not', $expression);
     }
 
     /**
@@ -1436,6 +1436,8 @@ class Expr
      * returned unmodified.
      *
      * @param Expr|mixed $expression
+     *
+     * @return array|mixed
      */
     private static function convertExpression($expression, ClassMetadata $classMetadata)
     {

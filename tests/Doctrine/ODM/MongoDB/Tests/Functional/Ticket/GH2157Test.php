@@ -7,11 +7,9 @@ namespace Doctrine\ODM\ODM\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-use function count;
-
 class GH2157Test extends BaseTest
 {
-    public function testFacetDiscriminatorMapCreation()
+    public function testFacetDiscriminatorMapCreation(): void
     {
         $this->dm->persist(new GH2157FirstType());
         $this->dm->persist(new GH2157FirstType());
@@ -36,7 +34,7 @@ class GH2157Test extends BaseTest
             ->execute()->toArray();
 
         $this->assertEquals(4, $result[0]['count'][0]['count']);
-        $this->assertEquals(2, count($result[0]['limitedResults']));
+        $this->assertCount(2, $result[0]['limitedResults']);
     }
 }
 

@@ -21,6 +21,9 @@ class DropCommand extends AbstractCommand
     /** @var string[] */
     private $dropOrder = [self::INDEX, self::COLLECTION, self::DB];
 
+    /**
+     * @return void
+     */
     protected function configure()
     {
         parent::configure();
@@ -34,10 +37,13 @@ class DropCommand extends AbstractCommand
             ->setDescription('Drop databases, collections and indexes for your documents');
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $drop = array_filter($this->dropOrder, static function ($option) use ($input) {
-            return $input->getOption($option);
+        $drop = array_filter($this->dropOrder, static function (string $option) use ($input): bool {
+            return (bool) $input->getOption($option);
         });
 
         // Default to the full drop order if no options were specified

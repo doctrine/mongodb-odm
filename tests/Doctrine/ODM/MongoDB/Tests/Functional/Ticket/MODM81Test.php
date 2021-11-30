@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM81Test extends BaseTest
 {
-    /**
-     * @return DocumentManager
-     */
-    private function getDocumentManager()
+    private function getDocumentManager(): DocumentManager
     {
         return $this->dm;
     }
 
-    public function testDocumentIdWithSameProxyId()
+    public function testDocumentIdWithSameProxyId(): void
     {
         $dm = $this->getDocumentManager();
 
@@ -64,43 +63,46 @@ class MODM81Test extends BaseTest
 /** @ODM\Document */
 class MODM81TestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $name;
 
-    /** @ODM\EmbedMany(targetDocument=MODM81TestEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=MODM81TestEmbeddedDocument::class)
+     *
+     * @var Collection<int, MODM81TestEmbeddedDocument>
+     */
     protected $embeddedDocuments;
 
-    /**
-     * @return string
-     */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
     /**
-     * @return ArrayCollection
+     * @return Collection<int, MODM81TestEmbeddedDocument>
      */
-    public function getEmbeddedDocuments()
+    public function getEmbeddedDocuments(): Collection
     {
         return $this->embeddedDocuments;
     }
@@ -108,7 +110,7 @@ class MODM81TestDocument
     /**
      * @param array $documents
      */
-    public function setEmbeddedDocuments($documents)
+    public function setEmbeddedDocuments(array $documents): void
     {
         $this->embeddedDocuments = new ArrayCollection($documents);
     }
@@ -117,42 +119,45 @@ class MODM81TestDocument
 /** @ODM\EmbeddedDocument */
 class MODM81TestEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $message;
 
-    /** @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class)
+     *
+     * @var MODM81TestDocument
+     */
     public $refTodocument1;
 
-    /** @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class)
+     *
+     * @var MODM81TestDocument
+     */
     public $refTodocument2;
 
-    public function __construct($document1, $document2, $message)
+    public function __construct(MODM81TestDocument $document1, MODM81TestDocument $document2, string $message)
     {
         $this->refTodocument1 = $document1;
         $this->refTodocument2 = $document2;
         $this->message        = $message;
     }
 
-    /**
-     * @return string
-     */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
-    /**
-     * @return MODM81TestDocument
-     */
-    public function getRefTodocument1()
+    public function getRefTodocument1(): MODM81TestDocument
     {
         return $this->refTodocument1;
     }
 
-    /**
-     * @return MODM81TestDocument
-     */
-    public function getRefTodocument2()
+    public function getRefTodocument2(): MODM81TestDocument
     {
         return $this->refTodocument2;
     }

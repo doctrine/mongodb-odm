@@ -10,16 +10,23 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use DoctrineGlobal_Article;
+use DoctrineGlobal_User;
 use Documents\Account;
 use Documents\Address;
 use Documents\Album;
 use Documents\Bars\Bar;
+use Documents\CmsGroup;
 use Documents\CmsUser;
+use Documents\CustomRepository\Repository;
 use Documents\SpecialUser;
 use Documents\User;
+use Documents\UserName;
 use Documents\UserRepository;
+use Generator;
 use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
@@ -28,12 +35,14 @@ use stdClass;
 
 use function array_merge;
 use function get_class;
+use function MongoDB\BSON\fromJSON;
+use function MongoDB\BSON\toPHP;
 use function serialize;
 use function unserialize;
 
 class ClassMetadataTest extends BaseTest
 {
-    public function testClassMetadataInstanceSerialization()
+    public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
 
@@ -48,8 +57,8 @@ class ClassMetadataTest extends BaseTest
 
         // Customize state
         $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION);
-        $cm->setSubclasses(['One', 'Two', 'Three']);
-        $cm->setParentClasses(['UserParent']);
+        $cm->setSubclasses([User::class, UserName::class]);
+        $cm->setParentClasses([stdClass::class]);
         $cm->setCustomRepositoryClass(UserRepository::class);
         $cm->setDiscriminatorField('disc');
         $cm->mapOneEmbedded(['fieldName' => 'phonenumbers', 'targetDocument' => Bar::class]);
@@ -61,6 +70,10 @@ class ClassMetadataTest extends BaseTest
         $cm->setLockField('lock');
         $cm->setVersioned(true);
         $cm->setVersionField('version');
+        $validatorJson = '{ "$and": [ { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\\\.com$", "options": "" } } } } ] }';
+        $cm->setValidator(toPHP(fromJSON($validatorJson)));
+        $cm->setValidationAction(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN);
+        $cm->setValidationLevel(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF);
         $this->assertIsArray($cm->getFieldMapping('phonenumbers'));
         $this->assertCount(1, $cm->fieldMappings);
         $this->assertCount(1, $cm->associationMappings);
@@ -72,9 +85,9 @@ class ClassMetadataTest extends BaseTest
         $this->assertGreaterThan(0, $cm->getReflectionProperties());
         $this->assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         $this->assertEquals(CmsUser::class, $cm->name);
-        $this->assertEquals('UserParent', $cm->rootDocumentName);
-        $this->assertEquals(['One', 'Two', 'Three'], $cm->subClasses);
-        $this->assertEquals(['UserParent'], $cm->parentClasses);
+        $this->assertEquals(stdClass::class, $cm->rootDocumentName);
+        $this->assertEquals([User::class, UserName::class], $cm->subClasses);
+        $this->assertEquals([stdClass::class], $cm->parentClasses);
         $this->assertEquals(UserRepository::class, $cm->customRepositoryClassName);
         $this->assertEquals('disc', $cm->discriminatorField);
         $this->assertIsArray($cm->getFieldMapping('phonenumbers'));
@@ -90,9 +103,12 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals('lock', $cm->lockField);
         $this->assertEquals(true, $cm->isVersioned);
         $this->assertEquals('version', $cm->versionField);
+        $this->assertEquals(toPHP(fromJSON($validatorJson)), $cm->getValidator());
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $cm->getValidationAction());
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF, $cm->getValidationLevel());
     }
 
-    public function testOwningSideAndInverseSide()
+    public function testOwningSideAndInverseSide(): void
     {
         $cm = new ClassMetadata(User::class);
         $cm->mapOneReference(['fieldName' => 'account', 'targetDocument' => Account::class, 'inversedBy' => 'user']);
@@ -103,7 +119,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertTrue($cm->fieldMappings['user']['isInverseSide']);
     }
 
-    public function testFieldIsNullable()
+    public function testFieldIsNullable(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
 
@@ -123,26 +139,26 @@ class ClassMetadataTest extends BaseTest
     /**
      * @group DDC-115
      */
-    public function testMapAssocationInGlobalNamespace()
+    public function testMapAssocationInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 
-        $cm = new ClassMetadata('DoctrineGlobal_Article');
+        $cm = new ClassMetadata(DoctrineGlobal_Article::class);
         $cm->mapManyEmbedded([
             'fieldName' => 'author',
-            'targetDocument' => 'DoctrineGlobal_User',
+            'targetDocument' => DoctrineGlobal_User::class,
         ]);
 
-        $this->assertEquals('DoctrineGlobal_User', $cm->fieldMappings['author']['targetDocument']);
+        $this->assertEquals(DoctrineGlobal_User::class, $cm->fieldMappings['author']['targetDocument']);
     }
 
-    public function testMapManyToManyJoinTableDefaults()
+    public function testMapManyToManyJoinTableDefaults(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
         $cm->mapManyEmbedded(
             [
                 'fieldName' => 'groups',
-                'targetDocument' => 'CmsGroup',
+                'targetDocument' => CmsGroup::class,
             ]
         );
 
@@ -150,7 +166,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertIsArray($assoc);
     }
 
-    public function testGetAssociationTargetClassWithoutTargetDocument()
+    public function testGetAssociationTargetClassWithoutTargetDocument(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
         $cm->mapManyEmbedded(
@@ -166,34 +182,34 @@ class ClassMetadataTest extends BaseTest
     /**
      * @group DDC-115
      */
-    public function testSetDiscriminatorMapInGlobalNamespace()
+    public function testSetDiscriminatorMapInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 
-        $cm = new ClassMetadata('DoctrineGlobal_User');
-        $cm->setDiscriminatorMap(['descr' => 'DoctrineGlobal_Article', 'foo' => 'DoctrineGlobal_User']);
+        $cm = new ClassMetadata(DoctrineGlobal_User::class);
+        $cm->setDiscriminatorMap(['descr' => DoctrineGlobal_Article::class, 'foo' => DoctrineGlobal_User::class]);
 
-        $this->assertEquals('DoctrineGlobal_Article', $cm->discriminatorMap['descr']);
-        $this->assertEquals('DoctrineGlobal_User', $cm->discriminatorMap['foo']);
+        $this->assertEquals(DoctrineGlobal_Article::class, $cm->discriminatorMap['descr']);
+        $this->assertEquals(DoctrineGlobal_User::class, $cm->discriminatorMap['foo']);
     }
 
     /**
      * @group DDC-115
      */
-    public function testSetSubClassesInGlobalNamespace()
+    public function testSetSubClassesInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 
-        $cm = new ClassMetadata('DoctrineGlobal_User');
-        $cm->setSubclasses(['DoctrineGlobal_Article']);
+        $cm = new ClassMetadata(DoctrineGlobal_User::class);
+        $cm->setSubclasses([DoctrineGlobal_Article::class]);
 
-        $this->assertEquals('DoctrineGlobal_Article', $cm->subClasses[0]);
+        $this->assertEquals(DoctrineGlobal_Article::class, $cm->subClasses[0]);
     }
 
-    public function testDuplicateFieldMapping()
+    public function testDuplicateFieldMapping(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $a1 = ['reference' => true, 'type' => 'many', 'fieldName' => 'name', 'targetDocument' => 'stdClass'];
+        $a1 = ['reference' => true, 'type' => 'many', 'fieldName' => 'name', 'targetDocument' => stdClass::class];
         $a2 = ['type' => 'string', 'fieldName' => 'name'];
 
         $cm->mapField($a1);
@@ -202,7 +218,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals('string', $cm->fieldMappings['name']['type']);
     }
 
-    public function testDuplicateColumnNameDiscriminatorColumnThrowsMappingException()
+    public function testDuplicateColumnNameDiscriminatorColumnThrowsMappingException(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
         $cm->mapField(['fieldName' => 'name', 'type' => Type::STRING]);
@@ -211,7 +227,7 @@ class ClassMetadataTest extends BaseTest
         $cm->setDiscriminatorField('name');
     }
 
-    public function testDuplicateFieldNameDiscriminatorColumn2ThrowsMappingException()
+    public function testDuplicateFieldNameDiscriminatorColumn2ThrowsMappingException(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
         $cm->setDiscriminatorField('name');
@@ -220,25 +236,25 @@ class ClassMetadataTest extends BaseTest
         $cm->mapField(['fieldName' => 'name', 'type' => Type::STRING]);
     }
 
-    public function testDuplicateFieldAndAssocationMapping1()
+    public function testDuplicateFieldAndAssocationMapping1(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
         $cm->mapField(['fieldName' => 'name', 'type' => Type::STRING]);
-        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => 'CmsUser']);
+        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => CmsUser::class]);
 
         $this->assertEquals('one', $cm->fieldMappings['name']['type']);
     }
 
-    public function testDuplicateFieldAndAssocationMapping2()
+    public function testDuplicateFieldAndAssocationMapping2(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => 'CmsUser']);
+        $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => CmsUser::class]);
         $cm->mapField(['fieldName' => 'name', 'columnName' => 'name', 'type' => 'string']);
 
         $this->assertEquals('string', $cm->fieldMappings['name']['type']);
     }
 
-    public function testMapNotExistingFieldThrowsException()
+    public function testMapNotExistingFieldThrowsException(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
         $this->expectException(ReflectionException::class);
@@ -246,9 +262,11 @@ class ClassMetadataTest extends BaseTest
     }
 
     /**
+     * @param ClassMetadata<CmsUser> $cm
+     *
      * @dataProvider dataProviderMetadataClasses
      */
-    public function testEmbeddedDocumentWithDiscriminator(ClassMetadata $cm)
+    public function testEmbeddedDocumentWithDiscriminator(ClassMetadata $cm): void
     {
         $cm->setDiscriminatorField('discriminator');
         $cm->setDiscriminatorValue('discriminatorValue');
@@ -260,7 +278,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertSame('discriminatorValue', $cm->discriminatorValue);
     }
 
-    public static function dataProviderMetadataClasses()
+    public static function dataProviderMetadataClasses(): array
     {
         $document = new ClassMetadata(CmsUser::class);
 
@@ -277,11 +295,16 @@ class ClassMetadataTest extends BaseTest
         ];
     }
 
-    public function testDefaultDiscriminatorField()
+    public function testDefaultDiscriminatorField(): void
     {
         $object = new class {
+            /** @var object|null */
             public $assoc;
+
+            /** @var stdClass|null */
             public $assocWithTargetDocument;
+
+            /** @var object|null */
             public $assocWithDiscriminatorField;
         };
 
@@ -297,7 +320,7 @@ class ClassMetadataTest extends BaseTest
             'fieldName' => 'assocWithTargetDocument',
             'reference' => true,
             'type' => 'one',
-            'targetDocument' => 'stdClass',
+            'targetDocument' => stdClass::class,
         ]);
 
         $cm->mapField([
@@ -332,7 +355,7 @@ class ClassMetadataTest extends BaseTest
         );
     }
 
-    public function testGetFieldValue()
+    public function testGetFieldValue(): void
     {
         $document = new Album('ten');
         $metadata = $this->dm->getClassMetadata(Album::class);
@@ -340,7 +363,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals($document->getName(), $metadata->getFieldValue($document, 'name'));
     }
 
-    public function testGetFieldValueInitializesProxy()
+    public function testGetFieldValueInitializesProxy(): void
     {
         $document = new Album('ten');
         $this->dm->persist($document);
@@ -355,7 +378,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertTrue($proxy->isProxyInitialized());
     }
 
-    public function testGetFieldValueOfIdentifierDoesNotInitializeProxy()
+    public function testGetFieldValueOfIdentifierDoesNotInitializeProxy(): void
     {
         $document = new Album('ten');
         $this->dm->persist($document);
@@ -370,7 +393,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertFalse($proxy->isProxyInitialized());
     }
 
-    public function testSetFieldValue()
+    public function testSetFieldValue(): void
     {
         $document = new Album('ten');
         $metadata = $this->dm->getClassMetadata(Album::class);
@@ -380,7 +403,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals('nevermind', $document->getName());
     }
 
-    public function testSetFieldValueWithProxy()
+    public function testSetFieldValueWithProxy(): void
     {
         $document = new Album('ten');
         $this->dm->persist($document);
@@ -402,21 +425,20 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals('nevermind', $proxy->getName());
     }
 
-    public function testSetCustomRepositoryClass()
+    public function testSetCustomRepositoryClass(): void
     {
-        $cm            = new ClassMetadata('Doctrine\ODM\MongoDB\Tests\Mapping\ClassMetadataTest');
-        $cm->namespace = 'Doctrine\ODM\MongoDB\Tests\Mapping';
+        $cm = new ClassMetadata(self::class);
 
-        $cm->setCustomRepositoryClass('TestCustomRepositoryClass');
+        $cm->setCustomRepositoryClass(Repository::class);
 
-        $this->assertEquals('TestCustomRepositoryClass', $cm->customRepositoryClassName);
+        $this->assertEquals(Repository::class, $cm->customRepositoryClassName);
 
-        $cm->setCustomRepositoryClass('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass');
+        $cm->setCustomRepositoryClass(TestCustomRepositoryClass::class);
 
-        $this->assertEquals('Doctrine\ODM\MongoDB\Tests\Mapping\TestCustomRepositoryClass', $cm->customRepositoryClassName);
+        $this->assertEquals(TestCustomRepositoryClass::class, $cm->customRepositoryClassName);
     }
 
-    public function testEmbeddedAssociationsAlwaysCascade()
+    public function testEmbeddedAssociationsAlwaysCascade(): void
     {
         $class = $this->dm->getClassMetadata(EmbeddedAssociationsCascadeTest::class);
 
@@ -433,7 +455,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertTrue($class->fieldMappings['addresses']['isCascadeDetach']);
     }
 
-    public function testEmbedWithCascadeThrowsMappingException()
+    public function testEmbedWithCascadeThrowsMappingException(): void
     {
         $class = new ClassMetadata(EmbedWithCascadeTest::class);
         $this->expectException(MappingException::class);
@@ -447,19 +469,19 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    public function testInvokeLifecycleCallbacksShouldRequireInstanceOfClass()
+    public function testInvokeLifecycleCallbacksShouldRequireInstanceOfClass(): void
     {
         $class    = $this->dm->getClassMetadata(User::class);
         $document = new stdClass();
 
-        $this->assertInstanceOf('\stdClass', $document);
+        $this->assertInstanceOf(stdClass::class, $document);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected document class "Documents\User"; found: "stdClass"');
         $class->invokeLifecycleCallbacks(Events::prePersist, $document);
     }
 
-    public function testInvokeLifecycleCallbacksAllowsInstanceOfClass()
+    public function testInvokeLifecycleCallbacksAllowsInstanceOfClass(): void
     {
         $class    = $this->dm->getClassMetadata(User::class);
         $document = new SpecialUser();
@@ -469,7 +491,7 @@ class ClassMetadataTest extends BaseTest
         $class->invokeLifecycleCallbacks(Events::prePersist, $document);
     }
 
-    public function testInvokeLifecycleCallbacksShouldAllowProxyOfExactClass()
+    public function testInvokeLifecycleCallbacksShouldAllowProxyOfExactClass(): void
     {
         $document = new User();
         $this->dm->persist($document);
@@ -484,7 +506,7 @@ class ClassMetadataTest extends BaseTest
         $class->invokeLifecycleCallbacks(Events::prePersist, $proxy);
     }
 
-    public function testSimpleReferenceRequiresTargetDocument()
+    public function testSimpleReferenceRequiresTargetDocument(): void
     {
         $cm = new ClassMetadata('stdClass');
 
@@ -498,7 +520,7 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    public function testSimpleAsStringReferenceRequiresTargetDocument()
+    public function testSimpleAsStringReferenceRequiresTargetDocument(): void
     {
         $cm = new ClassMetadata('stdClass');
 
@@ -513,9 +535,11 @@ class ClassMetadataTest extends BaseTest
     }
 
     /**
+     * @param mixed $value
+     *
      * @dataProvider provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort
      */
-    public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort($prop, $value)
+    public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $prop, $value): void
     {
         $cm = new ClassMetadata('stdClass');
 
@@ -534,14 +558,14 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    public function provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort()
+    public function provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(): Generator
     {
         yield ['skip', 5];
         yield ['limit', 5];
         yield ['sort', ['time' => 1]];
     }
 
-    public function testStoreAsIdReferenceRequiresTargetDocument()
+    public function testStoreAsIdReferenceRequiresTargetDocument(): void
     {
         $cm = new ClassMetadata('stdClass');
 
@@ -555,9 +579,10 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    public function testAtomicCollectionUpdateUsageInEmbeddedDocument()
+    public function testAtomicCollectionUpdateUsageInEmbeddedDocument(): void
     {
         $object = new class {
+            /** @var object[] */
             public $many;
         };
 
@@ -574,9 +599,10 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    public function testDefaultStorageStrategyOfEmbeddedDocumentFields()
+    public function testDefaultStorageStrategyOfEmbeddedDocumentFields(): void
     {
         $object = new class {
+            /** @var object[] */
             public $many;
         };
 
@@ -594,7 +620,7 @@ class ClassMetadataTest extends BaseTest
     /**
      * @dataProvider provideOwningAndInversedRefsNeedTargetDocument
      */
-    public function testOwningAndInversedRefsNeedTargetDocument($config)
+    public function testOwningAndInversedRefsNeedTargetDocument(array $config): void
     {
         $config = array_merge($config, [
             'fieldName' => 'many',
@@ -608,7 +634,7 @@ class ClassMetadataTest extends BaseTest
         $cm->mapField($config);
     }
 
-    public function provideOwningAndInversedRefsNeedTargetDocument()
+    public function provideOwningAndInversedRefsNeedTargetDocument(): array
     {
         return [
             [['type' => 'one', 'mappedBy' => 'post']],
@@ -618,16 +644,16 @@ class ClassMetadataTest extends BaseTest
         ];
     }
 
-    public function testAddInheritedAssociationMapping()
+    public function testAddInheritedAssociationMapping(): void
     {
         $cm = new ClassMetadata('stdClass');
 
-        $mapping = [
+        $mapping = ClassMetadataTestUtil::getFieldMapping([
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'one',
             'storeAs' => ClassMetadata::REFERENCE_STORE_AS_ID,
-        ];
+        ]);
 
         $cm->addInheritedAssociationMapping($mapping);
 
@@ -636,7 +662,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals($expected, $cm->associationMappings);
     }
 
-    public function testIdFieldsTypeMustNotBeOverridden()
+    public function testIdFieldsTypeMustNotBeOverridden(): void
     {
         $cm = new ClassMetadata('stdClass');
         $cm->setIdentifier('id');
@@ -648,7 +674,7 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    public function testReferenceManySortMustNotBeUsedWithNonSetCollectionStrategy()
+    public function testReferenceManySortMustNotBeUsedWithNonSetCollectionStrategy(): void
     {
         $cm = new ClassMetadata('stdClass');
         $this->expectException(MappingException::class);
@@ -665,7 +691,7 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    public function testSetShardKeyForClassWithoutInheritance()
+    public function testSetShardKeyForClassWithoutInheritance(): void
     {
         $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(['id' => 'asc']);
@@ -675,7 +701,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals(['id' => 1], $shardKey['keys']);
     }
 
-    public function testSetShardKeyForClassWithSingleCollectionInheritance()
+    public function testSetShardKeyForClassWithSingleCollectionInheritance(): void
     {
         $cm                  = new ClassMetadata('stdClass');
         $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION;
@@ -686,7 +712,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals(['id' => 1], $shardKey['keys']);
     }
 
-    public function testSetShardKeyForClassWithSingleCollectionInheritanceWhichAlreadyHasIt()
+    public function testSetShardKeyForClassWithSingleCollectionInheritanceWhichAlreadyHasIt(): void
     {
         $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(['id' => 'asc']);
@@ -697,7 +723,7 @@ class ClassMetadataTest extends BaseTest
         $cm->setShardKey(['foo' => 'asc']);
     }
 
-    public function testSetShardKeyForClassWithCollPerClassInheritance()
+    public function testSetShardKeyForClassWithCollPerClassInheritance(): void
     {
         $cm                  = new ClassMetadata('stdClass');
         $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
@@ -708,14 +734,14 @@ class ClassMetadataTest extends BaseTest
         $this->assertEquals(['id' => 1], $shardKey['keys']);
     }
 
-    public function testIsNotShardedIfThereIsNoShardKey()
+    public function testIsNotShardedIfThereIsNoShardKey(): void
     {
         $cm = new ClassMetadata('stdClass');
 
         $this->assertFalse($cm->isSharded());
     }
 
-    public function testIsShardedIfThereIsAShardKey()
+    public function testIsShardedIfThereIsAShardKey(): void
     {
         $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(['id' => 'asc']);
@@ -723,7 +749,7 @@ class ClassMetadataTest extends BaseTest
         $this->assertTrue($cm->isSharded());
     }
 
-    public function testEmbeddedDocumentCantHaveShardKey()
+    public function testEmbeddedDocumentCantHaveShardKey(): void
     {
         $cm                     = new ClassMetadata('stdClass');
         $cm->isEmbeddedDocument = true;
@@ -732,9 +758,10 @@ class ClassMetadataTest extends BaseTest
         $cm->setShardKey(['id' => 'asc']);
     }
 
-    public function testNoIncrementFieldsAllowedInShardKey()
+    public function testNoIncrementFieldsAllowedInShardKey(): void
     {
         $object = new class {
+            /** @var int|null */
             public $inc;
         };
 
@@ -749,9 +776,10 @@ class ClassMetadataTest extends BaseTest
         $cm->setShardKey(['inc' => 1]);
     }
 
-    public function testNoCollectionsInShardKey()
+    public function testNoCollectionsInShardKey(): void
     {
         $object = new class {
+            /** @var object[] */
             public $collection;
         };
 
@@ -765,9 +793,10 @@ class ClassMetadataTest extends BaseTest
         $cm->setShardKey(['collection' => 1]);
     }
 
-    public function testNoEmbedManyInShardKey()
+    public function testNoEmbedManyInShardKey(): void
     {
         $object = new class {
+            /** @var object[] */
             public $embedMany;
         };
 
@@ -778,9 +807,10 @@ class ClassMetadataTest extends BaseTest
         $cm->setShardKey(['embedMany' => 1]);
     }
 
-    public function testNoReferenceManyInShardKey()
+    public function testNoReferenceManyInShardKey(): void
     {
         $object = new class {
+            /** @var object[] */
             public $referenceMany;
         };
 
@@ -794,6 +824,7 @@ class ClassMetadataTest extends BaseTest
     public function testArbitraryFieldInGridFSFileThrowsException(): void
     {
         $object = new class {
+            /** @var string|null */
             public $contentType;
         };
 
@@ -805,26 +836,60 @@ class ClassMetadataTest extends BaseTest
 
         $cm->mapField(['type' => 'string', 'fieldName' => 'contentType']);
     }
+
+    public function testDefaultValueForValidator(): void
+    {
+        $cm = new ClassMetadata('stdClass');
+        $this->assertNull($cm->getValidator());
+    }
+
+    public function testDefaultValueForValidationAction(): void
+    {
+        $cm = new ClassMetadata('stdClass');
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR, $cm->getValidationAction());
+    }
+
+    public function testDefaultValueForValidationLevel(): void
+    {
+        $cm = new ClassMetadata('stdClass');
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT, $cm->getValidationLevel());
+    }
 }
 
+/**
+ * @template-extends DocumentRepository<self>
+ */
 class TestCustomRepositoryClass extends DocumentRepository
 {
 }
 
 class EmbedWithCascadeTest
 {
+    /** @var Address|null */
     public $address;
 }
 
 /** @ODM\Document */
 class EmbeddedAssociationsCascadeTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=Documents\Address::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Documents\Address::class)
+     *
+     * @var Address|null
+     */
     public $address;
 
-    /** @ODM\EmbedOne(targetDocument=Documents\Address::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Documents\Address::class)
+     *
+     * @var Address|null
+     */
     public $addresses;
 }

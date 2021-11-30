@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+use function assert;
+
 class OrphanRemovalTest extends BaseTest
 {
-    public function testOrphanRemoval()
+    public function testOrphanRemoval(): void
     {
         $profile1      = new OrphanRemovalProfile();
         $user          = new OrphanRemovalUser();
@@ -36,7 +39,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
-    public function testNoOrphanRemoval()
+    public function testNoOrphanRemoval(): void
     {
         $profile1                     = new OrphanRemovalProfile();
         $user                         = new OrphanRemovalUser();
@@ -62,7 +65,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
     }
 
-    public function testOrphanRemovalOnReferenceMany()
+    public function testOrphanRemovalOnReferenceMany(): void
     {
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
@@ -82,7 +85,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
     }
 
-    public function testNoOrphanRemovalOnReferenceMany()
+    public function testNoOrphanRemovalOnReferenceMany(): void
     {
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
@@ -102,7 +105,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
     }
 
-    public function testOrphanRemovalOnReferenceManyUsingClear()
+    public function testOrphanRemovalOnReferenceManyUsingClear(): void
     {
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
@@ -123,7 +126,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
-    public function testOrphanRemovalOnReferenceManyUsingClearUninitialized()
+    public function testOrphanRemovalOnReferenceManyUsingClearUninitialized(): void
     {
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
@@ -148,7 +151,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
-    public function testOrphanRemovalOnReferenceManyUsingClearAndAddingNewElements()
+    public function testOrphanRemovalOnReferenceManyUsingClearAndAddingNewElements(): void
     {
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
@@ -174,7 +177,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
     }
 
-    public function testOrphanRemovalOnReferenceManyRemovingAndAddingNewElements()
+    public function testOrphanRemovalOnReferenceManyRemovingAndAddingNewElements(): void
     {
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
@@ -200,7 +203,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
     }
 
-    public function testOrphanRemovalOnReferenceManyUsingSet()
+    public function testOrphanRemovalOnReferenceManyUsingSet(): void
     {
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
@@ -225,7 +228,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
     }
 
-    public function testOrphanRemovalWhenRemovingAndAddingSameElement()
+    public function testOrphanRemovalWhenRemovingAndAddingSameElement(): void
     {
         $profile = new OrphanRemovalProfile();
 
@@ -244,7 +247,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNotNull($this->getProfileRepository()->find($profile->id), 'Profile 1 should not have been removed');
     }
 
-    public function testOrphanRemovalOnRemoveWithoutCascade()
+    public function testOrphanRemovalOnRemoveWithoutCascade(): void
     {
         $profile1      = new OrphanRemovalProfile();
         $user          = new OrphanRemovalUser();
@@ -259,7 +262,7 @@ class OrphanRemovalTest extends BaseTest
         $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
     }
 
-    public function testOrphanRemovalReferenceManyOnRemoveWithoutCascade()
+    public function testOrphanRemovalReferenceManyOnRemoveWithoutCascade(): void
     {
         $profile1 = new OrphanRemovalProfile();
         $profile2 = new OrphanRemovalProfile();
@@ -280,47 +283,83 @@ class OrphanRemovalTest extends BaseTest
     }
 
     /**
-     * @return DocumentRepository
+     * @return DocumentRepository<OrphanRemovalUser>
      */
-    private function getUserRepository()
+    private function getUserRepository(): DocumentRepository
     {
-        return $this->dm->getRepository(OrphanRemovalUser::class);
+        $repository = $this->dm->getRepository(OrphanRemovalUser::class);
+
+        assert($repository instanceof DocumentRepository);
+
+        return $repository;
     }
 
     /**
-     * @return DocumentRepository
+     * @return DocumentRepository<OrphanRemovalProfile>
      */
-    private function getProfileRepository()
+    private function getProfileRepository(): DocumentRepository
     {
-        return $this->dm->getRepository(OrphanRemovalProfile::class);
+        $repository = $this->dm->getRepository(OrphanRemovalProfile::class);
+
+        assert($repository instanceof DocumentRepository);
+
+        return $repository;
     }
 }
 
 /** @ODM\Document */
 class OrphanRemovalUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true)
+     *
+     * @var OrphanRemovalProfile|null
+     */
     public $profile;
 
-    /** @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false)
+     *
+     * @var OrphanRemovalProfile|null
+     */
     public $profileNoOrphanRemoval;
 
-    /** @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true)
+     *
+     * @var Collection<int, OrphanRemovalProfile>|array<OrphanRemovalProfile>
+     */
     public $profileMany = [];
 
-    /** @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false)
+     *
+     * @var Collection<int, OrphanRemovalProfile>|array<OrphanRemovalProfile>
+     */
     public $profileManyNoOrphanRemoval = [];
 }
 
 /** @ODM\Document */
 class OrphanRemovalProfile
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }

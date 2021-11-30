@@ -23,7 +23,7 @@ use function array_keys;
 
 class BuilderTest extends BaseTest
 {
-    public function testGetPipeline()
+    public function testGetPipeline(): void
     {
         $point = ['type' => 'Point', 'coordinates' => [0, 0]];
 
@@ -173,7 +173,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testAggregationBuilder()
+    public function testAggregationBuilder(): void
     {
         $this->insertTestData();
 
@@ -228,7 +228,7 @@ class BuilderTest extends BaseTest
         $this->assertSame(3, $results[0]['numPosts']);
     }
 
-    public function testGetAggregation()
+    public function testGetAggregation(): void
     {
         $this->insertTestData();
 
@@ -259,7 +259,7 @@ class BuilderTest extends BaseTest
         $this->assertSame(3, $results[0]->numPosts);
     }
 
-    public function testPipelineConvertsTypes()
+    public function testPipelineConvertsTypes(): void
     {
         $builder  = $this->dm->createAggregationBuilder(Article::class);
         $dateTime = new DateTimeImmutable('2000-01-01T00:00Z');
@@ -307,7 +307,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testFieldNameConversion()
+    public function testFieldNameConversion(): void
     {
         $builder = $this->dm->createAggregationBuilder(CmsComment::class);
         $builder
@@ -337,7 +337,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testBuilderAppliesFilterAndDiscriminatorWithMatchStage()
+    public function testBuilderAppliesFilterAndDiscriminatorWithMatchStage(): void
     {
         $this->dm->getFilterCollection()->enable('testFilter');
         $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
@@ -368,7 +368,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testBuilderAppliesFilterAndDiscriminatorWithGeoNearStage()
+    public function testBuilderAppliesFilterAndDiscriminatorWithGeoNearStage(): void
     {
         $this->dm->getFilterCollection()->enable('testFilter');
         $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
@@ -399,7 +399,7 @@ class BuilderTest extends BaseTest
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testBuilderWithOutStageReturnsNoData()
+    public function testBuilderWithOutStageReturnsNoData(): void
     {
         $this->insertTestData();
 
@@ -411,7 +411,7 @@ class BuilderTest extends BaseTest
         $this->assertCount(0, $result);
     }
 
-    public function testBuilderWithIndexStatsStageDoesNotApplyFilters()
+    public function testBuilderWithIndexStatsStageDoesNotApplyFilters(): void
     {
         $builder = $this->dm
             ->createAggregationBuilder(BlogPost::class)
@@ -420,7 +420,7 @@ class BuilderTest extends BaseTest
         $this->assertSame('$indexStats', array_keys($builder->getPipeline()[0])[0]);
     }
 
-    public function testNonRewindableBuilder()
+    public function testNonRewindableBuilder(): void
     {
         $builder = $this->dm
             ->createAggregationBuilder(BlogPost::class)
@@ -431,7 +431,7 @@ class BuilderTest extends BaseTest
         $this->assertInstanceOf(UnrewindableIterator::class, $iterator);
     }
 
-    private function insertTestData()
+    private function insertTestData(): void
     {
         $baseballTag = new Tag('baseball');
         $footballTag = new Tag('football');

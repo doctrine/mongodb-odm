@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -11,7 +12,7 @@ use function array_search;
 
 class MODM70Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $avatar = new Avatar('Test', 1, [new AvatarPart('#000')]);
 
@@ -35,7 +36,11 @@ class MODM70Test extends BaseTest
  */
 class Avatar
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**
@@ -58,60 +63,69 @@ class Avatar
      *  name="aP"
      * )
      *
-     * @var array AvatarPart
+     * @var Collection<int, AvatarPart>|array<AvatarPart>
      */
     protected $avatarParts;
 
-    public function __construct($name, $sex, $avatarParts = null)
+    /**
+     * @param AvatarPart[] $avatarParts
+     */
+    public function __construct(string $name, int $sex, ?array $avatarParts = null)
     {
         $this->name        = $name;
         $this->sex         = $sex;
         $this->avatarParts = $avatarParts;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getSex()
+    public function getSex(): int
     {
         return $this->sex;
     }
 
-    public function setSex($sex)
+    public function setSex(int $sex): void
     {
         $this->sex = $sex;
     }
 
+    /**
+     * @return Collection<int, AvatarPart>|array<AvatarPart>|null
+     */
     public function getAvatarParts()
     {
         return $this->avatarParts;
     }
 
-    public function addAvatarPart($part)
+    public function addAvatarPart(AvatarPart $part): void
     {
         $this->avatarParts[] = $part;
     }
 
-    public function setAvatarParts($parts)
+    /**
+     * @param AvatarPart[] $parts
+     */
+    public function setAvatarParts(array $parts): void
     {
         $this->avatarParts = $parts;
     }
 
-    public function removeAvatarPart($part)
+    public function removeAvatarPart(AvatarPart $part): void
     {
-        $key = array_search($this->avatarParts, $part);
+        $key = array_search($part, $this->avatarParts);
         if ($key === false) {
             return;
         }
@@ -132,17 +146,17 @@ class AvatarPart
      */
     protected $color;
 
-    public function __construct($color = null)
+    public function __construct(string $color)
     {
         $this->color = $color;
     }
 
-    public function getColor()
+    public function getColor(): string
     {
         return $this->color;
     }
 
-    public function setColor($color)
+    public function setColor(string $color): void
     {
         $this->color = $color;
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -12,7 +13,7 @@ use function get_class;
 
 class GH1117Test extends BaseTest
 {
-    public function testAddOnUninitializedCollection()
+    public function testAddOnUninitializedCollection(): void
     {
         $doc = new GH1117Document();
         $doc->embeds->add(new GH1117EmbeddedDocument('one'));
@@ -37,10 +38,18 @@ class GH1117Test extends BaseTest
  */
 class GH1117Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedMany(strategy="set", targetDocument=GH1117EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(strategy="set", targetDocument=GH1117EmbeddedDocument::class)
+     *
+     * @var Collection<int, GH1117EmbeddedDocument>
+     */
     public $embeds;
 
     public function __construct()
@@ -54,10 +63,14 @@ class GH1117Document
  */
 class GH1117EmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $value;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }

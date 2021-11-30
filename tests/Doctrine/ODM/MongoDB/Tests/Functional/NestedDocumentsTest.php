@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
@@ -14,7 +15,7 @@ use function is_string;
 
 class NestedDocumentsTest extends BaseTest
 {
-    public function testSimple()
+    public function testSimple(): void
     {
         $product        = new Product();
         $product->title = 'Product';
@@ -68,7 +69,7 @@ class NestedDocumentsTest extends BaseTest
         $this->assertNotEquals($product->title, $order->product->title);
     }
 
-    public function testNestedCategories()
+    public function testNestedCategories(): void
     {
         $category = new Category('Root');
         $child1   = $category->addChild('Child 1');
@@ -97,7 +98,7 @@ class NestedDocumentsTest extends BaseTest
         $this->assertCount(2, $category->getChildren());
     }
 
-    public function testNestedReference()
+    public function testNestedReference(): void
     {
         $test   = new Hierarchy('Root');
         $child1 = $test->addChild('Child 1');
@@ -111,8 +112,8 @@ class NestedDocumentsTest extends BaseTest
         $test = $this->dm->getRepository(Hierarchy::class)->findOneBy(['name' => 'Root']);
 
         $this->assertNotNull($test);
-        $child1 = $test->getChild('Child 1')->setName('Child 1 Changed');
-        $child2 = $test->getChild('Child 2')->setName('Child 2 Changed');
+        $test->getChild('Child 1')->setName('Child 1 Changed');
+        $test->getChild('Child 2')->setName('Child 2 Changed');
         $test->setName('Root Changed');
         $child3 = $test->addChild('Child 3');
         $this->dm->persist($child3);
@@ -142,35 +143,52 @@ class NestedDocumentsTest extends BaseTest
 /** @ODM\Document */
 class Hierarchy
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     private $name;
 
-    /** @ODM\ReferenceMany(targetDocument=Hierarchy::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Hierarchy::class)
+     *
+     * @var Collection<int, Hierarchy>|array<Hierarchy>
+     */
     private $children = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @param int|string $name
+     *
+     * @return Hierarchy|null
+     */
     public function getChild($name)
     {
         if (is_numeric($name)) {
@@ -186,6 +204,11 @@ class Hierarchy
         return null;
     }
 
+    /**
+     * @param string|Hierarchy $child
+     *
+     * @return Hierarchy
+     */
     public function addChild($child)
     {
         if (is_string($child)) {
@@ -197,6 +220,9 @@ class Hierarchy
         return $child;
     }
 
+    /**
+     * @return Collection<int, Hierarchy>|array<Hierarchy>
+     */
     public function getChildren()
     {
         return $this->children;
@@ -206,28 +232,41 @@ class Hierarchy
 /** @ODM\MappedSuperclass */
 class BaseCategory
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $name;
 
-    /** @ODM\EmbedMany(targetDocument=ChildCategory::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=ChildCategory::class)
+     *
+     * @var Collection<int, ChildCategory>
+     */
     protected $children;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name     = $name;
         $this->children = new ArrayCollection();
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @param string|int $name
+     *
+     * @return ChildCategory|null
+     */
     public function getChild($name)
     {
         if (is_numeric($name)) {
@@ -243,6 +282,11 @@ class BaseCategory
         return null;
     }
 
+    /**
+     * @param string|ChildCategory $child
+     *
+     * @return ChildCategory
+     */
     public function addChild($child)
     {
         if (is_string($child)) {
@@ -254,7 +298,10 @@ class BaseCategory
         return $child;
     }
 
-    public function getChildren()
+    /**
+     * @return Collection<int, ChildCategory>
+     */
+    public function getChildren(): Collection
     {
         return $this->children;
     }
@@ -263,10 +310,14 @@ class BaseCategory
 /** @ODM\Document */
 class Category extends BaseCategory
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -280,23 +331,43 @@ class ChildCategory extends BaseCategory
 /** @ODM\Document */
 class Order
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $title;
 
-    /** @ODM\EmbedOne(targetDocument=ProductBackup::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=ProductBackup::class)
+     *
+     * @var ProductBackup|null
+     */
     public $product;
 }
 
 /** @ODM\Document */
 class Product
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $title;
 }
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Benchmark;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use MongoDB\Client;
 use MongoDB\Model\DatabaseInfo;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function array_map;
 use function getenv;
@@ -28,15 +28,12 @@ abstract class BaseBench
     /** @var DocumentManager */
     protected static $documentManager;
 
-    /**
-     * @return DocumentManager
-     */
-    protected function getDocumentManager()
+    protected function getDocumentManager(): DocumentManager
     {
         return self::$documentManager;
     }
 
-    public function initDocumentManager()
+    public function initDocumentManager(): void
     {
         $config = new Configuration();
 
@@ -48,7 +45,7 @@ abstract class BaseBench
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(self::DATABASE_NAME);
         $config->setMetadataDriverImpl(self::createMetadataDriverImpl());
-        $config->setMetadataCacheImpl(new ArrayCache());
+        $config->setMetadataCache(new ArrayAdapter());
 
         $client = new Client(
             getenv('DOCTRINE_MONGODB_SERVER') ?: self::DEFAULT_MONGODB_SERVER,
@@ -59,7 +56,7 @@ abstract class BaseBench
         self::$documentManager = DocumentManager::create($client, $config);
     }
 
-    public function clearDatabase()
+    public function clearDatabase(): void
     {
         // Check if the database exists. Calling listCollections on a non-existing
         // database in a sharded setup will cause an invalid command cursor to be
@@ -85,7 +82,7 @@ abstract class BaseBench
         }
     }
 
-    protected static function createMetadataDriverImpl()
+    protected static function createMetadataDriverImpl(): AnnotationDriver
     {
         return AnnotationDriver::create(__DIR__ . '/../tests/Documents');
     }

@@ -10,11 +10,12 @@ use Documents\BlogPost;
 use Documents\Comment;
 use Documents\User;
 
+use function assert;
 use function strtotime;
 
 class ReferenceRepositoryMethodTest extends BaseTest
 {
-    public function testOneToOne()
+    public function testOneToOne(): void
     {
         $date1 = new DateTime();
         $date1->setTimestamp(strtotime('-20 seconds'));
@@ -33,6 +34,8 @@ class ReferenceRepositoryMethodTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
 
+        assert($blogPost instanceof BlogPost);
+
         $this->assertEquals('Comment 2', $blogPost->repoComment->getText());
         $this->assertEquals('Comment 1', $blogPost->repoComments[0]->getText());
         $this->assertEquals('Comment 2', $blogPost->repoComments[1]->getText());
@@ -43,7 +46,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
      *
      * @url http://docs.doctrine-project.org/projects/doctrine-mongodb-odm/en/latest/reference/bidirectional-references.html
      */
-    public function testOneToMany()
+    public function testOneToMany(): void
     {
         $user = new User();
         $user->setUsername('w00ting');
@@ -73,7 +76,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $this->assertNull($post1->user);
     }
 
-    public function testSetStrategy()
+    public function testSetStrategy(): void
     {
         $repo = $this->dm->getRepository(BlogPost::class);
 
@@ -87,10 +90,11 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
                   ->getQuery()
                   ->getSingleResult();
+        assert($blogPost instanceof BlogPost);
         $this->assertEquals('Comment', $blogPost->repoCommentsSet[0]->getText());
     }
 
-    public function testRepositoryMethodWithoutMappedBy()
+    public function testRepositoryMethodWithoutMappedBy(): void
     {
         $blogPost = new BlogPost('Test');
 
@@ -102,6 +106,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
+        assert($blogPost instanceof BlogPost);
         $this->assertCount(1, $blogPost->repoCommentsWithoutMappedBy);
         $this->assertEquals('Comment', $blogPost->repoCommentsWithoutMappedBy[0]->getText());
     }

@@ -97,7 +97,7 @@ final class ReferencePrimer
      * @param array|Traversable $documents Documents containing references to prime
      * @param string            $fieldName Field name containing references to prime
      * @param array             $hints     UnitOfWork hints for priming queries
-     * @param callable          $primer    Optional primer callable
+     * @param callable|null     $primer    Optional primer callable
      *
      * @throws InvalidArgumentException If the mapped field is not the owning
      *                                   side of a reference relationship.
@@ -139,15 +139,16 @@ final class ReferencePrimer
                 continue;
             }
 
-            if ($mapping['type'] === 'one' && $fieldValue instanceof GhostObjectInterface && ! $fieldValue->isProxyInitialized()) {
+            if ($mapping['type'] === ClassMetadata::ONE && $fieldValue instanceof GhostObjectInterface && ! $fieldValue->isProxyInitialized()) {
                 $refClass                                    = $this->dm->getClassMetadata(get_class($fieldValue));
                 $id                                          = $this->uow->getDocumentIdentifier($fieldValue);
                 $groupedIds[$refClass->name][serialize($id)] = $id;
-            } elseif ($mapping['type'] === 'many' && $fieldValue instanceof PersistentCollectionInterface) {
+            } elseif ($mapping['type'] === ClassMetadata::MANY && $fieldValue instanceof PersistentCollectionInterface) {
                 $this->addManyReferences($fieldValue, $groupedIds);
             }
         }
 
+        /** @psalm-var class-string $className */
         foreach ($groupedIds as $className => $ids) {
             $refClass = $this->dm->getClassMetadata($className);
             call_user_func($primer, $this->dm, $refClass, array_values($ids), $hints);

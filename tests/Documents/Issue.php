@@ -11,24 +11,32 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Issue
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     private $name;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     private $description;
 
-    public function __construct($name, $description)
+    public function __construct(string $name, string $description)
     {
         $this->name        = $name;
         $this->description = $description;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }

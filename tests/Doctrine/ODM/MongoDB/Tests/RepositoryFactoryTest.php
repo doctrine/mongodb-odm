@@ -9,9 +9,11 @@ use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Documents\User;
 
+use function get_class;
+
 class RepositoryFactoryTest extends BaseTest
 {
-    public function testRepositoryFactoryCanBeReplaced()
+    public function testRepositoryFactoryCanBeReplaced(): void
     {
         $factory = $this->createMock(RepositoryFactory::class);
         $factory->expects($this->once())->method('getRepository');
@@ -23,15 +25,16 @@ class RepositoryFactoryTest extends BaseTest
         $dm->getRepository(User::class);
     }
 
-    public function testRepositoriesAreSameForSameClasses()
+    public function testRepositoriesAreSameForSameClasses(): void
     {
+        $proxy = $this->dm->getPartialReference(User::class, 'abc');
         $this->assertSame(
             $this->dm->getRepository(User::class),
-            $this->dm->getRepository(\Proxies\__CG__\Documents\User::class)
+            $this->dm->getRepository(get_class($proxy))
         );
     }
 
-    public function testRepositoriesAreDifferentForDifferentDms()
+    public function testRepositoriesAreDifferentForDifferentDms(): void
     {
         $conf = $this->getConfiguration();
         $conf->setRepositoryFactory(new DefaultRepositoryFactory());

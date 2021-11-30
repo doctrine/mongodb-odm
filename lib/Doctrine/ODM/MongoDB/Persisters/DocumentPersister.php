@@ -69,6 +69,10 @@ use function trigger_deprecation;
  * The DocumentPersister is responsible for persisting documents.
  *
  * @internal
+ *
+ * @template T of object
+ *
+ * @psalm-import-type CommitOptions from UnitOfWork
  */
 final class DocumentPersister
 {
@@ -81,7 +85,10 @@ final class DocumentPersister
     /** @var UnitOfWork */
     private $uow;
 
-    /** @var ClassMetadata */
+    /**
+     * @var ClassMetadata
+     * @psalm-var ClassMetadata<T>
+     */
     private $class;
 
     /** @var Collection|null */
@@ -113,6 +120,9 @@ final class DocumentPersister
     /** @var HydratorFactory */
     private $hydratorFactory;
 
+    /**
+     * @psalm-param ClassMetadata<T> $class
+     */
     public function __construct(
         PersistenceBuilder $pb,
         DocumentManager $dm,
@@ -197,6 +207,8 @@ final class DocumentPersister
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
+     * @psalm-param CommitOptions $options
+     *
      * @throws DriverException
      */
     public function executeInserts(array $options = []): void
@@ -253,6 +265,8 @@ final class DocumentPersister
      * Queued documents with an ID are upserted individually.
      *
      * If no upserts are queued, invoking this method is a NOOP.
+     *
+     * @psalm-param CommitOptions $options
      */
     public function executeUpserts(array $options = []): void
     {
@@ -349,6 +363,8 @@ final class DocumentPersister
     /**
      * Updates the already persisted document if it has any new changesets.
      *
+     * @psalm-param CommitOptions $options
+     *
      * @throws LockException
      */
     public function update(object $document, array $options = []): void
@@ -412,6 +428,8 @@ final class DocumentPersister
     /**
      * Removes document from mongo
      *
+     * @psalm-param CommitOptions $options
+     *
      * @throws LockException
      */
     public function delete(object $document, array $options = []): void
@@ -464,6 +482,9 @@ final class DocumentPersister
      * be used to match an _id value.
      *
      * @param mixed $criteria Query criteria
+     * @psalm-param T|null $document
+     *
+     * @psalm-return T|null
      *
      * @throws LockException
      *
@@ -618,11 +639,13 @@ final class DocumentPersister
     /**
      * Creates or fills a single document object from an query result.
      *
-     * @param array  $result   The query result.
-     * @param object $document The document object to fill, if any.
-     * @param array  $hints    Hints for document creation.
+     * @param array       $result   The query result.
+     * @param object|null $document The document object to fill, if any.
+     * @param array       $hints    Hints for document creation.
+     * @psalm-param T|null $document
      *
      * @return object The filled and managed document object.
+     * @psalm-return T
      */
     private function createDocument(array $result, ?object $document = null, array $hints = []): object
     {
@@ -1014,6 +1037,8 @@ final class DocumentPersister
         $preparedQuery = [];
 
         foreach ($query as $key => $value) {
+            $key = (string) $key;
+
             // Recursively prepare logical query clauses
             if (in_array($key, ['$and', '$or', '$nor'], true) && is_array($value)) {
                 foreach ($value as $k2 => $v2) {
@@ -1028,9 +1053,9 @@ final class DocumentPersister
                 continue;
             }
 
-            $preparedQueryElements = $this->prepareQueryElement((string) $key, $value, null, true, $isNewObj);
+            $preparedQueryElements = $this->prepareQueryElement($key, $value, null, true, $isNewObj);
             foreach ($preparedQueryElements as [$preparedKey, $preparedValue]) {
-                $preparedValue               = $this->convertToDatabaseValue((string) $key, $preparedValue);
+                $preparedValue               = $this->convertToDatabaseValue($key, $preparedValue);
                 $preparedQuery[$preparedKey] = $preparedValue;
             }
         }
@@ -1195,7 +1220,7 @@ final class DocumentPersister
         }
 
         if (
-            $mapping['type'] === 'many' && CollectionHelper::isHash($mapping['strategy'])
+            $mapping['type'] === ClassMetadata::MANY && CollectionHelper::isHash($mapping['strategy'])
                 && isset($e[2])
         ) {
             $objectProperty       = $e[2];
@@ -1386,7 +1411,9 @@ final class DocumentPersister
             $value = get_object_vars($value);
         }
 
-        foreach ($value as $key => $value) {
+        foreach ($value as $key => $notUsedValue) {
+            $key = (string) $key;
+
             if (isset($key[0]) && $key[0] === '$') {
                 return true;
             }
@@ -1496,6 +1523,9 @@ final class DocumentPersister
         return array_merge(['_id' => $id], $shardKeyQueryPart);
     }
 
+    /**
+     * @psalm-param CommitOptions $options
+     */
     private function getWriteOptions(array $options = []): array
     {
         $defaultOptions  = $this->dm->getConfiguration()->getDefaultCommitOptions();
@@ -1519,7 +1549,7 @@ final class DocumentPersister
         return $writeOptions;
     }
 
-    private function prepareReference(string $fieldName, $value, array $mapping, bool $inNewObj): array
+    private function prepareReference(string $fieldName, object $value, array $mapping, bool $inNewObj): array
     {
         $reference = $this->dm->createReference($value, $mapping);
         if ($inNewObj || $mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID) {
@@ -1549,7 +1579,7 @@ final class DocumentPersister
                 throw new InvalidArgumentException(sprintf('Reference type %s is invalid.', $mapping['storeAs']));
         }
 
-        if ($mapping['type'] === 'many') {
+        if ($mapping['type'] === ClassMetadata::MANY) {
             return [[$fieldName, ['$elemMatch' => array_intersect_key($reference, $keys)]]];
         }
 

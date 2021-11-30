@@ -13,11 +13,19 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
  * Interface for persistent collection classes.
  *
  * @internal
+ *
+ * @psalm-import-type FieldMapping from \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+ *
+ * @template TKey of array-key
+ * @template T of object
+ * @template-extends Collection<TKey, T>
  */
 interface PersistentCollectionInterface extends Collection
 {
     /**
      * Sets the document manager and unit of work (used during merge operations).
+     *
+     * @return void
      */
     public function setDocumentManager(DocumentManager $dm);
 
@@ -25,6 +33,8 @@ interface PersistentCollectionInterface extends Collection
      * Sets the array of raw mongo data that will be used to initialize this collection.
      *
      * @param array $mongoData
+     *
+     * @return void
      */
     public function setMongoData(array $mongoData);
 
@@ -39,6 +49,8 @@ interface PersistentCollectionInterface extends Collection
      * Set hints to account for during reconstitution/lookup of the documents.
      *
      * @param array $hints
+     *
+     * @return void
      */
     public function setHints(array $hints);
 
@@ -52,6 +64,8 @@ interface PersistentCollectionInterface extends Collection
     /**
      * Initializes the collection by loading its contents from the database
      * if the collection is not yet initialized.
+     *
+     * @return void
      */
     public function initialize();
 
@@ -67,12 +81,18 @@ interface PersistentCollectionInterface extends Collection
      * Sets a boolean flag, indicating whether this collection is dirty.
      *
      * @param bool $dirty Whether the collection should be marked dirty or not.
+     *
+     * @return void
      */
     public function setDirty($dirty);
 
     /**
-     * Sets the collection's owning entity together with the AssociationMapping that
+     * Sets the collection's owning document together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
+     *
+     * @psalm-param FieldMapping $mapping
+     *
+     * @return void
      */
     public function setOwner(object $document, array $mapping);
 
@@ -81,12 +101,16 @@ interface PersistentCollectionInterface extends Collection
      * itself numerically if using save strategy that is enforcing BSON array.
      * Reindexing is safe as snapshot is taken only after synchronizing collection
      * with database or clearing it.
+     *
+     * @return void
      */
     public function takeSnapshot();
 
     /**
      * Clears the internal snapshot information and sets isDirty to true if the collection
      * has elements.
+     *
+     * @return void
      */
     public function clearSnapshot();
 
@@ -128,11 +152,13 @@ interface PersistentCollectionInterface extends Collection
 
     /**
      * @return array
+     * @psalm-return FieldMapping
      */
     public function getMapping();
 
     /**
      * @return ClassMetadata
+     * @psalm-return ClassMetadata<T>
      *
      * @throws MongoDBException
      */
@@ -142,6 +168,8 @@ interface PersistentCollectionInterface extends Collection
      * Sets the initialized flag of the collection, forcing it into that state.
      *
      * @param bool $bool
+     *
+     * @return void
      */
     public function setInitialized($bool);
 
@@ -155,7 +183,7 @@ interface PersistentCollectionInterface extends Collection
     /**
      * Returns the wrapped Collection instance.
      *
-     * @return Collection
+     * @return Collection<TKey, T>
      */
     public function unwrap();
 }

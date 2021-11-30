@@ -25,7 +25,7 @@ final class LoadDocumentBench extends BaseBench
     /** @var ObjectId */
     private static $userId;
 
-    public function init()
+    public function init(): void
     {
         self::$userId = new ObjectId();
 
@@ -58,7 +58,7 @@ final class LoadDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchLoadDocument()
+    public function benchLoadDocument(): void
     {
         $this->loadDocument();
     }
@@ -66,7 +66,7 @@ final class LoadDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchLoadEmbedOne()
+    public function benchLoadEmbedOne(): void
     {
         $this->loadDocument()->getAddress()->getCity();
     }
@@ -74,17 +74,17 @@ final class LoadDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchLoadEmbedMany()
+    public function benchLoadEmbedMany(): void
     {
-        $this->loadDocument()->getPhonenumbers()->forAll(static function ($key, Phonenumber $element) {
-            return $element->getPhoneNumber();
+        $this->loadDocument()->getPhonenumbers()->forAll(static function (int $key, Phonenumber $element) {
+            return $element->getPhoneNumber() !== null;
         });
     }
 
     /**
      * @Warmup(2)
      */
-    public function benchLoadReferenceOne()
+    public function benchLoadReferenceOne(): void
     {
         $this->loadDocument()->getAccount()->getName();
     }
@@ -92,10 +92,10 @@ final class LoadDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchLoadReferenceMany()
+    public function benchLoadReferenceMany(): void
     {
-        $this->loadDocument()->getGroups()->forAll(static function ($key, Group $group) {
-            return $group->getName();
+        $this->loadDocument()->getGroups()->forAll(static function (int $key, Group $group) {
+            return $group->getName() !== null;
         });
     }
 

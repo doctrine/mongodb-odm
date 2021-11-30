@@ -22,7 +22,7 @@ class ReferenceDiscriminatorsTest extends BaseTest
     /**
      * This test demonstrates a CommentableAction being published to activity streams.
      */
-    public function testReferenceDiscriminators()
+    public function testReferenceDiscriminators(): void
     {
         $this->dm->persist($commentableAction           = new CommentableAction('actionType'));
         $this->dm->persist($groupMainActivityStreamItem = new GroupMainActivityStreamItem($commentableAction, 'groupId'));
@@ -49,7 +49,7 @@ class ReferenceDiscriminatorsTest extends BaseTest
      * This tests demonstrates a race condition between two requests which are
      * both publishing a CommentableAction to activity streams.
      */
-    public function testReferenceDiscriminatorsRaceCondition()
+    public function testReferenceDiscriminatorsRaceCondition(): void
     {
         $this->dm->persist($commentableAction1           = new CommentableAction('actionType'));
         $this->dm->persist($groupMainActivityStreamItem1 = new GroupMainActivityStreamItem($commentableAction1, 'groupId'));
@@ -98,23 +98,31 @@ class ReferenceDiscriminatorsTest extends BaseTest
  */
 class Action
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $type;
 
-    public function __construct($type)
+    public function __construct(string $type)
     {
         $this->type = $type;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
@@ -123,16 +131,20 @@ class Action
 /** @ODM\Document */
 class CommentableAction extends Action
 {
-    /** @ODM\Field(type="collection") **/
+    /**
+     * @ODM\Field(type="collection") *
+     *
+     * @var array
+     */
     protected $comments = [];
 
-    public function __construct($type, array $comments = [])
+    public function __construct(string $type, array $comments = [])
     {
         parent::__construct($type);
         $this->comments = $comments;
     }
 
-    public function getComments()
+    public function getComments(): array
     {
         return $this->comments;
     }
@@ -141,10 +153,18 @@ class CommentableAction extends Action
 /** @ODM\MappedSuperclass */
 abstract class ActivityStreamItem
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Action::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Action::class)
+     *
+     * @var Action
+     */
     protected $action;
 
     public function __construct(Action $action)
@@ -152,12 +172,12 @@ abstract class ActivityStreamItem
         $this->action = $action;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getAction()
+    public function getAction(): Action
     {
         return $this->action;
     }
@@ -169,16 +189,20 @@ abstract class ActivityStreamItem
  */
 abstract class GroupActivityStreamItem extends ActivityStreamItem
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $groupId;
 
-    public function __construct(Action $action, $groupId)
+    public function __construct(Action $action, string $groupId)
     {
         parent::__construct($action);
         $this->groupId = $groupId;
     }
 
-    public function getGroupId()
+    public function getGroupId(): string
     {
         return $this->groupId;
     }
@@ -200,16 +224,20 @@ class GroupMembersActivityStreamItem extends GroupActivityStreamItem
  */
 abstract class UserActivityStreamItem extends ActivityStreamItem
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $userId;
 
-    public function __construct(Action $action, $userId)
+    public function __construct(Action $action, string $userId)
     {
         parent::__construct($action);
         $this->userId = $userId;
     }
 
-    public function getUserId()
+    public function getUserId(): string
     {
         return $this->userId;
     }

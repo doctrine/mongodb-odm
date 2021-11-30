@@ -21,9 +21,6 @@ class MatchStage extends BaseMatchStage
         $this->graphLookup = $graphLookup;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return $this->query->getQuery();
