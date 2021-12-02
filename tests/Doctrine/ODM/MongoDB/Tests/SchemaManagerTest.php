@@ -33,6 +33,7 @@ use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
 
+use function array_count_values;
 use function array_map;
 use function assert;
 use function class_exists;
@@ -457,11 +458,15 @@ class SchemaManagerTest extends BaseTest
      */
     public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
-        foreach ($this->documentDatabases as $class => $database) {
+        $createdCollections = [];
+        foreach ($this->documentDatabases as $database) {
             $database
                 ->expects($this->atLeastOnce())
                 ->method('createCollection')
-                ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
+                ->with($this->anything(), $this->writeOptions($expectedWriteOptions))
+                ->willReturnCallback(static function (string $collectionName) use (&$createdCollections): void {
+                    $createdCollections[] = $collectionName;
+                });
 
             $database
                 ->expects($this->atLeastOnce())
@@ -470,6 +475,7 @@ class SchemaManagerTest extends BaseTest
         }
 
         $this->schemaManager->createCollections($maxTimeMs, $writeConcern);
+        self::assertSame(1, array_count_values($createdCollections)['Tournament']);
     }
 
     /**
