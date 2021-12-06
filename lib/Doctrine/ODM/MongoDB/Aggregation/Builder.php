@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
 use GeoJson\Geometry\Point;
+use IteratorAggregate;
 use MongoDB\Collection;
 use OutOfRangeException;
 use TypeError;
@@ -226,7 +227,7 @@ class Builder
     /**
      * Returns an aggregation object for the current pipeline
      */
-    public function getAggregation(array $options = []): Aggregation
+    public function getAggregation(array $options = []): IteratorAggregate
     {
         $class = $this->hydrationClass ? $this->dm->getClassMetadata($this->hydrationClass) : null;
 
