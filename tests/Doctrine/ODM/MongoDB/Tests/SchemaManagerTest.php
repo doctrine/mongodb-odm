@@ -18,6 +18,7 @@ use Documents\File;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
 use Documents\SimpleReferenceUser;
+use Documents\Tournament\Tournament;
 use Documents\UserName;
 use MongoDB\Client;
 use MongoDB\Collection;
@@ -458,6 +459,9 @@ class SchemaManagerTest extends BaseTest
      */
     public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
+        $class = $this->dm->getClassMetadata(Tournament::class);
+        self::assertSame(ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION, $class->inheritanceType);
+
         $createdCollections = [];
         foreach ($this->documentDatabases as $database) {
             $database
