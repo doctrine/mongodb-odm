@@ -23,6 +23,8 @@
     <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP80Types.php</exclude-pattern>
     <exclude-pattern>lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php</exclude-pattern>
     <exclude-pattern>lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php</exclude-pattern>
+    <!-- Figure out what to do with PHP 8.1 errors in coding standard -->
+    <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP81Types.php</exclude-pattern>
 
     <rule ref="Doctrine">
         <!-- Traversable type hints often end up as mixed[], so we skip them for now -->

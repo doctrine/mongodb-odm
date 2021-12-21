@@ -16,6 +16,9 @@
             <file name="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php" />
             <file name="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php" />
             <file name="tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures/User.php" />
+            <!-- Remove CollWithPHP81Types once Psalm supports native intersection https://github.com/vimeo/psalm/issues/6413 -->
+            <file name="tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/DefaultPersistentCollectionGeneratorTest.php" />
+            <file name="tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP81Types.php" />
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
