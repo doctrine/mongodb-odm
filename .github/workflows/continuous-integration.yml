@@ -21,6 +21,7 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
+          - "8.1"
         mongodb-version:
           - "4.4"
           - "4.2"
@@ -41,11 +42,6 @@ jobs:
             php-version: "8.0"
             mongodb-version: "4.4"
             driver-version: "stable"
-            dependencies: "highest"
-          - topology: "server"
-            php-version: "8.1"
-            mongodb-version: "4.4"
-            driver-version: "alpha"
             dependencies: "highest"
 
     steps:

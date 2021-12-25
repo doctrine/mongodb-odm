@@ -55,4 +55,14 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
         $coll  = new $class(new CollWithPHP80Types(), $this->dm, $this->uow);
         $this->assertInstanceOf(CollWithPHP80Types::class, $coll);
     }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testPHP81Types(): void
+    {
+        $class = $this->generator->loadClass(CollWithPHP81Types::class, Configuration::AUTOGENERATE_EVAL);
+        $coll  = new $class(new CollWithPHP81Types(), $this->dm, $this->uow);
+        $this->assertInstanceOf(CollWithPHP81Types::class, $coll);
+    }
 }
