@@ -472,7 +472,7 @@ EOT;
             ->with(
                 [
                     'collMod' => $class->collection,
-                    'validator' => [],
+                    'validator' => (object) [],
                     'validationAction' => ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR,
                     'validationLevel' => ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT,
                 ],
