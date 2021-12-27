@@ -20,6 +20,7 @@ use Documents\SchemaValidated;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
 use Documents\SimpleReferenceUser;
+use Documents\Tournament\Tournament;
 use Documents\UserName;
 use InvalidArgumentException;
 use MongoDB\Client;
@@ -37,6 +38,7 @@ use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
 
+use function array_count_values;
 use function array_map;
 use function assert;
 use function class_exists;
@@ -608,11 +610,18 @@ EOT;
      */
     public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
-        foreach ($this->documentDatabases as $class => $database) {
+        $class = $this->dm->getClassMetadata(Tournament::class);
+        self::assertSame(ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION, $class->inheritanceType);
+
+        $createdCollections = [];
+        foreach ($this->documentDatabases as $database) {
             $database
                 ->expects($this->atLeastOnce())
                 ->method('createCollection')
-                ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
+                ->with($this->anything(), $this->writeOptions($expectedWriteOptions))
+                ->willReturnCallback(static function (string $collectionName) use (&$createdCollections): void {
+                    $createdCollections[] = $collectionName;
+                });
 
             $database
                 ->expects($this->atLeastOnce())
@@ -621,6 +630,7 @@ EOT;
         }
 
         $this->schemaManager->createCollections($maxTimeMs, $writeConcern);
+        self::assertSame(1, array_count_values($createdCollections)['Tournament']);
     }
 
     /**
