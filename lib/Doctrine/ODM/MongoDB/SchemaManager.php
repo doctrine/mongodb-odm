@@ -21,7 +21,9 @@ use function array_search;
 use function array_unique;
 use function array_values;
 use function assert;
+use function count;
 use function in_array;
+use function is_array;
 use function is_string;
 use function iterator_count;
 use function iterator_to_array;
@@ -352,9 +354,9 @@ final class SchemaManager
             throw new InvalidArgumentException('Cannot update validators for files, views, mapped super classes, embedded documents or aggregation result documents.');
         }
 
-        $validator = [];
-        if ($class->getValidator() !== null) {
-            $validator = $class->getValidator();
+        $validator = $class->getValidator();
+        if ($validator === null || (is_array($validator) && count($validator) === 0)) {
+            $validator = (object) [];
         }
 
         $collection       = $this->dm->getDocumentCollection($class->name);
