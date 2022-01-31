@@ -170,7 +170,7 @@ class Builder
     /**
      * Create a new Expr instance that can be used as an expression with the Builder
      */
-    public function createExpr(): Expr
+    public function createAggregationExpression(): Expr
     {
         return new Expr($this->dm, $this->class);
     }
@@ -198,7 +198,15 @@ class Builder
      */
     public function expr(): Expr
     {
-        return $this->createExpr();
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.3',
+            'The "%s" method is deprecated. Please use "%s::createAggregationExpression" instead.',
+            __METHOD__,
+            static::class
+        );
+
+        return $this->createAggregationExpression();
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Aggregation;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use GeoJson\Geometry\Geometry;
@@ -369,7 +370,7 @@ class Builder
     /**
      * Create a new Expr instance that can be used as an expression with the Builder
      */
-    public function createExpr(): Expr
+    public function createQueryExpression(): Expr
     {
         $expr = new Expr($this->dm);
         $expr->setClassMetadata($this->class);
@@ -509,20 +510,28 @@ class Builder
      */
     public function expr(): Expr
     {
-        return $this->createExpr();
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.3',
+            'The "%s" method is deprecated. Please use "%s::createQueryExpression" instead.',
+            __METHOD__,
+            static::class
+        );
+
+        return $this->createQueryExpression();
     }
 
     /**
      * Specify $expr criteria for the current field.
      *
-     * @see Expr::exprOp()
+     * @param array|Aggregation\Expr $expression
      * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
      *
-     * @param array|Expr $expression
+     * @see Aggregation\Expr::aggregationExpression()
      */
-    public function exprOp($expression): self
+    public function aggregationExpression($expression): self
     {
-        $this->expr->exprOp($expression);
+        $this->expr->aggregationExpression($expression);
 
         return $this;
     }
