@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -21,6 +22,7 @@ use Documents\Phonenumber;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 
+use function assert;
 use function get_class;
 
 class EmbeddedTest extends BaseTest
@@ -112,6 +114,7 @@ class EmbeddedTest extends BaseTest
             ->field('id')->equals($user->getId())
             ->getQuery()
             ->getSingleResult();
+        assert($user instanceof User);
         $this->assertNotNull($user);
         $this->assertEquals($addressClone, $user->getAddress());
 
@@ -148,6 +151,7 @@ class EmbeddedTest extends BaseTest
             ->field('id')->equals($user->getId())
             ->getQuery()
             ->getSingleResult();
+        assert($user instanceof User);
         $this->assertNotNull($user);
         $this->assertNull($user->getAddress());
     }
@@ -166,6 +170,7 @@ class EmbeddedTest extends BaseTest
             ->field('id')->equals($user->getId())
             ->getQuery()
             ->getSingleResult();
+        assert($user2 instanceof User);
         $this->assertNotNull($user2);
         $this->assertEquals($user->getPhonenumbers()->toArray(), $user2->getPhonenumbers()->toArray());
     }
@@ -187,10 +192,11 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test   = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
+        assert($test instanceof EmbeddedTestLevel0b);
         $level1 = $test->level1[0];
 
         // $test->level1[0] is available
@@ -227,6 +233,7 @@ class EmbeddedTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
 
+        assert($test instanceof EmbeddedTestLevel0b);
         // $test->level1[0] is available
         $this->assertEquals('test level1 #1', $test->level1[0]->name);
 
@@ -243,6 +250,8 @@ class EmbeddedTest extends BaseTest
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
+
+        assert($test instanceof EmbeddedTestLevel0b);
 
         $this->assertInstanceOf(PersistentCollection::class, $test->level1);
 
@@ -272,10 +281,11 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test   = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
+        assert($test instanceof EmbeddedTestLevel0b);
         $level1 = $test->oneLevel1;
         $level2 = $level1->level2[0];
 
@@ -291,10 +301,11 @@ class EmbeddedTest extends BaseTest
         $this->assertEquals(0, $level1->level2->count());
 
         // retrieve test
-        $test   = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
+        assert($test instanceof EmbeddedTestLevel0b);
         $level1 = $test->oneLevel1;
 
         // verify that level1 has no more level2
@@ -323,10 +334,11 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         // retrieve test
-        $test   = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
+        assert($test instanceof EmbeddedTestLevel0b);
         $level1 = $test->oneLevel1;
         $level2 = $level1->level2[0];
 
@@ -360,10 +372,11 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test   = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder(get_class($test))
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
+        assert($test instanceof EmbeddedTestLevel0b);
         $level1 = $test->oneLevel1;
         $level2 = $level1->level2[0];
 
@@ -549,6 +562,8 @@ class EmbeddedTest extends BaseTest
         $this->dm->persist($test1);
         $this->dm->flush();
 
+        assert($test1->embedMany instanceof Collection);
+
         $test2            = new ChangeEmbeddedIdTest();
         $test2->embedMany = $test1->embedMany; //using clone will work
         $this->dm->persist($test2);
@@ -631,10 +646,18 @@ class ChangeEmbeddedIdTest
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class)
+     *
+     * @var EmbeddedDocumentWithId|null
+     */
     public $embed;
 
-    /** @ODM\EmbedMany(targetDocument=EmbeddedDocumentWithId::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=EmbeddedDocumentWithId::class)
+     *
+     * @var Collection<int, EmbeddedDocumentWithId>|array<EmbeddedDocumentWithId>
+     */
     public $embedMany;
 
     public function __construct()

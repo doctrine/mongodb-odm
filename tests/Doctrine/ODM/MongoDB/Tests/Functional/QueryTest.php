@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Article;
 use Documents\CmsComment;
@@ -19,12 +20,16 @@ use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
 
 use function array_values;
+use function assert;
 use function get_class;
 use function iterator_to_array;
 use function strtotime;
 
 class QueryTest extends BaseTest
 {
+    /** @var User */
+    private $user;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -306,7 +311,7 @@ class QueryTest extends BaseTest
             ->updateOne(User::class)
             ->field('nullTest')
             ->type('null')
-            ->unsetField('nullTest');
+            ->unsetField();
         $query = $qb->getQuery();
         $query->execute();
 
@@ -409,13 +414,17 @@ class QueryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $qb = $this->dm->createQueryBuilder('Documents\ReferenceUser');
+        $qb = $this->dm->createQueryBuilder(ReferenceUser::class);
 
         $referencedUsersQuery = $qb
             ->field('indirectlyReferencedUsers.user.id')->equals(new ObjectId($referencedUser->getId()))
             ->getQuery();
 
-        $referencedUsers = iterator_to_array($referencedUsersQuery->execute(), false);
+        $referencedUsersIterator = $referencedUsersQuery->execute();
+
+        assert($referencedUsersIterator instanceof Iterator);
+
+        $referencedUsers = iterator_to_array($referencedUsersIterator, false);
 
         $this->assertCount(1, $referencedUsers);
         $this->assertSame($user, $referencedUsers[0]);

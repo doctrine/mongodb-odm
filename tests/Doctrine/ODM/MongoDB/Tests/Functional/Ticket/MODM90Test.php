@@ -12,6 +12,9 @@ use function get_class;
 
 class MODM90Test extends BaseTest
 {
+    /** @var MODM90EventListener */
+    private $listener;
+
     private function getDocumentManager()
     {
         $this->listener = new MODM90EventListener();
@@ -66,7 +69,7 @@ class MODM90Test extends BaseTest
 
         $testDoc = $dm->find(MODM90TestDocument::class, $testDoc->id);
 
-        $this->assertEquals($testDoc->embedded->type, 'test2');
+        $this->assertEquals('test2', $testDoc->embedded->type);
     }
 }
 

@@ -14,16 +14,32 @@ class ViewReference
     /** @ODM\Id */
     private $id;
 
-    /** @ODM\ReferenceOne(targetDocument=UserName::class, cascade={"persist"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=UserName::class, cascade={"persist"})
+     *
+     * @var UserName
+     */
     private $referenceOneView;
 
-    /** @ODM\ReferenceOne(targetDocument=UserName::class, mappedBy="viewReference") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=UserName::class, mappedBy="viewReference")
+     *
+     * @var UserName
+     */
     private $referenceOneViewMappedBy;
 
-    /** @ODM\ReferenceMany(targetDocument=UserName::class, cascade={"persist"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=UserName::class, cascade={"persist"})
+     *
+     * @var Collection<int, UserName>
+     */
     private $referenceManyView;
 
-    /** @ODM\ReferenceMany(targetDocument=UserName::class, mappedBy="viewReference") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=UserName::class, mappedBy="viewReference")
+     *
+     * @var Collection<int, UserName>
+     */
     private $referenceManyViewMappedBy;
 
     public function __construct(string $id)
@@ -48,11 +64,17 @@ class ViewReference
         return $this->referenceOneViewMappedBy;
     }
 
+    /**
+     * @return Collection<int, UserName>
+     */
     public function getReferenceManyView(): Collection
     {
         return $this->referenceManyView;
     }
 
+    /**
+     * @return Collection<int, UserName>
+     */
     public function getReferenceManyViewMappedBy(): Collection
     {
         return $this->referenceManyViewMappedBy;

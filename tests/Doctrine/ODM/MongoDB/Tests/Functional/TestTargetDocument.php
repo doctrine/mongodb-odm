@@ -30,8 +30,15 @@ class TargetDocumentTestDocument
 }
 
 /** @ODM\MappedSuperclass */
-abstract class TargetDocumentTestReference
+abstract class AbstractTargetDocumentTestReference
 {
     /** @ODM\Id */
     public $id;
+}
+
+/**
+ * @ODM\Document
+ */
+class TargetDocumentTestReference extends AbstractTargetDocumentTestReference
+{
 }

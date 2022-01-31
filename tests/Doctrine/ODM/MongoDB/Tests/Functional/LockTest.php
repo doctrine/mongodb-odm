@@ -570,6 +570,8 @@ abstract class AbstractVersionBase
     /** @ODM\EmbedMany(targetDocument=Issue::class) */
     public $issues;
 
+    public $version;
+
     public function __construct($title = null)
     {
         $this->issues = new ArrayCollection();

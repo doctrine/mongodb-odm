@@ -36,8 +36,8 @@ class DropCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $drop = array_filter($this->dropOrder, static function ($option) use ($input) {
-            return $input->getOption($option);
+        $drop = array_filter($this->dropOrder, static function (string $option) use ($input): bool {
+            return (bool) $input->getOption($option);
         });
 
         // Default to the full drop order if no options were specified

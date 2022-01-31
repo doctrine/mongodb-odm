@@ -23,17 +23,17 @@ class SimpleReferenceUser
     /** @ODM\Field(type="string") */
     public $name;
 
-    public function setUser($user)
+    public function setUser(User $user)
     {
         $this->user = $user;
     }
 
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function addUser($user)
+    public function addUser(User $user)
     {
         $this->users[] = $user;
     }

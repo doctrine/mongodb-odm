@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 
 use function is_a;
-use function ltrim;
 use function spl_object_hash;
 
 /**
@@ -26,6 +25,13 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      */
     private $repositoryList = [];
 
+    /**
+     * @psalm-param class-string<T> $documentName
+     *
+     * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
+     *
+     * @template T of object
+     */
     public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
@@ -35,7 +41,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
             return $this->repositoryList[$hashKey];
         }
 
-        $repository = $this->createRepository($documentManager, ltrim($documentName, '\\'));
+        $repository = $this->createRepository($documentManager, $documentName);
 
         $this->repositoryList[$hashKey] = $repository;
 
@@ -45,7 +51,12 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for a document class.
      *
-     * @return ObjectRepository|GridFSRepository|ViewRepository
+     * @psalm-param class-string<T> $documentName
+     *
+     * @return DocumentRepository|GridFSRepository|ViewRepository
+     * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
+     *
+     * @template T of object
      */
     protected function createRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {

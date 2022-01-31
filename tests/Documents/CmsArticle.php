@@ -19,6 +19,8 @@ class CmsArticle
     /** @ODM\Field(type="string") */
     public $topic;
     /** @ODM\Field(type="string") */
+    public $title;
+    /** @ODM\Field(type="string") */
     public $text;
     /** @ODM\ReferenceOne(targetDocument=CmsUser::class) */
     public $user;

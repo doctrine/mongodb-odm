@@ -26,7 +26,7 @@ class Bucket extends AbstractBucket
      * boundaries. The specified values must be in ascending order and all of
      * the same type. The exception is if the values are of mixed numeric types.
      *
-     * @param array ...$boundaries
+     * @param mixed $boundaries
      */
     public function boundaries(...$boundaries): self
     {

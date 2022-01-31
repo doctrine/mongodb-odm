@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 final class ReferenceOne extends AbstractField
 {
     /** @var string */
-    public $type = 'one';
+    public $type = ClassMetadata::ONE;
 
     /** @var bool */
     public $reference = true;

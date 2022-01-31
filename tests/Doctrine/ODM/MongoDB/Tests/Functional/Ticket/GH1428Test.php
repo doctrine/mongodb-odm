@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use PHPUnit_Framework_Error_Notice;
+use PHPUnit\Framework\Error\Notice;
 
 class GH1428Test extends BaseTest
 {
@@ -27,8 +27,8 @@ class GH1428Test extends BaseTest
         try {
             $this->dm->flush();
             $this->assertTrue(true);
-        } catch (PHPUnit_Framework_Error_Notice $ex) {
-            $this->fail($ex);
+        } catch (Notice $ex) {
+            $this->fail($ex->getMessage());
         }
     }
 }

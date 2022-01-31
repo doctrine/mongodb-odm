@@ -22,8 +22,9 @@ class UnitOfWorkPerformanceTest extends BaseTest
      */
     public function testComputeChanges()
     {
+        $n     = 10000;
         $users = [];
-        for ($i = 1; $i <= 10000; ++$i) {
+        for ($i = 1; $i <= $n; ++$i) {
             $user           = new CmsUser();
             $user->status   = 'user';
             $user->username = 'user' . $i;

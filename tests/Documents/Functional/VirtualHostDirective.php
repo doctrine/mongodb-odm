@@ -89,12 +89,7 @@ class VirtualHostDirective
         return $this;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return VirtualHostDirective
-     */
-    public function hasDirective($name)
+    public function hasDirective(string $name): ?VirtualHostDirective
     {
         foreach ($this->getDirectives() as $d) {
             if ($d->getName() === $name) {
@@ -105,7 +100,7 @@ class VirtualHostDirective
         return null;
     }
 
-    public function getDirective($name)
+    public function getDirective($name): ?VirtualHostDirective
     {
         return $this->hasDirective($name);
     }

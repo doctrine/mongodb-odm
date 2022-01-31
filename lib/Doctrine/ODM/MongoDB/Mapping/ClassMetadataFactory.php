@@ -35,6 +35,10 @@ use function ucfirst;
  * to a document database.
  *
  * @internal
+ *
+ * @method ClassMetadata[] getAllMetadata()
+ * @method ClassMetadata[] getLoadedMetadata()
+ * @method ClassMetadata getMetadataFor($className)
  */
 final class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -61,11 +65,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     public function setConfiguration(Configuration $config): void
     {
         $this->config = $config;
-    }
-
-    public function getMetadataFor($className)
-    {
-        return parent::getMetadataFor($this->dm->getClassNameResolver()->getRealClass($className));
     }
 
     /**

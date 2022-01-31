@@ -7,12 +7,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
+use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+use function assert;
 use function date;
 use function strtotime;
 
@@ -23,6 +25,7 @@ class DateTypeTest extends TestCase
     public function testGetDateTime()
     {
         $type = Type::getType(Type::DATE);
+        assert($type instanceof DateType);
 
         $timestamp = 100000000.001;
         $dateTime  = $type->getDateTime($timestamp);
@@ -126,7 +129,10 @@ class DateTypeTest extends TestCase
             return $return;
         })($input);
 
-        $this->assertInstanceOf('DateTime', $return);
+        // @phpstan-ignore-next-line
+        assert($return instanceof DateTime);
+
+        $this->assertInstanceOf(DateTime::class, $return);
         $this->assertTimestampEquals($output, $return);
     }
 

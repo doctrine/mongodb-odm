@@ -146,7 +146,7 @@ class GH453Test extends BaseTest
         $this->assertBsonArray($doc->id, 'embedManyAddToSet');
 
         // Check that the value is changed properly
-        unset($colPush[1], $colSet[1], $colSetArray[1], $colAddToSet['1']);
+        unset($colPush[1], $colSet[1], $colSetArray[1], $colAddToSet[1]);
         $doc                    = $this->dm->merge($doc);
         $doc->embedManyPush     = $colPush;
         $doc->embedManySet      = $colSet;

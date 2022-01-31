@@ -15,6 +15,9 @@ use function sort;
 
 class MODM166Test extends BaseTest
 {
+    /** @var MODM166EventListener */
+    private $listener;
+
     public function setUp(): void
     {
         parent::setUp();

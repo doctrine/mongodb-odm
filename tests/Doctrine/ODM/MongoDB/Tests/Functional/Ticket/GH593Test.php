@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -108,10 +109,18 @@ class GH593User
     /** @ODM\Field(name="d", type="bool") */
     public $deleted = false;
 
-    /** @ODM\ReferenceMany(targetDocument=GH593User::class, inversedBy="followedBy", storeAs="id") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH593User::class, inversedBy="followedBy", storeAs="id")
+     *
+     * @var Collection<int, GH593User>
+     */
     public $following;
 
-    /** @ODM\ReferenceMany(targetDocument=GH593User::class, mappedBy="following") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH593User::class, mappedBy="following")
+     *
+     * @var Collection<int, GH593User>
+     */
     public $followedBy;
 
     public function __construct()

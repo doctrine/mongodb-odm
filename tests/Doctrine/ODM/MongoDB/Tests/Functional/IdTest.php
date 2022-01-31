@@ -88,11 +88,11 @@ class IdTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertEquals($user1->id, 1);
-        $this->assertEquals($user2->id, 2);
+        $this->assertEquals(1, $user1->id);
+        $this->assertEquals(2, $user2->id);
 
-        $this->assertEquals($reference1->id, 1);
-        $this->assertEquals($reference2->id, 2);
+        $this->assertEquals(1, $reference1->id);
+        $this->assertEquals(2, $reference2->id);
 
         $check1 = $this->dm->getRepository(CollectionIdUser::class)->findOneBy(['id' => $user1->id]);
         $check2 = $this->dm->getRepository(CollectionIdUser::class)->findOneBy(['id' => $user2->id]);
@@ -116,8 +116,8 @@ class IdTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertEquals($user1->id, 10);
-        $this->assertEquals($user2->id, 11);
+        $this->assertEquals(10, $user1->id);
+        $this->assertEquals(11, $user2->id);
     }
 
     public function testEmbeddedDocumentWithId()
@@ -134,14 +134,14 @@ class IdTest extends BaseTest
         $this->dm->persist($user2);
         $this->dm->flush();
 
-        $this->assertEquals($user1->id, 1);
-        $this->assertEquals($user2->id, 2);
+        $this->assertEquals(1, $user1->id);
+        $this->assertEquals(2, $user2->id);
 
-        $this->assertEquals($user1->embedded[0]->id, 1);
-        $this->assertEquals($user1->embedded[1]->id, 2);
+        $this->assertEquals(1, $user1->embedded[0]->id);
+        $this->assertEquals(2, $user1->embedded[1]->id);
 
-        $this->assertEquals($user2->embedded[0]->id, 3);
-        $this->assertEquals($user2->embedded[1]->id, 4);
+        $this->assertEquals(3, $user2->embedded[0]->id);
+        $this->assertEquals(4, $user2->embedded[1]->id);
     }
 
     public function testIdGeneratorInstance()
@@ -346,7 +346,6 @@ class IdTest extends BaseTest
 
     public function testStrategyAutoWithNotValidIdThrowsException()
     {
-        $this->createIdTestClass('id', 'auto');
         $user     = new TestIdTypesIdAutoUser();
         $user->id = 1;
         $this->expectException(InvalidArgumentException::class);
@@ -514,4 +513,11 @@ class CustomIdUser
     {
         $this->name = $name;
     }
+}
+
+/** @ODM\Document */
+class TestIdTypesIdAutoUser
+{
+    /** @ODM\Id(strategy="auto", options={"type"="id"}) **/
+    public $id;
 }

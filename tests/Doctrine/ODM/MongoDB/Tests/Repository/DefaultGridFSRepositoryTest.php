@@ -257,7 +257,11 @@ class DefaultGridFSRepositoryTest extends BaseTest
 
     private function getRepository($className = File::class): GridFSRepository
     {
-        return $this->dm->getRepository($className);
+        $repository = $this->dm->getRepository($className);
+
+        assert($repository instanceof GridFSRepository);
+
+        return $repository;
     }
 
     private function uploadFile($filename, ?UploadOptions $uploadOptions = null): File

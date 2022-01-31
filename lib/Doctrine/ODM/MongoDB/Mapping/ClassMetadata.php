@@ -57,7 +57,130 @@ use function trigger_deprecation;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
+ * @psalm-type FieldMappingConfig = array{
+ *      type?: string,
+ *      fieldName?: string,
+ *      name?: string,
+ *      strategy?: string,
+ *      association?: int,
+ *      id?: bool,
+ *      collectionClass?: class-string,
+ *      cascade?: list<string>|string,
+ *      embedded?: bool,
+ *      orphanRemoval?: bool,
+ *      options?: array<string, mixed>,
+ *      nullable?: bool,
+ *      reference?: bool,
+ *      storeAs?: string,
+ *      targetDocument?: class-string|null,
+ *      mappedBy?: string|null,
+ *      inversedBy?: string|null,
+ *      discriminatorField?: string,
+ *      defaultDiscriminatorValue?: string,
+ *      discriminatorMap?: array<string, class-string>,
+ *      repositoryMethod?: string|null,
+ *      sort?: array<string, string|int>,
+ *      limit?: int|null,
+ *      skip?: int|null,
+ *      version?: bool,
+ *      lock?: bool,
+ *      inherited?: string,
+ *      declared?: class-string,
+ *      prime?: list<string>
+ * }
+ * @psalm-type FieldMapping = array{
+ *      type: string,
+ *      fieldName: string,
+ *      name: string,
+ *      isCascadeRemove: bool,
+ *      isCascadePersist: bool,
+ *      isCascadeRefresh: bool,
+ *      isCascadeMerge: bool,
+ *      isCascadeDetach: bool,
+ *      isOwningSide: bool,
+ *      isInverseSide: bool,
+ *      strategy: string,
+ *      association?: int,
+ *      id?: bool,
+ *      collectionClass?: class-string,
+ *      cascade?: list<string>|string,
+ *      embedded?: bool,
+ *      orphanRemoval?: bool,
+ *      options?: array<string, mixed>,
+ *      nullable?: bool,
+ *      reference?: bool,
+ *      storeAs?: string,
+ *      targetDocument?: class-string|null,
+ *      mappedBy?: string|null,
+ *      inversedBy?: string|null,
+ *      discriminatorField?: string,
+ *      defaultDiscriminatorValue?: string,
+ *      discriminatorMap?: array<string, class-string>,
+ *      repositoryMethod?: string|null,
+ *      sort?: array<string, string|int>,
+ *      limit?: int|null,
+ *      skip?: int|null,
+ *      version?: bool,
+ *      lock?: bool,
+ *      notSaved?: bool,
+ *      inherited?: string,
+ *      declared?: class-string,
+ *      prime?: list<string>
+ * }
+ * @psalm-type AssociationFieldMapping = array{
+ *      type: string,
+ *      fieldName: string,
+ *      name: string,
+ *      isCascadeRemove: bool,
+ *      isCascadePersist: bool,
+ *      isCascadeRefresh: bool,
+ *      isCascadeMerge: bool,
+ *      isCascadeDetach: bool,
+ *      isOwningSide: bool,
+ *      isInverseSide: bool,
+ *      targetDocument: class-string|null,
+ *      association: int,
+ *      strategy: string,
+ *      id?: bool,
+ *      collectionClass?: class-string,
+ *      cascade?: list<string>|string,
+ *      embedded?: bool,
+ *      orphanRemoval?: bool,
+ *      options?: array<string, mixed>,
+ *      nullable?: bool,
+ *      reference?: bool,
+ *      storeAs?: string,
+ *      mappedBy?: string|null,
+ *      inversedBy?: string|null,
+ *      discriminatorField?: string,
+ *      defaultDiscriminatorValue?: string,
+ *      discriminatorMap?: array<string, class-string>,
+ *      repositoryMethod?: string|null,
+ *      sort?: array<string, string|int>,
+ *      limit?: int|null,
+ *      skip?: int|null,
+ *      version?: bool,
+ *      lock?: bool,
+ *      notSaved?: bool,
+ *      inherited?: string,
+ *      declared?: class-string,
+ *      prime?: list<string>
+ * }
+ * @psalm-type IndexKeys = array<string, mixed>
+ * @psalm-type IndexOptions = array<string, mixed>
+ * @psalm-type IndexMapping = array{
+ *      keys: IndexKeys,
+ *      options: IndexOptions
+ * }
+ * @psalm-type ShardKeys = array<string, mixed>
+ * @psalm-type ShardOptions = array<string, mixed>
+ * @psalm-type ShardKey = array{
+ *      keys?: ShardKeys,
+ *      options?: ShardOptions
+ * }
  * @final
+ * @template-covariant T of object
+ * @template-implements BaseClassMetadata<T>
  */
 /* final */ class ClassMetadata implements BaseClassMetadata
 {
@@ -108,12 +231,19 @@ use function trigger_deprecation;
      */
     public const DEFAULT_DISCRIMINATOR_FIELD = '_doctrine_class_name';
 
+    /**
+     * Association types
+     */
     public const REFERENCE_ONE  = 1;
     public const REFERENCE_MANY = 2;
     public const EMBED_ONE      = 3;
     public const EMBED_MANY     = 4;
-    public const MANY           = 'many';
-    public const ONE            = 'one';
+
+    /**
+     * Mapping types
+     */
+    public const MANY = 'many';
+    public const ONE  = 'one';
 
     /**
      * The types of storeAs references
@@ -122,6 +252,23 @@ use function trigger_deprecation;
     public const REFERENCE_STORE_AS_DB_REF         = 'dbRef';
     public const REFERENCE_STORE_AS_DB_REF_WITH_DB = 'dbRefWithDb';
     public const REFERENCE_STORE_AS_REF            = 'ref';
+
+    /**
+     * The collection schema validationAction values
+     *
+     * @see https://docs.mongodb.com/manual/core/schema-validation/#accept-or-reject-invalid-documents
+     */
+    public const SCHEMA_VALIDATION_ACTION_ERROR = 'error';
+    public const SCHEMA_VALIDATION_ACTION_WARN  = 'warn';
+
+    /**
+     * The collection schema validationLevel values
+     *
+     * @see https://docs.mongodb.com/manual/core/schema-validation/#existing-documents
+     */
+    public const SCHEMA_VALIDATION_LEVEL_OFF      = 'off';
+    public const SCHEMA_VALIDATION_LEVEL_STRICT   = 'strict';
+    public const SCHEMA_VALIDATION_LEVEL_MODERATE = 'moderate';
 
     /* The inheritance mapping types */
     /**
@@ -237,7 +384,7 @@ use function trigger_deprecation;
      * READ-ONLY Associated with readPreference Allows to specify criteria so that your application can target read
      * operations to specific members, based on custom parameters.
      *
-     * @var string[][]
+     * @var array<array<string, string>>
      */
     public $readPreferenceTags = [];
 
@@ -258,7 +405,8 @@ use function trigger_deprecation;
     /**
      * READ-ONLY: The array of indexes for the document collection.
      *
-     * @var array
+     * @var array<array<string, mixed>>
+     * @psalm-var array<IndexMapping>
      */
     public $indexes = [];
 
@@ -266,13 +414,37 @@ use function trigger_deprecation;
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
      *
      * @var array<string, array>
+     * @psalm-var ShardKey
      */
     public $shardKey = [];
+
+    /**
+     * Allows users to specify a validation schema for the collection.
+     *
+     * @var array|object|null
+     * @psalm-var array<string, mixed>|object|null
+     */
+    private $validator;
+
+    /**
+     * Determines whether to error on invalid documents or just warn about the violations but allow invalid documents to be inserted.
+     *
+     * @var string
+     */
+    private $validationAction = self::SCHEMA_VALIDATION_ACTION_ERROR;
+
+    /**
+     * Determines how strictly MongoDB applies the validation rules to existing documents during an update.
+     *
+     * @var string
+     */
+    private $validationLevel = self::SCHEMA_VALIDATION_LEVEL_STRICT;
 
     /**
      * READ-ONLY: The name of the document class.
      *
      * @var string
+     * @psalm-var class-string<T>
      */
     public $name;
 
@@ -282,6 +454,7 @@ use function trigger_deprecation;
      * as {@link $documentName}.
      *
      * @var string
+     * @psalm-var class-string
      */
     public $rootDocumentName;
 
@@ -290,6 +463,7 @@ use function trigger_deprecation;
      * (Optional).
      *
      * @var string|null
+     * @psalm-var class-string|null
      */
     public $customRepositoryClassName;
 
@@ -297,6 +471,7 @@ use function trigger_deprecation;
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var array
+     * @psalm-var list<class-string>
      */
     public $parentClasses = [];
 
@@ -304,6 +479,7 @@ use function trigger_deprecation;
      * READ-ONLY: The names of all subclasses (descendants).
      *
      * @var array
+     * @psalm-var list<class-string>
      */
     public $subClasses = [];
 
@@ -331,7 +507,7 @@ use function trigger_deprecation;
     /**
      * READ-ONLY: The Id generator options.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     public $generatorOptions = [];
 
@@ -355,7 +531,8 @@ use function trigger_deprecation;
      * Marks the field as the primary key of the document. Multiple fields of an
      * document can have the id attribute, forming a composite key.
      *
-     * @var array
+     * @var array<string, mixed>
+     * @psalm-var array<string, FieldMapping>
      */
     public $fieldMappings = [];
 
@@ -363,21 +540,22 @@ use function trigger_deprecation;
      * READ-ONLY: The association mappings of the class.
      * Keys are field names and values are mapping definitions.
      *
-     * @var array
+     * @var array<string, mixed>
+     * @psalm-var array<string, AssociationFieldMapping>
      */
     public $associationMappings = [];
 
     /**
      * READ-ONLY: Array of fields to also load with a given method.
      *
-     * @var array
+     * @var array<string, mixed[]>
      */
     public $alsoLoadMethods = [];
 
     /**
      * READ-ONLY: The registered lifecycle callbacks for documents of this class.
      *
-     * @var array
+     * @var array<string, list<string>>
      */
     public $lifecycleCallbacks = [];
 
@@ -505,6 +683,7 @@ use function trigger_deprecation;
      * The ReflectionClass instance of the mapped class.
      *
      * @var ReflectionClass
+     * @psalm-var ReflectionClass<T>
      */
     public $reflClass;
 
@@ -521,12 +700,17 @@ use function trigger_deprecation;
     /** @var ReflectionService */
     private $reflectionService;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     * @psalm-var class-string|null
+     */
     private $rootClass;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
+     *
+     * @psalm-param class-string<T> $documentName
      */
     public function __construct(string $documentName)
     {
@@ -618,7 +802,7 @@ use function trigger_deprecation;
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
      *
-     * return (string|null)[]
+     * @return array<string|null>
      */
     public function getIdentifierFieldNames(): array
     {
@@ -651,6 +835,8 @@ use function trigger_deprecation;
 
     /**
      * Registers a custom repository class for the document class.
+     *
+     * @psalm-param class-string|null $repositoryClassName
      */
     public function setCustomRepositoryClass(?string $repositoryClassName): void
     {
@@ -664,6 +850,8 @@ use function trigger_deprecation;
     /**
      * Dispatches the lifecycle event of the given document by invoking all
      * registered callbacks.
+     *
+     * @param mixed[]|null $arguments
      *
      * @throws InvalidArgumentException If document class is not this class or
      *                                   a Proxy of this class.
@@ -701,6 +889,8 @@ use function trigger_deprecation;
 
     /**
      * Gets the registered lifecycle callbacks for an event.
+     *
+     * @return list<string>
      */
     public function getLifecycleCallbacks(string $event): array
     {
@@ -725,6 +915,8 @@ use function trigger_deprecation;
      * Sets the lifecycle callbacks for documents of this class.
      *
      * Any previously registered callbacks are overwritten.
+     *
+     * @param array<string, list<string>> $callbacks
      */
     public function setLifecycleCallbacks(array $callbacks): void
     {
@@ -737,7 +929,7 @@ use function trigger_deprecation;
      * Note: A method may be registered multiple times for different fields.
      * it will be invoked only once for the first field found.
      *
-     * @param array|string $fields Database field name(s)
+     * @param array<string, mixed>|string $fields Database field name(s)
      */
     public function registerAlsoLoadMethod(string $method, $fields): void
     {
@@ -748,6 +940,8 @@ use function trigger_deprecation;
      * Sets the AlsoLoad methods for documents of this class.
      *
      * Any previously registered methods are overwritten.
+     *
+     * @param array<string, mixed[]> $methods
      */
     public function setAlsoLoadMethods(array $methods): void
     {
@@ -761,7 +955,8 @@ use function trigger_deprecation;
      * are only used to discern the hydration class and are not mapped to class
      * properties.
      *
-     * @param array|string|null $discriminatorField
+     * @param array<string, mixed>|string|null $discriminatorField
+     * @psalm-param array{name?: string, fieldName?: string}|string|null $discriminatorField
      *
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
@@ -800,6 +995,8 @@ use function trigger_deprecation;
     /**
      * Sets the discriminator values used by this class.
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
+     *
+     * @param array<string, class-string> $map
      *
      * @throws MappingException
      */
@@ -873,6 +1070,10 @@ use function trigger_deprecation;
 
     /**
      * Add a index for this Document.
+     *
+     * @param array<string, mixed> $keys
+     * @psalm-param IndexKeys $keys
+     * @psalm-param IndexOptions $options
      */
     public function addIndex(array $keys, array $options = []): void
     {
@@ -901,6 +1102,8 @@ use function trigger_deprecation;
 
     /**
      * Returns the array of indexes for this Document.
+     *
+     * @psalm-return array<IndexMapping>
      */
     public function getIndexes(): array
     {
@@ -917,6 +1120,11 @@ use function trigger_deprecation;
 
     /**
      * Set shard key for this Document.
+     *
+     * @param array<string, string|int> $keys
+     * @param array<string, mixed>      $options
+     * @psalm-param ShardKeys $keys
+     * @psalm-param ShardOptions      $options
      *
      * @throws MappingException
      */
@@ -935,7 +1143,7 @@ use function trigger_deprecation;
                 continue;
             }
 
-            if (in_array($this->fieldMappings[$field]['type'], ['many', 'collection'])) {
+            if (in_array($this->fieldMappings[$field]['type'], [self::MANY, Type::COLLECTION])) {
                 throw MappingException::noMultiKeyShardKeys($this->getName(), $field);
             }
 
@@ -967,6 +1175,9 @@ use function trigger_deprecation;
         ];
     }
 
+    /**
+     * @psalm-return ShardKey
+     */
     public function getShardKey(): array
     {
         return $this->shardKey;
@@ -981,7 +1192,47 @@ use function trigger_deprecation;
     }
 
     /**
+     * @return array|object|null
+     * @psalm-return array<string, mixed>|object|null
+     */
+    public function getValidator()
+    {
+        return $this->validator;
+    }
+
+    /**
+     * @param array|object|null $validator
+     * @psalm-param array<string, mixed>|object|null $validator
+     */
+    public function setValidator($validator): void
+    {
+        $this->validator = $validator;
+    }
+
+    public function getValidationAction(): string
+    {
+        return $this->validationAction;
+    }
+
+    public function setValidationAction(string $validationAction): void
+    {
+        $this->validationAction = $validationAction;
+    }
+
+    public function getValidationLevel(): string
+    {
+        return $this->validationLevel;
+    }
+
+    public function setValidationLevel(string $validationLevel): void
+    {
+        $this->validationLevel = $validationLevel;
+    }
+
+    /**
      * Sets the read preference used by this class.
+     *
+     * @param array<array<string, string>> $tags
      */
     public function setReadPreference(?string $readPreference, array $tags): void
     {
@@ -1049,6 +1300,8 @@ use function trigger_deprecation;
 
     /**
      * Gets the ReflectionProperties of the mapped class.
+     *
+     * @return ReflectionProperty[]
      */
     public function getReflectionProperties(): array
     {
@@ -1063,6 +1316,9 @@ use function trigger_deprecation;
         return $this->reflFields[$name];
     }
 
+    /**
+     * @psalm-return class-string<T>
+     */
     public function getName(): string
     {
         return $this->name;
@@ -1096,6 +1352,7 @@ use function trigger_deprecation;
      * Sets the collection this Document is mapped to.
      *
      * @param array|string $name
+     * @psalm-param array{name: string, capped?: bool, size?: int, max?: int}|string $name
      *
      * @throws InvalidArgumentException
      */
@@ -1195,6 +1452,8 @@ use function trigger_deprecation;
     /**
      * Validates the storage strategy of a mapping for consistency
      *
+     * @psalm-param FieldMapping $mapping
+     *
      * @throws MappingException
      */
     private function applyStorageStrategy(array &$mapping): void
@@ -1204,7 +1463,7 @@ use function trigger_deprecation;
         }
 
         switch (true) {
-            case $mapping['type'] === 'many':
+            case $mapping['type'] === self::MANY:
                 $defaultStrategy   = CollectionHelper::DEFAULT_STRATEGY;
                 $allowedStrategies = [
                     self::STORAGE_STRATEGY_PUSH_ALL,
@@ -1216,7 +1475,7 @@ use function trigger_deprecation;
                 ];
                 break;
 
-            case $mapping['type'] === 'one':
+            case $mapping['type'] === self::ONE:
                 $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET];
                 break;
@@ -1239,7 +1498,7 @@ use function trigger_deprecation;
         }
 
         if (
-            isset($mapping['reference']) && $mapping['type'] === 'many' && $mapping['isOwningSide']
+            isset($mapping['reference']) && $mapping['type'] === self::MANY && $mapping['isOwningSide']
             && ! empty($mapping['sort']) && ! CollectionHelper::usesSet($mapping['strategy'])
         ) {
             throw MappingException::referenceManySortMustNotBeUsedWithNonSetCollectionStrategy($this->name, $mapping['fieldName'], $mapping['strategy']);
@@ -1248,41 +1507,49 @@ use function trigger_deprecation;
 
     /**
      * Map a single embedded document.
+     *
+     * @psalm-param FieldMappingConfig $mapping
      */
     public function mapOneEmbedded(array $mapping): void
     {
         $mapping['embedded'] = true;
-        $mapping['type']     = 'one';
+        $mapping['type']     = self::ONE;
         $this->mapField($mapping);
     }
 
     /**
      * Map a collection of embedded documents.
+     *
+     * @psalm-param FieldMappingConfig $mapping
      */
     public function mapManyEmbedded(array $mapping): void
     {
         $mapping['embedded'] = true;
-        $mapping['type']     = 'many';
+        $mapping['type']     = self::MANY;
         $this->mapField($mapping);
     }
 
     /**
      * Map a single document reference.
+     *
+     * @psalm-param FieldMappingConfig $mapping
      */
     public function mapOneReference(array $mapping): void
     {
         $mapping['reference'] = true;
-        $mapping['type']      = 'one';
+        $mapping['type']      = self::ONE;
         $this->mapField($mapping);
     }
 
     /**
      * Map a collection of document references.
+     *
+     * @psalm-param FieldMappingConfig $mapping
      */
     public function mapManyReference(array $mapping): void
     {
         $mapping['reference'] = true;
-        $mapping['type']      = 'many';
+        $mapping['type']      = self::MANY;
         $this->mapField($mapping);
     }
 
@@ -1291,6 +1558,8 @@ use function trigger_deprecation;
      * This is mainly used to add inherited field mappings to derived classes.
      *
      * @internal
+     *
+     * @psalm-param FieldMapping $fieldMapping
      */
     public function addInheritedFieldMapping(array $fieldMapping): void
     {
@@ -1308,6 +1577,8 @@ use function trigger_deprecation;
      * This is mainly used to add inherited association mappings to derived classes.
      *
      * @internal
+     *
+     * @psalm-param AssociationFieldMapping $mapping
      *
      * @throws MappingException
      */
@@ -1518,6 +1789,8 @@ use function trigger_deprecation;
     /**
      * Gets the mapping of a field.
      *
+     * @psalm-return FieldMapping
+     *
      * @throws MappingException If the $fieldName is not found in the fieldMappings array.
      */
     public function getFieldMapping(string $fieldName): array
@@ -1531,6 +1804,8 @@ use function trigger_deprecation;
 
     /**
      * Gets mappings of fields holding embedded document(s).
+     *
+     * @psalm-return array<string, FieldMapping>
      */
     public function getEmbeddedFieldsMappings(): array
     {
@@ -1545,6 +1820,8 @@ use function trigger_deprecation;
     /**
      * Gets the field mapping by its DB name.
      * E.g. it returns identifier's mapping when called with _id.
+     *
+     * @psalm-return FieldMapping
      *
      * @throws MappingException
      */
@@ -1587,6 +1864,8 @@ use function trigger_deprecation;
 
     /**
      * Sets the Id generator options.
+     *
+     * @param array<string, mixed> $generatorOptions
      */
     public function setIdGeneratorOptions(array $generatorOptions): void
     {
@@ -1618,6 +1897,7 @@ use function trigger_deprecation;
      * Sets the mapped subclasses of this class.
      *
      * @param string[] $subclasses The names of all mapped subclasses.
+     * @psalm-param class-string[] $subclasses
      */
     public function setSubclasses(array $subclasses): void
     {
@@ -1632,6 +1912,7 @@ use function trigger_deprecation;
      * directParent -> directParentParent -> directParentParentParent ... -> root.
      *
      * @param string[] $classNames
+     * @psalm-param list<class-string> $classNames
      */
     public function setParentClasses(array $classNames): void
     {
@@ -1680,6 +1961,8 @@ use function trigger_deprecation;
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
      *
+     * @psalm-param FieldMapping $mapping
+     *
      * @throws LockException
      */
     public function setVersionMapping(array &$mapping): void
@@ -1712,6 +1995,8 @@ use function trigger_deprecation;
     /**
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
+     *
+     * @psalm-param FieldMapping $mapping
      *
      * @throws LockException
      */
@@ -1760,6 +2045,9 @@ use function trigger_deprecation;
         return $this->isView;
     }
 
+    /**
+     * @psalm-param class-string $rootClass
+     */
     public function markViewOf(string $rootClass): void
     {
         $this->isView    = true;
@@ -1822,7 +2110,7 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function isAssociationInverseSide($fieldName): bool
+    public function isAssociationInverseSide($assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
@@ -1830,13 +2118,17 @@ use function trigger_deprecation;
     /**
      * {@inheritDoc}
      */
-    public function getAssociationMappedByTargetField($fieldName)
+    public function getAssociationMappedByTargetField($assocName)
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
     /**
      * Map a field.
+     *
+     * @psalm-param FieldMappingConfig $mapping
+     *
+     * @psalm-return FieldMapping
      *
      * @throws MappingException
      */
@@ -1938,7 +2230,7 @@ use function trigger_deprecation;
             throw MappingException::owningAndInverseReferencesRequireTargetDocument($this->name, $mapping['fieldName']);
         }
 
-        if ($this->isEmbeddedDocument && $mapping['type'] === 'many' && isset($mapping['strategy']) && CollectionHelper::isAtomic($mapping['strategy'])) {
+        if ($this->isEmbeddedDocument && $mapping['type'] === self::MANY && isset($mapping['strategy']) && CollectionHelper::isAtomic($mapping['strategy'])) {
             throw MappingException::atomicCollectionStrategyNotAllowed($mapping['strategy'], $this->name, $mapping['fieldName']);
         }
 
@@ -1956,19 +2248,19 @@ use function trigger_deprecation;
             );
         }
 
-        if (isset($mapping['reference']) && $mapping['type'] === 'one') {
+        if (isset($mapping['reference']) && $mapping['type'] === self::ONE) {
             $mapping['association'] = self::REFERENCE_ONE;
         }
 
-        if (isset($mapping['reference']) && $mapping['type'] === 'many') {
+        if (isset($mapping['reference']) && $mapping['type'] === self::MANY) {
             $mapping['association'] = self::REFERENCE_MANY;
         }
 
-        if (isset($mapping['embedded']) && $mapping['type'] === 'one') {
+        if (isset($mapping['embedded']) && $mapping['type'] === self::ONE) {
             $mapping['association'] = self::EMBED_ONE;
         }
 
-        if (isset($mapping['embedded']) && $mapping['type'] === 'many') {
+        if (isset($mapping['embedded']) && $mapping['type'] === self::MANY) {
             $mapping['association'] = self::EMBED_MANY;
         }
 
@@ -2148,6 +2440,12 @@ use function trigger_deprecation;
             $serialized[] = 'isReadOnly';
         }
 
+        if ($this->validator !== null) {
+            $serialized[] = 'validator';
+            $serialized[] = 'validationAction';
+            $serialized[] = 'validationLevel';
+        }
+
         return $serialized;
     }
 
@@ -2170,9 +2468,12 @@ use function trigger_deprecation;
 
     /**
      * Creates a new instance of the mapped class, without invoking the constructor.
+     *
+     * @psalm-return T
      */
     public function newInstance(): object
     {
+        /** @psalm-var T */
         return $this->instantiator->instantiate($this->name);
     }
 
@@ -2181,6 +2482,9 @@ use function trigger_deprecation;
         return in_array($name, self::ALLOWED_GRIDFS_FIELDS, true);
     }
 
+    /**
+     * @psalm-param FieldMapping $mapping
+     */
     private function typeRequirementsAreMet(array $mapping): void
     {
         if ($mapping['type'] === Type::DECIMAL128 && ! extension_loaded('bcmath')) {
@@ -2188,6 +2492,9 @@ use function trigger_deprecation;
         }
     }
 
+    /**
+     * @psalm-param FieldMapping $mapping
+     */
     private function checkDuplicateMapping(array $mapping): void
     {
         if ($mapping['notSaved'] ?? false) {

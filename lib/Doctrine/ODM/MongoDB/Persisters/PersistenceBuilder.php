@@ -68,11 +68,14 @@ final class PersistenceBuilder
         foreach ($class->fieldMappings as $mapping) {
             $new = $changeset[$mapping['fieldName']][1] ?? null;
 
-            if ($new === null) {
-                if ($mapping['nullable']) {
-                    $insertData[$mapping['name']] = null;
-                }
+            if ($new === null && $mapping['nullable']) {
+                $insertData[$mapping['name']] = null;
+            }
 
+            /* Nothing more to do for null values, since we're either storing
+             * them (if nullable was true) or not.
+             */
+            if ($new === null) {
                 continue;
             }
 
@@ -140,35 +143,33 @@ final class PersistenceBuilder
 
             [$old, $new] = $change;
 
-            if ($new === null) {
-                if ($mapping['nullable'] === true) {
-                    $updateData['$set'][$mapping['name']] = null;
-                } else {
-                    $updateData['$unset'][$mapping['name']] = true;
-                }
-
-                continue;
-            }
-
             // Scalar fields
             if (! isset($mapping['association'])) {
-                if (isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
-                    $operator = '$inc';
-                    $type     = Type::getType($mapping['type']);
-                    assert($type instanceof Incrementable);
-                    $value = $type->convertToDatabaseValue($type->diff($old, $new));
+                if ($new === null && $mapping['nullable'] !== true) {
+                    $updateData['$unset'][$mapping['name']] = true;
                 } else {
-                    $operator = '$set';
-                    $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new);
-                }
+                    if ($new !== null && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
+                        $operator = '$inc';
+                        $type     = Type::getType($mapping['type']);
+                        assert($type instanceof Incrementable);
+                        $value = $type->convertToDatabaseValue($type->diff($old, $new));
+                    } else {
+                        $operator = '$set';
+                        $value    = $new === null ? null : Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    }
 
-                $updateData[$operator][$mapping['name']] = $value;
+                    $updateData[$operator][$mapping['name']] = $value;
+                }
 
             // @EmbedOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
                 // If we have a new embedded document then lets set the whole thing
-                if ($this->uow->isScheduledForInsert($new)) {
+                if ($new && $this->uow->isScheduledForInsert($new)) {
                     $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
+
+                // If we don't have a new value then lets unset the embedded document
+                } elseif (! $new) {
+                    $updateData['$unset'][$mapping['name']] = true;
 
                 // Update existing embedded document
                 } else {
@@ -181,7 +182,7 @@ final class PersistenceBuilder
                 }
 
             // @ReferenceMany, @EmbedMany
-            } elseif (isset($mapping['association']) && $mapping['type'] === 'many') {
+            } elseif (isset($mapping['association']) && $mapping['type'] === ClassMetadata::MANY && $new) {
                 if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForUpdate($new)) {
                     $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
                 } elseif (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($new)) {
@@ -207,7 +208,11 @@ final class PersistenceBuilder
 
             // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
-                $updateData['$set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
+                if (isset($new) || $mapping['nullable'] === true) {
+                    $updateData['$set'][$mapping['name']] = $new === null ? null : $this->prepareReferencedDocumentValue($mapping, $new);
+                } else {
+                    $updateData['$unset'][$mapping['name']] = true;
+                }
             }
         }
 
@@ -245,36 +250,31 @@ final class PersistenceBuilder
 
             [$old, $new] = $change;
 
-            // Fields with a null value should only be written for inserts
-            if ($new === null) {
-                if ($mapping['nullable'] === true) {
-                    $updateData['$setOnInsert'][$mapping['name']] = null;
-                }
-
-                continue;
-            }
-
             // Scalar fields
             if (! isset($mapping['association'])) {
-                if (empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
-                    $operator = '$inc';
-                    $type     = Type::getType($mapping['type']);
-                    assert($type instanceof Incrementable);
-                    $value = $type->convertToDatabaseValue($type->diff($old, $new));
-                } else {
-                    $operator = '$set';
-                    $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new);
-                }
+                if ($new !== null) {
+                    if (empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
+                        $operator = '$inc';
+                        $type     = Type::getType($mapping['type']);
+                        assert($type instanceof Incrementable);
+                        $value = $type->convertToDatabaseValue($type->diff($old, $new));
+                    } else {
+                        $operator = '$set';
+                        $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    }
 
-                $updateData[$operator][$mapping['name']] = $value;
+                    $updateData[$operator][$mapping['name']] = $value;
+                } elseif ($mapping['nullable'] === true) {
+                    $updateData['$setOnInsert'][$mapping['name']] = null;
+                }
 
             // @EmbedOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::EMBED_ONE) {
                 // If we don't have a new value then do nothing on upsert
                 // If we have a new embedded document then lets set the whole thing
-                if ($this->uow->isScheduledForInsert($new)) {
+                if ($new && $this->uow->isScheduledForInsert($new)) {
                     $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
-                } else {
+                } elseif ($new) {
                     // Update existing embedded document
                     $update = $this->prepareUpsertData($new);
                     foreach ($update as $cmd => $values) {
@@ -286,7 +286,9 @@ final class PersistenceBuilder
 
             // @ReferenceOne
             } elseif (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
-                $updateData['$set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
+                if (isset($new) || $mapping['nullable'] === true) {
+                    $updateData['$set'][$mapping['name']] = $new === null ? null : $this->prepareReferencedDocumentValue($mapping, $new);
+                }
 
             // @ReferenceMany, @EmbedMany
             } elseif (

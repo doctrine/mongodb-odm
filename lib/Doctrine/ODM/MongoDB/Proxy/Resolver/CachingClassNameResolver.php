@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Proxy\Resolver;
 
+use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
+
 /**
  * @internal
  */
-final class CachingClassNameResolver implements ClassNameResolver
+final class CachingClassNameResolver implements ClassNameResolver, ProxyClassNameResolver
 {
-    /** @var ClassNameResolver */
+    /** @var ProxyClassNameResolver */
     private $resolver;
 
     /** @var array<string, string> */
     private $resolvedNames = [];
 
-    public function __construct(ClassNameResolver $resolver)
+    public function __construct(ProxyClassNameResolver $resolver)
     {
         $this->resolver = $resolver;
     }
@@ -25,10 +27,15 @@ final class CachingClassNameResolver implements ClassNameResolver
      */
     public function getRealClass(string $class): string
     {
-        if (! isset($this->resolvedNames[$class])) {
-            $this->resolvedNames[$class] = $this->resolver->getRealClass($class);
+        return $this->resolveClassName($class);
+    }
+
+    public function resolveClassName(string $className): string
+    {
+        if (! isset($this->resolvedNames[$className])) {
+            $this->resolvedNames[$className] = $this->resolver->resolveClassName($className);
         }
 
-        return $this->resolvedNames[$class];
+        return $this->resolvedNames[$className];
     }
 }

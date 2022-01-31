@@ -1,44 +1,235 @@
 parameters:
-	ignoreErrors:
-		# Adding a parameter would be BC-break
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$applyFilters$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
+    ignoreErrors:
+        # Adding a parameter would be BC-break
+        -
+            message: "#^PHPDoc tag @param references unknown parameter\\: \\$applyFilters$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
 
-		# Making classes final as suggested would be a BC-break
-		-
-			message: "#^Unsafe usage of new static\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
+        # Making classes final as suggested would be a BC-break
+        -
+            message: "#^Unsafe usage of new static\\(\\)\\.$#"
+            paths:
+                 - lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
+                 - lib/Doctrine/ODM/MongoDB/DocumentManager.php
 
-		# The limit option in GeoNear has been removed in MongoDB 4.2 in favor of $limit stage
-		-
-			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php
+        # This cannot be solved the way it is, see https://github.com/vimeo/psalm/issues/5788
+        -
+            message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
 
-		# Fixed in 2.3
-		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:find\\(\\) should return T of object\\|null but returns object\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
+        # The limit option in GeoNear has been removed in MongoDB 4.2 in favor of $limit stage
+        -
+            message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php
 
-		# Fixed in 2.3
-		-
-			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
+        # Union types cannot be added yet
+        -
+            message: "#^Result of && is always false\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Query/Builder.php
 
-		# Making classes final as suggested would be a BC-break
-		-
-			message: "#^Unsafe usage of new static\\(\\)\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
+        -
+            message: "#DOCTRINE_MONGODB_DATABASE not found\\.$#"
+            paths:
+                - tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+                - tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
+                - tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php
+                - tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
 
-		# Union types cannot be added yet
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Query/Builder.php
+        -
+            message: "#DOCTRINE_MONGODB_SERVER not found\\.$#"
+            paths:
+                - tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
 
+        -
+            message: "#^Parameter \\#1 \\$builder of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Facet\\:\\:pipeline\\(\\) expects Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Builder\\|Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage, stdClass given\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/FacetTest.php
+
+        -
+            message: "#^Class Documents\\\\Account does not have a constructor and must be instantiated without any parameters\\.$#"
+            count: 4
+            path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
+
+        -
+            message: "#^Call to method PHPUnit\\\\Framework\\\\Assert\\:\\:assertSame\\(\\) with Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata&PHPUnit\\\\Framework\\\\MockObject\\\\MockObject and null will always evaluate to false\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Events/OnClassMetadataNotFoundEventArgsTest.php
+
+        -
+            message: "#^Cannot access property \\$username on array\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomFieldNameTest.php
+
+        -
+            message: "#^Offset 'userId' does not exist on array\\(\\)\\|array\\('ids' \\=\\> array\\<int, mixed\\>&nonEmpty, \\?'userId' \\=\\> true\\)\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomIdTest.php
+
+        -
+            message: "#^Cannot call method current\\(\\) on array\\|int\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
+
+        -
+            message: "#^Cannot call method next\\(\\) on array\\|int\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
+
+        -
+            message: "#^Cannot call method valid\\(\\) on array\\|int\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
+
+        -
+            message: "#^Cannot call method getCount\\(\\) on array\\|int\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FindAndModifyTest.php
+
+        -
+            message: "#^Cannot call method getUsername\\(\\) on array\\|int\\|object\\.$#"
+            count: 3
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FindAndModifyTest.php
+
+        -
+            message: "#^Cannot call method toArray\\(\\) on array\\|int\\|object\\.$#"
+            count: 2
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FunctionalTest.php
+
+        -
+            message: "#^Expression \"\\$groups\\[0\\]\" on a separate line does not do anything\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FunctionalTest.php
+
+        -
+            message: "#^Cannot call method getCount\\(\\) on array\\|int\\|object\\.$#"
+            count: 3
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/IdentifiersTest.php
+
+        -
+            message: "#^Cannot call method getProfile\\(\\) on array\\|object\\.$#"
+            count: 2
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/InheritanceTest.php
+
+        -
+            message: "#^Cannot access property \\$blogPosts on array\\|object\\.$#"
+            count: 2
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/OwningAndInverseReferencesTest.php
+
+        -
+            message: "#^Cannot access property \\$name on array\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/OwningAndInverseReferencesTest.php
+
+        -
+            message: "#^Cannot call method getUsername\\(\\) on array\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryTest.php
+
+        -
+            message: "#^Cannot call method toArray\\(\\) on array\\|int\\|object\\.$#"
+            count: 2
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryTest.php
+
+        -
+            message: "#^Comparison operation \"\\<\" between \\(array\\|float\\|int\\) and 0 results in an error\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1275Test.php
+
+        -
+            message: "#^Cannot call method current\\(\\) on array\\|int\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH267Test.php
+
+        -
+            message: "#^Cannot access property \\$ref on array\\|object\\.$#"
+            count: 2
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH520Test.php
+
+        -
+            message: "#^Unreachable statement \\- code above always terminates\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
+
+        -
+            message: "#^Cannot call method current\\(\\) on array\\|int\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH852Test.php
+
+        -
+            message: "#^Cannot call method getBody\\(\\) on array\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM88Test.php
+
+        -
+            message: "#^Cannot call method getTitle\\(\\) on array\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM88Test.php
+
+        -
+            message: "#^Cannot call method setTitle\\(\\) on array\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM88Test.php
+
+        -
+            message: "#^Result of \\|\\| is always true\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM92Test.php
+
+        -
+            message: "#^Result of \\|\\| is always true\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM95Test.php
+
+        -
+            message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:mapField\\(\\)\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
+
+        -
+            message: "#^Parameter \\#1 \\$primer of method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Builder\\:\\:prime\\(\\) expects bool\\|\\(callable\\(\\)\\: mixed\\), 1 given\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
+
+        -
+            message: "#^Cannot access property \\$pet on array\\|object\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+        -
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:writeOptions\\(\\) should return PHPUnit\\\\Framework\\\\Constraint\\\\Constraint but returns PHPUnit\\\\Framework\\\\Constraint\\\\ArraySubset\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Access to offset '.+' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
+            count: 12
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getMapping\\(\\) should return array\\('type' \\=\\> string, 'fieldName' \\=\\> string, 'name' \\=\\> string, 'isCascadeRemove' \\=\\> bool, 'isCascadePersist' \\=\\> bool, 'isCascadeRefresh' \\=\\> bool, 'isCascadeMerge' \\=\\> bool, 'isCascadeDetach' \\=\\> bool, \\.\\.\\.\\) but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$mapping has unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping as its type\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$mapping \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\) does not accept array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|int\\|string\\|null\\>\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # There is no way to define a generic array as attribute
+        -
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:getById\\(\\) should return T of object but returns object\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php

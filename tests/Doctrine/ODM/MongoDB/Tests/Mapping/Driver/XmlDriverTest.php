@@ -10,8 +10,13 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use TestDocuments\AlsoLoadDocument;
 use TestDocuments\CustomIdGenerator;
 use TestDocuments\InvalidPartialFilterDocument;
+use TestDocuments\SchemaInvalidDocument;
+use TestDocuments\SchemaValidatedDocument;
 use TestDocuments\UserCustomIdGenerator;
 use TestDocuments\UserNonStringOptions;
+
+use function MongoDB\BSON\fromJSON;
+use function MongoDB\BSON\toPHP;
 
 class XmlDriverTest extends AbstractDriverTest
 {
@@ -93,11 +98,53 @@ class XmlDriverTest extends AbstractDriverTest
             'alsoLoadFields' => ['createdOn', 'creation_date'],
         ], $classMetadata->fieldMappings['createdAt']);
     }
+
+    public function testValidationMapping()
+    {
+        $classMetadata = new ClassMetadata(SchemaValidatedDocument::class);
+        $this->driver->loadMetadataForClass($classMetadata->name, $classMetadata);
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $classMetadata->getValidationAction());
+        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE, $classMetadata->getValidationLevel());
+        $expectedValidatorJson = <<<'EOT'
+{
+    "$jsonSchema": {
+        "required": ["name"],
+        "properties": {
+            "name": {
+                "bsonType": "string",
+                "description": "must be a string and is required"
+            }
+        }
+    },
+    "$or": [
+        { "phone": { "$type": "string" } },
+        { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } } },
+        { "status": { "$in": [ "Unknown", "Incomplete" ] } }
+    ]
+}
+EOT;
+        $expectedValidatorBson = fromJSON($expectedValidatorJson);
+        $expectedValidator     = toPHP($expectedValidatorBson, []);
+        $this->assertEquals($expectedValidator, $classMetadata->getValidator());
+    }
+
+    public function testWrongValueForValidationSchemaShouldThrowException()
+    {
+        $classMetadata = new ClassMetadata(SchemaInvalidDocument::class);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('The following schema validation error occurred while parsing the "schema-validation" property of the "TestDocuments\SchemaInvalidDocument" class: "Got parse error at "w", position 13: "SPECIAL_EXPECTED"" (code 0).');
+        $this->driver->loadMetadataForClass($classMetadata->name, $classMetadata);
+    }
 }
 
 namespace TestDocuments;
 
 class UserCustomIdGenerator
+{
+    protected $id;
+}
+
+class CustomIdGenerator
 {
     protected $id;
 }

@@ -37,7 +37,11 @@ class User extends BaseDocument
     /** @ODM\ReferenceOne(targetDocument=Profile::class, cascade={"all"}) */
     protected $profile;
 
-    /** @ODM\ReferenceOne(targetDocument=ProfileNotify::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=ProfileNotify::class, cascade={"all"})
+     *
+     * @var ProfileNotify|null
+     */
     protected $profileNotify;
 
     /** @ODM\EmbedMany(targetDocument=Phonenumber::class) */
@@ -100,22 +104,22 @@ class User extends BaseDocument
     /** @ODM\Field(type="collection") */
     private $logs = [];
 
-    /** @var @ODM\ReferenceOne(storeAs="dbRefWithDb") */
+    /** @ODM\ReferenceOne(storeAs="dbRefWithDb") */
     protected $referenceToAnything;
 
-    /** @var @ODM\ReferenceOne(storeAs="dbRef") */
+    /** @ODM\ReferenceOne(storeAs="dbRef") */
     protected $referenceToAnythingWithoutDb;
 
     public function __construct()
     {
-        $this->phonebooks      = new ArrayCollection();
-        $this->phonenumbers    = new ArrayCollection();
-        $this->groups          = new ArrayCollection();
-        $this->groupsSimple    = new ArrayCollection();
-        $this->sortedGroups    = new ArrayCollection();
-        $this->sortedGroupsAsc = new ArrayCollection();
-        $this->posts           = new ArrayCollection();
-        $this->createdAt       = new DateTime();
+        $this->phonebooks       = new ArrayCollection();
+        $this->phonenumbers     = new ArrayCollection();
+        $this->groups           = new ArrayCollection();
+        $this->groupsSimple     = new ArrayCollection();
+        $this->sortedAscGroups  = new ArrayCollection();
+        $this->sortedDescGroups = new ArrayCollection();
+        $this->posts            = new ArrayCollection();
+        $this->createdAt        = new DateTime();
     }
 
     public function setId($id)
@@ -205,7 +209,7 @@ class User extends BaseDocument
         $this->profileNotify = $profile;
     }
 
-    public function getProfileNotify()
+    public function getProfileNotify(): ?ProfileNotify
     {
         return $this->profileNotify;
     }

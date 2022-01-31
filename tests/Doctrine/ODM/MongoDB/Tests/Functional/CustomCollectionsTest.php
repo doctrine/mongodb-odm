@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\File;
 use Documents\ProfileNotify;
+use stdClass;
 
 use function assert;
 use function get_class;
@@ -47,7 +48,7 @@ class CustomCollectionsTest extends BaseTest
             'fieldName' => 'assoc',
             'reference' => true,
             'type' => 'many',
-            'collectionClass' => 'stdClass',
+            'collectionClass' => stdClass::class,
         ]);
     }
 
