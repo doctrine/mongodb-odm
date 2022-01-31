@@ -326,8 +326,10 @@ class Expr
 
     /**
      * Returns a new expression object
+     *
+     * @return static
      */
-    public function createExpr(): self
+    public function createAggregationExpression(): self
     {
         return new static($this->dm, $this->class);
     }
@@ -466,20 +468,15 @@ class Expr
      */
     public function expr(): self
     {
-        return $this->createExpr();
-    }
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.3',
+            'The "%s" method is deprecated. Please use "%s::createAggregationExpression" instead.',
+            __METHOD__,
+            static::class
+        );
 
-    /**
-     * Specify $expr criteria for the current field.
-     *
-     * @see Builder::expr()
-     * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
-     *
-     * @param array|self $expression
-     */
-    public function exprOp($expression): self
-    {
-        return $this->operator('$expr', $expression);
+        return $this->createAggregationExpression();
     }
 
     /**

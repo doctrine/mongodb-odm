@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Aggregation;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -407,12 +408,12 @@ class Expr
     /**
      * Specify $expr criteria for the current field.
      *
-     * @see Builder::exprOp()
+     * @see Builder::aggregationExpression()
      * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
      *
-     * @param array|Expr $expression
+     * @param array|Aggregation\Expr $expression
      */
-    public function exprOp($expression): self
+    public function aggregationExpression($expression): self
     {
         return $this->operator('$expr', $expression);
     }
