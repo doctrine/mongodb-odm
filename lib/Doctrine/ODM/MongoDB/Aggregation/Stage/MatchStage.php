@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
+use Doctrine\ODM\MongoDB\Aggregation;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Query\Expr;
@@ -119,7 +120,7 @@ class MatchStage extends Stage
      * Create a new Expr instance that can be used to build partial expressions
      * for other operator methods.
      */
-    public function createExpr(): Expr
+    public function createQueryExpression(): Expr
     {
         return $this->builder->matchExpr();
     }
@@ -180,20 +181,28 @@ class MatchStage extends Stage
      */
     public function expr(): Expr
     {
-        return $this->createExpr();
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.3',
+            'The "%s" method is deprecated. Please use "%s::createQueryExpression" instead.',
+            __METHOD__,
+            static::class
+        );
+
+        return $this->createQueryExpression();
     }
 
     /**
      * Specify $expr criteria for the current field.
      *
-     * @see Expr::exprOp()
+     * @param array|Aggregation\Expr $expression
      * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
      *
-     * @param array|\Doctrine\ODM\MongoDB\Aggregation\Expr $expression
+     * @see Expr::aggregationExpression()
      */
-    public function exprOp($expression): self
+    public function aggregationExpression($expression): self
     {
-        $this->query->exprOp($expression);
+        $this->query->aggregationExpression($expression);
 
         return $this;
     }
