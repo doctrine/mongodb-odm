@@ -12,7 +12,11 @@ use InvalidArgumentException;
  */
 class Option
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
     /**
@@ -38,23 +42,16 @@ class Option
 
     public function __construct(string $name, Money $money, StockItem $stockItem)
     {
-        $this->name = (string) $name;
+        $this->name = $name;
         if (empty($this->name)) {
             throw new InvalidArgumentException('option name cannot be empty');
         }
 
-        $this->money = $money;
-        if (empty($this->money)) {
-            throw new InvalidArgumentException('option price cannot be empty');
-        }
-
+        $this->money     = $money;
         $this->stockItem = $stockItem;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -62,7 +59,7 @@ class Option
     /**
      * @return float|Money
      */
-    public function getPrice($object = false)
+    public function getPrice(?bool $object = false)
     {
         if ($object === true) {
             return $this->money;
@@ -71,10 +68,7 @@ class Option
         return $this->money->getAmount();
     }
 
-    /**
-     * @return StockItem
-     */
-    public function getStockItem()
+    public function getStockItem(): StockItem
     {
         return $this->stockItem;
     }

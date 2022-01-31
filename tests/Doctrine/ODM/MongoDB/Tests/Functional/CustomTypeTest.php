@@ -22,7 +22,7 @@ class CustomTypeTest extends BaseTest
         Type::addType('date_collection', DateCollectionType::class);
     }
 
-    public function testCustomTypeValueConversions()
+    public function testCustomTypeValueConversions(): void
     {
         $country                   = new Country();
         $country->nationalHolidays = [new DateTime(), new DateTime()];
@@ -37,7 +37,7 @@ class CustomTypeTest extends BaseTest
         $this->assertContainsOnly('DateTime', $country->nationalHolidays);
     }
 
-    public function testConvertToDatabaseValueExpectsArray()
+    public function testConvertToDatabaseValueExpectsArray(): void
     {
         $country                   = new Country();
         $country->nationalHolidays = new DateTime();
@@ -110,9 +110,17 @@ class CustomTypeException extends Exception
 /** @ODM\Document */
 class Country
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="date_collection") */
+    /**
+     * @ODM\Field(type="date_collection")
+     *
+     * @var DateTime[]|DateTime|null
+     */
     public $nationalHolidays;
 }

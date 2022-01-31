@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -12,7 +13,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 
 class LifecycleCallbacksTest extends BaseTest
 {
-    private function createUser($name = 'jon', $fullName = 'Jonathan H. Wage')
+    private function createUser(string $name = 'jon', string $fullName = 'Jonathan H. Wage'): User
     {
         $user                = new User();
         $user->name          = $name;
@@ -24,7 +25,7 @@ class LifecycleCallbacksTest extends BaseTest
         return $user;
     }
 
-    public function testPreUpdateChangingValue()
+    public function testPreUpdateChangingValue(): void
     {
         $user = $this->createUser();
         $this->dm->clear();
@@ -43,7 +44,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertInstanceOf(DateTime::class, $user->profile->updatedAt);
     }
 
-    public function testPreAndPostPersist()
+    public function testPreAndPostPersist(): void
     {
         $user = $this->createUser();
         $this->assertTrue($user->prePersist);
@@ -53,7 +54,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->postPersist);
     }
 
-    public function testPreUpdate()
+    public function testPreUpdate(): void
     {
         $user                = $this->createUser();
         $user->name          = 'jwage';
@@ -67,7 +68,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->postUpdate);
     }
 
-    public function testPreFlush()
+    public function testPreFlush(): void
     {
         $user                = $this->createUser();
         $user->name          = 'jwage';
@@ -78,7 +79,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->preFlush);
     }
 
-    public function testPreLoadAndPostLoad()
+    public function testPreLoadAndPostLoad(): void
     {
         $user = $this->createUser();
         $this->dm->clear();
@@ -91,7 +92,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->postLoad);
     }
 
-    public function testPreAndPostRemove()
+    public function testPreAndPostRemove(): void
     {
         $user = $this->createUser();
 
@@ -108,7 +109,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profile->postRemove);
     }
 
-    public function testEmbedManyEvent()
+    public function testEmbedManyEvent(): void
     {
         $user             = new User();
         $user->name       = 'jon';
@@ -154,7 +155,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($profile->postRemove);
     }
 
-    public function testMultipleLevelsOfEmbedded()
+    public function testMultipleLevelsOfEmbedded(): void
     {
         $user                   = $this->createUser();
         $profile                = new Profile();
@@ -212,7 +213,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertTrue($user->profiles[0]->postRemove);
     }
 
-    public function testReferences()
+    public function testReferences(): void
     {
         $user  = $this->createUser();
         $user2 = $this->createUser('maciej', 'Maciej Malarz');
@@ -227,7 +228,7 @@ class LifecycleCallbacksTest extends BaseTest
         $this->assertFalse($user2->postUpdate);
     }
 
-    public function testEventsNotFiredForInverseSide()
+    public function testEventsNotFiredForInverseSide(): void
     {
         $customer = new Customer();
         $cart     = new Cart();
@@ -248,120 +249,185 @@ class LifecycleCallbacksTest extends BaseTest
 /** @ODM\Document */
 class User extends BaseDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=Profile::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Profile::class)
+     *
+     * @var Profile|null
+     */
     public $profile;
 
-    /** @ODM\EmbedMany(targetDocument=Profile::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Profile::class)
+     *
+     * @var Collection<int, Profile>|array<Profile>
+     */
     public $profiles = [];
 
-    /** @ODM\ReferenceMany(targetDocument=User::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=User::class)
+     *
+     * @var Collection<int, User>|array<User>
+     */
     public $friends = [];
 }
 
 /** @ODM\Document */
 class Cart extends BaseDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart")
+     *
+     * @var Customer|null
+     */
     public $customer;
 }
 
 /** @ODM\Document */
 class Customer extends BaseDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Cart::class, mappedBy="customer") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Cart::class, mappedBy="customer")
+     *
+     * @var Cart|null
+     */
     public $cart;
 }
 
 /** @ODM\EmbeddedDocument */
 class Profile extends BaseDocument
 {
-    /** @ODM\EmbedOne(targetDocument=Profile::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=Profile::class)
+     *
+     * @var Profile|null
+     */
     public $profile;
 }
 
 /** @ODM\MappedSuperclass @ODM\HasLifecycleCallbacks */
 abstract class BaseDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime
+     */
     public $createdAt;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
     public $updatedAt;
 
-    public $prePersist  = false;
+    /** @var bool */
+    public $prePersist = false;
+
+    /** @var bool */
     public $postPersist = false;
-    public $preUpdate   = false;
-    public $postUpdate  = false;
-    public $preRemove   = false;
-    public $postRemove  = false;
-    public $preLoad     = false;
-    public $postLoad    = false;
-    public $preFlush    = false;
+
+    /** @var bool */
+    public $preUpdate = false;
+
+    /** @var bool */
+    public $postUpdate = false;
+
+    /** @var bool */
+    public $preRemove = false;
+
+    /** @var bool */
+    public $postRemove = false;
+
+    /** @var bool */
+    public $preLoad = false;
+
+    /** @var bool */
+    public $postLoad = false;
+
+    /** @var bool */
+    public $preFlush = false;
 
     /** @ODM\PrePersist */
-    public function prePersist(Event\LifecycleEventArgs $e)
+    public function prePersist(Event\LifecycleEventArgs $e): void
     {
         $this->prePersist = true;
         $this->createdAt  = new DateTime();
     }
 
     /** @ODM\PostPersist */
-    public function postPersist(Event\LifecycleEventArgs $e)
+    public function postPersist(Event\LifecycleEventArgs $e): void
     {
         $this->postPersist = true;
     }
 
     /** @ODM\PreUpdate */
-    public function preUpdate(Event\PreUpdateEventArgs $e)
+    public function preUpdate(Event\PreUpdateEventArgs $e): void
     {
         $this->preUpdate = true;
         $this->updatedAt = new DateTime();
     }
 
     /** @ODM\PostUpdate */
-    public function postUpdate(Event\LifecycleEventArgs $e)
+    public function postUpdate(Event\LifecycleEventArgs $e): void
     {
         $this->postUpdate = true;
     }
 
     /** @ODM\PreRemove */
-    public function preRemove(Event\LifecycleEventArgs $e)
+    public function preRemove(Event\LifecycleEventArgs $e): void
     {
         $this->preRemove = true;
     }
 
     /** @ODM\PostRemove */
-    public function postRemove(Event\LifecycleEventArgs $e)
+    public function postRemove(Event\LifecycleEventArgs $e): void
     {
         $this->postRemove = true;
     }
 
     /** @ODM\PreLoad */
-    public function preLoad(Event\PreLoadEventArgs $e)
+    public function preLoad(Event\PreLoadEventArgs $e): void
     {
         $this->preLoad = true;
     }
 
     /** @ODM\PostLoad */
-    public function postLoad(Event\LifecycleEventArgs $e)
+    public function postLoad(Event\LifecycleEventArgs $e): void
     {
         $this->postLoad = true;
     }
 
     /** @ODM\PreFlush */
-    public function preFlush(Event\PreFlushEventArgs $e)
+    public function preFlush(Event\PreFlushEventArgs $e): void
     {
         $this->preFlush = true;
     }

@@ -22,7 +22,7 @@ use function strtotime;
 
 class OwningAndInverseReferencesTest extends BaseTest
 {
-    public function testOneToOne()
+    public function testOneToOne(): void
     {
         // cart stores reference to customer
         // customer does not store reference to cart
@@ -65,7 +65,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertEquals('ok', $customer->cartTest);
     }
 
-    public function testOneToManyBiDirectional()
+    public function testOneToManyBiDirectional(): void
     {
         $product = new Product('Book');
         $product->addFeature(new Feature('Pages'));
@@ -90,7 +90,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertEquals('Cover', $features[1]->name);
     }
 
-    public function testOneToManySelfReferencing()
+    public function testOneToManySelfReferencing(): void
     {
         $node = new BrowseNode('Root');
         $node->addChild(new BrowseNode('Child 1'));
@@ -121,7 +121,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertCount(2, $root->children);
     }
 
-    public function testManyToMany()
+    public function testManyToMany(): void
     {
         $baseballTag    = new Tag('baseball');
         $blogPost       = new BlogPost();
@@ -154,7 +154,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->assertEquals('Test', $tag->blogPosts[0]->name);
     }
 
-    public function testManyToManySelfReferencing()
+    public function testManyToManySelfReferencing(): void
     {
         $jwage  = new FriendUser('jwage');
         $fabpot = new FriendUser('fabpot');
@@ -213,7 +213,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->clear();
     }
 
-    public function testSortLimitAndSkipReferences()
+    public function testSortLimitAndSkipReferences(): void
     {
         $date1 = new DateTime();
         $date1->setTimestamp(strtotime('-20 seconds'));

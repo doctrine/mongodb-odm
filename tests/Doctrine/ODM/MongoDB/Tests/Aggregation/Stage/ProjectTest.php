@@ -16,7 +16,7 @@ class ProjectTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testProjectStage()
+    public function testProjectStage(): void
     {
         $projectStage = new Project($this->getTestAggregationBuilder());
         $projectStage
@@ -28,7 +28,7 @@ class ProjectTest extends BaseTest
         $this->assertSame(['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]], $projectStage->getExpression());
     }
 
-    public function testProjectFromBuilder()
+    public function testProjectFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder
@@ -44,7 +44,7 @@ class ProjectTest extends BaseTest
     /**
      * @dataProvider provideAccumulators
      */
-    public function testAccumulatorsWithMultipleArguments($operator)
+    public function testAccumulatorsWithMultipleArguments(string $operator): void
     {
         $projectStage = new Project($this->getTestAggregationBuilder());
         $projectStage
@@ -54,7 +54,7 @@ class ProjectTest extends BaseTest
         $this->assertSame(['$project' => ['something' => ['$' . $operator => ['$expression1', '$expression2']]]], $projectStage->getExpression());
     }
 
-    public function provideAccumulators()
+    public function provideAccumulators(): array
     {
         $operators = ['avg', 'max', 'min', 'stdDevPop', 'stdDevSamp', 'sum'];
 
@@ -66,7 +66,7 @@ class ProjectTest extends BaseTest
     /**
      * @dataProvider provideProxiedExprMethods
      */
-    public function testProxiedExprMethods($method, $args = [])
+    public function testProxiedExprMethods(string $method, array $args = []): void
     {
         $expr = $this->getMockAggregationExpr();
         $expr
@@ -75,7 +75,7 @@ class ProjectTest extends BaseTest
             ->with(...$args);
 
         $stage = new class ($this->getTestAggregationBuilder()) extends Project {
-            public function setExpr(Expr $expr)
+            public function setExpr(Expr $expr): void
             {
                 $this->expr = $expr;
             }
@@ -85,7 +85,10 @@ class ProjectTest extends BaseTest
         $this->assertSame($stage, $stage->$method(...$args));
     }
 
-    public static function provideProxiedExprMethods()
+    /**
+     * @return array<array{string, string[]}>
+     */
+    public static function provideProxiedExprMethods(): array
     {
         return [
             'avg()' => ['avg', ['$field']],

@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH928Test extends BaseTest
 {
-    public function testNullIdCriteriaShouldNotRemoveEverything()
+    public function testNullIdCriteriaShouldNotRemoveEverything(): void
     {
         $docA = new GH928Document();
         $docB = new GH928Document();
@@ -36,6 +36,10 @@ class GH928Test extends BaseTest
 /** @ODM\Document */
 class GH928Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }

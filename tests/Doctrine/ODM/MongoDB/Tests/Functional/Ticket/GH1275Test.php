@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -14,7 +15,7 @@ use function array_map;
 
 class GH1275Test extends BaseTest
 {
-    public function testResortAtomicCollectionsFlipItems()
+    public function testResortAtomicCollectionsFlipItems(): void
     {
         $getNameCallback = static function (Item $item) {
             return $item->name;
@@ -55,7 +56,7 @@ class GH1275Test extends BaseTest
         );
     }
 
-    public function testResortAtomicCollections()
+    public function testResortAtomicCollections(): void
     {
         $getNameCallback = static function (Item $item) {
             return $item->name;
@@ -136,7 +137,7 @@ class GH1275Test extends BaseTest
         $this->assertCount(3, $container->items);
     }
 
-    public static function getCollectionStrategies()
+    public static function getCollectionStrategies(): array
     {
         return [
             'testResortWithStrategyAddToSet' => [ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET],
@@ -151,7 +152,7 @@ class GH1275Test extends BaseTest
     /**
      * @dataProvider getCollectionStrategies
      */
-    public function testResortEmbedManyCollection($strategy)
+    public function testResortEmbedManyCollection(string $strategy): void
     {
         $getNameCallback = static function (Element $element) {
             return $element->name;
@@ -192,16 +193,24 @@ class GH1275Test extends BaseTest
  */
 class Item
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
     /** @var Container */
     protected $container;
 
-    public function __construct(Container $c, $name)
+    public function __construct(Container $c, string $name)
     {
         $this->container = $c;
         $this->name      = $name;
@@ -213,13 +222,21 @@ class Item
  */
 class Element
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -230,7 +247,11 @@ class Element
  */
 class Container
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\ReferenceMany(
@@ -239,6 +260,8 @@ class Container
      *     orphanRemoval="true",
      *     strategy="atomicSet"
      * )
+     *
+     * @var Collection<int, Item>
      */
     public $items;
 
@@ -247,6 +270,8 @@ class Container
      *     targetDocument=Item::class,
      *     cascade={"refresh"}
      * )
+     *
+     * @var Item
      */
     public $firstItem;
 
@@ -255,6 +280,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="addToSet"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $addToSet;
 
@@ -263,6 +290,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="set"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $set;
 
@@ -271,6 +300,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="setArray"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $setArray;
 
@@ -279,6 +310,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="pushAll"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $pushAll;
 
@@ -287,6 +320,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="atomicSet"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $atomicSet;
 
@@ -295,6 +330,8 @@ class Container
      *     targetDocument=Element::class,
      *     strategy="atomicSetArray"
      * )
+     *
+     * @var Collection<int, Element>
      */
     public $atomicSetArray;
 
@@ -309,7 +346,7 @@ class Container
         $this->atomicSetArray = new ArrayCollection();
     }
 
-    public function add(Item $item)
+    public function add(Item $item): void
     {
         $this->items->add($item);
         if ($this->items->count() !== 1) {
@@ -319,7 +356,7 @@ class Container
         $this->firstItem = $item;
     }
 
-    public function flip($a, $b)
+    public function flip(int $a, int $b): void
     {
         $itemA = $this->items->get($a);
         $itemB = $this->items->get($b);
@@ -328,10 +365,10 @@ class Container
         $this->items->set($a, $itemB);
     }
 
-    public function move(Item $item, $move)
+    public function move(Item $item, int $move): void
     {
         if ($move === 0) {
-            return $this;
+            return;
         }
 
         $currentPosition = $this->items->indexOf($item);

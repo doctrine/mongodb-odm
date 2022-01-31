@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -11,19 +12,35 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class SimpleReferenceUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=User::class, storeAs="id", name="userId", inversedBy="simpleReferenceManyInverse") @ODM\Index */
+    /**
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="id", name="userId", inversedBy="simpleReferenceManyInverse") @ODM\Index
+     *
+     * @var User|null
+     */
     public $user;
 
-    /** @ODM\ReferenceMany(targetDocument=User::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="id")
+     *
+     * @var Collection<int, User>|array<User>
+     */
     public $users = [];
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    public function setUser(User $user)
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }
@@ -33,22 +50,25 @@ class SimpleReferenceUser
         return $this->user;
     }
 
-    public function addUser(User $user)
+    public function addUser(User $user): void
     {
         $this->users[] = $user;
     }
 
+    /**
+     * @return Collection<int, User>|array<User>
+     */
     public function getUsers()
     {
         return $this->users;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }

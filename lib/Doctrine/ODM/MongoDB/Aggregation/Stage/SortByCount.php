@@ -29,9 +29,6 @@ class SortByCount extends Stage
         $this->fieldName   = '$' . $documentPersister->prepareFieldName(substr($fieldName, 1));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

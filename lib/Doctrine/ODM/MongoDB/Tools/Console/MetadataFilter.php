@@ -22,10 +22,10 @@ class MetadataFilter extends FilterIterator implements Countable
     /**
      * Filter Metadatas by one or more filter options.
      *
-     * @param  ClassMetadata[] $metadatas
-     * @param  string[]|string $filter
+     * @param  ClassMetadata<object>[] $metadatas
+     * @param  string[]|string         $filter
      *
-     * @return ClassMetadata[]
+     * @return ClassMetadata<object>[]
      */
     public static function filter(array $metadatas, $filter): array
     {
@@ -38,7 +38,8 @@ class MetadataFilter extends FilterIterator implements Countable
     private $_filter = [];
 
     /**
-     * @param string[]|string $filter
+     * @param string[]|string                                 $filter
+     * @param ArrayIterator<array-key, ClassMetadata<object>> $metadata
      */
     public function __construct(ArrayIterator $metadata, $filter)
     {

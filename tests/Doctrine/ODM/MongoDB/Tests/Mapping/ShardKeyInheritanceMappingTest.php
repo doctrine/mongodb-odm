@@ -22,7 +22,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $this->factory->setConfiguration($this->dm->getConfiguration());
     }
 
-    public function testShardKeyFromMappedSuperclass()
+    public function testShardKeyFromMappedSuperclass(): void
     {
         $class = $this->factory->getMetadataFor(ShardedSubclass::class);
 
@@ -30,7 +30,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
-    public function testShardKeySingleCollectionInheritance()
+    public function testShardKeySingleCollectionInheritance(): void
     {
         $class = $this->factory->getMetadataFor(ShardedSingleCollInheritance2::class);
 
@@ -38,13 +38,13 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
-    public function testShardKeySingleCollectionInheritanceOverriding()
+    public function testShardKeySingleCollectionInheritanceOverriding(): void
     {
         $this->expectException(MappingException::class);
         $this->factory->getMetadataFor(ShardedSingleCollInheritance3::class);
     }
 
-    public function testShardKeyCollectionPerClassInheritance()
+    public function testShardKeyCollectionPerClassInheritance(): void
     {
         $class = $this->factory->getMetadataFor(ShardedCollectionPerClass2::class);
 
@@ -52,7 +52,7 @@ class ShardKeyInheritanceMappingTest extends BaseTest
         $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
-    public function testShardKeyCollectionPerClassInheritanceOverriding()
+    public function testShardKeyCollectionPerClassInheritanceOverriding(): void
     {
         $class = $this->factory->getMetadataFor(ShardedCollectionPerClass3::class);
 
@@ -68,14 +68,22 @@ class ShardKeyInheritanceMappingTest extends BaseTest
  */
 class ShardedSuperclass
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 }
 
 /** @ODM\Document */
 class ShardedSubclass extends ShardedSuperclass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }
 
@@ -86,7 +94,11 @@ class ShardedSubclass extends ShardedSuperclass
  */
 class ShardedSingleCollInheritance1
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }
 
@@ -112,7 +124,11 @@ class ShardedSingleCollInheritance3 extends ShardedSingleCollInheritance1
  */
 class ShardedCollectionPerClass1
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }
 

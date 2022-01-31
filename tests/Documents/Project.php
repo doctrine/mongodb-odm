@@ -16,10 +16,18 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Project
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
     /**
@@ -45,27 +53,27 @@ class Project
         $this->subProjects = $subProjects ?? new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function setAddress(Address $address)
+    public function setAddress(Address $address): void
     {
         $this->address = $address;
     }
 
-    public function getAddress()
+    public function getAddress(): ?Address
     {
         return $this->address;
     }
@@ -73,7 +81,7 @@ class Project
     /**
      * @param Collection<int, SubProject> $subProjects
      */
-    public function setSubProjects(Collection $subProjects)
+    public function setSubProjects(Collection $subProjects): void
     {
         $this->subProjects = $subProjects;
     }

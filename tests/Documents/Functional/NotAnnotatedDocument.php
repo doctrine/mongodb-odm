@@ -9,11 +9,20 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document(collection="functional_tests") */
 class NotAnnotatedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     public $field;
 
+    /** @var string|null */
     public $transientField;
 }

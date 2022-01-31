@@ -10,7 +10,7 @@ use MongoDB\Driver\Exception\BulkWriteException;
 
 class GH580Test extends BaseTest
 {
-    public function testDocumentPersisterShouldClearQueuedInsertsOnMongoException()
+    public function testDocumentPersisterShouldClearQueuedInsertsOnMongoException(): void
     {
         $class = GH580Document::class;
 
@@ -65,9 +65,18 @@ class GH580Test extends BaseTest
 /** @ODM\Document */
 class GH580Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") @ODM\Index(unique=true) */
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index(unique=true)
+     *
+     * @var string|null
+     */
     public $name;
 }

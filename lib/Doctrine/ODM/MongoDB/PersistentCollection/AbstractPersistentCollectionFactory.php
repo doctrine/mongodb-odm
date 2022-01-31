@@ -14,9 +14,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
  */
 abstract class AbstractPersistentCollectionFactory implements PersistentCollectionFactory
 {
-    /**
-     * {@inheritdoc}
-     */
     public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null): PersistentCollectionInterface
     {
         if ($coll === null) {

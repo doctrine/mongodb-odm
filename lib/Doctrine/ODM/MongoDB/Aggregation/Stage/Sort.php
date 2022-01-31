@@ -45,9 +45,6 @@ class Sort extends Stage
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

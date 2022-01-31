@@ -12,9 +12,17 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class ShardedByUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument="Documents\Sharded\ShardedUser", name="db_user") */
+    /**
+     * @ODM\ReferenceOne(targetDocument="Documents\Sharded\ShardedUser", name="db_user")
+     *
+     * @var ShardedUser|null
+     */
     public $user;
 }

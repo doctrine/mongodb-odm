@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class VersionTest extends BaseTest
 {
-    public function testVersioningWhenManipulatingEmbedMany()
+    public function testVersioningWhenManipulatingEmbedMany(): void
     {
         $expectedVersion  = 1;
         $doc              = new VersionedDocument();
@@ -48,16 +49,33 @@ class VersionTest extends BaseTest
  */
 class VersionedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="int", name="_version") @ODM\Version */
+    /**
+     * @ODM\Field(type="int", name="_version")
+     * @ODM\Version
+     *
+     * @var int
+     */
     public $version = 1;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class)
+     *
+     * @var Collection<int, VersionedEmbeddedDocument>|array<VersionedEmbeddedDocument>|null
+     */
     public $embedMany = [];
 
     public function __construct()
@@ -71,13 +89,21 @@ class VersionedDocument
  */
 class VersionedEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $value;
 
-    /** @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class)
+     *
+     * @var Collection<int, VersionedEmbeddedDocument>
+     */
     public $embedMany;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value     = $value;
         $this->embedMany = new ArrayCollection();

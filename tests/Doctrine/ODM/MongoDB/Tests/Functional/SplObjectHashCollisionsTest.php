@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -14,9 +15,11 @@ use function get_class;
 class SplObjectHashCollisionsTest extends BaseTest
 {
     /**
+     * @param callable(DocumentManager, object=): void $f
+     *
      * @dataProvider provideParentAssociationsIsCleared
      */
-    public function testParentAssociationsIsCleared($f)
+    public function testParentAssociationsIsCleared(callable $f): void
     {
         $d         = new SplColDoc();
         $d->one    = new SplColEmbed('d.one.v1');
@@ -32,9 +35,11 @@ class SplObjectHashCollisionsTest extends BaseTest
     }
 
     /**
+     * @param callable(DocumentManager, object=): void $f
+     *
      * @dataProvider provideParentAssociationsIsCleared
      */
-    public function testParentAssociationsLeftover($f, $leftover)
+    public function testParentAssociationsLeftover(callable $f, int $leftover): void
     {
         $d         = new SplColDoc();
         $d->one    = new SplColEmbed('d.one.v1');
@@ -51,23 +56,23 @@ class SplObjectHashCollisionsTest extends BaseTest
         $this->expectCount('embeddedDocumentsRegistry', $leftover);
     }
 
-    public function provideParentAssociationsIsCleared()
+    public function provideParentAssociationsIsCleared(): array
     {
         return [
             [
-                static function (DocumentManager $dm) {
+                static function (DocumentManager $dm): void {
                     $dm->clear();
                 },
                 0,
             ],
             [
-                static function (DocumentManager $dm, $doc) {
+                static function (DocumentManager $dm, $doc): void {
                     $dm->clear(get_class($doc));
                 },
                 1,
             ],
             [
-                static function (DocumentManager $dm, $doc) {
+                static function (DocumentManager $dm, $doc): void {
                     $dm->detach($doc);
                 },
                 1,
@@ -75,7 +80,7 @@ class SplObjectHashCollisionsTest extends BaseTest
         ];
     }
 
-    private function expectCount($prop, $expected)
+    private function expectCount(string $prop, int $expected): void
     {
         $ro = new ReflectionObject($this->uow);
         $rp = $ro->getProperty($prop);
@@ -87,26 +92,46 @@ class SplObjectHashCollisionsTest extends BaseTest
 /** @ODM\Document */
 class SplColDoc
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedOne */
+    /**
+     * @ODM\EmbedOne
+     *
+     * @var object|null
+     */
     public $one;
 
-    /** @ODM\EmbedMany */
+    /**
+     * @ODM\EmbedMany
+     *
+     * @var Collection<int, object>|array<object>
+     */
     public $many = [];
 }
 
 /** @ODM\EmbeddedDocument */
 class SplColEmbed
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

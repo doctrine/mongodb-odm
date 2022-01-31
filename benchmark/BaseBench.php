@@ -28,15 +28,12 @@ abstract class BaseBench
     /** @var DocumentManager */
     protected static $documentManager;
 
-    /**
-     * @return DocumentManager
-     */
-    protected function getDocumentManager()
+    protected function getDocumentManager(): DocumentManager
     {
         return self::$documentManager;
     }
 
-    public function initDocumentManager()
+    public function initDocumentManager(): void
     {
         $config = new Configuration();
 
@@ -59,7 +56,7 @@ abstract class BaseBench
         self::$documentManager = DocumentManager::create($client, $config);
     }
 
-    public function clearDatabase()
+    public function clearDatabase(): void
     {
         // Check if the database exists. Calling listCollections on a non-existing
         // database in a sharded setup will cause an invalid command cursor to be
@@ -85,7 +82,7 @@ abstract class BaseBench
         }
     }
 
-    protected static function createMetadataDriverImpl()
+    protected static function createMetadataDriverImpl(): AnnotationDriver
     {
         return AnnotationDriver::create(__DIR__ . '/../tests/Documents');
     }

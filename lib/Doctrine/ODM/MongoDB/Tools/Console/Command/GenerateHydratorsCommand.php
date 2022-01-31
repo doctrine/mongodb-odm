@@ -29,6 +29,8 @@ class GenerateHydratorsCommand extends Console\Command\Command
 {
     /**
      * @see Console\Command\Command
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -55,7 +57,7 @@ EOT
     }
 
     /**
-     * @see Console\Command\Command
+     * @return int
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {

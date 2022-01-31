@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -13,7 +14,11 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class ReferenceUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -26,7 +31,7 @@ class ReferenceUser
     /**
      * @ODM\ReferenceMany(targetDocument=User::class, storeAs="id")
      *
-     * @var User[]
+     * @var Collection<int, User>|array<User>
      */
     public $users = [];
 
@@ -40,7 +45,7 @@ class ReferenceUser
     /**
      * @ODM\ReferenceMany(targetDocument=User::class, storeAs="dbRef")
      *
-     * @var User[]
+     * @var Collection<int, User>|array<User>
      */
     public $parentUsers = [];
 
@@ -54,7 +59,7 @@ class ReferenceUser
     /**
      * @ODM\ReferenceMany(targetDocument=User::class, storeAs="dbRefWithDb")
      *
-     * @var User[]
+     * @var Collection<int, User>|array<User>
      */
     public $otherUsers = [];
 
@@ -68,14 +73,14 @@ class ReferenceUser
     /**
      * @ODM\ReferenceMany(targetDocument=User::class, storeAs="ref")
      *
-     * @var User[]
+     * @var Collection<int, User>|array<User>
      */
     public $referencedUsers = [];
 
     /**
      * @ODM\EmbedMany(targetDocument=Documents\IndirectlyReferencedUser::class)
      *
-     * @var IndirectlyReferencedUser[]
+     * @var Collection<int, IndirectlyReferencedUser>|array<IndirectlyReferencedUser>
      */
     public $indirectlyReferencedUsers = [];
 
@@ -86,114 +91,99 @@ class ReferenceUser
      */
     public $name;
 
-    public function setUser(User $user)
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }
 
-    /**
-     * @return User
-     */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function addUser(User $user)
+    public function addUser(User $user): void
     {
         $this->users[] = $user;
     }
 
     /**
-     * @return User[]
+     * @return Collection<int, User>|array<User>
      */
     public function getUsers()
     {
         return $this->users;
     }
 
-    public function setParentUser(User $parentUser)
+    public function setParentUser(User $parentUser): void
     {
         $this->parentUser = $parentUser;
     }
 
-    /**
-     * @return User
-     */
-    public function getParentUser()
+    public function getParentUser(): User
     {
         return $this->parentUser;
     }
 
-    public function addParentUser(User $parentUser)
+    public function addParentUser(User $parentUser): void
     {
         $this->parentUsers[] = $parentUser;
     }
 
     /**
-     * @return User[]
+     * @return Collection<int, User>|array<User>
      */
     public function getParentUsers()
     {
         return $this->parentUsers;
     }
 
-    public function setOtherUser(User $otherUser)
+    public function setOtherUser(User $otherUser): void
     {
         $this->otherUser = $otherUser;
     }
 
-    /**
-     * @return User
-     */
-    public function getOtherUser()
+    public function getOtherUser(): User
     {
         return $this->otherUser;
     }
 
-    public function addOtherUser(User $otherUser)
+    public function addOtherUser(User $otherUser): void
     {
         $this->otherUsers[] = $otherUser;
     }
 
     /**
-     * @return User[]
+     * @return Collection<int, User>|array<User>
      */
     public function getOtherUsers()
     {
         return $this->otherUsers;
     }
 
-    public function setReferencedUser(User $referencedUser)
+    public function setReferencedUser(User $referencedUser): void
     {
         $this->referencedUser = $referencedUser;
     }
 
-    /**
-     * @return User
-     */
-    public function getreferencedUser()
+    public function getreferencedUser(): User
     {
         return $this->referencedUser;
     }
 
-    public function addReferencedUser(User $referencedUser)
+    public function addReferencedUser(User $referencedUser): void
     {
         $this->referencedUsers[] = $referencedUser;
     }
 
     /**
-     * @return User[]
+     * @return Collection<int, User>|array<User>
      */
     public function getReferencedUsers()
     {
         return $this->referencedUsers;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

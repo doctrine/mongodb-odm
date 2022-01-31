@@ -6,6 +6,9 @@ namespace Documents\CustomRepository;
 
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
+/**
+ * @template-extends DocumentRepository<Document>
+ */
 class Repository extends DocumentRepository
 {
 }

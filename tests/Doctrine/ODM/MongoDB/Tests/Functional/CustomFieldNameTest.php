@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class CustomFieldNameTest extends BaseTest
 {
-    public function testInsertSetsLoginInsteadOfUsername()
+    public function testInsertSetsLoginInsteadOfUsername(): void
     {
         $test           = new CustomFieldName();
         $test->username = 'test';
@@ -22,7 +22,7 @@ class CustomFieldNameTest extends BaseTest
         $this->assertEquals('test', $test['login']);
     }
 
-    public function testHydration()
+    public function testHydration(): void
     {
         $test           = new CustomFieldName();
         $test->username = 'test';
@@ -36,7 +36,7 @@ class CustomFieldNameTest extends BaseTest
         $this->assertEquals('test', $test->username);
     }
 
-    public function testUpdateSetsLoginInsteadOfUsername()
+    public function testUpdateSetsLoginInsteadOfUsername(): void
     {
         $test           = new CustomFieldName();
         $test->username = 'test';
@@ -55,7 +55,7 @@ class CustomFieldNameTest extends BaseTest
         $this->assertEquals('ok', $test['login']);
     }
 
-    public function testFindOneQueryIsPrepared()
+    public function testFindOneQueryIsPrepared(): void
     {
         $test           = new CustomFieldName();
         $test->username = 'test';
@@ -69,7 +69,7 @@ class CustomFieldNameTest extends BaseTest
         $this->assertEquals('test', $test->username);
     }
 
-    public function testFindQueryIsPrepared()
+    public function testFindQueryIsPrepared(): void
     {
         $test           = new CustomFieldName();
         $test->username = 'test';
@@ -83,7 +83,7 @@ class CustomFieldNameTest extends BaseTest
         $this->assertEquals('test', $test->username);
     }
 
-    public function testQueryBuilderAndDqlArePrepared()
+    public function testQueryBuilderAndDqlArePrepared(): void
     {
         $test           = new CustomFieldName();
         $test->username = 'test';
@@ -103,9 +103,17 @@ class CustomFieldNameTest extends BaseTest
 /** @ODM\Document */
 class CustomFieldName
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="login", type="string") */
+    /**
+     * @ODM\Field(name="login", type="string")
+     *
+     * @var string|null
+     */
     public $username;
 }

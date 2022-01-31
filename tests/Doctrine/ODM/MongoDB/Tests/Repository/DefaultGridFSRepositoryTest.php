@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests\Repos;
+namespace Doctrine\ODM\MongoDB\Tests\Repository;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -224,7 +224,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame(0, $bucket->getChunksCollection()->count());
     }
 
-    public function testUploadMetadataForFileWithoutMetadata()
+    public function testUploadMetadataForFileWithoutMetadata(): void
     {
         $uploadOptions           = new UploadOptions();
         $uploadOptions->metadata = new FileMetadata();
@@ -243,7 +243,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         }
     }
 
-    public function testUploadFileWithoutChunkSize()
+    public function testUploadFileWithoutChunkSize(): void
     {
         $file = $this->getRepository(FileWithoutChunkSize::class)->uploadFromFile(__FILE__);
         assert($file instanceof FileWithoutChunkSize);
@@ -255,7 +255,14 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertSame(261120, $file->getChunkSize());
     }
 
-    private function getRepository($className = File::class): GridFSRepository
+    /**
+     * @param class-string<T> $className
+     *
+     * @return GridFSRepository<T>
+     *
+     * @template T of object
+     */
+    private function getRepository(string $className = File::class): GridFSRepository
     {
         $repository = $this->dm->getRepository($className);
 
@@ -264,7 +271,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
         return $repository;
     }
 
-    private function uploadFile($filename, ?UploadOptions $uploadOptions = null): File
+    private function uploadFile(string $filename, ?UploadOptions $uploadOptions = null): File
     {
         $fileResource = fopen($filename, 'r');
 

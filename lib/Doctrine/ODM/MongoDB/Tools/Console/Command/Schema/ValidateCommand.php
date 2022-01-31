@@ -17,7 +17,7 @@ use function unserialize;
 class ValidateCommand extends Command
 {
     /**
-     * @see \Symfony\Component\Console\Command\Command
+     * @return void
      */
     protected function configure()
     {
@@ -32,7 +32,7 @@ EOT
     }
 
     /**
-     * @see \Symfony\Component\Console\Command\Command
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

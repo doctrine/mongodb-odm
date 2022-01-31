@@ -19,18 +19,32 @@ class Currency
     public const EURO = 'EURO';
     public const JPN  = 'JPN';
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $name;
 
-    /** @ODM\Field(type="float") */
+    /**
+     * @ODM\Field(type="float")
+     *
+     * @var float
+     */
     protected $multiplier;
 
-    public function __construct($name, $multiplier = 1)
+    /**
+     * @param float|int $multiplier
+     */
+    public function __construct(string $name, $multiplier = 1)
     {
-        $name = (string) $name;
         if (! in_array($name, self::getAll())) {
             throw new InvalidArgumentException(
                 'Currency must be one of ' . implode(', ', self::getAll()) .
@@ -42,22 +56,25 @@ class Currency
         $this->setMultiplier($multiplier);
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getMultiplier()
+    public function getMultiplier(): float
     {
         return $this->multiplier;
     }
 
-    public function setMultiplier($multiplier)
+    /**
+     * @param float|int|string $multiplier
+     */
+    public function setMultiplier($multiplier): void
     {
         $multiplier = (float) $multiplier;
         if (empty($multiplier) || $multiplier <= 0) {
@@ -69,7 +86,10 @@ class Currency
         $this->multiplier = $multiplier;
     }
 
-    public static function getAll()
+    /**
+     * @return string[]
+     */
+    public static function getAll(): array
     {
         return [
             self::USD,

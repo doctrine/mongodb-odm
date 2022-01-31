@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH880Test extends BaseTest
 {
-    public function test880()
+    public function test880(): void
     {
         $docs   = [];
         $docs[] = new GH880Document('hello', 1);
@@ -43,16 +43,28 @@ class GH880Test extends BaseTest
 /** @ODM\Document */
 class GH880Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $status;
 
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int
+     */
     public $category;
 
-    public function __construct($status = '', $category = 0)
+    public function __construct(string $status = '', int $category = 0)
     {
         $this->status   = $status;
         $this->category = $category;

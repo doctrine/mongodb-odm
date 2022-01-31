@@ -18,7 +18,7 @@ final class StoreDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchStoreDocument()
+    public function benchStoreDocument(): void
     {
         $user = new User();
         $user->setUsername('alcaeus');
@@ -32,7 +32,7 @@ final class StoreDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchStoreDocumentWithEmbedOne()
+    public function benchStoreDocumentWithEmbedOne(): void
     {
         $address = new Address();
         $address->setAddress('Redacted');
@@ -51,7 +51,7 @@ final class StoreDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchStoreDocumentWithEmbedMany()
+    public function benchStoreDocumentWithEmbedMany(): void
     {
         $user = new User();
         $user->setUsername('alcaeus');
@@ -67,7 +67,7 @@ final class StoreDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchStoreDocumentWithReferenceOne()
+    public function benchStoreDocumentWithReferenceOne(): void
     {
         $account = new Account();
         $account->setName('alcaeus');
@@ -85,7 +85,7 @@ final class StoreDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchStoreDocumentWithReferenceMany()
+    public function benchStoreDocumentWithReferenceMany(): void
     {
         $group1 = new Group('One');
         $group2 = new Group('Two');

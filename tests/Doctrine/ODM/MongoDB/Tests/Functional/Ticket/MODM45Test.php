@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM45Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $a = new MODM45A();
         $a->setB(new MODM45B());
@@ -27,23 +27,31 @@ class MODM45Test extends BaseTest
 /** @ODM\Document(collection="modm45_test") */
 class MODM45A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\EmbedOne(targetDocument=MODM45B::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=MODM45B::class)
+     *
+     * @var MODM45B|null
+     */
     protected $b;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getB()
+    public function getB(): ?MODM45B
     {
         return $this->b;
     }
 
-    public function setB($b)
+    public function setB(MODM45B $b): void
     {
         $this->b = $b;
     }
@@ -52,15 +60,19 @@ class MODM45A
 /** @ODM\EmbeddedDocument */
 class MODM45B
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     protected $val;
 
-    public function setVal($val)
+    public function setVal(string $val): void
     {
         $this->val = $val;
     }
 
-    public function getVal()
+    public function getVal(): ?string
     {
         return $this->val;
     }

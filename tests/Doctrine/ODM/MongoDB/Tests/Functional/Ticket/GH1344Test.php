@@ -10,7 +10,7 @@ use MongoDB\Driver\Exception\CommandException;
 
 class GH1344Test extends BaseTest
 {
-    public function testGeneratingIndexesDoesNotThrowException()
+    public function testGeneratingIndexesDoesNotThrowException(): void
     {
         $indexes = $this->dm->getSchemaManager()->getDocumentIndexes(GH1344Main::class);
         self::assertCount(4, $indexes);
@@ -22,7 +22,7 @@ class GH1344Test extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes(GH1344Main::class);
     }
 
-    public function testGeneratingIndexesWithTooLongIndexNameThrowsExceptionBeforeMongoDB42()
+    public function testGeneratingIndexesWithTooLongIndexNameThrowsExceptionBeforeMongoDB42(): void
     {
         $this->skipOnMongoDB42('Index name restrictions were removed in MongoDB 4.2.');
 
@@ -34,7 +34,7 @@ class GH1344Test extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes(GH1344LongIndexName::class);
     }
 
-    public function testGeneratingIndexesWithLongIndexNameDoesNotThrowExceptionAfterMongoDB42()
+    public function testGeneratingIndexesWithLongIndexNameDoesNotThrowExceptionAfterMongoDB42(): void
     {
         $this->requireMongoDB42('Index name length is limited before MongoDB 4.2.');
 
@@ -49,13 +49,25 @@ class GH1344Test extends BaseTest
 /** @ODM\Document */
 class GH1344Main
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1344Embedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1344Embedded::class)
+     *
+     * @var GH1344Embedded|null
+     */
     public $embedded1;
 
-    /** @ODM\EmbedOne(targetDocument=GH1344Embedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1344Embedded::class)
+     *
+     * @var GH1344Embedded|null
+     */
     public $embedded2;
 }
 
@@ -65,10 +77,18 @@ class GH1344Main
  */
 class GH1344Embedded
 {
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     public $property;
 
-    /** @ODM\EmbedOne(targetDocument=GH1344EmbeddedNested::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1344EmbeddedNested::class)
+     *
+     * @var GH1344EmbeddedNested|null
+     */
     public $embedded;
 }
 
@@ -78,17 +98,29 @@ class GH1344Embedded
  */
 class GH1344EmbeddedNested
 {
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     public $property;
 }
 
 /** @ODM\Document */
 class GH1344LongIndexName
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1344LongIndexNameEmbedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1344LongIndexNameEmbedded::class)
+     *
+     * @var GH1344LongIndexNameEmbedded|null
+     */
     public $embedded1;
 }
 
@@ -98,6 +130,10 @@ class GH1344LongIndexName
  */
 class GH1344LongIndexNameEmbedded
 {
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
     public $property;
 }

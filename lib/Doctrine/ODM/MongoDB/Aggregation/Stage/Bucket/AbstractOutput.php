@@ -29,9 +29,6 @@ abstract class AbstractOutput extends Stage
         $this->expr   = $builder->expr();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return $this->expr->getExpression();

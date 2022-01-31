@@ -13,41 +13,53 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Participant
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string
+     */
     private $name;
 
-    /** @ODM\ReferenceOne(targetDocument=Tournament::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Tournament::class, cascade={"all"})
+     *
+     * @var Tournament|null
+     */
     protected $tournament;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setTournament(Tournament $tournament)
+    public function setTournament(Tournament $tournament): void
     {
         $this->tournament = $tournament;
     }
 
-    public function getTournament()
+    public function getTournament(): ?Tournament
     {
         return $this->tournament;
     }

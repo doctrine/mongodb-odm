@@ -87,11 +87,14 @@ class Configuration
      * @psalm-var array{
      *      autoGenerateHydratorClasses?: self::AUTOGENERATE_*,
      *      autoGeneratePersistentCollectionClasses?: self::AUTOGENERATE_*,
+     *      classMetadataFactoryName?: class-string<ClassMetadataFactory>,
      *      defaultCommitOptions?: CommitOptions,
-     *      defaultDocumentRepositoryClassName?: string,
+     *      defaultDocumentRepositoryClassName?: class-string<ObjectRepository>,
+     *      defaultGridFSRepositoryClassName?: class-string<GridFSRepository>,
+     *      defaultDB?: string,
      *      documentNamespaces?: array<string, string>,
      *      filters?: array<string, array{
-     *          class: string,
+     *          class: class-string,
      *          parameters: array<string, mixed>
      *      }>,
      *      hydratorDir?: string,
@@ -101,6 +104,7 @@ class Configuration
      *      persistentCollectionFactory?: PersistentCollectionFactory,
      *      persistentCollectionGenerator?: PersistentCollectionGenerator,
      *      persistentCollectionDir?: string,
+     *      persistentCollectionNamespace?: string,
      *      repositoryFactory?: RepositoryFactory
      * }
      */
@@ -136,6 +140,13 @@ class Configuration
      */
     public function getDocumentNamespace(string $documentNamespaceAlias): string
     {
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.3',
+            'Document short namespace aliases such as "%s" are deprecated, use ::class constant instead.',
+            $documentNamespaceAlias
+        );
+
         if (! isset($this->attributes['documentNamespaces'][$documentNamespaceAlias])) {
             throw MongoDBException::unknownDocumentNamespace($documentNamespaceAlias);
         }
@@ -402,11 +413,17 @@ class Configuration
         return $this->attributes['defaultDB'] ?? null;
     }
 
+    /**
+     * @psalm-param class-string<ClassMetadataFactory> $cmfName
+     */
     public function setClassMetadataFactoryName(string $cmfName): void
     {
         $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 
+    /**
+     * @psalm-return class-string<ClassMetadataFactory>
+     */
     public function getClassMetadataFactoryName(): string
     {
         if (! isset($this->attributes['classMetadataFactoryName'])) {
@@ -450,6 +467,9 @@ class Configuration
         ];
     }
 
+    /**
+     * @psalm-return class-string|null
+     */
     public function getFilterClassName(string $name): ?string
     {
         return isset($this->attributes['filters'][$name])
@@ -468,6 +488,8 @@ class Configuration
     }
 
     /**
+     * @psalm-param class-string<ObjectRepository> $className
+     *
      * @throws MongoDBException If not is a ObjectRepository.
      */
     public function setDefaultDocumentRepositoryClassName(string $className): void
@@ -481,12 +503,17 @@ class Configuration
         $this->attributes['defaultDocumentRepositoryClassName'] = $className;
     }
 
+    /**
+     * @psalm-return class-string<ObjectRepository>
+     */
     public function getDefaultDocumentRepositoryClassName(): string
     {
         return $this->attributes['defaultDocumentRepositoryClassName'] ?? DocumentRepository::class;
     }
 
     /**
+     * @psalm-param class-string<GridFSRepository> $className
+     *
      * @throws MongoDBException If the class does not implement the GridFSRepository interface.
      */
     public function setDefaultGridFSRepositoryClassName(string $className): void
@@ -500,6 +527,9 @@ class Configuration
         $this->attributes['defaultGridFSRepositoryClassName'] = $className;
     }
 
+    /**
+     * @psalm-return class-string<GridFSRepository>
+     */
     public function getDefaultGridFSRepositoryClassName(): string
     {
         return $this->attributes['defaultGridFSRepositoryClassName'] ?? DefaultGridFSRepository::class;

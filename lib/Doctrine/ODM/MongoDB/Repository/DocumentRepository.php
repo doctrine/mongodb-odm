@@ -157,8 +157,6 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds all documents in the repository.
-     *
-     * {@inheritDoc}
      */
     public function findAll(): array
     {
@@ -167,8 +165,6 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds documents by a set of criteria.
-     *
-     * {@inheritDoc}
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
@@ -222,7 +218,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * Selects all elements from a selectable that match the expression and
      * returns a new collection containing these elements.
      *
-     * {@inheritDoc}
+     * @return ArrayCollection<array-key, T>
      */
     public function matching(Criteria $criteria): ArrayCollection
     {
@@ -247,6 +243,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         }
 
         // @TODO: wrap around a specialized Collection for efficient count on large collections
+        /** @var Iterator<T> $iterator */
         $iterator = $queryBuilder->getQuery()->execute();
         assert($iterator instanceof Iterator);
 

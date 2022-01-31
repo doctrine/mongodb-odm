@@ -23,6 +23,8 @@
     <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP80Types.php</exclude-pattern>
     <exclude-pattern>lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php</exclude-pattern>
     <exclude-pattern>lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php</exclude-pattern>
+    <!-- Figure out what to do with PHP 8.1 errors in coding standard -->
+    <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP81Types.php</exclude-pattern>
 
     <rule ref="Doctrine">
         <!-- Traversable type hints often end up as mixed[], so we skip them for now -->
@@ -33,7 +35,6 @@
         <!-- Will cause BC breaks to method signatures - disabled for now -->
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint" />
-        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint" />
 
         <!-- Disabled to avoid class renaming - to be handled in a separate PR -->
@@ -67,14 +68,11 @@
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-        <exclude-pattern>*/tools/sandbox/Documents/*</exclude-pattern>
+    <!-- If forces to add "@inheritDoc" because the analysis is per file -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>*/lib/*</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Functional/DocumentPersisterTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomTypeTest.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">

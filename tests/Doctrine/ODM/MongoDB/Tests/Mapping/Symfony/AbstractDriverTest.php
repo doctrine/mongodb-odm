@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Symfony;
 
+use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
@@ -23,7 +24,7 @@ abstract class AbstractDriverTest extends TestCase
     /** @var string */
     protected $dir;
 
-    public function testFindMappingFile()
+    public function testFindMappingFile(): void
     {
         $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\DocumentFoo' => 'foo',
@@ -34,7 +35,7 @@ abstract class AbstractDriverTest extends TestCase
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Document\Foo'));
     }
 
-    public function testFindMappingFileInSubnamespace()
+    public function testFindMappingFileInSubnamespace(): void
     {
         $driver = $this->getDriver([
             'MyNamespace\MySubnamespace\Document' => $this->dir,
@@ -44,7 +45,7 @@ abstract class AbstractDriverTest extends TestCase
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Document\Foo\Bar'));
     }
 
-    public function testFindMappingFileNamespacedFoundFileNotFound()
+    public function testFindMappingFileNamespacedFoundFileNotFound(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No mapping file found named');
@@ -56,7 +57,7 @@ abstract class AbstractDriverTest extends TestCase
         $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Document\Foo');
     }
 
-    public function testFindMappingNamespaceNotFound()
+    public function testFindMappingNamespaceNotFound(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage("No mapping file found named 'Foo" . $this->getFileExtension() . "' for class 'MyOtherNamespace\MySubnamespace\Document\Foo'.");
@@ -89,7 +90,10 @@ abstract class AbstractDriverTest extends TestCase
         @rmdir($this->dir);
     }
 
-    abstract protected function getFileExtension();
+    abstract protected function getFileExtension(): string;
 
+    /**
+     * @return FileDriver
+     */
     abstract protected function getDriver(array $paths = []);
 }

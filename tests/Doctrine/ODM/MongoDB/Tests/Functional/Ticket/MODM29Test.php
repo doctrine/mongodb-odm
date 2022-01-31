@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM29Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $collection = new ArrayCollection([
             new MODM29Embedded('0'),
@@ -53,23 +54,40 @@ class MODM29Test extends BaseTest
 /** @ODM\Document */
 class MODM29Doc
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\EmbedMany(targetDocument=MODM29Embedded::class, strategy="set") */
+    /**
+     * @ODM\EmbedMany(targetDocument=MODM29Embedded::class, strategy="set")
+     *
+     * @var Collection<int, MODM29Embedded>
+     */
     protected $collection;
 
-    public function __construct($c)
+    /**
+     * @param Collection<int, MODM29Embedded> $c
+     */
+    public function __construct(Collection $c)
     {
         $this->set($c);
     }
 
-    public function set($c)
+    /**
+     * @param Collection<int, MODM29Embedded> $c
+     */
+    public function set(Collection $c): void
     {
         $this->collection = $c;
     }
 
-    public function get()
+    /**
+     * @return Collection<int, MODM29Embedded>
+     */
+    public function get(): Collection
     {
         return $this->collection;
     }
@@ -78,20 +96,24 @@ class MODM29Doc
 /** @ODM\EmbeddedDocument */
 class MODM29Embedded
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $val;
 
-    public function __construct($val)
+    public function __construct(string $val)
     {
         $this->set($val);
     }
 
-    public function get()
+    public function get(): string
     {
         return $this->val;
     }
 
-    public function set($val)
+    public function set(string $val): void
     {
         $this->val = $val;
     }

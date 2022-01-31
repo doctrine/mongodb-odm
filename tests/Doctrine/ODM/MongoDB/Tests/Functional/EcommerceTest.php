@@ -43,7 +43,7 @@ class EcommerceTest extends BaseTest
         unset($currencies, $product);
     }
 
-    public function testEmbedding()
+    public function testEmbedding(): void
     {
         $product  = $this->getProduct();
         $price    =  $product->getOption('small')->getPrice(true);
@@ -61,7 +61,7 @@ class EcommerceTest extends BaseTest
         $this->assertEquals(12.99 * 2, $product->getOption('small')->getPrice());
     }
 
-    public function testMoneyDocumentsAvailableForReference()
+    public function testMoneyDocumentsAvailableForReference(): void
     {
         $product  = $this->getProduct();
         $price    =  $product->getOption('small')->getPrice(true);
@@ -71,7 +71,7 @@ class EcommerceTest extends BaseTest
         $this->assertEquals($currency, $this->dm->getRepository(Currency::class)->findOneBy(['name' => Currency::USD]));
     }
 
-    public function testRemoveOption()
+    public function testRemoveOption(): void
     {
         $product = $this->getProduct();
 
@@ -86,7 +86,7 @@ class EcommerceTest extends BaseTest
         $this->assertCount(2, $product->getOptions());
     }
 
-    protected function getProduct()
+    protected function getProduct(): ConfigurableProduct
     {
         $products = $this->dm->getRepository(ConfigurableProduct::class)
             ->createQueryBuilder()

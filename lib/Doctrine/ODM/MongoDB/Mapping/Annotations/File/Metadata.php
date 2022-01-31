@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations\File;
 
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * @Annotation
+ * @NamedArgumentConstructor
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class Metadata extends AbstractField
 {
-    /** @var string */
-    public $name = 'metadata';
-
-    /** @var string */
-    public $type = ClassMetadata::ONE;
-
     /** @var bool */
     public $embedded = true;
 
@@ -27,9 +25,30 @@ final class Metadata extends AbstractField
     /** @var string|null */
     public $discriminatorField;
 
-    /** @var array|null */
+    /** @var array<string, class-string>|null */
     public $discriminatorMap;
 
     /** @var string|null */
     public $defaultDiscriminatorValue;
+
+    /**
+     * @param array<string, class-string>|null $discriminatorMap
+     */
+    public function __construct(
+        bool $nullable = false,
+        array $options = [],
+        ?string $strategy = null,
+        bool $notSaved = false,
+        ?string $targetDocument = null,
+        ?string $discriminatorField = null,
+        ?array $discriminatorMap = null,
+        ?string $defaultDiscriminatorValue = null
+    ) {
+        parent::__construct('metadata', ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
+
+        $this->targetDocument            = $targetDocument;
+        $this->discriminatorField        = $discriminatorField;
+        $this->discriminatorMap          = $discriminatorMap;
+        $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
+    }
 }

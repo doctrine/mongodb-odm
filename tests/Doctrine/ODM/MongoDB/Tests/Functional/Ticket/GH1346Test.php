@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -13,7 +14,7 @@ class GH1346Test extends BaseTest
     /**
      * @group GH1346Test
      */
-    public function testPublicProperty()
+    public function testPublicProperty(): void
     {
         $referenced1    = new GH1346ReferencedDocument();
         $referenced2    = new GH1346ReferencedDocument();
@@ -46,10 +47,18 @@ class GH1346Test extends BaseTest
  */
 class GH1346Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument=GH1346ReferencedDocument::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1346ReferencedDocument::class)
+     *
+     * @var Collection<int, GH1346ReferencedDocument>
+     */
     protected $references;
 
     public function __construct()
@@ -57,17 +66,20 @@ class GH1346Document
         $this->references = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function addReference($otherReference)
+    public function addReference(GH1346ReferencedDocument $otherReference): void
     {
         $this->references->add($otherReference);
     }
 
-    public function getReferences()
+    /**
+     * @return Collection<int, GH1346ReferencedDocument>
+     */
+    public function getReferences(): Collection
     {
         return $this->references;
     }
@@ -78,18 +90,26 @@ class GH1346Document
  */
 class GH1346ReferencedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $test;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    public function setTest($test)
+    public function setTest(string $test): void
     {
         $this->test = $test;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

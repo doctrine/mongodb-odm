@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -12,7 +13,7 @@ use function get_class;
 
 class GH1225Test extends BaseTest
 {
-    public function testRemoveAddEmbeddedDocToExistingDocumentWithPreUpdateHook()
+    public function testRemoveAddEmbeddedDocToExistingDocumentWithPreUpdateHook(): void
     {
         $doc = new GH1225Document();
         $doc->embeds->add(new GH1225EmbeddedDocument('foo'));
@@ -38,10 +39,18 @@ class GH1225Test extends BaseTest
  */
 class GH1225Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedMany(strategy="atomicSet", targetDocument=GH1225EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=GH1225EmbeddedDocument::class)
+     *
+     * @var Collection<int, GH1225EmbeddedDocument>
+     */
     public $embeds;
 
     public function __construct()
@@ -52,7 +61,7 @@ class GH1225Document
     /**
      * @ODM\PreUpdate
      */
-    public function exampleHook()
+    public function exampleHook(): void
     {
     }
 }
@@ -62,10 +71,14 @@ class GH1225Document
  */
 class GH1225EmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $value;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }

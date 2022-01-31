@@ -14,7 +14,7 @@ class RepositoriesTest extends BaseTest
     /** @var User */
     private $user;
 
-    /** @var DocumentRepository */
+    /** @var DocumentRepository<User> */
     private $repository;
 
     public function setUp(): void
@@ -30,7 +30,7 @@ class RepositoriesTest extends BaseTest
         $this->repository = $this->dm->getRepository(User::class);
     }
 
-    public function testFindAll()
+    public function testFindAll(): void
     {
         $users = $this->repository->findAll();
 
@@ -38,7 +38,7 @@ class RepositoriesTest extends BaseTest
         $this->assertCount(1, $users);
     }
 
-    public function testFind()
+    public function testFind(): void
     {
         $user2 = $this->repository->find($this->user->getId());
         $this->assertSame($this->user, $user2);
@@ -47,7 +47,7 @@ class RepositoriesTest extends BaseTest
         $this->assertSame($user2, $user3);
     }
 
-    public function testCriteria()
+    public function testCriteria(): void
     {
         $exprBuilder = Criteria::expr();
         $expr        = $exprBuilder->eq('username', 'lolcat');

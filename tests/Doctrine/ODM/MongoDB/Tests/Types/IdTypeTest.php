@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class IdTypeTest extends TestCase
 {
-    public function testConvertToDatabaseValue()
+    public function testConvertToDatabaseValue(): void
     {
         $identifier = new ObjectId();
         $type       = Type::getType('id');
@@ -21,16 +21,18 @@ class IdTypeTest extends TestCase
     }
 
     /**
+     * @param mixed $value
+     *
      * @dataProvider provideInvalidObjectIdConstructorArguments
      */
-    public function testConvertToDatabaseValueShouldGenerateObjectIds($value)
+    public function testConvertToDatabaseValueShouldGenerateObjectIds($value): void
     {
         $type = Type::getType('id');
 
         $this->assertInstanceOf(ObjectId::class, $type->convertToDatabaseValue($value));
     }
 
-    public function provideInvalidObjectIdConstructorArguments()
+    public function provideInvalidObjectIdConstructorArguments(): array
     {
         return [
             'integer' => [1],

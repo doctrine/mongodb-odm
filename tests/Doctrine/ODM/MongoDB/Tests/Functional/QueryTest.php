@@ -41,7 +41,7 @@ class QueryTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testAddElemMatch()
+    public function testAddElemMatch(): void
     {
         $user = new User();
         $user->setUsername('boo');
@@ -60,7 +60,7 @@ class QueryTest extends BaseTest
         $this->assertNotNull($user);
     }
 
-    public function testAddElemMatchWithDeepFields()
+    public function testAddElemMatchWithDeepFields(): void
     {
         $user1 = new User();
         $user1->setUsername('ben');
@@ -83,7 +83,7 @@ class QueryTest extends BaseTest
         $this->assertNotNull($user);
     }
 
-    public function testAddNot()
+    public function testAddNot(): void
     {
         $user = new User();
         $user->setUsername('boo');
@@ -103,7 +103,7 @@ class QueryTest extends BaseTest
         $this->assertNotNull($user);
     }
 
-    public function testNotAllowsRegex()
+    public function testNotAllowsRegex(): void
     {
         $user = new User();
         $user->setUsername('boo');
@@ -124,7 +124,7 @@ class QueryTest extends BaseTest
         $this->assertNotNull($user);
     }
 
-    public function testDistinct()
+    public function testDistinct(): void
     {
         $user = new User();
         $user->setUsername('distinct_test');
@@ -162,7 +162,7 @@ class QueryTest extends BaseTest
         $this->assertEquals([1, 2, 3], $results);
     }
 
-    public function testDistinctWithDifferentDbName()
+    public function testDistinctWithDifferentDbName(): void
     {
         $c1           = new CmsComment();
         $c1->authorIp = '127.0.0.1';
@@ -182,7 +182,7 @@ class QueryTest extends BaseTest
         $this->assertEquals(['127.0.0.1', '192.168.0.1'], $results);
     }
 
-    public function testFindQuery()
+    public function testFindQuery(): void
     {
         $qb    = $this->dm->createQueryBuilder(User::class)
             ->where("function() { return this.username == 'boo' }");
@@ -191,7 +191,7 @@ class QueryTest extends BaseTest
         $this->assertEquals('boo', $user->getUsername());
     }
 
-    public function testUpdateQuery()
+    public function testUpdateQuery(): void
     {
         $qb     = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
@@ -205,7 +205,7 @@ class QueryTest extends BaseTest
         $this->assertEquals('crap', $this->user->getUsername());
     }
 
-    public function testUpsertUpdateQuery()
+    public function testUpsertUpdateQuery(): void
     {
         $qb     = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
@@ -224,7 +224,7 @@ class QueryTest extends BaseTest
         $this->assertNotNull($user);
     }
 
-    public function testMultipleUpdateQuery()
+    public function testMultipleUpdateQuery(): void
     {
         $user = new User();
         $user->setUsername('multiple_test');
@@ -263,7 +263,7 @@ class QueryTest extends BaseTest
         $this->assertCount(4, $users);
     }
 
-    public function testRemoveQuery()
+    public function testRemoveQuery(): void
     {
         $this->dm->remove($this->user);
 
@@ -272,7 +272,7 @@ class QueryTest extends BaseTest
         $this->dm->refresh($this->user);
     }
 
-    public function testIncUpdateQuery()
+    public function testIncUpdateQuery(): void
     {
         $qb    = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
@@ -289,7 +289,7 @@ class QueryTest extends BaseTest
         $this->assertEquals(10, $user['hits']);
     }
 
-    public function testUnsetFieldUpdateQuery()
+    public function testUnsetFieldUpdateQuery(): void
     {
         $qb     = $this->dm->createQueryBuilder(User::class)
             ->updateOne()
@@ -305,7 +305,7 @@ class QueryTest extends BaseTest
         $this->assertArrayNotHasKey('hits', $user);
     }
 
-    public function testUnsetField()
+    public function testUnsetField(): void
     {
         $qb    = $this->dm->createQueryBuilder()
             ->updateOne(User::class)
@@ -322,7 +322,7 @@ class QueryTest extends BaseTest
         $this->assertNull($user);
     }
 
-    public function testDateRange()
+    public function testDateRange(): void
     {
         $article1 = new Article();
         $article1->setTitle('test');
@@ -364,7 +364,7 @@ class QueryTest extends BaseTest
         $this->assertEquals('1985-09-03', $articles[1]->getCreatedAt()->format('Y-m-d'));
     }
 
-    public function testQueryIsIterable()
+    public function testQueryIsIterable(): void
     {
         $article = new Article();
         $article->setTitle('test');
@@ -379,7 +379,7 @@ class QueryTest extends BaseTest
         }
     }
 
-    public function testQueryReferences()
+    public function testQueryReferences(): void
     {
         $group = new Group('Test Group');
 
@@ -397,7 +397,7 @@ class QueryTest extends BaseTest
         $this->assertSame($user, $user2);
     }
 
-    public function testNestedQueryReference()
+    public function testNestedQueryReference(): void
     {
         $referencedUser = new User();
         $referencedUser->setUsername('boo');
@@ -430,7 +430,7 @@ class QueryTest extends BaseTest
         $this->assertSame($user, $referencedUsers[0]);
     }
 
-    public function testQueryWhereIn()
+    public function testQueryWhereIn(): void
     {
         $qb      = $this->dm->createQueryBuilder(User::class);
         $choices = ['a', 'b'];
@@ -441,7 +441,7 @@ class QueryTest extends BaseTest
         $this->assertSame($expected, $qb->getQueryArray());
     }
 
-    public function testQueryWhereInReferenceId()
+    public function testQueryWhereInReferenceId(): void
     {
         $qb      = $this->dm->createQueryBuilder(User::class);
         $choices = [new ObjectId(), new ObjectId()];
@@ -453,7 +453,7 @@ class QueryTest extends BaseTest
         $this->assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
-    public function testQueryWhereOneValueOfCollection()
+    public function testQueryWhereOneValueOfCollection(): void
     {
         $qb = $this->dm->createQueryBuilder(Article::class);
         $qb->field('tags')->equals('pet');
@@ -463,7 +463,7 @@ class QueryTest extends BaseTest
     }
 
     /** search for articles where tags exactly equal [pet, blue] */
-    public function testQueryWhereAllValuesOfCollection()
+    public function testQueryWhereAllValuesOfCollection(): void
     {
         $qb = $this->dm->createQueryBuilder(Article::class);
         $qb->field('tags')->equals(['pet', 'blue']);

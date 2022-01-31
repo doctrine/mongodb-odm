@@ -37,7 +37,11 @@ class TypedDocument
     /** @ODM\ReferenceOne(targetDocument=TypedDocument::class, nullable=true) */
     public ?TypedDocument $initializedNullableReferenceOne = null;
 
-    /** @ODM\EmbedMany(targetDocument=TypedEmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=TypedEmbeddedDocument::class)
+     *
+     * @var Collection<int, TypedEmbeddedDocument>
+     */
     private Collection $embedMany;
 
     public function __construct()
@@ -45,6 +49,9 @@ class TypedDocument
         $this->embedMany = new ArrayCollection();
     }
 
+    /**
+     * @return Collection<int, TypedEmbeddedDocument>
+     */
     public function getEmbedMany(): Collection
     {
         return $this->embedMany;

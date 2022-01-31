@@ -12,15 +12,20 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class VersionedUser extends User
 {
-    /** @ODM\Field(type="int") @ODM\Version */
+    /**
+     * @ODM\Field(type="int")
+     * @ODM\Version
+     *
+     * @var int|null
+     */
     protected $version;
 
-    public function getVersion()
+    public function getVersion(): ?int
     {
         return $this->version;
     }
 
-    public function setVersion($version)
+    public function setVersion(int $version): void
     {
         $this->version = $version;
     }

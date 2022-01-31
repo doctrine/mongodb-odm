@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -13,6 +15,7 @@ use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use InvalidArgumentException;
 
 use function key;
@@ -22,27 +25,31 @@ use function usort;
 
 abstract class AbstractMappingDriverTest extends BaseTest
 {
-    abstract protected function loadDriver();
+    abstract protected function loadDriver(): MappingDriver;
 
-    protected function createMetadataDriverImpl()
+    protected function createMetadataDriverImpl(): MappingDriver
     {
         return $this->loadDriver();
     }
 
     /**
+     * @return ClassMetadata<AbstractMappingDriverUser>
+     *
      * @doesNotPerformAssertions
      */
-    public function testLoadMapping()
+    public function testLoadMapping(): ClassMetadata
     {
         return $this->dm->getClassMetadata(AbstractMappingDriverUser::class);
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testLoadMapping
      */
-    public function testDocumentCollectionNameAndInheritance($class)
+    public function testDocumentCollectionNameAndInheritance(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('cms_users', $class->getCollection());
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $class->inheritanceType);
@@ -51,11 +58,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testLoadMapping
      */
-    public function testDocumentMarkedAsReadOnly($class)
+    public function testDocumentMarkedAsReadOnly(ClassMetadata $class): ClassMetadata
     {
         $this->assertTrue($class->isReadOnly);
 
@@ -63,11 +72,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testDocumentCollectionNameAndInheritance
      */
-    public function testDocumentLevelReadPreference($class)
+    public function testDocumentLevelReadPreference(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('primaryPreferred', $class->readPreference);
         $this->assertEquals([
@@ -80,11 +91,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testDocumentCollectionNameAndInheritance
      */
-    public function testDocumentLevelWriteConcern($class)
+    public function testDocumentLevelWriteConcern(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals(1, $class->getWriteConcern());
 
@@ -92,11 +105,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testDocumentLevelWriteConcern
      */
-    public function testFieldMappings($class)
+    public function testFieldMappings(ClassMetadata $class): ClassMetadata
     {
         $this->assertCount(14, $class->fieldMappings);
         $this->assertTrue(isset($class->fieldMappings['identifier']));
@@ -110,11 +125,11 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @depends testDocumentCollectionNameAndInheritance
      */
-    public function testAssociationMappings($class)
+    public function testAssociationMappings(ClassMetadata $class): void
     {
         $this->assertCount(6, $class->associationMappings);
         $this->assertTrue(isset($class->associationMappings['address']));
@@ -126,11 +141,11 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @depends testDocumentCollectionNameAndInheritance
      */
-    public function testGetAssociationTargetClass($class)
+    public function testGetAssociationTargetClass(ClassMetadata $class): void
     {
         $this->assertEquals(Address::class, $class->getAssociationTargetClass('address'));
         $this->assertEquals(Group::class, $class->getAssociationTargetClass('groups'));
@@ -141,22 +156,24 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @depends testDocumentCollectionNameAndInheritance
      */
-    public function testGetAssociationTargetClassThrowsExceptionWhenEmpty($class)
+    public function testGetAssociationTargetClassThrowsExceptionWhenEmpty(ClassMetadata $class): void
     {
         $this->expectException(InvalidArgumentException::class);
         $class->getAssociationTargetClass('invalid_association');
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testDocumentCollectionNameAndInheritance
      */
-    public function testStringFieldMappings($class)
+    public function testStringFieldMappings(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('string', $class->fieldMappings['name']['type']);
 
@@ -164,11 +181,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testFieldMappings
      */
-    public function testIdentifier($class)
+    public function testIdentifier(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('identifier', $class->identifier);
 
@@ -176,11 +195,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testFieldMappings
      */
-    public function testVersionFieldMappings($class)
+    public function testVersionFieldMappings(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('int', $class->fieldMappings['version']['type']);
         $this->assertNotEmpty($class->fieldMappings['version']['version']);
@@ -189,11 +210,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testFieldMappings
      */
-    public function testLockFieldMappings($class)
+    public function testLockFieldMappings(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('int', $class->fieldMappings['lock']['type']);
         $this->assertNotEmpty($class->fieldMappings['lock']['lock']);
@@ -202,11 +225,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testIdentifier
      */
-    public function testAssocations($class)
+    public function testAssocations(ClassMetadata $class): ClassMetadata
     {
         $this->assertCount(14, $class->fieldMappings);
 
@@ -214,11 +239,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testAssocations
      */
-    public function testOwningOneToOneAssocation($class)
+    public function testOwningOneToOneAssociation(ClassMetadata $class): ClassMetadata
     {
         $this->assertTrue(isset($class->fieldMappings['address']));
         $this->assertIsArray($class->fieldMappings['address']);
@@ -233,11 +260,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
-     * @depends testOwningOneToOneAssocation
+     * @return ClassMetadata<AbstractMappingDriverUser>
+     *
+     * @depends testOwningOneToOneAssociation
      */
-    public function testLifecycleCallbacks($class)
+    public function testLifecycleCallbacks(ClassMetadata $class): ClassMetadata
     {
         $expectedLifecycleCallbacks = [
             'prePersist' => ['doStuffOnPrePersist', 'doOtherStuffOnPrePersistToo'],
@@ -250,11 +279,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testLifecycleCallbacks
      */
-    public function testCustomFieldName($class)
+    public function testCustomFieldName(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('name', $class->fieldMappings['name']['fieldName']);
         $this->assertEquals('username', $class->fieldMappings['name']['name']);
@@ -263,11 +294,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testCustomFieldName
      */
-    public function testCustomReferenceFieldName($class)
+    public function testCustomReferenceFieldName(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('morePhoneNumbers', $class->fieldMappings['morePhoneNumbers']['fieldName']);
         $this->assertEquals('more_phone_numbers', $class->fieldMappings['morePhoneNumbers']['name']);
@@ -276,11 +309,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testCustomReferenceFieldName
      */
-    public function testCustomEmbedFieldName($class)
+    public function testCustomEmbedFieldName(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('embeddedPhonenumber', $class->fieldMappings['embeddedPhonenumber']['fieldName']);
         $this->assertEquals('embedded_phone_number', $class->fieldMappings['embeddedPhonenumber']['name']);
@@ -289,15 +324,14 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testCustomEmbedFieldName
      */
-    public function testDiscriminator($class)
+    public function testDiscriminator(ClassMetadata $class): ClassMetadata
     {
-        $this->assertTrue(isset($class->discriminatorField));
-        $this->assertTrue(isset($class->discriminatorMap));
-        $this->assertTrue(isset($class->defaultDiscriminatorValue));
         $this->assertEquals('discr', $class->discriminatorField);
         $this->assertEquals(['default' => AbstractMappingDriverUser::class], $class->discriminatorMap);
         $this->assertEquals('default', $class->defaultDiscriminatorValue);
@@ -306,11 +340,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testDiscriminator
      */
-    public function testEmbedDiscriminator($class)
+    public function testEmbedDiscriminator(ClassMetadata $class): ClassMetadata
     {
         $this->assertTrue(isset($class->fieldMappings['otherPhonenumbers']['discriminatorField']));
         $this->assertTrue(isset($class->fieldMappings['otherPhonenumbers']['discriminatorMap']));
@@ -326,11 +362,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testEmbedDiscriminator
      */
-    public function testReferenceDiscriminator($class)
+    public function testReferenceDiscriminator(ClassMetadata $class): ClassMetadata
     {
         $this->assertTrue(isset($class->fieldMappings['phonenumbers']['discriminatorField']));
         $this->assertTrue(isset($class->fieldMappings['phonenumbers']['discriminatorMap']));
@@ -346,11 +384,13 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
+     *
+     * @return ClassMetadata<AbstractMappingDriverUser>
      *
      * @depends testCustomFieldName
      */
-    public function testIndexes($class)
+    public function testIndexes(ClassMetadata $class): ClassMetadata
     {
         $indexes = $class->indexes;
 
@@ -394,11 +434,11 @@ abstract class AbstractMappingDriverTest extends BaseTest
     }
 
     /**
-     * @param ClassMetadata $class
+     * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @depends testIndexes
      */
-    public function testShardKey($class)
+    public function testShardKey(ClassMetadata $class): void
     {
         $shardKey = $class->getShardKey();
 
@@ -411,7 +451,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->assertEquals(4096, $shardKey['options']['numInitialChunks'], 'Shard key option has wrong value');
     }
 
-    public function testGridFSMapping()
+    public function testGridFSMapping(): void
     {
         $class = $this->dm->getClassMetadata(AbstractMappingDriverFile::class);
 
@@ -456,7 +496,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         ], $class->getFieldMapping('metadata'), true);
     }
 
-    public function testGridFSMappingWithCustomRepository()
+    public function testGridFSMappingWithCustomRepository(): void
     {
         $class = $this->dm->getClassMetadata(AbstractMappingDriverFileWithCustomRepository::class);
 
@@ -464,7 +504,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->assertSame(AbstractMappingDriverGridFSRepository::class, $class->customRepositoryClassName);
     }
 
-    public function testDuplicateDatabaseNameInMappingCauseErrors()
+    public function testDuplicateDatabaseNameInMappingCauseErrors(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
@@ -474,7 +514,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->dm->getClassMetadata(AbstractMappingDriverDuplicateDatabaseName::class);
     }
 
-    public function testDuplicateDatabaseNameWithNotSavedDoesNotThrowExeption()
+    public function testDuplicateDatabaseNameWithNotSavedDoesNotThrowExeption(): void
     {
         $metadata = $this->dm->getClassMetadata(AbstractMappingDriverDuplicateDatabaseNameNotSaved::class);
 
@@ -483,7 +523,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->assertTrue($metadata->fieldMappings['bar']['notSaved']);
     }
 
-    public function testViewWithoutRepository()
+    public function testViewWithoutRepository(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(sprintf(
@@ -496,7 +536,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->dm->getRepository(AbstractMappingDriverViewWithoutRepository::class);
     }
 
-    public function testViewWithWrongRepository()
+    public function testViewWithWrongRepository(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(sprintf(
@@ -509,7 +549,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->dm->getRepository(AbstractMappingDriverViewWithWrongRepository::class);
     }
 
-    public function testViewWithoutRootClass()
+    public function testViewWithoutRootClass(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(sprintf(
@@ -520,7 +560,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->dm->getClassMetadata(AbstractMappingDriverViewWithoutRootClass::class);
     }
 
-    public function testViewWithNonExistingRootClass()
+    public function testViewWithNonExistingRootClass(): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(sprintf(
@@ -532,7 +572,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->dm->getClassMetadata(AbstractMappingDriverViewWithNonExistingRootClass::class);
     }
 
-    public function testView()
+    public function testView(): void
     {
         $metadata = $this->dm->getClassMetadata(AbstractMappingDriverView::class);
 
@@ -587,87 +627,167 @@ abstract class AbstractMappingDriverTest extends BaseTest
  *   {  }
  * })
  */
+#[ODM\Document(collection: 'cms_users', writeConcern: 1, readOnly: true)]
+#[ODM\DiscriminatorField('discr')]
+#[ODM\DiscriminatorMap(['default' => AbstractMappingDriverUser::class])]
+#[ODM\DefaultDiscriminatorValue('default')]
+#[ODM\HasLifecycleCallbacks]
+#[ODM\Index(keys: ['createdAt' => 'asc'], expireAfterSeconds: 3600)]
+#[ODM\Index(keys: ['lock' => 'asc'], partialFilterExpression: ['version' => ['$gt' => 1], 'discr' => ['$eq' => 'default']])]
+#[ODM\ShardKey(keys: ['name' => 'asc'], unique: true, numInitialChunks: 4096)]
+#[ODM\ReadPreference('primaryPreferred', tags: [['dc' => 'east'], ['dc' => 'west'], []])]
 class AbstractMappingDriverUser
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    #[ODM\Id()]
     public $identifier;
 
     /**
      * @ODM\Version
      * @ODM\Field(type="int")
+     *
+     * @var int|null
      */
+    #[ODM\Version]
+    #[ODM\Field(type: 'int')]
     public $version;
 
     /**
      * @ODM\Lock
      * @ODM\Field(type="int")
+     *
+     * @var int|null
      */
+    #[ODM\Lock]
+    #[ODM\Field(type: 'int')]
     public $lock;
 
     /**
      * @ODM\Field(name="username", type="string")
      * @ODM\UniqueIndex(order="desc")
+     *
+     * @var string|null
      */
+    #[ODM\Field(name: 'username', type: 'string')]
+    #[ODM\UniqueIndex(order: 'desc')]
     public $name;
 
     /**
      * @ODM\Field(type="string")
      * @ODM\UniqueIndex(order="desc")
+     *
+     * @var string|null
      */
+    #[ODM\Field(type: 'string')]
+    #[ODM\UniqueIndex(order: 'desc')]
     public $email;
 
     /**
      * @ODM\Field(type="int")
      * @ODM\UniqueIndex(order="desc")
+     *
+     * @var int|null
      */
+    #[ODM\Field(type: 'int')]
+    #[ODM\UniqueIndex(order: 'desc')]
     public $mysqlProfileId;
 
-    /** @ODM\ReferenceOne(targetDocument=Address::class, cascade={"remove"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Address::class, cascade={"remove"})
+     *
+     * @var Address|null
+     */
+    #[ODM\ReferenceOne(targetDocument: Address::class, cascade: ['remove'])]
     public $address;
 
-    /** @ODM\ReferenceMany(collectionClass=PhonenumberCollection::class, cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
+    /**
+     * @ODM\ReferenceMany(collectionClass=PhonenumberCollection::class, cascade={"persist"}, discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home")
+     *
+     * @var PhonenumberCollection
+     */
+    #[ODM\ReferenceMany(collectionClass: PhonenumberCollection::class, cascade: ['persist'], discriminatorField: 'discr', discriminatorMap: ['home' => HomePhonenumber::class, 'work' => WorkPhonenumber::class], defaultDiscriminatorValue: 'home')]
     public $phonenumbers;
 
-    /** @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"}) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Group::class, cascade={"all"})
+     *
+     * @var Collection<int, Group>
+     */
+    #[ODM\ReferenceMany(targetDocument: Group::class, cascade: ['all'])]
     public $groups;
 
-    /** @ODM\ReferenceMany(targetDocument=Phonenumber::class, collectionClass=PhonenumberCollection::class, name="more_phone_numbers") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=Phonenumber::class, collectionClass=PhonenumberCollection::class, name="more_phone_numbers")
+     *
+     * @var PhonenumberCollection
+     */
+    #[ODM\ReferenceMany(targetDocument: Phonenumber::class, collectionClass: PhonenumberCollection::class, name: 'more_phone_numbers')]
     public $morePhoneNumbers;
 
-    /** @ODM\EmbedMany(targetDocument=Phonenumber::class, name="embedded_phone_number") */
+    /**
+     * @ODM\EmbedMany(targetDocument=Phonenumber::class, name="embedded_phone_number")
+     *
+     * @var Collection<int, Phonenumber>
+     */
+    #[ODM\EmbedMany(targetDocument: Phonenumber::class, name: 'embedded_phone_number')]
     public $embeddedPhonenumber;
 
-    /** @ODM\EmbedMany(discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home") */
+    /**
+     * @ODM\EmbedMany(discriminatorField="discr", discriminatorMap={"home"=HomePhonenumber::class, "work"=WorkPhonenumber::class}, defaultDiscriminatorValue="home")
+     *
+     * @var Collection<int, HomePhonenumber|WorkPhonenumber>
+     */
+    #[ODM\EmbedMany(discriminatorField: 'discr', discriminatorMap: ['home' => HomePhonenumber::class, 'work' => WorkPhonenumber::class], defaultDiscriminatorValue: 'home')]
     public $otherPhonenumbers;
 
-    /** @ODM\Field(type="date") */
+    /**
+     * @ODM\Field(type="date")
+     *
+     * @var DateTime|null
+     */
+    #[ODM\Field(type: 'date')]
     public $createdAt;
 
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
+    #[ODM\Field(type: 'collection')]
     public $roles = [];
 
     /**
      * @ODM\PrePersist
      */
-    public function doStuffOnPrePersist()
+    #[ODM\PrePersist]
+    public function doStuffOnPrePersist(): void
     {
     }
 
     /**
      * @ODM\PrePersist
      */
-    public function doOtherStuffOnPrePersistToo()
+    #[ODM\PrePersist]
+    public function doOtherStuffOnPrePersistToo(): void
     {
     }
 
     /**
      * @ODM\PostPersist
      */
-    public function doStuffOnPostPersist()
+    #[ODM\PostPersist]
+    public function doStuffOnPostPersist(): void
     {
     }
 
-    public static function loadMetadata(ClassMetadata $metadata)
+    /**
+     * @param ClassMetadata<AbstractMappingDriverUser> $metadata
+     */
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
         $metadata->setCollection('cms_users');
@@ -760,6 +880,9 @@ class AbstractMappingDriverUser
     }
 }
 
+/**
+ * @template-extends ArrayCollection<int, Phonenumber>
+ */
 class PhonenumberCollection extends ArrayCollection
 {
 }
@@ -786,137 +909,270 @@ class Phonenumber
 
 class InvalidMappingDocument
 {
+    /** @var string|null */
     public $id;
 }
 
 /**
  * @ODM\File(chunkSizeBytes=12345)
  */
+#[ODM\File(chunkSizeBytes: 12345)]
 class AbstractMappingDriverFile
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    #[ODM\Id]
     public $id;
 
-    /** @ODM\File\Length */
+    /**
+     * @ODM\File\Length
+     *
+     * @var int|null
+     */
+    #[ODM\File\Length]
     public $size;
 
-    /** @ODM\File\ChunkSize */
+    /**
+     * @ODM\File\ChunkSize
+     *
+     * @var int|null
+     */
+    #[ODM\File\ChunkSize]
     public $chunkSize;
 
-    /** @ODM\File\Filename */
+    /**
+     * @ODM\File\Filename
+     *
+     * @var string|null
+     */
+    #[ODM\File\Filename]
     public $name;
 
-    /** @ODM\File\Metadata(targetDocument=AbstractMappingDriverFileMetadata::class) */
+    /**
+     * @ODM\File\Metadata(targetDocument=AbstractMappingDriverFileMetadata::class)
+     *
+     * @var AbstractMappingDriverFileMetadata|null
+     */
+    #[ODM\File\Metadata(targetDocument: AbstractMappingDriverFileMetadata::class)]
     public $metadata;
 
-    /** @ODM\File\UploadDate */
+    /**
+     * @ODM\File\UploadDate
+     *
+     * @var DateTime|null
+     */
+    #[ODM\File\UploadDate]
     public $uploadDate;
 }
 
 class AbstractMappingDriverFileMetadata
 {
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var string|null
+     */
+    #[ODM\Field]
     public $contentType;
 }
 
 /**
  * @ODM\File(repositoryClass=AbstractMappingDriverGridFSRepository::class)
  */
+#[ODM\File(repositoryClass: AbstractMappingDriverGridFSRepository::class)]
 class AbstractMappingDriverFileWithCustomRepository
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    #[ODM\Id]
     public $id;
 }
 
+/**
+ * @template-extends DefaultGridFSRepository<AbstractMappingDriverFileWithCustomRepository>
+ */
 class AbstractMappingDriverGridFSRepository extends DefaultGridFSRepository
 {
 }
 
 /** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 class AbstractMappingDriverSuperClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|int|null
+     */
+    #[ODM\Field(type: 'string')]
     protected $override;
 }
 
 /**
  * @ODM\Document
  */
+#[ODM\Document]
 class AbstractMappingDriverDuplicateDatabaseName extends AbstractMappingDriverSuperClass
 {
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
+    #[ODM\Field(type: 'int')]
     public $override;
 
-    /** @ODM\Field(type="string", name="baz") */
+    /**
+     * @ODM\Field(type="string", name="baz")
+     *
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string', name: 'baz')]
     public $foo;
 
-    /** @ODM\Field(type="string", name="baz") */
+    /**
+     * @ODM\Field(type="string", name="baz")
+     *
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string', name: 'baz')]
     public $bar;
 }
 
 /**
  * @ODM\Document
  */
+#[ODM\Document]
 class AbstractMappingDriverDuplicateDatabaseNameNotSaved extends AbstractMappingDriverSuperClass
 {
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int|null
+     */
+    #[ODM\Field(type: 'int')]
     public $override;
 
-    /** @ODM\Field(type="string", name="baz") */
+    /**
+     * @ODM\Field(type="string", name="baz")
+     *
+     * @var string|null
+     */
+    #[ODM\Field(type: 'int', name: 'baz')]
     public $foo;
 
-    /** @ODM\Field(type="string", name="baz", notSaved=true) */
+    /**
+     * @ODM\Field(type="string", name="baz", notSaved=true)
+     *
+     * @var string|null
+     */
+    #[ODM\Field(type: 'int', name: 'baz', notSaved: true)]
     public $bar;
 }
 
 /**
  * @ODM\View(rootClass=AbstractMappingDriverUser::class)
  */
+#[ODM\View(rootClass: AbstractMappingDriverUser::class)]
 class AbstractMappingDriverViewWithoutRepository
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
 /**
  * @ODM\View(repositoryClass=DocumentRepository::class, rootClass=AbstractMappingDriverUser::class)
  */
+#[ODM\View(repositoryClass: DocumentRepository::class, rootClass: AbstractMappingDriverUser::class)]
 class AbstractMappingDriverViewWithWrongRepository
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
 /**
  * @ODM\View(repositoryClass=AbstractMappingDriverViewRepository::class)
  */
+#[ODM\View(repositoryClass: AbstractMappingDriverViewRepository::class)]
 class AbstractMappingDriverViewWithoutRootClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
 /**
  * @ODM\View(repositoryClass=AbstractMappingDriverViewRepository::class, rootClass="Doctrine\ODM\MongoDB\LolNo")
  */
+#[ODM\View(repositoryClass: AbstractMappingDriverViewRepository::class, rootClass: 'Doctrine\ODM\MongoDB\LolNo')]
 class AbstractMappingDriverViewWithNonExistingRootClass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
@@ -927,15 +1183,30 @@ class AbstractMappingDriverViewWithNonExistingRootClass
  *     view="user_name",
  * )
  */
+#[ODM\View(repositoryClass: AbstractMappingDriverViewRepository::class, rootClass: AbstractMappingDriverUser::class, view: 'user_name')]
 class AbstractMappingDriverView
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    #[ODM\Id]
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
+/**
+ * @template-extends DocumentRepository<AbstractMappingDriverViewWithoutRootClass>
+ * @template-implements  ViewRepository<AbstractMappingDriverViewWithoutRootClass>
+ */
 class AbstractMappingDriverViewRepository extends DocumentRepository implements ViewRepository
 {
     public function createViewAggregation(Builder $builder): void

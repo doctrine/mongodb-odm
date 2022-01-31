@@ -9,9 +9,17 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document(collection="functional_tests") */
 class NullFieldValues
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(nullable=true) */
+    /**
+     * @ODM\Field(nullable=true)
+     *
+     * @var string|null
+     */
     public $field;
 }

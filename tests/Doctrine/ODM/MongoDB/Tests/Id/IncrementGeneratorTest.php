@@ -12,7 +12,7 @@ use const DOCTRINE_MONGODB_DATABASE;
 
 class IncrementGeneratorTest extends BaseTest
 {
-    public function testIdGeneratorWithStartingValue()
+    public function testIdGeneratorWithStartingValue(): void
     {
         $generator = new IncrementGenerator();
         $generator->setStartingId(10);
@@ -28,7 +28,7 @@ class IncrementGeneratorTest extends BaseTest
         self::assertSame(11, $result['current_id']);
     }
 
-    public function testUsesOneAsStartingValueIfNotOverridden()
+    public function testUsesOneAsStartingValueIfNotOverridden(): void
     {
         $generator = new IncrementGenerator();
 

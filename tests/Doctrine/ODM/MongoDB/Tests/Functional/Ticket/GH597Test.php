@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\ObjectId;
 
 class GH597Test extends BaseTest
 {
-    public function testEmbedManyGetsUnset()
+    public function testEmbedManyGetsUnset(): void
     {
         $post = new GH597Post();
         $this->dm->persist($post);
@@ -58,7 +59,7 @@ class GH597Test extends BaseTest
         $this->assertPostDocument($expectedDocument, $post);
     }
 
-    public function testReferenceManyGetsUnset()
+    public function testReferenceManyGetsUnset(): void
     {
         $post = new GH597Post();
         $this->dm->persist($post);
@@ -111,7 +112,7 @@ class GH597Test extends BaseTest
      *
      * @param array $expected
      */
-    private function assertPostDocument(array $expected, GH597Post $post)
+    private function assertPostDocument(array $expected, GH597Post $post): void
     {
         $collection = $this->dm->getDocumentCollection(GH597Post::class);
         $document   = $collection->findOne(['_id' => new ObjectId($post->getId())]);
@@ -122,13 +123,25 @@ class GH597Test extends BaseTest
 /** @ODM\Document() */
 class GH597Post
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedMany(targetDocument=GH597Comment::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH597Comment::class)
+     *
+     * @var Collection<int, GH597Comment>
+     */
     public $comments;
 
-    /** @ODM\ReferenceMany(targetDocument=GH597ReferenceMany::class, storeAs="id") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH597ReferenceMany::class, storeAs="id")
+     *
+     * @var Collection<int, GH597ReferenceMany>
+     */
     public $referenceMany;
 
     public function __construct()
@@ -137,17 +150,23 @@ class GH597Post
         $this->referenceMany = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getComments()
+    /**
+     * @return Collection<int, GH597Comment>
+     */
+    public function getComments(): Collection
     {
         return $this->comments;
     }
 
-    public function getReferenceMany()
+    /**
+     * @return Collection<int, GH597ReferenceMany>
+     */
+    public function getReferenceMany(): Collection
     {
         return $this->referenceMany;
     }
@@ -156,10 +175,14 @@ class GH597Post
 /** @ODM\EmbeddedDocument */
 class GH597Comment
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $comment;
 
-    public function __construct($comment)
+    public function __construct(string $comment)
     {
         $this->comment = $comment;
     }
@@ -169,18 +192,26 @@ class GH597Comment
 /** @ODM\Document */
 class GH597ReferenceMany
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $field;
 
-    public function __construct($field)
+    public function __construct(string $field)
     {
         $this->field = $field;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

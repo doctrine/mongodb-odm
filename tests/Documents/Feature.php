@@ -9,16 +9,28 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class Feature
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument=Product::class, inversedBy="features", cascade={"all"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Product::class, inversedBy="features", cascade={"all"})
+     *
+     * @var Product|null
+     */
     public $product;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

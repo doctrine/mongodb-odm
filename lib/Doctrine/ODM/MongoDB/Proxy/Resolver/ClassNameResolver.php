@@ -9,6 +9,8 @@ interface ClassNameResolver
 {
     /**
      * Gets the real class name of a class name that could be a proxy.
+     *
+     * @psalm-param class-string $class
      */
     public function getRealClass(string $class): string;
 }

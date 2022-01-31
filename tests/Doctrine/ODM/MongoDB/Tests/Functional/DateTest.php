@@ -17,7 +17,7 @@ use const PHP_INT_SIZE;
 
 class DateTest extends BaseTest
 {
-    public function testDates()
+    public function testDates(): void
     {
         $user = new User();
         $user->setUsername('w00ting');
@@ -38,9 +38,12 @@ class DateTest extends BaseTest
     }
 
     /**
+     * @param DateTime|UTCDateTime $oldValue
+     * @param DateTime|UTCDateTime $newValue
+     *
      * @dataProvider provideEquivalentDates
      */
-    public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame($oldValue, $newValue)
+    public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame($oldValue, $newValue): void
     {
         $user = new User();
         $user->setCreatedAt($oldValue);
@@ -51,11 +54,11 @@ class DateTest extends BaseTest
         $user = $this->dm->getRepository(get_class($user))->findOneBy([]);
         $user->setCreatedAt($newValue);
         $this->dm->getUnitOfWork()->computeChangeSets();
-        $changeset = $this->dm->getUnitOfWork()->getDocumentChangeset($user);
+        $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);
         $this->assertEmpty($changeset);
     }
 
-    public function provideEquivalentDates()
+    public function provideEquivalentDates(): array
     {
         return [
             [new DateTime('1985-09-01 00:00:00'), new DateTime('1985-09-01 00:00:00')],
@@ -67,7 +70,7 @@ class DateTest extends BaseTest
         ];
     }
 
-    public function testDateInstanceValueChangeDoesCauseUpdateIfValueIsTheSame()
+    public function testDateInstanceValueChangeDoesCauseUpdateIfValueIsTheSame(): void
     {
         $user = new User();
         $user->setCreatedAt(new DateTime('1985-09-01'));
@@ -76,14 +79,15 @@ class DateTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->findOneBy([]);
+        $this->assertInstanceOf(DateTime::class, $user->getCreatedAt());
         $user->getCreatedAt()->setTimestamp(time() - 3600);
 
         $this->dm->getUnitOfWork()->computeChangeSets();
-        $changeset = $this->dm->getUnitOfWork()->getDocumentChangeset($user);
+        $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);
         $this->assertNotEmpty($changeset);
     }
 
-    public function testOldDate()
+    public function testOldDate(): void
     {
         if (PHP_INT_SIZE === 4) {
             $this->expectException(InvalidArgumentException::class);

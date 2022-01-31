@@ -24,6 +24,9 @@ class CreateCommand extends AbstractCommand
     /** @var string[] */
     private $createOrder = [self::COLLECTION, self::INDEX];
 
+    /**
+     * @return void
+     */
     protected function configure()
     {
         parent::configure();
@@ -37,6 +40,9 @@ class CreateCommand extends AbstractCommand
             ->setDescription('Create databases, collections and indexes for your documents');
     }
 
+    /**
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $create = array_filter($this->createOrder, static function (string $option) use ($input): bool {
@@ -105,6 +111,9 @@ class CreateCommand extends AbstractCommand
         $sm->ensureIndexes($maxTimeMs, $writeConcern, $background);
     }
 
+    /**
+     * @return void
+     */
     protected function processDocumentProxy(SchemaManager $sm, string $document)
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
@@ -113,9 +122,11 @@ class CreateCommand extends AbstractCommand
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
     }
 
+    /**
+     * @return void
+     */
     protected function processProxy(SchemaManager $sm)
     {
-        /** @var ClassMetadata[] $metadatas */
         $metadatas = $this->getMetadataFactory()->getAllMetadata();
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($metadatas);
     }

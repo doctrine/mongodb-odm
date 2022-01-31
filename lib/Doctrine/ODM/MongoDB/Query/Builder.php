@@ -1625,11 +1625,11 @@ class Builder
     /**
      * Get Discriminator Values
      *
-     * @param string[] $classNames
+     * @psalm-param class-string[] $classNames
      *
      * @throws InvalidArgumentException If the number of found collections > 1.
      */
-    private function getDiscriminatorValues($classNames): array
+    private function getDiscriminatorValues(array $classNames): array
     {
         $discriminatorValues = [];
         $collections         = [];
@@ -1649,8 +1649,9 @@ class Builder
 
     /**
      * @param string[]|string|null $documentName an array of document names or just one.
+     * @psalm-param class-string[]|class-string|null $documentName
      */
-    private function setDocumentName($documentName)
+    private function setDocumentName($documentName): void
     {
         if (is_array($documentName)) {
             $documentNames = $documentName;

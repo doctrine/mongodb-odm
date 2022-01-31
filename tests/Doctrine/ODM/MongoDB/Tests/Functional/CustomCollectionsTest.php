@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -21,21 +22,21 @@ use function get_class;
 
 class CustomCollectionsTest extends BaseTest
 {
-    public function testMappingNamespaceIsAdded()
+    public function testMappingNamespaceIsAdded(): void
     {
         $d  = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
         $this->assertSame(MyEmbedsCollection::class, $cm->fieldMappings['coll']['collectionClass']);
     }
 
-    public function testLeadingBackslashIsRemoved()
+    public function testLeadingBackslashIsRemoved(): void
     {
         $d  = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
         $this->assertSame(MyDocumentsCollection::class, $cm->fieldMappings['inverseRefMany']['collectionClass']);
     }
 
-    public function testCollectionClassHasToImplementCommonInterface()
+    public function testCollectionClassHasToImplementCommonInterface(): void
     {
         $cm = new ClassMetadata('stdClass');
 
@@ -52,7 +53,7 @@ class CustomCollectionsTest extends BaseTest
         ]);
     }
 
-    public function testGeneratedClassExtendsBaseCollection()
+    public function testGeneratedClassExtendsBaseCollection(): void
     {
         $coll  = new MyEmbedsCollection();
         $pcoll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create(
@@ -65,7 +66,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertSame($coll, $pcoll->unwrap());
     }
 
-    public function testEmbedMany()
+    public function testEmbedMany(): void
     {
         $d = new DocumentWithCustomCollection();
         $d->coll->add(new EmbeddedDocumentInCustomCollection('#1', true));
@@ -91,7 +92,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertCount(2, $d->boring);
     }
 
-    public function testReferenceMany()
+    public function testReferenceMany(): void
     {
         $d = new DocumentWithCustomCollection();
         $d->coll->add(new EmbeddedDocumentInCustomCollection('#1', true));
@@ -112,7 +113,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertCount(1, $d2->refMany->havingEmbeds());
     }
 
-    public function testInverseSideOfReferenceMany()
+    public function testInverseSideOfReferenceMany(): void
     {
         $d = new DocumentWithCustomCollection();
         $this->dm->persist($d);
@@ -128,7 +129,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertInstanceOf(MyDocumentsCollection::class, $d2->inverseRefMany);
     }
 
-    public function testModifyingCollectionByCustomMethod()
+    public function testModifyingCollectionByCustomMethod(): void
     {
         $d = new DocumentWithCustomCollection();
         $d->coll->add($e1 = new EmbeddedDocumentInCustomCollection('#1', true));
@@ -147,7 +148,7 @@ class CustomCollectionsTest extends BaseTest
         $this->assertEquals($e1, $d->coll[1]);
     }
 
-    public function testModifyingCollectionInChangeTrackingNotifyDocument()
+    public function testModifyingCollectionInChangeTrackingNotifyDocument(): void
     {
         $repository = $this->dm->getRepository(File::class);
         assert($repository instanceof GridFSRepository);
@@ -175,7 +176,7 @@ class CustomCollectionsTest extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testMethodWithVoidReturnType()
+    public function testMethodWithVoidReturnType(): void
     {
         $d = new DocumentWithCustomCollection();
         $this->dm->persist($d);
@@ -191,7 +192,11 @@ class CustomCollectionsTest extends BaseTest
  */
 class DocumentWithCustomCollection
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -199,6 +204,8 @@ class DocumentWithCustomCollection
      *   collectionClass=MyEmbedsCollection::class,
      *   targetDocument=EmbeddedDocumentInCustomCollection::class
      * )
+     *
+     * @var MyEmbedsCollection<int, EmbeddedDocumentInCustomCollection>
      */
     public $coll;
 
@@ -206,6 +213,8 @@ class DocumentWithCustomCollection
      * @ODM\EmbedMany(
      *   targetDocument=EmbeddedDocumentInCustomCollection::class
      * )
+     *
+     * @var Collection<int, EmbeddedDocumentInCustomCollection>
      */
     public $boring;
 
@@ -215,6 +224,8 @@ class DocumentWithCustomCollection
      *   orphanRemoval=true,
      *   targetDocument=DocumentWithCustomCollection::class
      * )
+     *
+     * @var MyDocumentsCollection<int, DocumentWithCustomCollection>
      */
     public $refMany;
 
@@ -224,6 +235,8 @@ class DocumentWithCustomCollection
      *   mappedBy="refMany",
      *   targetDocument=DocumentWithCustomCollection::class
      * )
+     *
+     * @var MyDocumentsCollection<int, DocumentWithCustomCollection>
      */
     public $inverseRefMany;
 
@@ -241,36 +254,55 @@ class DocumentWithCustomCollection
  */
 class EmbeddedDocumentInCustomCollection
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\Field(type="bool") */
+    /**
+     * @ODM\Field(type="bool")
+     *
+     * @var bool
+     */
     public $enabled;
 
-    public function __construct($name, $enabled)
+    public function __construct(string $name, bool $enabled)
     {
         $this->name    = $name;
         $this->enabled = $enabled;
     }
 }
 
+/**
+ * @template TKey of array-key
+ * @template TElement
+ * @template-extends ArrayCollection<TKey, TElement>
+ */
 class MyEmbedsCollection extends ArrayCollection
 {
-    public function getByName($name)
+    /**
+     * @return MyEmbedsCollection<TKey, TElement>
+     */
+    public function getByName(string $name): MyEmbedsCollection
     {
         return $this->filter(static function ($item) use ($name) {
             return $item->name === $name;
         });
     }
 
-    public function getEnabled()
+    /**
+     * @return MyEmbedsCollection<TKey, TElement>
+     */
+    public function getEnabled(): MyEmbedsCollection
     {
         return $this->filter(static function ($item) {
             return $item->enabled;
         });
     }
 
-    public function move($i, $j)
+    public function move(int $i, int $j): void
     {
         $tmp = $this->get($i);
         $this->set($i, $this->get($j));
@@ -282,9 +314,17 @@ class MyEmbedsCollection extends ArrayCollection
     }
 }
 
+/**
+ * @template TKey of array-key
+ * @template TElement
+ * @template-extends ArrayCollection<TKey, TElement>
+ */
 class MyDocumentsCollection extends ArrayCollection
 {
-    public function havingEmbeds()
+    /**
+     * @return MyDocumentsCollection<TKey, TElement>
+     */
+    public function havingEmbeds(): MyDocumentsCollection
     {
         return $this->filter(static function ($item) {
             return $item->coll->count();

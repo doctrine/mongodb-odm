@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -11,7 +12,7 @@ use function get_class;
 
 class GH897Test extends BaseTest
 {
-    public function testRecomputeSingleDocumentChangesetForManagedDocumentWithoutChangeset()
+    public function testRecomputeSingleDocumentChangesetForManagedDocumentWithoutChangeset(): void
     {
         $documentA       = new GH897A();
         $documentA->name = 'a';
@@ -44,29 +45,50 @@ class GH897Test extends BaseTest
 /** @ODM\Document */
 class GH897A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }
 
 /** @ODM\Document @ODM\HasLifecycleCallbacks */
 class GH897B
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\ReferenceOne(targetDocument=GH897A::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH897A::class)
+     *
+     * @var GH897A|null
+     */
     public $refOne;
 
+    /** @var DocumentManager|null */
     public $dm;
 
     /** @ODM\PreFlush */
-    public function preFlush()
+    public function preFlush(): void
     {
         if (! $this->refOne instanceof GH897A) {
             return;

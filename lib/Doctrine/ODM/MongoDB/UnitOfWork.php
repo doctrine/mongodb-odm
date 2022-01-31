@@ -213,7 +213,7 @@ final class UnitOfWork implements PropertyChangedListener
      * At the end of the UnitOfWork all these collections will make new snapshots
      * of their data.
      *
-     * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
+     * @psalm-var array<string, array<PersistentCollectionInterface<array-key, object>>>
      */
     private $visitedCollections = [];
 
@@ -271,7 +271,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Array of parent associations between embedded documents.
      *
      * @var array
-     * @psalm-var array<string, array{0: FieldMapping, 1: object|null, 2: string}>
+     * @psalm-var array<string, array{0: AssociationFieldMapping, 1: object|null, 2: string}>
      */
     private $parentAssociations = [];
 
@@ -341,7 +341,7 @@ final class UnitOfWork implements PropertyChangedListener
      *     list($mapping, $parent, $propertyPath) = $this->getParentAssociation($embeddedDocument);
      *     </code>
      *
-     * @psalm-return array{0: FieldMapping, 1: object|null, 2: string}|null
+     * @psalm-return array{0: AssociationFieldMapping, 1: object|null, 2: string}|null
      */
     public function getParentAssociation(object $document): ?array
     {
@@ -1630,6 +1630,8 @@ final class UnitOfWork implements PropertyChangedListener
      * @throws InvalidArgumentException If the class does not have an identifier.
      *
      * @template T of object
+     *
+     * @psalm-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
     public function getById($id, ClassMetadata $class): object
     {
@@ -1657,6 +1659,8 @@ final class UnitOfWork implements PropertyChangedListener
      * @throws InvalidArgumentException If the class does not have an identifier.
      *
      * @template T of object
+     *
+     * @psalm-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
     public function tryGetById($id, ClassMetadata $class)
     {
@@ -2745,6 +2749,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @param FieldMapping              $mapping
      * @param array<string, mixed>|null $data
+     *
+     * @psalm-return class-string
      */
     public function getClassNameForAssociation(array $mapping, $data): string
     {
@@ -2802,6 +2808,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         if ($discriminatorValue !== null) {
+            /** @psalm-var class-string<T> $className */
             $className =  $class->discriminatorMap[$discriminatorValue] ?? $discriminatorValue;
 
             $class = $this->dm->getClassMetadata($className);

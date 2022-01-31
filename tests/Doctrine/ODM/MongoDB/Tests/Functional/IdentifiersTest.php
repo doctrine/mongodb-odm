@@ -7,13 +7,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Event;
 use Documents\User;
+use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function assert;
 use function get_class;
 
 class IdentifiersTest extends BaseTest
 {
-    public function testGetIdentifierValue()
+    public function testGetIdentifierValue(): void
     {
         $user = new User();
         $user->setUsername('jwage');
@@ -27,8 +28,10 @@ class IdentifiersTest extends BaseTest
 
         $test = $this->dm->getRepository(get_class($event))->find($event->getId());
 
-        $this->assertEquals($user->getId(), $test->getUser()->getId());
-        $this->assertFalse($test->getUser()->isProxyInitialized());
+        $userTest = $test->getUser();
+        $this->assertEquals($user->getId(), $userTest->getId());
+        $this->assertInstanceOf(LazyLoadingInterface::class, $userTest);
+        $this->assertFalse($userTest->isProxyInitialized());
 
         $this->dm->clear();
 
@@ -37,13 +40,14 @@ class IdentifiersTest extends BaseTest
         $test = $this->dm->getRepository(get_class($event))->find($event->getId());
         $this->assertEquals($user->getId(), $class->getIdentifierValue($test->getUser()));
         $this->assertEquals($user->getId(), $class->getFieldValue($test->getUser(), 'id'));
+        $this->assertInstanceOf(LazyLoadingInterface::class, $test->getUser());
         $this->assertFalse($test->getUser()->isProxyInitialized());
 
         $this->assertEquals('jwage', $test->getUser()->getUsername());
         $this->assertTrue($test->getUser()->isProxyInitialized());
     }
 
-    public function testIdentifiersAreSet()
+    public function testIdentifiersAreSet(): void
     {
         $user = new User();
         $user->setUsername('jwage');
@@ -55,7 +59,7 @@ class IdentifiersTest extends BaseTest
         $this->assertNotSame('', $user->getId());
     }
 
-    public function testIdentityMap()
+    public function testIdentityMap(): void
     {
         $user = new User();
         $user->setUsername('jwage');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -12,7 +13,7 @@ use function assert;
 
 class GH1418Test extends BaseTest
 {
-    public function testManualHydrateAndMerge()
+    public function testManualHydrateAndMerge(): void
     {
         $document = new GH1418Document();
         $this->dm->getHydratorFactory()->hydrate($document, [
@@ -40,7 +41,7 @@ class GH1418Test extends BaseTest
         $this->assertEquals(2, $document->embedMany->first()->id);
     }
 
-    public function testReadDocumentAndManage()
+    public function testReadDocumentAndManage(): void
     {
         $document     = new GH1418Document();
         $document->id = 1;
@@ -104,13 +105,25 @@ class GH1418Test extends BaseTest
 /** @ODM\Document */
 class GH1418Document
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var int|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1418Embedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1418Embedded::class)
+     *
+     * @var GH1418Embedded|null
+     */
     public $embedOne;
 
-    /** @ODM\EmbedMany(targetDocument=GH1418Embedded::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=GH1418Embedded::class)
+     *
+     * @var Collection<int, GH1418Embedded>
+     */
     public $embedMany;
 }
 
@@ -120,9 +133,15 @@ class GH1418Embedded
     /**
      * @ODM\Id(strategy="none", type="int")
      * @ODM\AlsoLoad("sourceId")
+     *
+     * @var int|null
      */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }

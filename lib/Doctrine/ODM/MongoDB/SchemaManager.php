@@ -21,13 +21,18 @@ use function array_search;
 use function array_unique;
 use function array_values;
 use function assert;
+use function count;
 use function in_array;
+use function is_array;
 use function is_string;
 use function iterator_count;
 use function iterator_to_array;
 use function ksort;
 use function sprintf;
 
+/**
+ * @psalm-import-type IndexMapping from ClassMetadata
+ */
 final class SchemaManager
 {
     private const GRIDFS_FILE_COLLECTION_INDEX = ['files_id' => 1, 'n' => 1];
@@ -100,6 +105,8 @@ final class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      *
+     * @psalm-param class-string $documentName
+     *
      * @throws InvalidArgumentException
      */
     public function updateDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
@@ -144,6 +151,11 @@ final class SchemaManager
         $this->ensureDocumentIndexes($documentName, $maxTimeMs, $writeConcern);
     }
 
+    /**
+     * @psalm-param class-string $documentName
+     *
+     * @psalm-return IndexMapping[]
+     */
     public function getDocumentIndexes(string $documentName): array
     {
         $visited = [];
@@ -151,6 +163,12 @@ final class SchemaManager
         return $this->doGetDocumentIndexes($documentName, $visited);
     }
 
+    /**
+     * @psalm-param class-string $documentName
+     * @psalm-param array<class-string, bool> $visited
+     *
+     * @psalm-return IndexMapping[]
+     */
     private function doGetDocumentIndexes(string $documentName, array &$visited): array
     {
         if (isset($visited[$documentName])) {
@@ -214,6 +232,11 @@ final class SchemaManager
         return $indexes;
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     *
+     * @psalm-return IndexMapping[]
+     */
     private function prepareIndexes(ClassMetadata $class): array
     {
         $persister  = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
@@ -244,6 +267,8 @@ final class SchemaManager
 
     /**
      * Ensure the given document's indexes are created.
+     *
+     * @psalm-param class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -288,6 +313,8 @@ final class SchemaManager
     /**
      * Delete the given document's indexes.
      *
+     * @psalm-param class-string $documentName
+     *
      * @throws InvalidArgumentException
      */
     public function deleteDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
@@ -317,6 +344,8 @@ final class SchemaManager
 
     /**
      * Ensure collection validators are up to date for the mapped document class.
+     *
+     * @psalm-param class-string $documentName
      */
     public function updateDocumentValidator(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
@@ -325,9 +354,9 @@ final class SchemaManager
             throw new InvalidArgumentException('Cannot update validators for files, views, mapped super classes, embedded documents or aggregation result documents.');
         }
 
-        $validator = [];
-        if ($class->getValidator() !== null) {
-            $validator = $class->getValidator();
+        $validator = $class->getValidator();
+        if ($validator === null || (is_array($validator) && count($validator) === 0)) {
+            $validator = (object) [];
         }
 
         $collection       = $this->dm->getDocumentCollection($class->name);
@@ -363,10 +392,20 @@ final class SchemaManager
      */
     public function createCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
+        $singleInheritanceProcessed = [];
+
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
+            }
+
+            if ($class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION) {
+                if (in_array($class->collection, $singleInheritanceProcessed)) {
+                    continue;
+                }
+
+                $singleInheritanceProcessed[] = $class->collection;
             }
 
             $this->createDocumentCollection($class->name, $maxTimeMs, $writeConcern);
@@ -375,6 +414,8 @@ final class SchemaManager
 
     /**
      * Create the document collection for a mapped class.
+     *
+     * @psalm-param class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -453,6 +494,8 @@ final class SchemaManager
     /**
      * Drop the document collection for a mapped class.
      *
+     * @psalm-param class-string $documentName
+     *
      * @throws InvalidArgumentException
      */
     public function dropDocumentCollection(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
@@ -491,6 +534,8 @@ final class SchemaManager
     /**
      * Drop the document database for a mapped class.
      *
+     * @psalm-param class-string $documentName
+     *
      * @throws InvalidArgumentException
      */
     public function dropDocumentDatabase(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
@@ -503,6 +548,9 @@ final class SchemaManager
         $this->dm->getDocumentDatabase($documentName)->drop($this->getWriteOptions($maxTimeMs, $writeConcern));
     }
 
+    /**
+     * @psalm-param IndexMapping $documentIndex
+     */
     public function isMongoIndexEquivalentToDocumentIndex(IndexInfo $mongoIndex, array $documentIndex): bool
     {
         return $this->isEquivalentIndexKeys($mongoIndex, $documentIndex) && $this->isEquivalentIndexOptions($mongoIndex, $documentIndex);
@@ -511,6 +559,8 @@ final class SchemaManager
     /**
      * Determine if the keys for a MongoDB index can be considered equivalent to
      * those for an index in class metadata.
+     *
+     * @psalm-param IndexMapping $documentIndex
      */
     private function isEquivalentIndexKeys(IndexInfo $mongoIndex, array $documentIndex): bool
     {
@@ -540,6 +590,9 @@ final class SchemaManager
             $mongoIndexKeys == $documentIndexKeys;
     }
 
+    /**
+     * @psalm-param IndexMapping $documentIndex
+     */
     private function hasTextIndexesAtSamePosition(IndexInfo $mongoIndex, array $documentIndex): bool
     {
         $mongoIndexKeys    = $mongoIndex['key'];
@@ -574,6 +627,8 @@ final class SchemaManager
      *
      * The background option is only relevant to index creation and is not
      * considered.
+     *
+     * @psalm-param IndexMapping $documentIndex
      */
     private function isEquivalentIndexOptions(IndexInfo $mongoIndex, array $documentIndex): bool
     {
@@ -650,6 +705,8 @@ final class SchemaManager
     /**
      * Determine if the text index weights for a MongoDB index can be considered
      * equivalent to those for an index in class metadata.
+     *
+     * @psalm-param IndexMapping $documentIndex
      */
     private function isEquivalentTextIndexWeights(IndexInfo $mongoIndex, array $documentIndex): bool
     {
@@ -698,6 +755,8 @@ final class SchemaManager
     /**
      * Ensure sharding for collection by document name.
      *
+     * @psalm-param class-string $documentName
+     *
      * @throws MongoDBException
      */
     public function ensureDocumentSharding(string $documentName, ?WriteConcern $writeConcern = null): void
@@ -723,6 +782,8 @@ final class SchemaManager
     /**
      * Enable sharding for database which contains documents with given name.
      *
+     * @psalm-param class-string $documentName
+     *
      * @throws MongoDBException
      */
     public function enableShardingForDbByDocumentName(string $documentName): void
@@ -742,7 +803,10 @@ final class SchemaManager
         }
     }
 
-    private function runShardCollectionCommand(string $documentName, ?WriteConcern $writeConcern = null): array
+    /**
+     * @psalm-param class-string $documentName
+     */
+    private function runShardCollectionCommand(string $documentName, ?WriteConcern $writeConcern = null): void
     {
         $class    = $this->dm->getClassMetadata($documentName);
         $dbName   = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
@@ -765,7 +829,7 @@ final class SchemaManager
             $shardKeyPart[$fieldName] = $order;
         }
 
-        return $adminDb->command(
+        $adminDb->command(
             array_merge(
                 [
                     'shardCollection' => $dbName . '.' . $class->getCollection(),
@@ -773,15 +837,21 @@ final class SchemaManager
                 ],
                 $this->getWriteOptions(null, $writeConcern)
             )
-        )->toArray()[0];
+        );
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function ensureGridFSIndexes(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $this->ensureChunksIndex($class, $maxTimeMs, $writeConcern, $background);
         $this->ensureFilesIndex($class, $maxTimeMs, $writeConcern, $background);
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function ensureChunksIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $chunksCollection = $this->dm->getDocumentBucket($class->getName())->getChunksCollection();
@@ -797,6 +867,9 @@ final class SchemaManager
         );
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function ensureFilesIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $filesCollection = $this->dm->getDocumentCollection($class->getName());
@@ -809,6 +882,9 @@ final class SchemaManager
         $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX, $this->getWriteOptions($maxTimeMs, $writeConcern, ['background' => $background]));
     }
 
+    /**
+     * @psalm-param class-string $documentName
+     */
     private function collectionIsSharded(string $documentName): bool
     {
         $class = $this->dm->getClassMetadata($documentName);

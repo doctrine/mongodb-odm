@@ -12,7 +12,7 @@ use function get_class;
 
 class GH529Test extends BaseTest
 {
-    public function testAutoIdWithConsistentValues()
+    public function testAutoIdWithConsistentValues(): void
     {
         $identifier = new ObjectId();
         $doc        = new GH529AutoIdDocument();
@@ -28,7 +28,7 @@ class GH529Test extends BaseTest
         $this->assertEquals($identifier, $doc->id);
     }
 
-    public function testCustomIdType()
+    public function testCustomIdType(): void
     {
         /* All values are consistent for CustomIdType, since the PHP and DB
          * conversions return the value as-is.
@@ -46,7 +46,7 @@ class GH529Test extends BaseTest
         $this->assertSame('foo', $doc->id);
     }
 
-    public function testIntIdWithConsistentValues()
+    public function testIntIdWithConsistentValues(): void
     {
         $doc     = new GH529IntIdDocument();
         $doc->id = 1;
@@ -61,7 +61,7 @@ class GH529Test extends BaseTest
         $this->assertSame(1, $doc->id);
     }
 
-    public function testIntIdWithInconsistentValues()
+    public function testIntIdWithInconsistentValues(): void
     {
         $doc     = new GH529IntIdDocument();
         $doc->id = 3.14;
@@ -80,20 +80,32 @@ class GH529Test extends BaseTest
 /** @ODM\Document */
 class GH529AutoIdDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var ObjectId|null
+     */
     public $id;
 }
 
 /** @ODM\Document */
 class GH529CustomIdDocument
 {
-    /** @ODM\Id(strategy="none", type="custom_id") */
+    /**
+     * @ODM\Id(strategy="none", type="custom_id")
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document */
 class GH529IntIdDocument
 {
-    /** @ODM\Id(strategy="none", type="int") */
+    /**
+     * @ODM\Id(strategy="none", type="int")
+     *
+     * @var float|int|null
+     */
     public $id;
 }

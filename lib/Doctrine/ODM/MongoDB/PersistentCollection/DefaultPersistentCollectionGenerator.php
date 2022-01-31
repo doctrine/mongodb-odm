@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\Configuration;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionIntersectionType;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -22,6 +23,7 @@ use function explode;
 use function file_exists;
 use function file_put_contents;
 use function implode;
+use function in_array;
 use function interface_exists;
 use function is_dir;
 use function is_writable;
@@ -114,7 +116,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
     /**
      * @param string|false $fileName Filename to write collection class code or false to eval it.
      */
-    private function generateCollectionClass(string $for, string $targetFqcn, $fileName)
+    private function generateCollectionClass(string $for, string $targetFqcn, $fileName): void
     {
         $exploded  = explode('\\', $targetFqcn);
         $class     = array_pop($exploded);
@@ -193,17 +195,10 @@ CODE;
     {
         $parametersString = $this->buildParametersString($method);
         $callParamsString = implode(', ', $this->getParameterNamesForDecoratedCall($method->getParameters()));
-
-        $return = 'return ';
-        if ($method->getReturnType() !== null && $this->formatType($method->getReturnType(), $method) === 'void') {
-            $return = '';
-        }
+        $return           = $this->shouldMethodSkipReturnKeyword($method) ? '' : 'return ';
 
         return <<<CODE
 
-    /**
-     * {@inheritDoc}
-     */
     public function {$method->name}($parametersString){$this->getMethodReturnType($method)}
     {
         \$this->initialize();
@@ -214,6 +209,15 @@ CODE;
     }
 
 CODE;
+    }
+
+    private function shouldMethodSkipReturnKeyword(ReflectionMethod $method): bool
+    {
+        if ($method->getReturnType() === null) {
+            return false;
+        }
+
+        return in_array($this->formatType($method->getReturnType(), $method), ['void', 'never'], true);
     }
 
     private function buildParametersString(ReflectionMethod $method): string
@@ -301,6 +305,15 @@ CODE;
             return implode('|', array_map(
                 function (ReflectionType $unionedType) use ($method, $parameter) {
                     return $this->formatType($unionedType, $method, $parameter);
+                },
+                $type->getTypes()
+            ));
+        }
+
+        if ($type instanceof ReflectionIntersectionType) {
+            return implode('&', array_map(
+                function (ReflectionType $intersectedType) use ($method, $parameter) {
+                    return $this->formatType($intersectedType, $method, $parameter);
                 },
                 $type->getTypes()
             ));

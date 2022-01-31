@@ -54,6 +54,8 @@ final class LifecycleEventManager
 
     /**
      * Dispatches postCollectionLoad event.
+     *
+     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function postCollectionLoad(PersistentCollectionInterface $coll): void
     {
@@ -63,6 +65,11 @@ final class LifecycleEventManager
 
     /**
      * Invokes postPersist callbacks and events for given document cascading them to embedded documents as well.
+     *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $document
+     *
+     * @template T of object
      */
     public function postPersist(ClassMetadata $class, object $document): void
     {
@@ -73,6 +80,11 @@ final class LifecycleEventManager
 
     /**
      * Invokes postRemove callbacks and events for given document.
+     *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $document
+     *
+     * @template T of object
      */
     public function postRemove(ClassMetadata $class, object $document): void
     {
@@ -83,6 +95,11 @@ final class LifecycleEventManager
     /**
      * Invokes postUpdate callbacks and events for given document. The same will be done for embedded documents owned
      * by given document unless they were new in which case postPersist callbacks and events will be dispatched.
+     *
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $document
+     *
+     * @template T of object
      */
     public function postUpdate(ClassMetadata $class, object $document): void
     {
@@ -93,6 +110,11 @@ final class LifecycleEventManager
 
     /**
      * Invokes prePersist callbacks and events for given document.
+     *
+     * @param ClassMetadata<T> $class
+     * @param T                $document
+     *
+     * @template T of object
      */
     public function prePersist(ClassMetadata $class, object $document): void
     {
@@ -102,6 +124,11 @@ final class LifecycleEventManager
 
     /**
      * Invokes prePersist callbacks and events for given document.
+     *
+     * @param ClassMetadata<T> $class
+     * @param T                $document
+     *
+     * @template T of object
      */
     public function preRemove(ClassMetadata $class, object $document): void
     {
@@ -111,6 +138,11 @@ final class LifecycleEventManager
 
     /**
      * Invokes preUpdate callbacks and events for given document cascading them to embedded documents as well.
+     *
+     * @param ClassMetadata<T> $class
+     * @param T                $document
+     *
+     * @template T of object
      */
     public function preUpdate(ClassMetadata $class, object $document): void
     {
@@ -125,6 +157,11 @@ final class LifecycleEventManager
 
     /**
      * Cascades the preUpdate event to embedded documents.
+     *
+     * @param ClassMetadata<T> $class
+     * @param T                $document
+     *
+     * @template T of object
      */
     private function cascadePreUpdate(ClassMetadata $class, object $document): void
     {
@@ -148,6 +185,11 @@ final class LifecycleEventManager
 
     /**
      * Cascades the postUpdate and postPersist events to embedded documents.
+     *
+     * @param ClassMetadata<T> $class
+     * @param T                $document
+     *
+     * @template T of object
      */
     private function cascadePostUpdate(ClassMetadata $class, object $document): void
     {
@@ -176,6 +218,11 @@ final class LifecycleEventManager
 
     /**
      * Cascades the postPersist events to embedded documents.
+     *
+     * @param ClassMetadata<T> $class
+     * @param T                $document
+     *
+     * @template T of object
      */
     private function cascadePostPersist(ClassMetadata $class, object $document): void
     {
@@ -192,6 +239,9 @@ final class LifecycleEventManager
         }
     }
 
+    /**
+     * @param ClassMetadata<object> $class
+     */
     private function dispatchEvent(ClassMetadata $class, string $eventName, ?EventArgs $eventArgs = null): void
     {
         if ($class->isView()) {

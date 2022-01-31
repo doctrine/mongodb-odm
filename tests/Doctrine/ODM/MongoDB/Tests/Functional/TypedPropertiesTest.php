@@ -10,20 +10,12 @@ use Documents74\TypedEmbeddedDocument;
 use MongoDB\BSON\ObjectId;
 
 use function assert;
-use function phpversion;
-use function version_compare;
 
+/**
+ * @requires PHP 7.4
+ */
 class TypedPropertiesTest extends BaseTest
 {
-    public function setUp(): void
-    {
-        if (version_compare((string) phpversion(), '7.4.0', '<')) {
-            $this->markTestSkipped('PHP 7.4 is required to run this test');
-        }
-
-        parent::setUp();
-    }
-
     public function testPersistNew(): void
     {
         $ref       = new TypedDocument();

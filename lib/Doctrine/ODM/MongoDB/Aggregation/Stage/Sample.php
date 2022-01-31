@@ -22,9 +22,6 @@ class Sample extends Stage
         $this->size = $size;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

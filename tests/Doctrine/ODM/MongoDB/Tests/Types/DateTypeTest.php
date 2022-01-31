@@ -22,7 +22,7 @@ use const PHP_INT_SIZE;
 
 class DateTypeTest extends TestCase
 {
-    public function testGetDateTime()
+    public function testGetDateTime(): void
     {
         $type = Type::getType(Type::DATE);
         assert($type instanceof DateType);
@@ -36,7 +36,7 @@ class DateTypeTest extends TestCase
         $this->assertEquals($timestamp, $dateTime->format('U.u'));
     }
 
-    public function testConvertToDatabaseValue()
+    public function testConvertToDatabaseValue(): void
     {
         $type = Type::getType(Type::DATE);
 
@@ -55,7 +55,7 @@ class DateTypeTest extends TestCase
         $this->assertEquals(null, $type->convertToDatabaseValue(null), 'null are converted to null');
     }
 
-    public function testConvertDateTimeImmutable()
+    public function testConvertDateTimeImmutable(): void
     {
         $type = Type::getType(Type::DATE);
 
@@ -66,7 +66,7 @@ class DateTypeTest extends TestCase
         $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTimeImmutable), 'DateTimeImmutable objects are converted to MongoDate objects');
     }
 
-    public function testConvertOldDate()
+    public function testConvertOldDate(): void
     {
         $type = Type::getType(Type::DATE);
 
@@ -76,16 +76,18 @@ class DateTypeTest extends TestCase
     }
 
     /**
+     * @param mixed $value
+     *
      * @dataProvider provideInvalidDateValues
      */
-    public function testConvertToDatabaseValueWithInvalidValues($value)
+    public function testConvertToDatabaseValueWithInvalidValues($value): void
     {
         $type = Type::getType(Type::DATE);
         $this->expectException(InvalidArgumentException::class);
         $type->convertToDatabaseValue($value);
     }
 
-    public function provideInvalidDateValues()
+    public function provideInvalidDateValues(): array
     {
         return [
             'array'  => [[]],
@@ -97,9 +99,11 @@ class DateTypeTest extends TestCase
     }
 
     /**
+     * @param mixed $input
+     *
      * @dataProvider provideDatabaseToPHPValues
      */
-    public function testConvertToPHPValue($input, $output)
+    public function testConvertToPHPValue($input, DateTime $output): void
     {
         $type   = Type::getType(Type::DATE);
         $return = $type->convertToPHPValue($input);
@@ -108,7 +112,7 @@ class DateTypeTest extends TestCase
         $this->assertTimestampEquals($output, $return);
     }
 
-    public function testConvertToPHPValueDoesNotConvertNull()
+    public function testConvertToPHPValueDoesNotConvertNull(): void
     {
         $type = Type::getType(Type::DATE);
 
@@ -116,9 +120,11 @@ class DateTypeTest extends TestCase
     }
 
     /**
+     * @param mixed $input
+     *
      * @dataProvider provideDatabaseToPHPValues
      */
-    public function testClosureToPHP($input, $output)
+    public function testClosureToPHP($input, DateTime $output): void
     {
         $type = Type::getType(Type::DATE);
 
@@ -136,7 +142,7 @@ class DateTypeTest extends TestCase
         $this->assertTimestampEquals($output, $return);
     }
 
-    public function provideDatabaseToPHPValues()
+    public function provideDatabaseToPHPValues(): array
     {
         $yesterday = strtotime('yesterday');
         $mongoDate = new UTCDateTime($yesterday * 1000);
@@ -151,7 +157,7 @@ class DateTypeTest extends TestCase
         ];
     }
 
-    public function test32bit1900Date()
+    public function test32bit1900Date(): void
     {
         if (PHP_INT_SIZE !== 4) {
             $this->markTestSkipped('Platform is not 32-bit');
@@ -162,7 +168,7 @@ class DateTypeTest extends TestCase
         $type->convertToDatabaseValue('1900-01-01');
     }
 
-    public function test64bit1900Date()
+    public function test64bit1900Date(): void
     {
         if (PHP_INT_SIZE !== 8) {
             $this->markTestSkipped('Platform is not 64-bit');
@@ -175,7 +181,7 @@ class DateTypeTest extends TestCase
         $this->assertEquals(new UTCDateTime(strtotime('1900-01-01') * 1000), $return);
     }
 
-    private function assertTimestampEquals(DateTime $expected, DateTime $actual)
+    private function assertTimestampEquals(DateTime $expected, DateTime $actual): void
     {
         $this->assertEquals($expected->format('U.u'), $actual->format('U.u'));
     }

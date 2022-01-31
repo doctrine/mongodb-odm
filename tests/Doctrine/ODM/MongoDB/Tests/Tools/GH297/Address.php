@@ -9,15 +9,19 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class Address
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $street;
 
-    public function getStreet()
+    public function getStreet(): ?string
     {
         return $this->street;
     }
 
-    public function setStreet($street)
+    public function setStreet(string $street): void
     {
         $this->street = $street;
     }

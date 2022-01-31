@@ -11,6 +11,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 }

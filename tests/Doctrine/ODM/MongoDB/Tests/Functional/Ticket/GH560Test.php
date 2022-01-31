@@ -14,9 +14,11 @@ use function get_class;
 class GH560Test extends BaseTest
 {
     /**
+     * @param int|string $id
+     *
      * @dataProvider provideDocumentIds
      */
-    public function testPersistListenersAreCalled($id)
+    public function testPersistListenersAreCalled($id): void
     {
         $listener = new GH560EventSubscriber([
             Events::prePersist,
@@ -39,9 +41,11 @@ class GH560Test extends BaseTest
     }
 
     /**
+     * @param int|string $id
+     *
      * @dataProvider provideDocumentIds
      */
-    public function testDocumentWithCustomIdStrategyIsSavedAndFoundFromDatabase($id)
+    public function testDocumentWithCustomIdStrategyIsSavedAndFoundFromDatabase($id): void
     {
         $doc = new GH560Document($id, 'test');
         $this->dm->persist($doc);
@@ -53,9 +57,11 @@ class GH560Test extends BaseTest
     }
 
     /**
+     * @param int|string $id
+     *
      * @dataProvider provideDocumentIds
      */
-    public function testUpdateListenersAreCalled($id)
+    public function testUpdateListenersAreCalled($id): void
     {
         $listener = new GH560EventSubscriber([
             Events::preUpdate,
@@ -80,7 +86,7 @@ class GH560Test extends BaseTest
         $this->assertEquals($called, $listener->called);
     }
 
-    public function provideDocumentIds()
+    public function provideDocumentIds(): array
     {
         return [
             [123456],
@@ -91,7 +97,10 @@ class GH560Test extends BaseTest
 
 class GH560EventSubscriber implements EventSubscriber
 {
+    /** @var array<array{string, class-string}> */
     public $called;
+
+    /** @var string[] */
     public $events;
 
     public function __construct(array $events)
@@ -100,12 +109,12 @@ class GH560EventSubscriber implements EventSubscriber
         $this->events = $events;
     }
 
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return $this->events;
     }
 
-    public function __call($eventName, $args)
+    public function __call(string $eventName, array $args): void
     {
         $this->called[] = [$eventName, get_class($args[0]->getDocument())];
     }
@@ -114,13 +123,24 @@ class GH560EventSubscriber implements EventSubscriber
 /** @ODM\Document */
 class GH560Document
 {
-    /** @ODM\Id(strategy="NONE") */
+    /**
+     * @ODM\Id(strategy="NONE")
+     *
+     * @var int|string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    public function __construct($id, $name)
+    /**
+     * @param int|string $id
+     */
+    public function __construct($id, string $name)
     {
         $this->id   = $id;
         $this->name = $name;

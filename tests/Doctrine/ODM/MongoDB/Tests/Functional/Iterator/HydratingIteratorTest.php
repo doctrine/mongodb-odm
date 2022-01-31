@@ -7,13 +7,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
+use Generator;
 use MongoDB\BSON\ObjectId;
 
 use function is_array;
 
 final class HydratingIteratorTest extends BaseTest
 {
-    public function testConstructorRewinds()
+    public function testConstructorRewinds(): void
     {
         $iterator = new HydratingIterator($this->getTraversable(), $this->uow, $this->dm->getClassMetadata(User::class));
 
@@ -22,7 +23,7 @@ final class HydratingIteratorTest extends BaseTest
         $this->assertInstanceOf(User::class, $iterator->current());
     }
 
-    public function testIteration()
+    public function testIteration(): void
     {
         $iterator = new HydratingIterator($this->getTraversable(), $this->uow, $this->dm->getClassMetadata(User::class));
 
@@ -39,7 +40,7 @@ final class HydratingIteratorTest extends BaseTest
         $this->assertFalse($iterator->valid());
     }
 
-    public function testIterationWithEmptySet()
+    public function testIterationWithEmptySet(): void
     {
         $iterator = new HydratingIterator($this->getTraversable([]), $this->uow, $this->dm->getClassMetadata(User::class));
 
@@ -47,7 +48,7 @@ final class HydratingIteratorTest extends BaseTest
         $this->assertFalse($iterator->valid());
     }
 
-    private function getTraversable($items = null)
+    private function getTraversable(?array $items = null): Generator
     {
         if (! is_array($items)) {
             $items = [

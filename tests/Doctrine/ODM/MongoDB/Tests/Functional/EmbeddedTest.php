@@ -27,7 +27,7 @@ use function get_class;
 
 class EmbeddedTest extends BaseTest
 {
-    public function testSetEmbeddedToNull()
+    public function testSetEmbeddedToNull(): void
     {
         $user = new User();
         $user->setId((string) new ObjectId());
@@ -44,7 +44,7 @@ class EmbeddedTest extends BaseTest
         $this->assertNull($user->getAddress());
     }
 
-    public function testFlushEmbedded()
+    public function testFlushEmbedded(): void
     {
         $test       = new EmbeddedTestLevel0();
         $test->name = 'test';
@@ -89,7 +89,7 @@ class EmbeddedTest extends BaseTest
         $this->assertCount(1, $test->level1);
     }
 
-    public function testOneEmbedded()
+    public function testOneEmbedded(): void
     {
         $address = new Address();
         $address->setAddress('6512 Mercomatic Ct.');
@@ -129,7 +129,7 @@ class EmbeddedTest extends BaseTest
         $this->assertSame($user->getAddress(), $changeSet['address'][1]);
     }
 
-    public function testRemoveOneEmbedded()
+    public function testRemoveOneEmbedded(): void
     {
         $address = new Address();
         $address->setAddress('6512 Mercomatic Ct.');
@@ -156,7 +156,7 @@ class EmbeddedTest extends BaseTest
         $this->assertNull($user->getAddress());
     }
 
-    public function testManyEmbedded()
+    public function testManyEmbedded(): void
     {
         $user = new User();
         $user->addPhonenumber(new Phonenumber('6155139185'));
@@ -175,7 +175,7 @@ class EmbeddedTest extends BaseTest
         $this->assertEquals($user->getPhonenumbers()->toArray(), $user2->getPhonenumbers()->toArray());
     }
 
-    public function testPostRemoveEventOnEmbeddedManyDocument()
+    public function testPostRemoveEventOnEmbeddedManyDocument(): void
     {
         // create a test document
         $test       = new EmbeddedTestLevel0b();
@@ -211,7 +211,7 @@ class EmbeddedTest extends BaseTest
         $this->assertTrue($level1->postRemove, 'the removed embedded document executed the PostRemove lifecycle callback');
     }
 
-    public function testRemoveEmbeddedManyDocument()
+    public function testRemoveEmbeddedManyDocument(): void
     {
         // create a test document
         $test       = new EmbeddedTestLevel0b();
@@ -259,7 +259,7 @@ class EmbeddedTest extends BaseTest
         $this->assertEquals(0, $test->level1->count());
     }
 
-    public function testRemoveDeepEmbeddedManyDocument()
+    public function testRemoveDeepEmbeddedManyDocument(): void
     {
         // create a test document
         $test       = new EmbeddedTestLevel0b();
@@ -312,7 +312,7 @@ class EmbeddedTest extends BaseTest
         $this->assertEquals(0, $level1->level2->count());
     }
 
-    public function testPostRemoveEventOnDeepEmbeddedManyDocument()
+    public function testPostRemoveEventOnDeepEmbeddedManyDocument(): void
     {
         // create a test document
         $test       = new EmbeddedTestLevel0b();
@@ -354,7 +354,7 @@ class EmbeddedTest extends BaseTest
         $this->assertTrue($level2->postRemove, 'the removed embedded document executed the PostRemove lifecycle callback');
     }
 
-    public function testEmbeddedLoadEvents()
+    public function testEmbeddedLoadEvents(): void
     {
         // create a test document
         $test       = new EmbeddedTestLevel0b();
@@ -386,7 +386,7 @@ class EmbeddedTest extends BaseTest
         $this->assertTrue($level2->postLoad);
     }
 
-    public function testEmbeddedDocumentChangesParent()
+    public function testEmbeddedDocumentChangesParent(): void
     {
         $address = new Address();
         $address->setAddress('6512 Mercomatic Ct.');
@@ -409,7 +409,7 @@ class EmbeddedTest extends BaseTest
         $this->assertEquals('changed', $user->getAddress()->getAddress());
     }
 
-    public function testRemoveEmbeddedDocument()
+    public function testRemoveEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setAddress('6512 Mercomatic Ct.');
@@ -435,7 +435,7 @@ class EmbeddedTest extends BaseTest
         $this->assertArrayNotHasKey('address', $check);
     }
 
-    public function testRemoveAddDeepEmbedded()
+    public function testRemoveAddDeepEmbedded(): void
     {
         $vhost = new VirtualHost();
 
@@ -469,7 +469,7 @@ class EmbeddedTest extends BaseTest
         }
     }
 
-    public function testEmbeddedDocumentNotSavedFields()
+    public function testEmbeddedDocumentNotSavedFields(): void
     {
         $document                     = new NotSaved();
         $document->embedded           = new NotSavedEmbedded();
@@ -486,7 +486,7 @@ class EmbeddedTest extends BaseTest
         $this->assertNull($document->embedded->notSaved);
     }
 
-    public function testChangeEmbedOneDocumentId()
+    public function testChangeEmbedOneDocumentId(): void
     {
         $originalId = (string) new ObjectId();
 
@@ -509,7 +509,7 @@ class EmbeddedTest extends BaseTest
         $this->assertEquals($newId, $test->embed->id);
     }
 
-    public function testChangeEmbedManyDocumentId()
+    public function testChangeEmbedManyDocumentId(): void
     {
         $originalId = (string) new ObjectId();
 
@@ -532,7 +532,7 @@ class EmbeddedTest extends BaseTest
         $this->assertEquals($newId, $test->embedMany[0]->id);
     }
 
-    public function testEmbeddedDocumentsWithSameIdAreNotSameInstance()
+    public function testEmbeddedDocumentsWithSameIdAreNotSameInstance(): void
     {
         $originalId = (string) new ObjectId();
 
@@ -551,7 +551,7 @@ class EmbeddedTest extends BaseTest
         $this->assertNotSame($test->embed, $test->embedMany[1]);
     }
 
-    public function testWhenCopyingManyEmbedSubDocumentsFromOneDocumentToAnotherWillNotAffectTheSourceDocument()
+    public function testWhenCopyingManyEmbedSubDocumentsFromOneDocumentToAnotherWillNotAffectTheSourceDocument(): void
     {
         $test1 = new ChangeEmbeddedIdTest();
 
@@ -582,7 +582,7 @@ class EmbeddedTest extends BaseTest
         $this->assertCount(1, $test1->embedMany);
     }
 
-    public function testReusedEmbeddedDocumentsAreClonedInFact()
+    public function testReusedEmbeddedDocumentsAreClonedInFact(): void
     {
         $test1 = new ChangeEmbeddedIdTest();
         $test2 = new ChangeEmbeddedIdTest();
@@ -606,7 +606,7 @@ class EmbeddedTest extends BaseTest
         $this->assertSame($originalTest2['embed'], $test2->embed);
     }
 
-    public function testEmbeddedDocumentWithDifferentFieldNameAnnotation()
+    public function testEmbeddedDocumentWithDifferentFieldNameAnnotation(): void
     {
         $test1 = new ChangeEmbeddedWithNameAnnotationTest();
 
@@ -643,7 +643,11 @@ class EmbeddedTest extends BaseTest
  */
 class ChangeEmbeddedIdTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
@@ -671,7 +675,11 @@ class ChangeEmbeddedIdTest
  */
 class EmbeddedDocumentWithId
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
@@ -680,13 +688,25 @@ class EmbeddedDocumentWithId
  */
 class ChangeEmbeddedWithNameAnnotationTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithAnotherEmbedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithAnotherEmbedded::class)
+     *
+     * @var EmbeddedDocumentWithAnotherEmbedded|null
+     */
     public $embedOne;
 
-    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithAnotherEmbedded::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithAnotherEmbedded::class)
+     *
+     * @var EmbeddedDocumentWithAnotherEmbedded|null
+     */
     public $embedTwo;
 }
 
@@ -695,6 +715,10 @@ class ChangeEmbeddedWithNameAnnotationTest
  */
 class EmbeddedDocumentWithAnotherEmbedded
 {
-    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class, name="m_id") */
+    /**
+     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class, name="m_id")
+     *
+     * @var EmbeddedDocumentWithId|null
+     */
     public $embed;
 }

@@ -33,6 +33,8 @@ class GenerateProxiesCommand extends Console\Command\Command
 {
     /**
      * @see Console\Command\Command
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -54,7 +56,7 @@ EOT
     }
 
     /**
-     * @see Console\Command\Command
+     * @return int
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
@@ -64,7 +66,6 @@ EOT
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         assert($dm instanceof DocumentManager);
 
-        /** @var ClassMetadata[] $metadatas */
         $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata): bool {
             return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
         });

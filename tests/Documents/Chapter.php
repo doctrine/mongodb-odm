@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -13,16 +14,28 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Chapter
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=Page::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Page::class)
+     *
+     * @var Collection<int, Page>
+     */
     public $pages;
 
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int
+     */
     public $nbPages = 0;
 
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
         $this->name  = $name;
         $this->pages = new ArrayCollection();
@@ -31,7 +44,7 @@ class Chapter
     /**
      * @ODM\PostUpdate
      */
-    public function doThisAfterAnUpdate()
+    public function doThisAfterAnUpdate(): void
     {
         /* Do not do this at home, it is here only to see if nothing breaks,
          * field will not be updated in database with new value unless another

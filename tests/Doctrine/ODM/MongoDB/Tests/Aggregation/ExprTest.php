@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
 use BadMethodCallException;
+use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use LogicException;
@@ -14,9 +15,11 @@ class ExprTest extends BaseTest
     use AggregationOperatorsProviderTrait;
 
     /**
+     * @param array|Closure $args
+     *
      * @dataProvider provideAllOperators
      */
-    public function testGenericOperator($expected, $operator, $args)
+    public function testGenericOperator(array $expected, string $operator, $args): void
     {
         $expr = $this->createExpr();
         $args = $this->resolveArgs($args);
@@ -26,9 +29,11 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param array|Closure $args
+     *
      * @dataProvider provideAllOperators
      */
-    public function testGenericOperatorWithField($expected, $operator, $args)
+    public function testGenericOperatorWithField(array $expected, string $operator, $args): void
     {
         $expr = $this->createExpr();
         $args = $this->resolveArgs($args);
@@ -37,7 +42,7 @@ class ExprTest extends BaseTest
         $this->assertSame(['foo' => $expected], $expr->getExpression());
     }
 
-    public function testExpr()
+    public function testExpr(): void
     {
         $expr = $this->createExpr();
 
@@ -46,7 +51,7 @@ class ExprTest extends BaseTest
         $this->assertNotSame($newExpr, $expr);
     }
 
-    public function testExpression()
+    public function testExpression(): void
     {
         $nestedExpr = $this->createExpr();
         $nestedExpr
@@ -69,7 +74,7 @@ class ExprTest extends BaseTest
         );
     }
 
-    public function testExpressionWithoutField()
+    public function testExpressionWithoutField(): void
     {
         $nestedExpr = $this->createExpr();
         $nestedExpr
@@ -84,7 +89,7 @@ class ExprTest extends BaseTest
         $expr->expression($nestedExpr);
     }
 
-    public function testSwitch()
+    public function testSwitch(): void
     {
         $expr = $this->createExpr();
 
@@ -109,7 +114,7 @@ class ExprTest extends BaseTest
         );
     }
 
-    public function testCallingCaseWithoutSwitchThrowsException()
+    public function testCallingCaseWithoutSwitchThrowsException(): void
     {
         $expr = $this->createExpr();
 
@@ -119,7 +124,7 @@ class ExprTest extends BaseTest
         $expr->case('$field');
     }
 
-    public function testCallingThenWithoutCaseThrowsException()
+    public function testCallingThenWithoutCaseThrowsException(): void
     {
         $expr = $this->createExpr();
 
@@ -129,7 +134,7 @@ class ExprTest extends BaseTest
         $expr->then('$field');
     }
 
-    public function testCallingThenWithoutCaseAfterSuccessfulCaseThrowsException()
+    public function testCallingThenWithoutCaseAfterSuccessfulCaseThrowsException(): void
     {
         $expr = $this->createExpr();
 
@@ -143,7 +148,7 @@ class ExprTest extends BaseTest
         $expr->then('$field');
     }
 
-    public function testCallingDefaultWithoutSwitchThrowsException()
+    public function testCallingDefaultWithoutSwitchThrowsException(): void
     {
         $expr = $this->createExpr();
 

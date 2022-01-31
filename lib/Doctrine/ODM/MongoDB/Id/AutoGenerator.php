@@ -12,7 +12,6 @@ use MongoDB\BSON\ObjectId;
  */
 final class AutoGenerator extends AbstractIdGenerator
 {
-    /** @inheritDoc */
     public function generate(DocumentManager $dm, object $document)
     {
         return new ObjectId();

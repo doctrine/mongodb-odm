@@ -28,7 +28,7 @@ final class HydratorException extends MongoDBException
         return new self('You must configure a hydrator namespace. See docs for details');
     }
 
-    public static function associationTypeMismatch(string $className, string $fieldName, string $expectedType, string $actualType)
+    public static function associationTypeMismatch(string $className, string $fieldName, string $expectedType, string $actualType): self
     {
         return new self(sprintf(
             'Expected association for field "%s" in document of type "%s" to be of type "%s", "%s" received.',
@@ -39,7 +39,10 @@ final class HydratorException extends MongoDBException
         ));
     }
 
-    public static function associationItemTypeMismatch(string $className, string $fieldName, $key, string $expectedType, string $actualType)
+    /**
+     * @param int|string $key
+     */
+    public static function associationItemTypeMismatch(string $className, string $fieldName, $key, string $expectedType, string $actualType): self
     {
         return new self(sprintf(
             'Expected association item with key "%s" for field "%s" in document of type "%s" to be of type "%s", "%s" received.',

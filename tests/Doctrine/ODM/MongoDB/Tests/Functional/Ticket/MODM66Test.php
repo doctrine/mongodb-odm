@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM66Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $b1 = new MODM52B('first');
         $a  = new MODM52A([$b1]);
@@ -34,7 +35,7 @@ class MODM66Test extends BaseTest
         ]);
     }
 
-    public function testRefresh()
+    public function testRefresh(): void
     {
         $b1 = new MODM52B('first');
         $a  = new MODM52A([$b1]);
@@ -64,18 +65,32 @@ class MODM66Test extends BaseTest
 /** @ODM\Document */
 class MODM52A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\ReferenceMany(targetDocument=MODM52B::class, cascade="all") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=MODM52B::class, cascade="all")
+     *
+     * @var Collection<int, MODM52B>
+     */
     protected $b;
 
-    public function __construct($b)
+    /**
+     * @param array<MODM52B> $b
+     */
+    public function __construct(array $b)
     {
         $this->b = new ArrayCollection($b);
     }
 
-    public function getB()
+    /**
+     * @return Collection<int, MODM52B>
+     */
+    public function getB(): Collection
     {
         return $this->b;
     }
@@ -84,18 +99,26 @@ class MODM52A
 /** @ODM\Document */
 class MODM52B
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $value;
 
-    public function __construct($v)
+    public function __construct(string $v)
     {
         $this->value = $v;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

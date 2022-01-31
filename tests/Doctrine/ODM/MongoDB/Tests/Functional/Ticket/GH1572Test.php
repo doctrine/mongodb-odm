@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
@@ -11,7 +13,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1572Test extends BaseTest
 {
-    public function testPersistentCollectionCount()
+    public function testPersistentCollectionCount(): void
     {
         $blog = new GH1572Blog();
         $this->dm->persist($blog);
@@ -44,26 +46,50 @@ class GH1572Test extends BaseTest
 /** @ODM\Document */
 class GH1572Blog
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog")
+     *
+     * @var Collection<int, GH1572Post>|array<GH1572Post>
+     */
     public $allPosts = [];
 
-    /** @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog", sort={"id"="asc"}, limit=2) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog", sort={"id"="asc"}, limit=2)
+     *
+     * @var Collection<int, GH1572Post>|array<GH1572Post>
+     */
     public $latestPosts = [];
 
-    /** @ODM\ReferenceMany(targetDocument=GH1572Post::class, repositoryMethod="getPostsForBlog") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH1572Post::class, repositoryMethod="getPostsForBlog")
+     *
+     * @var Collection<int, GH1572Post>|array<GH1572Post>
+     */
     public $latestPostsRepositoryMethod = [];
 }
 
 /** @ODM\Document(repositoryClass=GH1572PostRepository::class) */
 class GH1572Post
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=GH1572Blog::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH1572Blog::class)
+     *
+     * @var GH1572Blog
+     */
     public $blog;
 
     public function __construct(GH1572Blog $blog)
@@ -73,9 +99,15 @@ class GH1572Post
     }
 }
 
+/**
+ * @template-extends DocumentRepository<GH1572Blog>
+ */
 class GH1572PostRepository extends DocumentRepository
 {
-    public function getPostsForBlog($blog)
+    /**
+     * @return Iterator<GH1572Blog>
+     */
+    public function getPostsForBlog(GH1572Blog $blog): Iterator
     {
         return $this->createQueryBuilder()
             ->field('blog')

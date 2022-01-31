@@ -9,12 +9,24 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class Cart
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="int") */
+    /**
+     * @ODM\Field(type="int")
+     *
+     * @var int
+     */
     public $numItems = 0;
 
-    /** @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart") */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart")
+     *
+     * @var Customer|null
+     */
     public $customer;
 }

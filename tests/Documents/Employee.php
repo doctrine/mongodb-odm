@@ -9,15 +9,19 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class Employee extends BaseEmployee
 {
-    /** @ODM\ReferenceOne(targetDocument=Manager::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Manager::class)
+     *
+     * @var Manager|null
+     */
     private $manager;
 
-    public function getManager()
+    public function getManager(): ?Manager
     {
         return $this->manager;
     }
 
-    public function setManager($val)
+    public function setManager(Manager $val): Employee
     {
         $this->manager = $val;
 

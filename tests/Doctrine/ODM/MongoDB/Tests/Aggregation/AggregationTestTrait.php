@@ -12,10 +12,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 trait AggregationTestTrait
 {
-    /**
-     * @return Builder
-     */
-    protected function getTestAggregationBuilder(string $documentName = User::class)
+    protected function getTestAggregationBuilder(string $documentName = User::class): Builder
     {
         return new Builder($this->dm, $documentName);
     }

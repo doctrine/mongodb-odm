@@ -114,6 +114,11 @@ class DateType extends Type implements Versionable
         return 'if ($value === null) { $return = null; } else { $return = \\' . static::class . '::getDateTime($value); }';
     }
 
+    /**
+     * @param mixed $current
+     *
+     * @return DateTimeInterface
+     */
     public function getNextVersion($current)
     {
         return new DateTime();

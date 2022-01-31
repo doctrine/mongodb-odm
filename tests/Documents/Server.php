@@ -17,9 +17,17 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class Server
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 }

@@ -9,15 +9,19 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\Document */
 class SpecialUser extends User
 {
-    /** @ODM\Field(type="collection") */
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var string[]
+     */
     private $rules = [];
 
-    public function setRules(array $rules)
+    public function setRules(array $rules): void
     {
         $this->rules = $rules;
     }
 
-    public function getRules()
+    public function getRules(): array
     {
         return $this->rules;
     }

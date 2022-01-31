@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM65Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $user                               = new MODM65User();
         $user->socialNetworkUser            = new MODM65SocialNetworkUser();
@@ -34,7 +34,11 @@ class MODM65Test extends BaseTest
  */
 class MODM65User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
     /**
      * @ODM\EmbedOne(
@@ -44,6 +48,8 @@ class MODM65User
      *  },
      *  name="snu"
      * )
+     *
+     * @var MODM65SocialNetworkUser|null
      */
     public $socialNetworkUser;
 }

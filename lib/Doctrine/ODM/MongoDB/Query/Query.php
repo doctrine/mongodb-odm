@@ -169,6 +169,8 @@ final class Query implements IteratorAggregate
      * The $name parameter may be used to return a specific key from the
      * internal $query array property. If omitted, the entire array will be
      * returned.
+     *
+     * @return array<string, mixed>|mixed
      */
     public function debug(?string $name = null)
     {
@@ -424,7 +426,7 @@ final class Query implements IteratorAggregate
 
         switch ($this->query['type']) {
             case self::TYPE_FIND:
-                $queryOptions = $this->getQueryOptions('select', 'sort', 'skip', 'limit', 'readPreference');
+                $queryOptions = $this->getQueryOptions('select', 'sort', 'skip', 'limit', 'readPreference', 'hint');
                 $queryOptions = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
 
                 $cursor = $this->collection->find(

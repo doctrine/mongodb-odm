@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MappedSuperclassTest extends BaseTest
 {
-    public function testCRUD()
+    public function testCRUD(): void
     {
         $e = new DocumentSubClass();
         $e->setId(1);
@@ -41,41 +41,59 @@ class MappedSuperclassTest extends BaseTest
 /** @ODM\MappedSuperclass */
 class MappedSuperclassBase
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var int|string|null
+     */
     private $mapped1;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $mapped2;
 
-    /** @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class)
+     *
+     * @var MappedSuperclassRelated1|null
+     */
     private $mappedRelated1;
 
-    public function setMapped1($val)
+    /**
+     * @param int|string $val
+     */
+    public function setMapped1($val): void
     {
         $this->mapped1 = $val;
     }
 
+    /**
+     * @return int|string|null
+     */
     public function getMapped1()
     {
         return $this->mapped1;
     }
 
-    public function setMapped2($val)
+    public function setMapped2(string $val): void
     {
         $this->mapped2 = $val;
     }
 
-    public function getMapped2()
+    public function getMapped2(): ?string
     {
         return $this->mapped2;
     }
 
-    public function setMappedRelated1($mappedRelated1)
+    public function setMappedRelated1(MappedSuperclassRelated1 $mappedRelated1): void
     {
         $this->mappedRelated1 = $mappedRelated1;
     }
 
-    public function getMappedRelated1()
+    public function getMappedRelated1(): ?MappedSuperclassRelated1
     {
         return $this->mappedRelated1;
     }
@@ -84,28 +102,36 @@ class MappedSuperclassBase
 /** @ODM\Document */
 class MappedSuperclassRelated1
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var int|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -114,28 +140,36 @@ class MappedSuperclassRelated1
 /** @ODM\Document */
 class DocumentSubClass extends MappedSuperclassBase
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var int|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $name;
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

@@ -35,7 +35,7 @@ final class HydrateDocumentBench extends BaseBench
     /** @var HydratorInterface */
     private static $hydrator;
 
-    public function init()
+    public function init(): void
     {
         self::$data = [
             '_id' => new ObjectId(),
@@ -83,7 +83,7 @@ final class HydrateDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchHydrateDocument()
+    public function benchHydrateDocument(): void
     {
         self::$hydrator->hydrate(new User(), self::$data);
     }
@@ -91,7 +91,7 @@ final class HydrateDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchHydrateDocumentWithEmbedOne()
+    public function benchHydrateDocumentWithEmbedOne(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$embedOneData);
     }
@@ -99,7 +99,7 @@ final class HydrateDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchHydrateDocumentWithEmbedMany()
+    public function benchHydrateDocumentWithEmbedMany(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$embedManyData);
     }
@@ -107,7 +107,7 @@ final class HydrateDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchHydrateDocumentWithReferenceOne()
+    public function benchHydrateDocumentWithReferenceOne(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$referenceOneData);
     }
@@ -115,7 +115,7 @@ final class HydrateDocumentBench extends BaseBench
     /**
      * @Warmup(2)
      */
-    public function benchHydrateDocumentWithReferenceMany()
+    public function benchHydrateDocumentWithReferenceMany(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$referenceManyData);
     }

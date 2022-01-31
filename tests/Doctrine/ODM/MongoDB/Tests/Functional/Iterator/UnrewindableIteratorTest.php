@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Exception;
+use Generator;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Throwable;
@@ -17,7 +18,7 @@ class UnrewindableIteratorTest extends TestCase
     /**
      * Sanity check for all following tests.
      */
-    public function testTraversingGeneratorConsumesIt()
+    public function testTraversingGeneratorConsumesIt(): void
     {
         $iterator = $this->getTraversable([1, 2, 3]);
         $this->assertSame([1, 2, 3], iterator_to_array($iterator));
@@ -26,7 +27,7 @@ class UnrewindableIteratorTest extends TestCase
         $this->assertSame([1, 2, 3], iterator_to_array($iterator));
     }
 
-    public function testConstructorRewinds()
+    public function testConstructorRewinds(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
 
@@ -35,7 +36,7 @@ class UnrewindableIteratorTest extends TestCase
         $this->assertSame(1, $iterator->current());
     }
 
-    public function testIteration()
+    public function testIteration(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
 
@@ -50,7 +51,7 @@ class UnrewindableIteratorTest extends TestCase
         $this->assertFalse($iterator->valid());
     }
 
-    public function testIterationWithEmptySet()
+    public function testIterationWithEmptySet(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([]));
 
@@ -58,14 +59,14 @@ class UnrewindableIteratorTest extends TestCase
         $this->assertFalse($iterator->valid());
     }
 
-    public function testToArrayWithEmptySet()
+    public function testToArrayWithEmptySet(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([]));
 
         $this->assertEquals([], $iterator->toArray());
     }
 
-    public function testPartialIterationDoesNotExhaust()
+    public function testPartialIterationDoesNotExhaust(): void
     {
         $traversable = $this->getTraversableThatThrows([1, 2, new Exception()]);
         $iterator    = new UnrewindableIterator($traversable);
@@ -85,7 +86,7 @@ class UnrewindableIteratorTest extends TestCase
         $this->assertTrue($iterator->valid());
     }
 
-    public function testRewindAfterPartialIteration()
+    public function testRewindAfterPartialIteration(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
 
@@ -99,13 +100,13 @@ class UnrewindableIteratorTest extends TestCase
         iterator_to_array($iterator);
     }
 
-    public function testToArray()
+    public function testToArray(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
         $this->assertSame([1, 2, 3], $iterator->toArray());
     }
 
-    public function testToArrayAfterPartialIteration()
+    public function testToArrayAfterPartialIteration(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
 
@@ -119,14 +120,14 @@ class UnrewindableIteratorTest extends TestCase
         $iterator->toArray();
     }
 
-    private function getTraversable($items)
+    private function getTraversable(array $items): Generator
     {
         foreach ($items as $item) {
             yield $item;
         }
     }
 
-    private function getTraversableThatThrows($items)
+    private function getTraversableThatThrows(array $items): Generator
     {
         foreach ($items as $item) {
             if ($item instanceof Exception) {

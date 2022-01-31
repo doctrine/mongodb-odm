@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Generator;
+use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 
@@ -21,13 +22,16 @@ use function reset;
  * those operations (e.g. MongoDB\Driver\Cursor).
  *
  * @internal
+ *
+ * @template TValue
+ * @template-implements Iterator<TValue>
  */
 final class CachingIterator implements Iterator
 {
-    /** @var array */
+    /** @var array<mixed, TValue> */
     private $items = [];
 
-    /** @var Generator|null */
+    /** @var Generator<mixed, TValue>|null */
     private $iterator;
 
     /** @var bool */
@@ -42,6 +46,8 @@ final class CachingIterator implements Iterator
      * will execute up to its first yield statement. Additionally, this mimics
      * behavior of the SPL iterators and allows users to omit an explicit call
      * to rewind() before using the other methods.
+     *
+     * @param Traversable<mixed, TValue> $iterator
      */
     public function __construct(Traversable $iterator)
     {
@@ -62,20 +68,18 @@ final class CachingIterator implements Iterator
     }
 
     /**
-     * @see http://php.net/iterator.current
-     *
-     * @return mixed
+     * @return TValue|false
      */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return current($this->items);
     }
 
     /**
-     * @see http://php.net/iterator.mixed
-     *
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function key()
     {
         return key($this->items);
@@ -129,6 +133,9 @@ final class CachingIterator implements Iterator
         $this->iterator = null;
     }
 
+    /**
+     * @return Generator<mixed, TValue>
+     */
     private function getIterator(): Generator
     {
         if ($this->iterator === null) {
@@ -152,6 +159,11 @@ final class CachingIterator implements Iterator
         $this->items[$key] = $this->getIterator()->current();
     }
 
+    /**
+     * @param Traversable<mixed, TValue> $traversable
+     *
+     * @return Generator<mixed, TValue>
+     */
     private function wrapTraversable(Traversable $traversable): Generator
     {
         foreach ($traversable as $key => $value) {

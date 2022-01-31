@@ -13,6 +13,7 @@ metadata:
 
 -  **XML files** (XmlDriver)
 -  **Class DocBlock Annotations** (AnnotationDriver)
+-  **Attributes** (AttributeDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
 
 Something important to note about the above drivers is they are all
@@ -100,14 +101,8 @@ the ``AbstractFileDriver`` implementation for you to extend from:
 
     class MyMetadataDriver extends AbstractFileDriver
     {
-        /**
-         * {@inheritdoc}
-         */
         protected $_fileExtension = '.dcm.ext';
 
-        /**
-         * {@inheritdoc}
-         */
         public function loadMetadataForClass($className, ClassMetadata $metadata)
         {
             $data = $this->_loadMappingFile($file);
@@ -115,9 +110,6 @@ the ``AbstractFileDriver`` implementation for you to extend from:
             // populate ClassMetadata instance from $data
         }
 
-        /**
-         * {@inheritdoc}
-         */
         protected function _loadMappingFile($file)
         {
             // parse contents of $file and return php data structure

@@ -11,7 +11,7 @@ use Documents\User;
 
 class CustomIdTest extends BaseTest
 {
-    public function testSetId()
+    public function testSetId(): void
     {
         $account = new Account();
         $account->setName('Jon Test Account');
@@ -47,7 +47,7 @@ class CustomIdTest extends BaseTest
         $this->assertEquals('userId', $user->getId());
     }
 
-    public function testBatchInsertCustomId()
+    public function testBatchInsertCustomId(): void
     {
         $account = new Account();
         $account->setName('Jon Test Account');
@@ -81,7 +81,7 @@ class CustomIdTest extends BaseTest
 
         $this->assertCount(2, $users);
 
-        $results = [];
+        $results = ['userId' => false];
         foreach ($users as $user) {
             if ($user->getId() === 'userId') {
                 $results['userId'] = true;
@@ -108,7 +108,7 @@ class CustomIdTest extends BaseTest
         $this->assertCount(3, $results['ids']);
     }
 
-    public function testFindUser()
+    public function testFindUser(): void
     {
         $account = new Account();
         $account->setName('Jon Test Account');

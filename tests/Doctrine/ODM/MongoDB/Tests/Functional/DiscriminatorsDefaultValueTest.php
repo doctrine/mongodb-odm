@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
+class DiscriminatorsDefaultValueTest extends BaseTest
 {
     public function setUp(): void
     {
@@ -17,7 +18,7 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
     /**
      * This test demonstrates a document without discriminator being treated with defaultDiscriminatorValue
      */
-    public function testLoadDocumentWithDefaultValue()
+    public function testLoadDocumentWithDefaultValue(): void
     {
         // Create referenced document without discriminator value
         $this->dm->persist($firstChildWithoutDiscriminator  = new ChildDocumentWithoutDiscriminator('firstWithoutDiscriminator'));
@@ -44,7 +45,7 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
     /**
      * This test ensures that a discriminatorValue is stored in the database and overrides the default
      */
-    public function testLoadDocumentWithDifferentChild()
+    public function testLoadDocumentWithDifferentChild(): void
     {
         $this->dm->persist($firstChildWithDiscriminator  = new ChildDocumentWithDiscriminatorComplex('firstWithDiscriminator', 'veryComplex'));
         $this->dm->persist($secondChildWithDiscriminator = new ChildDocumentWithDiscriminatorSimple('secondWithDiscriminator'));
@@ -82,17 +83,28 @@ class ReferenceDiscriminatorsDefaultValueTest extends BaseTest
 /** @ODM\Document(collection="discriminator_parent") */
 abstract class ParentDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
+    /** @var ChildDocument */
     protected $referencedChild;
 
+    /** @var Collection<int, ChildDocument>|array<ChildDocument> */
     protected $referencedChildren;
 
+    /** @var ChildDocument */
     protected $embeddedChild;
 
+    /** @var Collection<int, ChildDocument>|array<ChildDocument> */
     protected $embeddedChildren;
 
+    /**
+     * @param array{0: ChildDocument, 1: ChildDocument} $children
+     */
     public function __construct(array $children)
     {
         $this->referencedChild    = $children[0];
@@ -101,26 +113,32 @@ abstract class ParentDocument
         $this->embeddedChildren   = $children;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getReferencedChild()
+    public function getReferencedChild(): ChildDocument
     {
         return $this->referencedChild;
     }
 
+    /**
+     * @return Collection<int, ChildDocument>|array<ChildDocument>
+     */
     public function getReferencedChildren()
     {
         return $this->referencedChildren;
     }
 
-    public function getEmbeddedChild()
+    public function getEmbeddedChild(): ChildDocument
     {
         return $this->embeddedChild;
     }
 
+    /**
+     * @return Collection<int, ChildDocument>|array<ChildDocument>
+     */
     public function getEmbeddedChildren()
     {
         return $this->embeddedChildren;
@@ -130,23 +148,31 @@ abstract class ParentDocument
 /** @ODM\Document(collection="discriminator_child") */
 abstract class ChildDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $type;
 
-    public function __construct($type)
+    public function __construct(string $type)
     {
         $this->type = $type;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
@@ -156,16 +182,32 @@ abstract class ChildDocument
 /** @ODM\Document(collection="discriminator_parent") */
 class ParentDocumentWithoutDiscriminator extends ParentDocument
 {
-    /** @ODM\ReferenceOne(targetDocument=ChildDocumentWithoutDiscriminator::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=ChildDocumentWithoutDiscriminator::class)
+     *
+     * @var ChildDocumentWithDiscriminator
+     */
     protected $referencedChild;
 
-    /** @ODM\ReferenceMany(targetDocument=ChildDocumentWithoutDiscriminator::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=ChildDocumentWithoutDiscriminator::class)
+     *
+     * @var Collection<int, ChildDocumentWithDiscriminator>|array<ChildDocumentWithDiscriminator>
+     */
     protected $referencedChildren;
 
-    /** @ODM\EmbedOne(targetDocument=ChildDocumentWithoutDiscriminator::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=ChildDocumentWithoutDiscriminator::class)
+     *
+     * @var ChildDocumentWithoutDiscriminator
+     */
     protected $embeddedChild;
 
-    /** @ODM\EmbedMany(targetDocument=ChildDocumentWithoutDiscriminator::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=ChildDocumentWithoutDiscriminator::class)
+     *
+     * @var Collection<int, ChildDocumentWithDiscriminator>|array<ChildDocumentWithDiscriminator>
+     */
     protected $embeddedChildren;
 }
 
@@ -178,16 +220,32 @@ class ChildDocumentWithoutDiscriminator extends ChildDocument
 /** @ODM\Document(collection="discriminator_parent") */
 class ParentDocumentWithDiscriminator extends ParentDocument
 {
-    /** @ODM\ReferenceOne(targetDocument=ChildDocumentWithDiscriminator::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=ChildDocumentWithDiscriminator::class)
+     *
+     * @var ChildDocumentWithDiscriminator
+     */
     protected $referencedChild;
 
-    /** @ODM\ReferenceMany(targetDocument=ChildDocumentWithDiscriminator::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=ChildDocumentWithDiscriminator::class)
+     *
+     * @var Collection<int, ChildDocumentWithDiscriminator>|array<ChildDocumentWithDiscriminator>
+     */
     protected $referencedChildren;
 
-    /** @ODM\EmbedOne(targetDocument=ChildDocumentWithDiscriminator::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=ChildDocumentWithDiscriminator::class)
+     *
+     * @var ChildDocumentWithDiscriminator
+     */
     protected $embeddedChild;
 
-    /** @ODM\EmbedMany(targetDocument=ChildDocumentWithDiscriminator::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=ChildDocumentWithDiscriminator::class)
+     *
+     * @var Collection<int, ChildDocumentWithDiscriminator>
+     */
     protected $embeddedChildren;
 }
 
@@ -210,16 +268,20 @@ class ChildDocumentWithDiscriminatorSimple extends ChildDocumentWithDiscriminato
 /** @ODM\Document(collection="discriminator_child") */
 class ChildDocumentWithDiscriminatorComplex extends ChildDocumentWithDiscriminatorSimple
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     protected $value;
 
-    public function __construct($type, $value)
+    public function __construct(string $type, string $value)
     {
         parent::__construct($type);
         $this->value = $value;
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }

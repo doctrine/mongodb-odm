@@ -42,7 +42,7 @@ class UpdateCommandTest extends AbstractCommandTest
         unset($this->commandTester);
     }
 
-    public function testProcessValidator()
+    public function testProcessValidator(): void
     {
         $this->commandTester->execute(
             [
@@ -53,7 +53,7 @@ class UpdateCommandTest extends AbstractCommandTest
         $this->assertStringContainsString('Updated validation for Documents\SchemaValidated', $output);
     }
 
-    public function testProcessValidators()
+    public function testProcessValidators(): void
     {
         // Only load a subset of documents with legit annotations
         $annotationDriver = AnnotationDriver::create(__DIR__ . '/../../../../../../../../Documents/Ecommerce');

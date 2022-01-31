@@ -64,6 +64,7 @@ use function trigger_deprecation;
  *      strategy?: string,
  *      association?: int,
  *      id?: bool,
+ *      isOwningSide?: bool,
  *      collectionClass?: class-string,
  *      cascade?: list<string>|string,
  *      embedded?: bool,
@@ -86,7 +87,15 @@ use function trigger_deprecation;
  *      lock?: bool,
  *      inherited?: string,
  *      declared?: class-string,
- *      prime?: list<string>
+ *      prime?: list<string>,
+ *      sparse?: bool,
+ *      unique?: bool,
+ *      index?: bool,
+ *      index-name?: string,
+ *      criteria?: array<string, string>,
+ *      alsoLoadFields?: list<string>,
+ *      order?: int|string,
+ *      background?: bool
  * }
  * @psalm-type FieldMapping = array{
  *      type: string,
@@ -99,7 +108,7 @@ use function trigger_deprecation;
  *      isCascadeDetach: bool,
  *      isOwningSide: bool,
  *      isInverseSide: bool,
- *      strategy: string,
+ *      strategy?: string,
  *      association?: int,
  *      id?: bool,
  *      collectionClass?: class-string,
@@ -125,10 +134,15 @@ use function trigger_deprecation;
  *      notSaved?: bool,
  *      inherited?: string,
  *      declared?: class-string,
- *      prime?: list<string>
+ *      prime?: list<string>,
+ *      sparse?: bool,
+ *      unique?: bool,
+ *      index?: bool,
+ *      criteria?: array<string, string>,
+ *      alsoLoadFields?: list<string>,
  * }
  * @psalm-type AssociationFieldMapping = array{
- *      type: string,
+ *      type?: string,
  *      fieldName: string,
  *      name: string,
  *      isCascadeRemove: bool,
@@ -140,7 +154,7 @@ use function trigger_deprecation;
  *      isInverseSide: bool,
  *      targetDocument: class-string|null,
  *      association: int,
- *      strategy: string,
+ *      strategy?: string,
  *      id?: bool,
  *      collectionClass?: class-string,
  *      cascade?: list<string>|string,
@@ -164,7 +178,12 @@ use function trigger_deprecation;
  *      notSaved?: bool,
  *      inherited?: string,
  *      declared?: class-string,
- *      prime?: list<string>
+ *      prime?: list<string>,
+ *      sparse?: bool,
+ *      unique?: bool,
+ *      index?: bool,
+ *      criteria?: array<string, string>,
+ *      alsoLoadFields?: list<string>,
  * }
  * @psalm-type IndexKeys = array<string, mixed>
  * @psalm-type IndexOptions = array<string, mixed>
@@ -579,7 +598,7 @@ use function trigger_deprecation;
      *
      * @see discriminatorField
      *
-     * @var mixed
+     * @psalm-var array<string, class-string>
      */
     public $discriminatorMap = [];
 
@@ -769,9 +788,6 @@ use function trigger_deprecation;
         return $this->reflClass;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isIdentifier($fieldName): bool
     {
         return $this->identifier === $fieldName;
@@ -788,8 +804,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
      */
@@ -809,9 +823,6 @@ use function trigger_deprecation;
         return [$this->identifier];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function hasField($fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
@@ -1452,7 +1463,7 @@ use function trigger_deprecation;
     /**
      * Validates the storage strategy of a mapping for consistency
      *
-     * @psalm-param FieldMapping $mapping
+     * @psalm-param FieldMappingConfig $mapping
      *
      * @throws MappingException
      */
@@ -1604,8 +1615,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Checks whether the class has a mapped association (embed or reference) with the given field name.
      */
     public function hasAssociation($fieldName): bool
@@ -1614,8 +1623,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a single valued association.
      */
@@ -1625,8 +1632,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a collection valued association.
      */
@@ -1735,8 +1740,6 @@ use function trigger_deprecation;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
@@ -2054,34 +2057,22 @@ use function trigger_deprecation;
         $this->rootClass = $rootClass;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getFieldNames(): array
     {
         return array_keys($this->fieldMappings);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getAssociationNames(): array
     {
         return array_keys($this->associationMappings);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getTypeOfField($fieldName): ?string
     {
         return isset($this->fieldMappings[$fieldName]) ?
             $this->fieldMappings[$fieldName]['type'] : null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getAssociationTargetClass($assocName): ?string
     {
         if (! isset($this->associationMappings[$assocName])) {
@@ -2107,17 +2098,11 @@ use function trigger_deprecation;
         return $this->associationMappings[$assocName]['collectionClass'];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isAssociationInverseSide($assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getAssociationMappedByTargetField($assocName)
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');

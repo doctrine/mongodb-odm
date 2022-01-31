@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH232Test extends BaseTest
 {
-    public function testReferencedDocumentInsideEmbeddedDocument()
+    public function testReferencedDocumentInsideEmbeddedDocument(): void
     {
         /* PARENT DOCUMENT */
         $product = new Product('Product');
@@ -40,19 +41,35 @@ class GH232Test extends BaseTest
 /** @ODM\Document */
 class Product
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     protected $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
     public $name;
 
-    /** @ODM\EmbedMany(targetDocument=Price::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Price::class)
+     *
+     * @var Collection<int, Price>|array<Price>
+     */
     public $prices = [];
 
-    /** @ODM\EmbedMany(targetDocument=SubProduct::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=SubProduct::class)
+     *
+     * @var Collection<int, SubProduct>|array<SubProduct>
+     */
     public $subproducts = [];
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name        = $name;
         $this->subproducts = new ArrayCollection();
@@ -62,7 +79,11 @@ class Product
 /** @ODM\EmbeddedDocument */
 class SubProduct
 {
-    /** @ODM\EmbedMany(targetDocument=Price::class) */
+    /**
+     * @ODM\EmbedMany(targetDocument=Price::class)
+     *
+     * @var Collection<int, Price>|array<Price>
+     */
     public $prices = [];
 
     public function __construct()
@@ -74,6 +95,10 @@ class SubProduct
 /** @ODM\EmbeddedDocument */
 class Price
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $price;
 }

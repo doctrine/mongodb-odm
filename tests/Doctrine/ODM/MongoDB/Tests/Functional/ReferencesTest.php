@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Account;
 use Documents\Address;
@@ -22,13 +23,14 @@ use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function assert;
 use function get_class;
 
 class ReferencesTest extends BaseTest
 {
-    public function testManyDeleteReference()
+    public function testManyDeleteReference(): void
     {
         $user = new User();
 
@@ -57,7 +59,7 @@ class ReferencesTest extends BaseTest
         $this->assertCount(0, $groups->toArray());
     }
 
-    public function testLazyLoadReference()
+    public function testLazyLoadReference(): void
     {
         $user    = new User();
         $profile = new Profile();
@@ -89,7 +91,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals('Wage', $profile->getLastName());
     }
 
-    public function testLazyLoadedWithNotifyPropertyChanged()
+    public function testLazyLoadedWithNotifyPropertyChanged(): void
     {
         $user    = new User();
         $profile = new ProfileNotify();
@@ -114,7 +116,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals('Malarz', $profile->getLastName());
     }
 
-    public function testOneEmbedded()
+    public function testOneEmbedded(): void
     {
         $address = new Address();
         $address->setAddress('6512 Mercomatic Ct.');
@@ -141,7 +143,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals($user->getAddress(), $user2->getAddress());
     }
 
-    public function testManyEmbedded()
+    public function testManyEmbedded(): void
     {
         $user = new User();
         $user->addPhonenumber(new Phonenumber('6155139185'));
@@ -159,7 +161,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals($user->getPhonenumbers()->toArray(), $user2->getPhonenumbers()->toArray());
     }
 
-    public function testOneReference()
+    public function testOneReference(): void
     {
         $account = new Account();
         $account->setName('Test Account');
@@ -182,7 +184,7 @@ class ReferencesTest extends BaseTest
         $this->assertInstanceOf(User::class, $user2);
     }
 
-    public function testManyReference()
+    public function testManyReference(): void
     {
         $user = new User();
         $user->addGroup(new Group('Group 1'));
@@ -205,6 +207,7 @@ class ReferencesTest extends BaseTest
         $user2 = $query->getSingleResult();
         assert($user2 instanceof User);
         $groups = $user2->getGroups();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
         $this->assertFalse($groups->isInitialized());
 
         $groups->count();
@@ -238,7 +241,7 @@ class ReferencesTest extends BaseTest
         $this->assertCount(1, $groups);
     }
 
-    public function testFlushInitializesEmptyPersistentCollection()
+    public function testFlushInitializesEmptyPersistentCollection(): void
     {
         $user = new User();
 
@@ -254,12 +257,13 @@ class ReferencesTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
         $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
         $this->assertCount(2, $user->getGroups());
         $this->assertCount(2, $user->getGroups()->toArray());
     }
 
-    public function testFlushInitializesNotEmptyPersistentCollection()
+    public function testFlushInitializesNotEmptyPersistentCollection(): void
     {
         $user = new User();
         $user->addGroup(new Group('Group'));
@@ -276,12 +280,13 @@ class ReferencesTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
         $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
         $this->assertCount(3, $user->getGroups());
         $this->assertCount(3, $user->getGroups()->toArray());
     }
 
-    public function testManyReferenceWithAddToSetStrategy()
+    public function testManyReferenceWithAddToSetStrategy(): void
     {
         $user = new User();
         $user->addUniqueGroup($group1 = new Group('Group 1'));
@@ -307,6 +312,7 @@ class ReferencesTest extends BaseTest
         assert($user2 instanceof User);
 
         $groups = $user2->getUniqueGroups();
+        $this->assertInstanceOf(PersistentCollection\PersistentCollectionInterface::class, $groups);
         $this->assertFalse($groups->isInitialized());
 
         $groups->count();
@@ -340,7 +346,7 @@ class ReferencesTest extends BaseTest
         $this->assertCount(1, $groups);
     }
 
-    public function testSortReferenceManyOwningSide()
+    public function testSortReferenceManyOwningSide(): void
     {
         $user = new User();
         $user->addGroup(new Group('Group 1'));
@@ -365,7 +371,7 @@ class ReferencesTest extends BaseTest
         $this->assertEquals('Group 1', $groups[1]->getName());
     }
 
-    public function testDocumentNotFoundExceptionWithArrayId()
+    public function testDocumentNotFoundExceptionWithArrayId(): void
     {
         $test                   = new DocumentWithArrayReference();
         $test->referenceOne     = new DocumentWithArrayId();
@@ -388,6 +394,7 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
+        $this->assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier ' .
@@ -396,7 +403,7 @@ class ReferencesTest extends BaseTest
         $test->referenceOne->initializeProxy();
     }
 
-    public function testDocumentNotFoundExceptionWithObjectId()
+    public function testDocumentNotFoundExceptionWithObjectId(): void
     {
         $profile = new Profile();
         $user    = new User();
@@ -420,6 +427,7 @@ class ReferencesTest extends BaseTest
 
         $user    = $this->dm->find(get_class($user), $user->getId());
         $profile = $user->getProfile();
+        $this->assertInstanceOf(LazyLoadingInterface::class, $profile);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.'
@@ -427,7 +435,7 @@ class ReferencesTest extends BaseTest
         $profile->initializeProxy();
     }
 
-    public function testDocumentNotFoundExceptionWithMongoBinDataId()
+    public function testDocumentNotFoundExceptionWithMongoBinDataId(): void
     {
         $test                   = new DocumentWithMongoBinDataReference();
         $test->referenceOne     = new DocumentWithMongoBinDataId();
@@ -450,6 +458,7 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
+        $this->assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier ' .
@@ -458,7 +467,7 @@ class ReferencesTest extends BaseTest
         $test->referenceOne->initializeProxy();
     }
 
-    public function testDocumentNotFoundEvent()
+    public function testDocumentNotFoundEvent(): void
     {
         $profile = new Profile();
         $user    = new User();
@@ -491,6 +500,7 @@ class ReferencesTest extends BaseTest
 
         $this->dm->getEventManager()->addEventListener(Events::documentNotFound, new DocumentNotFoundListener($closure));
 
+        $this->assertInstanceOf(LazyLoadingInterface::class, $profile);
         $profile->initializeProxy();
     }
 }
@@ -498,17 +508,29 @@ class ReferencesTest extends BaseTest
 /** @ODM\Document */
 class DocumentWithArrayReference
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentWithArrayId::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentWithArrayId::class)
+     *
+     * @var DocumentWithArrayId|null
+     */
     public $referenceOne;
 }
 
 /** @ODM\Document */
 class DocumentWithArrayId
 {
-    /** @ODM\Id(strategy="none", options={"type"="hash"}) */
+    /**
+     * @ODM\Id(strategy="none", options={"type"="hash"})
+     *
+     * @var array<string, int>
+     */
     public $id;
 }
 
@@ -516,22 +538,35 @@ class DocumentWithArrayId
 /** @ODM\Document */
 class DocumentWithMongoBinDataReference
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=DocumentWithMongoBinDataId::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=DocumentWithMongoBinDataId::class)
+     *
+     * @var DocumentWithMongoBinDataId|null
+     */
     public $referenceOne;
 }
 
 /** @ODM\Document */
 class DocumentWithMongoBinDataId
 {
-    /** @ODM\Id(strategy="none", options={"type"="bin"}) */
+    /**
+     * @ODM\Id(strategy="none", options={"type"="bin"})
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 class DocumentNotFoundListener
 {
+    /** @var Closure */
     private $closure;
 
     public function __construct(Closure $closure)
@@ -539,7 +574,7 @@ class DocumentNotFoundListener
         $this->closure = $closure;
     }
 
-    public function documentNotFound(DocumentNotFoundEventArgs $eventArgs)
+    public function documentNotFound(DocumentNotFoundEventArgs $eventArgs): void
     {
         $closure = $this->closure;
         $closure($eventArgs);

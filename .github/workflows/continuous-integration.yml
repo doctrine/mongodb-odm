@@ -21,7 +21,9 @@ jobs:
           - "7.3"
           - "7.4"
           - "8.0"
+          - "8.1"
         mongodb-version:
+          - "5.0"
           - "4.4"
           - "4.2"
           - "4.0"
@@ -32,7 +34,7 @@ jobs:
         dependencies:
           - "highest"
         include:
-          - deps: "lowest"
+          - dependencies: "lowest"
             php-version: "7.2"
             mongodb-version: "3.6"
             driver-version: "1.5.0"
@@ -41,7 +43,7 @@ jobs:
             php-version: "8.0"
             mongodb-version: "4.4"
             driver-version: "stable"
-            deps: "highest"
+            dependencies: "highest"
 
     steps:
       - name: "Checkout"
@@ -75,6 +77,15 @@ jobs:
 
       - name: "Show driver information"
         run: "php --ri mongodb"
+
+      # Remove this when laminas/laminas-code 4.5 is released
+      - name: "Use dev stability"
+        if: "${{ matrix.php-version == '8.1' }}"
+        run: composer config minimum-stability dev
+
+      # This allows installing symfony/console 3.4 and 6
+      - name: "Remove phpbench/phpbench"
+        run: composer remove --no-update --dev phpbench/phpbench
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"

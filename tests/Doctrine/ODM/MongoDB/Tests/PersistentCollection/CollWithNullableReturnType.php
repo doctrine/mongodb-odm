@@ -9,6 +9,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use function rand;
 
+/**
+ * @template TKey of array-key
+ * @template TElement
+ * @template-extends ArrayCollection<TKey, TElement>
+ */
 class CollWithNullableReturnType extends ArrayCollection
 {
     public function maybeGetDate(): ?DateTime

@@ -15,7 +15,7 @@ use function iterator_to_array;
 
 class GH602Test extends BaseTest
 {
-    public function testReferenceManyOwningSidePreparesFilterCriteriaForDifferentClass()
+    public function testReferenceManyOwningSidePreparesFilterCriteriaForDifferentClass(): void
     {
         $thingClass = GH602Thing::class;
         $userClass  = GH602User::class;
@@ -61,7 +61,7 @@ class GH602Test extends BaseTest
         $user1likes[1]->initializeProxy();
     }
 
-    public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass()
+    public function testReferenceManyInverseSidePreparesFilterCriteriaForDifferentClass(): void
     {
         $thingClass = GH602Thing::class;
         $userClass  = GH602User::class;
@@ -92,7 +92,10 @@ class GH602Test extends BaseTest
         $this->assertEquals($user1->getId(), $thing1likedBy[0]->getId());
     }
 
-    private function enableDeletedFilter($class)
+    /**
+     * @psaml-param class-string $class
+     */
+    private function enableDeletedFilter(string $class): void
     {
         $this->dm->getFilterCollection()->enable('testFilter');
         $filter = $this->dm->getFilterCollection()->getFilter('testFilter');
@@ -105,10 +108,18 @@ class GH602Test extends BaseTest
 /** @ODM\Document */
 class GH602User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="user_deleted", type="bool") */
+    /**
+     * @ODM\Field(name="user_deleted", type="bool")
+     *
+     * @var bool
+     */
     public $deleted = false;
 
     /**
@@ -124,7 +135,7 @@ class GH602User
     }
 
     /** Return the identifier without triggering Proxy initialization */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -133,13 +144,25 @@ class GH602User
 /** @ODM\Document */
 class GH602Thing
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(name="thing_deleted", type="bool") */
+    /**
+     * @ODM\Field(name="thing_deleted", type="bool")
+     *
+     * @var bool
+     */
     public $deleted = false;
 
-    /** @ODM\ReferenceMany(targetDocument=GH602User::class, mappedBy="likes") */
+    /**
+     * @ODM\ReferenceMany(targetDocument=GH602User::class, mappedBy="likes")
+     *
+     * @var Collection<int, GH602User>
+     */
     public $likedBy;
 
     public function __construct()
@@ -148,7 +171,7 @@ class GH602Thing
     }
 
     /** Return the identifier without triggering Proxy initialization */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

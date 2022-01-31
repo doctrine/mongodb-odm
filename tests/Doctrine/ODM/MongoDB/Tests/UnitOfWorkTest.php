@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Closure;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -32,7 +33,7 @@ use function sprintf;
 
 class UnitOfWorkTest extends BaseTest
 {
-    public function testIsDocumentScheduled()
+    public function testIsDocumentScheduled(): void
     {
         $class = $this->dm->getClassMetadata(ForumUser::class);
         $user  = new ForumUser();
@@ -41,7 +42,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertTrue($this->uow->isDocumentScheduled($user));
     }
 
-    public function testScheduleForInsert()
+    public function testScheduleForInsert(): void
     {
         $class = $this->dm->getClassMetadata(ForumUser::class);
         $user  = new ForumUser();
@@ -50,7 +51,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertTrue($this->uow->isScheduledForInsert($user));
     }
 
-    public function testScheduleForUpsert()
+    public function testScheduleForUpsert(): void
     {
         $class    = $this->dm->getClassMetadata(ForumUser::class);
         $user     = new ForumUser();
@@ -62,7 +63,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertTrue($this->uow->isScheduledForUpsert($user));
     }
 
-    public function testGetScheduledDocumentUpserts()
+    public function testGetScheduledDocumentUpserts(): void
     {
         $class    = $this->dm->getClassMetadata(ForumUser::class);
         $user     = new ForumUser();
@@ -72,7 +73,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals([spl_object_hash($user) => $user], $this->uow->getScheduledDocumentUpserts());
     }
 
-    public function testScheduleForEmbeddedUpsert()
+    public function testScheduleForEmbeddedUpsert(): void
     {
         $test     = new EmbeddedUpsertDocument();
         $test->id = (string) new ObjectId();
@@ -83,7 +84,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertFalse($this->uow->isScheduledForUpsert($test));
     }
 
-    public function testScheduleForUpsertWithNonObjectIdValues()
+    public function testScheduleForUpsertWithNonObjectIdValues(): void
     {
         $doc     = new UowCustomIdDocument();
         $doc->id = 'string';
@@ -95,7 +96,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertTrue($this->uow->isScheduledForUpsert($doc));
     }
 
-    public function testScheduleForInsertShouldNotUpsertDocumentsWithInconsistentIdValues()
+    public function testScheduleForInsertShouldNotUpsertDocumentsWithInconsistentIdValues(): void
     {
         $class    = $this->dm->getClassMetadata(ForumUser::class);
         $user     = new ForumUser();
@@ -107,7 +108,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertFalse($this->uow->isScheduledForUpsert($user));
     }
 
-    public function testRegisterRemovedOnNewEntityIsIgnored()
+    public function testRegisterRemovedOnNewEntityIsIgnored(): void
     {
         $user           = new ForumUser();
         $user->username = 'romanb';
@@ -116,7 +117,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertFalse($this->uow->isScheduledForDelete($user));
     }
 
-    public function testScheduleForDeleteShouldUnregisterScheduledUpserts()
+    public function testScheduleForDeleteShouldUnregisterScheduledUpserts(): void
     {
         $class    = $this->dm->getClassMetadata(ForumUser::class);
         $user     = new ForumUser();
@@ -134,13 +135,13 @@ class UnitOfWorkTest extends BaseTest
         $this->assertTrue($this->uow->isScheduledForDelete($user));
     }
 
-    public function testThrowsOnPersistOfMappedSuperclass()
+    public function testThrowsOnPersistOfMappedSuperclass(): void
     {
         $this->expectException(MongoDBException::class);
         $this->uow->persist(new MappedSuperclass());
     }
 
-    public function testParentAssociations()
+    public function testParentAssociations(): void
     {
         $a = new ParentAssociationTest('a');
         $b = new ParentAssociationTest('b');
@@ -158,7 +159,7 @@ class UnitOfWorkTest extends BaseTest
     /**
      * @doesNotPerformAssertions
      */
-    public function testPreUpdateTriggeredWithEmptyChangeset()
+    public function testPreUpdateTriggeredWithEmptyChangeset(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
             new PreUpdateListenerMock()
@@ -174,7 +175,7 @@ class UnitOfWorkTest extends BaseTest
         $this->dm->flush();
     }
 
-    public function testNotSaved()
+    public function testNotSaved(): void
     {
         $test           = new NotSaved();
         $test->name     = 'test';
@@ -250,7 +251,7 @@ class UnitOfWorkTest extends BaseTest
     /**
      * @dataProvider getScheduleForUpdateWithArraysTests
      */
-    public function testScheduleForUpdateWithArrays($origData, $updateData, $shouldInUpdate)
+    public function testScheduleForUpdateWithArrays(?array $origData, ?array $updateData, bool $shouldInUpdate): void
     {
         $arrayTest = new ArrayTest($origData);
         $this->uow->persist($arrayTest);
@@ -267,7 +268,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertFalse($this->uow->isScheduledForUpdate($arrayTest));
     }
 
-    public function getScheduleForUpdateWithArraysTests()
+    public function getScheduleForUpdateWithArraysTests(): array
     {
         return [
             [
@@ -318,7 +319,7 @@ class UnitOfWorkTest extends BaseTest
         ];
     }
 
-    public function testRegisterManagedEmbeddedDocumentWithMappedIdAndNullValue()
+    public function testRegisterManagedEmbeddedDocumentWithMappedIdAndNullValue(): void
     {
         $document = new EmbeddedDocumentWithId();
         $oid      = spl_object_hash($document);
@@ -328,7 +329,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
 
-    public function testRegisterManagedEmbeddedDocumentWithoutMappedId()
+    public function testRegisterManagedEmbeddedDocumentWithoutMappedId(): void
     {
         $document = new EmbeddedDocumentWithoutId();
         $oid      = spl_object_hash($document);
@@ -338,7 +339,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
 
-    public function testRegisterManagedEmbeddedDocumentWithMappedIdStrategyNoneAndNullValue()
+    public function testRegisterManagedEmbeddedDocumentWithMappedIdStrategyNoneAndNullValue(): void
     {
         $document = new EmbeddedDocumentWithIdStrategyNone();
         $oid      = spl_object_hash($document);
@@ -358,7 +359,7 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->persist($file);
     }
 
-    public function testPersistRemovedDocument()
+    public function testPersistRemovedDocument(): void
     {
         $user           = new ForumUser();
         $user->username = 'jwage';
@@ -381,7 +382,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertNotNull($this->dm->getRepository(get_class($user))->find($user->id));
     }
 
-    public function testRemovePersistedButNotFlushedDocument()
+    public function testRemovePersistedButNotFlushedDocument(): void
     {
         $user           = new ForumUser();
         $user->username = 'jwage';
@@ -393,7 +394,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertNull($this->dm->getRepository(get_class($user))->find($user->id));
     }
 
-    public function testPersistRemovedEmbeddedDocument()
+    public function testPersistRemovedEmbeddedDocument(): void
     {
         $test           = new PersistRemovedEmbeddedDocument();
         $test->embedded = new EmbeddedDocumentWithId();
@@ -421,7 +422,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($test->embedded));
     }
 
-    public function testPersistingEmbeddedDocumentWithoutIdentifier()
+    public function testPersistingEmbeddedDocumentWithoutIdentifier(): void
     {
         $address = new Address();
         $user    = new User();
@@ -444,7 +445,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertFalse($this->uow->isScheduledForInsert($address));
     }
 
-    public function testEmbeddedDocumentChangeSets()
+    public function testEmbeddedDocumentChangeSets(): void
     {
         $address = new Address();
         $user    = new User();
@@ -468,7 +469,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals('Nashville', $changeSet['city'][1]);
     }
 
-    public function testGetClassNameForAssociation()
+    public function testGetClassNameForAssociation(): void
     {
         $mapping = ClassMetadataTestUtil::getFieldMapping([
             'discriminatorField' => 'type',
@@ -480,7 +481,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
     }
 
-    public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap()
+    public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap(): void
     {
         $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
         $data    = ['type' => 'forum_user'];
@@ -493,13 +494,13 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
     }
 
-    public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData()
+    public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData(): void
     {
         $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
         $this->assertEquals(User::class, $this->uow->getClassNameForAssociation($mapping, null));
     }
 
-    public function testRecomputeChangesetForUninitializedProxyDoesNotCreateChangeset()
+    public function testRecomputeChangesetForUninitializedProxyDoesNotCreateChangeset(): void
     {
         $user           = new ForumUser();
         $user->username = '12345';
@@ -523,7 +524,7 @@ class UnitOfWorkTest extends BaseTest
         $this->assertEquals([], $this->uow->getDocumentChangeSet($user->getAvatar()));
     }
 
-    public function testCommitsInProgressIsUpdatedOnException()
+    public function testCommitsInProgressIsUpdatedOnException(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
             new ExceptionThrowingListenerMock()
@@ -552,9 +553,10 @@ class UnitOfWorkTest extends BaseTest
 
 class ParentAssociationTest
 {
+    /** @var string */
     public $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -566,17 +568,31 @@ class ParentAssociationTest
  */
 class NotifyChangedDocument implements NotifyPropertyChanged
 {
+    /** @var PropertyChangedListener[] */
     private $_listeners = [];
 
-    /** @ODM\Id(type="int", strategy="none") */
+    /**
+     * @ODM\Id(type="int", strategy="none")
+     *
+     * @var int|null
+     */
     private $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     private $data;
 
-    /** @ODM\ReferenceMany(targetDocument=NotifyChangedRelatedItem::class) */
+    /**
+     * @ODM\ReferenceMany(targetDocument=NotifyChangedRelatedItem::class)
+     *
+     * @var Collection<int, NotifyChangedRelatedItem>
+     */
     private $items;
 
+    /** @var mixed */
     private $transient; // not persisted
 
     public function __construct()
@@ -584,22 +600,22 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->items = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getData()
+    public function getData(): ?string
     {
         return $this->data;
     }
 
-    public function setData($data)
+    public function setData(string $data): void
     {
         if ($data === $this->data) {
             return;
@@ -609,12 +625,18 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->data = $data;
     }
 
-    public function getItems()
+    /**
+     * @return Collection<int, NotifyChangedRelatedItem>
+     */
+    public function getItems(): Collection
     {
         return $this->items;
     }
 
-    public function setTransient($value)
+    /**
+     * @param mixed $value
+     */
+    public function setTransient($value): void
     {
         if ($value === $this->transient) {
             return;
@@ -629,7 +651,11 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->_listeners[] = $listener;
     }
 
-    protected function onPropertyChanged($propName, $oldValue, $newValue)
+    /**
+     * @param mixed $oldValue
+     * @param mixed $newValue
+     */
+    protected function onPropertyChanged(string $propName, $oldValue, $newValue): void
     {
         foreach ($this->_listeners as $listener) {
             $listener->propertyChanged($this, $propName, $oldValue, $newValue);
@@ -640,28 +666,36 @@ class NotifyChangedDocument implements NotifyPropertyChanged
 /** @ODM\Document */
 class NotifyChangedRelatedItem
 {
-    /** @ODM\Id(type="int", strategy="none") */
+    /**
+     * @ODM\Id(type="int", strategy="none")
+     *
+     * @var int|null
+     */
     private $id;
 
-    /** @ODM\ReferenceOne(targetDocument=NotifyChangedDocument::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=NotifyChangedDocument::class)
+     *
+     * @var NotifyChangedDocument|null
+     */
     private $owner;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getOwner()
+    public function getOwner(): ?NotifyChangedDocument
     {
         return $this->owner;
     }
 
-    public function setOwner($owner)
+    public function setOwner(NotifyChangedDocument $owner): void
     {
         $this->owner = $owner;
     }
@@ -670,13 +704,21 @@ class NotifyChangedRelatedItem
 /** @ODM\Document */
 class ArrayTest
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 
-    /** @ODM\Field(type="hash") */
+    /**
+     * @ODM\Field(type="hash")
+     *
+     * @var array<array-key, mixed>|null
+     */
     public $data;
 
-    public function __construct($data)
+    public function __construct(?array $data)
     {
         $this->data = $data;
     }
@@ -685,14 +727,22 @@ class ArrayTest
 /** @ODM\Document */
 class UowCustomIdDocument
 {
-    /** @ODM\Id(type="custom_id") */
+    /**
+     * @ODM\Id(type="custom_id")
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\EmbeddedDocument */
 class EmbeddedUpsertDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 
@@ -704,13 +754,18 @@ class EmbeddedDocumentWithoutId
 /** @ODM\EmbeddedDocument */
 class EmbeddedDocumentWithId
 {
+    /** @var bool */
     public $preRemove = false;
 
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /** @ODM\PreRemove */
-    public function preRemove()
+    public function preRemove(): void
     {
         $this->preRemove = true;
     }
@@ -719,23 +774,39 @@ class EmbeddedDocumentWithId
 /** @ODM\EmbeddedDocument */
 class EmbeddedDocumentWithIdStrategyNone
 {
-    /** @ODM\Id(strategy="none") */
+    /**
+     * @ODM\Id(strategy="none")
+     *
+     * @var string|null
+     */
     public $id;
 }
 
 /** @ODM\Document */
 class PersistRemovedEmbeddedDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class)
+     *
+     * @var EmbeddedDocumentWithId
+     */
     public $embedded;
 }
 
 /** @ODM\MappedSuperclass */
 class MappedSuperclass
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }

@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 class GH520Test extends BaseTest
 {
-    public function testPrimeWithGetSingleResult()
+    public function testPrimeWithGetSingleResult(): void
     {
         $document      = new GH520Document();
         $document->ref = new GH520Document();
@@ -31,7 +32,7 @@ class GH520Test extends BaseTest
         $this->assertTrue($document->ref->isProxyInitialized());
     }
 
-    public function testPrimeWithGetSingleResultWillNotPrimeEntireResultSet()
+    public function testPrimeWithGetSingleResultWillNotPrimeEntireResultSet(): void
     {
         $document1 = new GH520Document();
         $document2 = new GH520Document();
@@ -65,9 +66,17 @@ class GH520Test extends BaseTest
 /** @ODM\Document */
 class GH520Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=GH520Document::class, cascade={"persist"}) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=GH520Document::class, cascade={"persist"})
+     *
+     * @var GH520Document|null
+     */
     public $ref;
 }

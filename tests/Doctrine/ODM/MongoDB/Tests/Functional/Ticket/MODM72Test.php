@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM72Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $class = $this->dm->getClassMetadata(MODM72User::class);
         $this->assertEquals(['test' => 'test'], $class->fieldMappings['name']['options']);
@@ -19,9 +19,17 @@ class MODM72Test extends BaseTest
 /** @ODM\Document */
 class MODM72User
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string", options={"test"="test"}) */
+    /**
+     * @ODM\Field(type="string", options={"test"="test"})
+     *
+     * @var string|null
+     */
     public $name;
 }

@@ -10,7 +10,7 @@ use MongoDB\BSON\ObjectId;
 
 class MODM46Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $a = [
             '_id' => new ObjectId(),
@@ -28,12 +28,18 @@ class MODM46Test extends BaseTest
 /** @ODM\Document */
 class MODM46A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
     /**
      * @ODM\EmbedOne(targetDocument=MODM46AB::class)
      * @ODM\AlsoLoad("c")
+     *
+     * @var MODM46AB|null
      */
     public $b;
 }
@@ -41,6 +47,10 @@ class MODM46A
 /** @ODM\EmbeddedDocument */
 class MODM46AB
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $value;
 }

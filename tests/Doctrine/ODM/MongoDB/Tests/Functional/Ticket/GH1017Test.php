@@ -13,7 +13,7 @@ use function spl_object_hash;
 
 class GH1017Test extends BaseTest
 {
-    public function testSPLObjectHashCollisionOnReplacingEmbeddedDoc()
+    public function testSPLObjectHashCollisionOnReplacingEmbeddedDoc(): void
     {
         $usedHashes = [];
         $owner      = new GH1017Document();
@@ -54,10 +54,18 @@ class GH1017Test extends BaseTest
 /** @ODM\Document */
 class GH1017Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=GH1017EmbeddedDocument::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=GH1017EmbeddedDocument::class)
+     *
+     * @var GH1017EmbeddedDocument|null
+     */
     public $embedded;
 }
 

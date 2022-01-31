@@ -37,7 +37,7 @@ class PersistenceBuilderTest extends BaseTest
         parent::tearDown();
     }
 
-    public function testQueryBuilderUpdateWithDiscriminatorMap()
+    public function testQueryBuilderUpdateWithDiscriminatorMap(): void
     {
         $testCollection = new SameCollection1();
         $id             = '4f28aa84acee413889000001';
@@ -63,7 +63,7 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertEquals('OK! TEST', $testCollection->test);
     }
 
-    public function testFindWithOrOnCollectionWithDiscriminatorMap()
+    public function testFindWithOrOnCollectionWithDiscriminatorMap(): void
     {
         $sameCollection1  = new SameCollection1();
         $sameCollection2a = new SameCollection2();
@@ -76,7 +76,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $sameCollection1->id   = $ids[0];
         $sameCollection1->name = 'First entry in SameCollection1';
-        $sameCollection1->test = 1;
+        $sameCollection1->test = 'test';
         $this->dm->persist($sameCollection1);
         $this->dm->flush();
 
@@ -113,7 +113,7 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertCount(2, $results->toArray());
     }
 
-    public function testPrepareUpdateDataDoesNotIncludeId()
+    public function testPrepareUpdateDataDoesNotIncludeId(): void
     {
         $article        = new CmsArticle();
         $article->topic = 'persistence builder test';
@@ -130,7 +130,7 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertFalse(isset($data['$unset']['_id']));
     }
 
-    public function testPrepareInsertDataWithCreatedReferenceOne()
+    public function testPrepareInsertDataWithCreatedReferenceOne(): void
     {
         $article        = new CmsArticle();
         $article->title = 'persistence builder test';
@@ -152,7 +152,7 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
 
-    public function testPrepareInsertDataWithFetchedReferenceOne()
+    public function testPrepareInsertDataWithFetchedReferenceOne(): void
     {
         $article        = new CmsArticle();
         $article->title = 'persistence builder test';
@@ -177,7 +177,7 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertDocumentInsertData($expectedData, $this->pb->prepareInsertData($comment));
     }
 
-    public function testPrepareUpsertData()
+    public function testPrepareUpsertData(): void
     {
         $article        = new CmsArticle();
         $article->title = 'persistence builder test';
@@ -212,7 +212,7 @@ class PersistenceBuilderTest extends BaseTest
     /**
      * @dataProvider getDocumentsAndExpectedData
      */
-    public function testPrepareInsertData($document, array $expectedData)
+    public function testPrepareInsertData(object $document, array $expectedData): void
     {
         $this->dm->persist($document);
         $this->uow->computeChangeSets();
@@ -225,7 +225,7 @@ class PersistenceBuilderTest extends BaseTest
      *
      * @return array
      */
-    public function getDocumentsAndExpectedData()
+    public function getDocumentsAndExpectedData(): array
     {
         return [
             [new ConfigurableProduct('Test Product'), ['name' => 'Test Product']],
@@ -233,7 +233,7 @@ class PersistenceBuilderTest extends BaseTest
         ];
     }
 
-    private function assertDocumentInsertData(array $expectedData, ?array $preparedData = null)
+    private function assertDocumentInsertData(array $expectedData, ?array $preparedData = null): void
     {
         foreach ($preparedData as $key => $value) {
             if ($key === '_id') {
@@ -252,7 +252,7 @@ class PersistenceBuilderTest extends BaseTest
         $this->assertEquals(array_keys($expectedData), array_keys($preparedData));
     }
 
-    public function testAdvancedQueriesOnReferenceWithDiscriminatorMap()
+    public function testAdvancedQueriesOnReferenceWithDiscriminatorMap(): void
     {
         $article        = new CmsArticle();
         $article->id    = '4f8373f952fbfe7411000001';

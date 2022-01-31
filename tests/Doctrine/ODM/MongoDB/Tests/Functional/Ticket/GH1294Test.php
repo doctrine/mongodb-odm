@@ -10,7 +10,7 @@ use MongoDB\BSON\Regex;
 
 class GH1294Test extends BaseTest
 {
-    public function testRegexSearchOnIdentifierWithUuidStrategy()
+    public function testRegexSearchOnIdentifierWithUuidStrategy(): void
     {
         $user1       = new GH1294User();
         $user1->id   = 'aaa111aaa';
@@ -40,13 +40,21 @@ class GH1294Test extends BaseTest
 /** @ODM\Document */
 class GH1294User
 {
-    /** @ODM\Id(strategy="UUID", type="string") */
+    /**
+     * @ODM\Id(strategy="UUID", type="string")
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
-    public $name = false;
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
+    public $name = '';
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

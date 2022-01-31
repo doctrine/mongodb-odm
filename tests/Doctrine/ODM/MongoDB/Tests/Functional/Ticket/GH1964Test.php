@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1964Test extends BaseTest
 {
-    public function testSortMetaShouldReturnCorrectQuery()
+    public function testSortMetaShouldReturnCorrectQuery(): void
     {
         $builder = $this->dm->createQueryBuilder(GH1964Document::class);
         $builder->sort(['someField1' => 1, 'someField2' => -1]);
@@ -29,6 +29,10 @@ class GH1964Test extends BaseTest
  */
 class GH1964Document
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     private $id;
 }

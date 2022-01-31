@@ -22,9 +22,6 @@ class Count extends Stage
         $this->fieldName = $fieldName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExpression(): array
     {
         return [

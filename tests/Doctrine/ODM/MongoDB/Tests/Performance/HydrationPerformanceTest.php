@@ -21,7 +21,7 @@ class HydrationPerformanceTest extends BaseTest
     /**
      * [jwage: 10000 objects in ~6 seconds]
      */
-    public function testHydrationPerformance()
+    public function testHydrationPerformance(): void
     {
         $s = microtime(true);
 

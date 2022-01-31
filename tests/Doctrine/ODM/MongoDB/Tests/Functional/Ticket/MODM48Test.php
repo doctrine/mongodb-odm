@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM48Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $a    = new MODM48A();
         $a->b = new MODM48B();
@@ -33,23 +33,31 @@ class MODM48Test extends BaseTest
 /** @ODM\Document */
 class MODM48A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\EmbedOne(targetDocument=MODM48B::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=MODM48B::class)
+     *
+     * @var MODM48B|null
+     */
     public $b;
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getB()
+    public function getB(): ?MODM48B
     {
         return $this->b;
     }
 
-    public function setB($b)
+    public function setB(MODM48B $b): void
     {
         $this->b = $b;
     }
@@ -58,15 +66,19 @@ class MODM48A
 /** @ODM\EmbeddedDocument */
 class MODM48B
 {
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $val;
 
-    public function setVal($val)
+    public function setVal(string $val): void
     {
         $this->val = $val;
     }
 
-    public function getVal()
+    public function getVal(): ?string
     {
         return $this->val;
     }

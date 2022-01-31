@@ -6,7 +6,9 @@ namespace TestDocuments;
 
 class QueryResultDocument
 {
+    /** @var string|null */
     public $name;
 
+    /** @var int|null */
     public $count;
 }

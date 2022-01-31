@@ -12,12 +12,13 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 use GeoJson\Geometry\Geometry;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class MatchStageTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testMatchStage()
+    public function testMatchStage(): void
     {
         $matchStage = new MatchStage($this->getTestAggregationBuilder());
         $matchStage
@@ -27,7 +28,7 @@ class MatchStageTest extends BaseTest
         $this->assertSame(['$match' => ['someField' => 'someValue']], $matchStage->getExpression());
     }
 
-    public function testMatchFromBuilder()
+    public function testMatchFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder
@@ -41,7 +42,7 @@ class MatchStageTest extends BaseTest
     /**
      * @dataProvider provideProxiedExprMethods
      */
-    public function testProxiedExprMethods($method, array $args = [])
+    public function testProxiedExprMethods(string $method, array $args = []): void
     {
         $expr = $this->getMockQueryExpr();
         $expr
@@ -50,7 +51,7 @@ class MatchStageTest extends BaseTest
             ->with(...$args);
 
         $stage = new class ($this->getTestAggregationBuilder()) extends MatchStage {
-            public function setQuery(Expr $query)
+            public function setQuery(Expr $query): void
             {
                 $this->query = $query;
             }
@@ -60,7 +61,7 @@ class MatchStageTest extends BaseTest
         $this->assertSame($stage, $stage->$method(...$args));
     }
 
-    public function provideProxiedExprMethods()
+    public function provideProxiedExprMethods(): array
     {
         return [
             'field()' => ['field', ['fieldName']],
@@ -96,7 +97,7 @@ class MatchStageTest extends BaseTest
         ];
     }
 
-    public function testTypeConversion()
+    public function testTypeConversion(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
@@ -117,6 +118,9 @@ class MatchStageTest extends BaseTest
         );
     }
 
+    /**
+     * @return MockObject&Geometry
+     */
     private function getMockGeometry()
     {
         return $this->getMockBuilder(Geometry::class)

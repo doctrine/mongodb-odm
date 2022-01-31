@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class TargetDocumentTest extends BaseTest
 {
-    public function testMappedSuperClassAsTargetDocument()
+    public function testMappedSuperClassAsTargetDocument(): void
     {
         $test            = new TargetDocumentTestDocument();
         $test->reference = new TargetDocumentTestReference();
@@ -22,17 +22,29 @@ class TargetDocumentTest extends BaseTest
 /** @ODM\Document */
 class TargetDocumentTestDocument
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\TargetDocumentTestReference::class) */
+    /**
+     * @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\TargetDocumentTestReference::class)
+     *
+     * @var TargetDocumentTestReference|null
+     */
     public $reference;
 }
 
 /** @ODM\MappedSuperclass */
 abstract class AbstractTargetDocumentTestReference
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 }
 

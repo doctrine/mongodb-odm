@@ -10,7 +10,7 @@ use MongoDB\BSON\ObjectId;
 
 class MODM47Test extends BaseTest
 {
-    public function testTest()
+    public function testTest(): void
     {
         $a = [
             '_id' => new ObjectId(),
@@ -26,19 +26,27 @@ class MODM47Test extends BaseTest
 /** @ODM\Document */
 class MODM47A
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $b = 'tmp';
 
     /** @ODM\AlsoLoad("c") */
-    public function renameC($c)
+    public function renameC(string $c): void
     {
         $this->b = $c;
     }
 
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }

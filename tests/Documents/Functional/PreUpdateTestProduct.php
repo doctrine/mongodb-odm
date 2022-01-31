@@ -11,21 +11,33 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class PreUpdateTestProduct
 {
-    /** @ODM\Id */
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
-    /** @ODM\Field(type="string") */
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string|null
+     */
     public $name;
 
-    /** @ODM\EmbedOne(targetDocument=PreUpdateTestSellable::class) */
+    /**
+     * @ODM\EmbedOne(targetDocument=PreUpdateTestSellable::class)
+     *
+     * @var PreUpdateTestSellable|null
+     */
     public $sellable;
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

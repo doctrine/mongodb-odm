@@ -2,16 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests;
+namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
+use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\BSON\ObjectId;
 
 use function get_class;
 
 class GH774Test extends BaseTest
 {
-    public function testUpsert()
+    public function testUpsert(): void
     {
         $id = (string) new ObjectId();
 
@@ -28,7 +30,7 @@ class GH774Test extends BaseTest
         $this->assertEquals('test', $thread->permalink);
     }
 
-    protected function createMetadataDriverImpl()
+    protected function createMetadataDriverImpl(): MappingDriver
     {
         return new XmlDriver(__DIR__ . '/GH774');
     }
@@ -36,8 +38,14 @@ class GH774Test extends BaseTest
 
 abstract class GH774AbstractThread
 {
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
     public $id;
 
+    /** @var string|null */
     public $permalink;
 }
 

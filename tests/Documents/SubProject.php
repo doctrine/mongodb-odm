@@ -20,7 +20,7 @@ class SubProject extends Project
     /**
      * @return Collection<int, Issue>
      */
-    public function getIssues()
+    public function getIssues(): Collection
     {
         return $this->issues;
     }
@@ -28,7 +28,7 @@ class SubProject extends Project
     /**
      * @param Collection<int, Issue> $issues
      */
-    public function setIssues(Collection $issues)
+    public function setIssues(Collection $issues): void
     {
         $this->issues = $issues;
     }
