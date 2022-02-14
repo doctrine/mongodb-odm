@@ -108,7 +108,6 @@ final class StaticProxyFactory implements ProxyFactory
             $initializer         = null;
             $identifier          = $metadata->getIdentifierValue($ghostObject);
 
-            // @phpstan-ignore-next-line $ghostObject is of type T&GhostObjectInterface<T>
             if (! $documentPersister->load(['_id' => $identifier], $ghostObject)) {
                 $initializer = $originalInitializer;
 

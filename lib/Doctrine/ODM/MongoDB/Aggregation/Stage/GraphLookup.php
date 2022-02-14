@@ -22,25 +22,25 @@ use function substr;
 
 class GraphLookup extends Stage
 {
-    /** @var string */
+    /** @var string|null */
     private $from;
 
-    /** @var string|Expr|array */
+    /** @var string|Expr|array|null */
     private $startWith;
 
-    /** @var string */
+    /** @var string|null */
     private $connectFromField;
 
-    /** @var string */
+    /** @var string|null */
     private $connectToField;
 
-    /** @var string */
+    /** @var string|null */
     private $as;
 
-    /** @var int */
+    /** @var int|null */
     private $maxDepth;
 
-    /** @var string */
+    /** @var string|null */
     private $depthField;
 
     /** @var Stage\GraphLookup\MatchStage */
