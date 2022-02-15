@@ -197,12 +197,6 @@ parameters:
             count: 1
             path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        # There is no way to define a generic array as attribute
-        -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:getById\\(\\) should return T of object but returns object\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
-
         # That statement is never reached because DateTimeInterface is either DateTimeImmutable or DateTime
         -
             message: "#^Unreachable statement \\- code above always terminates\\.$#"
@@ -252,12 +246,6 @@ parameters:
             message: "#^Parameter \\#2 \\$projects of class Documents\\\\Developer constructor expects Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Documents\\\\Project\\>\\|null, Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<int, Documents\\\\SubProject\\> given\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
-
-        # See https://github.com/phpstan/phpstan/issues/5860
-        -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:getOrCreateDocument\\(\\) should return T of object but returns \\(Doctrine\\\\Persistence\\\\NotifyPropertyChanged&ProxyManager\\\\Proxy\\\\GhostObjectInterface&T of object\\)\\|\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface&T of object\\)\\|T of object\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
 
         # 'strategy' offset is defined as nullable, but here there is no check here
         -
