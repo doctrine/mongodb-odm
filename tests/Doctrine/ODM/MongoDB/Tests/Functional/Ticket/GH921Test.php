@@ -29,19 +29,21 @@ class GH921Test extends BaseTest
         $this->dm->persist($postA);
         $this->dm->flush();
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getPosts());
-        $this->assertFalse($user->getPosts()->isDirty(), 'A flushed collection should not be dirty');
-        $this->assertTrue($user->getPosts()->isInitialized(), 'A flushed collection should be initialized');
-        $this->assertCount(1, $user->getPosts());
-        $this->assertCount(1, $user->getPosts()->toArray());
+        $posts = $user->getPosts();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $posts);
+        $this->assertFalse($posts->isDirty(), 'A flushed collection should not be dirty');
+        $this->assertTrue($posts->isInitialized(), 'A flushed collection should be initialized');
+        $this->assertCount(1, $posts);
+        $this->assertCount(1, $posts->toArray());
 
         $this->dm->refresh($user);
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getPosts());
-        $this->assertFalse($user->getPosts()->isDirty(), 'A refreshed collection should not be dirty');
-        $this->assertFalse($user->getPosts()->isInitialized(), 'A refreshed collection should not be initialized');
-        $this->assertCount(1, $user->getPosts());
-        $this->assertCount(1, $user->getPosts()->toArray());
+        $posts = $user->getPosts();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $posts);
+        $this->assertFalse($posts->isDirty(), 'A refreshed collection should not be dirty');
+        $this->assertFalse($posts->isInitialized(), 'A refreshed collection should not be initialized');
+        $this->assertCount(1, $posts);
+        $this->assertCount(1, $posts->toArray());
 
         $this->dm->refresh($user);
 
@@ -49,18 +51,18 @@ class GH921Test extends BaseTest
         $user->addPost($postB);
         $this->dm->persist($postB);
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getPosts());
-        $this->assertTrue($user->getPosts()->isDirty(), 'A refreshed collection then modified should be dirty');
-        $this->assertFalse($user->getPosts()->isInitialized(), 'A refreshed collection then modified should not be initialized');
-        $this->assertCount(2, $user->getPosts());
-        $this->assertCount(2, $user->getPosts()->toArray());
+        $posts = $user->getPosts();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $posts);
+        $this->assertTrue($posts->isDirty(), 'A refreshed collection then modified should be dirty');
+        $this->assertFalse($posts->isInitialized(), 'A refreshed collection then modified should not be initialized');
+        $this->assertCount(2, $posts);
+        $this->assertCount(2, $posts->toArray());
 
-        $user->getPosts()->initialize();
+        $posts->initialize();
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getPosts());
-        $this->assertTrue($user->getPosts()->isDirty(), 'A dirty collection then initialized should remain dirty');
-        $this->assertCount(2, $user->getPosts());
-        $this->assertCount(2, $user->getPosts()->toArray());
+        $this->assertTrue($posts->isDirty(), 'A dirty collection then initialized should remain dirty');
+        $this->assertCount(2, $posts);
+        $this->assertCount(2, $posts->toArray());
     }
 }
 

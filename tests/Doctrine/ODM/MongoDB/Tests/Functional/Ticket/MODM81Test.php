@@ -84,12 +84,12 @@ class MODM81TestDocument
      */
     protected $embeddedDocuments;
 
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }

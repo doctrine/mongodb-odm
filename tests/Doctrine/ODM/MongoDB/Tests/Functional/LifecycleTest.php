@@ -79,7 +79,7 @@ class ParentObject
     /**
      * @ODM\EmbedOne(targetDocument=ChildEmbeddedObject::class)
      *
-     * @var ChildEmbeddedObject|null
+     * @var ChildEmbeddedObject
      */
     private $childEmbedded;
 

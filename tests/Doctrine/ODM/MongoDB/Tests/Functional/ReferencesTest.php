@@ -257,10 +257,11 @@ class ReferencesTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
-        $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
-        $this->assertCount(2, $user->getGroups());
-        $this->assertCount(2, $user->getGroups()->toArray());
+        $groups = $user->getGroups();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
+        $this->assertTrue($groups->isInitialized(), 'A flushed collection should be initialized');
+        $this->assertCount(2, $groups);
+        $this->assertCount(2, $groups->toArray());
     }
 
     public function testFlushInitializesNotEmptyPersistentCollection(): void
@@ -280,10 +281,11 @@ class ReferencesTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
-        $this->assertTrue($user->getGroups()->isInitialized(), 'A flushed collection should be initialized');
-        $this->assertCount(3, $user->getGroups());
-        $this->assertCount(3, $user->getGroups()->toArray());
+        $groups = $user->getGroups();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
+        $this->assertTrue($groups->isInitialized(), 'A flushed collection should be initialized');
+        $this->assertCount(3, $groups);
+        $this->assertCount(3, $groups->toArray());
     }
 
     public function testManyReferenceWithAddToSetStrategy(): void

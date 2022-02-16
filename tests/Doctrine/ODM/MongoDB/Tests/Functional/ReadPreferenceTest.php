@@ -37,8 +37,9 @@ class ReadPreferenceTest extends BaseTest
         $user = $query->getSingleResult();
         $this->assertInstanceOf(User::class, $user);
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
-        $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $user->getGroups()->getHints());
+        $groups = $user->getGroups();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
+        $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $groups->getHints());
     }
 
     /**
@@ -58,8 +59,9 @@ class ReadPreferenceTest extends BaseTest
         $user = $query->getSingleResult();
         $this->assertInstanceOf(User::class, $user);
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->getGroups());
-        $this->assertReadPreferenceHint($readPreference, $user->getGroups()->getHints()[Query::HINT_READ_PREFERENCE], $tags);
+        $groups = $user->getGroups();
+        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
+        $this->assertReadPreferenceHint($readPreference, $groups->getHints()[Query::HINT_READ_PREFERENCE], $tags);
     }
 
     public function provideReadPreferenceHints(): array

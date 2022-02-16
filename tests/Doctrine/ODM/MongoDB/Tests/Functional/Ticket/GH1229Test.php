@@ -203,7 +203,7 @@ class GH1229Child
     /**
      * @ODM\Field(type="int")
      *
-     * @var int|null
+     * @var int
      */
     public $order = 0;
 

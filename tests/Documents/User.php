@@ -141,7 +141,7 @@ class User extends BaseDocument
     /**
      * @ODM\Field(type="int")
      *
-     * @var int|null
+     * @var int
      */
     protected $hits = 0;
 

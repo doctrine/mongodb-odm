@@ -14,7 +14,7 @@ class ViewReference
     /**
      * @ODM\Id
      *
-     * @var string|null
+     * @var string
      */
     private $id;
 

@@ -70,8 +70,9 @@ final class StaticProxyFactory implements ProxyFactory
                 ->proxyFactory
                 ->createProxy(
                     $metadata->getName(),
-                    static function () {
+                    static function (): bool {
                         // empty closure, serves its purpose, for now
+                        return true;
                     },
                     [
                         'skippedProperties' => $this->skippedFieldsFqns($metadata),
@@ -83,10 +84,18 @@ final class StaticProxyFactory implements ProxyFactory
     }
 
     /**
-     * @param ClassMetadata<T>     $metadata
-     * @param DocumentPersister<T> $documentPersister
+     * @param ClassMetadata<TDocument>     $metadata
+     * @param DocumentPersister<TDocument> $documentPersister
      *
-     * @template T of object
+     * @psalm-return Closure(
+     *   TDocument&GhostObjectInterface<TDocument>,
+     *   string,
+     *   array<string, mixed>,
+     *   ?Closure=,
+     *   array<string, mixed>
+     * ) : bool
+     *
+     * @template TDocument of object
      */
     private function createInitializer(
         ClassMetadata $metadata,

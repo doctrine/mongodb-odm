@@ -73,7 +73,7 @@ class File
         return $this->length;
     }
 
-    public function getUploadDate(): DateTimeInterface
+    public function getUploadDate(): ?DateTimeInterface
     {
         return $this->uploadDate;
     }
@@ -89,6 +89,6 @@ class File
             $this->metadata = new FileMetadata();
         }
 
-        return $this->getMetadata();
+        return $this->metadata;
     }
 }

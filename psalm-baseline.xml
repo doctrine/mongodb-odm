@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.20.0@f82a70e7edfc6cf2705e9374c8a0b6a974a779ed">
+  <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$this-&gt;num($limit)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>self</code>
+    </InvalidReturnType>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php">
+    <InvalidArrayOffset occurrences="1">
+      <code>[$this-&gt;identifier =&gt; $this-&gt;getIdentifierValue($object)]</code>
+    </InvalidArrayOffset>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php">
+    <InvalidArgument occurrences="1">
+      <code>$mapping</code>
+    </InvalidArgument>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/PersistentCollection/AbstractPersistentCollectionFactory.php">
+    <InvalidArgument occurrences="1">
+      <code>new PersistentCollection($coll, $dm, $dm-&gt;getUnitOfWork())</code>
+    </InvalidArgument>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/PersistentCollection/PersistentCollectionTrait.php">
+    <InvalidArgument occurrences="5">
+      <code>$func</code>
+      <code>$p</code>
+      <code>$p</code>
+      <code>$p</code>
+      <code>$p</code>
+    </InvalidArgument>
+    <InvalidNullableReturnType occurrences="1">
+      <code>getMapping</code>
+    </InvalidNullableReturnType>
+    <InvalidReturnType occurrences="1">
+      <code>getTypeClass</code>
+    </InvalidReturnType>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Proxy/Resolver/ProxyManagerClassNameResolver.php">
+    <MoreSpecificImplementedParamType occurrences="1">
+      <code>$className</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Repository/DefaultGridFSRepository.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$options + ['metadata' =&gt; (object) $metadata]</code>
+    </InvalidReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/UnitOfWork.php">
+    <InvalidPropertyAssignmentValue occurrences="2">
+      <code>$this-&gt;identityMap</code>
+      <code>$this-&gt;originalDocumentData</code>
+    </InvalidPropertyAssignmentValue>
+    <NullableReturnStatement occurrences="1">
+      <code>$mapping['targetDocument']</code>
+    </NullableReturnStatement>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php">
+    <InvalidArgument occurrences="1">
+      <code>new ArrayCollection([$project])</code>
+    </InvalidArgument>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/CollectionPersisterTest.php">
+    <InvalidArgument occurrences="3">
+      <code>[$user-&gt;categories[0]-&gt;children, $user-&gt;categories[1]-&gt;children]</code>
+      <code>[$user-&gt;categories[0]-&gt;children[0]-&gt;children, $user-&gt;categories[0]-&gt;children[1]-&gt;children]</code>
+      <code>[$user-&gt;categories[0]-&gt;children[0]-&gt;children, $user-&gt;categories[0]-&gt;children[1]-&gt;children]</code>
+    </InvalidArgument>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomCollectionsTest.php">
+    <InvalidArgument occurrences="4">
+      <code>$i</code>
+      <code>$i</code>
+      <code>$j</code>
+      <code>$j</code>
+    </InvalidArgument>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM81Test.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>DocumentManager</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>$this-&gt;dm</code>
+    </NullableReturnStatement>
+  </file>
+</files>

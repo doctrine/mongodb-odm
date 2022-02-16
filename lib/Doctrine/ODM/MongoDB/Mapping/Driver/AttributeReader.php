@@ -20,16 +20,17 @@ use function is_subclass_of;
  */
 final class AttributeReader implements Reader
 {
-    /**
-     * @param ReflectionClass<object> $class
-     */
     public function getClassAnnotations(ReflectionClass $class): array
     {
         return $this->convertToAttributeInstances($class->getAttributes());
     }
 
     /**
-     * @param ReflectionClass<object> $class
+     * @param class-string<T> $annotationName
+     *
+     * @return T|null
+     *
+     * @template T
      */
     public function getClassAnnotation(ReflectionClass $class, $annotationName)
     {
@@ -47,6 +48,13 @@ final class AttributeReader implements Reader
         return $this->convertToAttributeInstances($method->getAttributes());
     }
 
+    /**
+     * @param class-string<T> $annotationName
+     *
+     * @return T|null
+     *
+     * @template T
+     */
     public function getMethodAnnotation(ReflectionMethod $method, $annotationName)
     {
         foreach ($this->getMethodAnnotations($method) as $annotation) {
@@ -63,6 +71,13 @@ final class AttributeReader implements Reader
         return $this->convertToAttributeInstances($property->getAttributes());
     }
 
+    /**
+     * @param class-string<T> $annotationName
+     *
+     * @return T|null
+     *
+     * @template T
+     */
     public function getPropertyAnnotation(ReflectionProperty $property, $annotationName)
     {
         foreach ($this->getPropertyAnnotations($property) as $annotation) {
