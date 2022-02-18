@@ -70,6 +70,7 @@ class MODM90Test extends BaseTest
 
         $testDoc = $dm->find(MODM90TestDocument::class, $testDoc->id);
 
+        $this->assertInstanceOf(MODM90Test2EmbeddedDocument::class, $testDoc->embedded);
         $this->assertEquals('test2', $testDoc->embedded->type);
     }
 }

@@ -571,7 +571,7 @@ class XmlDriver extends FileDriver
     }
 
     /**
-     * @return array<string, array<string, mixed>|scalar>
+     * @return array<string, array<string, mixed>|scalar|null>
      */
     private function getPartialFilterExpression(SimpleXMLElement $fields): array
     {

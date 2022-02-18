@@ -42,7 +42,7 @@ class GH499Document
     /**
      * @ODM\Id
      *
-     * @var string|null
+     * @var string
      */
     protected $id;
 

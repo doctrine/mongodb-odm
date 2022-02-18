@@ -20,7 +20,7 @@ final class FileMetadata
     /**
      * @ODM\EmbedOne(targetDocument=Embedded::class)
      *
-     * @var Embedded|null
+     * @var Embedded
      */
     private $embedOne;
 

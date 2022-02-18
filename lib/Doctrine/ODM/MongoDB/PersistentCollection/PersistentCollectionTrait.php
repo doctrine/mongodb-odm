@@ -428,6 +428,7 @@ trait PersistentCollectionTrait
 
     /**
      * @return Traversable
+     * @psalm-return Traversable<TKey, T>
      */
     #[ReturnTypeWillChange]
     public function getIterator()
@@ -540,6 +541,7 @@ trait PersistentCollectionTrait
      * @param mixed $offset
      *
      * @return mixed
+     * @psalm-return T|null
      */
     #[ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -660,6 +662,11 @@ trait PersistentCollectionTrait
      * @param mixed $offset
      *
      * @return bool|T|null
+     * @psalm-return (
+     *      $arrayAccess is false
+     *      ? T|null
+     *      : T|null|true
+     * )
      */
     private function doRemove($offset, bool $arrayAccess)
     {

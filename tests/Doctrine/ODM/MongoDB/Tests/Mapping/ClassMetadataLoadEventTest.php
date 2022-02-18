@@ -7,7 +7,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+
+use function assert;
 
 class ClassMetadataLoadEventTest extends BaseTest
 {
@@ -27,6 +30,7 @@ class ClassMetadataLoadEventTest extends BaseTest
             'fieldName' => 'about',
             'type' => 'string',
         ];
+        assert($classMetadata instanceof ClassMetadata);
         $classMetadata->mapField($field);
     }
 }

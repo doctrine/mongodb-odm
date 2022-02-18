@@ -10,12 +10,13 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Group;
 use Documents\Profile;
 use Documents\User;
+use MongoDB\BSON\ObjectId;
 
 use function sort;
 
 class FilterTest extends BaseTest
 {
-    /** @var array<string, string> */
+    /** @var array<string, ObjectId|string|null> */
     private $ids;
 
     /** @var FilterCollection */

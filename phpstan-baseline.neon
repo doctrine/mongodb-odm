@@ -154,11 +154,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM88Test.php
 
         -
-            message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:mapField\\(\\)\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
-
-        -
             message: "#^Parameter \\#1 \\$primer of method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Builder\\:\\:prime\\(\\) expects bool\\|\\(callable\\(\\)\\: mixed\\), 1 given\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php

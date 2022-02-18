@@ -38,6 +38,8 @@ class GH1775Test extends BaseTest
         $blog  = $this->dm->find(GH1775Blog::class, $blogId);
         $image = $this->dm->find(GH1775Image::class, $imageId);
 
+        $this->assertInstanceOf(GH1775Blog::class, $blog);
+        $this->assertInstanceOf(GH1775Image::class, $image);
         $post2 = new GH1775Post([$blog], [$image]);
         $this->dm->persist($post2);
 

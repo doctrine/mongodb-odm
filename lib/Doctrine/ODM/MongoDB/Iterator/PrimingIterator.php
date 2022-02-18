@@ -29,7 +29,7 @@ final class PrimingIterator implements Iterator
     /** @var ReferencePrimer */
     private $referencePrimer;
 
-    /** @var array<string, callable|null> */
+    /** @var array<string, callable|true|null> */
     private $primers;
 
     /**
@@ -42,9 +42,9 @@ final class PrimingIterator implements Iterator
     private $referencesPrimed = false;
 
     /**
-     * @param \Iterator<mixed, TValue>     $iterator
-     * @param ClassMetadata<TDocument>     $class
-     * @param array<string, callable|null> $primers
+     * @param \Iterator<mixed, TValue>          $iterator
+     * @param ClassMetadata<TDocument>          $class
+     * @param array<string, callable|true|null> $primers
      * @psalm-param Hints $unitOfWorkHints
      */
     public function __construct(\Iterator $iterator, ClassMetadata $class, ReferencePrimer $referencePrimer, array $primers, array $unitOfWorkHints = [])
