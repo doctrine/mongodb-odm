@@ -251,7 +251,7 @@ class ReferencePrimerTest extends BaseTest
         foreach ($qb->getQuery() as $referenceUser) {
             assert($referenceUser instanceof ReferenceUser);
             $user = $referenceUser->getUser();
-            assert($user instanceof User && $user instanceof GhostObjectInterface);
+            $this->assertInstanceOf(User::class, $user);
             $this->assertInstanceOf(GhostObjectInterface::class, $user);
             $this->assertTrue($user->isProxyInitialized());
 
@@ -263,8 +263,8 @@ class ReferencePrimerTest extends BaseTest
             }
 
             $parentUser = $referenceUser->getParentUser();
-            assert($parentUser instanceof User && $parentUser instanceof GhostObjectInterface);
             $this->assertInstanceOf(GhostObjectInterface::class, $parentUser);
+            $this->assertInstanceOf(User::class, $parentUser);
             $this->assertTrue($parentUser->isProxyInitialized());
 
             $this->assertCount(1, $referenceUser->getParentUsers());
@@ -275,7 +275,7 @@ class ReferencePrimerTest extends BaseTest
             }
 
             $otherUser = $referenceUser->getOtherUser();
-            assert($otherUser instanceof User && $otherUser instanceof GhostObjectInterface);
+            $this->assertInstanceOf(User::class, $otherUser);
             $this->assertInstanceOf(GhostObjectInterface::class, $otherUser);
             $this->assertTrue($otherUser->isProxyInitialized());
 
@@ -503,7 +503,6 @@ class ReferencePrimerTest extends BaseTest
             ->field('options.money.currency')->prime(true);
 
         $query = $qb->getQuery();
-        assert($query instanceof Query);
 
         $product = $query->getSingleResult();
         assert($product instanceof ConfigurableProduct);
@@ -515,10 +514,9 @@ class ReferencePrimerTest extends BaseTest
         assert($money instanceof Money);
 
         $currency = $money->getCurrency();
-        assert($currency instanceof Currency && $currency instanceof GhostObjectInterface);
-        assert($currency instanceof Currency);
 
         $this->assertInstanceOf(GhostObjectInterface::class, $currency);
+        $this->assertInstanceOf(Currency::class, $currency);
         $this->assertTrue($currency->isProxyInitialized());
     }
 
@@ -542,7 +540,6 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->clear();
 
         $post = $this->dm->find(BlogPost::class, $post->id);
-        assert($post instanceof BlogPost);
         $this->assertInstanceOf(BlogPost::class, $post);
 
         $comment = $post->comments->first();
@@ -570,7 +567,6 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->clear();
 
         $post = $this->dm->find(BlogPost::class, $post->id);
-        assert($post instanceof BlogPost);
         $this->assertInstanceOf(BlogPost::class, $post);
 
         $comment = $post->repoCommentsWithPrimer->first();

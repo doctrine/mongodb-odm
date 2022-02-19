@@ -44,11 +44,6 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/FacetTest.php
 
         -
-            message: "#^Class Documents\\\\Account does not have a constructor and must be instantiated without any parameters\\.$#"
-            count: 4
-            path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
-
-        -
             message: "#^Cannot access property \\$username on array\\|object\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomFieldNameTest.php

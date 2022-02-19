@@ -10,12 +10,10 @@ use Doctrine\ODM\MongoDB\Types;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 
-use function assert;
 use function end;
 use function explode;
 use function gettype;
 use function is_object;
-use function is_string;
 use function sprintf;
 use function str_replace;
 
@@ -263,7 +261,6 @@ abstract class Type
     {
         $e         = explode('\\', static::class);
         $className = end($e);
-        assert(is_string($className));
 
         return str_replace('Type', '', $className);
     }
