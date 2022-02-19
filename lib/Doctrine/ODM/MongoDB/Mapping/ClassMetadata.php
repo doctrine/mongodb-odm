@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use BadMethodCallException;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\IdGenerator;
@@ -20,6 +22,7 @@ use InvalidArgumentException;
 use LogicException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionProperty;
 
 use function array_filter;
@@ -42,6 +45,8 @@ use function sprintf;
 use function strtolower;
 use function strtoupper;
 use function trigger_deprecation;
+
+use const PHP_VERSION_ID;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -1525,6 +1530,11 @@ use function trigger_deprecation;
     {
         $mapping['embedded'] = true;
         $mapping['type']     = self::ONE;
+
+        if ($this->isTypedProperty($mapping['fieldName'])) {
+            $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
+        }
+
         $this->mapField($mapping);
     }
 
@@ -1549,6 +1559,11 @@ use function trigger_deprecation;
     {
         $mapping['reference'] = true;
         $mapping['type']      = self::ONE;
+
+        if ($this->isTypedProperty($mapping['fieldName'])) {
+            $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
+        }
+
         $this->mapField($mapping);
     }
 
@@ -2195,6 +2210,19 @@ use function trigger_deprecation;
             unset($this->generatorOptions['type']);
         }
 
+        if ($this->isTypedProperty($mapping['fieldName'])) {
+            $mapping = $this->validateAndCompleteTypedFieldMapping($mapping);
+
+            if (isset($mapping['type']) && ($mapping['type'] === self::ONE || $mapping['type'] === self::MANY)) {
+                $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
+            }
+        }
+
+        if (! isset($mapping['type'])) {
+            // Default to string
+            $mapping['type'] = Type::STRING;
+        }
+
         if (! isset($mapping['nullable'])) {
             $mapping['nullable'] = false;
         }
@@ -2504,5 +2532,84 @@ use function trigger_deprecation;
 
             throw MappingException::duplicateDatabaseFieldName($this->getName(), $mapping['fieldName'], $mapping['name'], $fieldName);
         }
+    }
+
+    private function isTypedProperty(string $name): bool
+    {
+        return PHP_VERSION_ID >= 70400
+            && $this->reflClass->hasProperty($name)
+            && $this->reflClass->getProperty($name)->hasType();
+    }
+
+    /**
+     * Validates & completes the given field mapping based on typed property.
+     *
+     * @psalm-param FieldMappingConfig $mapping
+     *
+     * @return FieldMappingConfig
+     */
+    private function validateAndCompleteTypedFieldMapping(array $mapping): array
+    {
+        $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+
+        if (! $type instanceof ReflectionNamedType || isset($mapping['type'])) {
+            return $mapping;
+        }
+
+        switch ($type->getName()) {
+            case DateTime::class:
+                $mapping['type'] = Type::DATE;
+                break;
+            case DateTimeImmutable::class:
+                $mapping['type'] = Type::DATE_IMMUTABLE;
+                break;
+            case 'array':
+                $mapping['type'] = Type::HASH;
+                break;
+            case 'bool':
+                $mapping['type'] = Type::BOOL;
+                break;
+            case 'float':
+                $mapping['type'] = Type::FLOAT;
+                break;
+            case 'int':
+                $mapping['type'] = Type::INT;
+                break;
+            case 'string':
+                $mapping['type'] = Type::STRING;
+                break;
+        }
+
+        return $mapping;
+    }
+
+    /**
+     * Validates & completes the basic mapping information based on typed property.
+     *
+     * @psalm-param FieldMappingConfig $mapping
+     *
+     * @return FieldMappingConfig
+     */
+    private function validateAndCompleteTypedAssociationMapping(array $mapping): array
+    {
+        $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+
+        if (! $type instanceof ReflectionNamedType) {
+            return $mapping;
+        }
+
+        if (! isset($mapping['targetDocument']) && $mapping['type'] === self::ONE) {
+            $mapping['targetDocument'] = $type->getName();
+        }
+
+        if (
+            ! isset($mapping['collectionClass'])
+            && $mapping['type'] === self::MANY
+            && class_exists($type->getName())
+        ) {
+            $mapping['collectionClass'] = $type->getName();
+        }
+
+        return $mapping;
     }
 }

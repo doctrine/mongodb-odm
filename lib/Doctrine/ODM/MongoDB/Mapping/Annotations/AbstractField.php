@@ -29,7 +29,7 @@ abstract class AbstractField implements Annotation
      */
     public function __construct(
         ?string $name = null,
-        ?string $type = 'string',
+        ?string $type = null,
         bool $nullable = false,
         array $options = [],
         ?string $strategy = null,
