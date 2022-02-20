@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
+use BackedEnum;
 use BadMethodCallException;
 use DateTime;
 use DateTimeImmutable;
@@ -34,6 +35,7 @@ use function assert;
 use function class_exists;
 use function constant;
 use function count;
+use function enum_exists;
 use function extension_loaded;
 use function get_class;
 use function in_array;
@@ -100,7 +102,8 @@ use const PHP_VERSION_ID;
  *      criteria?: array<string, string>,
  *      alsoLoadFields?: list<string>,
  *      order?: int|string,
- *      background?: bool
+ *      background?: bool,
+ *      enumType?: class-string<BackedEnum>|null,
  * }
  * @psalm-type FieldMapping = array{
  *      type: string,
@@ -145,6 +148,7 @@ use const PHP_VERSION_ID;
  *      index?: bool,
  *      criteria?: array<string, string>,
  *      alsoLoadFields?: list<string>,
+ *      enumType?: class-string<BackedEnum>|null,
  * }
  * @psalm-type AssociationFieldMapping = array{
  *      type?: string,
@@ -2349,6 +2353,23 @@ use const PHP_VERSION_ID;
         $reflProp = $this->reflectionService->getAccessibleProperty($this->name, $mapping['fieldName']);
         assert($reflProp instanceof ReflectionProperty);
         $this->reflFields[$mapping['fieldName']] = $reflProp;
+
+        if (isset($mapping['enumType'])) {
+            if (PHP_VERSION_ID < 80100) {
+                throw MappingException::enumsRequirePhp81($this->name, $mapping['fieldName']);
+            }
+
+            if (! enum_exists($mapping['enumType'])) {
+                throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
+            }
+
+            if ($this->reflFields[$mapping['fieldName']] !== null) {
+                $this->reflFields[$mapping['fieldName']] = new ReflectionEnumProperty(
+                    $this->reflFields[$mapping['fieldName']],
+                    $mapping['enumType']
+                );
+            }
+        }
 
         return $mapping;
     }

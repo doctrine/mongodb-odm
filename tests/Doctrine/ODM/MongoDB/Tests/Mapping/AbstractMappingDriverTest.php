@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\ReflectionEnumProperty;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
@@ -20,6 +21,8 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents74\CustomCollection;
 use Documents74\TypedEmbeddedDocument;
 use Documents74\UserTyped;
+use Documents81\Card;
+use Documents81\Suit;
 use InvalidArgumentException;
 
 use function key;
@@ -636,6 +639,21 @@ abstract class AbstractMappingDriverTest extends BaseTest
             'nullable' => false,
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $metadata->fieldMappings['name']);
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testEnumType(): void
+    {
+        $metadata = $this->dm->getClassMetadata(Card::class);
+
+        self::assertSame(Suit::class, $metadata->fieldMappings['suit']['enumType']);
+        self::assertSame('string', $metadata->fieldMappings['suit']['type']);
+        self::assertInstanceOf(ReflectionEnumProperty::class, $metadata->reflFields['suit']);
+        self::assertSame(Suit::class, $metadata->fieldMappings['nullableSuit']['enumType']);
+        self::assertSame('string', $metadata->fieldMappings['suit']['type']);
+        self::assertInstanceOf(ReflectionEnumProperty::class, $metadata->reflFields['nullableSuit']);
     }
 }
 
