@@ -17,9 +17,12 @@ use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use Documents74\CustomCollection;
 use Documents74\TypedEmbeddedDocument;
 use Documents74\UserTyped;
+use Documents81\Card;
+use Documents81\Suit;
 use InvalidArgumentException;
 
 use function key;
@@ -636,6 +639,21 @@ abstract class AbstractMappingDriverTest extends BaseTest
             'nullable' => false,
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $metadata->fieldMappings['name']);
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testEnumType(): void
+    {
+        $metadata = $this->dm->getClassMetadata(Card::class);
+
+        self::assertSame(Suit::class, $metadata->fieldMappings['suit']['enumType']);
+        self::assertSame('string', $metadata->fieldMappings['suit']['type']);
+        self::assertInstanceOf(EnumReflectionProperty::class, $metadata->reflFields['suit']);
+        self::assertSame(Suit::class, $metadata->fieldMappings['nullableSuit']['enumType']);
+        self::assertSame('string', $metadata->fieldMappings['suit']['type']);
+        self::assertInstanceOf(EnumReflectionProperty::class, $metadata->reflFields['nullableSuit']);
     }
 }
 
