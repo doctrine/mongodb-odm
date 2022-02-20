@@ -12,7 +12,6 @@ use ReflectionMethod;
 use ReflectionProperty;
 
 use function assert;
-use function is_string;
 use function is_subclass_of;
 
 /**
@@ -100,7 +99,6 @@ final class AttributeReader implements Reader
 
         foreach ($attributes as $attribute) {
             $attributeName = $attribute->getName();
-            assert(is_string($attributeName));
             // Make sure we only get Doctrine Annotations
             if (! is_subclass_of($attributeName, Annotation::class)) {
                 continue;

@@ -226,7 +226,6 @@ CODE;
         $parameterDefinitions = [];
 
         foreach ($parameters as $param) {
-            assert($param instanceof ReflectionParameter);
             $parameterDefinition = '';
             if ($param->hasType()) {
                 $parameterDefinition .= $this->getParameterType($param) . ' ';

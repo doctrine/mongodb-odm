@@ -251,7 +251,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         foreach ($reflClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            assert($method instanceof ReflectionMethod);
             /* Filter for the declaring class only. Callbacks from parent
              * classes will already be registered.
              */
@@ -292,8 +291,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     * @param ClassMetadata<object> $class
-     * @param string[]              $keys
+     * @param ClassMetadata<object>     $class
+     * @param array<string, int|string> $keys
      */
     private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []): void
     {
