@@ -56,9 +56,9 @@ class CollectionsTest extends BaseTest
         $this->dm->clear();
 
         $bar = $this->dm->find(Bar::class, $bar->getId());
+        $this->assertNotNull($bar);
         $this->assertEquals($bar->getId(), $this->dm->getUnitOfWork()->getDocumentIdentifier($bar));
 
-        $this->assertNotNull($bar);
         $locations = $bar->getLocations();
         $this->assertCount(3, $locations);
         $locations = $bar->getLocations();

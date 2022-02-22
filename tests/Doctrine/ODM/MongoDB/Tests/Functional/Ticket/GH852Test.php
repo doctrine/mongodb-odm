@@ -52,6 +52,7 @@ class GH852Test extends BaseTest
         $this->assertEquals('parent', $parent->name);
 
         $this->assertInstanceOf(GhostObjectInterface::class, $parent->refOne);
+        $this->assertInstanceOf(GH852Document::class, $parent->refOne);
         $this->assertFalse($parent->refOne->isProxyInitialized());
         $this->assertEquals($idGenerator('childA'), $parent->refOne->id);
         $this->assertEquals('childA', $parent->refOne->name);
@@ -63,11 +64,13 @@ class GH852Test extends BaseTest
          * by DocumentPersister::loadReferenceManyCollectionOwningSide().
          */
         $this->assertInstanceOf(GhostObjectInterface::class, $parent->refMany[0]);
+        $this->assertInstanceOf(GH852Document::class, $parent->refMany[0]);
         $this->assertTrue($parent->refMany[0]->isProxyInitialized());
         $this->assertEquals($idGenerator('childB'), $parent->refMany[0]->id);
         $this->assertEquals('childB', $parent->refMany[0]->name);
 
         $this->assertInstanceOf(GhostObjectInterface::class, $parent->refMany[1]);
+        $this->assertInstanceOf(GH852Document::class, $parent->refMany[1]);
         $this->assertTrue($parent->refMany[1]->isProxyInitialized());
         $this->assertEquals($idGenerator('childC'), $parent->refMany[1]->id);
         $this->assertEquals('childC', $parent->refMany[1]->name);
