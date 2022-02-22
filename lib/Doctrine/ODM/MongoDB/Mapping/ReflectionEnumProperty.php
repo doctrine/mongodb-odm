@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use BackedEnum;
+use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use ReflectionProperty;
 use ReturnTypeWillChange;
 use ValueError;
@@ -45,13 +46,7 @@ class ReflectionEnumProperty extends ReflectionProperty
             return null;
         }
 
-        $enum = $this->originalReflectionProperty->getValue($object);
-
-        if ($enum === null) {
-            return null;
-        }
-
-        return $enum->value;
+        return $this->originalReflectionProperty->getValue($object)->value;
     }
 
     /**
@@ -67,7 +62,7 @@ class ReflectionEnumProperty extends ReflectionProperty
             } catch (ValueError $e) {
                 assert(is_string($value) || is_int($value));
 
-                throw MappingException::invalidEnumValue(
+                throw HydratorException::invalidEnumValue(
                     get_class($object),
                     $this->originalReflectionProperty->getName(),
                     (string) $value,

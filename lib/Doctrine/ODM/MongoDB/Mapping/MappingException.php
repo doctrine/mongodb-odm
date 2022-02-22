@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use BackedEnum;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractDocument;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 use ReflectionException;
 use ReflectionObject;
-use ValueError;
 
 use function sprintf;
 
@@ -281,36 +279,16 @@ final class MappingException extends BaseMappingException
 
     public static function enumsRequirePhp81(string $className, string $fieldName): self
     {
-        return new self(sprintf('Enum types require PHP 8.1 in %s::$%s', $className, $fieldName));
+        return new self(sprintf('Enum types require PHP 8.1 in %s::%s', $className, $fieldName));
     }
 
     public static function nonEnumTypeMapped(string $className, string $fieldName, string $enumType): self
     {
         return new self(sprintf(
-            'Attempting to map non-enum type %s as enum in document class %s::$%s',
+            'Attempting to map a non-enum type %s as an enum: %s::%s',
             $enumType,
             $className,
             $fieldName
         ));
-    }
-
-    /**
-     * @param class-string             $className
-     * @param class-string<BackedEnum> $enumType
-     */
-    public static function invalidEnumValue(
-        string $className,
-        string $fieldName,
-        string $value,
-        string $enumType,
-        ValueError $previous
-    ): self {
-        return new self(sprintf(
-            'Trying to hydrate enum property "%s::$%s". Problem: Case "%s" is not listed in enum "%s"',
-            $className,
-            $fieldName,
-            $value,
-            $enumType
-        ), 0, $previous);
     }
 }
