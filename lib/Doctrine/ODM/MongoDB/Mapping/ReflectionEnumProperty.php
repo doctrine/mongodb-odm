@@ -46,7 +46,13 @@ class ReflectionEnumProperty extends ReflectionProperty
             return null;
         }
 
-        return $this->originalReflectionProperty->getValue($object)->value;
+        $enum = $this->originalReflectionProperty->getValue($object);
+
+        if ($enum === null) {
+            return null;
+        }
+
+        return $enum->value;
     }
 
     /**
