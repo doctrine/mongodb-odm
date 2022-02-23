@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
 
 use function bcadd;
 
@@ -43,7 +44,7 @@ class User extends BaseDocument
     /**
      * @ODM\Field(type="date")
      *
-     * @var DateTimeInterface|string
+     * @var UTCDateTime|DateTimeInterface|string
      */
     protected $createdAt;
 
@@ -296,7 +297,7 @@ class User extends BaseDocument
     }
 
     /**
-     * @param DateTimeInterface|string $createdAt
+     * @param UTCDateTime|DateTimeInterface|string $createdAt
      */
     public function setCreatedAt($createdAt): void
     {
@@ -304,7 +305,7 @@ class User extends BaseDocument
     }
 
     /**
-     * @return DateTime|DateTimeInterface|string
+     * @return UTCDateTime|DateTime|DateTimeInterface|string
      */
     public function getCreatedAt()
     {

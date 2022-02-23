@@ -1082,7 +1082,7 @@ use function trigger_deprecation;
     /**
      * Add a index for this Document.
      *
-     * @param array<string, mixed> $keys
+     * @param array<string, int|string> $keys
      * @psalm-param IndexKeys $keys
      * @psalm-param IndexOptions $options
      */

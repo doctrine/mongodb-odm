@@ -32,7 +32,7 @@ class DocumentRepositoryTest extends BaseTest
     public function testFindByRefOneFull(): void
     {
         $user    = new User();
-        $account = new Account('name');
+        $account = new Account();
         $user->setAccount($account);
         $this->dm->persist($user);
         $this->dm->persist($account);
@@ -51,7 +51,7 @@ class DocumentRepositoryTest extends BaseTest
     public function testFindByRefOneWithoutTargetDocumentFull(): void
     {
         $user    = new User();
-        $account = new Account('name');
+        $account = new Account();
         $user->setAccount($account);
         $this->dm->persist($user);
         $this->dm->persist($account);
@@ -74,7 +74,7 @@ class DocumentRepositoryTest extends BaseTest
     public function testFindByRefOneWithoutTargetDocumentStoredAsDbRef(): void
     {
         $user    = new User();
-        $account = new Account('name');
+        $account = new Account();
         $account->setUserDbRef($user);
         $this->dm->persist($user);
         $this->dm->persist($account);
@@ -114,7 +114,7 @@ class DocumentRepositoryTest extends BaseTest
     public function testFindByRefOneSimple(): void
     {
         $user    = new User();
-        $account = new Account('name');
+        $account = new Account();
         $user->setAccountSimple($account);
         $this->dm->persist($user);
         $this->dm->persist($account);

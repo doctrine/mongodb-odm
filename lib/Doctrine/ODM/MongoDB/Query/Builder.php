@@ -698,7 +698,7 @@ class Builder
                 $includeMode = 0 < count(array_filter($query['select'], static function ($mode) {
                     return $mode === 1;
                 }));
-                if ($includeMode && ! isset($query['select'][$this->class->discriminatorField])) {
+                if ($includeMode) {
                     $query['select'][$this->class->discriminatorField] = 1;
                 }
             }

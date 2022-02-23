@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsArticle;
 use Documents\CmsComment;
@@ -17,7 +16,6 @@ use Documents\Functional\SameCollection2;
 use MongoDB\BSON\ObjectId;
 
 use function array_keys;
-use function assert;
 use function get_class;
 
 class PersistenceBuilderTest extends BaseTest
@@ -49,7 +47,6 @@ class PersistenceBuilderTest extends BaseTest
         $this->uow->computeChangeSets();
 
         $qb = $this->dm->createQueryBuilder(SameCollection1::class);
-        assert($qb instanceof Builder);
         $qb->updateOne()
             ->field('ok')->set(true)
             ->field('test')->set('OK! TEST')
@@ -95,7 +92,6 @@ class PersistenceBuilderTest extends BaseTest
         $this->uow->computeChangeSets();
 
         $qb = $this->dm->createQueryBuilder(SameCollection2::class);
-        assert($qb instanceof Builder);
         $qb
             ->field('id')->in($ids)
             ->select('id')->hydrate(false);
@@ -268,11 +264,10 @@ class PersistenceBuilderTest extends BaseTest
 
         $this->uow->computeChangeSets();
 
-        $articleId = (string) $article->id;
-        $commentId = (string) $comment->id;
+        $articleId = $article->id;
+        $commentId = $comment->id;
 
         $qb = $this->dm->createQueryBuilder(CmsComment::class);
-        assert($qb instanceof Builder);
         $qb
             ->field('article.id')->in([$articleId]);
         $query   = $qb->getQuery();
