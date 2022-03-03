@@ -207,7 +207,7 @@ can tell the query builder to not return a caching iterator:
     <?php
 
     $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
-    $builder->setRewindable(false);
+    $builder->rewindable(false);
 
 When setting this option to ``false``, attempting a second iteration will result
 in an exception. Note that calling ``getAggregation()`` will always yield a
