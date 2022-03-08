@@ -26,6 +26,9 @@ use Documents\SpecialUser;
 use Documents\User;
 use Documents\UserName;
 use Documents\UserRepository;
+use Documents74\CustomCollection;
+use Documents74\TypedEmbeddedDocument;
+use Documents74\UserTyped;
 use Generator;
 use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -134,6 +137,54 @@ class ClassMetadataTest extends BaseTest
         // Implicit Not Nullable
         $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
         $this->assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
+    }
+
+    /**
+     * @requires PHP >= 7.4
+     */
+    public function testFieldTypeFromReflection(): void
+    {
+        $cm = new ClassMetadata(UserTyped::class);
+
+        // String
+        $cm->mapField(['fieldName' => 'username', 'length' => 50]);
+        self::assertEquals(Type::STRING, $cm->getTypeOfField('username'));
+
+        // DateTime object
+        $cm->mapField(['fieldName' => 'dateTime']);
+        self::assertEquals(Type::DATE, $cm->getTypeOfField('dateTime'));
+
+        // DateTimeImmutable object
+        $cm->mapField(['fieldName' => 'dateTimeImmutable']);
+        self::assertEquals(Type::DATE_IMMUTABLE, $cm->getTypeOfField('dateTimeImmutable'));
+
+        // array as hash
+        $cm->mapField(['fieldName' => 'array']);
+        self::assertEquals(Type::HASH, $cm->getTypeOfField('array'));
+
+        // bool
+        $cm->mapField(['fieldName' => 'boolean']);
+        self::assertEquals(Type::BOOL, $cm->getTypeOfField('boolean'));
+
+        // float
+        $cm->mapField(['fieldName' => 'float']);
+        self::assertEquals(Type::FLOAT, $cm->getTypeOfField('float'));
+
+        // int
+        $cm->mapField(['fieldName' => 'int']);
+        self::assertEquals(Type::INT, $cm->getTypeOfField('int'));
+
+        $cm->mapOneEmbedded(['fieldName' => 'embedOne']);
+        self::assertEquals(TypedEmbeddedDocument::class, $cm->getAssociationTargetClass('embedOne'));
+
+        $cm->mapOneReference(['fieldName' => 'referenceOne']);
+        self::assertEquals(UserTyped::class, $cm->getAssociationTargetClass('referenceOne'));
+
+        $cm->mapManyEmbedded(['fieldName' => 'embedMany']);
+        self::assertEquals(CustomCollection::class, $cm->getAssociationCollectionClass('embedMany'));
+
+        $cm->mapManyReference(['fieldName' => 'referenceMany']);
+        self::assertEquals(CustomCollection::class, $cm->getAssociationCollectionClass('referenceMany'));
     }
 
     /**

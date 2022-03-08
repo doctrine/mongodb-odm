@@ -198,6 +198,25 @@ This list explains some of the less obvious mapping types:
     suitable you should either use an embedded document or use formats provided
     by the MongoDB driver (e.g. ``\MongoDB\BSON\UTCDateTime`` instead of ``\DateTime``).
 
+.. _reference-php-mapping-types:
+
+PHP Types Mapping
+_________________
+
+Since version 2.4 Doctrine can determine usable defaults from property types
+on document classes. Doctrine will map PHP types to ``type`` attribute as
+follows:
+
+- ``DateTime``: ``date``
+- ``DateTimeImmutable``: ``date_immutable``
+- ``array``: ``hash``
+- ``bool``: ``bool``
+- ``float``: ``float``
+- ``int``: ``int``
+- ``string``: ``string``
+
+Please note that at this time, due to backward compatibility reasons, nullable type does not imply `nullable` mapping.
+
 Property Mapping
 ----------------
 

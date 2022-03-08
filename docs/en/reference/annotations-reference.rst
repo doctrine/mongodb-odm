@@ -210,7 +210,8 @@ Optional attributes:
     information.
 -
     ``collectionClass`` - A |FQCN| of class that implements ``Collection``
-    interface and is used to hold documents. Doctrine's ``ArrayCollection`` is
+    interface and is used to hold documents. When typed properties
+    are used it is inherited from PHP type, otherwise Doctrine's ``ArrayCollection`` is
     used by default.
 -
     ``notSaved`` - The property is loaded if it exists in the database; however,
@@ -257,7 +258,8 @@ following excerpt from the MongoDB documentation:
 Optional attributes:
 
 -
-    ``targetDocument`` - A |FQCN| of the target document.
+    ``targetDocument`` - A |FQCN| of the target document. When typed properties
+    are used it is inherited from PHP type.
 -
     ``discriminatorField`` - The database field name to store the discriminator
     value within the embedded document.
@@ -356,7 +358,8 @@ Optional attributes:
 -
    ``type`` - Name of the ODM type, which will determine the value's
    representation in PHP and BSON (i.e. MongoDB). See
-   :ref:`doctrine_mapping_types` for a list of types. Defaults to "string".
+   :ref:`doctrine_mapping_types` for a list of types. Defaults to "string" or
+   :ref:`Type from PHP property type <reference-php-mapping-types>`.
 -
    ``name`` - By default, the property name is used for the field name in
    MongoDB; however, this option may be used to specify a database field name.
@@ -961,7 +964,8 @@ Optional attributes:
     information.
 -
     ``collectionClass`` - A |FQCN| of class that implements ``Collection``
-    interface and is used to hold documents. Doctrine's ``ArrayCollection`` is
+    interface and is used to hold documents. When typed properties
+    are used it is inherited from PHP type, otherwise Doctrine's ``ArrayCollection`` is
     used by default
 -
     ``prime`` - A list of references contained in the target document that will
@@ -1002,7 +1006,8 @@ Optional attributes:
 
 -
     ``targetDocument`` - A |FQCN| of the target document. A ``targetDocument``
-    is required when using ``storeAs: id``.
+    is required when using ``storeAs: id``. When typed properties are used
+    it is inherited from PHP type.
 -
     ``storeAs`` - Indicates how to store the reference. ``id`` stores the
     identifier, ``ref`` an embedded object containing the ``id`` field and

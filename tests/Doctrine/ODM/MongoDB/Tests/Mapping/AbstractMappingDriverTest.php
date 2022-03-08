@@ -15,7 +15,11 @@ use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Documents74\CustomCollection;
+use Documents74\TypedEmbeddedDocument;
+use Documents74\UserTyped;
 use InvalidArgumentException;
 
 use function key;
@@ -192,6 +196,28 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->assertEquals('identifier', $class->identifier);
 
         return $class;
+    }
+
+    /**
+     * @requires PHP >= 7.4
+     */
+    public function testFieldTypeFromReflection(): void
+    {
+        $class = $this->dm->getClassMetadata(UserTyped::class);
+
+        $this->assertSame(Type::ID, $class->getTypeOfField('id'));
+        $this->assertSame(Type::STRING, $class->getTypeOfField('username'));
+        $this->assertSame(Type::DATE, $class->getTypeOfField('dateTime'));
+        $this->assertSame(Type::DATE_IMMUTABLE, $class->getTypeOfField('dateTimeImmutable'));
+        $this->assertSame(Type::HASH, $class->getTypeOfField('array'));
+        $this->assertSame(Type::BOOL, $class->getTypeOfField('boolean'));
+        $this->assertSame(Type::FLOAT, $class->getTypeOfField('float'));
+
+        $this->assertSame(TypedEmbeddedDocument::class, $class->getAssociationTargetClass('embedOne'));
+        $this->assertSame(UserTyped::class, $class->getAssociationTargetClass('referenceOne'));
+
+        $this->assertSame(CustomCollection::class, $class->getAssociationCollectionClass('embedMany'));
+        $this->assertSame(CustomCollection::class, $class->getAssociationCollectionClass('referenceMany'));
     }
 
     /**
