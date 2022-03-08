@@ -7,7 +7,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1152Test extends BaseTest
