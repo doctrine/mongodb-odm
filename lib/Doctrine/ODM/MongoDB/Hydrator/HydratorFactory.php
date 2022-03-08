@@ -459,9 +459,10 @@ EOF
      * Hydrate array of MongoDB document data into the given document object.
      *
      * @param array<string, mixed> $data
-     * @psalm-param Hints $hints Any hints to account for during reconstitution/lookup of the document.
      *
      * @return array<string, mixed>
+     *
+     * @psalm-param Hints $hints Any hints to account for during reconstitution/lookup of the document.
      */
     public function hydrate(object $document, array $data, array $hints = []): array
     {

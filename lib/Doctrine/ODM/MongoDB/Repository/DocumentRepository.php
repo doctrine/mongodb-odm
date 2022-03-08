@@ -61,6 +61,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * @param DocumentManager $dm            The DocumentManager to use.
      * @param UnitOfWork      $uow           The UnitOfWork to use.
      * @param ClassMetadata   $classMetadata The class metadata.
+     *
      * @psalm-param ClassMetadata<T>   $classMetadata The class metadata.
      */
     public function __construct(DocumentManager $dm, UnitOfWork $uow, ClassMetadata $classMetadata)
@@ -101,10 +102,10 @@ class DocumentRepository implements ObjectRepository, Selectable
      *
      * @param mixed $id Identifier.
      *
-     * @psalm-return T|null
-     *
      * @throws MappingException
      * @throws LockException
+     *
+     * @psalm-return T|null
      */
     public function find($id, int $lockMode = LockMode::NONE, ?int $lockVersion = null): ?object
     {
@@ -178,6 +179,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * @param array<string, mixed>      $criteria
      *
      * @return object|null The object.
+     *
      * @psalm-return T|null
      */
     public function findOneBy(array $criteria, ?array $sort = null): ?object

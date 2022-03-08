@@ -301,12 +301,10 @@ class DocumentManager implements ObjectManager
      * Returns the metadata for a class.
      *
      * @param string $className The class name.
+     *
      * @psalm-param class-string<T> $className
-     *
      * @psalm-return ClassMetadata<T>
-     *
      * @template T of object
-     *
      * @psalm-suppress InvalidReturnType, InvalidReturnStatement see https://github.com/vimeo/psalm/issues/5788
      */
     public function getClassMetadata($className): ClassMetadata
@@ -571,11 +569,11 @@ class DocumentManager implements ObjectManager
      * Gets the repository for a document class.
      *
      * @param string $className The name of the Document.
-     * @psalm-param class-string<T> $className
      *
      * @return DocumentRepository|GridFSRepository|ViewRepository  The repository.
-     * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      *
+     * @psalm-param class-string<T> $className
+     * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      * @template T of object
      */
     public function getRepository($className)
@@ -589,9 +587,10 @@ class DocumentManager implements ObjectManager
      * database.
      *
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
-     * @psalm-param CommitOptions $options
      *
      * @throws MongoDBException
+     *
+     * @psalm-param CommitOptions $options
      */
     public function flush(array $options = [])
     {
@@ -608,10 +607,9 @@ class DocumentManager implements ObjectManager
      * loads itself on first access.
      *
      * @param mixed $identifier
+     *
      * @psalm-param class-string<T> $documentName
-     *
      * @psalm-return T|(T&GhostObjectInterface<T>)
-     *
      * @template T of object
      */
     public function getReference(string $documentName, $identifier): object
@@ -677,10 +675,9 @@ class DocumentManager implements ObjectManager
      * @param mixed  $id
      * @param int    $lockMode
      * @param int    $lockVersion
+     *
      * @psalm-param class-string<T> $className
-     *
      * @psalm-return T|null
-     *
      * @template T of object
      */
     public function find($className, $id, $lockMode = LockMode::NONE, $lockVersion = null): ?object

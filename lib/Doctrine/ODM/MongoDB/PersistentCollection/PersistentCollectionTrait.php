@@ -7,11 +7,9 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-use ReturnTypeWillChange;
 use Traversable;
 
 use function array_combine;

@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Query\Expr;
 use GeoJson\Geometry\Geometry;
 
 use function func_get_args;
+use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -192,10 +193,10 @@ class MatchStage extends Stage
     /**
      * Specify $expr criteria for the current field.
      *
-     * @param array|Aggregation\Expr $expression
      * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
-     *
      * @see Expr::aggregationExpression()
+     *
+     * @param array|Aggregation\Expr $expression
      */
     public function aggregationExpression($expression): self
     {

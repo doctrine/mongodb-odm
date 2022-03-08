@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Generator;
-use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 
