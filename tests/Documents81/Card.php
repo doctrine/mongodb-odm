@@ -16,8 +16,8 @@ class Card
     #[ODM\Id]
     public string $id;
 
-    /** @ODM\Field(type="string", enumType=Suit::class) */
-    #[ODM\Field(type: 'string', enumType: Suit::class)]
+    /** @ODM\Field() */
+    #[ODM\Field()]
     public Suit $suit;
 
     /** @ODM\Field(type="string", enumType=Suit::class, nullable=true) */

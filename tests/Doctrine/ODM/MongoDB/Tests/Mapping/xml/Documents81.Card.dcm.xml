@@ -8,7 +8,7 @@
 >
     <document name="Documents81\Card">
         <id />
-        <field name="suit" type="string" enum-type="Documents81\Suit" />
+        <field name="suit" />
         <field name="nullableSuit" type="string" enum-type="Documents81\Suit" nullable="true" />
     </document>
 </doctrine-mongo-mapping>

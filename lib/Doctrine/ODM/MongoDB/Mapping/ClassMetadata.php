@@ -23,6 +23,7 @@ use InvalidArgumentException;
 use LogicException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
+use ReflectionEnum;
 use ReflectionNamedType;
 use ReflectionProperty;
 
@@ -2575,6 +2576,15 @@ use const PHP_VERSION_ID;
 
         if (! $type instanceof ReflectionNamedType || isset($mapping['type'])) {
             return $mapping;
+        }
+
+        if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName(), false)) {
+            $mapping['enumType'] = $type->getName();
+
+            $reflection = new ReflectionEnum($type->getName());
+            $type       = $reflection->getBackingType();
+
+            assert($type instanceof ReflectionNamedType);
         }
 
         switch ($type->getName()) {

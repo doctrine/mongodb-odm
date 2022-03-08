@@ -26,7 +26,7 @@ final class Field extends AbstractField
      */
     public function __construct(
         ?string $name = null,
-        ?string $type = 'string',
+        ?string $type = null,
         bool $nullable = false,
         array $options = [],
         ?string $strategy = null,
