@@ -162,9 +162,8 @@ class AtomicSetTest extends BaseTest
         $this->assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
-        $user                 = $this->dm->getRepository(get_class($user))->find($user->id);
-        $user->phonenumbers   = new ArrayCollection();
-        $user->phonenumbers[] = new Phonenumber('87654321');
+        $user               = $this->dm->getRepository(get_class($user))->find($user->id);
+        $user->phonenumbers = new ArrayCollection([new Phonenumber('87654321')]);
         $this->logger->clear();
         $this->dm->flush();
         $this->assertCount(1, $this->logger, 'Updating emptied collection requires one query');
