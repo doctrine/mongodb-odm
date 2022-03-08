@@ -92,9 +92,9 @@ interface PersistentCollectionInterface extends Collection
      * Sets the collection's owning document together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
      *
-     * @psalm-param FieldMapping $mapping
-     *
      * @return void
+     *
+     * @psalm-param FieldMapping $mapping
      */
     public function setOwner(object $document, array $mapping);
 
@@ -154,15 +154,17 @@ interface PersistentCollectionInterface extends Collection
 
     /**
      * @return array
+     *
      * @psalm-return FieldMapping
      */
     public function getMapping();
 
     /**
      * @return ClassMetadata
-     * @psalm-return ClassMetadata<T>
      *
      * @throws MongoDBException
+     *
+     * @psalm-return ClassMetadata<T>
      */
     public function getTypeClass();
 

@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Countable;
 use Generator;
-use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 

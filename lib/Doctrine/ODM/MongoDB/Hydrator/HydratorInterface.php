@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
-use Doctrine\ODM\MongoDB\UnitOfWork;
-
 /**
  * The HydratorInterface defines methods all hydrator need to implement
  *
@@ -17,9 +15,10 @@ interface HydratorInterface
      * Hydrate array of MongoDB document data into the given document object.
      *
      * @param array<string, mixed> $data
-     * @psalm-param Hints $hints
      *
      * @return array<string, mixed>
+     *
+     * @psalm-param Hints $hints
      */
     public function hydrate(object $document, array $data, array $hints = []): array;
 }

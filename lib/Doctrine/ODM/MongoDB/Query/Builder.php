@@ -26,6 +26,7 @@ use function is_bool;
 use function is_callable;
 use function is_string;
 use function strtolower;
+use function trigger_deprecation;
 
 /**
  * Query builder for ODM.

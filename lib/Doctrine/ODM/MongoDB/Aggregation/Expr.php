@@ -19,6 +19,7 @@ use function func_get_args;
 use function is_array;
 use function is_string;
 use function substr;
+use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.

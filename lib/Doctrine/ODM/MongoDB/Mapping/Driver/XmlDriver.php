@@ -341,6 +341,7 @@ class XmlDriver extends FileDriver
 
     /**
      * @param ClassMetadata<object> $class
+     *
      * @psalm-param FieldMappingConfig $mapping
      */
     private function addFieldMapping(ClassMetadata $class, array $mapping): void
