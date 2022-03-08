@@ -207,9 +207,9 @@ final class DocumentPersister
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
-     * @psalm-param CommitOptions $options
-     *
      * @throws DriverException
+     *
+     * @psalm-param CommitOptions $options
      */
     public function executeInserts(array $options = []): void
     {
@@ -363,9 +363,9 @@ final class DocumentPersister
     /**
      * Updates the already persisted document if it has any new changesets.
      *
-     * @psalm-param CommitOptions $options
-     *
      * @throws LockException
+     *
+     * @psalm-param CommitOptions $options
      */
     public function update(object $document, array $options = []): void
     {
@@ -428,9 +428,9 @@ final class DocumentPersister
     /**
      * Removes document from mongo
      *
-     * @psalm-param CommitOptions $options
-     *
      * @throws LockException
+     *
+     * @psalm-param CommitOptions $options
      */
     public function delete(object $document, array $options = []): void
     {
@@ -482,12 +482,11 @@ final class DocumentPersister
      * be used to match an _id value.
      *
      * @param mixed $criteria Query criteria
-     * @psalm-param T|null $document
-     *
-     * @psalm-return T|null
      *
      * @throws LockException
      *
+     * @psalm-param T|null $document
+     * @psalm-return T|null
      * @todo Check identity map? loadById method? Try to guess whether
      *     $criteria is the id?
      */
@@ -642,9 +641,10 @@ final class DocumentPersister
      * @param array       $result   The query result.
      * @param object|null $document The document object to fill, if any.
      * @param array       $hints    Hints for document creation.
-     * @psalm-param T|null $document
      *
      * @return object The filled and managed document object.
+     *
+     * @psalm-param T|null $document
      * @psalm-return T
      */
     private function createDocument(array $result, ?object $document = null, array $hints = []): object

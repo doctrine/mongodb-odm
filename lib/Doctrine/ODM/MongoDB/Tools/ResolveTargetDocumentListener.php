@@ -93,6 +93,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
 
     /**
      * @param ClassMetadata<object> $classMetadata
+     *
      * @psalm-param AssociationFieldMapping $mapping
      */
     private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void

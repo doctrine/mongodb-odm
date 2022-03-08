@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Generator;
 use LogicException;
-use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 

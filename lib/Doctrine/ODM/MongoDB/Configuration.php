@@ -457,6 +457,7 @@ class Configuration
      * Add a filter to the list of possible filters.
      *
      * @param array<string, mixed> $parameters
+     *
      * @psalm-param class-string $className
      */
     public function addFilter(string $name, string $className, array $parameters = []): void
@@ -488,9 +489,9 @@ class Configuration
     }
 
     /**
-     * @psalm-param class-string<ObjectRepository> $className
-     *
      * @throws MongoDBException If not is a ObjectRepository.
+     *
+     * @psalm-param class-string<ObjectRepository> $className
      */
     public function setDefaultDocumentRepositoryClassName(string $className): void
     {
@@ -512,9 +513,9 @@ class Configuration
     }
 
     /**
-     * @psalm-param class-string<GridFSRepository> $className
-     *
      * @throws MongoDBException If the class does not implement the GridFSRepository interface.
+     *
+     * @psalm-param class-string<GridFSRepository> $className
      */
     public function setDefaultGridFSRepositoryClassName(string $className): void
     {

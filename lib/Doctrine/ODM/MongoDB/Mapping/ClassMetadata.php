@@ -967,10 +967,11 @@ use function trigger_deprecation;
      * properties.
      *
      * @param array<string, mixed>|string|null $discriminatorField
-     * @psalm-param array{name?: string, fieldName?: string}|string|null $discriminatorField
      *
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
+     *
+     * @psalm-param array{name?: string, fieldName?: string}|string|null $discriminatorField
      */
     public function setDiscriminatorField($discriminatorField): void
     {
@@ -1083,6 +1084,7 @@ use function trigger_deprecation;
      * Add a index for this Document.
      *
      * @param array<string, mixed> $keys
+     *
      * @psalm-param IndexKeys $keys
      * @psalm-param IndexOptions $options
      */
@@ -1134,10 +1136,11 @@ use function trigger_deprecation;
      *
      * @param array<string, string|int> $keys
      * @param array<string, mixed>      $options
-     * @psalm-param ShardKeys $keys
-     * @psalm-param ShardOptions      $options
      *
      * @throws MappingException
+     *
+     * @psalm-param ShardKeys $keys
+     * @psalm-param ShardOptions      $options
      */
     public function setShardKey(array $keys, array $options = []): void
     {
@@ -1204,6 +1207,7 @@ use function trigger_deprecation;
 
     /**
      * @return array|object|null
+     *
      * @psalm-return array<string, mixed>|object|null
      */
     public function getValidator()
@@ -1213,6 +1217,7 @@ use function trigger_deprecation;
 
     /**
      * @param array|object|null $validator
+     *
      * @psalm-param array<string, mixed>|object|null $validator
      */
     public function setValidator($validator): void
@@ -1363,9 +1368,10 @@ use function trigger_deprecation;
      * Sets the collection this Document is mapped to.
      *
      * @param array|string $name
-     * @psalm-param array{name: string, capped?: bool, size?: int, max?: int}|string $name
      *
      * @throws InvalidArgumentException
+     *
+     * @psalm-param array{name: string, capped?: bool, size?: int, max?: int}|string $name
      */
     public function setCollection($name): void
     {
@@ -1463,9 +1469,9 @@ use function trigger_deprecation;
     /**
      * Validates the storage strategy of a mapping for consistency
      *
-     * @psalm-param FieldMappingConfig $mapping
-     *
      * @throws MappingException
+     *
+     * @psalm-param FieldMappingConfig $mapping
      */
     private function applyStorageStrategy(array &$mapping): void
     {
@@ -1589,9 +1595,9 @@ use function trigger_deprecation;
      *
      * @internal
      *
-     * @psalm-param AssociationFieldMapping $mapping
-     *
      * @throws MappingException
+     *
+     * @psalm-param AssociationFieldMapping $mapping
      */
     public function addInheritedAssociationMapping(array $mapping): void
     {
@@ -1792,9 +1798,9 @@ use function trigger_deprecation;
     /**
      * Gets the mapping of a field.
      *
-     * @psalm-return FieldMapping
-     *
      * @throws MappingException If the $fieldName is not found in the fieldMappings array.
+     *
+     * @psalm-return FieldMapping
      */
     public function getFieldMapping(string $fieldName): array
     {
@@ -1824,9 +1830,9 @@ use function trigger_deprecation;
      * Gets the field mapping by its DB name.
      * E.g. it returns identifier's mapping when called with _id.
      *
-     * @psalm-return FieldMapping
-     *
      * @throws MappingException
+     *
+     * @psalm-return FieldMapping
      */
     public function getFieldMappingByDbFieldName(string $dbFieldName): array
     {
@@ -1900,6 +1906,7 @@ use function trigger_deprecation;
      * Sets the mapped subclasses of this class.
      *
      * @param string[] $subclasses The names of all mapped subclasses.
+     *
      * @psalm-param class-string[] $subclasses
      */
     public function setSubclasses(array $subclasses): void
@@ -1915,6 +1922,7 @@ use function trigger_deprecation;
      * directParent -> directParentParent -> directParentParentParent ... -> root.
      *
      * @param string[] $classNames
+     *
      * @psalm-param list<class-string> $classNames
      */
     public function setParentClasses(array $classNames): void
@@ -1964,9 +1972,9 @@ use function trigger_deprecation;
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
      *
-     * @psalm-param FieldMapping $mapping
-     *
      * @throws LockException
+     *
+     * @psalm-param FieldMapping $mapping
      */
     public function setVersionMapping(array &$mapping): void
     {
@@ -1999,9 +2007,9 @@ use function trigger_deprecation;
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
      *
-     * @psalm-param FieldMapping $mapping
-     *
      * @throws LockException
+     *
+     * @psalm-param FieldMapping $mapping
      */
     public function setLockMapping(array &$mapping): void
     {
@@ -2111,11 +2119,10 @@ use function trigger_deprecation;
     /**
      * Map a field.
      *
-     * @psalm-param FieldMappingConfig $mapping
-     *
-     * @psalm-return FieldMapping
-     *
      * @throws MappingException
+     *
+     * @psalm-param FieldMappingConfig $mapping
+     * @psalm-return FieldMapping
      */
     public function mapField(array $mapping): array
     {

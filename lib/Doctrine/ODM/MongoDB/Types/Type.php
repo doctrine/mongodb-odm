@@ -202,10 +202,9 @@ abstract class Type
     /**
      * Adds a custom type to the type map.
      *
-     * @psalm-param class-string $className
-     *
      * @throws MappingException
      *
+     * @psalm-param class-string $className
      * @static
      */
     public static function addType(string $name, string $className): void
@@ -230,10 +229,9 @@ abstract class Type
     /**
      * Overrides an already defined type to use a different implementation.
      *
-     * @psalm-param class-string $className
-     *
      * @throws MappingException
      *
+     * @psalm-param class-string $className
      * @static
      */
     public static function overrideType(string $name, string $className): void

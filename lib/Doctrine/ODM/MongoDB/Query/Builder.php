@@ -26,6 +26,7 @@ use function is_bool;
 use function is_callable;
 use function is_string;
 use function strtolower;
+use function trigger_deprecation;
 
 /**
  * Query builder for ODM.
@@ -524,10 +525,10 @@ class Builder
     /**
      * Specify $expr criteria for the current field.
      *
-     * @param array|Aggregation\Expr $expression
      * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
-     *
      * @see Aggregation\Expr::aggregationExpression()
+     *
+     * @param array|Aggregation\Expr $expression
      */
     public function aggregationExpression($expression): self
     {
@@ -1625,9 +1626,9 @@ class Builder
     /**
      * Get Discriminator Values
      *
-     * @psalm-param class-string[] $classNames
-     *
      * @throws InvalidArgumentException If the number of found collections > 1.
+     *
+     * @psalm-param class-string[] $classNames
      */
     private function getDiscriminatorValues(array $classNames): array
     {
@@ -1649,6 +1650,7 @@ class Builder
 
     /**
      * @param string[]|string|null $documentName an array of document names or just one.
+     *
      * @psalm-param class-string[]|class-string|null $documentName
      */
     private function setDocumentName($documentName): void
