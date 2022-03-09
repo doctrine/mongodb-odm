@@ -104,7 +104,7 @@ use const PHP_VERSION_ID;
  *      alsoLoadFields?: list<string>,
  *      order?: int|string,
  *      background?: bool,
- *      enumType?: class-string<BackedEnum>|null,
+ *      enumType?: class-string<BackedEnum>,
  * }
  * @psalm-type FieldMapping = array{
  *      type: string,
@@ -149,7 +149,7 @@ use const PHP_VERSION_ID;
  *      index?: bool,
  *      criteria?: array<string, string>,
  *      alsoLoadFields?: list<string>,
- *      enumType?: class-string<BackedEnum>|null,
+ *      enumType?: class-string<BackedEnum>,
  * }
  * @psalm-type AssociationFieldMapping = array{
  *      type?: string,
