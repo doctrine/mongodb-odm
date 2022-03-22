@@ -12,7 +12,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Driver\Exception\UnexpectedValueException;
 use ReflectionClass;
 use ReflectionMethod;
@@ -33,8 +34,33 @@ use function trigger_deprecation;
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  */
-class AnnotationDriver extends AbstractAnnotationDriver
+class AnnotationDriver implements MappingDriver
 {
+    use ColocatedMappingDriver;
+
+    /**
+     * The annotation reader.
+     *
+     * @internal this property will be private in 3.0
+     *
+     * @var Reader
+     */
+    protected $reader;
+
+    /**
+     * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
+     * docblock annotations.
+     *
+     * @param Reader               $reader The AnnotationReader to use, duck-typed.
+     * @param string|string[]|null $paths  One or multiple paths where mapping classes can be found.
+     */
+    public function __construct($reader, $paths = null)
+    {
+        $this->reader = $reader;
+
+        $this->addPaths((array) $paths);
+    }
+
     public function isTransient($className)
     {
         $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
@@ -333,6 +359,23 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         $class->setShardKey($shardKey->keys, $options);
+    }
+
+    /**
+     * Retrieve the current annotation reader
+     *
+     * @return Reader
+     */
+    public function getReader()
+    {
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.4',
+            '%s is deprecated with no replacement',
+            __METHOD__
+        );
+
+        return $this->reader;
     }
 
     /**
