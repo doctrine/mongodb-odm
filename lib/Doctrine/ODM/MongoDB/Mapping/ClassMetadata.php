@@ -19,6 +19,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use InvalidArgumentException;
 use LogicException;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -2353,7 +2354,6 @@ use const PHP_VERSION_ID;
 
         $reflProp = $this->reflectionService->getAccessibleProperty($this->name, $mapping['fieldName']);
         assert($reflProp instanceof ReflectionProperty);
-        $this->reflFields[$mapping['fieldName']] = $reflProp;
 
         if (isset($mapping['enumType'])) {
             if (PHP_VERSION_ID < 80100) {
@@ -2364,13 +2364,10 @@ use const PHP_VERSION_ID;
                 throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
             }
 
-            if ($this->reflFields[$mapping['fieldName']] !== null) {
-                $this->reflFields[$mapping['fieldName']] = new ReflectionEnumProperty(
-                    $this->reflFields[$mapping['fieldName']],
-                    $mapping['enumType']
-                );
-            }
+            $reflProp = new EnumReflectionProperty($reflProp, $mapping['enumType']);
         }
+
+        $this->reflFields[$mapping['fieldName']] = $reflProp;
 
         return $mapping;
     }
@@ -2578,7 +2575,7 @@ use const PHP_VERSION_ID;
             return $mapping;
         }
 
-        if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName(), false)) {
+        if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName(), true)) {
             $mapping['enumType'] = $type->getName();
 
             $reflection = new ReflectionEnum($type->getName());

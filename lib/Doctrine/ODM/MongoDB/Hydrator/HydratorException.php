@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
-use BackedEnum;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use ValueError;
 
 use function sprintf;
 
@@ -54,25 +52,5 @@ final class HydratorException extends MongoDBException
             $expectedType,
             $actualType
         ));
-    }
-
-    /**
-     * @param class-string             $className
-     * @param class-string<BackedEnum> $enumType
-     */
-    public static function invalidEnumValue(
-        string $className,
-        string $fieldName,
-        string $value,
-        string $enumType,
-        ValueError $previous
-    ): self {
-        return new self(sprintf(
-            'Trying to hydrate an enum property "%s::%s", but "%s" is not listed as one of "%s" cases',
-            $className,
-            $fieldName,
-            $value,
-            $enumType
-        ), 0, $previous);
     }
 }
