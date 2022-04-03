@@ -23,3 +23,9 @@ in `doctrine/persistence`, and no longer do.
 
 That method was inherited from the abstract `AnnotationDriver` class of
 `doctrine/persistence`, and does not seem to serve any purpose.
+
+## Deprecate `DocumentManager::clear()` with an argument
+
+Detaching all documents of a given class has been deprecated. We deem the process fragile and suggest
+detaching your documents one-by-one using `DocumentManager::detach()`. This effectively deprecates
+`OnClearEventArgs::getDocumentClass` and `OnClearEventArgs::clearsAllDocuments`.
