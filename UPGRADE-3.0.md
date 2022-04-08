@@ -34,3 +34,12 @@ for the class and read the class using `$metadata->getName()`. The metadata
 layer is aware of these proxy namespace changes and how to resolve them, so
 users should always go through the metadata layer to retrieve mapped class
 names.
+
+## Clearing all documents of a specific class
+
+Clearing all documents of a given class with `DocumentManager::clear(Document::class)`
+has been removed. Use `DocumentManager::detach` passing documents to be detached
+to retain the functionality.
+
+`Doctrine\ODM\MongoDB\Event\OnClearEventArgs`' methods `getDocumentClass` and 
+`clearsAllDocuments` have been removed.

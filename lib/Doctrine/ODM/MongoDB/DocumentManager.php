@@ -38,6 +38,7 @@ use function gettype;
 use function is_object;
 use function ltrim;
 use function sprintf;
+use function trigger_deprecation;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -703,6 +704,15 @@ class DocumentManager implements ObjectManager
      */
     public function clear($objectName = null)
     {
+        if ($objectName !== null) {
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.4',
+                'Calling %s() with any arguments to clear specific documents is deprecated and will not be supported in Doctrine ODM 3.0.',
+                __METHOD__
+            );
+        }
+
         $this->unitOfWork->clear($objectName);
     }
 
