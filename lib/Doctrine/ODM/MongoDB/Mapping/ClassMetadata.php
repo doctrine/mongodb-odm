@@ -793,6 +793,9 @@ use const PHP_VERSION_ID;
         return $this->reflClass;
     }
 
+    /**
+     * @param string $fieldName
+     */
     public function isIdentifier($fieldName): bool
     {
         return $this->identifier === $fieldName;
@@ -811,6 +814,8 @@ use const PHP_VERSION_ID;
     /**
      * Since MongoDB only allows exactly one identifier field
      * this will always return an array with only one value
+     *
+     * @return array<string|null>
      */
     public function getIdentifier(): array
     {
@@ -828,6 +833,9 @@ use const PHP_VERSION_ID;
         return [$this->identifier];
     }
 
+    /**
+     * @param string $fieldName
+     */
     public function hasField($fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
@@ -1631,6 +1639,8 @@ use const PHP_VERSION_ID;
 
     /**
      * Checks whether the class has a mapped association (embed or reference) with the given field name.
+     *
+     * @param string $fieldName
      */
     public function hasAssociation($fieldName): bool
     {
@@ -1640,6 +1650,8 @@ use const PHP_VERSION_ID;
     /**
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a single valued association.
+     *
+     * @param string $fieldName
      */
     public function isSingleValuedAssociation($fieldName): bool
     {
@@ -1649,6 +1661,8 @@ use const PHP_VERSION_ID;
     /**
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a collection valued association.
+     *
+     * @param string $fieldName
      */
     public function isCollectionValuedAssociation($fieldName): bool
     {
@@ -1758,6 +1772,8 @@ use const PHP_VERSION_ID;
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
+     *
+     * @param object $object
      */
     public function getIdentifierValues($object): array
     {
@@ -2082,12 +2098,18 @@ use const PHP_VERSION_ID;
         return array_keys($this->associationMappings);
     }
 
+    /**
+     * @param string $fieldName
+     */
     public function getTypeOfField($fieldName): ?string
     {
         return isset($this->fieldMappings[$fieldName]) ?
             $this->fieldMappings[$fieldName]['type'] : null;
     }
 
+    /**
+     * @param string $assocName
+     */
     public function getAssociationTargetClass($assocName): ?string
     {
         if (! isset($this->associationMappings[$assocName])) {
@@ -2113,11 +2135,17 @@ use const PHP_VERSION_ID;
         return $this->associationMappings[$assocName]['collectionClass'];
     }
 
+    /**
+     * @param string $assocName
+     */
     public function isAssociationInverseSide($assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
+    /**
+     * @param string $assocName
+     */
     public function getAssociationMappedByTargetField($assocName)
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');

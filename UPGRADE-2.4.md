@@ -14,6 +14,17 @@ private int $myProp;
 This property will be stored in DB as `string` but casted back to `int`. Please note that at this
 time, due to backward compatibility reasons, nullable type does not imply `nullable` mapping.
 
+## doctrine/persistence ^2.4 || ^3.0
+
+ODM now supports two major versions of `doctrine/persistence` and provides forward compatibility where possible.
+We strongly recommend checking [package's upgrade notes](https://github.com/doctrine/persistence/blob/3.0.x/UPGRADE.md)
+and [ODM's todo list](https://github.com/doctrine/mongodb-odm/issues/2419). Please require 2.x version of
+`doctrine/persistence` in your composer.json should you need to use functionalities without a forward
+compatibility layer. Most notable examples are:
+
+* removed `LifecycleEventArgs::getEntity()`
+* removed support for short namespace aliases
+
 ## BC Break: `AttributeDriver` and `AnnotationDriver` no longer extends parent class from `doctrine/persistence`
 
 Both these classes used to extend an abstract `AnnotationDriver` class defined
