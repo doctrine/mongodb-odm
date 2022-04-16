@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.20.0@f82a70e7edfc6cf2705e9374c8a0b6a974a779ed">
+<files psalm-version="4.22.0@fc2c6ab4d5fa5d644d8617089f012f3bb84b8703">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php">
     <InvalidReturnStatement occurrences="1">
       <code>$this-&gt;num($limit)</code>
@@ -7,6 +7,11 @@
     <InvalidReturnType occurrences="1">
       <code>self</code>
     </InvalidReturnType>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Event/OnClearEventArgs.php">
+    <TooManyArguments occurrences="1">
+      <code>parent::__construct($objectManager, $entityClass)</code>
+    </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Iterator/CachingIterator.php">
     <ImplementedReturnTypeMismatch occurrences="1">
@@ -19,12 +24,17 @@
     </ImplementedReturnTypeMismatch>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
+    <ImplementedReturnTypeMismatch occurrences="2">
+      <code>array&lt;string|null&gt;</code>
       <code>array&lt;string|null&gt;</code>
     </ImplementedReturnTypeMismatch>
     <InvalidArrayOffset occurrences="1">
       <code>[$this-&gt;identifier =&gt; $this-&gt;getIdentifierValue($object)]</code>
     </InvalidArrayOffset>
+    <LessSpecificImplementedReturnType occurrences="2">
+      <code>?string</code>
+      <code>array</code>
+    </LessSpecificImplementedReturnType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php">
     <InvalidArgument occurrences="2">
@@ -86,6 +96,11 @@
     <InvalidReturnStatement occurrences="1">
       <code>$options + ['metadata' =&gt; (object) $metadata]</code>
     </InvalidReturnStatement>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Repository/DocumentRepository.php">
+    <LessSpecificImplementedReturnType occurrences="1">
+      <code>array</code>
+    </LessSpecificImplementedReturnType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Types/DateImmutableType.php">
     <RedundantCondition occurrences="1">

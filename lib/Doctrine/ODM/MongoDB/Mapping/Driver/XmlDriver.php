@@ -71,6 +71,9 @@ class XmlDriver extends FileDriver
         ],
     ];
 
+    /**
+     * @param string|null $fileExtension
+     */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         parent::__construct($locator, $fileExtension);

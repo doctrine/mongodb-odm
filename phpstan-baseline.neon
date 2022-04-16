@@ -263,6 +263,12 @@ parameters:
             count: 1
             path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
+        # compatibility layer for doctrine/persistence ^2.4 || ^3.0
+        -
+            message: "#.*#"
+            count: 3
+            path: lib/Doctrine/ODM/MongoDB/Event/OnClearEventArgs
+
         -
             message: "#Property .+ is never written, only read.#"
             path: tests

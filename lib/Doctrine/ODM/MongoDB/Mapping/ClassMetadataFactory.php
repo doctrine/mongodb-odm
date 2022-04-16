@@ -83,6 +83,9 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->initialized = true;
     }
 
+    /**
+     * @param string $className
+     */
     protected function onNotFoundMetadata($className)
     {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
@@ -96,12 +99,18 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $eventArgs->getFoundMetadata();
     }
 
+    /**
+     * @deprecated
+     *
+     * @param string $namespaceAlias
+     * @param string $simpleClassName
+     */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName): string
     {
         return $this->config->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
     }
 
-    protected function getDriver()
+    protected function getDriver(): MappingDriver
     {
         return $this->driver;
     }
@@ -121,6 +130,9 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument && ! $class->isView();
     }
 
+    /**
+     * @param bool $rootEntityFound
+     */
     protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []): void
     {
         assert($class instanceof ClassMetadata);
