@@ -15,11 +15,11 @@
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist>
+    <coverage>
+        <include>
             <directory suffix=".php">./lib/Doctrine/ODM/MongoDB</directory>
-        </whitelist>
-    </filter>
+        </include>
+    </coverage>
 
     <groups>
         <exclude>
