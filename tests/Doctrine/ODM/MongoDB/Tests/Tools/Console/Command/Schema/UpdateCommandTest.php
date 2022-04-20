@@ -53,6 +53,18 @@ class UpdateCommandTest extends AbstractCommandTest
         $this->assertStringContainsString('Updated validation for Documents\SchemaValidated', $output);
     }
 
+    public function testDisabledValidatorProcessing(): void
+    {
+        $this->commandTester->execute(
+            [
+                '--class' => SchemaValidated::class,
+                '--disable-validators' => true,
+            ]
+        );
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringNotContainsString('Updated validation for Documents\SchemaValidated', $output);
+    }
+
     public function testProcessValidators(): void
     {
         // Only load a subset of documents with legit annotations
@@ -61,5 +73,15 @@ class UpdateCommandTest extends AbstractCommandTest
         $this->commandTester->execute([]);
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('Updated validation for all classes', $output);
+    }
+
+    public function testDisabledValidatorsProcessing(): void
+    {
+        // Only load a subset of documents with legit annotations
+        $annotationDriver = AnnotationDriver::create(__DIR__ . '/../../../../../../../../Documents/Ecommerce');
+        $this->dm->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $this->commandTester->execute(['--disable-validators' => true]);
+        $output = $this->commandTester->getDisplay();
+        $this->assertStringNotContainsString('Updated validation for all classes', $output);
     }
 }

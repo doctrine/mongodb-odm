@@ -27,7 +27,8 @@ class UpdateCommand extends AbstractCommand
         $this
             ->setName('odm:schema:update')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
-            ->setDescription('Update indexes for your documents');
+            ->addOption('disable-validators', null, InputOption::VALUE_NONE, 'Do not update database-level validation rules')
+            ->setDescription('Update indexes and validation rules for your documents');
     }
 
     /**
@@ -35,7 +36,8 @@ class UpdateCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $class = $input->getOption('class');
+        $class            = $input->getOption('class');
+        $updateValidators = ! $input->getOption('disable-validators');
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
@@ -44,13 +46,19 @@ class UpdateCommand extends AbstractCommand
             if (is_string($class)) {
                 $this->processDocumentIndex($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 $output->writeln(sprintf('Updated <comment>index(es)</comment> for <info>%s</info>', $class));
-                $this->processDocumentValidator($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
-                $output->writeln(sprintf('Updated <comment>validation</comment> for <info>%s</info>', $class));
+
+                if ($updateValidators) {
+                    $this->processDocumentValidator($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
+                    $output->writeln(sprintf('Updated <comment>validation</comment> for <info>%s</info>', $class));
+                }
             } else {
                 $this->processIndex($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 $output->writeln('Updated <comment>indexes</comment> for <info>all classes</info>');
-                $this->processValidators($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
-                $output->writeln('Updated <comment>validation</comment> for <info>all classes</info>');
+
+                if ($updateValidators) {
+                    $this->processValidators($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
+                    $output->writeln('Updated <comment>validation</comment> for <info>all classes</info>');
+                }
             }
         } catch (Throwable $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
