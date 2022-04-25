@@ -30,6 +30,9 @@ abstract class Operator extends Stage
         $this->expr = $builder->expr();
     }
 
+    /**
+     * @param mixed[] $args
+     */
     public function __call(string $method, array $args): self
     {
         $this->expr->$method(...$args);
@@ -86,8 +89,8 @@ abstract class Operator extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/and/
      * @see Expr::addAnd
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param mixed[]|Expr $expression
+     * @param mixed[]|Expr ...$expressions
      *
      * @return static
      */
@@ -104,8 +107,8 @@ abstract class Operator extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/or/
      * @see Expr::addOr
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param mixed[]|Expr $expression
+     * @param mixed[]|Expr ...$expressions
      *
      * @return static
      */
@@ -145,7 +148,7 @@ abstract class Operator extends Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/anyElementTrue/
      * @see Expr::anyElementTrue
      *
-     * @param array|Expr $expression
+     * @param mixed[]|Expr $expression
      *
      * @return static
      */

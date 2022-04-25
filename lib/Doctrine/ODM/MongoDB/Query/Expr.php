@@ -32,13 +32,15 @@ use function strtolower;
 
 /**
  * Query expression builder for ODM.
+ *
+ * @psalm-import-type FieldMapping from ClassMetadata
  */
 class Expr
 {
     /**
      * The query criteria array.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     private $query = [];
 
@@ -46,9 +48,9 @@ class Expr
      * The "new object" array containing either a full document or a number of
      * atomic update operators.
      *
-     * @see docs.mongodb.org/manual/reference/method/db.collection.update/#update-parameter
+     * @see https://docs.mongodb.org/manual/reference/method/db.collection.update/#update-parameter
      *
-     * @var array
+     * @var array<string, mixed>
      */
     private $newObj = [];
 
@@ -84,8 +86,8 @@ class Expr
      * @see Builder::addAnd()
      * @see https://docs.mongodb.com/manual/reference/operator/and/
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
     public function addAnd($expression, ...$expressions): self
     {
@@ -107,8 +109,8 @@ class Expr
      * @see Builder::addNor()
      * @see https://docs.mongodb.com/manual/reference/operator/nor/
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
     public function addNor($expression, ...$expressions): self
     {
@@ -130,8 +132,8 @@ class Expr
      * @see Builder::addOr()
      * @see https://docs.mongodb.com/manual/reference/operator/or/
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
     public function addOr($expression, ...$expressions): self
     {
@@ -177,6 +179,8 @@ class Expr
      *
      * @see Builder::all()
      * @see https://docs.mongodb.com/manual/reference/operator/all/
+     *
+     * @param mixed[] $values
      */
     public function all(array $values): self
     {
@@ -225,7 +229,7 @@ class Expr
      * @see Builder::bitsAllClear()
      * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAllClear/
      *
-     * @param int|array|Binary $value
+     * @param int|list<int>|Binary $value
      */
     public function bitsAllClear($value): self
     {
@@ -241,7 +245,7 @@ class Expr
      * @see Builder::bitsAllSet()
      * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAllSet/
      *
-     * @param int|array|Binary $value
+     * @param int|list<int>|Binary $value
      */
     public function bitsAllSet($value): self
     {
@@ -257,7 +261,7 @@ class Expr
      * @see Builder::bitsAnyClear()
      * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAnyClear/
      *
-     * @param int|array|Binary $value
+     * @param int|list<int>|Binary $value
      */
     public function bitsAnyClear($value): self
     {
@@ -273,7 +277,7 @@ class Expr
      * @see Builder::bitsAnySet()
      * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAnySet/
      *
-     * @param int|array|Binary $value
+     * @param int|list<int>|Binary $value
      */
     public function bitsAnySet($value): self
     {
@@ -385,6 +389,8 @@ class Expr
      *
      * @see Expr::push()
      * @see https://docs.mongodb.com/manual/reference/operator/each/
+     *
+     * @param mixed[] $values
      */
     public function each(array $values): self
     {
@@ -397,7 +403,7 @@ class Expr
      * @see Builder::elemMatch()
      * @see https://docs.mongodb.com/manual/reference/operator/elemMatch/
      *
-     * @param array|Expr $expression
+     * @param array<string, mixed>|Expr $expression
      */
     public function elemMatch($expression): self
     {
@@ -454,7 +460,7 @@ class Expr
      * @see Builder::geoIntersects()
      * @see https://docs.mongodb.com/manual/reference/operator/geoIntersects/
      *
-     * @param array|Geometry $geometry
+     * @param array<string, mixed>|Geometry $geometry
      */
     public function geoIntersects($geometry): self
     {
@@ -474,7 +480,7 @@ class Expr
      * @see Builder::geoWithin()
      * @see https://docs.mongodb.com/manual/reference/operator/geoIntersects/
      *
-     * @param array|Geometry $geometry
+     * @param array<string, mixed>|Geometry $geometry
      */
     public function geoWithin($geometry): self
     {
@@ -549,10 +555,10 @@ class Expr
      * @see Builder::geoWithinPolygon()
      * @see https://docs.mongodb.com/manual/reference/operator/polygon/
      *
-     * @param array $point1    First point of the polygon
-     * @param array $point2    Second point of the polygon
-     * @param array $point3    Third point of the polygon
-     * @param array ...$points Additional points of the polygon
+     * @param array{int|float, int|float} $point1    First point of the polygon
+     * @param array{int|float, int|float} $point2    Second point of the polygon
+     * @param array{int|float, int|float} $point3    Third point of the polygon
+     * @param array{int|float, int|float} ...$points Additional points of the polygon
      *
      * @throws InvalidArgumentException If less than three points are given.
      */
@@ -573,6 +579,8 @@ class Expr
 
     /**
      * Gets prepared newObj part of expression.
+     *
+     * @return array<string, mixed>
      */
     public function getNewObj(): array
     {
@@ -583,6 +591,8 @@ class Expr
 
     /**
      * Gets prepared query part of expression.
+     *
+     * @return array<string, mixed>
      */
     public function getQuery(): array
     {
@@ -622,6 +632,8 @@ class Expr
      *
      * @see Builder::in()
      * @see https://docs.mongodb.com/manual/reference/operator/in/
+     *
+     * @param mixed[] $values
      */
     public function in(array $values): self
     {
@@ -813,8 +825,8 @@ class Expr
      * @see Builder::near()
      * @see https://docs.mongodb.com/manual/reference/operator/near/
      *
-     * @param float|array|Point $x
-     * @param float             $y
+     * @param float|array<string, mixed>|Point $x
+     * @param float                            $y
      */
     public function near($x, $y = null): self
     {
@@ -839,8 +851,8 @@ class Expr
      * @see Builder::nearSphere()
      * @see https://docs.mongodb.com/manual/reference/operator/nearSphere/
      *
-     * @param float|array|Point $x
-     * @param float             $y
+     * @param float|array<string, mixed>|Point $x
+     * @param float                            $y
      */
     public function nearSphere($x, $y = null): self
     {
@@ -886,6 +898,8 @@ class Expr
      *
      * @see Builder::notIn()
      * @see https://docs.mongodb.com/manual/reference/operator/nin/
+     *
+     * @param mixed[] $values
      */
     public function notIn(array $values): self
     {
@@ -977,6 +991,8 @@ class Expr
      *
      * @see Builder::pullAll()
      * @see https://docs.mongodb.com/manual/reference/operator/pullAll/
+     *
+     * @param mixed[] $values
      */
     public function pullAll(array $values): self
     {
@@ -1148,6 +1164,8 @@ class Expr
      * Set the "new object".
      *
      * @see Builder::setNewObj()
+     *
+     * @param array<string, mixed> $newObj
      */
     public function setNewObj(array $newObj): self
     {
@@ -1182,6 +1200,8 @@ class Expr
      * Set the query criteria.
      *
      * @see Builder::setQueryArray()
+     *
+     * @param array<string, mixed> $query
      */
     public function setQuery(array $query): self
     {
@@ -1227,8 +1247,8 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/sort/
      *
-     * @param array|string $fieldName Field name or array of field/order pairs
-     * @param int|string   $order     Field order (if one field is specified)
+     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
+     * @param int|string                       $order     Field order (if one field is specified)
      */
     public function sort($fieldName, $order = null): self
     {
@@ -1300,6 +1320,8 @@ class Expr
 
     /**
      * Gets reference mapping for current field from current class or its descendants.
+     *
+     * @return FieldMapping
      *
      * @throws MappingException
      */
@@ -1404,6 +1426,11 @@ class Expr
         $query = ['$in' => [$query]];
     }
 
+    /**
+     * @param array<string, mixed>|array<array<string, mixed>> $query
+     *
+     * @return array<mixed>
+     */
     private function convertExpressions(array $query, ?ClassMetadata $classMetadata = null): array
     {
         if ($classMetadata === null) {
@@ -1437,7 +1464,7 @@ class Expr
      *
      * @param Expr|mixed $expression
      *
-     * @return array|mixed
+     * @return array<string, mixed>|mixed
      */
     private static function convertExpression($expression, ClassMetadata $classMetadata)
     {

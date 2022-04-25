@@ -28,6 +28,8 @@ use function strtolower;
 
 /**
  * Query builder for ODM.
+ *
+ * @psalm-import-type QueryShape from Query
  */
 class Builder
 {
@@ -70,7 +72,7 @@ class Builder
     /**
      * Array of primer Closure instances.
      *
-     * @var array
+     * @var array<string, true|callable>
      */
     private $primers = [];
 
@@ -95,6 +97,7 @@ class Builder
      * Array containing the query data.
      *
      * @var array
+     * @psalm-var QueryShape
      */
     private $query = ['type' => Query::TYPE_FIND];
 
@@ -137,8 +140,8 @@ class Builder
      * @see Expr::addAnd()
      * @see https://docs.mongodb.com/manual/reference/operator/and/
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
     public function addAnd($expression, ...$expressions): self
     {
@@ -155,8 +158,8 @@ class Builder
      * @see Expr::addNor()
      * @see https://docs.mongodb.com/manual/reference/operator/nor/
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
     public function addNor($expression, ...$expressions): self
     {
@@ -173,8 +176,8 @@ class Builder
      * @see Expr::addOr()
      * @see https://docs.mongodb.com/manual/reference/operator/or/
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
     public function addOr($expression, ...$expressions): self
     {
@@ -212,6 +215,8 @@ class Builder
      *
      * @see Expr::all()
      * @see https://docs.mongodb.com/manual/reference/operator/all/
+     *
+     * @param mixed[] $values
      */
     public function all(array $values): self
     {
@@ -255,7 +260,7 @@ class Builder
      * @see Expr::bitsAllClear()
      * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAllClear/
      *
-     * @param int|array|Binary $value
+     * @param int|list<int>|Binary $value
      */
     public function bitsAllClear($value): self
     {
@@ -271,7 +276,7 @@ class Builder
      * @see Expr::bitsAllSet()
      * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAllSet/
      *
-     * @param int|array|Binary $value
+     * @param int|list<int>|Binary $value
      */
     public function bitsAllSet($value): self
     {
@@ -287,7 +292,7 @@ class Builder
      * @see Expr::bitsAnyClear()
      * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAnyClear/
      *
-     * @param int|array|Binary $value
+     * @param int|list<int>|Binary $value
      */
     public function bitsAnyClear($value): self
     {
@@ -303,7 +308,7 @@ class Builder
      * @see Expr::bitsAnySet()
      * @see https://docs.mongodb.com/manual/reference/operator/query/bitsAnySet/
      *
-     * @param int|array|Binary $value
+     * @param int|list<int>|Binary $value
      */
     public function bitsAnySet($value): self
     {
@@ -432,7 +437,7 @@ class Builder
      * @see Expr::elemMatch()
      * @see https://docs.mongodb.com/manual/reference/operator/elemMatch/
      *
-     * @param array|Expr $expression
+     * @param array<string, mixed>|Expr $expression
      */
     public function elemMatch($expression): self
     {
@@ -461,7 +466,7 @@ class Builder
      * If fields have been selected for inclusion, only the "_id" field may be
      * excluded.
      *
-     * @param array|string $fieldName,...
+     * @param string[]|string $fieldName,...
      */
     public function exclude($fieldName = null): self
     {
@@ -549,7 +554,7 @@ class Builder
      * @see Expr::geoIntersects()
      * @see https://docs.mongodb.com/manual/reference/operator/geoIntersects/
      *
-     * @param array|Geometry $geometry
+     * @param array<string, mixed>|Geometry $geometry
      */
     public function geoIntersects($geometry): self
     {
@@ -567,7 +572,7 @@ class Builder
      * @see Expr::geoWithin()
      * @see https://docs.mongodb.com/manual/reference/operator/geoWithin/
      *
-     * @param array|Geometry $geometry
+     * @param array<string, mixed>|Geometry $geometry
      */
     public function geoWithin($geometry): self
     {
@@ -640,10 +645,10 @@ class Builder
      * @see Expr::geoWithinPolygon()
      * @see https://docs.mongodb.com/manual/reference/operator/polygon/
      *
-     * @param array $point1    First point of the polygon
-     * @param array $point2    Second point of the polygon
-     * @param array $point3    Third point of the polygon
-     * @param array ...$points Additional points of the polygon
+     * @param array{int|float, int|float} $point1    First point of the polygon
+     * @param array{int|float, int|float} $point2    Second point of the polygon
+     * @param array{int|float, int|float} $point3    Third point of the polygon
+     * @param array{int|float, int|float} ...$points Additional points of the polygon
      */
     public function geoWithinPolygon($point1, $point2, $point3, ...$points): self
     {
@@ -656,6 +661,8 @@ class Builder
      * Return the expression's "new object".
      *
      * @see Expr::getNewObj()
+     *
+     * @return array<string, mixed>
      */
     public function getNewObj(): array
     {
@@ -664,6 +671,8 @@ class Builder
 
     /**
      * Gets the Query executable.
+     *
+     * @param array<string, mixed> $options
      */
     public function getQuery(array $options = []): Query
     {
@@ -730,6 +739,8 @@ class Builder
      * Return the expression's query criteria.
      *
      * @see Expr::getQuery()
+     *
+     * @return array<string, mixed>
      */
     public function getQueryArray(): array
     {
@@ -777,7 +788,7 @@ class Builder
     /**
      * Set the index hint for the query.
      *
-     * @param array|string $index
+     * @param array<string, -1|1>|string $index
      */
     public function hint($index): self
     {
@@ -808,6 +819,8 @@ class Builder
      *
      * @see Expr::in()
      * @see https://docs.mongodb.com/manual/reference/operator/in/
+     *
+     * @param mixed[] $values
      */
     public function in(array $values): self
     {
@@ -990,8 +1003,8 @@ class Builder
      * @see Expr::near()
      * @see https://docs.mongodb.com/manual/reference/operator/near/
      *
-     * @param float|array|Point $x
-     * @param float             $y
+     * @param float|array<string, mixed>|Point $x
+     * @param float                            $y
      */
     public function near($x, $y = null): self
     {
@@ -1010,8 +1023,8 @@ class Builder
      * @see Expr::nearSphere()
      * @see https://docs.mongodb.com/manual/reference/operator/nearSphere/
      *
-     * @param float|array|Point $x
-     * @param float             $y
+     * @param float|array<string, mixed>|Point $x
+     * @param float                            $y
      */
     public function nearSphere($x, $y = null): self
     {
@@ -1058,7 +1071,7 @@ class Builder
      * @see Expr::notIn()
      * @see https://docs.mongodb.com/manual/reference/operator/nin/
      *
-     * @param array $values
+     * @param mixed[] $values
      */
     public function notIn(array $values): self
     {
@@ -1150,6 +1163,8 @@ class Builder
      *
      * @see Expr::pullAll()
      * @see https://docs.mongodb.com/manual/reference/operator/pullAll/
+     *
+     * @param mixed[] $values
      */
     public function pullAll(array $values): self
     {
@@ -1255,7 +1270,7 @@ class Builder
     /**
      * Set one or more fields to be included in the query projection.
      *
-     * @param array|string $fieldName,...
+     * @param string[]|string $fieldName,...
      */
     public function select($fieldName = null): self
     {
@@ -1278,7 +1293,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/projection/elemMatch/
      *
-     * @param array|Expr $expression
+     * @param array<string, mixed>|Expr $expression
      */
     public function selectElemMatch(string $fieldName, $expression): self
     {
@@ -1347,6 +1362,8 @@ class Builder
      * Set the expression's "new object".
      *
      * @see Expr::setNewObj()
+     *
+     * @param array<string, mixed> $newObj
      */
     public function setNewObj(array $newObj): self
     {
@@ -1401,6 +1418,8 @@ class Builder
      * Set the expression's query criteria.
      *
      * @see Expr::setQuery()
+     *
+     * @param array<string, mixed> $query
      */
     public function setQueryArray(array $query): self
     {
@@ -1453,8 +1472,8 @@ class Builder
      * If sorting by multiple fields, the first argument should be an array of
      * field name (key) and order (value) pairs.
      *
-     * @param array|string $fieldName Field name or array of field/order pairs
-     * @param int|string   $order     Field order (if one field is specified)
+     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
+     * @param int|string                       $order     Field order (if one field is specified)
      */
     public function sort($fieldName, $order = 1): self
     {
@@ -1592,6 +1611,8 @@ class Builder
      * Get Discriminator Values
      *
      * @psalm-param class-string[] $classNames
+     *
+     * @return array<string|null>
      *
      * @throws InvalidArgumentException If the number of found collections > 1.
      */

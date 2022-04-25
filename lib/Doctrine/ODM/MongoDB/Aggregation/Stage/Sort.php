@@ -17,12 +17,12 @@ use function strtolower;
  */
 class Sort extends Stage
 {
-    /** @var array */
+    /** @var array<string, -1|1|array{"$meta": string}> */
     private $sort = [];
 
     /**
-     * @param array|string $fieldName Field name or array of field/order pairs
-     * @param int|string   $order     Field order (if one field is specified)
+     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
+     * @param int|string                       $order     Field order (if one field is specified)
      */
     public function __construct(Builder $builder, $fieldName, $order = null)
     {

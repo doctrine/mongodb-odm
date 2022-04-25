@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -738,20 +739,24 @@ class FunctionalTest extends BaseTest
         $test = $this->dm->getRepository(SameCollection2::class)->findOneBy(['name' => 'test1']);
         $this->assertNull($test);
 
-        $qb   = $this->dm->createQueryBuilder([
+        $qb     = $this->dm->createQueryBuilder([
             SameCollection1::class,
             SameCollection2::class,
         ]);
-        $q    = $qb->getQuery();
-        $test = $q->execute()->toArray();
+        $q      = $qb->getQuery();
+        $result = $q->execute();
+        $this->assertInstanceOf(Iterator::class, $result);
+        $test = $result->toArray();
         $this->assertCount(3, $test);
 
         $test = $this->dm->getRepository(SameCollection1::class)->findAll();
         $this->assertCount(2, $test);
 
-        $qb    = $this->dm->createQueryBuilder(SameCollection1::class);
-        $query = $qb->getQuery();
-        $test  = $query->execute()->toArray();
+        $qb     = $this->dm->createQueryBuilder(SameCollection1::class);
+        $query  = $qb->getQuery();
+        $result = $query->execute();
+        $this->assertInstanceOf(Iterator::class, $result);
+        $test = $result->toArray();
         $this->assertCount(2, $test);
     }
 

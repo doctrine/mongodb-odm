@@ -43,8 +43,8 @@ class MatchStage extends Stage
      * @see Expr::addAnd()
      * @see https://docs.mongodb.com/manual/reference/operator/and/
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param mixed[]|Expr $expression
+     * @param mixed[]|Expr ...$expressions
      *
      * @return static
      */
@@ -64,8 +64,8 @@ class MatchStage extends Stage
      * @see Expr::addNor()
      * @see https://docs.mongodb.com/manual/reference/operator/nor/
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param mixed[]|Expr $expression
+     * @param mixed[]|Expr ...$expressions
      *
      * @return static
      */
@@ -85,8 +85,8 @@ class MatchStage extends Stage
      * @see Expr::addOr()
      * @see https://docs.mongodb.com/manual/reference/operator/or/
      *
-     * @param array|Expr $expression
-     * @param array|Expr ...$expressions
+     * @param mixed[]|Expr $expression
+     * @param mixed[]|Expr ...$expressions
      *
      * @return static
      */
@@ -121,7 +121,7 @@ class MatchStage extends Stage
      * @see Expr::elemMatch()
      * @see https://docs.mongodb.com/manual/reference/operator/elemMatch/
      *
-     * @param array|Expr $expression
+     * @param mixed[]|Expr $expression
      *
      * @return static
      */
@@ -452,7 +452,7 @@ class MatchStage extends Stage
      * @see Expr::not()
      * @see https://docs.mongodb.com/manual/reference/operator/not/
      *
-     * @param array|Expr $expression
+     * @param mixed[]|Expr $expression
      *
      * @return static
      */

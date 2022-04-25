@@ -105,12 +105,15 @@ class IdentifiersTest extends BaseTest
             ->field('count')->inc(1);
 
         $result = $qb->refresh(false)->getQuery()->execute();
+        $this->assertInstanceOf(User::class, $result);
         $this->assertEquals(0, $result->getCount());
 
         $result = $qb->refresh(false)->getQuery()->execute();
+        $this->assertInstanceOf(User::class, $result);
         $this->assertEquals(0, $result->getCount());
 
         $result = $qb->refresh(true)->getQuery()->execute();
+        $this->assertInstanceOf(User::class, $result);
         $this->assertEquals(3, $result->getCount());
     }
 }

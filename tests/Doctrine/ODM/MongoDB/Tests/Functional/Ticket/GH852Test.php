@@ -8,6 +8,7 @@ use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use MongoDB\BSON\Binary;
@@ -81,6 +82,7 @@ class GH852Test extends BaseTest
                 ->field('name')->equals('parent')
                 ->field('refMany')->prime()
                 ->getQuery()->execute();
+        $this->assertInstanceOf(Iterator::class, $docs);
         $this->assertCount(1, $docs);
         $this->assertCount(2, $docs->current()->refMany);
 

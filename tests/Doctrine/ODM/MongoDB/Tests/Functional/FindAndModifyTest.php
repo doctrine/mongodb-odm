@@ -24,6 +24,7 @@ class FindAndModifyTest extends BaseTest
             ->getQuery();
         $result = $q->execute();
 
+        $this->assertInstanceOf(User::class, $result);
         // Test the username was set and count incremented
         $this->assertEquals('jwage', $result->getUsername());
         $this->assertEquals(5, $result->getCount());
@@ -35,6 +36,7 @@ class FindAndModifyTest extends BaseTest
             ->getQuery();
         $result = $q->execute();
 
+        $this->assertInstanceOf(User::class, $result);
         // Test the object was returned
         $this->assertEquals('jwage', $result->getUsername());
 
@@ -59,6 +61,7 @@ class FindAndModifyTest extends BaseTest
             ->getQuery();
         $result = $q->execute();
 
+        $this->assertInstanceOf(User::class, $result);
         // Test the username was set
         $this->assertEquals('Romain Neutron', $result->getUsername());
     }
