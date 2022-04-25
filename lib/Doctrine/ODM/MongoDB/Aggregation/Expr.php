@@ -31,7 +31,7 @@ class Expr
     /** @var ClassMetadata */
     private $class;
 
-    /** @var array */
+    /** @var array<string, mixed> */
     private $expr = [];
 
     /**
@@ -537,6 +537,9 @@ class Expr
         return $this->operator('$floor', $number);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getExpression(): array
     {
         return $this->expr;

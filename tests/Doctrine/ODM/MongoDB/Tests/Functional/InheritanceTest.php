@@ -37,12 +37,14 @@ class InheritanceTest extends BaseTest
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
 
+        $this->assertInstanceOf(SpecialUser::class, $user);
         $user->getProfile()->setLastName('Wage');
         $this->dm->flush();
         $this->dm->clear();
 
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
+        $this->assertInstanceOf(SpecialUser::class, $user);
         $this->assertEquals('Wage', $user->getProfile()->getLastName());
         $this->assertInstanceOf(SpecialUser::class, $user);
     }

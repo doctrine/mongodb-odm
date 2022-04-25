@@ -32,6 +32,7 @@ use function sprintf;
 
 /**
  * @psalm-import-type IndexMapping from ClassMetadata
+ * @psalm-import-type IndexOptions from ClassMetadata
  */
 final class SchemaManager
 {
@@ -692,6 +693,9 @@ final class SchemaManager
      *
      * Options added to the ALLOWED_MISSING_INDEX_OPTIONS constant are ignored
      * and are expected to be checked later
+     *
+     * @psalm-param IndexOptions $mongoIndexOptions
+     * @psalm-param IndexOptions $documentIndexOptions
      */
     private function indexOptionsAreMissing(array $mongoIndexOptions, array $documentIndexOptions): bool
     {
@@ -900,6 +904,11 @@ final class SchemaManager
         return (bool) ($stats['sharded'] ?? false);
     }
 
+    /**
+     * @param array<string, mixed> $options
+     *
+     * @return array<string, mixed>
+     */
     private function getWriteOptions(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, array $options = []): array
     {
         unset($options['maxTimeMs'], $options['writeConcern']);

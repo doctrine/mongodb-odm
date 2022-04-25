@@ -26,6 +26,8 @@ abstract class Stage
 
     /**
      * Assembles the aggregation stage
+     *
+     * @return array<string, mixed>
      */
     abstract public function getExpression(): array;
 

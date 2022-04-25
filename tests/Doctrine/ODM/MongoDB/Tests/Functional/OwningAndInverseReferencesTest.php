@@ -149,6 +149,7 @@ class OwningAndInverseReferencesTest extends BaseTest
         $tag = $this->dm->createQueryBuilder(Tag::class)
             ->getQuery()
             ->getSingleResult();
+        $this->assertInstanceOf(Tag::class, $tag);
         $this->assertEquals('baseball', $tag->name);
         $this->assertEquals(1, $tag->blogPosts->count());
         $this->assertEquals('Test', $tag->blogPosts[0]->name);

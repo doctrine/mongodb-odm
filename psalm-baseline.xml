@@ -92,6 +92,12 @@
       <code>$className</code>
     </MoreSpecificImplementedParamType>
   </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Query/Builder.php">
+    <InvalidPropertyAssignmentValue occurrences="2">
+      <code>$this-&gt;query</code>
+      <code>$this-&gt;query</code>
+    </InvalidPropertyAssignmentValue>
+  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Repository/DefaultGridFSRepository.php">
     <InvalidReturnStatement occurrences="1">
       <code>$options + ['metadata' =&gt; (object) $metadata]</code>
@@ -164,6 +170,11 @@
     <TooManyArguments occurrences="1">
       <code>andX</code>
     </TooManyArguments>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php">
+    <InvalidArgument occurrences="1">
+      <code>['type' =&gt; -1]</code>
+    </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php">
     <InternalClass occurrences="2">

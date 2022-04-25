@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\Ecommerce\Currency;
@@ -92,6 +93,9 @@ class EcommerceTest extends BaseTest
             ->createQueryBuilder()
             ->getQuery()
             ->execute();
+
+        $this->assertInstanceOf(Iterator::class, $products);
+
         $products->valid() ?: $products->next();
 
         return $products->current();

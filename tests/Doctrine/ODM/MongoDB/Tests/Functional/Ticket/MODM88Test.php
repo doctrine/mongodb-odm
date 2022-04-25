@@ -23,6 +23,7 @@ class MODM88Test extends BaseTest
         $q        = $qb->getQuery();
         $document = $q->getSingleResult();
 
+        $this->assertInstanceOf(Article::class, $document);
         $this->assertEquals('Test Title', $document->getTitle());
         $this->assertNull($document->getBody());
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
@@ -44,6 +45,9 @@ class GH267Test extends BaseTest
 
         $query  = $qb->getQuery();
         $result = $query->execute();
+
+        $this->assertInstanceOf(Iterator::class, $result);
+
         $dbUser = $result->current();
 
         // Assert user name

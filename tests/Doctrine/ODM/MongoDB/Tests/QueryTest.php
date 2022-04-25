@@ -408,6 +408,7 @@ class QueryTest extends BaseTest
             ->readOnly(true)
             ->getQuery()->getSingleResult();
 
+        $this->assertInstanceOf(Person::class, $readOnly);
         $this->assertNotSame($p, $readOnly);
         $this->assertTrue($this->uow->isInIdentityMap($p));
         $this->assertFalse($this->uow->isInIdentityMap($readOnly));
@@ -421,6 +422,8 @@ class QueryTest extends BaseTest
     }
 
     /**
+     * @psalm-param Query::TYPE_* $type
+     *
      * @dataProvider provideQueryTypesThatDoNotReturnAnIterator
      */
     public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator(int $type, string $method): void

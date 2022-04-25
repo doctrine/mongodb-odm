@@ -23,7 +23,7 @@ abstract class BsonFilter
     /**
      * Parameters for the filter.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $parameters = [];
 
@@ -68,6 +68,8 @@ abstract class BsonFilter
      * If there is no criteria for the class, an empty array should be returned.
      *
      * @param ClassMetadata<object> $class Target document metadata.
+     *
+     * @return array<string, mixed>
      */
     abstract public function addFilterCriteria(ClassMetadata $class): array;
 }

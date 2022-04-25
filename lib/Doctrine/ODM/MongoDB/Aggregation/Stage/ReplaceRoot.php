@@ -24,11 +24,11 @@ class ReplaceRoot extends Operator
     /** @var ClassMetadata */
     private $class;
 
-    /** @var string|array|Expr|null */
+    /** @var string|mixed[]|Expr|null */
     private $expression;
 
     /**
-     * @param string|array|Expr|null $expression
+     * @param string|mixed[]|Expr|null $expression
      */
     public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class, $expression = null)
     {
@@ -51,9 +51,9 @@ class ReplaceRoot extends Operator
     }
 
     /**
-     * @param array|string|mixed $expression
+     * @param mixed[]|string|mixed $expression
      *
-     * @return array|string|mixed
+     * @return mixed[]|string|mixed
      */
     private function convertExpression($expression)
     {

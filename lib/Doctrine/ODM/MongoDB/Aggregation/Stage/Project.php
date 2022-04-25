@@ -40,6 +40,8 @@ class Project extends Operator
 
     /**
      * Shorthand method to define which fields to be included.
+     *
+     * @param string[] $fields
      */
     public function includeFields(array $fields): self
     {
@@ -55,6 +57,8 @@ class Project extends Operator
      *
      * If you specify the exclusion of a field other than _id, you cannot employ
      * any other $project specification forms.
+     *
+     * @param string[] $fields
      */
     public function excludeFields(array $fields): self
     {

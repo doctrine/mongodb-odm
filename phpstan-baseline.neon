@@ -44,84 +44,9 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/FacetTest.php
 
         -
-            message: "#^Cannot access property \\$username on array\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomFieldNameTest.php
-
-        -
-            message: "#^Cannot call method current\\(\\) on array\\|int\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
-
-        -
-            message: "#^Cannot call method next\\(\\) on array\\|int\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
-
-        -
-            message: "#^Cannot call method valid\\(\\) on array\\|int\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/EcommerceTest.php
-
-        -
-            message: "#^Cannot call method getCount\\(\\) on array\\|int\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FindAndModifyTest.php
-
-        -
-            message: "#^Cannot call method getUsername\\(\\) on array\\|int\\|object\\.$#"
-            count: 3
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FindAndModifyTest.php
-
-        -
-            message: "#^Cannot call method toArray\\(\\) on array\\|int\\|object\\.$#"
-            count: 2
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FunctionalTest.php
-
-        -
             message: "#^Expression \"\\$groups\\[0\\]\" on a separate line does not do anything\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FunctionalTest.php
-
-        -
-            message: "#^Cannot call method getCount\\(\\) on array\\|int\\|object\\.$#"
-            count: 3
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/IdentifiersTest.php
-
-        -
-            message: "#^Cannot call method getProfile\\(\\) on array\\|object\\.$#"
-            count: 2
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/InheritanceTest.php
-
-        -
-            message: "#^Cannot access property \\$blogPosts on array\\|object\\.$#"
-            count: 2
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/OwningAndInverseReferencesTest.php
-
-        -
-            message: "#^Cannot access property \\$name on array\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/OwningAndInverseReferencesTest.php
-
-        -
-            message: "#^Cannot call method getUsername\\(\\) on array\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryTest.php
-
-        -
-            message: "#^Cannot call method toArray\\(\\) on array\\|int\\|object\\.$#"
-            count: 2
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryTest.php
-
-        -
-            message: "#^Cannot call method current\\(\\) on array\\|int\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH267Test.php
-
-        -
-            message: "#^Cannot access property \\$ref on array\\|object\\.$#"
-            count: 2
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH520Test.php
 
         -
             message: "#^Unreachable statement \\- code above always terminates\\.$#"
@@ -129,34 +54,9 @@ parameters:
             path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
 
         -
-            message: "#^Cannot call method current\\(\\) on array\\|int\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH852Test.php
-
-        -
-            message: "#^Cannot call method getBody\\(\\) on array\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM88Test.php
-
-        -
-            message: "#^Cannot call method getTitle\\(\\) on array\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM88Test.php
-
-        -
-            message: "#^Cannot call method setTitle\\(\\) on array\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM88Test.php
-
-        -
             message: "#^Parameter \\#1 \\$primer of method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Builder\\:\\:prime\\(\\) expects bool\\|\\(callable\\(\\)\\: mixed\\), 1 given\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
-
-        -
-            message: "#^Cannot access property \\$pet on array\\|object\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
 
         -
             message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:writeOptions\\(\\) should return PHPUnit\\\\Framework\\\\Constraint\\\\Constraint but returns PHPUnit\\\\Framework\\\\Constraint\\\\ArraySubset\\.$#"
@@ -280,3 +180,8 @@ parameters:
         -
             message: "#Property .+ is unused.#"
             path: tests
+
+        -
+            message: "#^Parameter \\#4 \\$query of class Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Query constructor expects array\\{distinct\\?\\: string, hint\\?\\: array\\<string, \\-1\\|1\\>\\|string, limit\\?\\: int, multiple\\?\\: bool, new\\?\\: bool, newObj\\?\\: array\\<string, mixed\\>, query\\?\\: array\\<string, mixed\\>, readPreference\\?\\: MongoDB\\\\Driver\\\\ReadPreference, \\.\\.\\.\\}, array\\{type\\: \\-1\\} given\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php

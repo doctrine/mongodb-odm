@@ -20,7 +20,9 @@ final class CriteriaMerger
     /**
      * Combines any number of criteria arrays as clauses of an "$and" query.
      *
-     * @param array ...$criterias Any number of query criteria arrays
+     * @param array<string, mixed> ...$criterias Any number of query criteria arrays
+     *
+     * @return array<string, mixed>
      */
     public function merge(...$criterias): array
     {

@@ -188,6 +188,8 @@ class QueryTest extends BaseTest
             ->where("function() { return this.username == 'boo' }");
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
+
+        $this->assertInstanceOf(User::class, $user);
         $this->assertEquals('boo', $user->getUsername());
     }
 
@@ -254,11 +256,13 @@ class QueryTest extends BaseTest
         $q       = $qb->getQuery();
         $results = $q->execute();
 
-        $qb    = $this->dm->createQueryBuilder(User::class)
+        $qb     = $this->dm->createQueryBuilder(User::class)
             ->find()
             ->field('username')->equals('foo');
-        $q     = $qb->getQuery();
-        $users = array_values($q->execute()->toArray());
+        $q      = $qb->getQuery();
+        $result = $q->execute();
+        $this->assertInstanceOf(Iterator::class, $result);
+        $users = array_values($result->toArray());
 
         $this->assertCount(4, $users);
     }
@@ -357,8 +361,10 @@ class QueryTest extends BaseTest
             new UTCDateTime(strtotime('1985-09-01 01:00:00') * 1000),
             new UTCDateTime(strtotime('1985-09-04') * 1000)
         );
-        $query    = $qb->getQuery();
-        $articles = array_values($query->execute()->toArray());
+        $query  = $qb->getQuery();
+        $result = $query->execute();
+        $this->assertInstanceOf(Iterator::class, $result);
+        $articles = array_values($result->toArray());
         $this->assertCount(2, $articles);
         $this->assertEquals('1985-09-02', $articles[0]->getCreatedAt()->format('Y-m-d'));
         $this->assertEquals('1985-09-03', $articles[1]->getCreatedAt()->format('Y-m-d'));

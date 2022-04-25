@@ -95,7 +95,7 @@ class CustomFieldNameTest extends BaseTest
         $qb    = $this->dm->createQueryBuilder(CustomFieldName::class)->field('username')->equals('test');
         $query = $qb->getQuery();
         $test  = $query->getSingleResult();
-        $this->assertNotNull($test);
+        $this->assertInstanceOf(CustomFieldName::class, $test);
         $this->assertEquals('test', $test->username);
     }
 }

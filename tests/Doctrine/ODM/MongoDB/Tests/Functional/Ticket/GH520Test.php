@@ -28,6 +28,7 @@ class GH520Test extends BaseTest
 
         $document = $query->getSingleResult();
 
+        $this->assertInstanceOf(GH520Document::class, $document);
         $this->assertInstanceOf(GhostObjectInterface::class, $document->ref);
         $this->assertTrue($document->ref->isProxyInitialized());
     }
