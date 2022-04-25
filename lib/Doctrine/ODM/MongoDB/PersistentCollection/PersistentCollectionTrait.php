@@ -665,7 +665,7 @@ trait PersistentCollectionTrait
      * @psalm-return (
      *      $arrayAccess is false
      *      ? T|null
-     *      : T|null|true
+     *      : T|true|null
      * )
      */
     private function doRemove($offset, bool $arrayAccess)
