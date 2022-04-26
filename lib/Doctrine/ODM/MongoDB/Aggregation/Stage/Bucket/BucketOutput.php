@@ -44,7 +44,7 @@ class BucketOutput extends AbstractOutput
      * boundaries. The specified values must be in ascending order and all of
      * the same type. The exception is if the values are of mixed numeric types.
      *
-     * @param array ...$boundaries
+     * @param mixed ...$boundaries
      *
      * @return Stage\Bucket
      */

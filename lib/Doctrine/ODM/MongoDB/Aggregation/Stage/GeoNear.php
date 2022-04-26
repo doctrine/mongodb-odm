@@ -29,7 +29,7 @@ class GeoNear extends MatchStage
     /** @var float */
     private $minDistance;
 
-    /** @var array */
+    /** @var array<string, mixed>|array{int|float, int|float} */
     private $near;
 
     /** @var int */
@@ -42,8 +42,8 @@ class GeoNear extends MatchStage
     private $uniqueDocs;
 
     /**
-     * @param float|array|Point $x
-     * @param float             $y
+     * @param float|array<string, mixed>|Point $x
+     * @param float                            $y
      */
     public function __construct(Builder $builder, $x, $y = null)
     {
@@ -144,8 +144,8 @@ class GeoNear extends MatchStage
      * an array corresponding to the point's JSON representation. If GeoJSON is
      * used, the "spherical" option will default to true.
      *
-     * @param float|array|Point $x
-     * @param float             $y
+     * @param float|array<string, mixed>|Point $x
+     * @param float                            $y
      */
     public function near($x, $y = null): self
     {

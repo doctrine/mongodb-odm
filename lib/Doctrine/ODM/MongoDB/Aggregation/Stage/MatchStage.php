@@ -103,6 +103,8 @@ class MatchStage extends Stage
      * @see Expr::all()
      * @see https://docs.mongodb.com/manual/reference/operator/all/
      *
+     * @param mixed[] $values
+     *
      * @return static
      */
     public function all(array $values): self
@@ -195,7 +197,7 @@ class MatchStage extends Stage
      * @see Expr::geoIntersects()
      * @see https://docs.mongodb.com/manual/reference/operator/geoIntersects/
      *
-     * @param array|Geometry $geometry
+     * @param array<string, mixed>|Geometry $geometry
      *
      * @return static
      */
@@ -294,10 +296,10 @@ class MatchStage extends Stage
      * @see Expr::geoWithinPolygon()
      * @see https://docs.mongodb.com/manual/reference/operator/polygon/
      *
-     * @param array $point1    First point of the polygon
-     * @param array $point2    Second point of the polygon
-     * @param array $point3    Third point of the polygon
-     * @param array ...$points Additional points of the polygon
+     * @param array{int|float, int|float} $point1    First point of the polygon
+     * @param array{int|float, int|float} $point2    Second point of the polygon
+     * @param array{int|float, int|float} $point3    Third point of the polygon
+     * @param array{int|float, int|float} ...$points Additional points of the polygon
      *
      * @return static
      */
@@ -354,6 +356,8 @@ class MatchStage extends Stage
      *
      * @see Expr::in()
      * @see https://docs.mongodb.com/manual/reference/operator/in/
+     *
+     * @param mixed[] $values
      *
      * @return static
      */
@@ -485,6 +489,8 @@ class MatchStage extends Stage
      *
      * @see Expr::notIn()
      * @see https://docs.mongodb.com/manual/reference/operator/nin/
+     *
+     * @param mixed[] $values
      *
      * @return static
      */

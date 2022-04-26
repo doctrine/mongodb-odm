@@ -41,7 +41,7 @@ class Expr
      */
     private $currentField;
 
-    /** @var array|null */
+    /** @var array{case: mixed|self, then?: mixed|self}|null */
     private $switchBranch;
 
     public function __construct(DocumentManager $dm, ClassMetadataInterface $class)
@@ -90,8 +90,8 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/and/
      *
-     * @param array|self $expression
-     * @param array|self ...$expressions
+     * @param array<string, mixed>|self $expression
+     * @param array<string, mixed>|self ...$expressions
      */
     public function addAnd($expression, ...$expressions): self
     {
@@ -109,8 +109,8 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/or/
      *
-     * @param array|self $expression
-     * @param array|self ...$expressions
+     * @param array<string, mixed>|self $expression
+     * @param array<string, mixed>|self ...$expressions
      */
     public function addOr($expression, ...$expressions): self
     {
@@ -162,7 +162,7 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/anyElementTrue/
      *
-     * @param array|self $expression
+     * @param mixed[]|self $expression
      */
     public function anyElementTrue($expression): self
     {
@@ -313,7 +313,7 @@ class Expr
      *
      * @param mixed|self $expression
      *
-     * @return string|array
+     * @return string|array<string, mixed>
      */
     public static function convertExpression($expression)
     {
@@ -1583,7 +1583,7 @@ class Expr
      * If there is a current field, the operator will be set on it; otherwise,
      * the operator is set at the top level of the query.
      *
-     * @param array|self $expression
+     * @param mixed[]|self $expression
      */
     private function operator(string $operator, $expression): self
     {
