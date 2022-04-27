@@ -40,3 +40,9 @@ That method was inherited from the abstract `AnnotationDriver` class of
 Detaching all documents of a given class has been deprecated. We deem the process fragile and suggest
 detaching your documents one-by-one using `DocumentManager::detach()`. This effectively deprecates
 `OnClearEventArgs::getDocumentClass` and `OnClearEventArgs::clearsAllDocuments`.
+
+## Deprecate `NOTIFY` change tracking policy
+
+The `NOTIFY` change tracking policy has been deprecated. We suggest to use `DEFERRED_EXPLICIT`
+strategy instead. This effectively deprecates `ClassMetadata::isChangeTrackingNotify` and
+`ClassMetadata::CHANGETRACKING_NOTIFY`.

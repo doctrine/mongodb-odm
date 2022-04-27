@@ -62,6 +62,11 @@ This policy can be configured as follows:
 Notify
 ~~~~~~
 
+.. warning::
+
+    The notify change tracking policy is deprecated and will be removed in ODM 3.0.
+    (`Details <https://github.com/doctrine/mongodb-odm/issues/2424>`_)
+
 This policy is based on the assumption that the documents notify
 interested listeners of changes to their properties. For that
 purpose, a class that wants to use this policy needs to implement
