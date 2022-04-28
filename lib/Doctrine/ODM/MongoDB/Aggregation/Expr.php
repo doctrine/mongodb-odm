@@ -188,6 +188,21 @@ class Expr
     }
 
     /**
+     * Converts an array into a single document.
+     *
+     * The <expression> can be any valid expression that resolves to an array of
+     * two-element arrays or array of documents that contains “k” and “v” fields.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/arrayToObject/
+     * @param mixed|self $expression
+     * @return $this
+     */
+    public function arrayToObject($expression)
+    {
+        return $this->operator('$arrayToObject', $expression);
+    }
+
+    /**
      * Returns the average value of the numeric values that result from applying
      * a specified expression to each document in a group of documents that
      * share the same group by key. Ignores nun-numeric values.

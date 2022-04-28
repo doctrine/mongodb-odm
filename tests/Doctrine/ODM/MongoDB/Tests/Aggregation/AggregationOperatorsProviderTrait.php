@@ -118,6 +118,11 @@ trait AggregationOperatorsProviderTrait
                 'operator' => 'arrayElemAt',
                 'args' => ['$array', '$index'],
             ],
+            'arrayToObject' => [
+                'expected' => ['$arrayToObject' => '$field'],
+                'operator' => 'arrayToObject',
+                'args' => ['$field'],
+            ],
             'ceil' => [
                 'expected' => ['$ceil' => '$field'],
                 'operator' => 'ceil',
