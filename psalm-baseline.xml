@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.22.0@fc2c6ab4d5fa5d644d8617089f012f3bb84b8703">
+  <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php">
+    <InvalidArgument occurrences="1">
+      <code>$fields</code>
+    </InvalidArgument>
+  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php">
     <InvalidReturnStatement occurrences="1">
       <code>$this-&gt;num($limit)</code>
@@ -93,6 +98,9 @@
     </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Query/Builder.php">
+    <InvalidArgument occurrences="1">
+      <code>$query</code>
+    </InvalidArgument>
     <InvalidPropertyAssignmentValue occurrences="2">
       <code>$this-&gt;query</code>
       <code>$this-&gt;query</code>
@@ -121,6 +129,11 @@
     <NullableReturnStatement occurrences="1">
       <code>$mapping['targetDocument']</code>
     </NullableReturnStatement>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/DocumentManagerTest.php">
+    <InvalidArgument occurrences="1">
+      <code>['storeAs' =&gt; ClassMetadata::REFERENCE_STORE_AS_DB_REF]</code>
+    </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php">
     <InvalidArgument occurrences="1">

@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Documents\Account;
 use Documents\Agent;
 use Documents\BlogPost;
@@ -416,7 +417,10 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->persist($group);
         $this->dm->flush();
 
-        $groupDBRef = $this->dm->createReference($group, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'targetDocument' => Group::class]);
+        $groupDBRef = $this->dm->createReference($group, ClassMetadataTestUtil::getFieldMapping([
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF,
+            'targetDocument' => Group::class,
+        ]));
 
         $this->dm->clear();
 

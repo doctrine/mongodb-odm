@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
@@ -73,6 +74,10 @@ use function trigger_deprecation;
  * @template T of object
  *
  * @psalm-import-type CommitOptions from UnitOfWork
+ * @psalm-import-type Hints from UnitOfWork
+ * @psalm-import-type FieldMapping from ClassMetadata
+ * @psalm-import-type SortMeta from Sort
+ * @psalm-import-type SortShape from Sort
  */
 final class DocumentPersister
 {
@@ -100,14 +105,14 @@ final class DocumentPersister
     /**
      * Array of queued inserts for the persister to insert.
      *
-     * @var array
+     * @var array<string, object>
      */
     private $queuedInserts = [];
 
     /**
      * Array of queued inserts for the persister to insert.
      *
-     * @var array
+     * @var array<string, object>
      */
     private $queuedUpserts = [];
 
@@ -152,6 +157,9 @@ final class DocumentPersister
         $this->bucket = $dm->getDocumentBucket($class->name);
     }
 
+    /**
+     * @return array<string, object>
+     */
     public function getInserts(): array
     {
         return $this->queuedInserts;
@@ -171,6 +179,9 @@ final class DocumentPersister
         $this->queuedInserts[spl_object_hash($document)] = $document;
     }
 
+    /**
+     * @return array<string, object>
+     */
     public function getUpserts(): array
     {
         return $this->queuedUpserts;
@@ -290,6 +301,8 @@ final class DocumentPersister
 
     /**
      * Executes a single upsert in {@link executeUpserts}
+     *
+     * @param array<string, mixed> $options
      */
     private function executeUpsert(object $document, array $options): void
     {
@@ -481,7 +494,10 @@ final class DocumentPersister
      * If a scalar or MongoDB\BSON\ObjectId is provided for $criteria, it will
      * be used to match an _id value.
      *
-     * @param mixed $criteria Query criteria
+     * @param array<string, mixed>|scalar|ObjectId|null            $criteria Query criteria
+     * @param array<string, int|string|array<string, string>>|null $sort
+     * @psalm-param SortShape|null $sort
+     * @psalm-param Hints $hints
      * @psalm-param T|null $document
      *
      * @psalm-return T|null
@@ -527,6 +543,9 @@ final class DocumentPersister
 
     /**
      * Finds documents by a set of criteria.
+     *
+     * @param array<string, mixed>           $criteria
+     * @param array<string, int|string>|null $sort
      */
     public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null): Iterator
     {
@@ -554,6 +573,8 @@ final class DocumentPersister
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws MongoDBException
      */
     private function getShardKeyQuery(object $document): array
@@ -639,9 +660,10 @@ final class DocumentPersister
     /**
      * Creates or fills a single document object from an query result.
      *
-     * @param array       $result   The query result.
-     * @param object|null $document The document object to fill, if any.
-     * @param array       $hints    Hints for document creation.
+     * @param array<string, mixed> $result   The query result.
+     * @param object|null          $document The document object to fill, if any.
+     * @param array                $hints    Hints for document creation.
+     * @psalm-param Hints $hints
      * @psalm-param T|null $document
      *
      * @return object The filled and managed document object.
@@ -911,6 +933,10 @@ final class DocumentPersister
     /**
      * Prepare a projection array by converting keys, which are PHP property
      * names, to MongoDB field names.
+     *
+     * @param array<string, mixed> $fields
+     *
+     * @return array<string, mixed>
      */
     public function prepareProjection(array $fields): array
     {
@@ -924,9 +950,9 @@ final class DocumentPersister
     }
 
     /**
-     * @param int|string|null $sort
+     * @param int|string $sort
      *
-     * @return int|string|null
+     * @return int|string
      */
     private function getSortDirection($sort)
     {
@@ -944,6 +970,11 @@ final class DocumentPersister
     /**
      * Prepare a sort specification array by converting keys to MongoDB field
      * names and changing direction strings to int.
+     *
+     * @param array<string, int|string|array<string, string>> $fields
+     * @psalm-param SortShape $fields
+     *
+     * @psalm-return array<string, -1|1|SortMeta>
      */
     public function prepareSort(array $fields): array
     {
@@ -982,6 +1013,10 @@ final class DocumentPersister
      * This method should be used once for query criteria and not be used for
      * nested expressions. It should be called before
      * {@link DocumentPerister::addFilterToPreparedQuery()}.
+     *
+     * @param array<string, mixed> $preparedQuery
+     *
+     * @return array<string, mixed>
      */
     public function addDiscriminatorToPreparedQuery(array $preparedQuery): array
     {
@@ -1010,6 +1045,10 @@ final class DocumentPersister
      * This method should be used once for query criteria and not be used for
      * nested expressions. It should be called after
      * {@link DocumentPerister::addDiscriminatorToPreparedQuery()}.
+     *
+     * @param array<string, mixed> $preparedQuery
+     *
+     * @return array<string, mixed>
      */
     public function addFilterToPreparedQuery(array $preparedQuery): array
     {
@@ -1031,6 +1070,10 @@ final class DocumentPersister
      * Prepares the query criteria or new document object.
      *
      * PHP field names and types will be converted to those used by MongoDB.
+     *
+     * @param array<string, mixed> $query
+     *
+     * @return array<string, mixed>
      */
     public function prepareQueryOrNewObj(array $query, bool $isNewObj = false): array
     {
@@ -1119,6 +1162,8 @@ final class DocumentPersister
      * different.
      *
      * @param mixed $value
+     *
+     * @return array<array{string, mixed}>
      */
     private function prepareQueryElement(string $fieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false): array
     {
@@ -1319,6 +1364,11 @@ final class DocumentPersister
         return [[$fieldName, $value]];
     }
 
+    /**
+     * @param array<string, mixed> $expression
+     *
+     * @return array<string, mixed>
+     */
     private function prepareQueryExpression(array $expression, ClassMetadata $class): array
     {
         foreach ($expression as $k => $v) {
@@ -1424,6 +1474,8 @@ final class DocumentPersister
 
     /**
      * Returns the list of discriminator values for the given ClassMetadata
+     *
+     * @psalm-return list<class-string>
      */
     private function getClassDiscriminatorValues(ClassMetadata $metadata): array
     {
@@ -1450,6 +1502,9 @@ final class DocumentPersister
         return $discriminatorValues;
     }
 
+    /**
+     * @param array<string, mixed> $options
+     */
     private function handleCollections(object $document, array $options): void
     {
         // Collection deletions (deletions of complete collections)
@@ -1491,6 +1546,8 @@ final class DocumentPersister
      * exception. Also, shard key field should be present in actual document
      * data.
      *
+     * @param array<string, mixed> $actualDocumentData
+     *
      * @throws MongoDBException
      */
     private function guardMissingShardKey(object $document, string $shardKeyField, array $actualDocumentData): void
@@ -1512,6 +1569,8 @@ final class DocumentPersister
 
     /**
      * Get shard key aware query for single document.
+     *
+     * @return array<string, mixed>
      */
     private function getQueryForDocument(object $document): array
     {
@@ -1525,6 +1584,8 @@ final class DocumentPersister
 
     /**
      * @psalm-param CommitOptions $options
+     *
+     * @psalm-return CommitOptions
      */
     private function getWriteOptions(array $options = []): array
     {
@@ -1549,6 +1610,14 @@ final class DocumentPersister
         return $writeOptions;
     }
 
+    /**
+     * @psalm-param FieldMapping $mapping
+     *
+     * @psalm-return array<array{
+     *     string,
+     *     string|ObjectId|array<string, mixed>
+     * }>
+     */
     private function prepareReference(string $fieldName, object $value, array $mapping, bool $inNewObj): array
     {
         $reference = $this->dm->createReference($value, $mapping);

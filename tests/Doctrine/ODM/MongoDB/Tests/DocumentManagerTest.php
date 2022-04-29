@@ -184,7 +184,10 @@ class DocumentManagerTest extends BaseTest
         $phonenumber->phonenumber = 0;
         $this->dm->persist($phonenumber);
 
-        $dbRef = $this->dm->createReference($phonenumber, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF, 'targetDocument' => CmsPhonenumber::class]);
+        $dbRef = $this->dm->createReference($phonenumber, ClassMetadataTestUtil::getFieldMapping([
+            'storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF,
+            'targetDocument' => CmsPhonenumber::class,
+        ]));
 
         $this->assertSame(['$ref' => 'CmsPhonenumber', '$id' => 0], $dbRef);
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
@@ -54,11 +55,12 @@ use function reset;
  *     readPreference?: ReadPreference,
  *     select?: array<string, 0|1|array<string, mixed>>,
  *     skip?: int,
- *     sort?: array<string, int|array{"$meta": string}>,
+ *     sort?: array<string, -1|1|SortMeta>,
  *     type?: Query::TYPE_*,
  *     upsert?: bool,
  * }
  * @psalm-import-type Hints from UnitOfWork
+ * @psalm-import-type SortMeta from Sort
  */
 final class Query implements IteratorAggregate
 {

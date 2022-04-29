@@ -62,8 +62,8 @@ class MongoDBException extends Exception
     }
 
     /**
-     * @param string|array $expected
-     * @param mixed        $got
+     * @param string|string[] $expected
+     * @param mixed           $got
      *
      * @return MongoDBException
      */

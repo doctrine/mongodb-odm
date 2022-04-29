@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Documents\File;
 use Documents\ProfileNotify;
 use stdClass;
@@ -58,7 +59,7 @@ class CustomCollectionsTest extends BaseTest
         $coll  = new MyEmbedsCollection();
         $pcoll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create(
             $this->dm,
-            ['collectionClass' => MyEmbedsCollection::class],
+            ClassMetadataTestUtil::getFieldMapping(['collectionClass' => MyEmbedsCollection::class]),
             $coll
         );
         $this->assertInstanceOf(PersistentCollectionInterface::class, $pcoll);

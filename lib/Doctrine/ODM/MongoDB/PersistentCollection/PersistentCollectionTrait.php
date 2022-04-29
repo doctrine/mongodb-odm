@@ -26,6 +26,7 @@ use function is_object;
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
  *
+ * @psalm-import-type Hints from UnitOfWork
  * @psalm-import-type FieldMapping from ClassMetadata
  * @template TKey of array-key
  * @template T of object
@@ -92,7 +93,7 @@ trait PersistentCollectionTrait
     /**
      * The raw mongo data that will be used to initialize this collection.
      *
-     * @var array
+     * @var mixed[]
      */
     private $mongoData = [];
 
@@ -100,6 +101,7 @@ trait PersistentCollectionTrait
      * Any hints to account for during reconstitution/lookup of the documents.
      *
      * @var array
+     * @psalm-var Hints
      */
     private $hints = [];
 
