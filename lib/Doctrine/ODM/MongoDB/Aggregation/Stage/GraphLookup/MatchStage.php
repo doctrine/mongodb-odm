@@ -45,7 +45,7 @@ class MatchStage extends BaseMatchStage
      * Optionally, startWith may be array of values, each of which is
      * individually followed through the traversal process.
      *
-     * @param string|array|Expr $expression
+     * @param string|mixed[]|Expr $expression
      */
     public function startWith($expression): GraphLookup
     {

@@ -20,12 +20,15 @@ use function is_array;
 use function is_string;
 use function substr;
 
+/**
+ * @psalm-import-type FieldMapping from ClassMetadata
+ */
 class GraphLookup extends Stage
 {
     /** @var string|null */
     private $from;
 
-    /** @var string|Expr|array|null */
+    /** @var string|Expr|mixed[]|null */
     private $startWith;
 
     /** @var string|null */
@@ -230,7 +233,7 @@ class GraphLookup extends Stage
      * Optionally, startWith may be array of values, each of which is
      * individually followed through the traversal process.
      *
-     * @param string|array|Expr $expression
+     * @param string|mixed[]|Expr $expression
      */
     public function startWith($expression): self
     {
@@ -308,6 +311,9 @@ class GraphLookup extends Stage
         return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
     }
 
+    /**
+     * @psalm-param FieldMapping $mapping
+     */
     private function getReferencedFieldName(string $fieldName, array $mapping): string
     {
         if (! $this->targetClass) {

@@ -24,7 +24,7 @@ class BucketAutoOutput extends AbstractOutput
      * An expression to group documents by. To specify a field path, prefix the
      * field name with a dollar sign $ and enclose it in quotes.
      *
-     * @param array|Expr|string $expression
+     * @param array<string, mixed>|Expr|string $expression
      */
     public function groupBy($expression): Stage\BucketAuto
     {

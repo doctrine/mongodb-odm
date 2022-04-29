@@ -35,6 +35,8 @@ abstract class Stage
      * Executes the aggregation pipeline
      *
      * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
+     *
+     * @param array<string, mixed> $options
      */
     public function execute(array $options = []): Iterator
     {
@@ -51,6 +53,8 @@ abstract class Stage
 
     /**
      * Returns an aggregation object for the current pipeline
+     *
+     * @param array<string, mixed> $options
      */
     public function getAggregation(array $options = []): Aggregation
     {
@@ -150,8 +154,8 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/
      *
-     * @param float|array|Point $x
-     * @param float             $y
+     * @param float|array<string, mixed>|Point $x
+     * @param float                            $y
      */
     public function geoNear($x, $y = null): Stage\GeoNear
     {
@@ -160,6 +164,8 @@ abstract class Stage
 
     /**
      * Returns the assembled aggregation pipeline
+     *
+     * @return array<array<string, mixed>>
      */
     public function getPipeline(): array
     {
@@ -278,7 +284,7 @@ abstract class Stage
      * including the _id field. You can promote an existing embedded document to
      * the top level, or create a new document for promotion.
      *
-     * @param string|array|null $expression Optional. A replacement expression that
+     * @param string|mixed[]|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
     public function replaceRoot($expression = null): Stage\ReplaceRoot
@@ -336,8 +342,8 @@ abstract class Stage
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
      *
-     * @param array|string $fieldName Field name or array of field/order pairs
-     * @param int|string   $order     Field order (if one field is specified)
+     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
+     * @param int|string                       $order     Field order (if one field is specified)
      */
     public function sort($fieldName, $order = null): Stage\Sort
     {

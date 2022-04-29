@@ -28,15 +28,19 @@ final class Aggregation implements IteratorAggregate
     /** @var Collection */
     private $collection;
 
-    /** @var array */
+    /** @var array<string, mixed> */
     private $pipeline;
 
-    /** @var array */
+    /** @var array<string, mixed> */
     private $options;
 
     /** @var bool */
     private $rewindable;
 
+    /**
+     * @param array<string, mixed> $pipeline
+     * @param array<string, mixed> $options
+     */
     public function __construct(DocumentManager $dm, ?ClassMetadata $classMetadata, Collection $collection, array $pipeline, array $options = [], bool $rewindable = true)
     {
         $this->dm            = $dm;

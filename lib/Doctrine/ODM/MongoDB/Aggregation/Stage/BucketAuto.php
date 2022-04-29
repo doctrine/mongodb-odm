@@ -14,7 +14,7 @@ class BucketAuto extends AbstractBucket
     /** @var int */
     private $buckets;
 
-    /** @var string */
+    /** @var string|null */
     private $granularity;
 
     /**
@@ -56,6 +56,9 @@ class BucketAuto extends AbstractBucket
         return $this->output;
     }
 
+    /**
+     * @return array{buckets: int, granularity?: string}
+     */
     protected function getExtraPipelineFields(): array
     {
         $fields = ['buckets' => $this->buckets];
