@@ -185,3 +185,32 @@ parameters:
             message: "#^Parameter \\#4 \\$query of class Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Query constructor expects array\\{distinct\\?\\: string, hint\\?\\: array\\<string, \\-1\\|1\\>\\|string, limit\\?\\: int, multiple\\?\\: bool, new\\?\\: bool, newObj\\?\\: array\\<string, mixed\\>, query\\?\\: array\\<string, mixed\\>, readPreference\\?\\: MongoDB\\\\Driver\\\\ReadPreference, \\.\\.\\.\\}, array\\{type\\: \\-1\\} given\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+        -
+            message: "#^Parameter \\#2 \\$referenceMapping of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:createReference\\(\\) expects array\\{type\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\}, array\\{storeAs\\: 'dbRef'\\} given\\.$#"
+            count: 1
+            path: tests/Doctrine/ODM/MongoDB/Tests/DocumentManagerTest.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$hints \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\) does not accept default value of type array\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$hints has unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints as its type\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$hints \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\) does not accept array\\<int, mixed\\>\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
+        -
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getHints\\(\\) should return array\\<int, mixed\\> but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php

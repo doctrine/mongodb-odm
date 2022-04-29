@@ -64,7 +64,7 @@ final class CollectionPersister
      * Deletes a PersistentCollection instances completely from a document using $unset.
      *
      * @param PersistentCollectionInterface[] $collections
-     * @param array                           $options
+     * @param array<string, mixed>            $options
      */
     public function delete(object $parent, array $collections, array $options): void
     {
@@ -100,7 +100,7 @@ final class CollectionPersister
      * Updates a list PersistentCollection instances deleting removed rows and inserting new rows.
      *
      * @param PersistentCollectionInterface[] $collections
-     * @param array                           $options
+     * @param array<string, mixed>            $options
      */
     public function update(object $parent, array $collections, array $options): void
     {
@@ -155,7 +155,7 @@ final class CollectionPersister
      * reindexed numerically before storage.
      *
      * @param PersistentCollectionInterface[] $collections
-     * @param array                           $options
+     * @param array<string, mixed>            $options
      */
     private function setCollections(object $parent, array $collections, array $options): void
     {
@@ -195,7 +195,7 @@ final class CollectionPersister
      * This method is intended to be used with the "pushAll" and "addToSet" strategies.
      *
      * @param PersistentCollectionInterface[] $collections
-     * @param array                           $options
+     * @param array<string, mixed>            $options
      */
     private function deleteElements(object $parent, array $collections, array $options): void
     {
@@ -258,7 +258,7 @@ final class CollectionPersister
      * This method is intended to be used with the "pushAll" and "addToSet" strategies.
      *
      * @param PersistentCollectionInterface[] $collections
-     * @param array                           $options
+     * @param array<string, mixed>            $options
      */
     private function insertElements(object $parent, array $collections, array $options): void
     {
@@ -328,11 +328,11 @@ final class CollectionPersister
     /**
      * Perform collections update for 'pushAll' strategy.
      *
-     * @param object $parent       Parent object to which passed collections is belong.
-     * @param array  $collsPaths   Paths of collections that is passed.
-     * @param array  $pathCollsMap List of collections indexed by their paths.
-     * @param array  $diffsMap     List of collection diffs indexed by collections paths.
-     * @param array  $options
+     * @param object                                                          $parent       Parent object to which passed collections is belong.
+     * @param string[]                                                        $collsPaths   Paths of collections that is passed.
+     * @param array<string, PersistentCollectionInterface<array-key, object>> $pathCollsMap List of collections indexed by their paths.
+     * @param array<string, mixed[]>                                          $diffsMap     List of collection diffs indexed by collections paths.
+     * @param array<string, mixed>                                            $options
      */
     private function pushAllCollections(object $parent, array $collsPaths, array $pathCollsMap, array $diffsMap, array $options): void
     {
@@ -362,11 +362,11 @@ final class CollectionPersister
     /**
      * Perform collections update by 'addToSet' strategy.
      *
-     * @param object $parent       Parent object to which passed collections is belong.
-     * @param array  $collsPaths   Paths of collections that is passed.
-     * @param array  $pathCollsMap List of collections indexed by their paths.
-     * @param array  $diffsMap     List of collection diffs indexed by collections paths.
-     * @param array  $options
+     * @param object                                                          $parent       Parent object to which passed collections is belong.
+     * @param string[]                                                        $collsPaths   Paths of collections that is passed.
+     * @param array<string, PersistentCollectionInterface<array-key, object>> $pathCollsMap List of collections indexed by their paths.
+     * @param array<string, mixed[]>                                          $diffsMap     List of collection diffs indexed by collections paths.
+     * @param array<string, mixed>                                            $options
      */
     private function addToSetCollections(object $parent, array $collsPaths, array $pathCollsMap, array $diffsMap, array $options): void
     {
@@ -416,6 +416,8 @@ final class CollectionPersister
      *     <code>
      *     list($path, $parent) = $this->getPathAndParent($coll)
      *     </code>
+     *
+     * @return array{string, object|null}
      */
     private function getPathAndParent(PersistentCollectionInterface $coll): array
     {
@@ -443,6 +445,9 @@ final class CollectionPersister
 
     /**
      * Executes a query updating the given document.
+     *
+     * @param array<string, mixed> $newObj
+     * @param array<string, mixed> $options
      */
     private function executeQuery(object $document, array $newObj, array $options): void
     {

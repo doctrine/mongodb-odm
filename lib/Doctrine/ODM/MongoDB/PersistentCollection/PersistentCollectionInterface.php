@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
@@ -15,6 +16,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
  * @internal
  *
  * @psalm-import-type FieldMapping from \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+ * @psalm-import-type Hints from UnitOfWork
  *
  * @template TKey of array-key
  * @template T of object
@@ -32,7 +34,7 @@ interface PersistentCollectionInterface extends Collection
     /**
      * Sets the array of raw mongo data that will be used to initialize this collection.
      *
-     * @param array $mongoData
+     * @param mixed[] $mongoData
      *
      * @return void
      */
@@ -41,14 +43,14 @@ interface PersistentCollectionInterface extends Collection
     /**
      * Gets the array of raw mongo data that will be used to initialize this collection.
      *
-     * @return array $mongoData
+     * @return mixed[] $mongoData
      */
     public function getMongoData();
 
     /**
      * Set hints to account for during reconstitution/lookup of the documents.
      *
-     * @param array $hints
+     * @param Hints $hints
      *
      * @return void
      */
@@ -57,7 +59,7 @@ interface PersistentCollectionInterface extends Collection
     /**
      * Get hints to account for during reconstitution/lookup of the documents.
      *
-     * @return array $hints
+     * @return Hints $hints
      */
     public function getHints();
 
@@ -117,31 +119,31 @@ interface PersistentCollectionInterface extends Collection
     /**
      * Returns the last snapshot of the elements in the collection.
      *
-     * @return array The last snapshot of the elements.
+     * @return object[] The last snapshot of the elements.
      */
     public function getSnapshot();
 
     /**
-     * @return array
+     * @return array<string, object>
      */
     public function getDeleteDiff();
 
     /**
      * Get objects that were removed, unlike getDeleteDiff this doesn't care about indices.
      *
-     * @return array
+     * @return list<object>
      */
     public function getDeletedDocuments();
 
     /**
-     * @return array
+     * @return array<string, object>
      */
     public function getInsertDiff();
 
     /**
      * Get objects that were added, unlike getInsertDiff this doesn't care about indices.
      *
-     * @return array
+     * @return list<object>
      */
     public function getInsertedDocuments();
 

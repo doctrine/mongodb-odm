@@ -591,7 +591,8 @@ use const PHP_VERSION_ID;
      *
      * @see discriminatorField
      *
-     * @var mixed
+     * @var string|null
+     * @psalm-var class-string|null
      */
     public $discriminatorValue;
 

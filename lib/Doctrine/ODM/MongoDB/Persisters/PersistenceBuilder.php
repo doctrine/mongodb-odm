@@ -26,6 +26,8 @@ use function get_class;
  * UnitOfWork to build queries using atomic operators like $set, $unset, etc.
  *
  * @internal
+ *
+ * @psalm-import-type FieldMapping from ClassMetadata
  */
 final class PersistenceBuilder
 {
@@ -57,7 +59,7 @@ final class PersistenceBuilder
      *
      * @param object $document
      *
-     * @return array $insertData
+     * @return array<string, mixed> $insertData
      */
     public function prepareInsertData($document)
     {
@@ -122,7 +124,7 @@ final class PersistenceBuilder
      *
      * @param object $document
      *
-     * @return array $updateData
+     * @return array<string, mixed> $updateData
      */
     public function prepareUpdateData($document)
     {
@@ -232,7 +234,7 @@ final class PersistenceBuilder
      *
      * @param object $document
      *
-     * @return array $updateData
+     * @return array<string, mixed> $updateData
      */
     public function prepareUpsertData($document)
     {
@@ -323,10 +325,10 @@ final class PersistenceBuilder
      * If the document does not have an identifier and the mapping calls for a
      * simple reference, null may be returned.
      *
-     * @param array  $referenceMapping
      * @param object $document
+     * @psalm-param FieldMapping $referenceMapping
      *
-     * @return array|null
+     * @return array<string, mixed>|null
      */
     public function prepareReferencedDocumentValue(array $referenceMapping, $document)
     {
@@ -347,11 +349,11 @@ final class PersistenceBuilder
      * within this value were previously scheduled for deletion or update, they
      * will also be unscheduled.
      *
-     * @param array  $embeddedMapping
      * @param object $embeddedDocument
      * @param bool   $includeNestedCollections
+     * @psalm-param FieldMapping  $embeddedMapping
      *
-     * @return array|object
+     * @return array<string, mixed>|object
      *
      * @throws UnexpectedValueException If an unsupported associating mapping is found.
      */
@@ -462,11 +464,11 @@ final class PersistenceBuilder
     /**
      * Returns the embedded document or reference representation to be stored.
      *
-     * @param array  $mapping
      * @param object $document
      * @param bool   $includeNestedCollections
+     * @psalm-param FieldMapping  $mapping
      *
-     * @return array|object|null
+     * @return mixed[]|object|null
      *
      * @throws InvalidArgumentException If the mapping is neither embedded nor reference.
      */
@@ -488,7 +490,7 @@ final class PersistenceBuilder
      *
      * @param bool $includeNestedCollections
      *
-     * @return array
+     * @return mixed[]
      */
     public function prepareAssociatedCollectionValue(PersistentCollectionInterface $coll, $includeNestedCollections = false)
     {

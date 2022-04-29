@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -26,6 +27,8 @@ use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.
+ *
+ * @psalm-import-type SortShape from Sort
  */
 class Builder
 {
@@ -533,8 +536,9 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
      *
-     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
+     * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|null                                        $order     Field order (if one field is specified)
+     * @psalm-param SortShape|string $fieldName Field name or array of field/order pairs
      */
     public function sort($fieldName, $order = null): Stage\Sort
     {
