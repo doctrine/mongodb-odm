@@ -201,12 +201,12 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Types/DateImmutableTypeTest.php">
     <TypeDoesNotContainType occurrences="1">
-      <code>assert($return instanceof DateTimeImmutable)</code>
+      <code>assertInstanceOf</code>
     </TypeDoesNotContainType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Types/DateTypeTest.php">
     <TypeDoesNotContainType occurrences="1">
-      <code>assert($return instanceof DateTime)</code>
+      <code>assertInstanceOf</code>
     </TypeDoesNotContainType>
   </file>
   <file src="tests/Documents/CommentRepository.php">
