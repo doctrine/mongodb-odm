@@ -96,7 +96,7 @@ final class ReferencePrimer
      * the default primer defined in the constructor. If $primer is not
      * callable, the default primer will be used.
      *
-     * @param ClassMetadata                     $class     Class metadata for the document
+     * @param ClassMetadata<object>             $class     Class metadata for the document
      * @param array<object>|Traversable<object> $documents Documents containing references to prime
      * @param string                            $fieldName Field name containing references to prime
      * @param array                             $hints     UnitOfWork hints for priming queries
@@ -167,10 +167,11 @@ final class ReferencePrimer
      * ... but you cannot prime this: myDocument.embeddedDocument.referencedDocuments.referencedDocument(s)
      * This addresses Issue #624.
      *
+     * @param ClassMetadata<object>             $class
      * @param array<object>|Traversable<object> $documents
      * @param FieldMapping|null                 $mapping
      *
-     * @return array{fieldName: string, class: ClassMetadata, documents: array<object>|Traversable<object>, mapping: FieldMapping}
+     * @return array{fieldName: string, class: ClassMetadata<object>, documents: array<object>|Traversable<object>, mapping: FieldMapping}
      */
     private function parseDotSyntaxForPrimer(string $fieldName, ClassMetadata $class, $documents, ?array $mapping = null): array
     {
@@ -245,6 +246,7 @@ final class ReferencePrimer
      * have a target document class defined. Without that, there is no way to
      * infer the class of the referenced documents.
      *
+     * @param PersistentCollectionInterface<array-key, object> $persistentCollection
      * @psalm-param array<class-string, array<string, mixed>> $groupedIds
      */
     private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds): void

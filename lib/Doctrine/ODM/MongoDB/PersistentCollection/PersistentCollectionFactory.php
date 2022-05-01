@@ -19,6 +19,9 @@ interface PersistentCollectionFactory
      * Creates specified persistent collection to work with given collection class.
      *
      * @psalm-param FieldMapping $mapping
+     * @psalm-param BaseCollection<array-key, object>|null $coll
+     *
+     * @psalm-return PersistentCollectionInterface<array-key, object>
      */
     public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null): PersistentCollectionInterface;
 }
