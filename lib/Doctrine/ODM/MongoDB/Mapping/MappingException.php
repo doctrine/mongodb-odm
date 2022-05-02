@@ -291,4 +291,14 @@ final class MappingException extends BaseMappingException
             $fieldName
         ));
     }
+
+    public static function nonBackedEnumMapped(string $className, string $fieldName, string $enumType): self
+    {
+        return new self(sprintf(
+            'Attempting to map a non-backed enum %s: %s::%s',
+            $enumType,
+            $className,
+            $fieldName
+        ));
+    }
 }

@@ -2393,6 +2393,11 @@ use const PHP_VERSION_ID;
                 throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
             }
 
+            $reflectionEnum = new ReflectionEnum($mapping['enumType']);
+            if (! $reflectionEnum->isBacked()) {
+                throw MappingException::nonBackedEnumMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
+            }
+
             $reflProp = new EnumReflectionProperty($reflProp, $mapping['enumType']);
         }
 
@@ -2609,6 +2614,10 @@ use const PHP_VERSION_ID;
 
             $reflection = new ReflectionEnum($type->getName());
             $type       = $reflection->getBackingType();
+
+            if ($type === null) {
+                throw MappingException::nonBackedEnumMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
+            }
 
             assert($type instanceof ReflectionNamedType);
         }

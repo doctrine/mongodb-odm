@@ -20,7 +20,13 @@ class Card
     #[ODM\Field()]
     public Suit $suit;
 
+    /** @ODM\Field() */
+    #[ODM\Field()]
+    public ?SuitInt $suitInt;
+
     /** @ODM\Field(type="string", enumType=Suit::class, nullable=true) */
     #[ODM\Field(type: 'string', enumType: Suit::class, nullable: true)]
     public ?Suit $nullableSuit;
+
+    public ?SuitNonBacked $suitNonBacked;
 }

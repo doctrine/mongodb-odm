@@ -650,9 +650,12 @@ abstract class AbstractMappingDriverTest extends BaseTest
 
         self::assertSame(Suit::class, $metadata->fieldMappings['suit']['enumType']);
         self::assertSame('string', $metadata->fieldMappings['suit']['type']);
+        self::assertFalse($metadata->fieldMappings['suit']['nullable']);
         self::assertInstanceOf(EnumReflectionProperty::class, $metadata->reflFields['suit']);
+
         self::assertSame(Suit::class, $metadata->fieldMappings['nullableSuit']['enumType']);
-        self::assertSame('string', $metadata->fieldMappings['suit']['type']);
+        self::assertSame('string', $metadata->fieldMappings['nullableSuit']['type']);
+        self::assertTrue($metadata->fieldMappings['nullableSuit']['nullable']);
         self::assertInstanceOf(EnumReflectionProperty::class, $metadata->reflFields['nullableSuit']);
     }
 }
