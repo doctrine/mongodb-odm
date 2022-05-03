@@ -7,13 +7,14 @@ namespace Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\Event\OnClearEventArgs as BaseOnClearEventArgs;
 
-use function assert;
 use function func_num_args;
 use function method_exists;
 use function trigger_deprecation;
 
 /**
  * Provides event arguments for the onClear event.
+ *
+ * @template-extends BaseOnClearEventArgs<DocumentManager>
  */
 final class OnClearEventArgs extends BaseOnClearEventArgs
 {
@@ -50,10 +51,7 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
 
     public function getDocumentManager(): DocumentManager
     {
-        $dm = $this->getObjectManager();
-        assert($dm instanceof DocumentManager);
-
-        return $dm;
+        return $this->getObjectManager();
     }
 
     /**

@@ -7,11 +7,11 @@ namespace Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
 
-use function assert;
-
 /**
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
  * of documents.
+ *
+ * @template-extends BaseLifecycleEventArgs<DocumentManager>
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
@@ -22,9 +22,6 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
 
     public function getDocumentManager(): DocumentManager
     {
-        $dm = $this->getObjectManager();
-        assert($dm instanceof DocumentManager);
-
-        return $dm;
+        return $this->getObjectManager();
     }
 }
