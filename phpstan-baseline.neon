@@ -214,3 +214,9 @@ parameters:
             message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getHints\\(\\) should return array\\<int, mixed\\> but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # breaking types expected by static analysis to check exceptions
+        -
+            message: "#.+mapField\\(\\) expects.+enumType\\: 'Documents81#"
+            count: 2
+            path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php

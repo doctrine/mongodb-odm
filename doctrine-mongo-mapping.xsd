@@ -138,6 +138,7 @@
     <xs:attribute name="not-saved" type="xs:boolean" />
     <xs:attribute name="nullable" type="xs:boolean" />
     <xs:attribute name="also-load" type="xs:string" />
+    <xs:attribute name="enum-type" type="xs:string" />
 
     <!-- index options -->
     <xs:attribute name="background" type="xs:boolean" />

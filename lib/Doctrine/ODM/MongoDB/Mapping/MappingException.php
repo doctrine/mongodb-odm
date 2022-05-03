@@ -276,4 +276,29 @@ final class MappingException extends BaseMappingException
     {
         return new self(sprintf('The following schema validation error occurred while parsing the "%s" property of the "%s" class: "%s" (code %s).', $property, $className, $errorMessage, $errorCode));
     }
+
+    public static function enumsRequirePhp81(string $className, string $fieldName): self
+    {
+        return new self(sprintf('Enum types require PHP 8.1 in %s::%s', $className, $fieldName));
+    }
+
+    public static function nonEnumTypeMapped(string $className, string $fieldName, string $enumType): self
+    {
+        return new self(sprintf(
+            'Attempting to map a non-enum type %s as an enum: %s::%s',
+            $enumType,
+            $className,
+            $fieldName
+        ));
+    }
+
+    public static function nonBackedEnumMapped(string $className, string $fieldName, string $enumType): self
+    {
+        return new self(sprintf(
+            'Attempting to map a non-backed enum %s: %s::%s',
+            $enumType,
+            $className,
+            $fieldName
+        ));
+    }
 }

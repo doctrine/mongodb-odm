@@ -29,6 +29,10 @@ use Documents\UserRepository;
 use Documents74\CustomCollection;
 use Documents74\TypedEmbeddedDocument;
 use Documents74\UserTyped;
+use Documents81\Card;
+use Documents81\Suit;
+use Documents81\SuitInt;
+use Documents81\SuitNonBacked;
 use Generator;
 use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -185,6 +189,87 @@ class ClassMetadataTest extends BaseTest
 
         $cm->mapManyReference(['fieldName' => 'referenceMany']);
         self::assertEquals(CustomCollection::class, $cm->getAssociationCollectionClass('referenceMany'));
+    }
+
+    /**
+     * @requires PHP >= 8.1
+     */
+    public function testEnumTypeFromReflection(): void
+    {
+        $cm = new ClassMetadata(Card::class);
+
+        $cm->mapField(['fieldName' => 'suit']);
+        self::assertEquals(Type::STRING, $cm->getTypeOfField('suit'));
+        self::assertSame(Suit::class, $cm->fieldMappings['suit']['enumType']);
+        self::assertFalse($cm->isNullable('suit'));
+
+        $cm->mapField(['fieldName' => 'suitInt']);
+        self::assertEquals(Type::INT, $cm->getTypeOfField('suitInt'));
+        self::assertSame(SuitInt::class, $cm->fieldMappings['suitInt']['enumType']);
+        self::assertFalse($cm->isNullable('suitInt'));
+
+        $cm->mapField(['fieldName' => 'nullableSuit']);
+        self::assertEquals(Type::STRING, $cm->getTypeOfField('nullableSuit'));
+        self::assertSame(Suit::class, $cm->fieldMappings['nullableSuit']['enumType']);
+        self::assertFalse($cm->isNullable('nullableSuit'));
+    }
+
+    /**
+     * @requires PHP >= 8.1
+     */
+    public function testEnumTypeFromReflectionMustBeBacked(): void
+    {
+        $cm = new ClassMetadata(Card::class);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Attempting to map a non-backed enum Documents81\SuitNonBacked: Documents81\Card::suitNonBacked'
+        );
+        $cm->mapField(['fieldName' => 'suitNonBacked']);
+    }
+
+    /**
+     * @requires PHP >= 8.1
+     */
+    public function testEnumTypeMustPointToAnEnum(): void
+    {
+        $object = new class {
+            /** @var Card|null */
+            public $enum;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Attempting to map a non-enum type Documents81\Card as an enum: '
+        );
+        $cm->mapField([
+            'fieldName' => 'enum',
+            'enumType' => Card::class,
+        ]);
+    }
+
+    /**
+     * @requires PHP >= 8.1
+     */
+    public function testEnumTypeMustPointToABackedEnum(): void
+    {
+        $object = new class {
+            /** @var SuitNonBacked|null */
+            public $enum;
+        };
+
+        $cm = new ClassMetadata(get_class($object));
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Attempting to map a non-backed enum Documents81\SuitNonBacked: '
+        );
+        $cm->mapField([
+            'fieldName' => 'enum',
+            'enumType' => SuitNonBacked::class,
+        ]);
     }
 
     /**

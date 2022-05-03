@@ -278,6 +278,10 @@ class XmlDriver extends FileDriver
                     $mapping['notSaved'] = ((string) $attributes['not-saved'] === 'true');
                 }
 
+                if (isset($attributes['enum-type'])) {
+                    $mapping['enumType'] = (string) $attributes['enum-type'];
+                }
+
                 if (isset($attributes['field-name'])) {
                     $mapping['fieldName'] = (string) $attributes['field-name'];
                 }

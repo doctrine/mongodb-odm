@@ -215,6 +215,10 @@ follows:
 - ``int``: ``int``
 - ``string``: ``string``
 
+Doctrine will also autoconfigure any backed ``enum`` it encounters: ``type``
+will be set to ``string`` or ``int``, depending on the enum's backing type,
+and ``enumType`` to the enum's |FQCN|.
+
 Please note that at this time, due to backward compatibility reasons, nullable type does not imply `nullable` mapping.
 
 Property Mapping

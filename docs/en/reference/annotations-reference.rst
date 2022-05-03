@@ -361,6 +361,10 @@ Optional attributes:
    :ref:`doctrine_mapping_types` for a list of types. Defaults to "string" or
    :ref:`Type from PHP property type <reference-php-mapping-types>`.
 -
+   ``enumType`` - A |FQCN| of an ``enum``. ODM will automatically handle conversion
+   from the backing value stored in the database to an ``enum``. Can be auto-detected
+   by :ref:`type from PHP property type <reference-php-mapping-types>`.
+-
    ``name`` - By default, the property name is used for the field name in
    MongoDB; however, this option may be used to specify a database field name.
 -
