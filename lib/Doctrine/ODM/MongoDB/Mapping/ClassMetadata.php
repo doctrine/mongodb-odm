@@ -333,6 +333,8 @@ use const PHP_VERSION_ID;
      * NOTIFY means that Doctrine relies on the entities sending out notifications
      * when their properties change. Such entity classes must implement
      * the <tt>NotifyPropertyChanged</tt> interface.
+     *
+     * @deprecated
      */
     public const CHANGETRACKING_NOTIFY = 3;
 
@@ -1317,6 +1319,9 @@ use const PHP_VERSION_ID;
 
     /**
      * Whether the change tracking policy of this class is "notify".
+     *
+     * @deprecated This method was deprecated in doctrine/mongodb-odm 2.4. Please use DEFERRED_EXPLICIT tracking
+     * policy and isChangeTrackingDeferredImplicit method to detect it.
      */
     public function isChangeTrackingNotify(): bool
     {

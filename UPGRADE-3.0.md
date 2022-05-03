@@ -22,6 +22,11 @@ The `boolean`, `integer`, and `int_id` mapping types have been removed. Use the
 `bool`, `int`, and `int` types, respectively. These types behave exactly the
 same.
 
+The `NOTIFY` change tracking policy has been removed, we suggest switching to
+`DEFERRED_EXPLICIT` instead. Consequentially `ClassMetadata::isChangeTrackingNotify` 
+and `ClassMetadata::CHANGETRACKING_NOTIFY` have been removed as well. `UnitOfWork`
+no longer implements the `PropertyChangedListener` interface.
+
 ## Proxy Class Name Resolution
 
 The `Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver` interface has been
