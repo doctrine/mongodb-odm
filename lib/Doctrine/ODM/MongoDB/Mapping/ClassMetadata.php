@@ -1563,6 +1563,7 @@ use const PHP_VERSION_ID;
     {
         $mapping['embedded'] = true;
         $mapping['type']     = self::MANY;
+
         $this->mapField($mapping);
     }
 
@@ -1588,6 +1589,7 @@ use const PHP_VERSION_ID;
     {
         $mapping['reference'] = true;
         $mapping['type']      = self::MANY;
+
         $this->mapField($mapping);
     }
 
@@ -2120,7 +2122,7 @@ use const PHP_VERSION_ID;
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
         }
 
-        return $this->associationMappings[$assocName]['targetDocument'];
+        return $this->associationMappings[$assocName]['targetDocument'] ?? null;
     }
 
     /**
@@ -2168,6 +2170,14 @@ use const PHP_VERSION_ID;
     {
         if (! isset($mapping['fieldName']) && isset($mapping['name'])) {
             $mapping['fieldName'] = $mapping['name'];
+        }
+
+        if ($this->isTypedProperty($mapping['fieldName'])) {
+            $mapping = $this->validateAndCompleteTypedFieldMapping($mapping);
+
+            if (isset($mapping['type']) && $mapping['type'] === self::MANY) {
+                $mapping = $this->validateAndCompleteTypedManyAssociationMapping($mapping);
+            }
         }
 
         if (! isset($mapping['fieldName']) || ! is_string($mapping['fieldName'])) {
@@ -2240,14 +2250,6 @@ use const PHP_VERSION_ID;
             }
 
             unset($this->generatorOptions['type']);
-        }
-
-        if ($this->isTypedProperty($mapping['fieldName'])) {
-            $mapping = $this->validateAndCompleteTypedFieldMapping($mapping);
-
-            if (isset($mapping['type']) && ($mapping['type'] === self::ONE || $mapping['type'] === self::MANY)) {
-                $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
-            }
         }
 
         if (! isset($mapping['type'])) {
@@ -2653,7 +2655,7 @@ use const PHP_VERSION_ID;
      *
      * @return FieldMappingConfig
      */
-    private function validateAndCompleteTypedAssociationMapping(array $mapping): array
+    private function validateAndCompleteTypedManyAssociationMapping(array $mapping): array
     {
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
@@ -2661,11 +2663,7 @@ use const PHP_VERSION_ID;
             return $mapping;
         }
 
-        if (
-            ! isset($mapping['collectionClass'])
-            && $mapping['type'] === self::MANY
-            && class_exists($type->getName())
-        ) {
+        if (! isset($mapping['collectionClass']) && class_exists($type->getName())) {
             $mapping['collectionClass'] = $type->getName();
         }
 
