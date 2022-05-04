@@ -61,6 +61,7 @@
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <exclude-pattern>lib/Doctrine/ODM/MongoDB/Mapping/Driver/CompatibilityAnnotationDriver.php</exclude-pattern>
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
