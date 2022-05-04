@@ -27,7 +27,6 @@ use Documents\User;
 use Documents\UserName;
 use Documents\UserRepository;
 use Documents74\CustomCollection;
-use Documents74\TypedEmbeddedDocument;
 use Documents74\UserTyped;
 use Documents81\Card;
 use Documents81\Suit;
@@ -177,12 +176,6 @@ class ClassMetadataTest extends BaseTest
         // int
         $cm->mapField(['fieldName' => 'int']);
         self::assertEquals(Type::INT, $cm->getTypeOfField('int'));
-
-        $cm->mapOneEmbedded(['fieldName' => 'embedOne']);
-        self::assertEquals(TypedEmbeddedDocument::class, $cm->getAssociationTargetClass('embedOne'));
-
-        $cm->mapOneReference(['fieldName' => 'referenceOne']);
-        self::assertEquals(UserTyped::class, $cm->getAssociationTargetClass('referenceOne'));
 
         $cm->mapManyEmbedded(['fieldName' => 'embedMany']);
         self::assertEquals(CustomCollection::class, $cm->getAssociationCollectionClass('embedMany'));

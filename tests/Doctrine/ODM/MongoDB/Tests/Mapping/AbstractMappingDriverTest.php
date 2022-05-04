@@ -19,7 +19,6 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use Documents74\CustomCollection;
-use Documents74\TypedEmbeddedDocument;
 use Documents74\UserTyped;
 use Documents81\Card;
 use Documents81\Suit;
@@ -215,9 +214,6 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->assertSame(Type::HASH, $class->getTypeOfField('array'));
         $this->assertSame(Type::BOOL, $class->getTypeOfField('boolean'));
         $this->assertSame(Type::FLOAT, $class->getTypeOfField('float'));
-
-        $this->assertSame(TypedEmbeddedDocument::class, $class->getAssociationTargetClass('embedOne'));
-        $this->assertSame(UserTyped::class, $class->getAssociationTargetClass('referenceOne'));
 
         $this->assertSame(CustomCollection::class, $class->getAssociationCollectionClass('embedMany'));
         $this->assertSame(CustomCollection::class, $class->getAssociationCollectionClass('referenceMany'));
