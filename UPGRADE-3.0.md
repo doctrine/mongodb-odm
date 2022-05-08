@@ -27,6 +27,10 @@ The `NOTIFY` change tracking policy has been removed, we suggest switching to
 and `ClassMetadata::CHANGETRACKING_NOTIFY` have been removed as well. `UnitOfWork`
 no longer implements the `PropertyChangedListener` interface.
 
+`AttributeDriver` and `AnnotationDriver` no longer extend an abstract 
+`AnnotationDriver` class defined in `doctrine/persistence` (or in ODM's 
+compatibility layer)
+
 ## Proxy Class Name Resolution
 
 The `Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver` interface has been
