@@ -16,9 +16,6 @@
         <field name="float"/>
         <field name="int"/>
 
-        <embed-one field="embedOne" />
-        <reference-one field="referenceOne" />
-
         <embed-many field="embedMany" />
         <reference-many field="referenceMany" />
     </document>

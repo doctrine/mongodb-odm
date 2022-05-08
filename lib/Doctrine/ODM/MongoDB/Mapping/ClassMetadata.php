@@ -1551,10 +1551,6 @@ use const PHP_VERSION_ID;
         $mapping['embedded'] = true;
         $mapping['type']     = self::ONE;
 
-        if ($this->isTypedProperty($mapping['fieldName'])) {
-            $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
-        }
-
         $this->mapField($mapping);
     }
 
@@ -1579,10 +1575,6 @@ use const PHP_VERSION_ID;
     {
         $mapping['reference'] = true;
         $mapping['type']      = self::ONE;
-
-        if ($this->isTypedProperty($mapping['fieldName'])) {
-            $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
-        }
 
         $this->mapField($mapping);
     }
@@ -2667,10 +2659,6 @@ use const PHP_VERSION_ID;
 
         if (! $type instanceof ReflectionNamedType) {
             return $mapping;
-        }
-
-        if (! isset($mapping['targetDocument']) && $mapping['type'] === self::ONE) {
-            $mapping['targetDocument'] = $type->getName();
         }
 
         if (

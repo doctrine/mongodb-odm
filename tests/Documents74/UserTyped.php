@@ -46,14 +46,6 @@ class UserTyped
     #[ODM\Field]
     public int $int;
 
-    /** @ODM\EmbedOne */
-    #[ODM\EmbedOne]
-    public TypedEmbeddedDocument $embedOne;
-
-    /** @ODM\ReferenceOne */
-    #[ODM\ReferenceOne]
-    public UserTyped $referenceOne;
-
     /** @ODM\EmbedMany  */
     #[ODM\EmbedMany]
     public CustomCollection $embedMany;
