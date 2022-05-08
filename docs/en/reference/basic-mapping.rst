@@ -203,6 +203,9 @@ This list explains some of the less obvious mapping types:
 PHP Types Mapping
 _________________
 
+.. note::
+    Doctrine will skip type autoconfiguration if settings are provided explicitly.
+
 Since version 2.4 Doctrine can determine usable defaults from property types
 on document classes. Doctrine will map PHP types to ``type`` attribute as
 follows:
@@ -215,11 +218,16 @@ follows:
 - ``int``: ``int``
 - ``string``: ``string``
 
-Doctrine will also autoconfigure any backed ``enum`` it encounters: ``type``
+Doctrine can also autoconfigure any backed ``enum`` it encounters: ``type``
 will be set to ``string`` or ``int``, depending on the enum's backing type,
 and ``enumType`` to the enum's |FQCN|.
 
-Please note that at this time, due to backward compatibility reasons, nullable type does not imply `nullable` mapping.
+.. note::
+    Nullable type does not imply ``nullable`` mapping option. You need to manually
+    set ``nullable=true`` to have ``null`` values saved to the database.
+
+Additionally Doctrine can determine ``collectionClass`` for ``ReferenceMany`` and
+``EmbedMany`` collections from property's type.
 
 Property Mapping
 ----------------
