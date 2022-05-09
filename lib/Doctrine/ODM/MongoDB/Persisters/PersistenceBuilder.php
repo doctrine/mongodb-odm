@@ -488,7 +488,8 @@ final class PersistenceBuilder
     /**
      * Returns the collection representation to be stored and unschedules it afterwards.
      *
-     * @param bool $includeNestedCollections
+     * @param PersistentCollectionInterface<array-key, object> $coll
+     * @param bool                                             $includeNestedCollections
      *
      * @return mixed[]
      */

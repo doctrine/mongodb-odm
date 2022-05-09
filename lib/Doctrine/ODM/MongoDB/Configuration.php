@@ -89,8 +89,8 @@ class Configuration
      *      autoGeneratePersistentCollectionClasses?: self::AUTOGENERATE_*,
      *      classMetadataFactoryName?: class-string<ClassMetadataFactory>,
      *      defaultCommitOptions?: CommitOptions,
-     *      defaultDocumentRepositoryClassName?: class-string<ObjectRepository>,
-     *      defaultGridFSRepositoryClassName?: class-string<GridFSRepository>,
+     *      defaultDocumentRepositoryClassName?: class-string<ObjectRepository<object>>,
+     *      defaultGridFSRepositoryClassName?: class-string<GridFSRepository<object>>,
      *      defaultDB?: string,
      *      documentNamespaces?: array<string, string>,
      *      filters?: array<string, array{
@@ -488,7 +488,7 @@ class Configuration
     }
 
     /**
-     * @psalm-param class-string<ObjectRepository> $className
+     * @psalm-param class-string<ObjectRepository<object>> $className
      *
      * @throws MongoDBException If not is a ObjectRepository.
      */
@@ -504,7 +504,7 @@ class Configuration
     }
 
     /**
-     * @psalm-return class-string<ObjectRepository>
+     * @psalm-return class-string<ObjectRepository<object>>
      */
     public function getDefaultDocumentRepositoryClassName(): string
     {
@@ -512,7 +512,7 @@ class Configuration
     }
 
     /**
-     * @psalm-param class-string<GridFSRepository> $className
+     * @psalm-param class-string<GridFSRepository<object>> $className
      *
      * @throws MongoDBException If the class does not implement the GridFSRepository interface.
      */
@@ -528,7 +528,7 @@ class Configuration
     }
 
     /**
-     * @psalm-return class-string<GridFSRepository>
+     * @psalm-return class-string<GridFSRepository<object>>
      */
     public function getDefaultGridFSRepositoryClassName(): string
     {

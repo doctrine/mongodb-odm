@@ -817,8 +817,8 @@ class DocumentManager implements ObjectManager
     /**
      * Build discriminator portion of reference for specified reference mapping and class metadata.
      *
-     * @param array         $referenceMapping Mappings of reference for which discriminator data is created.
-     * @param ClassMetadata $class            Metadata of reference document class.
+     * @param array                 $referenceMapping Mappings of reference for which discriminator data is created.
+     * @param ClassMetadata<object> $class            Metadata of reference document class.
      * @psalm-param FieldMapping $referenceMapping
      *
      * @return array with next structure [{discriminator field} => {discriminator value}]
