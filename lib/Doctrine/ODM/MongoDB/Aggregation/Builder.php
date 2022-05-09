@@ -236,7 +236,7 @@ class Builder
     /**
      * Returns an aggregation object for the current pipeline
      *
-     * @param array<array<string, mixed>> $options
+     * @param array<string, mixed> $options
      */
     public function getAggregation(array $options = []): Aggregation
     {
