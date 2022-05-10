@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use DoctrineGlobal_Article;
 use DoctrineGlobal_User;
 use Documents\Account;
@@ -205,6 +206,22 @@ class ClassMetadataTest extends BaseTest
         self::assertEquals(Type::STRING, $cm->getTypeOfField('nullableSuit'));
         self::assertSame(Suit::class, $cm->fieldMappings['nullableSuit']['enumType']);
         self::assertFalse($cm->isNullable('nullableSuit'));
+    }
+
+    /**
+     * @requires PHP >= 8.1
+     */
+    public function testEnumReflectionPropertySerialization(): void
+    {
+        $cm = new ClassMetadata(Card::class);
+
+        $cm->mapField(['fieldName' => 'suit']);
+        self::assertInstanceOf(EnumReflectionProperty::class, $cm->reflFields['suit']);
+
+        $serialized = serialize($cm);
+        $cm         = unserialize($serialized);
+
+        self::assertInstanceOf(EnumReflectionProperty::class, $cm->reflFields['suit']);
     }
 
     /**
