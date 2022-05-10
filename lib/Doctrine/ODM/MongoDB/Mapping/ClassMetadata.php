@@ -2533,6 +2533,11 @@ use const PHP_VERSION_ID;
         foreach ($this->fieldMappings as $field => $mapping) {
             $prop = $this->reflectionService->getAccessibleProperty($mapping['declared'] ?? $this->name, $field);
             assert($prop instanceof ReflectionProperty);
+
+            if (isset($mapping['enumType'])) {
+                $prop = new EnumReflectionProperty($prop, $mapping['enumType']);
+            }
+
             $this->reflFields[$field] = $prop;
         }
     }
