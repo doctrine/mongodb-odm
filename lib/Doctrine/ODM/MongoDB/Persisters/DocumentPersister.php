@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
+use BackedEnum;
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -1128,6 +1129,10 @@ final class DocumentPersister
         }
 
         if (! $this->class->hasField($fieldName)) {
+            if ($value instanceof BackedEnum) {
+                $value = $value->value;
+            }
+
             return Type::convertPHPToDatabaseValue($value);
         }
 
@@ -1142,6 +1147,10 @@ final class DocumentPersister
             throw new InvalidArgumentException(
                 sprintf('Mapping type "%s" does not exist', $typeName)
             );
+        }
+
+        if ($value instanceof BackedEnum && isset($mapping['enumType'])) {
+            $value = $value->value;
         }
 
         if (in_array($typeName, ['collection', 'hash'])) {
