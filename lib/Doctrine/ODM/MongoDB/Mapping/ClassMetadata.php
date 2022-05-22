@@ -2115,6 +2115,8 @@ use const PHP_VERSION_ID;
 
     /**
      * @param string $assocName
+     *
+     * @psalm-return class-string|null
      */
     public function getAssociationTargetClass($assocName): ?string
     {
@@ -2127,6 +2129,8 @@ use const PHP_VERSION_ID;
 
     /**
      * Retrieve the collectionClass associated with an association
+     *
+     * @psalm-return class-string
      */
     public function getAssociationCollectionClass(string $assocName): string
     {
