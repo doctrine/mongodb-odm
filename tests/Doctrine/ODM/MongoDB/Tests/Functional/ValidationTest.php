@@ -36,7 +36,7 @@ class ValidationTest extends BaseTest
     },
     "$or": [
         { "phone": { "$type": "string" } },
-        { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } } },
+        { "email": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } },
         { "status": { "$in": [ "Unknown", "Incomplete" ] } }
     ]
 }
