@@ -220,3 +220,14 @@ parameters:
             message: "#.+mapField\\(\\) expects.+enumType\\: 'Documents81#"
             count: 2
             path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
+
+        # it loads an empty class ReflectionEnum of ReflectionEnumPolyfill.php file from laminas/laminas-code, see https://github.com/phpstan/phpstan/issues/7290
+        -
+            message: "#^Call to an undefined method ReflectionEnum\\:\\:isBacked\\(\\)\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+
+        -
+            message: "#^Call to an undefined method ReflectionEnum\\:\\:getBackingType\\(\\)\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
