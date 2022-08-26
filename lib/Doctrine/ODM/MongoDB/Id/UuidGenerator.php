@@ -125,7 +125,7 @@ final class UuidGenerator extends AbstractIdGenerator
         // Calculate hash value
         $hash = sha1($nstr . $salt);
 
-        return sprintf(
+        return hexdec(sprintf(
             '%08s%04s%04x%04x%12s',
             // 32 bits for "time_low"
             substr($hash, 0, 8),
@@ -140,6 +140,6 @@ final class UuidGenerator extends AbstractIdGenerator
             (hexdec(substr($hash, 16, 4)) & 0x3fff) | 0x8000,
             // 48 bits for "node"
             substr($hash, 20, 12)
-        );
+        ));
     }
 }
