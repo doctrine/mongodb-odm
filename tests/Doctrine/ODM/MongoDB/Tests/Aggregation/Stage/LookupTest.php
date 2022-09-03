@@ -47,6 +47,95 @@ class LookupTest extends BaseTest
         $this->assertSame('alcaeus', $result[0]['user'][0]['username']);
     }
 
+    public function testLookupStageWithPipeline(): void
+    {
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder
+            ->lookup('user')
+            ->excludeLocalAndForeignField()
+            ->alias('user')
+            ->let(['name' => '$username'])
+            ->pipeline([
+                [
+                    '$match' => ['username' => 'alcaeus'],
+                ],
+                [
+                    '$project' => [
+                        '_id' => 0,
+                        'username' => 1,
+                    ],
+                ],
+            ]);
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'as' => 'user',
+                    'let' => ['name' => '$username'],
+                    'pipeline' => [
+                        [
+                            '$match' => ['username' => 'alcaeus'],
+                        ],
+                        [
+                            '$project' => [
+                                '_id' => 0,
+                                'username' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
+    public function testLookupStageWithPipelineAndLocalForeignFields(): void
+    {
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder
+            ->lookup('user')
+            ->alias('user')
+            ->let(['name' => '$username'])
+            ->pipeline([
+                [
+                    '$match' => ['username' => 'alcaeus'],
+                ],
+                [
+                    '$project' => [
+                        '_id' => 0,
+                        'username' => 1,
+                    ],
+                ],
+            ]);
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'as' => 'user',
+                    'localField' => 'userId',
+                    'foreignField' => '_id',
+                    'let' => ['name' => '$username'],
+                    'pipeline' => [
+                        [
+                            '$match' => ['username' => 'alcaeus'],
+                        ],
+                        [
+                            '$project' => [
+                                '_id' => 0,
+                                'username' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
     public function testLookupStageWithFieldNameTranslation(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
