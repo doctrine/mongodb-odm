@@ -38,6 +38,12 @@ class Lookup extends Stage
     /** @var string */
     private $as;
 
+    /** @var array */
+    private $let;
+
+    /** @var array */
+    private $pipeline;
+
     public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
     {
         parent::__construct($builder);
@@ -98,14 +104,25 @@ class Lookup extends Stage
 
     public function getExpression(): array
     {
-        return [
+        $expression = [
             '$lookup' => [
                 'from' => $this->from,
-                'localField' => $this->localField,
-                'foreignField' => $this->foreignField,
                 'as' => $this->as,
             ],
         ];
+
+        if (! empty($this->pipeline)) {
+            $expression['$lookup']['pipeline'] = $this->pipeline;
+
+            if (! empty($this->let)) {
+                $expression['$lookup']['let'] = $this->let;
+            }
+        } else {
+            $expression['$lookup']['localField']   = $this->localField;
+            $expression['$lookup']['foreignField'] = $this->foreignField;
+        }
+
+        return $expression;
     }
 
     /**
@@ -134,6 +151,20 @@ class Lookup extends Stage
     public function foreignField(string $foreignField): self
     {
         $this->foreignField = $this->prepareFieldName($foreignField, $this->targetClass);
+
+        return $this;
+    }
+
+    public function let(array $let): self
+    {
+        $this->let = $let;
+
+        return $this;
+    }
+
+    public function pipeline(array $pipeline): self
+    {
+        $this->pipeline = $pipeline;
 
         return $this;
     }
