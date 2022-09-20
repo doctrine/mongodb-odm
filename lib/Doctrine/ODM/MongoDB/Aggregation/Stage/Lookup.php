@@ -111,15 +111,20 @@ class Lookup extends Stage
             ],
         ];
 
+        if (! empty($this->localField)) {
+            $expression['$lookup']['localField'] = $this->localField;
+        }
+
+        if (! empty($this->foreignField)) {
+            $expression['$lookup']['foreignField'] = $this->foreignField;
+        }
+
+        if (! empty($this->let)) {
+            $expression['$lookup']['let'] = $this->let;
+        }
+
         if (! empty($this->pipeline)) {
             $expression['$lookup']['pipeline'] = $this->pipeline;
-
-            if (! empty($this->let)) {
-                $expression['$lookup']['let'] = $this->let;
-            }
-        } else {
-            $expression['$lookup']['localField']   = $this->localField;
-            $expression['$lookup']['foreignField'] = $this->foreignField;
         }
 
         return $expression;

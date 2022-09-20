@@ -71,6 +71,8 @@ class LookupTest extends BaseTest
                 '$lookup' => [
                     'from' => 'users',
                     'as' => 'user',
+                    'localField' => 'userId',
+                    'foreignField' => '_id',
                     'let' => ['name' => '$username'],
                     'pipeline' => [
                         [
