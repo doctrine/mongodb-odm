@@ -77,7 +77,7 @@ class ClassMetadataTest extends BaseTest
         $cm->setLockField('lock');
         $cm->setVersioned(true);
         $cm->setVersionField('version');
-        $validatorJson = '{ "$and": [ { "email": { "$regex": { "$regularExpression" : { "pattern": "@mongodb\\\\.com$", "options": "" } } } } ] }';
+        $validatorJson = '{ "$and": [ { "email": { "$regularExpression" : { "pattern": "@mongodb\\\\.com$", "options": "" } } } ] }';
         $cm->setValidator(toPHP(fromJSON($validatorJson)));
         $cm->setValidationAction(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN);
         $cm->setValidationLevel(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF);

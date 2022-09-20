@@ -367,6 +367,7 @@ final class UnitOfWork implements PropertyChangedListener
             $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this, $this->hydratorFactory, $class);
         }
 
+        /** @psalm-var Persisters\DocumentPersister<T> */
         return $this->persisters[$documentName];
     }
 

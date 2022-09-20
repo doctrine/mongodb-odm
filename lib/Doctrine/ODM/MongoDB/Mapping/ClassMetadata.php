@@ -2247,7 +2247,7 @@ use const PHP_VERSION_ID;
                     break;
                 default:
                     if (! empty($this->generatorOptions['type'])) {
-                        $mapping['type'] = $this->generatorOptions['type'];
+                        $mapping['type'] = (string) $this->generatorOptions['type'];
                     } elseif (empty($mapping['type'])) {
                         $mapping['type'] = $this->generatorType === self::GENERATOR_TYPE_INCREMENT ? Type::INT : Type::CUSTOMID;
                     }

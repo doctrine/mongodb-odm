@@ -88,11 +88,11 @@ final class StaticProxyFactory implements ProxyFactory
      * @param DocumentPersister<TDocument> $documentPersister
      *
      * @psalm-return Closure(
-     *   TDocument&GhostObjectInterface<TDocument>,
-     *   string,
-     *   array<string, mixed>,
+     *   TDocument&GhostObjectInterface<TDocument>=,
+     *   string=,
+     *   array<string, mixed>=,
      *   ?Closure=,
-     *   array<string, mixed>
+     *   array<string, mixed>=
      * ) : bool
      *
      * @template TDocument of object
@@ -103,10 +103,8 @@ final class StaticProxyFactory implements ProxyFactory
     ): Closure {
         return function (
             GhostObjectInterface $ghostObject,
-            string $method,
-            // we don't care
-            array $parameters,
-            // we don't care
+            string $method, // we don't care
+            array $parameters, // we don't care
             &$initializer,
             array $properties // we currently do not use this
         ) use (
