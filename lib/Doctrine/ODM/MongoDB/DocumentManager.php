@@ -621,13 +621,15 @@ class DocumentManager implements ObjectManager
         /** @psalm-var ClassMetadata<T> $class */
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         assert($class instanceof ClassMetadata);
+        /** @psalm-var T|false $document */
         $document = $this->unitOfWork->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
-        if ($document) {
+        if ($document !== false) {
             return $document;
         }
 
+        /** @psalm-var T&GhostObjectInterface<T> $document */
         $document = $this->proxyFactory->getProxy($class, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, []);
 
@@ -689,6 +691,7 @@ class DocumentManager implements ObjectManager
     {
         $repository = $this->getRepository($className);
         if ($repository instanceof DocumentRepository) {
+            /** @psalm-var DocumentRepository<T> $repository */
             return $repository->find($id, $lockMode, $lockVersion);
         }
 

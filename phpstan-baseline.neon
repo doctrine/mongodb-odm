@@ -145,8 +145,8 @@ parameters:
 
         # When iterating over SimpleXMLElement, we cannot know the key values
         -
-            message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\<int\\|string, non\\-empty\\-array\\<int, string\\>\\|bool\\|string\\> given\\.$#"
-            count: 1
+            message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array#"
+            count: 2
             path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
         # This is handled by a try-catch block
@@ -162,6 +162,17 @@ parameters:
             message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+        # complains about types for arguments we do not use/care
+        -
+            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Proxy\\\\Factory\\\\StaticProxyFactory\\:\\:createInitializer\\(\\) should return Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<TDocument of object\\>&TDocument of object\\=, string\\=, array\\<string, mixed\\>\\=, Closure\\|null\\=, array\\<string, mixed\\>\\=\\)\\: bool but returns Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface, string, array, mixed, array\\)\\: true\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/StaticProxyFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$initializer of method ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<object\\>\\:\\:setProxyInitializer\\(\\) expects \\(Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<object\\>\\=, string\\=, array\\<string, mixed\\>\\=, Closure\\|null\\=, array\\<string, mixed\\>\\=\\)\\: bool\\)\\|null, Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface, string, array, mixed, array\\)\\: true given\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Hydrator/HydratorFactory.php
 
         # compatibility layer for doctrine/persistence ^2.4 || ^3.0
         -
@@ -220,3 +231,14 @@ parameters:
             message: "#.+mapField\\(\\) expects.+enumType\\: 'Documents81#"
             count: 2
             path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
+
+        # it loads an empty class ReflectionEnum of ReflectionEnumPolyfill.php file from laminas/laminas-code, see https://github.com/phpstan/phpstan/issues/7290
+        -
+            message: "#^Call to an undefined method ReflectionEnum\\:\\:isBacked\\(\\)\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+
+        -
+            message: "#^Call to an undefined method ReflectionEnum\\:\\:getBackingType\\(\\)\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
