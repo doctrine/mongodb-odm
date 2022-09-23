@@ -12,6 +12,8 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 
+use function version_compare;
+
 /**
  * Fluent interface for building aggregation pipelines.
  */
@@ -111,11 +113,11 @@ class Lookup extends Stage
             ],
         ];
 
-        if (! empty($this->localField)) {
-            $expression['$lookup']['localField'] = $this->localField;
-        }
+        $serverVersion                    = $this->dm->getServerVersion($this->class->getName());
+        $isSupportsPipelineWithLocalField = version_compare($serverVersion, '5.0') >= 0;
 
-        if (! empty($this->foreignField)) {
+        if (empty($this->pipeline) || $isSupportsPipelineWithLocalField) {
+            $expression['$lookup']['localField']   = $this->localField;
             $expression['$lookup']['foreignField'] = $this->foreignField;
         }
 
