@@ -12,6 +12,8 @@ use Documents\Sharded\ShardedOne;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 
+use function version_compare;
+
 class LookupTest extends BaseTest
 {
     public function setUp(): void
@@ -86,6 +88,11 @@ class LookupTest extends BaseTest
                 ],
             ],
         ];
+
+        if (version_compare($this->dm->getServerVersion(SimpleReferenceUser::class), '5.0') >= 0) {
+            $expectedPipeline[0]['$lookup']['localField']   = 'userId';
+            $expectedPipeline[0]['$lookup']['foreignField'] = '_id';
+        }
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
 
