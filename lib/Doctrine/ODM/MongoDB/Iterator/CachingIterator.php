@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Iterator;
 
+use Countable;
 use Generator;
 use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 
+use function count;
 use function current;
 use function key;
 use function next;
@@ -26,7 +28,7 @@ use function reset;
  * @template TValue
  * @template-implements Iterator<TValue>
  */
-final class CachingIterator implements Iterator
+final class CachingIterator implements Countable, Iterator
 {
     /** @var array<mixed, TValue> */
     private $items = [];
@@ -53,6 +55,16 @@ final class CachingIterator implements Iterator
     {
         $this->iterator = $this->wrapTraversable($iterator);
         $this->storeCurrentItem();
+    }
+
+    /**
+     * @see https://php.net/countable.count
+     */
+    public function count(): int
+    {
+        $this->exhaustIterator();
+
+        return count($this->items);
     }
 
     public function __destruct()
