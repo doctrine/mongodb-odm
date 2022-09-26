@@ -912,7 +912,7 @@ class DocumentManager implements ObjectManager
      * Returns the MongoDB server version.
      *
      * @param string $className The name of the Document.
-     * @psalm-param class-string<T> $className
+     * @psalm-param class-string $className
      *
      * @throws Exception
      */
