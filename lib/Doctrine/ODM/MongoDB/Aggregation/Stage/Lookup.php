@@ -12,8 +12,6 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 
-use function version_compare;
-
 /**
  * Fluent interface for building aggregation pipelines.
  */
@@ -46,6 +44,9 @@ class Lookup extends Stage
     /** @var array */
     private $pipeline;
 
+    /** @var bool */
+    private $excludeLocalAndForeignField = false;
+
     public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
     {
         parent::__construct($builder);
@@ -73,7 +74,7 @@ class Lookup extends Stage
     /**
      * Specifies the collection or field name in the same database to perform the join with.
      *
-     * The from collection cannot be sharded.
+     * Starting in MongoDB 5.1, the from collection can be sharded.
      */
     public function from(string $from): self
     {
@@ -113,10 +114,7 @@ class Lookup extends Stage
             ],
         ];
 
-        $serverVersion                    = $this->dm->getServerVersion($this->class->getName());
-        $isSupportsPipelineWithLocalField = version_compare($serverVersion, '5.0') >= 0;
-
-        if (empty($this->pipeline) || $isSupportsPipelineWithLocalField) {
+        if (! $this->excludeLocalAndForeignField) {
             $expression['$lookup']['localField']   = $this->localField;
             $expression['$lookup']['foreignField'] = $this->foreignField;
         }
@@ -162,6 +160,12 @@ class Lookup extends Stage
         return $this;
     }
 
+    /**
+     * Optional. Specifies variables to use in the pipeline stages.
+     *
+     * Use the variable expressions to access the fields from
+     * the joined collection's documents that are input to the pipeline.
+     */
     public function let(array $let): self
     {
         $this->let = $let;
@@ -169,9 +173,29 @@ class Lookup extends Stage
         return $this;
     }
 
+    /**
+     * Specifies the pipeline to run on the joined collection.
+     *
+     * The pipeline determines the resulting documents from the joined collection.
+     * To return all documents, specify an empty pipeline [].
+     *
+     * The pipeline cannot directly access the joined document fields.
+     * Instead, define variables for the joined document fields using the let option
+     * and then reference the variables in the pipeline stages.
+     */
     public function pipeline(array $pipeline): self
     {
         $this->pipeline = $pipeline;
+
+        return $this;
+    }
+
+    /**
+     * Excludes localField and foreignField from an expression.
+     */
+    public function excludeLocalAndForeignField(): self
+    {
+        $this->excludeLocalAndForeignField = true;
 
         return $this;
     }

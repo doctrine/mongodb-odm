@@ -12,8 +12,6 @@ use Documents\Sharded\ShardedOne;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 
-use function version_compare;
-
 class LookupTest extends BaseTest
 {
     public function setUp(): void
@@ -54,6 +52,7 @@ class LookupTest extends BaseTest
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
             ->lookup('user')
+            ->excludeLocalAndForeignField()
             ->alias('user')
             ->let(['name' => '$username'])
             ->pipeline([
@@ -89,18 +88,52 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        if (version_compare($this->dm->getServerVersion(SimpleReferenceUser::class), '5.0') >= 0) {
-            $expectedPipeline[0]['$lookup']['localField']   = 'userId';
-            $expectedPipeline[0]['$lookup']['foreignField'] = '_id';
-        }
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
+    public function testLookupStageWithPipelineAndLocalForeignFields(): void
+    {
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder
+            ->lookup('user')
+            ->alias('user')
+            ->let(['name' => '$username'])
+            ->pipeline([
+                [
+                    '$match' => ['username' => 'alcaeus'],
+                ],
+                [
+                    '$project' => [
+                        '_id' => 0,
+                        'username' => 1,
+                    ],
+                ],
+            ]);
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'as' => 'user',
+                    'localField' => 'userId',
+                    'foreignField' => '_id',
+                    'let' => ['name' => '$username'],
+                    'pipeline' => [
+                        [
+                            '$match' => ['username' => 'alcaeus'],
+                        ],
+                        [
+                            '$project' => [
+                                '_id' => 0,
+                                'username' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
 
         $this->assertEquals($expectedPipeline, $builder->getPipeline());
-
-        $result = $builder->execute()->toArray();
-
-        $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['user']);
-        $this->assertSame('alcaeus', $result[0]['user'][0]['username']);
     }
 
     public function testLookupStageWithFieldNameTranslation(): void

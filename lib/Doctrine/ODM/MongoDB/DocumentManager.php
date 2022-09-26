@@ -25,8 +25,6 @@ use Jean85\PrettyVersions;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
-use MongoDB\Driver\Command;
-use MongoDB\Driver\Exception\Exception;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -35,7 +33,6 @@ use Throwable;
 
 use function array_search;
 use function assert;
-use function current;
 use function get_class;
 use function gettype;
 use function is_object;
@@ -159,9 +156,6 @@ class DocumentManager implements ObjectManager
 
     /** @var ClassNameResolver */
     private $classNameResolver;
-
-    /** @var string|null */
-    private $serverVersion;
 
     /** @var string|null */
     private static $version;
@@ -906,32 +900,6 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->filterCollection;
-    }
-
-    /**
-     * Returns the MongoDB server version.
-     *
-     * @param string $className The name of the Document.
-     * @psalm-param class-string $className
-     *
-     * @throws Exception
-     */
-    public function getServerVersion(string $className): string
-    {
-        if ($this->serverVersion === null) {
-            $cursor = $this->getClient()->getManager()->executeCommand(
-                $this->getDocumentDatabase($className)->getDatabaseName(),
-                new Command(['serverStatus' => 1]),
-                new ReadPreference(ReadPreference::RP_PRIMARY)
-            );
-
-            $cursor->setTypeMap(['root' => 'array', 'document' => 'array']);
-            $document = current($cursor->toArray());
-
-            $this->serverVersion = $document['version'];
-        }
-
-        return $this->serverVersion;
     }
 
     private static function getVersion(): string
