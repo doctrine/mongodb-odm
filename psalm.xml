@@ -40,5 +40,11 @@
                 <referencedClass name="ReturnTypeWillChange" />
             </errorLevel>
         </UndefinedAttributeClass>
+        <InvalidReturnType>
+            <errorLevel type="suppress">
+                <!-- Remove it when dropping support for doctrine/collections v1 -->
+                <file name="lib/Doctrine/ODM/MongoDB/PersistentCollection/PersistentCollectionTrait.php"/>
+            </errorLevel>
+        </InvalidReturnType>
     </issueHandlers>
 </psalm>
