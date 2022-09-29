@@ -359,6 +359,9 @@ trait PersistentCollectionTrait
         return $this->coll->containsKey($key);
     }
 
+    /**
+     * @template TMaybeContained
+     */
     public function contains($element)
     {
         $this->initialize();
@@ -373,6 +376,11 @@ trait PersistentCollectionTrait
         return $this->coll->exists($p);
     }
 
+    /**
+     * @psalm-return (TMaybeContained is T ? TKey|false : false)
+     *
+     * @template TMaybeContained
+     */
     public function indexOf($element)
     {
         $this->initialize();
