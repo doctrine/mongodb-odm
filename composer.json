@@ -22,7 +22,7 @@
         { "name": "Andreas Braun", "email": "alcaeus@alcaeus.org" }
     ],
     "require": {
-        "php": "^7.2 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "ext-mongodb": "^1.5",
         "doctrine/annotations": "^1.12",
         "doctrine/cache": "^1.11 || ^2.0",
@@ -45,7 +45,7 @@
         "phpbench/phpbench": "^1.0.0",
         "phpstan/phpstan": "^1.4.6",
         "phpstan/phpstan-phpunit": "^1.0",
-        "phpunit/phpunit": "^8.5 || ^9",
+        "phpunit/phpunit": "^9",
         "squizlabs/php_codesniffer": "^3.5",
         "symfony/cache": "^4.4 || ^5.0 || ^6.0",
         "vimeo/psalm": "^4.20.0"
