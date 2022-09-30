@@ -200,9 +200,6 @@ abstract class AbstractMappingDriverTest extends BaseTest
         return $class;
     }
 
-    /**
-     * @requires PHP >= 7.4
-     */
     public function testFieldTypeFromReflection(): void
     {
         $class = $this->dm->getClassMetadata(UserTyped::class);

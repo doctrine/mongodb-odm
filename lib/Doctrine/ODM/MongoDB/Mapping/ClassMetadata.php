@@ -2597,8 +2597,7 @@ use const PHP_VERSION_ID;
 
     private function isTypedProperty(string $name): bool
     {
-        return PHP_VERSION_ID >= 70400
-            && $this->reflClass->hasProperty($name)
+        return $this->reflClass->hasProperty($name)
             && $this->reflClass->getProperty($name)->hasType();
     }
 
