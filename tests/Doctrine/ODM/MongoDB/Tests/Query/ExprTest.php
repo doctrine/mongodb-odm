@@ -704,9 +704,7 @@ class ExprTest extends BaseTest
      */
     private function getMockPoint(array $json)
     {
-        $point = $this->getMockBuilder(Point::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $point = $this->createMock(Point::class);
 
         $point->expects($this->once())
             ->method('jsonSerialize')
@@ -720,9 +718,7 @@ class ExprTest extends BaseTest
      */
     private function getMockPolygon(array $json)
     {
-        $point = $this->getMockBuilder(Polygon::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $point = $this->createMock(Polygon::class);
 
         $point->expects($this->once())
             ->method('jsonSerialize')

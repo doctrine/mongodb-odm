@@ -157,9 +157,7 @@ final class FilterCollection
 
         return $this->cm->merge(
             ...array_map(
-                static function ($filter) use ($class) {
-                    return $filter->addFilterCriteria($class);
-                },
+                static fn ($filter) => $filter->addFilterCriteria($class),
                 array_values($this->enabledFilters)
             )
         );

@@ -738,9 +738,7 @@ class XmlDriver extends FileDriver
      */
     private function formatErrors(array $xmlErrors): string
     {
-        return implode("\n", array_map(static function (LibXMLError $error): string {
-            return sprintf('Line %d:%d: %s', $error->line, $error->column, $error->message);
-        }, $xmlErrors));
+        return implode("\n", array_map(static fn (LibXMLError $error): string => sprintf('Line %d:%d: %s', $error->line, $error->column, $error->message), $xmlErrors));
     }
 
     /**

@@ -17,9 +17,7 @@ class GH1275Test extends BaseTest
 {
     public function testResortAtomicCollectionsFlipItems(): void
     {
-        $getNameCallback = static function (Item $item) {
-            return $item->name;
-        };
+        $getNameCallback = static fn (Item $item) => $item->name;
 
         $container = new Container();
         $this->dm->persist($container);
@@ -58,9 +56,7 @@ class GH1275Test extends BaseTest
 
     public function testResortAtomicCollections(): void
     {
-        $getNameCallback = static function (Item $item) {
-            return $item->name;
-        };
+        $getNameCallback = static fn (Item $item) => $item->name;
 
         $container = new Container();
         $this->dm->persist($container);
@@ -154,9 +150,7 @@ class GH1275Test extends BaseTest
      */
     public function testResortEmbedManyCollection(string $strategy): void
     {
-        $getNameCallback = static function (Element $element) {
-            return $element->name;
-        };
+        $getNameCallback = static fn (Element $element) => $element->name;
 
         $container = new Container();
         $container->$strategy->add(new Element('one'));

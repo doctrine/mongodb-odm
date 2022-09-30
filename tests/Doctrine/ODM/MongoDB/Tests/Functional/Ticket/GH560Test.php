@@ -98,14 +98,13 @@ class GH560Test extends BaseTest
 class GH560EventSubscriber implements EventSubscriber
 {
     /** @var array<array{string, class-string}> */
-    public $called;
+    public $called = [];
 
     /** @var string[] */
     public $events;
 
     public function __construct(array $events)
     {
-        $this->called = [];
         $this->events = $events;
     }
 

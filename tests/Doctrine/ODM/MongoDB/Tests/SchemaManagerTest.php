@@ -104,9 +104,7 @@ class SchemaManagerTest extends BaseTest
             $this->documentDatabases[$db] = $this->getMockDatabase();
         }
 
-        $client->method('selectDatabase')->willReturnCallback(function (string $db) {
-            return $this->documentDatabases[$db];
-        });
+        $client->method('selectDatabase')->willReturnCallback(fn (string $db) => $this->documentDatabases[$db]);
 
         $this->schemaManager = $this->dm->getSchemaManager();
     }
@@ -168,9 +166,7 @@ class SchemaManagerTest extends BaseTest
     public function testEnsureIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
         $indexedCollections = array_map(
-            function (string $fqcn) {
-                return $this->dm->getClassMetadata($fqcn)->getCollection();
-            },
+            fn (string $fqcn) => $this->dm->getClassMetadata($fqcn)->getCollection(),
             $this->indexedClasses
         );
         foreach ($this->documentCollections as $collectionName => $collection) {
@@ -348,9 +344,7 @@ class SchemaManagerTest extends BaseTest
     public function testDeleteIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $views = array_map(
-            function (string $fqcn) {
-                return $this->dm->getClassMetadata($fqcn)->getCollection();
-            },
+            fn (string $fqcn) => $this->dm->getClassMetadata($fqcn)->getCollection(),
             $this->views
         );
 
@@ -388,6 +382,9 @@ class SchemaManagerTest extends BaseTest
         $this->schemaManager->deleteDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testUpdateValidators(): void
     {
         $dbCommands = [];
@@ -1120,7 +1117,7 @@ EOT;
      */
     private function getDatabaseName(ClassMetadata $cm): string
     {
-        return $cm->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB() ?: 'doctrine';
+        return ($cm->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB()) ?: 'doctrine';
     }
 
     /** @return Bucket&MockObject */
@@ -1137,9 +1134,7 @@ EOT;
     private function getMockCollection(?string $name = null)
     {
         $collection = $this->createMock(Collection::class);
-        $collection->method('getCollectionName')->willReturnCallback(static function () use ($name) {
-            return $name;
-        });
+        $collection->method('getCollectionName')->willReturnCallback(static fn () => $name);
 
         return $collection;
     }
@@ -1148,12 +1143,8 @@ EOT;
     private function getMockDatabase()
     {
         $db = $this->createMock(Database::class);
-        $db->method('selectCollection')->willReturnCallback(function (string $collection) {
-            return $this->documentCollections[$collection];
-        });
-        $db->method('selectGridFSBucket')->willReturnCallback(function (array $options) {
-            return $this->documentBuckets[$options['bucketName']];
-        });
+        $db->method('selectCollection')->willReturnCallback(fn (string $collection) => $this->documentCollections[$collection]);
+        $db->method('selectGridFSBucket')->willReturnCallback(fn (array $options) => $this->documentBuckets[$options['bucketName']]);
         $db->method('listCollections')->willReturnCallback(function () {
             $collections = [];
             foreach ($this->documentCollections as $collectionName => $collection) {

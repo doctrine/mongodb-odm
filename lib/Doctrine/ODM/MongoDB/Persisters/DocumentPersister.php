@@ -1176,7 +1176,7 @@ final class DocumentPersister
      */
     private function prepareQueryElement(string $fieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false): array
     {
-        $class = $class ?? $this->class;
+        $class ??= $this->class;
 
         // @todo Consider inlining calls to ClassMetadata methods
 
@@ -1662,9 +1662,7 @@ final class DocumentPersister
         }
 
         return array_map(
-            static function ($key) use ($reference, $fieldName) {
-                return [$fieldName . '.' . $key, $reference[$key]];
-            },
+            static fn ($key) => [$fieldName . '.' . $key, $reference[$key]],
             array_keys($keys)
         );
     }

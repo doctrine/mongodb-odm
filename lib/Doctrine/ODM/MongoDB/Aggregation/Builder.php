@@ -277,9 +277,7 @@ class Builder
         }
 
         $pipeline = array_map(
-            static function (Stage $stage) {
-                return $stage->getExpression();
-            },
+            static fn (Stage $stage) => $stage->getExpression(),
             $this->stages
         );
 

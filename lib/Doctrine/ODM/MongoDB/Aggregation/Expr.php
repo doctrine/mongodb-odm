@@ -318,9 +318,7 @@ class Expr
     public static function convertExpression($expression)
     {
         if (is_array($expression)) {
-            return array_map(static function ($expression) {
-                return static::convertExpression($expression);
-            }, $expression);
+            return array_map(static fn ($expression) => static::convertExpression($expression), $expression);
         }
 
         if ($expression instanceof self) {

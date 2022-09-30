@@ -61,19 +61,14 @@ final class StaticProxyFactory implements ProxyFactory
 
     public function generateProxyClasses(array $classes): int
     {
-        $concreteClasses = array_filter($classes, static function (ClassMetadata $metadata): bool {
-            return ! ($metadata->isMappedSuperclass || $metadata->isQueryResultDocument || $metadata->getReflectionClass()->isAbstract());
-        });
+        $concreteClasses = array_filter($classes, static fn (ClassMetadata $metadata): bool => ! ($metadata->isMappedSuperclass || $metadata->isQueryResultDocument || $metadata->getReflectionClass()->isAbstract()));
 
         foreach ($concreteClasses as $metadata) {
             $this
                 ->proxyFactory
                 ->createProxy(
                     $metadata->getName(),
-                    static function (): bool {
-                        // empty closure, serves its purpose, for now
-                        return true;
-                    },
+                    static fn (): bool => true, // empty closure, serves its purpose, for now
                     [
                         'skippedProperties' => $this->skippedFieldsFqns($metadata),
                     ]

@@ -37,7 +37,7 @@ class User
     protected $phonenumbers;
 
     /** @var Collection<int, Group>|Group[] */
-    protected $groups;
+    protected $groups = [];
 
     /** @var Account|null */
     protected $account;
@@ -51,7 +51,6 @@ class User
     public function __construct()
     {
         $this->phonenumbers = new ArrayCollection();
-        $this->groups       = [];
         $this->createdAt    = new DateTime();
     }
 

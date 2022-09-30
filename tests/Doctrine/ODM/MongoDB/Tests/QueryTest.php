@@ -583,9 +583,7 @@ class QueryTest extends BaseTest
      */
     private function getMockCollection()
     {
-        return $this->getMockBuilder(Collection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Collection::class);
     }
 }
 

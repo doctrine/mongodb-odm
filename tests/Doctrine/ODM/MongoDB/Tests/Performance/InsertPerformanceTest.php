@@ -20,6 +20,8 @@ class InsertPerformanceTest extends BaseTest
 {
     /**
      * [jwage: 10000 objects in ~4 seconds]
+     *
+     * @doesNotPerformAssertions
      */
     public function testInsertPerformance(): void
     {

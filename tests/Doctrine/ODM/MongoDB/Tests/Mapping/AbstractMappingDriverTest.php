@@ -419,9 +419,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         /* Sort indexes by their first fieldname. This is necessary since the
          * index registration order may differ among drivers.
          */
-        $this->assertTrue(usort($indexes, static function (array $a, array $b) {
-            return strcmp(key($a['keys']), key($b['keys']));
-        }));
+        $this->assertTrue(usort($indexes, static fn (array $a, array $b) => strcmp(key($a['keys']), key($b['keys']))));
 
         $this->assertTrue(isset($indexes[0]['keys']['createdAt']));
         $this->assertEquals(1, $indexes[0]['keys']['createdAt']);

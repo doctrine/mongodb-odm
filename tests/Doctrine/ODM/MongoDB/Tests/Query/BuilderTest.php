@@ -863,9 +863,7 @@ class BuilderTest extends BaseTest
      */
     private function getMockExpr()
     {
-        return $this->getMockBuilder(Expr::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Expr::class);
     }
 
     /**
@@ -873,9 +871,7 @@ class BuilderTest extends BaseTest
      */
     private function getMockGeometry()
     {
-        return $this->getMockBuilder(Geometry::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Geometry::class);
     }
 
     /**
@@ -883,9 +879,7 @@ class BuilderTest extends BaseTest
      */
     private function getMockPoint(array $json)
     {
-        $point = $this->getMockBuilder(Point::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $point = $this->createMock(Point::class);
 
         $point->expects($this->once())
             ->method('jsonSerialize')

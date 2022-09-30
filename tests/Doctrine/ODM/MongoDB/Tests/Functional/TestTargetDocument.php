@@ -9,6 +9,9 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class TargetDocumentTest extends BaseTest
 {
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testMappedSuperClassAsTargetDocument(): void
     {
         $test            = new TargetDocumentTestDocument();
