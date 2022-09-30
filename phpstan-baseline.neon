@@ -63,6 +63,12 @@ parameters:
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
 
+        # Support for doctrine/collections v1
+        -
+            message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:add\(\) with return type void returns true but should not return anything\.$#'
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
         # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
         -
             message: "#^Access to offset '.+' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
