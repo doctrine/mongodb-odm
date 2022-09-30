@@ -143,9 +143,6 @@ class ClassMetadataTest extends BaseTest
         $this->assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
     }
 
-    /**
-     * @requires PHP >= 7.4
-     */
     public function testFieldTypeFromReflection(): void
     {
         $cm = new ClassMetadata(UserTyped::class);

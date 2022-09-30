@@ -11,9 +11,6 @@ use MongoDB\BSON\ObjectId;
 
 use function assert;
 
-/**
- * @requires PHP 7.4
- */
 class TypedPropertiesTest extends BaseTest
 {
     public function testPersistNew(): void
