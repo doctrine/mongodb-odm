@@ -38,6 +38,15 @@ class Lookup extends Stage
     /** @var string */
     private $as;
 
+    /** @var array */
+    private $let;
+
+    /** @var array */
+    private $pipeline;
+
+    /** @var bool */
+    private $excludeLocalAndForeignField = false;
+
     public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
     {
         parent::__construct($builder);
@@ -65,7 +74,7 @@ class Lookup extends Stage
     /**
      * Specifies the collection or field name in the same database to perform the join with.
      *
-     * The from collection cannot be sharded.
+     * Starting in MongoDB 5.1, the from collection can be sharded.
      */
     public function from(string $from): self
     {
@@ -98,14 +107,27 @@ class Lookup extends Stage
 
     public function getExpression(): array
     {
-        return [
+        $expression = [
             '$lookup' => [
                 'from' => $this->from,
-                'localField' => $this->localField,
-                'foreignField' => $this->foreignField,
                 'as' => $this->as,
             ],
         ];
+
+        if (! $this->excludeLocalAndForeignField) {
+            $expression['$lookup']['localField']   = $this->localField;
+            $expression['$lookup']['foreignField'] = $this->foreignField;
+        }
+
+        if (! empty($this->let)) {
+            $expression['$lookup']['let'] = $this->let;
+        }
+
+        if (! empty($this->pipeline)) {
+            $expression['$lookup']['pipeline'] = $this->pipeline;
+        }
+
+        return $expression;
     }
 
     /**
@@ -134,6 +156,46 @@ class Lookup extends Stage
     public function foreignField(string $foreignField): self
     {
         $this->foreignField = $this->prepareFieldName($foreignField, $this->targetClass);
+
+        return $this;
+    }
+
+    /**
+     * Optional. Specifies variables to use in the pipeline stages.
+     *
+     * Use the variable expressions to access the fields from
+     * the joined collection's documents that are input to the pipeline.
+     */
+    public function let(array $let): self
+    {
+        $this->let = $let;
+
+        return $this;
+    }
+
+    /**
+     * Specifies the pipeline to run on the joined collection.
+     *
+     * The pipeline determines the resulting documents from the joined collection.
+     * To return all documents, specify an empty pipeline [].
+     *
+     * The pipeline cannot directly access the joined document fields.
+     * Instead, define variables for the joined document fields using the let option
+     * and then reference the variables in the pipeline stages.
+     */
+    public function pipeline(array $pipeline): self
+    {
+        $this->pipeline = $pipeline;
+
+        return $this;
+    }
+
+    /**
+     * Excludes localField and foreignField from an expression.
+     */
+    public function excludeLocalAndForeignField(): self
+    {
+        $this->excludeLocalAndForeignField = true;
 
         return $this;
     }
