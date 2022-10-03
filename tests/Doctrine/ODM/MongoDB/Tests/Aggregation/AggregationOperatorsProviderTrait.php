@@ -151,13 +151,11 @@ trait AggregationOperatorsProviderTrait
             'cond' => [
                 'expected' => ['$cond' => ['if' => ['$gte' => ['$field', 5]], 'then' => '$field', 'else' => '$otherField']],
                 'operator' => 'cond',
-                'args' => static function (Expr $expr) {
-                    return [
-                        $expr->gte('$field', 5),
-                        '$field',
-                        '$otherField',
-                    ];
-                },
+                'args' => static fn (Expr $expr) => [
+                    $expr->gte('$field', 5),
+                    '$field',
+                    '$otherField',
+                ],
             ],
             'dateToString' => [
                 'expected' => ['$dateToString' => ['format' => '%Y-%m-%d', 'date' => '$dateField']],
@@ -320,17 +318,15 @@ trait AggregationOperatorsProviderTrait
                     ],
                 ],
                 'operator' => 'let',
-                'args' => static function (Expr $expr) {
-                    return [
-                        $expr->expr()
-                            ->field('total')
-                            ->add('$price', '$tax')
-                            ->field('discounted')
-                            ->cond('$applyDiscount', 0.9, 1),
-                        $expr->expr()
-                            ->multiply('$$total', '$$discounted'),
-                    ];
-                },
+                'args' => static fn (Expr $expr) => [
+                    $expr->expr()
+                        ->field('total')
+                        ->add('$price', '$tax')
+                        ->field('discounted')
+                        ->cond('$applyDiscount', 0.9, 1),
+                    $expr->expr()
+                        ->multiply('$$total', '$$discounted'),
+                ],
             ],
             'literal' => [
                 'expected' => ['$literal' => '$field'],
@@ -365,13 +361,11 @@ trait AggregationOperatorsProviderTrait
             'map' => [
                 'expected' => ['$map' => ['input' => '$quizzes', 'as' => 'grade', 'in' => ['$add' => ['$$grade', 2]]]],
                 'operator' => 'map',
-                'args' => static function (Expr $expr) {
-                    return [
-                        '$quizzes',
-                        'grade',
-                        $expr->add('$$grade', 2),
-                    ];
-                },
+                'args' => static fn (Expr $expr) => [
+                    '$quizzes',
+                    'grade',
+                    $expr->add('$$grade', 2),
+                ],
             ],
             'meta' => [
                 'expected' => ['$meta' => '$field'],
@@ -440,15 +434,13 @@ trait AggregationOperatorsProviderTrait
                     ],
                 ],
                 'operator' => 'reduce',
-                'args' => static function (Expr $expr) {
-                    return [
-                        '$array',
-                        ['sum' => 0, 'product' => 1],
-                        $expr
-                            ->add('$$value.sum', '$$this')
-                            ->multiply('$$value.product', '$$this'),
-                    ];
-                },
+                'args' => static fn (Expr $expr) => [
+                    '$array',
+                    ['sum' => 0, 'product' => 1],
+                    $expr
+                        ->add('$$value.sum', '$$this')
+                        ->multiply('$$value.product', '$$this'),
+                ],
             ],
             'reverseArray' => [
                 'expected' => ['$reverseArray' => '$array'],

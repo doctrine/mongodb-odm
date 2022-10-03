@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Traversable;
 
-use function is_array;
+use function is_iterable;
 
 class MODM92Test extends BaseTest
 {
@@ -78,7 +78,7 @@ class MODM92TestDocument
     {
         $this->embeddedDocuments->clear();
 
-        if (! (is_array($embeddedDocuments) || $embeddedDocuments instanceof Traversable)) {
+        if (! is_iterable($embeddedDocuments)) {
             return;
         }
 

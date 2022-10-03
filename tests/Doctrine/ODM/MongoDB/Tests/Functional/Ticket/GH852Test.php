@@ -104,14 +104,10 @@ class GH852Test extends BaseTest
 
         return [
             [
-                static function ($id) {
-                    return ['foo' => $id];
-                },
+                static fn ($id) => ['foo' => $id],
             ],
             [
-                static function ($id) use ($binDataType) {
-                    return new Binary($id, $binDataType);
-                },
+                static fn ($id) => new Binary($id, $binDataType),
             ],
         ];
     }

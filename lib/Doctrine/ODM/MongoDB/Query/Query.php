@@ -30,6 +30,7 @@ use function array_combine;
 use function array_filter;
 use function array_flip;
 use function array_intersect_key;
+use function array_key_first;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -37,8 +38,6 @@ use function array_values;
 use function is_array;
 use function is_callable;
 use function is_string;
-use function key;
-use function reset;
 
 /**
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
@@ -385,9 +384,7 @@ final class Query implements IteratorAggregate
     {
         return array_filter(
             array_intersect_key($this->query, array_flip($keys)),
-            static function ($value) {
-                return $value !== null;
-            }
+            static fn ($value) => $value !== null
         );
     }
 
@@ -433,9 +430,7 @@ final class Query implements IteratorAggregate
 
         $options = array_combine(
             array_map(
-                static function ($key) use ($rename) {
-                    return $rename[$key] ?? $key;
-                },
+                static fn ($key) => $rename[$key] ?? $key,
                 array_keys($options)
             ),
             array_values($options)
@@ -552,8 +547,7 @@ final class Query implements IteratorAggregate
 
     private function isFirstKeyUpdateOperator(): bool
     {
-        reset($this->query['newObj']);
-        $firstKey = key($this->query['newObj']);
+        $firstKey = array_key_first($this->query['newObj']);
 
         return is_string($firstKey) && $firstKey[0] === '$';
     }

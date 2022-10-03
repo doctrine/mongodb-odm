@@ -19,6 +19,8 @@ class UnitOfWorkPerformanceTest extends BaseTest
 {
     /**
      * [jwage: compute changesets for 10000 objects in ~10 seconds]
+     *
+     * @doesNotPerformAssertions
      */
     public function testComputeChanges(): void
     {

@@ -154,7 +154,7 @@ class $class extends \\$for implements \\Doctrine\\ODM\\MongoDB\\PersistentColle
 
 CODE;
         $rc        = new ReflectionClass($for);
-        $rt        = new ReflectionClass('Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait');
+        $rt        = new ReflectionClass(PersistentCollectionTrait::class);
         foreach ($rc->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             if (
                 $rt->hasMethod($method->name) ||
@@ -302,18 +302,14 @@ CODE;
     ): string {
         if ($type instanceof ReflectionUnionType) {
             return implode('|', array_map(
-                function (ReflectionType $unionedType) use ($method, $parameter) {
-                    return $this->formatType($unionedType, $method, $parameter);
-                },
+                fn (ReflectionType $unionedType) => $this->formatType($unionedType, $method, $parameter),
                 $type->getTypes()
             ));
         }
 
         if ($type instanceof ReflectionIntersectionType) {
             return implode('&', array_map(
-                function (ReflectionType $intersectedType) use ($method, $parameter) {
-                    return $this->formatType($intersectedType, $method, $parameter);
-                },
+                fn (ReflectionType $intersectedType) => $this->formatType($intersectedType, $method, $parameter),
                 $type->getTypes()
             ));
         }

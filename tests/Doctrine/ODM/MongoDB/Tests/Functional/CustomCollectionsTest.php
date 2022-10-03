@@ -288,9 +288,7 @@ class MyEmbedsCollection extends ArrayCollection
      */
     public function getByName(string $name): MyEmbedsCollection
     {
-        return $this->filter(static function ($item) use ($name) {
-            return $item->name === $name;
-        });
+        return $this->filter(static fn ($item) => $item->name === $name);
     }
 
     /**
@@ -298,9 +296,7 @@ class MyEmbedsCollection extends ArrayCollection
      */
     public function getEnabled(): MyEmbedsCollection
     {
-        return $this->filter(static function ($item) {
-            return $item->enabled;
-        });
+        return $this->filter(static fn ($item) => $item->enabled);
     }
 
     public function move(int $i, int $j): void
@@ -327,8 +323,6 @@ class MyDocumentsCollection extends ArrayCollection
      */
     public function havingEmbeds(): MyDocumentsCollection
     {
-        return $this->filter(static function ($item) {
-            return $item->coll->count();
-        });
+        return $this->filter(static fn ($item) => $item->coll->count());
     }
 }

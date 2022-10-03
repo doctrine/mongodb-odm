@@ -8,6 +8,7 @@ use BackedEnum;
 use BadMethodCallException;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\IdGenerator;
@@ -1851,9 +1852,7 @@ use const PHP_VERSION_ID;
     {
         return array_filter(
             $this->associationMappings,
-            static function ($assoc) {
-                return ! empty($assoc['embedded']);
-            }
+            static fn ($assoc) => ! empty($assoc['embedded'])
         );
     }
 
@@ -2206,7 +2205,7 @@ use const PHP_VERSION_ID;
 
         if (! empty($mapping['collectionClass'])) {
             $rColl = new ReflectionClass($mapping['collectionClass']);
-            if (! $rColl->implementsInterface('Doctrine\\Common\\Collections\\Collection')) {
+            if (! $rColl->implementsInterface(Collection::class)) {
                 throw MappingException::collectionClassDoesNotImplementCommonInterface($this->name, $mapping['fieldName'], $mapping['collectionClass']);
             }
         }

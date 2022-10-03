@@ -498,12 +498,8 @@ final class PersistenceBuilder
         $mapping  = $coll->getMapping();
         $pb       = $this;
         $callback = isset($mapping['embedded'])
-            ? static function ($v) use ($pb, $mapping, $includeNestedCollections) {
-                return $pb->prepareEmbeddedDocumentValue($mapping, $v, $includeNestedCollections);
-            }
-            : static function ($v) use ($pb, $mapping) {
-                return $pb->prepareReferencedDocumentValue($mapping, $v);
-            };
+            ? static fn ($v) => $pb->prepareEmbeddedDocumentValue($mapping, $v, $includeNestedCollections)
+            : static fn ($v) => $pb->prepareReferencedDocumentValue($mapping, $v);
 
         $setData = $coll->map($callback)->toArray();
         if (CollectionHelper::isList($mapping['strategy'])) {

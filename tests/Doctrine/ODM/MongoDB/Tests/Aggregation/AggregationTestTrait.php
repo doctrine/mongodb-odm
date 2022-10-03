@@ -22,9 +22,7 @@ trait AggregationTestTrait
      */
     protected function getMockAggregationExpr()
     {
-        return $this->getMockBuilder(AggregationExpr::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(AggregationExpr::class);
     }
 
     /**
@@ -32,8 +30,6 @@ trait AggregationTestTrait
      */
     protected function getMockQueryExpr()
     {
-        return $this->getMockBuilder(QueryExpr::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(QueryExpr::class);
     }
 }

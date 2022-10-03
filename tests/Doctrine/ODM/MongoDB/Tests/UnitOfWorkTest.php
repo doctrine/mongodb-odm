@@ -537,10 +537,8 @@ class UnitOfWorkTest extends BaseTest
         try {
             $this->dm->flush();
         } catch (Throwable $exception) {
-            $getCommitsInProgress = Closure::bind(function (UnitOfWork $unitOfWork) {
-                /** @psalm-suppress InaccessibleProperty */
-                return $unitOfWork->commitsInProgress;
-            }, $this->dm->getUnitOfWork(), UnitOfWork::class);
+            $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => /** @psalm-suppress InaccessibleProperty */
+$unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
 
             $this->assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
 

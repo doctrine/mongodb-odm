@@ -123,8 +123,6 @@ class MatchStageTest extends BaseTest
      */
     private function getMockGeometry()
     {
-        return $this->getMockBuilder(Geometry::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Geometry::class);
     }
 }

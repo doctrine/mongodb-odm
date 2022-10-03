@@ -576,9 +576,7 @@ final class SchemaManager
         if (isset($mongoIndexKeys['_fts']) && $mongoIndexKeys['_fts'] === 'text') {
             unset($mongoIndexKeys['_fts'], $mongoIndexKeys['_ftsx']);
 
-            $documentIndexKeys = array_filter($documentIndexKeys, static function ($type) {
-                return $type !== 'text';
-            });
+            $documentIndexKeys = array_filter($documentIndexKeys, static fn ($type) => $type !== 'text');
         }
 
         /* Avoid a strict equality check of the arrays here. The numeric type returned

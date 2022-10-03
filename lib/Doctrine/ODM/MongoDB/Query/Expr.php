@@ -1254,9 +1254,7 @@ class Expr
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 
-        return $this->operator('$sort', array_map(function ($order) {
-            return $this->normalizeSortOrder($order);
-        }, $fields));
+        return $this->operator('$sort', array_map(fn ($order) => $this->normalizeSortOrder($order), $fields));
     }
 
     /**

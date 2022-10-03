@@ -25,9 +25,7 @@ class Facet extends Stage
     public function getExpression(): array
     {
         return [
-            '$facet' => array_map(static function (Builder $builder) {
-                return $builder->getPipeline(false);
-            }, $this->pipelines),
+            '$facet' => array_map(static fn (Builder $builder) => $builder->getPipeline(false), $this->pipelines),
         ];
     }
 

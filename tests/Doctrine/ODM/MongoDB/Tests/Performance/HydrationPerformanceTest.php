@@ -20,6 +20,8 @@ class HydrationPerformanceTest extends BaseTest
 {
     /**
      * [jwage: 10000 objects in ~6 seconds]
+     *
+     * @doesNotPerformAssertions
      */
     public function testHydrationPerformance(): void
     {

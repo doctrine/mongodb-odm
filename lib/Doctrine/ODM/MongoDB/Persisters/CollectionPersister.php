@@ -396,14 +396,10 @@ final class CollectionPersister
     {
         $mapping = $coll->getMapping();
         if (isset($mapping['embedded'])) {
-            return function ($v) use ($mapping) {
-                return $this->pb->prepareEmbeddedDocumentValue($mapping, $v);
-            };
+            return fn ($v) => $this->pb->prepareEmbeddedDocumentValue($mapping, $v);
         }
 
-        return function ($v) use ($mapping) {
-            return $this->pb->prepareReferencedDocumentValue($mapping, $v);
-        };
+        return fn ($v) => $this->pb->prepareReferencedDocumentValue($mapping, $v);
     }
 
     /**

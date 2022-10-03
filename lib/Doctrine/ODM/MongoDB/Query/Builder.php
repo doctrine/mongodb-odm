@@ -704,9 +704,7 @@ class Builder
                 $this->hydrate && $this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION
                 && ! isset($query['select'][$this->class->discriminatorField])
             ) {
-                $includeMode = 0 < count(array_filter($query['select'], static function ($mode) {
-                    return $mode === 1;
-                }));
+                $includeMode = 0 < count(array_filter($query['select'], static fn ($mode) => $mode === 1));
                 if ($includeMode) {
                     $query['select'][$this->class->discriminatorField] = 1;
                 }

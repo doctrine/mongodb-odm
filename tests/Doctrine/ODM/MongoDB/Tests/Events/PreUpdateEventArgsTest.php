@@ -32,6 +32,9 @@ class PreUpdateEventArgsTest extends BaseTest
         $this->assertEquals('Changed', $a->getBody());
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testCollectionsAreInChangeSet(): void
     {
         $listener = new CollectionsAreInChangeSetListener($this);
@@ -74,14 +77,13 @@ class ChangeSetIsUpdatedListener
 class CollectionsAreInChangeSetListener
 {
     /** @var list<class-string> */
-    private $allowed;
+    private $allowed = [Book::class, Chapter::class];
 
     /** @var PreUpdateEventArgsTest */
     private $phpunit;
 
     public function __construct(PreUpdateEventArgsTest $phpunit)
     {
-        $this->allowed = [Book::class, Chapter::class];
         $this->phpunit = $phpunit;
     }
 
