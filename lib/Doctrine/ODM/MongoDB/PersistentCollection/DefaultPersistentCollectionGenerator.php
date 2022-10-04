@@ -45,17 +45,13 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
 {
     /**
      * The namespace that contains all persistent collection classes.
-     *
-     * @var string
      */
-    private $collectionNamespace;
+    private string $collectionNamespace;
 
     /**
      * The directory that contains all persistent collection classes.
-     *
-     * @var string
      */
-    private $collectionDir;
+    private string $collectionDir;
 
     public function __construct(string $collectionDir, string $collectionNs)
     {

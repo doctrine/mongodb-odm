@@ -12,8 +12,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Sample extends Stage
 {
-    /** @var int */
-    private $size;
+    private int $size;
 
     public function __construct(Builder $builder, int $size)
     {

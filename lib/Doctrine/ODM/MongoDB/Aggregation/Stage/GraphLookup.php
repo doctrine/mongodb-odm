@@ -25,38 +25,28 @@ use function substr;
  */
 class GraphLookup extends Stage
 {
-    /** @var string|null */
-    private $from;
+    private ?string $from;
 
     /** @var string|Expr|mixed[]|null */
     private $startWith;
 
-    /** @var string|null */
-    private $connectFromField;
+    private ?string $connectFromField = null;
 
-    /** @var string|null */
-    private $connectToField;
+    private ?string $connectToField = null;
 
-    /** @var string|null */
-    private $as;
+    private ?string $as = null;
 
-    /** @var int|null */
-    private $maxDepth;
+    private ?int $maxDepth = null;
 
-    /** @var string|null */
-    private $depthField;
+    private ?string $depthField = null;
 
-    /** @var Stage\GraphLookup\MatchStage */
-    private $restrictSearchWithMatch;
+    private Stage\GraphLookup\MatchStage $restrictSearchWithMatch;
 
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ClassMetadata $class;
 
-    /** @var ClassMetadata|null */
-    private $targetClass;
+    private ?ClassMetadata $targetClass = null;
 
     /**
      * @param string $from Target collection for the $graphLookup operation to

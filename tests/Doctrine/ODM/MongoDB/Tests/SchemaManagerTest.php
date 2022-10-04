@@ -382,9 +382,6 @@ class SchemaManagerTest extends BaseTest
         $this->schemaManager->deleteDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testUpdateValidators(): void
     {
         $dbCommands = [];

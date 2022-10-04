@@ -100,10 +100,9 @@ final class UnitOfWork implements PropertyChangedListener
      * Since all classes in a hierarchy must share the same identifier set,
      * we always take the root class name of the hierarchy.
      *
-     * @var array
      * @psalm-var array<class-string, array<string, object>>
      */
-    private $identityMap = [];
+    private array $identityMap = [];
 
     /**
      * Map of all identifiers of managed documents.
@@ -111,7 +110,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @var array<string, mixed>
      */
-    private $documentIdentifiers = [];
+    private array $documentIdentifiers = [];
 
     /**
      * Map of the original document data of managed documents.
@@ -124,25 +123,23 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @var array<string, array<string, mixed>>
      */
-    private $originalDocumentData = [];
+    private array $originalDocumentData = [];
 
     /**
      * Map of document changes. Keys are object ids (spl_object_hash).
      * Filled at the beginning of a commit of the UnitOfWork and cleaned at the end.
      *
-     * @var array
      * @psalm-var array<string, array<string, ChangeSet>>
      */
-    private $documentChangeSets = [];
+    private array $documentChangeSets = [];
 
     /**
      * The (cached) states of any known documents.
      * Keys are object ids (spl_object_hash).
      *
-     * @var array
      * @psalm-var array<string, self::STATE_*>
      */
-    private $documentStates = [];
+    private array $documentStates = [];
 
     /**
      * Map of documents that are scheduled for dirty checking at commit time.
@@ -151,62 +148,58 @@ final class UnitOfWork implements PropertyChangedListener
      * object hash. This is only used for documents with a change tracking
      * policy of DEFERRED_EXPLICIT.
      *
-     * @var array
      * @psalm-var array<class-string, array<string, object>>
      */
-    private $scheduledForSynchronization = [];
+    private array $scheduledForSynchronization = [];
 
     /**
      * A list of all pending document insertions.
      *
      * @var array<string, object>
      */
-    private $documentInsertions = [];
+    private array $documentInsertions = [];
 
     /**
      * A list of all pending document updates.
      *
      * @var array<string, object>
      */
-    private $documentUpdates = [];
+    private array $documentUpdates = [];
 
     /**
      * A list of all pending document upserts.
      *
      * @var array<string, object>
      */
-    private $documentUpserts = [];
+    private array $documentUpserts = [];
 
     /**
      * A list of all pending document deletions.
      *
      * @var array<string, object>
      */
-    private $documentDeletions = [];
+    private array $documentDeletions = [];
 
     /**
      * All pending collection deletions.
      *
-     * @var array
      * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
      */
-    private $collectionDeletions = [];
+    private array $collectionDeletions = [];
 
     /**
      * All pending collection updates.
      *
-     * @var array
      * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
      */
-    private $collectionUpdates = [];
+    private array $collectionUpdates = [];
 
     /**
      * A list of documents related to collections scheduled for update or deletion
      *
-     * @var array
      * @psalm-var array<string, array<string, PersistentCollectionInterface<array-key, object>>>
      */
-    private $hasScheduledCollections = [];
+    private array $hasScheduledCollections = [];
 
     /**
      * List of collections visited during changeset calculation on a commit-phase of a UnitOfWork.
@@ -215,71 +208,57 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @psalm-var array<string, array<PersistentCollectionInterface<array-key, object>>>
      */
-    private $visitedCollections = [];
+    private array $visitedCollections = [];
 
     /**
      * The DocumentManager that "owns" this UnitOfWork instance.
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The EventManager used for dispatching events.
-     *
-     * @var EventManager
      */
-    private $evm;
+    private EventManager $evm;
 
     /**
      * Additional documents that are scheduled for removal.
      *
      * @var array<string, object>
      */
-    private $orphanRemovals = [];
+    private array $orphanRemovals = [];
 
     /**
      * The HydratorFactory used for hydrating array Mongo documents to Doctrine object documents.
-     *
-     * @var HydratorFactory
      */
-    private $hydratorFactory;
+    private HydratorFactory $hydratorFactory;
 
     /**
      * The document persister instances used to persist document instances.
      *
-     * @var array
      * @psalm-var array<class-string, Persisters\DocumentPersister>
      */
-    private $persisters = [];
+    private array $persisters = [];
 
     /**
      * The collection persister instance used to persist changes to collections.
-     *
-     * @var Persisters\CollectionPersister|null
      */
-    private $collectionPersister;
+    private ?CollectionPersister $collectionPersister = null;
 
     /**
      * The persistence builder instance used in DocumentPersisters.
-     *
-     * @var PersistenceBuilder|null
      */
-    private $persistenceBuilder;
+    private ?PersistenceBuilder $persistenceBuilder = null;
 
     /**
      * Array of parent associations between embedded documents.
      *
-     * @var array
      * @psalm-var array<string, array{0: AssociationFieldMapping, 1: object|null, 2: string}>
      */
-    private $parentAssociations = [];
+    private array $parentAssociations = [];
 
-    /** @var LifecycleEventManager */
-    private $lifecycleEventManager;
+    private LifecycleEventManager $lifecycleEventManager;
 
-    /** @var ReflectionService */
-    private $reflectionService;
+    private ReflectionService $reflectionService;
 
     /**
      * Array of embedded documents known to UnitOfWork. We need to hold them to prevent spl_object_hash
@@ -288,10 +267,9 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @var array<string, object>
      */
-    private $embeddedDocumentsRegistry = [];
+    private array $embeddedDocumentsRegistry = [];
 
-    /** @var int */
-    private $commitsInProgress = 0;
+    private int $commitsInProgress = 0;
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.

@@ -14,32 +14,24 @@ use function is_array;
  */
 class GeoNear extends MatchStage
 {
-    /** @var string */
-    private $distanceField;
+    private ?string $distanceField = null;
 
-    /** @var float */
-    private $distanceMultiplier;
+    private ?float $distanceMultiplier = null;
 
-    /** @var string */
-    private $includeLocs;
+    private ?string $includeLocs = null;
 
-    /** @var float */
-    private $maxDistance;
+    private ?float $maxDistance = null;
 
-    /** @var float */
-    private $minDistance;
+    private ?float $minDistance = null;
 
     /** @var array<string, mixed>|array{int|float, int|float} */
     private $near;
 
-    /** @var int */
-    private $num;
+    private ?int $num = null;
 
-    /** @var bool */
-    private $spherical = false;
+    private bool $spherical = false;
 
-    /** @var bool */
-    private $uniqueDocs;
+    private ?bool $uniqueDocs = null;
 
     /**
      * @param float|array<string, mixed>|Point $x

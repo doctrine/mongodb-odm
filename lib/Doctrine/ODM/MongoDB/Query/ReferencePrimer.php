@@ -54,17 +54,13 @@ final class ReferencePrimer
 
     /**
      * The DocumentManager instance.
-     *
-     * @var DocumentManager $dm
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The UnitOfWork instance.
-     *
-     * @var UnitOfWork
      */
-    private $uow;
+    private UnitOfWork $uow;
 
     public function __construct(DocumentManager $dm, UnitOfWork $uow)
     {

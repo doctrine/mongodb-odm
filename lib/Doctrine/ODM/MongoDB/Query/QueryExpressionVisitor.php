@@ -24,7 +24,7 @@ final class QueryExpressionVisitor extends ExpressionVisitor
      * @todo Implement support for Comparison::CONTAINS
      * @var array<string, string>
      */
-    private static $operatorMethods = [
+    private static array $operatorMethods = [
         Comparison::EQ => 'equals',
         Comparison::GT => 'gt',
         Comparison::GTE => 'gte',
@@ -38,16 +38,14 @@ final class QueryExpressionVisitor extends ExpressionVisitor
     /**
      * Map Criteria API composite types to query builder methods
      *
-     * @var array
      * @psalm-var array<CompositeExpression::TYPE_*, string>
      */
-    private static $compositeMethods = [
+    private static array $compositeMethods = [
         CompositeExpression::TYPE_AND => 'addAnd',
         CompositeExpression::TYPE_OR => 'addOr',
     ];
 
-    /** @var Builder */
-    protected $builder;
+    protected Builder $builder;
 
     public function __construct(Builder $builder)
     {

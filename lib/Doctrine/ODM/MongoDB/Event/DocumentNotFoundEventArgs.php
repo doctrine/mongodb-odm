@@ -14,8 +14,7 @@ final class DocumentNotFoundEventArgs extends LifecycleEventArgs
     /** @var mixed */
     private $identifier;
 
-    /** @var bool */
-    private $disableException = false;
+    private bool $disableException = false;
 
     /**
      * @param mixed $identifier

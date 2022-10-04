@@ -11,11 +11,9 @@ use function assert;
  */
 class BucketAuto extends AbstractBucket
 {
-    /** @var int */
-    private $buckets;
+    private ?int $buckets = null;
 
-    /** @var string|null */
-    private $granularity;
+    private ?string $granularity = null;
 
     /**
      * A positive 32-bit integer that specifies the number of buckets into which

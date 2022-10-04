@@ -47,16 +47,16 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected $cacheSalt = '$MONGODBODMCLASSMETADATA';
 
     /** @var DocumentManager The DocumentManager instance */
-    private $dm;
+    private DocumentManager $dm;
 
     /** @var Configuration The Configuration instance */
-    private $config;
+    private Configuration $config;
 
     /** @var MappingDriver The used metadata driver. */
-    private $driver;
+    private MappingDriver $driver;
 
     /** @var EventManager The event manager instance */
-    private $evm;
+    private EventManager $evm;
 
     public function setDocumentManager(DocumentManager $dm): void
     {

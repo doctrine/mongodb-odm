@@ -468,10 +468,8 @@ use const PHP_VERSION_ID;
 
     /**
      * Determines how strictly MongoDB applies the validation rules to existing documents during an update.
-     *
-     * @var string
      */
-    private $validationLevel = self::SCHEMA_VALIDATION_LEVEL_STRICT;
+    private string $validationLevel = self::SCHEMA_VALIDATION_LEVEL_STRICT;
 
     /**
      * READ-ONLY: The name of the document class.
@@ -657,10 +655,8 @@ use const PHP_VERSION_ID;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a database view.
-     *
-     * @var bool
      */
-    private $isView = false;
+    private bool $isView = false;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a gridFS file
@@ -728,11 +724,9 @@ use const PHP_VERSION_ID;
      */
     public $isReadOnly;
 
-    /** @var InstantiatorInterface */
-    private $instantiator;
+    private InstantiatorInterface $instantiator;
 
-    /** @var ReflectionService */
-    private $reflectionService;
+    private ReflectionService $reflectionService;
 
     /**
      * @var string|null

@@ -12,7 +12,7 @@ use function assert;
 class Bucket extends AbstractBucket
 {
     /** @var mixed[] */
-    private $boundaries;
+    private ?array $boundaries = null;
 
     /** @var mixed */
     private $default;

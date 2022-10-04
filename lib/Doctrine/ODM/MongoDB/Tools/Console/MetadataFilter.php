@@ -35,7 +35,7 @@ class MetadataFilter extends FilterIterator implements Countable
     }
 
     /** @var string[] */
-    private $_filter = [];
+    private array $_filter = [];
 
     /**
      * @param string[]|string                                 $filter

@@ -23,14 +23,11 @@ use function get_class;
  */
 final class LifecycleEventManager
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var EventManager */
-    private $evm;
+    private EventManager $evm;
 
-    /** @var UnitOfWork */
-    private $uow;
+    private UnitOfWork $uow;
 
     public function __construct(DocumentManager $dm, UnitOfWork $uow, EventManager $evm)
     {

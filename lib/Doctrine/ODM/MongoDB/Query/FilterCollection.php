@@ -22,31 +22,25 @@ final class FilterCollection
 {
     /**
      * The used Configuration.
-     *
-     * @var Configuration
      */
-    private $config;
+    private Configuration $config;
 
     /**
      * The DocumentManager that "owns" this FilterCollection instance.
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * Instances of enabled filters.
      *
      * @var BsonFilter[]
      */
-    private $enabledFilters = [];
+    private array $enabledFilters = [];
 
     /**
      * The CriteriaMerger instance.
-     *
-     * @var CriteriaMerger
      */
-    private $cm;
+    private CriteriaMerger $cm;
 
     public function __construct(DocumentManager $dm, ?CriteriaMerger $cm = null)
     {

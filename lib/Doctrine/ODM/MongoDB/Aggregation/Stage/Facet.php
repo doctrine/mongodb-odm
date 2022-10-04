@@ -17,10 +17,9 @@ use function array_map;
 class Facet extends Stage
 {
     /** @var Builder[] */
-    private $pipelines = [];
+    private array $pipelines = [];
 
-    /** @var string */
-    private $field;
+    private ?string $field = null;
 
     public function getExpression(): array
     {

@@ -58,107 +58,83 @@ class DocumentManager implements ObjectManager
 
     /**
      * The Doctrine MongoDB connection instance.
-     *
-     * @var Client
      */
-    private $client;
+    private Client $client;
 
     /**
      * The used Configuration.
-     *
-     * @var Configuration
      */
-    private $config;
+    private Configuration $config;
 
     /**
      * The metadata factory, used to retrieve the ODM metadata of document classes.
-     *
-     * @var ClassMetadataFactory
      */
-    private $metadataFactory;
+    private ClassMetadataFactory $metadataFactory;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
-     *
-     * @var UnitOfWork
      */
-    private $unitOfWork;
+    private UnitOfWork $unitOfWork;
 
     /**
      * The event manager that is the central point of the event system.
-     *
-     * @var EventManager
      */
-    private $eventManager;
+    private EventManager $eventManager;
 
     /**
      * The Hydrator factory instance.
-     *
-     * @var HydratorFactory
      */
-    private $hydratorFactory;
+    private HydratorFactory $hydratorFactory;
 
     /**
      * The Proxy factory instance.
-     *
-     * @var ProxyFactory
      */
-    private $proxyFactory;
+    private ProxyFactory $proxyFactory;
 
     /**
      * The repository factory used to create dynamic repositories.
-     *
-     * @var RepositoryFactory
      */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
     /**
      * SchemaManager instance
-     *
-     * @var SchemaManager
      */
-    private $schemaManager;
+    private SchemaManager $schemaManager;
 
     /**
      * Array of cached document database instances that are lazily loaded.
      *
      * @var Database[]
      */
-    private $documentDatabases = [];
+    private array $documentDatabases = [];
 
     /**
      * Array of cached document collection instances that are lazily loaded.
      *
      * @var Collection[]
      */
-    private $documentCollections = [];
+    private array $documentCollections = [];
 
     /**
      * Array of cached document bucket instances that are lazily loaded.
      *
      * @var Bucket[]
      */
-    private $documentBuckets = [];
+    private array $documentBuckets = [];
 
     /**
      * Whether the DocumentManager is closed or not.
-     *
-     * @var bool
      */
-    private $closed = false;
+    private bool $closed = false;
 
     /**
      * Collection of query filters.
-     *
-     * @var FilterCollection
      */
-    private $filterCollection;
+    private ?FilterCollection $filterCollection = null;
 
-    /** @var ClassNameResolver */
-    private $classNameResolver;
+    private ClassNameResolver $classNameResolver;
 
-    /** @var string|null */
-    private static $version;
+    private static ?string $version = null;
 
     /**
      * Creates a new Document that operates on the given Mongo connection

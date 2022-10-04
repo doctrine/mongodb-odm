@@ -44,14 +44,11 @@ use function strpos;
  */
 final class CollectionPersister
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var PersistenceBuilder */
-    private $pb;
+    private PersistenceBuilder $pb;
 
-    /** @var UnitOfWork */
-    private $uow;
+    private UnitOfWork $uow;
 
     public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {

@@ -19,7 +19,7 @@ use function ucfirst;
 class DropCommand extends AbstractCommand
 {
     /** @var string[] */
-    private $dropOrder = [self::INDEX, self::COLLECTION, self::DB];
+    private array $dropOrder = [self::INDEX, self::COLLECTION, self::DB];
 
     /**
      * @return void

@@ -31,16 +31,14 @@ use function reset;
 final class CachingIterator implements Countable, Iterator
 {
     /** @var array<mixed, TValue> */
-    private $items = [];
+    private array $items = [];
 
     /** @var Generator<mixed, TValue>|null */
     private $iterator;
 
-    /** @var bool */
-    private $iteratorAdvanced = false;
+    private bool $iteratorAdvanced = false;
 
-    /** @var bool */
-    private $iteratorExhausted = false;
+    private bool $iteratorExhausted = false;
 
     /**
      * Initialize the iterator and stores the first item in the cache. This

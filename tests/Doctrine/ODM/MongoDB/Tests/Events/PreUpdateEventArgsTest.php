@@ -32,9 +32,6 @@ class PreUpdateEventArgsTest extends BaseTest
         $this->assertEquals('Changed', $a->getBody());
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testCollectionsAreInChangeSet(): void
     {
         $listener = new CollectionsAreInChangeSetListener($this);

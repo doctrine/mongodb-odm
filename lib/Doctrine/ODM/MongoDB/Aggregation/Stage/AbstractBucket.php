@@ -24,11 +24,9 @@ use function substr;
  */
 abstract class AbstractBucket extends Stage
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ClassMetadata $class;
 
     /** @var Bucket\AbstractOutput|null */
     protected $output;

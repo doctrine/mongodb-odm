@@ -13,8 +13,7 @@ use function substr;
 
 class SortByCount extends Stage
 {
-    /** @var string */
-    private $fieldName;
+    private string $fieldName;
 
     /**
      * @param string $fieldName Expression to group by. To specify a field path,

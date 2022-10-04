@@ -54,11 +54,9 @@ final class SchemaManager
         'name',
     ];
 
-    /** @var DocumentManager */
-    protected $dm;
+    protected DocumentManager $dm;
 
-    /** @var ClassMetadataFactory */
-    protected $metadataFactory;
+    protected ClassMetadataFactory $metadataFactory;
 
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {

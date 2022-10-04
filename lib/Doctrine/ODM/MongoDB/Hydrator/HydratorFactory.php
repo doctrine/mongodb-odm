@@ -44,53 +44,40 @@ final class HydratorFactory
 {
     /**
      * The DocumentManager this factory is bound to.
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
-     *
-     * @var UnitOfWork
      */
-    private $unitOfWork;
+    private ?UnitOfWork $unitOfWork = null;
 
     /**
      * The EventManager associated with this Hydrator
-     *
-     * @var EventManager
      */
-    private $evm;
+    private EventManager $evm;
 
     /**
      * Which algorithm to use to automatically (re)generate hydrator classes.
-     *
-     * @var int
      */
-    private $autoGenerate;
+    private int $autoGenerate;
 
     /**
      * The namespace that contains all hydrator classes.
-     *
-     * @var string|null
      */
-    private $hydratorNamespace;
+    private ?string $hydratorNamespace;
 
     /**
      * The directory that contains all hydrator classes.
-     *
-     * @var string
      */
-    private $hydratorDir;
+    private string $hydratorDir;
 
     /**
      * Array of instantiated document hydrators.
      *
-     * @var array
      * @psalm-var array<class-string, HydratorInterface>
      */
-    private $hydrators = [];
+    private array $hydrators = [];
 
     /**
      * @throws HydratorException

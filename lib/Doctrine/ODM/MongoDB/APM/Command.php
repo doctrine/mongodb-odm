@@ -13,8 +13,7 @@ use Throwable;
 
 final class Command
 {
-    /** @var CommandStartedEvent */
-    private $startedEvent;
+    private CommandStartedEvent $startedEvent;
 
     /** @var CommandSucceededEvent|CommandFailedEvent */
     private $finishedEvent;
