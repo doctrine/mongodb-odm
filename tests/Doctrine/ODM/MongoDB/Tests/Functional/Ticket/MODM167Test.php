@@ -13,8 +13,7 @@ use function get_class;
 
 class MODM167Test extends BaseTest
 {
-    /** @var MODM167EventListener */
-    private $listener;
+    private MODM167EventListener $listener;
 
     public function setUp(): void
     {

@@ -15,8 +15,7 @@ use function unserialize;
 
 class BasicInheritanceMappingTest extends BaseTest
 {
-    /** @var ClassMetadataFactory */
-    private $factory;
+    private ClassMetadataFactory $factory;
 
     public function setUp(): void
     {

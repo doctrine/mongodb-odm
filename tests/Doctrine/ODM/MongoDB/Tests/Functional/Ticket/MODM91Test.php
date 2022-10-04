@@ -13,8 +13,7 @@ use function get_class;
 
 class MODM91Test extends BaseTest
 {
-    /** @var MODM91EventListener */
-    private $listener;
+    private MODM91EventListener $listener;
 
     private function getDocumentManager(): ?DocumentManager
     {

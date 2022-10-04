@@ -74,10 +74,9 @@ class ChangeSetIsUpdatedListener
 class CollectionsAreInChangeSetListener
 {
     /** @var list<class-string> */
-    private $allowed = [Book::class, Chapter::class];
+    private array $allowed = [Book::class, Chapter::class];
 
-    /** @var PreUpdateEventArgsTest */
-    private $phpunit;
+    private PreUpdateEventArgsTest $phpunit;
 
     public function __construct(PreUpdateEventArgsTest $phpunit)
     {
@@ -93,13 +92,13 @@ class CollectionsAreInChangeSetListener
     {
         switch (get_class($e->getDocument())) {
             case Book::class:
-                if (in_array(Book::class, $this->allowed)) {
+                if (in_array(Book::class, $this->allowed, true)) {
                     $this->phpunit->assertTrue($e->hasChangedField('chapters'));
                 }
 
                 break;
             case Chapter::class:
-                if (in_array(Chapter::class, $this->allowed)) {
+                if (in_array(Chapter::class, $this->allowed, true)) {
                     $this->phpunit->assertTrue($e->hasChangedField('pages'));
                 }
 

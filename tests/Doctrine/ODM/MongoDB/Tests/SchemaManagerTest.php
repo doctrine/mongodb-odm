@@ -49,7 +49,7 @@ use function MongoDB\BSON\toPHP;
 class SchemaManagerTest extends BaseTest
 {
     /** @psalm-var list<class-string> */
-    private $indexedClasses = [
+    private array $indexedClasses = [
         CmsAddress::class,
         CmsArticle::class,
         CmsComment::class,
@@ -61,21 +61,20 @@ class SchemaManagerTest extends BaseTest
     ];
 
     /** @psalm-var list<class-string> */
-    private $views = [
+    private array $views = [
         UserName::class,
     ];
 
     /** @var array<Collection&MockObject> */
-    private $documentCollections = [];
+    private array $documentCollections = [];
 
     /** @var array<Bucket&MockObject> */
-    private $documentBuckets = [];
+    private array $documentBuckets = [];
 
     /** @var array<Database&MockObject> */
-    private $documentDatabases = [];
+    private array $documentDatabases = [];
 
-    /** @var SchemaManager */
-    private $schemaManager;
+    private SchemaManager $schemaManager;
 
     public function setUp(): void
     {

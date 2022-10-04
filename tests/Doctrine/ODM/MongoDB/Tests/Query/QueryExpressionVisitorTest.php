@@ -18,11 +18,9 @@ use RuntimeException;
 
 class QueryExpressionVisitorTest extends BaseTest
 {
-    /** @var Builder */
-    private $queryBuilder;
+    private Builder $queryBuilder;
 
-    /** @var QueryExpressionVisitor */
-    private $visitor;
+    private QueryExpressionVisitor $visitor;
 
     public function setUp(): void
     {

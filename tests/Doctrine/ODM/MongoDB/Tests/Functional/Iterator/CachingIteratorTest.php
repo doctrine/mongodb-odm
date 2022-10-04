@@ -143,8 +143,7 @@ class CachingIteratorTest extends TestCase
     public function testWithWrongIterator(): void
     {
         $nestedIterator = new class implements Iterator {
-            /** @var int */
-            private $i = 0;
+            private int $i = 0;
 
             public function current(): int
             {

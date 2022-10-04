@@ -19,8 +19,7 @@ use function get_class;
 
 class CommitImprovementTest extends BaseTest
 {
-    /** @var CommandLogger */
-    private $logger;
+    private CommandLogger $logger;
 
     public function setUp(): void
     {
@@ -148,11 +147,9 @@ class CommitImprovementTest extends BaseTest
 
 class PhonenumberMachine implements EventSubscriber
 {
-    /** @var string[] */
-    private $numbers = ['12345678', '87654321'];
+    private array $numbers = ['12345678', '87654321'];
 
-    /** @var int */
-    private $numberId = 0;
+    private int $numberId = 0;
 
     public function getSubscribedEvents(): array
     {

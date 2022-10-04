@@ -27,8 +27,7 @@ use function strtotime;
 
 class QueryTest extends BaseTest
 {
-    /** @var User */
-    private $user;
+    private User $user;
 
     public function setUp(): void
     {

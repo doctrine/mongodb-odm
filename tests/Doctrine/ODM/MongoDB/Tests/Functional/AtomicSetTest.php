@@ -26,8 +26,7 @@ use function get_class;
  */
 class AtomicSetTest extends BaseTest
 {
-    /** @var CommandLogger */
-    private $logger;
+    private CommandLogger $logger;
 
     public function setUp(): void
     {

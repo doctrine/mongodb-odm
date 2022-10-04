@@ -21,8 +21,7 @@ use function unlink;
  */
 abstract class AbstractDriverTest extends TestCase
 {
-    /** @var string */
-    protected $dir;
+    protected string $dir;
 
     public function testFindMappingFile(): void
     {

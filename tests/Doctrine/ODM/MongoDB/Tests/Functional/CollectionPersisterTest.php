@@ -17,8 +17,7 @@ use function get_class;
 
 class CollectionPersisterTest extends BaseTest
 {
-    /** @var CommandLogger */
-    private $logger;
+    private CommandLogger $logger;
 
     public function setUp(): void
     {

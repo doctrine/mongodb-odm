@@ -13,8 +13,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
  */
 class DefaultPersistentCollectionGeneratorTest extends BaseTest
 {
-    /** @var DefaultPersistentCollectionGenerator */
-    private $generator;
+    private DefaultPersistentCollectionGenerator $generator;
 
     public function setUp(): void
     {
