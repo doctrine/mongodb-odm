@@ -19,7 +19,7 @@ class Facet extends Stage
     /** @var Builder[] */
     private array $pipelines = [];
 
-    private ?string $field = null;
+    private string $field;
 
     public function getExpression(): array
     {
@@ -45,7 +45,7 @@ class Facet extends Stage
      */
     public function pipeline($builder): self
     {
-        if (! $this->field) {
+        if (! isset($this->field)) {
             throw new LogicException(__METHOD__ . ' requires you set a current field using field().');
         }
 

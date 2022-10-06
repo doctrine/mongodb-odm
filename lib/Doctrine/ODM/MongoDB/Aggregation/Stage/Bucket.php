@@ -12,7 +12,7 @@ use function assert;
 class Bucket extends AbstractBucket
 {
     /** @var mixed[] */
-    private ?array $boundaries = null;
+    private array $boundaries;
 
     /** @var mixed */
     private $default;
@@ -70,7 +70,7 @@ class Bucket extends AbstractBucket
      */
     protected function getExtraPipelineFields(): array
     {
-        $fields = ['boundaries' => $this->boundaries];
+        $fields = ['boundaries' => $this->boundaries ?? null];
         if ($this->default !== null) {
             $fields['default'] = $this->default;
         }

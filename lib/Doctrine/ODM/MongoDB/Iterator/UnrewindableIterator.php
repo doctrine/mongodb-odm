@@ -24,7 +24,7 @@ use function sprintf;
 final class UnrewindableIterator implements Iterator
 {
     /** @var Generator<mixed, TValue>|null */
-    private $iterator;
+    private ?Generator $iterator;
 
     private bool $iteratorAdvanced = false;
 

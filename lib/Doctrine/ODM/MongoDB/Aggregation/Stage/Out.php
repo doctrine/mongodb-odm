@@ -15,7 +15,7 @@ class Out extends Stage
 {
     private DocumentManager $dm;
 
-    private ?string $collection = null;
+    private string $collection;
 
     public function __construct(Builder $builder, string $collection, DocumentManager $documentManager)
     {

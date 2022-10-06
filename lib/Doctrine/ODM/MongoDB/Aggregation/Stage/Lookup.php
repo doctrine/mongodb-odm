@@ -31,14 +31,11 @@ class Lookup extends Stage
 
     private ?string $as = null;
 
-    /** @var array */
-    private $let;
+    private ?array $let = null;
 
-    /** @var array */
-    private $pipeline;
+    private ?array $pipeline = null;
 
-    /** @var bool */
-    private $excludeLocalAndForeignField = false;
+    private bool $excludeLocalAndForeignField = false;
 
     public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
     {

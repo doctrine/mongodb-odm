@@ -34,7 +34,7 @@ final class CachingIterator implements Countable, Iterator
     private array $items = [];
 
     /** @var Generator<mixed, TValue>|null */
-    private $iterator;
+    private ?Generator $iterator;
 
     private bool $iteratorAdvanced = false;
 
