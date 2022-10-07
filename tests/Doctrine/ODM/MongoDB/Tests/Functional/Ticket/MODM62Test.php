@@ -21,7 +21,7 @@ class MODM62Test extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->find(MODM62Document::class, $test->id);
-        $this->assertEquals(['test', 'test2'], $test->b);
+        self::assertEquals(['test', 'test2'], $test->b);
     }
 }
 

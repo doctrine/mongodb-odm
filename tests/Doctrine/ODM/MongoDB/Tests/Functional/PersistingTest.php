@@ -26,7 +26,7 @@ class PersistingTest extends BaseTest
         $account->setName('w00t');
         $this->dm->flush();
 
-        $this->assertEquals('w00t', $user->getAccount()->getName());
+        self::assertEquals('w00t', $user->getAccount()->getName());
 
         $this->dm->remove($user);
         $this->dm->flush();
@@ -46,15 +46,15 @@ class PersistingTest extends BaseTest
 
         $user = $this->dm->find(User::class, $user->getId());
 
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
         $user->setUsername('w00t');
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->find(User::class, $user->getId());
-        $this->assertNotNull($user);
-        $this->assertEquals('w00t', $user->getUsername());
-        $this->assertEquals('cool', $user->getInheritedProperty());
+        self::assertNotNull($user);
+        self::assertEquals('w00t', $user->getUsername());
+        self::assertEquals('cool', $user->getInheritedProperty());
     }
 
     public function testDetach(): void
@@ -71,7 +71,7 @@ class PersistingTest extends BaseTest
         $this->dm->clear();
 
         $user2 = $this->dm->find(User::class, $user->getId());
-        $this->assertNotNull($user2);
-        $this->assertEquals('jon', $user2->getUsername());
+        self::assertNotNull($user2);
+        self::assertEquals('jon', $user2->getUsername());
     }
 }

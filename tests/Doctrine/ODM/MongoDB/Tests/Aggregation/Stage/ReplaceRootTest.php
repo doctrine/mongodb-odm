@@ -23,7 +23,7 @@ class ReplaceRootTest extends BaseTest
                 ->field('isToday')
                 ->eq('$createdAt', $dateTime);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 '$replaceRoot' => [
                     'newRoot' => (object) [
@@ -48,7 +48,7 @@ class ReplaceRootTest extends BaseTest
                     ->eq('$createdAt', $dateTime)
             );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 '$replaceRoot' => [
                     'newRoot' => (object) [
@@ -69,7 +69,7 @@ class ReplaceRootTest extends BaseTest
                 ->field('someField')
                 ->concat('$authorIp', 'foo');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 '$replaceRoot' => [
                     'newRoot' => (object) [
@@ -88,7 +88,7 @@ class ReplaceRootTest extends BaseTest
         $stage = $builder
             ->replaceRoot('$authorIp');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 '$replaceRoot' => ['newRoot' => '$ip'],
             ],

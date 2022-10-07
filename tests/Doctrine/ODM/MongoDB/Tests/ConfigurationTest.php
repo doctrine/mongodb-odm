@@ -14,8 +14,8 @@ class ConfigurationTest extends BaseTest
     {
         $c       = new Configuration();
         $factory = $c->getPersistentCollectionFactory();
-        $this->assertInstanceOf(PersistentCollectionFactory::class, $factory);
-        $this->assertSame($factory, $c->getPersistentCollectionFactory());
+        self::assertInstanceOf(PersistentCollectionFactory::class, $factory);
+        self::assertSame($factory, $c->getPersistentCollectionFactory());
     }
 
     public function testDefaultPersistentCollectionGenerator(): void
@@ -24,7 +24,7 @@ class ConfigurationTest extends BaseTest
         $c->setPersistentCollectionDir(__DIR__ . '/../../../../PersistentCollections');
         $c->setPersistentCollectionNamespace('PersistentCollections');
         $generator = $c->getPersistentCollectionGenerator();
-        $this->assertInstanceOf(PersistentCollectionGenerator::class, $generator);
-        $this->assertSame($generator, $c->getPersistentCollectionGenerator());
+        self::assertInstanceOf(PersistentCollectionGenerator::class, $generator);
+        self::assertSame($generator, $c->getPersistentCollectionGenerator());
     }
 }

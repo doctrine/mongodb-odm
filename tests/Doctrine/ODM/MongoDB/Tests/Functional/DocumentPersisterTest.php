@@ -64,14 +64,14 @@ class DocumentPersisterTest extends BaseTest
 
         $updatedData = $this->dm->getDocumentCollection($this->class)->findOne(['_id' => $originalData['_id']]);
 
-        $this->assertEquals($originalData, $updatedData);
+        self::assertEquals($originalData, $updatedData);
     }
 
     public function testExistsReturnsTrueForExistentDocuments(): void
     {
         foreach (['a', 'b', 'c', 'd'] as $name) {
             $document = $this->documentPersister->load(['name' => $name]);
-            $this->assertTrue($this->documentPersister->exists($document));
+            self::assertTrue($this->documentPersister->exists($document));
         }
     }
 
@@ -80,7 +80,7 @@ class DocumentPersisterTest extends BaseTest
         $document     = new DocumentPersisterTestDocument();
         $document->id = new ObjectId();
 
-        $this->assertFalse($this->documentPersister->exists($document));
+        self::assertFalse($this->documentPersister->exists($document));
     }
 
     public function testLoadPreparesCriteriaAndSort(): void
@@ -90,8 +90,8 @@ class DocumentPersisterTest extends BaseTest
 
         $document = $this->documentPersister->load($criteria, null, [], 0, $sort);
 
-        $this->assertInstanceOf($this->class, $document);
-        $this->assertEquals('b', $document->name);
+        self::assertInstanceOf($this->class, $document);
+        self::assertEquals('b', $document->name);
     }
 
     public function testLoadAllPreparesCriteriaAndSort(): void
@@ -102,10 +102,10 @@ class DocumentPersisterTest extends BaseTest
         $cursor    = $this->documentPersister->loadAll($criteria, $sort);
         $documents = $cursor->toArray();
 
-        $this->assertInstanceOf($this->class, $documents[0]);
-        $this->assertEquals('b', $documents[0]->name);
-        $this->assertInstanceOf($this->class, $documents[1]);
-        $this->assertEquals('a', $documents[1]->name);
+        self::assertInstanceOf($this->class, $documents[0]);
+        self::assertEquals('b', $documents[0]->name);
+        self::assertInstanceOf($this->class, $documents[1]);
+        self::assertEquals('a', $documents[1]->name);
     }
 
     public function testLoadAllWithSortLimitAndSkip(): void
@@ -115,9 +115,9 @@ class DocumentPersisterTest extends BaseTest
         $cursor    = $this->documentPersister->loadAll([], $sort, 1, 2);
         $documents = $cursor->toArray();
 
-        $this->assertInstanceOf($this->class, $documents[0]);
-        $this->assertEquals('b', $documents[0]->name);
-        $this->assertCount(1, $documents);
+        self::assertInstanceOf($this->class, $documents[0]);
+        self::assertEquals('b', $documents[0]->name);
+        self::assertCount(1, $documents);
     }
 
     /**
@@ -125,7 +125,7 @@ class DocumentPersisterTest extends BaseTest
      */
     public function testPrepareFieldName(string $fieldName, string $expected): void
     {
-        $this->assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
+        self::assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
     }
 
     public function getTestPrepareFieldNameData(): array
@@ -150,7 +150,7 @@ class DocumentPersisterTest extends BaseTest
             ->updateMany()
             ->field('createdAt')->currentDate();
 
-        $this->assertSame(
+        self::assertSame(
             ['$currentDate' => ['createdAt' => ['$type' => 'date']]],
             $qb->getQuery()->debug('newObj')
         );
@@ -162,7 +162,7 @@ class DocumentPersisterTest extends BaseTest
             ->field('title')->exists(false)
             ->field('createdAt')->exists(true);
 
-        $this->assertSame(
+        self::assertSame(
             [
                 'title' => ['$exists' => false],
                 'createdAt' => ['$exists' => true],
@@ -184,7 +184,7 @@ class DocumentPersisterTest extends BaseTest
         $value    = ['_id' => $hashId];
         $expected = ['_id' => (object) $hashId];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
     /**
@@ -200,27 +200,27 @@ class DocumentPersisterTest extends BaseTest
         $value    = ['_id' => ['$exists' => true]];
         $expected = ['_id' => ['$exists' => true]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$elemMatch' => $hashId]];
         $expected = ['_id' => ['$elemMatch' => $hashId]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$in' => [$hashId]]];
         $expected = ['_id' => ['$in' => [(object) $hashId]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['_id' => ['$not' => ['$elemMatch' => $hashId]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['_id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
     /**
@@ -233,7 +233,7 @@ class DocumentPersisterTest extends BaseTest
 
         Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $documentPersister->prepareQueryOrNewObj($query)
         );
@@ -251,7 +251,7 @@ class DocumentPersisterTest extends BaseTest
 
         ['query' => $query, 'expected' => $expected] = $getTestCase($this->dm);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $documentPersister->prepareQueryOrNewObj($query)
         );
@@ -276,32 +276,32 @@ class DocumentPersisterTest extends BaseTest
         $value    = ['simpleRef' => (string) $id];
         $expected = ['simpleRef' => $id];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$exists' => true]];
         $expected = ['simpleRef' => ['$exists' => true]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$elemMatch' => (string) $id]];
         $expected = ['simpleRef' => ['$elemMatch' => $id]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$in' => [(string) $id]]];
         $expected = ['simpleRef' => ['$in' => [$id]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$not' => ['$elemMatch' => (string) $id]]];
         $expected = ['simpleRef' => ['$not' => ['$elemMatch' => $id]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$not' => ['$in' => [(string) $id]]]];
         $expected = ['simpleRef' => ['$not' => ['$in' => [$id]]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
     public static function queryProviderForCustomTypeId(): Generator
@@ -395,32 +395,32 @@ class DocumentPersisterTest extends BaseTest
         $value    = ['simpleRef' => $hashId];
         $expected = ['simpleRef' => (object) $hashId];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$exists' => true]];
         $expected = ['simpleRef' => ['$exists' => true]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$elemMatch' => $hashId]];
         $expected = ['simpleRef' => ['$elemMatch' => $hashId]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$in' => [$hashId]]];
         $expected = ['simpleRef' => ['$in' => [(object) $hashId]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['simpleRef' => ['$not' => ['$elemMatch' => $hashId]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['simpleRef' => ['$not' => ['$in' => [(object) $hashId]]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
     public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithNormalIdType(): void
@@ -433,32 +433,32 @@ class DocumentPersisterTest extends BaseTest
         $value    = ['complexRef.id' => (string) $id];
         $expected = ['complexRef.$id' => $id];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$exists' => true]];
         $expected = ['complexRef.$id' => ['$exists' => true]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$elemMatch' => (string) $id]];
         $expected = ['complexRef.$id' => ['$elemMatch' => $id]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$in' => [(string) $id]]];
         $expected = ['complexRef.$id' => ['$in' => [$id]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$not' => ['$elemMatch' => (string) $id]]];
         $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => $id]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$not' => ['$in' => [(string) $id]]]];
         $expected = ['complexRef.$id' => ['$not' => ['$in' => [$id]]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
     /**
@@ -474,32 +474,32 @@ class DocumentPersisterTest extends BaseTest
         $value    = ['complexRef.id' => $hashId];
         $expected = ['complexRef.$id' => (object) $hashId];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$exists' => true]];
         $expected = ['complexRef.$id' => ['$exists' => true]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$elemMatch' => $hashId]];
         $expected = ['complexRef.$id' => ['$elemMatch' => $hashId]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$in' => [$hashId]]];
         $expected = ['complexRef.$id' => ['$in' => [(object) $hashId]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => $hashId]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['complexRef.$id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
     /**
@@ -510,7 +510,7 @@ class DocumentPersisterTest extends BaseTest
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $documentPersister->prepareQueryOrNewObj($query)
         );
@@ -549,32 +549,32 @@ class DocumentPersisterTest extends BaseTest
         $value    = ['embeddedRef.id' => (string) $id];
         $expected = ['embeddedRef.id' => $id];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$exists' => true]];
         $expected = ['embeddedRef.id' => ['$exists' => true]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$elemMatch' => (string) $id]];
         $expected = ['embeddedRef.id' => ['$elemMatch' => $id]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$in' => [(string) $id]]];
         $expected = ['embeddedRef.id' => ['$in' => [$id]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$not' => ['$elemMatch' => (string) $id]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $id]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$not' => ['$in' => [(string) $id]]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$in' => [$id]]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
     /**
@@ -590,32 +590,32 @@ class DocumentPersisterTest extends BaseTest
         $value    = ['embeddedRef.id' => $hashId];
         $expected = ['embeddedRef.id' => (object) $hashId];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$exists' => true]];
         $expected = ['embeddedRef.id' => ['$exists' => true]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$elemMatch' => $hashId]];
         $expected = ['embeddedRef.id' => ['$elemMatch' => $hashId]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$in' => [$hashId]]];
         $expected = ['embeddedRef.id' => ['$in' => [(object) $hashId]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
-        $this->assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
     /**
@@ -771,7 +771,7 @@ class DocumentPersisterTest extends BaseTest
         $this->dm->persist($testDocument);
         $this->dm->flush();
 
-        $this->assertEquals(2, $testDocument->revision);
+        self::assertEquals(2, $testDocument->revision);
     }
 
     public function testNoVersionIncrementOnUpdateFailure(): void

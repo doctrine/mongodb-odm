@@ -24,9 +24,9 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
-        $this->assertEquals('foo', $document->foo, '"foo" gets its own value and ignores "bar" and "zip"');
-        $this->assertEquals('bar', $document->bar, '"bar" is hydrated normally');
-        $this->assertNull($document->baz, '"baz" gets its own null value and ignores "zip" and "bar"');
+        self::assertEquals('foo', $document->foo, '"foo" gets its own value and ignores "bar" and "zip"');
+        self::assertEquals('bar', $document->bar, '"bar" is hydrated normally');
+        self::assertNull($document->baz, '"baz" gets its own null value and ignores "zip" and "bar"');
     }
 
     public function testPropertyAlsoLoadMayOverwriteDefaultPropertyValue(): void
@@ -37,8 +37,8 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
-        $this->assertEquals('zip', $document->zap, '"zap" gets value from "zip", overwriting its default value');
-        $this->assertEquals('zip', $document->zip, '"zip" is hydrated normally');
+        self::assertEquals('zip', $document->zap, '"zap" gets value from "zip", overwriting its default value');
+        self::assertEquals('zip', $document->zip, '"zip" is hydrated normally');
     }
 
     public function testPropertyAlsoLoadShortCircuitsAfterFirstFieldIsFound(): void
@@ -52,10 +52,10 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
-        $this->assertEquals(null, $document->foo, '"foo" gets null value from "bar" and ignores "zip"');
-        $this->assertEquals('zip', $document->baz, '"baz" gets value from "zip" and ignores "bar"');
-        $this->assertEquals(null, $document->bar, '"bar" is hydrated normally');
-        $this->assertEquals('zip', $document->zip, '"zip" is hydrated normally');
+        self::assertEquals(null, $document->foo, '"foo" gets null value from "bar" and ignores "zip"');
+        self::assertEquals('zip', $document->baz, '"baz" gets value from "zip" and ignores "bar"');
+        self::assertEquals(null, $document->bar, '"bar" is hydrated normally');
+        self::assertEquals('zip', $document->zip, '"zip" is hydrated normally');
     }
 
     public function testPropertyAlsoLoadChecksMultipleFields(): void
@@ -66,9 +66,9 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
-        $this->assertEquals('zip', $document->foo, '"foo" gets value from "zip" since "bar" was missing');
-        $this->assertNull($document->bar, '"bar" is not hydrated');
-        $this->assertEquals('zip', $document->zip, '"zip" is hydrated normally');
+        self::assertEquals('zip', $document->foo, '"foo" gets value from "zip" since "bar" was missing');
+        self::assertNull($document->bar, '"bar" is not hydrated');
+        self::assertEquals('zip', $document->zip, '"zip" is hydrated normally');
     }
 
     public function testPropertyAlsoLoadBeatsMethodAlsoLoad(): void
@@ -82,9 +82,9 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
-        $this->assertEquals('testNew', $document->test, '"test" gets value from "testNew"');
-        $this->assertEquals('testNew', $document->testNew, '"testNew" is hydrated normally');
-        $this->assertEquals('testOld', $document->testOld, '"testOld" is hydrated normally');
+        self::assertEquals('testNew', $document->test, '"test" gets value from "testNew"');
+        self::assertEquals('testNew', $document->testNew, '"testNew" is hydrated normally');
+        self::assertEquals('testOld', $document->testOld, '"testOld" is hydrated normally');
     }
 
     public function testMethodAlsoLoadDoesNotInterfereWithBasicHydration(): void
@@ -98,9 +98,9 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
-        $this->assertEquals('Jonathan', $document->firstName, '"firstName" gets value from exploded "name" but is overwritten with normal hydration');
-        $this->assertEquals('Wallsmith', $document->lastName, '"lastName" gets value from exploded "name"');
-        $this->assertEquals('Kris Wallsmith', $document->name, '"name" is hydrated normally');
+        self::assertEquals('Jonathan', $document->firstName, '"firstName" gets value from exploded "name" but is overwritten with normal hydration');
+        self::assertEquals('Wallsmith', $document->lastName, '"lastName" gets value from exploded "name"');
+        self::assertEquals('Kris Wallsmith', $document->name, '"name" is hydrated normally');
     }
 
     public function testMethodAlsoLoadMayOverwriteDefaultPropertyValue(): void
@@ -111,8 +111,8 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
-        $this->assertNull($document->test, '"test" gets value from "testOld", overwriting its default value');
-        $this->assertNull($document->testOld, '"testOld" is hydrated normally"');
+        self::assertNull($document->test, '"test" gets value from "testOld", overwriting its default value');
+        self::assertNull($document->testOld, '"testOld" is hydrated normally"');
     }
 
     public function testMethodAlsoLoadShortCircuitsAfterFirstFieldIsFound(): void
@@ -128,14 +128,14 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
-        $this->assertEquals('Jonathan Wage', $document->name, '"name" is hydrated normally');
-        $this->assertEquals('Kris Wallsmith', $document->fullName, '"fullName" is hydrated normally');
-        $this->assertEquals('Jonathan', $document->firstName, '"firstName" gets value from exploded "name" and ignores "fullName"');
-        $this->assertEquals('Wage', $document->lastName, '"lastName" gets value from exploded "name" and ignores "fullName"');
+        self::assertEquals('Jonathan Wage', $document->name, '"name" is hydrated normally');
+        self::assertEquals('Kris Wallsmith', $document->fullName, '"fullName" is hydrated normally');
+        self::assertEquals('Jonathan', $document->firstName, '"firstName" gets value from exploded "name" and ignores "fullName"');
+        self::assertEquals('Wage', $document->lastName, '"lastName" gets value from exploded "name" and ignores "fullName"');
 
-        $this->assertEquals('testOld', $document->test, '"test" gets value from "testOld" and ignores "testOlder"');
-        $this->assertEquals('testOld', $document->testOld, '"testOld" is hydrated normally');
-        $this->assertEquals('testOlder', $document->testOlder, '"testOlder" is hydrated normally');
+        self::assertEquals('testOld', $document->test, '"test" gets value from "testOld" and ignores "testOlder"');
+        self::assertEquals('testOld', $document->testOld, '"testOld" is hydrated normally');
+        self::assertEquals('testOlder', $document->testOlder, '"testOlder" is hydrated normally');
     }
 
     public function testMethodAlsoLoadChecksMultipleFields(): void
@@ -149,14 +149,14 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadDocument::class)->findOneBy([]);
 
-        $this->assertNull($document->name, '"name" is not hydrated');
-        $this->assertEquals('Kris Wallsmith', $document->fullName, '"fullName" is hydrated normally');
-        $this->assertEquals('Kris', $document->firstName, '"firstName" gets value from exploded "fullName" since "name" was missing');
-        $this->assertEquals('Wallsmith', $document->lastName, '"lastName" gets value from exploded "fullName" since "name" was missing');
+        self::assertNull($document->name, '"name" is not hydrated');
+        self::assertEquals('Kris Wallsmith', $document->fullName, '"fullName" is hydrated normally');
+        self::assertEquals('Kris', $document->firstName, '"firstName" gets value from exploded "fullName" since "name" was missing');
+        self::assertEquals('Wallsmith', $document->lastName, '"lastName" gets value from exploded "fullName" since "name" was missing');
 
-        $this->assertEquals('testOlder', $document->test, '"test" gets value from "testOlder" since "testOld" was missing');
-        $this->assertNull($document->testOld, '"testOld" is not hydrated');
-        $this->assertEquals('testOlder', $document->testOlder, '"testOlder" is hydrated normally');
+        self::assertEquals('testOlder', $document->test, '"test" gets value from "testOlder" since "testOld" was missing');
+        self::assertNull($document->testOld, '"testOld" is not hydrated');
+        self::assertEquals('testOlder', $document->testOlder, '"testOlder" is hydrated normally');
     }
 
     public function testNotSaved(): void
@@ -172,10 +172,10 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getDocumentCollection(AlsoLoadDocument::class)->findOne();
 
-        $this->assertEquals('Jonathan', $document['firstName'], '"firstName" is hydrated normally');
-        $this->assertEquals('Wage', $document['lastName'], '"lastName" is hydrated normally');
-        $this->assertArrayNotHasKey('name', $document, '"name" was not saved');
-        $this->assertArrayNotHasKey('baz', $document, '"baz" was not saved');
+        self::assertEquals('Jonathan', $document['firstName'], '"firstName" is hydrated normally');
+        self::assertEquals('Wage', $document['lastName'], '"lastName" is hydrated normally');
+        self::assertArrayNotHasKey('name', $document, '"name" was not saved');
+        self::assertArrayNotHasKey('baz', $document, '"baz" was not saved');
     }
 
     public function testMethodAlsoLoadParentInheritance(): void
@@ -191,8 +191,8 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadChild::class)->findOneBy([]);
 
-        $this->assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
-        $this->assertEquals('test', $document->test, '"test" is hydrated normally, since "testOldest" was missing and parent method was overridden');
+        self::assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
+        self::assertEquals('test', $document->test, '"test" is hydrated normally, since "testOldest" was missing and parent method was overridden');
     }
 
     public function testMethodAlsoLoadGrandparentInheritance(): void
@@ -206,8 +206,8 @@ class AlsoLoadTest extends BaseTest
 
         $document = $this->dm->getRepository(AlsoLoadGrandchild::class)->findOneBy([]);
 
-        $this->assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
-        $this->assertEquals('testReallyOldest', $document->test, '"test" gets value from "testReallyOldest"');
+        self::assertEquals('buzz', $document->fizz, '"fizz" gets value from "buzz"');
+        self::assertEquals('testReallyOldest', $document->test, '"test" gets value from "testReallyOldest"');
     }
 }
 

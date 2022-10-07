@@ -43,15 +43,15 @@ class SimpleReferencesTest extends BaseTest
     public function testIndexes(): void
     {
         $indexes = $this->dm->getSchemaManager()->getDocumentIndexes(SimpleReferenceUser::class);
-        $this->assertEquals(['userId' => 1], $indexes[0]['keys']);
+        self::assertEquals(['userId' => 1], $indexes[0]['keys']);
     }
 
     public function testStorage(): void
     {
         $test = $this->dm->getDocumentCollection(SimpleReferenceUser::class)->findOne();
-        $this->assertNotNull($test);
-        $this->assertInstanceOf(ObjectId::class, $test['userId']);
-        $this->assertInstanceOf(ObjectId::class, $test['users'][0]);
+        self::assertNotNull($test);
+        self::assertInstanceOf(ObjectId::class, $test['userId']);
+        self::assertInstanceOf(ObjectId::class, $test['users'][0]);
     }
 
     public function testQuery(): void
@@ -60,15 +60,15 @@ class SimpleReferencesTest extends BaseTest
 
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('user')->references($this->user);
-        $this->assertEquals(['userId' => new ObjectId($this->user->getId())], $qb->getQuery()->debug('query'));
+        self::assertEquals(['userId' => new ObjectId($this->user->getId())], $qb->getQuery()->debug('query'));
 
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('user')->equals($this->user->getId());
-        $this->assertEquals(['userId' => new ObjectId($this->user->getId())], $qb->getQuery()->debug('query'));
+        self::assertEquals(['userId' => new ObjectId($this->user->getId())], $qb->getQuery()->debug('query'));
 
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('user')->in([$this->user->getId()]);
-        $this->assertEquals(['userId' => ['$in' => [new ObjectId($this->user->getId())]]], $qb->getQuery()->debug('query'));
+        self::assertEquals(['userId' => ['$in' => [new ObjectId($this->user->getId())]]], $qb->getQuery()->debug('query'));
     }
 
     public function testProxy(): void
@@ -77,70 +77,70 @@ class SimpleReferencesTest extends BaseTest
 
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('user')->references($this->user);
-        $this->assertEquals(['userId' => new ObjectId($this->user->getId())], $qb->getQuery()->debug('query'));
+        self::assertEquals(['userId' => new ObjectId($this->user->getId())], $qb->getQuery()->debug('query'));
 
         $this->dm->clear();
 
         $test = $qb->getQuery()->getSingleResult();
         assert($test instanceof SimpleReferenceUser);
 
-        $this->assertNotNull($test);
+        self::assertNotNull($test);
         $user = $test->getUser();
         assert($user instanceof User && $user instanceof GhostObjectInterface);
-        $this->assertNotNull($user);
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertInstanceOf(GhostObjectInterface::class, $user);
-        $this->assertFalse($user->isProxyInitialized());
-        $this->assertEquals('jwage', $user->getUsername());
-        $this->assertTrue($user->isProxyInitialized());
+        self::assertNotNull($user);
+        self::assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(GhostObjectInterface::class, $user);
+        self::assertFalse($user->isProxyInitialized());
+        self::assertEquals('jwage', $user->getUsername());
+        self::assertTrue($user->isProxyInitialized());
     }
 
     public function testPersistentCollectionOwningSide(): void
     {
         $test  = $this->dm->getRepository(SimpleReferenceUser::class)->findOneBy([]);
         $users = $test->getUsers()->toArray();
-        $this->assertEquals(2, $test->getUsers()->count());
-        $this->assertEquals('jwage', current($users)->getUsername());
-        $this->assertEquals('jwage', end($users)->getUsername());
+        self::assertEquals(2, $test->getUsers()->count());
+        self::assertEquals('jwage', current($users)->getUsername());
+        self::assertEquals('jwage', end($users)->getUsername());
     }
 
     public function testPersistentCollectionInverseSide(): void
     {
         $user = $this->dm->getRepository(User::class)->findOneBy([]);
         $test = $user->getSimpleReferenceManyInverse()->toArray();
-        $this->assertEquals('test', current($test)->getName());
+        self::assertEquals('test', current($test)->getName());
     }
 
     public function testOneInverseSide(): void
     {
         $user = $this->dm->getRepository(User::class)->findOneBy([]);
         $test = $user->getSimpleReferenceOneInverse();
-        $this->assertEquals('test', $test->getName());
+        self::assertEquals('test', $test->getName());
     }
 
     public function testQueryForNonIds(): void
     {
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('user')->equals(null);
-        $this->assertEquals(['userId' => null], $qb->getQueryArray());
+        self::assertEquals(['userId' => null], $qb->getQueryArray());
 
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('user')->notEqual(null);
-        $this->assertEquals(['userId' => ['$ne' => null]], $qb->getQueryArray());
+        self::assertEquals(['userId' => ['$ne' => null]], $qb->getQueryArray());
 
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('user')->exists(true);
-        $this->assertEquals(['userId' => ['$exists' => true]], $qb->getQueryArray());
+        self::assertEquals(['userId' => ['$exists' => true]], $qb->getQueryArray());
     }
 
     public function testRemoveDocumentByEmptyRefMany(): void
     {
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('users')->equals([]);
-        $this->assertEquals(['users' => []], $qb->getQueryArray());
+        self::assertEquals(['users' => []], $qb->getQueryArray());
 
         $qb = $this->dm->createQueryBuilder(SimpleReferenceUser::class);
         $qb->field('users')->equals(new stdClass());
-        $this->assertEquals(['users' => new stdClass()], $qb->getQueryArray());
+        self::assertEquals(['users' => new stdClass()], $qb->getQueryArray());
     }
 }

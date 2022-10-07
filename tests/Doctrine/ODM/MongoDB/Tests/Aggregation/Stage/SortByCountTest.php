@@ -14,7 +14,7 @@ class SortByCountTest extends BaseTest
         $builder = $this->dm->createAggregationBuilder(CmsComment::class);
         $builder->sortByCount('$authorIp');
 
-        $this->assertEquals(
+        self::assertEquals(
             [['$sortByCount' => '$ip']],
             $builder->getPipeline()
         );

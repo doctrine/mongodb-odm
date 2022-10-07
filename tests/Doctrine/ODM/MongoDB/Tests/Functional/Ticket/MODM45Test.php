@@ -20,7 +20,7 @@ class MODM45Test extends BaseTest
 
         $a = $this->dm->find(MODM45A::class, $a->getId());
         $c = ($a->getB() !== null);
-        $this->assertTrue($c); // returns false, while expecting true
+        self::assertTrue($c); // returns false, while expecting true
     }
 }
 

@@ -50,27 +50,27 @@ class AtomicSetTest extends BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertCount(1, $user->phonenumbers);
-        $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
+        self::assertEquals('Maciej', $user->name);
+        self::assertCount(1, $user->phonenumbers);
+        self::assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
 
         $user->surname        = 'Malarz';
         $user->phonenumbers[] = new Phonenumber('87654321');
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Updating a document and its embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Updating a document and its embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertEquals('Malarz', $user->surname);
-        $this->assertCount(2, $user->phonenumbers);
-        $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
-        $this->assertEquals('87654321', $user->phonenumbers[1]->getPhonenumber());
+        self::assertEquals('Maciej', $user->name);
+        self::assertEquals('Malarz', $user->surname);
+        self::assertCount(2, $user->phonenumbers);
+        self::assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
+        self::assertEquals('87654321', $user->phonenumbers[1]->getPhonenumber());
     }
 
     public function testAtomicUpsert(): void
@@ -80,13 +80,13 @@ class AtomicSetTest extends BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Upserting a document with an embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Upserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertCount(1, $user->phonenumbers);
-        $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
+        self::assertEquals('Maciej', $user->name);
+        self::assertCount(1, $user->phonenumbers);
+        self::assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
     }
 
     /**
@@ -100,25 +100,25 @@ class AtomicSetTest extends BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertCount(1, $user->phonenumbers);
-        $this->assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
+        self::assertEquals('Maciej', $user->name);
+        self::assertCount(1, $user->phonenumbers);
+        self::assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
 
         $user->surname      = 'Malarz';
         $user->phonenumbers = $clearWith;
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Updating a document and unsetting its embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Updating a document and unsetting its embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertEquals('Malarz', $user->surname);
-        $this->assertCount(0, $user->phonenumbers);
+        self::assertEquals('Maciej', $user->name);
+        self::assertEquals('Malarz', $user->surname);
+        self::assertEmpty($user->phonenumbers);
     }
 
     public function provideAtomicCollectionUnset(): array
@@ -136,7 +136,7 @@ class AtomicSetTest extends BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
@@ -144,13 +144,13 @@ class AtomicSetTest extends BaseTest
         $user->phonenumbers[] = new Phonenumber('87654321');
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Updating emptied collection requires one query');
+        self::assertCount(1, $this->logger, 'Updating emptied collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertCount(1, $user->phonenumbers);
-        $this->assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
+        self::assertEquals('Maciej', $user->name);
+        self::assertCount(1, $user->phonenumbers);
+        self::assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
     }
 
     public function testAtomicCollectionReplacedAndUpdated(): void
@@ -159,20 +159,20 @@ class AtomicSetTest extends BaseTest
         $user->phonenumbers[] = new Phonenumber('12345678');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user               = $this->dm->getRepository(get_class($user))->find($user->id);
         $user->phonenumbers = new ArrayCollection([new Phonenumber('87654321')]);
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Updating emptied collection requires one query');
+        self::assertCount(1, $this->logger, 'Updating emptied collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertCount(1, $user->phonenumbers);
-        $this->assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
+        self::assertEquals('Maciej', $user->name);
+        self::assertCount(1, $user->phonenumbers);
+        self::assertEquals('87654321', $user->phonenumbers[0]->getPhonenumber());
     }
 
     public function testAtomicSetArray(): void
@@ -182,25 +182,25 @@ class AtomicSetTest extends BaseTest
         $user->phonenumbersArray[2] = new Phonenumber('87654321');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a document with an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertCount(2, $user->phonenumbersArray);
-        $this->assertEquals('12345678', $user->phonenumbersArray[0]->getPhonenumber());
-        $this->assertEquals('87654321', $user->phonenumbersArray[1]->getPhonenumber());
+        self::assertEquals('Maciej', $user->name);
+        self::assertCount(2, $user->phonenumbersArray);
+        self::assertEquals('12345678', $user->phonenumbersArray[0]->getPhonenumber());
+        self::assertEquals('87654321', $user->phonenumbersArray[1]->getPhonenumber());
 
         unset($user->phonenumbersArray[0]);
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Unsetting an element within an embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Unsetting an element within an embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertCount(1, $user->phonenumbersArray);
-        $this->assertEquals('87654321', $user->phonenumbersArray[0]->getPhonenumber());
-        $this->assertFalse(isset($user->phonenumbersArray[1]));
+        self::assertCount(1, $user->phonenumbersArray);
+        self::assertEquals('87654321', $user->phonenumbersArray[0]->getPhonenumber());
+        self::assertFalse(isset($user->phonenumbersArray[1]));
     }
 
     public function testAtomicCollectionWithAnotherNested(): void
@@ -211,16 +211,16 @@ class AtomicSetTest extends BaseTest
         $user->phonebooks[] = $privateBook;
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a document with a nested embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a document with a nested embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertCount(1, $user->phonebooks);
+        self::assertEquals('Maciej', $user->name);
+        self::assertCount(1, $user->phonebooks);
         $privateBook = $user->phonebooks[0];
-        $this->assertEquals('Private', $privateBook->getTitle());
-        $this->assertCount(1, $privateBook->getPhonenumbers());
-        $this->assertEquals('12345678', $privateBook->getPhonenumbers()->get(0)->getPhonenumber());
+        self::assertEquals('Private', $privateBook->getTitle());
+        self::assertCount(1, $privateBook->getPhonenumbers());
+        self::assertEquals('12345678', $privateBook->getPhonenumbers()->get(0)->getPhonenumber());
 
         $privateBook->addPhonenumber(new Phonenumber('87654321'));
         $publicBook = new Phonebook('Public');
@@ -228,35 +228,35 @@ class AtomicSetTest extends BaseTest
         $user->phonebooks[] = $publicBook;
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Updating multiple, nested embed-many collections requires one query');
+        self::assertCount(1, $this->logger, 'Updating multiple, nested embed-many collections requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertEquals('Maciej', $user->name);
-        $this->assertCount(2, $user->phonebooks);
+        self::assertEquals('Maciej', $user->name);
+        self::assertCount(2, $user->phonebooks);
         $privateBook = $user->phonebooks[0];
-        $this->assertEquals('Private', $privateBook->getTitle());
-        $this->assertCount(2, $privateBook->getPhonenumbers());
-        $this->assertEquals('12345678', $privateBook->getPhonenumbers()->get(0)->getPhonenumber());
-        $this->assertEquals('87654321', $privateBook->getPhonenumbers()->get(1)->getPhonenumber());
+        self::assertEquals('Private', $privateBook->getTitle());
+        self::assertCount(2, $privateBook->getPhonenumbers());
+        self::assertEquals('12345678', $privateBook->getPhonenumbers()->get(0)->getPhonenumber());
+        self::assertEquals('87654321', $privateBook->getPhonenumbers()->get(1)->getPhonenumber());
         $publicBook = $user->phonebooks[1];
-        $this->assertCount(1, $publicBook->getPhonenumbers());
-        $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
+        self::assertCount(1, $publicBook->getPhonenumbers());
+        self::assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
 
         $privateBook->getPhonenumbers()->clear();
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Clearing a nested embed-many collection requires one query');
+        self::assertCount(1, $this->logger, 'Clearing a nested embed-many collection requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertCount(2, $user->phonebooks);
+        self::assertCount(2, $user->phonebooks);
         $privateBook = $user->phonebooks[0];
-        $this->assertEquals('Private', $privateBook->getTitle());
-        $this->assertCount(0, $privateBook->getPhonenumbers());
+        self::assertEquals('Private', $privateBook->getTitle());
+        self::assertEmpty($privateBook->getPhonenumbers());
         $publicBook = $user->phonebooks[1];
-        $this->assertCount(1, $publicBook->getPhonenumbers());
-        $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
+        self::assertCount(1, $publicBook->getPhonenumbers());
+        self::assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
 
     public function testWeNeedToGoDeeper(): void
@@ -271,52 +271,52 @@ class AtomicSetTest extends BaseTest
         $user->inception[0]->one->one->many[0]->many[] = new AtomicSetInception('start.one.one.many.0.many.0');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a document with nested embed-many collections requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a document with nested embed-many collections requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertCount(1, $user->inception);
-        $this->assertEquals('start', $user->inception[0]->value);
-        $this->assertNotNull($user->inception[0]->one);
-        $this->assertEquals('start.one', $user->inception[0]->one->value);
-        $this->assertCount(2, $user->inception[0]->one->many);
-        $this->assertEquals('start.one.many.0', $user->inception[0]->one->many[0]->value);
-        $this->assertEquals('start.one.many.1', $user->inception[0]->one->many[1]->value);
-        $this->assertNotNull($user->inception[0]->one->one);
-        $this->assertEquals('start.one.one', $user->inception[0]->one->one->value);
-        $this->assertCount(1, $user->inception[0]->one->one->many);
-        $this->assertEquals('start.one.one.many.0', $user->inception[0]->one->one->many[0]->value);
-        $this->assertCount(1, $user->inception[0]->one->one->many[0]->many);
-        $this->assertEquals('start.one.one.many.0.many.0', $user->inception[0]->one->one->many[0]->many[0]->value);
+        self::assertCount(1, $user->inception);
+        self::assertEquals('start', $user->inception[0]->value);
+        self::assertNotNull($user->inception[0]->one);
+        self::assertEquals('start.one', $user->inception[0]->one->value);
+        self::assertCount(2, $user->inception[0]->one->many);
+        self::assertEquals('start.one.many.0', $user->inception[0]->one->many[0]->value);
+        self::assertEquals('start.one.many.1', $user->inception[0]->one->many[1]->value);
+        self::assertNotNull($user->inception[0]->one->one);
+        self::assertEquals('start.one.one', $user->inception[0]->one->one->value);
+        self::assertCount(1, $user->inception[0]->one->one->many);
+        self::assertEquals('start.one.one.many.0', $user->inception[0]->one->one->many[0]->value);
+        self::assertCount(1, $user->inception[0]->one->one->many[0]->many);
+        self::assertEquals('start.one.one.many.0.many.0', $user->inception[0]->one->one->many[0]->many[0]->value);
 
         unset($user->inception[0]->one->many[0]);
         $user->inception[0]->one->many[]               = new AtomicSetInception('start.one.many.2');
         $user->inception[0]->one->one->many[0]->many[] = new AtomicSetInception('start.one.one.many.0.many.1');
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Updating nested collections on various levels requires one query');
+        self::assertCount(1, $this->logger, 'Updating nested collections on various levels requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertCount(1, $user->inception);
-        $this->assertEquals('start', $user->inception[0]->value);
-        $this->assertNotNull($user->inception[0]->one);
-        $this->assertEquals('start.one', $user->inception[0]->one->value);
-        $this->assertCount(2, $user->inception[0]->one->many);
+        self::assertCount(1, $user->inception);
+        self::assertEquals('start', $user->inception[0]->value);
+        self::assertNotNull($user->inception[0]->one);
+        self::assertEquals('start.one', $user->inception[0]->one->value);
+        self::assertCount(2, $user->inception[0]->one->many);
         /* Note: Since the "start.one.many" collection uses a pushAll strategy,
          * "start.one.many.1" is reindexed at 0 after fetching. Before the last
          * flush (when we unset "start.one.many.0"), it would still have been
          * accessible via index 1.
          */
-        $this->assertEquals('start.one.many.1', $user->inception[0]->one->many[0]->value);
-        $this->assertEquals('start.one.many.2', $user->inception[0]->one->many[1]->value);
-        $this->assertNotNull($user->inception[0]->one->one);
-        $this->assertEquals('start.one.one', $user->inception[0]->one->one->value);
-        $this->assertCount(1, $user->inception[0]->one->one->many);
-        $this->assertEquals('start.one.one.many.0', $user->inception[0]->one->one->many[0]->value);
-        $this->assertCount(2, $user->inception[0]->one->one->many[0]->many);
-        $this->assertEquals('start.one.one.many.0.many.0', $user->inception[0]->one->one->many[0]->many[0]->value);
-        $this->assertEquals('start.one.one.many.0.many.1', $user->inception[0]->one->one->many[0]->many[1]->value);
+        self::assertEquals('start.one.many.1', $user->inception[0]->one->many[0]->value);
+        self::assertEquals('start.one.many.2', $user->inception[0]->one->many[1]->value);
+        self::assertNotNull($user->inception[0]->one->one);
+        self::assertEquals('start.one.one', $user->inception[0]->one->one->value);
+        self::assertCount(1, $user->inception[0]->one->one->many);
+        self::assertEquals('start.one.one.many.0', $user->inception[0]->one->one->many[0]->value);
+        self::assertCount(2, $user->inception[0]->one->one->many[0]->many);
+        self::assertEquals('start.one.one.many.0.many.0', $user->inception[0]->one->one->many[0]->many[0]->value);
+        self::assertEquals('start.one.one.many.0.many.1', $user->inception[0]->one->one->many[0]->many[1]->value);
     }
 
     public function testUpdatingNestedCollectionWhileDeletingParent(): void
@@ -329,19 +329,19 @@ class AtomicSetTest extends BaseTest
         $user->inception[0]->many[1]->many[0] = new AtomicSetInception('start.many.1.many.0');
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a document with nested embed-many collections requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a document with nested embed-many collections requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertCount(1, $user->inception);
-        $this->assertEquals('start', $user->inception[0]->value);
-        $this->assertCount(2, $user->inception[0]->many);
-        $this->assertEquals('start.many.0', $user->inception[0]->many[0]->value);
-        $this->assertCount(1, $user->inception[0]->many[0]->many);
-        $this->assertEquals('start.many.0.many.0', $user->inception[0]->many[0]->many[0]->value);
-        $this->assertEquals('start.many.1', $user->inception[0]->many[1]->value);
-        $this->assertCount(1, $user->inception[0]->many[0]->many);
-        $this->assertEquals('start.many.1.many.0', $user->inception[0]->many[1]->many[0]->value);
+        self::assertCount(1, $user->inception);
+        self::assertEquals('start', $user->inception[0]->value);
+        self::assertCount(2, $user->inception[0]->many);
+        self::assertEquals('start.many.0', $user->inception[0]->many[0]->value);
+        self::assertCount(1, $user->inception[0]->many[0]->many);
+        self::assertEquals('start.many.0.many.0', $user->inception[0]->many[0]->many[0]->value);
+        self::assertEquals('start.many.1', $user->inception[0]->many[1]->value);
+        self::assertCount(1, $user->inception[0]->many[0]->many);
+        self::assertEquals('start.many.1.many.0', $user->inception[0]->many[1]->many[0]->value);
 
         $user->inception[0]->many[0]->many[0]->value = 'start.many.0.many.0-changed';
         $user->inception[0]->many[0]->many[1]        = new AtomicSetInception('start.many.0.many.1');
@@ -351,18 +351,18 @@ class AtomicSetTest extends BaseTest
         $user->inception[0]->many[1]->many[0] = new AtomicSetInception('start.many.1.many.0-new');
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Updating nested collections while deleting parents requires one query');
+        self::assertCount(1, $this->logger, 'Updating nested collections while deleting parents requires one query');
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->find($user->id);
-        $this->assertCount(1, $user->inception);
-        $this->assertEquals('start', $user->inception[0]->value);
-        $this->assertCount(2, $user->inception[0]->many);
-        $this->assertEquals('start.many.0', $user->inception[0]->many[0]->value);
-        $this->assertCount(0, $user->inception[0]->many[0]->many);
-        $this->assertEquals('start.many.1', $user->inception[0]->many[1]->value);
-        $this->assertCount(1, $user->inception[0]->many[1]->many);
-        $this->assertEquals('start.many.1.many.0-new', $user->inception[0]->many[1]->many[0]->value);
+        self::assertCount(1, $user->inception);
+        self::assertEquals('start', $user->inception[0]->value);
+        self::assertCount(2, $user->inception[0]->many);
+        self::assertEquals('start.many.0', $user->inception[0]->many[0]->value);
+        self::assertEmpty($user->inception[0]->many[0]->many);
+        self::assertEquals('start.many.1', $user->inception[0]->many[1]->value);
+        self::assertCount(1, $user->inception[0]->many[1]->many);
+        self::assertEquals('start.many.1.many.0-new', $user->inception[0]->many[1]->many[0]->value);
     }
 
     public function testAtomicRefMany(): void
@@ -379,29 +379,29 @@ class AtomicSetTest extends BaseTest
 
         $malarzm->friends[] = $jmikola;
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Updating empty atomic reference many requires one query');
+        self::assertCount(1, $this->logger, 'Updating empty atomic reference many requires one query');
         $this->dm->clear();
 
         $malarzm = $this->dm->find(get_class($malarzm), $malarzm->id);
-        $this->assertCount(1, $malarzm->friends);
-        $this->assertEquals('Jeremy', $malarzm->friends[0]->name);
+        self::assertCount(1, $malarzm->friends);
+        self::assertEquals('Jeremy', $malarzm->friends[0]->name);
 
         $jonwage            = $this->dm->find(get_class($jonwage), $jonwage->id);
         $malarzm->friends[] = $jonwage;
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Updating existing atomic reference many requires one query');
+        self::assertCount(1, $this->logger, 'Updating existing atomic reference many requires one query');
         $this->dm->clear();
 
         $malarzm = $this->dm->find(get_class($malarzm), $malarzm->id);
-        $this->assertCount(2, $malarzm->friends);
-        $this->assertEquals('Jeremy', $malarzm->friends[0]->name);
-        $this->assertEquals('Jon', $malarzm->friends[1]->name);
+        self::assertCount(2, $malarzm->friends);
+        self::assertEquals('Jeremy', $malarzm->friends[0]->name);
+        self::assertEquals('Jon', $malarzm->friends[1]->name);
 
         $malarzm->friends->clear();
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Clearing atomic reference many requires one query');
+        self::assertCount(1, $this->logger, 'Clearing atomic reference many requires one query');
         $this->dm->clear();
     }
 
@@ -417,7 +417,7 @@ class AtomicSetTest extends BaseTest
 
         // Saving this book should result in 1 query since we use strategy="atomicSet"
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a book with one chapter and page requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a book with one chapter and page requires one query');
 
         // Simulate another PHP request which loads this record and tries to add an embedded document two levels deep...
         $this->dm->clear();
@@ -430,11 +430,11 @@ class AtomicSetTest extends BaseTest
         // Updating this book should result in 1 query since we use strategy="atomicSet"
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Adding a page to the first chapter of the book requires one query');
+        self::assertCount(1, $this->logger, 'Adding a page to the first chapter of the book requires one query');
 
         // this is failing if lifecycle callback postUpdate is recomputing change set
         $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
-        $this->assertEquals(2, $book->chapters->first()->pages->count(), 'Two page objects are expected in the first chapter of the book.');
+        self::assertEquals(2, $book->chapters->first()->pages->count(), 'Two page objects are expected in the first chapter of the book.');
     }
 
     public function testReplacementOfEmbedManyElements(): void
@@ -468,8 +468,8 @@ class AtomicSetTest extends BaseTest
         $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
 
         // Verify we see chapters A and B.
-        $this->assertEquals('First chapter A', $book->chapters[0]->name);
-        $this->assertEquals('Second chapter B', $book->chapters[1]->name);
+        self::assertEquals('First chapter A', $book->chapters[0]->name);
+        self::assertEquals('Second chapter B', $book->chapters[1]->name);
     }
 
     public function testReplacementOfIdentifiedEmbedManyElements(): void
@@ -494,8 +494,8 @@ class AtomicSetTest extends BaseTest
         $this->dm->clear();
 
         $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
-        $this->assertEquals('First chapter A', $book->identifiedChapters[0]->name);
-        $this->assertEquals('Second chapter B', $book->identifiedChapters[1]->name);
+        self::assertEquals('First chapter A', $book->identifiedChapters[0]->name);
+        self::assertEquals('Second chapter B', $book->identifiedChapters[1]->name);
     }
 
     public function testOnlyEmbeddedDocumentUpdated(): void
@@ -521,7 +521,7 @@ class AtomicSetTest extends BaseTest
         $this->dm->clear();
         $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
 
-        $this->assertEquals('First chapter A', $book->chapters[0]->name, 'The chapter title failed to update.');
+        self::assertEquals('First chapter A', $book->chapters[0]->name, 'The chapter title failed to update.');
     }
 
     public function testUpdatedEmbeddedDocumentAndDirtyCollectionInside(): void
@@ -545,7 +545,7 @@ class AtomicSetTest extends BaseTest
         $this->dm->clear();
 
         $book = $this->dm->getRepository(Book::CLASSNAME)->findOneBy(['_id' => $book->id]);
-        $this->assertEquals(2, $book->chapters->first()->pages->count());
+        self::assertEquals(2, $book->chapters->first()->pages->count());
     }
 }
 

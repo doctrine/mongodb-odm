@@ -46,7 +46,7 @@ class MODM91Test extends BaseTest
         $dm->clear();
 
         $called = [];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
     }
 }
 

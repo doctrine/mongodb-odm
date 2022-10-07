@@ -25,20 +25,20 @@ class GH1418Test extends BaseTest
             ],
         ], [Query::HINT_READ_ONLY => true]);
 
-        $this->assertEquals(1, $document->embedOne->id);
-        $this->assertEquals(2, $document->embedMany->first()->id);
+        self::assertEquals(1, $document->embedOne->id);
+        self::assertEquals(2, $document->embedMany->first()->id);
 
         $this->dm->merge($document);
         $this->dm->flush();
         $this->dm->clear();
 
         $document = $this->dm->getRepository(GH1418Document::class)->find(1);
-        $this->assertEquals(1, $document->id);
-        $this->assertEquals('maciej', $document->embedOne->name);
-        $this->assertEquals(1, $document->embedOne->id);
-        $this->assertEquals(1, $document->embedMany->count());
-        $this->assertEquals('maciej', $document->embedMany->first()->name);
-        $this->assertEquals(2, $document->embedMany->first()->id);
+        self::assertEquals(1, $document->id);
+        self::assertEquals('maciej', $document->embedOne->name);
+        self::assertEquals(1, $document->embedOne->id);
+        self::assertEquals(1, $document->embedMany->count());
+        self::assertEquals('maciej', $document->embedMany->first()->name);
+        self::assertEquals(2, $document->embedMany->first()->id);
     }
 
     public function testReadDocumentAndManage(): void
@@ -65,12 +65,12 @@ class GH1418Test extends BaseTest
             ->getSingleResult();
         assert($document instanceof GH1418Document);
 
-        $this->assertEquals(1, $document->id);
-        $this->assertEquals('maciej', $document->embedOne->name);
-        $this->assertEquals(1, $document->embedOne->id);
-        $this->assertEquals(1, $document->embedMany->count());
-        $this->assertEquals('maciej', $document->embedMany->first()->name);
-        $this->assertEquals(1, $document->embedMany->first()->id);
+        self::assertEquals(1, $document->id);
+        self::assertEquals('maciej', $document->embedOne->name);
+        self::assertEquals(1, $document->embedOne->id);
+        self::assertEquals(1, $document->embedMany->count());
+        self::assertEquals('maciej', $document->embedMany->first()->name);
+        self::assertEquals(1, $document->embedMany->first()->id);
 
         $document = $this->dm->merge($document);
 
@@ -81,12 +81,12 @@ class GH1418Test extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->getRepository(GH1418Document::class)->find(1);
-        $this->assertEquals(1, $document->id);
-        $this->assertEquals('alcaeus', $document->embedOne->name);
-        $this->assertEquals(1, $document->embedOne->id);
-        $this->assertEquals(1, $document->embedMany->count());
-        $this->assertEquals('alcaeus', $document->embedMany->first()->name);
-        $this->assertEquals(1, $document->embedMany->first()->id);
+        self::assertEquals(1, $document->id);
+        self::assertEquals('alcaeus', $document->embedOne->name);
+        self::assertEquals(1, $document->embedOne->id);
+        self::assertEquals(1, $document->embedMany->count());
+        self::assertEquals('alcaeus', $document->embedMany->first()->name);
+        self::assertEquals(1, $document->embedMany->first()->id);
 
         $document->embedMany[] = clone $embedded;
 
@@ -95,10 +95,10 @@ class GH1418Test extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->getRepository(GH1418Document::class)->find(1);
-        $this->assertEquals(1, $document->id);
-        $this->assertEquals('alcaeus', $document->embedOne->name);
-        $this->assertEquals(2, $document->embedMany->count());
-        $this->assertEquals('maciej', $document->embedMany->last()->name);
+        self::assertEquals(1, $document->id);
+        self::assertEquals('alcaeus', $document->embedOne->name);
+        self::assertEquals(2, $document->embedMany->count());
+        self::assertEquals('maciej', $document->embedMany->last()->name);
     }
 }
 

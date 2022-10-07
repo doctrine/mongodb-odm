@@ -29,30 +29,30 @@ class DateTypeTest extends TestCase
 
         $timestamp = 100000000.001;
         $dateTime  = $type->getDateTime($timestamp);
-        $this->assertEquals($timestamp, $dateTime->format('U.u'));
+        self::assertEquals($timestamp, $dateTime->format('U.u'));
 
         $mongoDate = new UTCDateTime(100000000001);
         $dateTime  = $type->getDateTime($mongoDate);
-        $this->assertEquals($timestamp, $dateTime->format('U.u'));
+        self::assertEquals($timestamp, $dateTime->format('U.u'));
     }
 
     public function testConvertToDatabaseValue(): void
     {
         $type = Type::getType(Type::DATE);
 
-        $this->assertNull($type->convertToDatabaseValue(null), 'null is not converted');
+        self::assertNull($type->convertToDatabaseValue(null), 'null is not converted');
 
         $mongoDate = new UTCDateTime();
-        $this->assertSame($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are not converted');
+        self::assertSame($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are not converted');
 
         $timestamp = 100000000.123;
         $dateTime  = DateTime::createFromFormat('U.u', (string) $timestamp);
         $mongoDate = new UTCDateTime(100000000123);
-        $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTime), 'DateTime objects are converted to MongoDate objects');
-        $this->assertEquals($mongoDate, $type->convertToDatabaseValue($timestamp), 'Numeric timestamps are converted to MongoDate objects');
-        $this->assertEquals($mongoDate, $type->convertToDatabaseValue('' . $timestamp), 'String dates are converted to MongoDate objects');
-        $this->assertEquals($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are converted to MongoDate objects');
-        $this->assertEquals(null, $type->convertToDatabaseValue(null), 'null are converted to null');
+        self::assertEquals($mongoDate, $type->convertToDatabaseValue($dateTime), 'DateTime objects are converted to MongoDate objects');
+        self::assertEquals($mongoDate, $type->convertToDatabaseValue($timestamp), 'Numeric timestamps are converted to MongoDate objects');
+        self::assertEquals($mongoDate, $type->convertToDatabaseValue('' . $timestamp), 'String dates are converted to MongoDate objects');
+        self::assertEquals($mongoDate, $type->convertToDatabaseValue($mongoDate), 'MongoDate objects are converted to MongoDate objects');
+        self::assertEquals(null, $type->convertToDatabaseValue(null), 'null are converted to null');
     }
 
     public function testConvertDateTimeImmutable(): void
@@ -63,7 +63,7 @@ class DateTypeTest extends TestCase
         $mongoDate = new UTCDateTime(100000000123);
 
         $dateTimeImmutable = DateTimeImmutable::createFromFormat('U.u', (string) $timestamp);
-        $this->assertEquals($mongoDate, $type->convertToDatabaseValue($dateTimeImmutable), 'DateTimeImmutable objects are converted to MongoDate objects');
+        self::assertEquals($mongoDate, $type->convertToDatabaseValue($dateTimeImmutable), 'DateTimeImmutable objects are converted to MongoDate objects');
     }
 
     public function testConvertOldDate(): void
@@ -72,7 +72,7 @@ class DateTypeTest extends TestCase
 
         $date      = new DateTime('1900-01-01 00:00:00.123', new DateTimeZone('UTC'));
         $timestamp = '-2208988800.123';
-        $this->assertEquals($type->convertToDatabaseValue($timestamp), $type->convertToDatabaseValue($date));
+        self::assertEquals($type->convertToDatabaseValue($timestamp), $type->convertToDatabaseValue($date));
     }
 
     /**
@@ -108,7 +108,7 @@ class DateTypeTest extends TestCase
         $type   = Type::getType(Type::DATE);
         $return = $type->convertToPHPValue($input);
 
-        $this->assertInstanceOf('DateTime', $return);
+        self::assertInstanceOf('DateTime', $return);
         $this->assertTimestampEquals($output, $return);
     }
 
@@ -116,7 +116,7 @@ class DateTypeTest extends TestCase
     {
         $type = Type::getType(Type::DATE);
 
-        $this->assertNull($type->convertToPHPValue(null));
+        self::assertNull($type->convertToPHPValue(null));
     }
 
     /**
@@ -136,7 +136,7 @@ class DateTypeTest extends TestCase
         })($input);
 
         // @phpstan-ignore-next-line
-        $this->assertInstanceOf(DateTime::class, $return);
+        self::assertInstanceOf(DateTime::class, $return);
         $this->assertTimestampEquals($output, $return);
     }
 
@@ -175,12 +175,12 @@ class DateTypeTest extends TestCase
         $type   = Type::getType(Type::DATE);
         $return = $type->convertToDatabaseValue('1900-01-01');
 
-        $this->assertInstanceOf(UTCDateTime::class, $return);
-        $this->assertEquals(new UTCDateTime(strtotime('1900-01-01') * 1000), $return);
+        self::assertInstanceOf(UTCDateTime::class, $return);
+        self::assertEquals(new UTCDateTime(strtotime('1900-01-01') * 1000), $return);
     }
 
     private function assertTimestampEquals(DateTime $expected, DateTime $actual): void
     {
-        $this->assertEquals($expected->format('U.u'), $actual->format('U.u'));
+        self::assertEquals($expected->format('U.u'), $actual->format('U.u'));
     }
 }

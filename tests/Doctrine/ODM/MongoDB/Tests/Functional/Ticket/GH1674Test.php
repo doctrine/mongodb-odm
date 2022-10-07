@@ -23,7 +23,7 @@ class GH1674Test extends BaseTest
                     ->equals(1)
             );
 
-        $this->assertSame(
+        self::assertSame(
             [
                 'embedded' => [
                     '$elemMatch' => ['id' => '1'],

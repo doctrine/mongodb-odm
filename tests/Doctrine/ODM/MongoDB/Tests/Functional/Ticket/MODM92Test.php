@@ -25,18 +25,18 @@ class MODM92Test extends BaseTest
         $this->dm->clear();
 
         $testDoc = $this->dm->find(MODM92TestDocument::class, $testDoc->id);
-        $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
+        self::assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
 
         $embeddedDocuments = [new MODM92TestEmbeddedDocument('bar')];
 
         $testDoc->setEmbeddedDocuments($embeddedDocuments);
-        $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
+        self::assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
 
         $this->dm->flush();
         $this->dm->clear();
         $testDoc = $this->dm->find(MODM92TestDocument::class, $testDoc->id);
 
-        $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
+        self::assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
     }
 }
 

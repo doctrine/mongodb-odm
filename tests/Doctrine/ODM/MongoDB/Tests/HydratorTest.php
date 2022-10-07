@@ -36,25 +36,25 @@ class HydratorTest extends BaseTest
             ],
         ]);
 
-        $this->assertEquals(1, $user->id);
-        $this->assertNull($user->title);
-        $this->assertEquals('jon', $user->name);
-        $this->assertInstanceOf(DateTime::class, $user->birthdate);
-        $this->assertInstanceOf(HydrationClosureReferenceOne::class, $user->referenceOne);
-        $this->assertInstanceOf(GhostObjectInterface::class, $user->referenceOne);
-        $this->assertInstanceOf(PersistentCollection::class, $user->referenceMany);
-        $this->assertInstanceOf(GhostObjectInterface::class, $user->referenceMany[0]);
-        $this->assertInstanceOf(GhostObjectInterface::class, $user->referenceMany[1]);
-        $this->assertInstanceOf(HydrationClosureEmbedOne::class, $user->embedOne);
-        $this->assertInstanceOf(PersistentCollection::class, $user->embedMany);
-        $this->assertEquals('jon', $user->embedOne->name);
-        $this->assertEquals('jon', $user->embedMany[0]->name);
+        self::assertEquals(1, $user->id);
+        self::assertNull($user->title);
+        self::assertEquals('jon', $user->name);
+        self::assertInstanceOf(DateTime::class, $user->birthdate);
+        self::assertInstanceOf(HydrationClosureReferenceOne::class, $user->referenceOne);
+        self::assertInstanceOf(GhostObjectInterface::class, $user->referenceOne);
+        self::assertInstanceOf(PersistentCollection::class, $user->referenceMany);
+        self::assertInstanceOf(GhostObjectInterface::class, $user->referenceMany[0]);
+        self::assertInstanceOf(GhostObjectInterface::class, $user->referenceMany[1]);
+        self::assertInstanceOf(HydrationClosureEmbedOne::class, $user->embedOne);
+        self::assertInstanceOf(PersistentCollection::class, $user->embedMany);
+        self::assertEquals('jon', $user->embedOne->name);
+        self::assertEquals('jon', $user->embedMany[0]->name);
     }
 
     public function testHydrateProxyWithMissingAssociations(): void
     {
         $user = $this->dm->getReference(HydrationClosureUser::class, 1);
-        $this->assertInstanceOf(GhostObjectInterface::class, $user);
+        self::assertInstanceOf(GhostObjectInterface::class, $user);
 
         $this->dm->getHydratorFactory()->hydrate($user, [
             '_id' => 1,
@@ -62,14 +62,14 @@ class HydratorTest extends BaseTest
             'name' => 'jon',
         ]);
 
-        $this->assertEquals(1, $user->id);
-        $this->assertNull($user->title);
-        $this->assertEquals('jon', $user->name);
-        $this->assertNull($user->birthdate);
-        $this->assertNull($user->referenceOne);
-        $this->assertInstanceOf(PersistentCollection::class, $user->referenceMany);
-        $this->assertNull($user->embedOne);
-        $this->assertInstanceOf(PersistentCollection::class, $user->embedMany);
+        self::assertEquals(1, $user->id);
+        self::assertNull($user->title);
+        self::assertEquals('jon', $user->name);
+        self::assertNull($user->birthdate);
+        self::assertNull($user->referenceOne);
+        self::assertInstanceOf(PersistentCollection::class, $user->referenceMany);
+        self::assertNull($user->embedOne);
+        self::assertInstanceOf(PersistentCollection::class, $user->embedMany);
     }
 
     public function testReadOnly(): void
@@ -87,9 +87,9 @@ class HydratorTest extends BaseTest
             ],
         ], [Query::HINT_READ_ONLY => true]);
 
-        $this->assertFalse($this->uow->isInIdentityMap($user));
-        $this->assertFalse($this->uow->isInIdentityMap($user->embedOne));
-        $this->assertFalse($this->uow->isInIdentityMap($user->embedMany[0]));
+        self::assertFalse($this->uow->isInIdentityMap($user));
+        self::assertFalse($this->uow->isInIdentityMap($user->embedOne));
+        self::assertFalse($this->uow->isInIdentityMap($user->embedMany[0]));
     }
 
     public function testEmbedOneWithWrongType(): void
@@ -127,7 +127,7 @@ class HydratorTest extends BaseTest
             'embedMany' => ['jon'],
         ]);
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->embedMany);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->embedMany);
 
         $this->expectException(HydratorException::class);
         $this->expectExceptionMessage('Expected association item with key "0" for field "embedMany" in document of type "' . HydrationClosureUser::class . '" to be of type "array", "string" received.');
@@ -170,7 +170,7 @@ class HydratorTest extends BaseTest
             'referenceMany' => ['jon'],
         ]);
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->referenceMany);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->referenceMany);
 
         $this->expectException(HydratorException::class);
         $this->expectExceptionMessage('Expected association item with key "0" for field "referenceMany" in document of type "' . HydrationClosureUser::class . '" to be of type "array", "string" received.');

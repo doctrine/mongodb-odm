@@ -41,83 +41,83 @@ class DocumentManagerTest extends BaseTest
 {
     public function testCustomRepository(): void
     {
-        $this->assertInstanceOf(Repository::class, $this->dm->getRepository(Document::class));
+        self::assertInstanceOf(Repository::class, $this->dm->getRepository(Document::class));
     }
 
     public function testCustomRepositoryMappedsuperclass(): void
     {
-        $this->assertInstanceOf(BaseCategoryRepository::class, $this->dm->getRepository(BaseCategory::class));
+        self::assertInstanceOf(BaseCategoryRepository::class, $this->dm->getRepository(BaseCategory::class));
     }
 
     public function testCustomRepositoryMappedsuperclassChild(): void
     {
-        $this->assertInstanceOf(BaseCategoryRepository::class, $this->dm->getRepository(Category::class));
+        self::assertInstanceOf(BaseCategoryRepository::class, $this->dm->getRepository(Category::class));
     }
 
     public function testGetConnection(): void
     {
-        $this->assertInstanceOf(Client::class, $this->dm->getClient());
+        self::assertInstanceOf(Client::class, $this->dm->getClient());
     }
 
     public function testGetMetadataFactory(): void
     {
-        $this->assertInstanceOf(ClassMetadataFactory::class, $this->dm->getMetadataFactory());
+        self::assertInstanceOf(ClassMetadataFactory::class, $this->dm->getMetadataFactory());
     }
 
     public function testGetConfiguration(): void
     {
-        $this->assertInstanceOf(Configuration::class, $this->dm->getConfiguration());
+        self::assertInstanceOf(Configuration::class, $this->dm->getConfiguration());
     }
 
     public function testGetUnitOfWork(): void
     {
-        $this->assertInstanceOf(UnitOfWork::class, $this->dm->getUnitOfWork());
+        self::assertInstanceOf(UnitOfWork::class, $this->dm->getUnitOfWork());
     }
 
     public function testGetProxyFactory(): void
     {
-        $this->assertInstanceOf(ProxyFactory::class, $this->dm->getProxyFactory());
+        self::assertInstanceOf(ProxyFactory::class, $this->dm->getProxyFactory());
     }
 
     public function testGetEventManager(): void
     {
-        $this->assertInstanceOf(EventManager::class, $this->dm->getEventManager());
+        self::assertInstanceOf(EventManager::class, $this->dm->getEventManager());
     }
 
     public function testGetSchemaManager(): void
     {
-        $this->assertInstanceOf(SchemaManager::class, $this->dm->getSchemaManager());
+        self::assertInstanceOf(SchemaManager::class, $this->dm->getSchemaManager());
     }
 
     public function testCreateQueryBuilder(): void
     {
-        $this->assertInstanceOf(QueryBuilder::class, $this->dm->createQueryBuilder());
+        self::assertInstanceOf(QueryBuilder::class, $this->dm->createQueryBuilder());
     }
 
     public function testCreateAggregationBuilder(): void
     {
-        $this->assertInstanceOf(AggregationBuilder::class, $this->dm->createAggregationBuilder(BlogPost::class));
+        self::assertInstanceOf(AggregationBuilder::class, $this->dm->createAggregationBuilder(BlogPost::class));
     }
 
     public function testGetFilterCollection(): void
     {
-        $this->assertInstanceOf(FilterCollection::class, $this->dm->getFilterCollection());
+        self::assertInstanceOf(FilterCollection::class, $this->dm->getFilterCollection());
     }
 
     public function testGetPartialReference(): void
     {
         $id   = new ObjectId();
         $user = $this->dm->getPartialReference(CmsUser::class, $id);
-        $this->assertTrue($this->dm->contains($user));
-        $this->assertEquals($id, $user->id);
-        $this->assertNull($user->getName());
+        self::assertTrue($this->dm->contains($user));
+        self::assertEquals($id, $user->id);
+        self::assertNull($user->getName());
     }
 
     public function testDocumentManagerIsClosedAccessor(): void
     {
-        $this->assertTrue($this->dm->isOpen());
+        self::assertTrue($this->dm->isOpen());
         $this->dm->close();
-        $this->assertFalse($this->dm->isOpen());
+        self::assertFalse($this->dm->isOpen());
     }
 
     public function dataMethodsAffectedByNoObjectArguments(): array
@@ -189,7 +189,7 @@ class DocumentManagerTest extends BaseTest
             'targetDocument' => CmsPhonenumber::class,
         ]));
 
-        $this->assertSame(['$ref' => 'CmsPhonenumber', '$id' => 0], $dbRef);
+        self::assertSame(['$ref' => 'CmsPhonenumber', '$id' => 0], $dbRef);
     }
 
     public function testDisriminatedSimpleReferenceFails(): void
@@ -214,22 +214,22 @@ class DocumentManagerTest extends BaseTest
         $class = $this->dm->getClassMetadata(get_class($d));
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref1']);
-        $this->assertInstanceOf(ObjectId::class, $dbRef);
+        self::assertInstanceOf(ObjectId::class, $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref2']);
-        $this->assertCount(2, $dbRef);
-        $this->assertArrayHasKey('$ref', $dbRef);
-        $this->assertArrayHasKey('$id', $dbRef);
+        self::assertCount(2, $dbRef);
+        self::assertArrayHasKey('$ref', $dbRef);
+        self::assertArrayHasKey('$id', $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref3']);
-        $this->assertCount(3, $dbRef);
-        $this->assertArrayHasKey('$ref', $dbRef);
-        $this->assertArrayHasKey('$id', $dbRef);
-        $this->assertArrayHasKey('$db', $dbRef);
+        self::assertCount(3, $dbRef);
+        self::assertArrayHasKey('$ref', $dbRef);
+        self::assertArrayHasKey('$id', $dbRef);
+        self::assertArrayHasKey('$db', $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref4']);
-        $this->assertCount(1, $dbRef);
-        $this->assertArrayHasKey('id', $dbRef);
+        self::assertCount(1, $dbRef);
+        self::assertArrayHasKey('id', $dbRef);
     }
 }
 

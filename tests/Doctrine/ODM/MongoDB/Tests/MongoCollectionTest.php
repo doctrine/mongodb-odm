@@ -11,6 +11,6 @@ class MongoCollectionTest extends BaseTest
     public function testGridFSEmptyResult(): void
     {
         $mongoCollection = $this->dm->getDocumentCollection(File::class);
-        $this->assertNull($mongoCollection->findOne(['_id' => 'definitelynotanid']));
+        self::assertNull($mongoCollection->findOne(['_id' => 'definitelynotanid']));
     }
 }

@@ -31,8 +31,8 @@ class LifecycleCallbacksTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(User::class, $user->id);
-        $this->assertInstanceOf(DateTime::class, $user->createdAt);
-        $this->assertInstanceOf(DateTime::class, $user->profile->createdAt);
+        self::assertInstanceOf(DateTime::class, $user->createdAt);
+        self::assertInstanceOf(DateTime::class, $user->profile->createdAt);
 
         $user->name          = 'jon changed';
         $user->profile->name = 'changed';
@@ -40,18 +40,18 @@ class LifecycleCallbacksTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(User::class, $user->id);
-        $this->assertInstanceOf(DateTime::class, $user->updatedAt);
-        $this->assertInstanceOf(DateTime::class, $user->profile->updatedAt);
+        self::assertInstanceOf(DateTime::class, $user->updatedAt);
+        self::assertInstanceOf(DateTime::class, $user->profile->updatedAt);
     }
 
     public function testPreAndPostPersist(): void
     {
         $user = $this->createUser();
-        $this->assertTrue($user->prePersist);
-        $this->assertTrue($user->profile->prePersist);
+        self::assertTrue($user->prePersist);
+        self::assertTrue($user->profile->prePersist);
 
-        $this->assertTrue($user->postPersist);
-        $this->assertTrue($user->profile->postPersist);
+        self::assertTrue($user->postPersist);
+        self::assertTrue($user->profile->postPersist);
     }
 
     public function testPreUpdate(): void
@@ -61,11 +61,11 @@ class LifecycleCallbacksTest extends BaseTest
         $user->profile->name = 'Jon Doe';
         $this->dm->flush();
 
-        $this->assertTrue($user->preUpdate);
-        $this->assertTrue($user->profile->preUpdate);
+        self::assertTrue($user->preUpdate);
+        self::assertTrue($user->profile->preUpdate);
 
-        $this->assertTrue($user->postUpdate);
-        $this->assertTrue($user->profile->postUpdate);
+        self::assertTrue($user->postUpdate);
+        self::assertTrue($user->profile->postUpdate);
     }
 
     public function testPreFlush(): void
@@ -75,8 +75,8 @@ class LifecycleCallbacksTest extends BaseTest
         $user->profile->name = 'Jon Doe';
         $this->dm->flush();
 
-        $this->assertTrue($user->preFlush);
-        $this->assertTrue($user->profile->preFlush);
+        self::assertTrue($user->preFlush);
+        self::assertTrue($user->profile->preFlush);
     }
 
     public function testPreLoadAndPostLoad(): void
@@ -86,27 +86,27 @@ class LifecycleCallbacksTest extends BaseTest
 
         $user = $this->dm->find(User::class, $user->id);
 
-        $this->assertTrue($user->preLoad);
-        $this->assertTrue($user->profile->preLoad);
-        $this->assertTrue($user->postLoad);
-        $this->assertTrue($user->profile->postLoad);
+        self::assertTrue($user->preLoad);
+        self::assertTrue($user->profile->preLoad);
+        self::assertTrue($user->postLoad);
+        self::assertTrue($user->profile->postLoad);
     }
 
     public function testPreAndPostRemove(): void
     {
         $user = $this->createUser();
 
-        $this->assertTrue($this->uow->isInIdentityMap($user));
-        $this->assertTrue($this->uow->isInIdentityMap($user->profile));
+        self::assertTrue($this->uow->isInIdentityMap($user));
+        self::assertTrue($this->uow->isInIdentityMap($user->profile));
 
         $this->dm->remove($user);
         $this->dm->flush();
 
-        $this->assertTrue($user->preRemove);
-        $this->assertTrue($user->profile->preRemove);
+        self::assertTrue($user->preRemove);
+        self::assertTrue($user->profile->preRemove);
 
-        $this->assertTrue($user->postRemove);
-        $this->assertTrue($user->profile->postRemove);
+        self::assertTrue($user->postRemove);
+        self::assertTrue($user->profile->postRemove);
     }
 
     public function testEmbedManyEvent(): void
@@ -120,39 +120,39 @@ class LifecycleCallbacksTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertTrue($profile->prePersist);
-        $this->assertTrue($profile->postPersist);
-        $this->assertFalse($profile->preUpdate);
-        $this->assertFalse($profile->postUpdate);
+        self::assertTrue($profile->prePersist);
+        self::assertTrue($profile->postPersist);
+        self::assertFalse($profile->preUpdate);
+        self::assertFalse($profile->postUpdate);
 
         $profile->name = 'changed';
         $this->dm->flush();
 
-        $this->assertTrue($profile->preUpdate);
-        $this->assertTrue($profile->postUpdate);
+        self::assertTrue($profile->preUpdate);
+        self::assertTrue($profile->postUpdate);
 
         $this->dm->clear();
         $user    = $this->dm->find(User::class, $user->id);
         $profile = $user->profiles[0];
 
-        $this->assertTrue($profile->preLoad);
-        $this->assertTrue($profile->postLoad);
+        self::assertTrue($profile->preLoad);
+        self::assertTrue($profile->postLoad);
 
         $profile->name = 'w00t';
         $this->dm->flush();
 
-        $this->assertTrue($user->preUpdate);
-        $this->assertTrue($user->postUpdate);
-        $this->assertTrue($profile->preUpdate);
-        $this->assertTrue($profile->postUpdate);
+        self::assertTrue($user->preUpdate);
+        self::assertTrue($user->postUpdate);
+        self::assertTrue($profile->preUpdate);
+        self::assertTrue($profile->postUpdate);
 
         $this->dm->remove($user);
         $this->dm->flush();
 
-        $this->assertTrue($user->preRemove);
-        $this->assertTrue($user->postRemove);
-        $this->assertTrue($profile->preRemove);
-        $this->assertTrue($profile->postRemove);
+        self::assertTrue($user->preRemove);
+        self::assertTrue($user->postRemove);
+        self::assertTrue($profile->preRemove);
+        self::assertTrue($profile->postRemove);
     }
 
     public function testMultipleLevelsOfEmbedded(): void
@@ -163,19 +163,19 @@ class LifecycleCallbacksTest extends BaseTest
         $user->profile->profile = $profile;
         $this->dm->flush();
 
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->profile->profile));
-        $this->assertTrue($this->uow->isInIdentityMap($user->profile->profile));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->profile->profile));
+        self::assertTrue($this->uow->isInIdentityMap($user->profile->profile));
 
-        $this->assertTrue($profile->prePersist);
-        $this->assertTrue($profile->postPersist);
-        $this->assertFalse($profile->preUpdate);
-        $this->assertFalse($profile->postUpdate);
+        self::assertTrue($profile->prePersist);
+        self::assertTrue($profile->postPersist);
+        self::assertFalse($profile->preUpdate);
+        self::assertFalse($profile->postUpdate);
 
         $profile->name = '2nd level changed';
         $this->dm->flush();
 
-        $this->assertTrue($profile->preUpdate);
-        $this->assertTrue($profile->postUpdate);
+        self::assertTrue($profile->preUpdate);
+        self::assertTrue($profile->postUpdate);
 
         $this->dm->clear();
         $user          = $this->dm->find(User::class, $user->id);
@@ -187,30 +187,30 @@ class LifecycleCallbacksTest extends BaseTest
         $user->profiles[] = $profile2;
         $this->dm->flush();
 
-        $this->assertFalse($profile->prePersist);
-        $this->assertFalse($profile->postPersist);
-        $this->assertTrue($profile->preUpdate);
-        $this->assertTrue($profile->postUpdate);
+        self::assertFalse($profile->prePersist);
+        self::assertFalse($profile->postPersist);
+        self::assertTrue($profile->preUpdate);
+        self::assertTrue($profile->postUpdate);
 
-        $this->assertTrue($profile2->prePersist);
-        $this->assertTrue($profile2->postPersist);
-        $this->assertFalse($profile2->preUpdate);
-        $this->assertFalse($profile2->postUpdate);
+        self::assertTrue($profile2->prePersist);
+        self::assertTrue($profile2->postPersist);
+        self::assertFalse($profile2->preUpdate);
+        self::assertFalse($profile2->postUpdate);
 
         $this->dm->remove($user);
         $this->dm->flush();
 
-        $this->assertTrue($user->preRemove);
-        $this->assertTrue($user->postRemove);
+        self::assertTrue($user->preRemove);
+        self::assertTrue($user->postRemove);
 
-        $this->assertTrue($user->profile->preRemove);
-        $this->assertTrue($user->profile->postRemove);
+        self::assertTrue($user->profile->preRemove);
+        self::assertTrue($user->profile->postRemove);
 
-        $this->assertTrue($user->profile->profile->preRemove);
-        $this->assertTrue($user->profile->profile->postRemove);
+        self::assertTrue($user->profile->profile->preRemove);
+        self::assertTrue($user->profile->profile->postRemove);
 
-        $this->assertTrue($user->profiles[0]->preRemove);
-        $this->assertTrue($user->profiles[0]->postRemove);
+        self::assertTrue($user->profiles[0]->preRemove);
+        self::assertTrue($user->profiles[0]->postRemove);
     }
 
     public function testReferences(): void
@@ -221,11 +221,11 @@ class LifecycleCallbacksTest extends BaseTest
         $user->friends[] = $user2;
         $this->dm->flush();
 
-        $this->assertTrue($user->preFlush);
-        $this->assertTrue($user->preUpdate);
-        $this->assertTrue($user->postUpdate);
-        $this->assertFalse($user2->preUpdate);
-        $this->assertFalse($user2->postUpdate);
+        self::assertTrue($user->preFlush);
+        self::assertTrue($user->preUpdate);
+        self::assertTrue($user->postUpdate);
+        self::assertFalse($user2->preUpdate);
+        self::assertFalse($user2->postUpdate);
     }
 
     public function testEventsNotFiredForInverseSide(): void
@@ -241,8 +241,8 @@ class LifecycleCallbacksTest extends BaseTest
         $cart->customer = $customer;
         $this->dm->flush();
 
-        $this->assertFalse($customer->postUpdate);
-        $this->assertTrue($cart->postUpdate);
+        self::assertFalse($customer->postUpdate);
+        self::assertTrue($cart->postUpdate);
     }
 }
 

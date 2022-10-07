@@ -44,17 +44,17 @@ class IndexesTest extends BaseTest
         $sm      = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
-        $this->assertTrue(isset($indexes[0]['keys']['embedded.name']));
-        $this->assertEquals(1, $indexes[0]['keys']['embedded.name']);
+        self::assertTrue(isset($indexes[0]['keys']['embedded.name']));
+        self::assertEquals(1, $indexes[0]['keys']['embedded.name']);
 
-        $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
-        $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
+        self::assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
+        self::assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
 
-        $this->assertTrue(isset($indexes[2]['keys']['embeddedSecondary.name']));
-        $this->assertEquals(1, $indexes[2]['keys']['embeddedSecondary.name']);
+        self::assertTrue(isset($indexes[2]['keys']['embeddedSecondary.name']));
+        self::assertEquals(1, $indexes[2]['keys']['embeddedSecondary.name']);
 
-        $this->assertTrue(isset($indexes[3]['keys']['embeddedSecondary.embeddedMany.name']));
-        $this->assertEquals(1, $indexes[3]['keys']['embeddedSecondary.embeddedMany.name']);
+        self::assertTrue(isset($indexes[3]['keys']['embeddedSecondary.embeddedMany.name']));
+        self::assertEquals(1, $indexes[3]['keys']['embeddedSecondary.embeddedMany.name']);
     }
 
     public function testDiscriminatedEmbeddedIndexes(): void
@@ -63,14 +63,14 @@ class IndexesTest extends BaseTest
         $sm      = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
-        $this->assertTrue(isset($indexes[0]['keys']['embedded.name']));
-        $this->assertEquals(1, $indexes[0]['keys']['embedded.name']);
+        self::assertTrue(isset($indexes[0]['keys']['embedded.name']));
+        self::assertEquals(1, $indexes[0]['keys']['embedded.name']);
 
-        $this->assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
-        $this->assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
+        self::assertTrue(isset($indexes[1]['keys']['embedded.embeddedMany.name']));
+        self::assertEquals(1, $indexes[1]['keys']['embedded.embeddedMany.name']);
 
-        $this->assertTrue(isset($indexes[2]['keys']['embedded.value']));
-        $this->assertEquals(1, $indexes[2]['keys']['embedded.value']);
+        self::assertTrue(isset($indexes[2]['keys']['embedded.value']));
+        self::assertEquals(1, $indexes[2]['keys']['embedded.value']);
     }
 
     public function testDiscriminatorIndexes(): void
@@ -79,8 +79,8 @@ class IndexesTest extends BaseTest
         $sm      = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
-        $this->assertTrue(isset($indexes[0]['keys']['type']));
-        $this->assertEquals(1, $indexes[0]['keys']['type']);
+        self::assertTrue(isset($indexes[0]['keys']['type']));
+        self::assertEquals(1, $indexes[0]['keys']['type']);
     }
 
     public function testMultipleIndexAnnotations(): void
@@ -89,111 +89,111 @@ class IndexesTest extends BaseTest
         $sm      = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
-        $this->assertCount(3, $indexes);
+        self::assertCount(3, $indexes);
 
-        $this->assertTrue(isset($indexes[0]['keys']['name']));
-        $this->assertEquals(1, $indexes[0]['keys']['name']);
+        self::assertTrue(isset($indexes[0]['keys']['name']));
+        self::assertEquals(1, $indexes[0]['keys']['name']);
 
-        $this->assertTrue(isset($indexes[1]['keys']['name']));
-        $this->assertEquals(-1, $indexes[1]['keys']['name']);
+        self::assertTrue(isset($indexes[1]['keys']['name']));
+        self::assertEquals(-1, $indexes[1]['keys']['name']);
 
-        $this->assertTrue(isset($indexes[2]['keys']['name']));
-        $this->assertEquals(1, $indexes[2]['keys']['name']);
-        $this->assertTrue(isset($indexes[2]['options']['unique']));
-        $this->assertEquals(true, $indexes[2]['options']['unique']);
-        $this->assertTrue(isset($indexes[2]['options']['sparse']));
-        $this->assertEquals(true, $indexes[2]['options']['sparse']);
+        self::assertTrue(isset($indexes[2]['keys']['name']));
+        self::assertEquals(1, $indexes[2]['keys']['name']);
+        self::assertTrue(isset($indexes[2]['options']['unique']));
+        self::assertEquals(true, $indexes[2]['options']['unique']);
+        self::assertTrue(isset($indexes[2]['options']['sparse']));
+        self::assertEquals(true, $indexes[2]['options']['sparse']);
     }
 
     public function testIndexDefinitions(): void
     {
         $class   = $this->dm->getClassMetadata(UniqueOnFieldTest::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['options']['unique']));
-        $this->assertEquals(true, $indexes[0]['options']['unique']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['options']['unique']));
+        self::assertEquals(true, $indexes[0]['options']['unique']);
 
         $class   = $this->dm->getClassMetadata(UniqueOnDocumentTest::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['options']['unique']));
-        $this->assertEquals(true, $indexes[0]['options']['unique']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['options']['unique']));
+        self::assertEquals(true, $indexes[0]['options']['unique']);
 
         $class   = $this->dm->getClassMetadata(IndexesOnDocumentTest::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['options']['unique']));
-        $this->assertEquals(true, $indexes[0]['options']['unique']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['options']['unique']));
+        self::assertEquals(true, $indexes[0]['options']['unique']);
 
         $class   = $this->dm->getClassMetadata(PartialIndexOnDocumentTest::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['options']['partialFilterExpression']));
-        $this->assertSame(['counter' => ['$gt' => 5]], $indexes[0]['options']['partialFilterExpression']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['options']['partialFilterExpression']));
+        self::assertSame(['counter' => ['$gt' => 5]], $indexes[0]['options']['partialFilterExpression']);
 
         $class   = $this->dm->getClassMetadata(UniqueSparseOnFieldTest::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['options']['unique']));
-        $this->assertEquals(true, $indexes[0]['options']['unique']);
-        $this->assertTrue(isset($indexes[0]['options']['sparse']));
-        $this->assertEquals(true, $indexes[0]['options']['sparse']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['options']['unique']));
+        self::assertEquals(true, $indexes[0]['options']['unique']);
+        self::assertTrue(isset($indexes[0]['options']['sparse']));
+        self::assertEquals(true, $indexes[0]['options']['sparse']);
 
         $class   = $this->dm->getClassMetadata(UniqueSparseOnDocumentTest::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['options']['unique']));
-        $this->assertEquals(true, $indexes[0]['options']['unique']);
-        $this->assertTrue(isset($indexes[0]['options']['sparse']));
-        $this->assertEquals(true, $indexes[0]['options']['sparse']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['options']['unique']));
+        self::assertEquals(true, $indexes[0]['options']['unique']);
+        self::assertTrue(isset($indexes[0]['options']['sparse']));
+        self::assertEquals(true, $indexes[0]['options']['sparse']);
 
         $class   = $this->dm->getClassMetadata(SparseIndexesOnDocumentTest::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['options']['unique']));
-        $this->assertEquals(true, $indexes[0]['options']['unique']);
-        $this->assertTrue(isset($indexes[0]['options']['sparse']));
-        $this->assertEquals(true, $indexes[0]['options']['sparse']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['options']['unique']));
+        self::assertEquals(true, $indexes[0]['options']['unique']);
+        self::assertTrue(isset($indexes[0]['options']['sparse']));
+        self::assertEquals(true, $indexes[0]['options']['sparse']);
 
         $class   = $this->dm->getClassMetadata(MultipleFieldsUniqueIndexTest::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['keys']['email']));
-        $this->assertEquals(1, $indexes[0]['keys']['email']);
-        $this->assertTrue(isset($indexes[0]['options']['unique']));
-        $this->assertEquals(true, $indexes[0]['options']['unique']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['keys']['email']));
+        self::assertEquals(1, $indexes[0]['keys']['email']);
+        self::assertTrue(isset($indexes[0]['options']['unique']));
+        self::assertEquals(true, $indexes[0]['options']['unique']);
 
         $class   = $this->dm->getClassMetadata(MultipleFieldsUniqueSparseIndexTest::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['keys']['email']));
-        $this->assertEquals(1, $indexes[0]['keys']['email']);
-        $this->assertTrue(isset($indexes[0]['options']['unique']));
-        $this->assertEquals(true, $indexes[0]['options']['unique']);
-        $this->assertTrue(isset($indexes[0]['options']['sparse']));
-        $this->assertEquals(true, $indexes[0]['options']['sparse']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['keys']['email']));
+        self::assertEquals(1, $indexes[0]['keys']['email']);
+        self::assertTrue(isset($indexes[0]['options']['unique']));
+        self::assertEquals(true, $indexes[0]['options']['unique']);
+        self::assertTrue(isset($indexes[0]['options']['sparse']));
+        self::assertEquals(true, $indexes[0]['options']['sparse']);
 
         $class   = $this->dm->getClassMetadata(MultipleFieldIndexes::class);
         $indexes = $class->getIndexes();
-        $this->assertTrue(isset($indexes[0]['keys']['username']));
-        $this->assertEquals(1, $indexes[0]['keys']['username']);
-        $this->assertTrue(isset($indexes[0]['options']['unique']));
-        $this->assertEquals(true, $indexes[0]['options']['unique']);
+        self::assertTrue(isset($indexes[0]['keys']['username']));
+        self::assertEquals(1, $indexes[0]['keys']['username']);
+        self::assertTrue(isset($indexes[0]['options']['unique']));
+        self::assertEquals(true, $indexes[0]['options']['unique']);
 
-        $this->assertTrue(isset($indexes[1]['keys']['email']));
-        $this->assertEquals(1, $indexes[1]['keys']['email']);
-        $this->assertTrue(isset($indexes[1]['options']['unique']));
-        $this->assertEquals(true, $indexes[1]['options']['unique']);
-        $this->assertEquals('test', $indexes[0]['options']['name']);
+        self::assertTrue(isset($indexes[1]['keys']['email']));
+        self::assertEquals(1, $indexes[1]['keys']['email']);
+        self::assertTrue(isset($indexes[1]['options']['unique']));
+        self::assertEquals(true, $indexes[1]['options']['unique']);
+        self::assertEquals('test', $indexes[0]['options']['name']);
     }
 
     public function testUniqueIndexOnField(): void
@@ -237,9 +237,9 @@ class IndexesTest extends BaseTest
         $this->dm->getSchemaManager()->ensureDocumentIndexes($className);
 
         $indexes = $this->dm->getSchemaManager()->getDocumentIndexes($className);
-        $this->assertNotEmpty($indexes[0]['options']['partialFilterExpression']);
-        $this->assertSame(['counter' => ['$gt' => 5]], $indexes[0]['options']['partialFilterExpression']);
-        $this->assertTrue($indexes[0]['options']['unique']);
+        self::assertNotEmpty($indexes[0]['options']['partialFilterExpression']);
+        self::assertSame(['counter' => ['$gt' => 5]], $indexes[0]['options']['partialFilterExpression']);
+        self::assertTrue($indexes[0]['options']['unique']);
     }
 }
 

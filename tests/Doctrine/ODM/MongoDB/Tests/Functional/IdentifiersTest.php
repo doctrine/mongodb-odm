@@ -29,22 +29,22 @@ class IdentifiersTest extends BaseTest
         $test = $this->dm->getRepository(get_class($event))->find($event->getId());
 
         $userTest = $test->getUser();
-        $this->assertEquals($user->getId(), $userTest->getId());
-        $this->assertInstanceOf(LazyLoadingInterface::class, $userTest);
-        $this->assertFalse($userTest->isProxyInitialized());
+        self::assertEquals($user->getId(), $userTest->getId());
+        self::assertInstanceOf(LazyLoadingInterface::class, $userTest);
+        self::assertFalse($userTest->isProxyInitialized());
 
         $this->dm->clear();
 
         $class = $this->dm->getClassMetadata(get_class($test->getUser()));
 
         $test = $this->dm->getRepository(get_class($event))->find($event->getId());
-        $this->assertEquals($user->getId(), $class->getIdentifierValue($test->getUser()));
-        $this->assertEquals($user->getId(), $class->getFieldValue($test->getUser(), 'id'));
-        $this->assertInstanceOf(LazyLoadingInterface::class, $test->getUser());
-        $this->assertFalse($test->getUser()->isProxyInitialized());
+        self::assertEquals($user->getId(), $class->getIdentifierValue($test->getUser()));
+        self::assertEquals($user->getId(), $class->getFieldValue($test->getUser(), 'id'));
+        self::assertInstanceOf(LazyLoadingInterface::class, $test->getUser());
+        self::assertFalse($test->getUser()->isProxyInitialized());
 
-        $this->assertEquals('jwage', $test->getUser()->getUsername());
-        $this->assertTrue($test->getUser()->isProxyInitialized());
+        self::assertEquals('jwage', $test->getUser()->getUsername());
+        self::assertTrue($test->getUser()->isProxyInitialized());
     }
 
     public function testIdentifiersAreSet(): void
@@ -56,7 +56,7 @@ class IdentifiersTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertNotSame('', $user->getId());
+        self::assertNotSame('', $user->getId());
     }
 
     public function testIdentityMap(): void
@@ -72,13 +72,13 @@ class IdentifiersTest extends BaseTest
 
         $user = $qb->getQuery()->getSingleResult();
         assert($user instanceof User);
-        $this->assertSame($user, $user);
+        self::assertSame($user, $user);
 
         $this->dm->clear();
 
         $user2 = $qb->getQuery()->getSingleResult();
         assert($user2 instanceof User);
-        $this->assertNotSame($user, $user2);
+        self::assertNotSame($user, $user2);
 
         $user2->setUsername('changed');
 
@@ -86,8 +86,8 @@ class IdentifiersTest extends BaseTest
 
         $user3 = $qb->getQuery()->getSingleResult();
         assert($user3 instanceof User);
-        $this->assertSame($user2, $user3);
-        $this->assertEquals('jwage', $user3->getUsername());
+        self::assertSame($user2, $user3);
+        self::assertEquals('jwage', $user3->getUsername());
 
         $user3->setUsername('changed');
 
@@ -95,7 +95,7 @@ class IdentifiersTest extends BaseTest
 
         $user4 = $qb->getQuery()->getSingleResult();
         assert($user4 instanceof User);
-        $this->assertEquals('changed', $user4->getUsername());
+        self::assertEquals('changed', $user4->getUsername());
 
         $qb = $this->dm->createQueryBuilder(User::class)
             ->findAndUpdate()
@@ -105,15 +105,15 @@ class IdentifiersTest extends BaseTest
             ->field('count')->inc(1);
 
         $result = $qb->refresh(false)->getQuery()->execute();
-        $this->assertInstanceOf(User::class, $result);
-        $this->assertEquals(0, $result->getCount());
+        self::assertInstanceOf(User::class, $result);
+        self::assertEquals(0, $result->getCount());
 
         $result = $qb->refresh(false)->getQuery()->execute();
-        $this->assertInstanceOf(User::class, $result);
-        $this->assertEquals(0, $result->getCount());
+        self::assertInstanceOf(User::class, $result);
+        self::assertEquals(0, $result->getCount());
 
         $result = $qb->refresh(true)->getQuery()->execute();
-        $this->assertInstanceOf(User::class, $result);
-        $this->assertEquals(3, $result->getCount());
+        self::assertInstanceOf(User::class, $result);
+        self::assertEquals(3, $result->getCount());
     }
 }

@@ -16,7 +16,7 @@ class SkipTest extends BaseTest
     {
         $skipStage = new Skip($this->getTestAggregationBuilder(), 10);
 
-        $this->assertSame(['$skip' => 10], $skipStage->getExpression());
+        self::assertSame(['$skip' => 10], $skipStage->getExpression());
     }
 
     public function testSkipFromBuilder(): void
@@ -24,6 +24,6 @@ class SkipTest extends BaseTest
         $builder = $this->getTestAggregationBuilder();
         $builder->skip(10);
 
-        $this->assertSame([['$skip' => 10]], $builder->getPipeline());
+        self::assertSame([['$skip' => 10]], $builder->getPipeline());
     }
 }

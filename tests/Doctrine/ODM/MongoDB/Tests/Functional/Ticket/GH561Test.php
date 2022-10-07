@@ -24,16 +24,16 @@ class GH561Test extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->find(GH561Document::class, $document->id);
-        $this->assertInstanceOf(GH561Document::class, $document);
-        $this->assertCount(1, $document->embeddedDocuments);
+        self::assertInstanceOf(GH561Document::class, $document);
+        self::assertCount(1, $document->embeddedDocuments);
 
         $embeddedDocument = $document->embeddedDocuments->first();
-        $this->assertInstanceOf(GH561EmbeddedDocument::class, $embeddedDocument);
-        $this->assertCount(1, $embeddedDocument->embeddedDocuments);
+        self::assertInstanceOf(GH561EmbeddedDocument::class, $embeddedDocument);
+        self::assertCount(1, $embeddedDocument->embeddedDocuments);
 
         $anotherEmbeddedDocument = $embeddedDocument->embeddedDocuments->first();
-        $this->assertInstanceOf(GH561AnotherEmbeddedDocument::class, $anotherEmbeddedDocument);
-        $this->assertEquals('foo', $anotherEmbeddedDocument->name);
+        self::assertInstanceOf(GH561AnotherEmbeddedDocument::class, $anotherEmbeddedDocument);
+        self::assertEquals('foo', $anotherEmbeddedDocument->name);
     }
 }
 

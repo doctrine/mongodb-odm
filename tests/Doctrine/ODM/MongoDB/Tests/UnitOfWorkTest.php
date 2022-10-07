@@ -37,18 +37,18 @@ class UnitOfWorkTest extends BaseTest
     {
         $class = $this->dm->getClassMetadata(ForumUser::class);
         $user  = new ForumUser();
-        $this->assertFalse($this->uow->isDocumentScheduled($user));
+        self::assertFalse($this->uow->isDocumentScheduled($user));
         $this->uow->scheduleForInsert($class, $user);
-        $this->assertTrue($this->uow->isDocumentScheduled($user));
+        self::assertTrue($this->uow->isDocumentScheduled($user));
     }
 
     public function testScheduleForInsert(): void
     {
         $class = $this->dm->getClassMetadata(ForumUser::class);
         $user  = new ForumUser();
-        $this->assertFalse($this->uow->isScheduledForInsert($user));
+        self::assertFalse($this->uow->isScheduledForInsert($user));
         $this->uow->scheduleForInsert($class, $user);
-        $this->assertTrue($this->uow->isScheduledForInsert($user));
+        self::assertTrue($this->uow->isScheduledForInsert($user));
     }
 
     public function testScheduleForUpsert(): void
@@ -56,11 +56,11 @@ class UnitOfWorkTest extends BaseTest
         $class    = $this->dm->getClassMetadata(ForumUser::class);
         $user     = new ForumUser();
         $user->id = new ObjectId();
-        $this->assertFalse($this->uow->isScheduledForInsert($user));
-        $this->assertFalse($this->uow->isScheduledForUpsert($user));
+        self::assertFalse($this->uow->isScheduledForInsert($user));
+        self::assertFalse($this->uow->isScheduledForUpsert($user));
         $this->uow->scheduleForUpsert($class, $user);
-        $this->assertFalse($this->uow->isScheduledForInsert($user));
-        $this->assertTrue($this->uow->isScheduledForUpsert($user));
+        self::assertFalse($this->uow->isScheduledForInsert($user));
+        self::assertTrue($this->uow->isScheduledForUpsert($user));
     }
 
     public function testGetScheduledDocumentUpserts(): void
@@ -68,20 +68,20 @@ class UnitOfWorkTest extends BaseTest
         $class    = $this->dm->getClassMetadata(ForumUser::class);
         $user     = new ForumUser();
         $user->id = new ObjectId();
-        $this->assertEmpty($this->uow->getScheduledDocumentUpserts());
+        self::assertEmpty($this->uow->getScheduledDocumentUpserts());
         $this->uow->scheduleForUpsert($class, $user);
-        $this->assertEquals([spl_object_hash($user) => $user], $this->uow->getScheduledDocumentUpserts());
+        self::assertEquals([spl_object_hash($user) => $user], $this->uow->getScheduledDocumentUpserts());
     }
 
     public function testScheduleForEmbeddedUpsert(): void
     {
         $test     = new EmbeddedUpsertDocument();
         $test->id = (string) new ObjectId();
-        $this->assertFalse($this->uow->isScheduledForInsert($test));
-        $this->assertFalse($this->uow->isScheduledForUpsert($test));
+        self::assertFalse($this->uow->isScheduledForInsert($test));
+        self::assertFalse($this->uow->isScheduledForUpsert($test));
         $this->uow->persist($test);
-        $this->assertTrue($this->uow->isScheduledForInsert($test));
-        $this->assertFalse($this->uow->isScheduledForUpsert($test));
+        self::assertTrue($this->uow->isScheduledForInsert($test));
+        self::assertFalse($this->uow->isScheduledForUpsert($test));
     }
 
     public function testScheduleForUpsertWithNonObjectIdValues(): void
@@ -89,11 +89,11 @@ class UnitOfWorkTest extends BaseTest
         $doc     = new UowCustomIdDocument();
         $doc->id = 'string';
         $class   = $this->dm->getClassMetadata(get_class($doc));
-        $this->assertFalse($this->uow->isScheduledForInsert($doc));
-        $this->assertFalse($this->uow->isScheduledForUpsert($doc));
+        self::assertFalse($this->uow->isScheduledForInsert($doc));
+        self::assertFalse($this->uow->isScheduledForUpsert($doc));
         $this->uow->scheduleForUpsert($class, $doc);
-        $this->assertFalse($this->uow->isScheduledForInsert($doc));
-        $this->assertTrue($this->uow->isScheduledForUpsert($doc));
+        self::assertFalse($this->uow->isScheduledForInsert($doc));
+        self::assertTrue($this->uow->isScheduledForUpsert($doc));
     }
 
     public function testScheduleForInsertShouldNotUpsertDocumentsWithInconsistentIdValues(): void
@@ -101,20 +101,20 @@ class UnitOfWorkTest extends BaseTest
         $class    = $this->dm->getClassMetadata(ForumUser::class);
         $user     = new ForumUser();
         $user->id = 1;
-        $this->assertFalse($this->uow->isScheduledForInsert($user));
-        $this->assertFalse($this->uow->isScheduledForUpsert($user));
+        self::assertFalse($this->uow->isScheduledForInsert($user));
+        self::assertFalse($this->uow->isScheduledForUpsert($user));
         $this->uow->scheduleForInsert($class, $user);
-        $this->assertTrue($this->uow->isScheduledForInsert($user));
-        $this->assertFalse($this->uow->isScheduledForUpsert($user));
+        self::assertTrue($this->uow->isScheduledForInsert($user));
+        self::assertFalse($this->uow->isScheduledForUpsert($user));
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored(): void
     {
         $user           = new ForumUser();
         $user->username = 'romanb';
-        $this->assertFalse($this->uow->isScheduledForDelete($user));
+        self::assertFalse($this->uow->isScheduledForDelete($user));
         $this->uow->scheduleForDelete($user);
-        $this->assertFalse($this->uow->isScheduledForDelete($user));
+        self::assertFalse($this->uow->isScheduledForDelete($user));
     }
 
     public function testScheduleForDeleteShouldUnregisterScheduledUpserts(): void
@@ -122,17 +122,17 @@ class UnitOfWorkTest extends BaseTest
         $class    = $this->dm->getClassMetadata(ForumUser::class);
         $user     = new ForumUser();
         $user->id = new ObjectId();
-        $this->assertFalse($this->uow->isScheduledForInsert($user));
-        $this->assertFalse($this->uow->isScheduledForUpsert($user));
-        $this->assertFalse($this->uow->isScheduledForDelete($user));
+        self::assertFalse($this->uow->isScheduledForInsert($user));
+        self::assertFalse($this->uow->isScheduledForUpsert($user));
+        self::assertFalse($this->uow->isScheduledForDelete($user));
         $this->uow->scheduleForUpsert($class, $user);
-        $this->assertFalse($this->uow->isScheduledForInsert($user));
-        $this->assertTrue($this->uow->isScheduledForUpsert($user));
-        $this->assertFalse($this->uow->isScheduledForDelete($user));
+        self::assertFalse($this->uow->isScheduledForInsert($user));
+        self::assertTrue($this->uow->isScheduledForUpsert($user));
+        self::assertFalse($this->uow->isScheduledForDelete($user));
         $this->uow->scheduleForDelete($user);
-        $this->assertFalse($this->uow->isScheduledForInsert($user));
-        $this->assertFalse($this->uow->isScheduledForUpsert($user));
-        $this->assertTrue($this->uow->isScheduledForDelete($user));
+        self::assertFalse($this->uow->isScheduledForInsert($user));
+        self::assertFalse($this->uow->isScheduledForUpsert($user));
+        self::assertTrue($this->uow->isScheduledForDelete($user));
     }
 
     public function testThrowsOnPersistOfMappedSuperclass(): void
@@ -153,7 +153,7 @@ class UnitOfWorkTest extends BaseTest
         $mappingD = ClassMetadataTestUtil::getFieldMapping(['name' => 'c']);
         $this->uow->setParentAssociation($d, $mappingD, $c, 'b.c.d');
 
-        $this->assertEquals([$mappingD, $c, 'b.c.d'], $this->uow->getParentAssociation($d));
+        self::assertEquals([$mappingD, $c, 'b.c.d'], $this->uow->getParentAssociation($d));
     }
 
     /**
@@ -184,7 +184,7 @@ class UnitOfWorkTest extends BaseTest
 
         $this->uow->computeChangeSets();
         $changeset = $this->uow->getDocumentChangeSet($test);
-        $this->assertArrayNotHasKey('notSaved', $changeset);
+        self::assertArrayNotHasKey('notSaved', $changeset);
     }
 
     public function testNoUpdatesOnGridFSFields(): void
@@ -218,11 +218,11 @@ class UnitOfWorkTest extends BaseTest
 
         $this->uow->computeChangeSets();
         $changeset = $this->uow->getDocumentChangeSet($file);
-        $this->assertArrayNotHasKey('filename', $changeset);
-        $this->assertArrayNotHasKey('chunkSize', $changeset);
-        $this->assertArrayNotHasKey('length', $changeset);
-        $this->assertArrayNotHasKey('uploadDate', $changeset);
-        $this->assertArrayHasKey('metadata', $changeset);
+        self::assertArrayNotHasKey('filename', $changeset);
+        self::assertArrayNotHasKey('chunkSize', $changeset);
+        self::assertArrayNotHasKey('length', $changeset);
+        self::assertArrayNotHasKey('uploadDate', $changeset);
+        self::assertArrayHasKey('metadata', $changeset);
     }
 
     public function testComputingChangesetForFileWithoutMetadataThrowsNoError(): void
@@ -245,7 +245,7 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->computeChangeSets();
         $changeset = $this->uow->getDocumentChangeSet($file);
 
-        $this->assertSame([], $changeset);
+        self::assertSame([], $changeset);
     }
 
     /**
@@ -261,11 +261,11 @@ class UnitOfWorkTest extends BaseTest
         $arrayTest->data = $updateData;
         $this->uow->computeChangeSets();
 
-        $this->assertEquals($shouldInUpdate, $this->uow->isScheduledForUpdate($arrayTest));
+        self::assertEquals($shouldInUpdate, $this->uow->isScheduledForUpdate($arrayTest));
 
         $this->uow->commit();
 
-        $this->assertFalse($this->uow->isScheduledForUpdate($arrayTest));
+        self::assertFalse($this->uow->isScheduledForUpdate($arrayTest));
     }
 
     public function getScheduleForUpdateWithArraysTests(): array
@@ -326,7 +326,7 @@ class UnitOfWorkTest extends BaseTest
 
         $this->uow->registerManaged($document, null, []);
 
-        $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
+        self::assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
 
     public function testRegisterManagedEmbeddedDocumentWithoutMappedId(): void
@@ -336,7 +336,7 @@ class UnitOfWorkTest extends BaseTest
 
         $this->uow->registerManaged($document, null, []);
 
-        $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
+        self::assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
 
     public function testRegisterManagedEmbeddedDocumentWithMappedIdStrategyNoneAndNullValue(): void
@@ -346,7 +346,7 @@ class UnitOfWorkTest extends BaseTest
 
         $this->uow->registerManaged($document, null, []);
 
-        $this->assertEquals($oid, $this->uow->getDocumentIdentifier($document));
+        self::assertEquals($oid, $this->uow->getDocumentIdentifier($document));
     }
 
     public function testPersistNewGridFSFile(): void
@@ -367,19 +367,19 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->persist($user);
         $this->uow->commit();
 
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user));
 
         $this->uow->remove($user);
 
-        $this->assertEquals(UnitOfWork::STATE_REMOVED, $this->uow->getDocumentState($user));
+        self::assertEquals(UnitOfWork::STATE_REMOVED, $this->uow->getDocumentState($user));
 
         $this->uow->persist($user);
 
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user));
 
         $this->uow->commit();
 
-        $this->assertNotNull($this->dm->getRepository(get_class($user))->find($user->id));
+        self::assertNotNull($this->dm->getRepository(get_class($user))->find($user->id));
     }
 
     public function testRemovePersistedButNotFlushedDocument(): void
@@ -391,7 +391,7 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->remove($user);
         $this->uow->commit();
 
-        $this->assertNull($this->dm->getRepository(get_class($user))->find($user->id));
+        self::assertNull($this->dm->getRepository(get_class($user))->find($user->id));
     }
 
     public function testPersistRemovedEmbeddedDocument(): void
@@ -406,20 +406,20 @@ class UnitOfWorkTest extends BaseTest
 
         $this->uow->remove($test);
 
-        $this->assertEquals(UnitOfWork::STATE_REMOVED, $this->uow->getDocumentState($test));
-        $this->assertTrue($this->uow->isScheduledForDelete($test));
+        self::assertEquals(UnitOfWork::STATE_REMOVED, $this->uow->getDocumentState($test));
+        self::assertTrue($this->uow->isScheduledForDelete($test));
 
         // removing a top level document should cascade to embedded documents
-        $this->assertEquals(UnitOfWork::STATE_REMOVED, $this->uow->getDocumentState($test->embedded));
-        $this->assertTrue($this->uow->isScheduledForDelete($test->embedded));
+        self::assertEquals(UnitOfWork::STATE_REMOVED, $this->uow->getDocumentState($test->embedded));
+        self::assertTrue($this->uow->isScheduledForDelete($test->embedded));
 
         $this->uow->persist($test);
         $this->uow->commit();
 
-        $this->assertFalse($test->embedded->preRemove);
+        self::assertFalse($test->embedded->preRemove);
 
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($test));
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($test->embedded));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($test));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($test->embedded));
     }
 
     public function testPersistingEmbeddedDocumentWithoutIdentifier(): void
@@ -428,21 +428,21 @@ class UnitOfWorkTest extends BaseTest
         $user    = new User();
         $user->setAddress($address);
 
-        $this->assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($address));
-        $this->assertFalse($this->uow->isInIdentityMap($address));
-        $this->assertNull($this->uow->getDocumentIdentifier($address));
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($address));
+        self::assertFalse($this->uow->isInIdentityMap($address));
+        self::assertNull($this->uow->getDocumentIdentifier($address));
 
         $this->uow->persist($user);
 
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->getAddress()));
-        $this->assertTrue($this->uow->isInIdentityMap($address));
-        $this->assertTrue($this->uow->isScheduledForInsert($address));
-        $this->assertEquals(spl_object_hash($address), $this->uow->getDocumentIdentifier($address));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->getAddress()));
+        self::assertTrue($this->uow->isInIdentityMap($address));
+        self::assertTrue($this->uow->isScheduledForInsert($address));
+        self::assertEquals(spl_object_hash($address), $this->uow->getDocumentIdentifier($address));
 
         $this->uow->commit();
 
-        $this->assertTrue($this->uow->isInIdentityMap($address));
-        $this->assertFalse($this->uow->isScheduledForInsert($address));
+        self::assertTrue($this->uow->isInIdentityMap($address));
+        self::assertFalse($this->uow->isScheduledForInsert($address));
     }
 
     public function testEmbeddedDocumentChangeSets(): void
@@ -456,7 +456,7 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->computeChangeSets();
 
         $changeSet = $this->uow->getDocumentChangeSet($address);
-        $this->assertNotEmpty($changeSet);
+        self::assertNotEmpty($changeSet);
 
         $this->uow->commit();
 
@@ -465,8 +465,8 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->computeChangeSets();
         $changeSet = $this->uow->getDocumentChangeSet($address);
 
-        $this->assertArrayHasKey('city', $changeSet);
-        $this->assertEquals('Nashville', $changeSet['city'][1]);
+        self::assertArrayHasKey('city', $changeSet);
+        self::assertEquals('Nashville', $changeSet['city'][1]);
     }
 
     public function testGetClassNameForAssociation(): void
@@ -478,7 +478,7 @@ class UnitOfWorkTest extends BaseTest
         ]);
         $data    = ['type' => 'forum_user'];
 
-        $this->assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
+        self::assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
     }
 
     public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap(): void
@@ -491,13 +491,13 @@ class UnitOfWorkTest extends BaseTest
         $userClassMetadata->discriminatorMap   = ['forum_user' => ForumUser::class];
         $this->dm->getMetadataFactory()->setMetadataFor(User::class, $userClassMetadata);
 
-        $this->assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
+        self::assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
     }
 
     public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData(): void
     {
         $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
-        $this->assertEquals(User::class, $this->uow->getClassNameForAssociation($mapping, null));
+        self::assertEquals(User::class, $this->uow->getClassNameForAssociation($mapping, null));
     }
 
     public function testRecomputeChangesetForUninitializedProxyDoesNotCreateChangeset(): void
@@ -513,15 +513,15 @@ class UnitOfWorkTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(ForumUser::class, $id);
-        $this->assertInstanceOf(ForumUser::class, $user);
+        self::assertInstanceOf(ForumUser::class, $user);
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $user->getAvatar());
+        self::assertInstanceOf(GhostObjectInterface::class, $user->getAvatar());
 
         $classMetadata = $this->dm->getClassMetadata(ForumAvatar::class);
 
         $this->uow->recomputeSingleDocumentChangeSet($classMetadata, $user->getAvatar());
 
-        $this->assertEquals([], $this->uow->getDocumentChangeSet($user->getAvatar()));
+        self::assertEquals([], $this->uow->getDocumentChangeSet($user->getAvatar()));
     }
 
     public function testCommitsInProgressIsUpdatedOnException(): void
@@ -542,7 +542,7 @@ class UnitOfWorkTest extends BaseTest
                 return $unitOfWork->commitsInProgress;
             }, $this->dm->getUnitOfWork(), UnitOfWork::class);
 
-            $this->assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
+            self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
 
             return;
         }

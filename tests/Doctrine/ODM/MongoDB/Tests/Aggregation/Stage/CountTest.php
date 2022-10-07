@@ -16,7 +16,7 @@ class CountTest extends BaseTest
     {
         $countStage = new Count($this->getTestAggregationBuilder(), 'document_count');
 
-        $this->assertSame(['$count' => 'document_count'], $countStage->getExpression());
+        self::assertSame(['$count' => 'document_count'], $countStage->getExpression());
     }
 
     public function testCountFromBuilder(): void
@@ -24,6 +24,6 @@ class CountTest extends BaseTest
         $builder = $this->getTestAggregationBuilder();
         $builder->count('document_count');
 
-        $this->assertSame([['$count' => 'document_count']], $builder->getPipeline());
+        self::assertSame([['$count' => 'document_count']], $builder->getPipeline());
     }
 }

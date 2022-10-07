@@ -27,7 +27,7 @@ class GH389Test extends BaseTest
         $rootDocument = $this->dm->getRepository(RootDocument::class)->find($rootDocumentId);
 
         //Test
-        $this->assertInstanceOf(EmptyEmbeddedDocument::class, $rootDocument->getEmptyEmbeddedDocument());
+        self::assertInstanceOf(EmptyEmbeddedDocument::class, $rootDocument->getEmptyEmbeddedDocument());
     }
 }
 

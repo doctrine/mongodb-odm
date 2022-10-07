@@ -27,14 +27,14 @@ class CustomCollectionsTest extends BaseTest
     {
         $d  = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
-        $this->assertSame(MyEmbedsCollection::class, $cm->fieldMappings['coll']['collectionClass']);
+        self::assertSame(MyEmbedsCollection::class, $cm->fieldMappings['coll']['collectionClass']);
     }
 
     public function testLeadingBackslashIsRemoved(): void
     {
         $d  = new DocumentWithCustomCollection();
         $cm = $this->dm->getClassMetadata(get_class($d));
-        $this->assertSame(MyDocumentsCollection::class, $cm->fieldMappings['inverseRefMany']['collectionClass']);
+        self::assertSame(MyDocumentsCollection::class, $cm->fieldMappings['inverseRefMany']['collectionClass']);
     }
 
     public function testCollectionClassHasToImplementCommonInterface(): void
@@ -62,9 +62,9 @@ class CustomCollectionsTest extends BaseTest
             ClassMetadataTestUtil::getFieldMapping(['collectionClass' => MyEmbedsCollection::class]),
             $coll
         );
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $pcoll);
-        $this->assertInstanceOf(MyEmbedsCollection::class, $pcoll);
-        $this->assertSame($coll, $pcoll->unwrap());
+        self::assertInstanceOf(PersistentCollectionInterface::class, $pcoll);
+        self::assertInstanceOf(MyEmbedsCollection::class, $pcoll);
+        self::assertSame($coll, $pcoll->unwrap());
     }
 
     public function testEmbedMany(): void
@@ -77,20 +77,20 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->persist($d);
         $this->dm->flush();
 
-        $this->assertNotInstanceOf(PersistentCollection::class, $d->coll);
-        $this->assertInstanceOf(MyEmbedsCollection::class, $d->coll);
-        $this->assertInstanceOf(PersistentCollection::class, $d->boring);
+        self::assertNotInstanceOf(PersistentCollection::class, $d->coll);
+        self::assertInstanceOf(MyEmbedsCollection::class, $d->coll);
+        self::assertInstanceOf(PersistentCollection::class, $d->boring);
 
         $this->dm->clear();
         $d = $this->dm->find(get_class($d), $d->id);
 
-        $this->assertNotInstanceOf(PersistentCollection::class, $d->coll);
-        $this->assertInstanceOf(MyEmbedsCollection::class, $d->coll);
-        $this->assertCount(1, $d->coll->getEnabled());
-        $this->assertCount(1, $d->coll->getByName('#1'));
+        self::assertNotInstanceOf(PersistentCollection::class, $d->coll);
+        self::assertInstanceOf(MyEmbedsCollection::class, $d->coll);
+        self::assertCount(1, $d->coll->getEnabled());
+        self::assertCount(1, $d->coll->getByName('#1'));
 
-        $this->assertInstanceOf(PersistentCollection::class, $d->boring);
-        $this->assertCount(2, $d->boring);
+        self::assertInstanceOf(PersistentCollection::class, $d->boring);
+        self::assertCount(2, $d->boring);
     }
 
     public function testReferenceMany(): void
@@ -108,10 +108,10 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->clear();
 
         $d2 = $this->dm->find(get_class($d2), $d2->id);
-        $this->assertNotInstanceOf(PersistentCollection::class, $d2->refMany);
-        $this->assertInstanceOf(MyDocumentsCollection::class, $d2->refMany);
-        $this->assertCount(2, $d2->refMany);
-        $this->assertCount(1, $d2->refMany->havingEmbeds());
+        self::assertNotInstanceOf(PersistentCollection::class, $d2->refMany);
+        self::assertInstanceOf(MyDocumentsCollection::class, $d2->refMany);
+        self::assertCount(2, $d2->refMany);
+        self::assertCount(1, $d2->refMany->havingEmbeds());
     }
 
     public function testInverseSideOfReferenceMany(): void
@@ -126,8 +126,8 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->clear();
 
         $d2 = $this->dm->find(get_class($d2), $d2->id);
-        $this->assertNotInstanceOf(PersistentCollection::class, $d2->inverseRefMany);
-        $this->assertInstanceOf(MyDocumentsCollection::class, $d2->inverseRefMany);
+        self::assertNotInstanceOf(PersistentCollection::class, $d2->inverseRefMany);
+        self::assertInstanceOf(MyDocumentsCollection::class, $d2->inverseRefMany);
     }
 
     public function testModifyingCollectionByCustomMethod(): void
@@ -144,9 +144,9 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->clear();
 
         $d = $this->dm->find(get_class($d), $d->id);
-        $this->assertCount(2, $d->coll);
-        $this->assertEquals($e2, $d->coll[0]);
-        $this->assertEquals($e1, $d->coll[1]);
+        self::assertCount(2, $d->coll);
+        self::assertEquals($e2, $d->coll[0]);
+        self::assertEquals($e1, $d->coll[1]);
     }
 
     public function testModifyingCollectionInChangeTrackingNotifyDocument(): void
@@ -169,9 +169,9 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->clear();
 
         $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
-        $this->assertCount(2, $profile->getImages());
-        $this->assertEquals($f2->getId(), $profile->getImages()[0]->getId());
-        $this->assertEquals($f1->getId(), $profile->getImages()[1]->getId());
+        self::assertCount(2, $profile->getImages());
+        self::assertEquals($f2->getId(), $profile->getImages()[0]->getId());
+        self::assertEquals($f1->getId(), $profile->getImages()[1]->getId());
     }
 
     /**

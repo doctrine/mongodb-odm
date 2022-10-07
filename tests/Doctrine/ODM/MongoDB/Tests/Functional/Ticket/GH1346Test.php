@@ -35,7 +35,7 @@ class GH1346Test extends BaseTest
         $this->dm->persist($gH1346Document);
         $this->dm->flush();
 
-        $this->assertEquals(2, $gH1346Document->getReferences()->count());
+        self::assertEquals(2, $gH1346Document->getReferences()->count());
 
         $this->dm->flush();
     }

@@ -32,14 +32,14 @@ class ReadPreferenceTest extends BaseTest
             ->createQueryBuilder()
             ->getQuery();
 
-        $this->assertArrayNotHasKey('readPreference', $query->getQuery());
+        self::assertArrayNotHasKey('readPreference', $query->getQuery());
 
         $user = $query->getSingleResult();
-        $this->assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(User::class, $user);
 
         $groups = $user->getGroups();
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
-        $this->assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $groups->getHints());
+        self::assertInstanceOf(PersistentCollectionInterface::class, $groups);
+        self::assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $groups->getHints());
     }
 
     /**
@@ -57,10 +57,10 @@ class ReadPreferenceTest extends BaseTest
         $this->assertReadPreferenceHint($readPreference, $query->getQuery()['readPreference'], $tags);
 
         $user = $query->getSingleResult();
-        $this->assertInstanceOf(User::class, $user);
+        self::assertInstanceOf(User::class, $user);
 
         $groups = $user->getGroups();
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $groups);
         $this->assertReadPreferenceHint($readPreference, $groups->getHints()[Query::HINT_READ_PREFERENCE], $tags);
     }
 
@@ -77,8 +77,8 @@ class ReadPreferenceTest extends BaseTest
     {
         $coll = $this->dm->getDocumentCollection(DocumentWithReadPreference::class);
 
-        $this->assertSame(ReadPreference::RP_NEAREST, $coll->getReadPreference()->getMode());
-        $this->assertSame([['dc' => 'east']], $coll->getReadPreference()->getTagSets());
+        self::assertSame(ReadPreference::RP_NEAREST, $coll->getReadPreference()->getMode());
+        self::assertSame([['dc' => 'east']], $coll->getReadPreference()->getTagSets());
     }
 
     public function testDocumentLevelReadPreferenceIsAppliedInQueryBuilder(): void
@@ -102,9 +102,9 @@ class ReadPreferenceTest extends BaseTest
 
     private function assertReadPreferenceHint(int $mode, ReadPreference $readPreference, array $tags = []): void
     {
-        $this->assertInstanceOf(ReadPreference::class, $readPreference);
-        $this->assertEquals($mode, $readPreference->getMode());
-        $this->assertEquals($tags, $readPreference->getTagSets());
+        self::assertInstanceOf(ReadPreference::class, $readPreference);
+        self::assertEquals($mode, $readPreference->getMode());
+        self::assertEquals($tags, $readPreference->getTagSets());
     }
 }
 

@@ -55,11 +55,11 @@ class ShardKeyTest extends BaseTest
 
         $queries   = $this->logger->getAll();
         $lastQuery = end($queries);
-        $this->assertSame('update', $lastQuery->getCommandName());
+        self::assertSame('update', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
-        $this->assertCount(1, $command->updates);
-        $this->assertEquals($o->key, $command->updates[0]->q->k);
+        self::assertCount(1, $command->updates);
+        self::assertEquals($o->key, $command->updates[0]->q->k);
     }
 
     public function testUpsert(): void
@@ -71,12 +71,12 @@ class ShardKeyTest extends BaseTest
 
         $queries   = $this->logger->getAll();
         $lastQuery = end($queries);
-        $this->assertSame('update', $lastQuery->getCommandName());
+        self::assertSame('update', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
-        $this->assertCount(1, $command->updates);
-        $this->assertEquals($o->key, $command->updates[0]->q->k);
-        $this->assertTrue($command->updates[0]->upsert);
+        self::assertCount(1, $command->updates);
+        self::assertEquals($o->key, $command->updates[0]->q->k);
+        self::assertTrue($command->updates[0]->upsert);
     }
 
     public function testRemove(): void
@@ -89,11 +89,11 @@ class ShardKeyTest extends BaseTest
 
         $queries   = $this->logger->getAll();
         $lastQuery = end($queries);
-        $this->assertSame('delete', $lastQuery->getCommandName());
+        self::assertSame('delete', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
-        $this->assertCount(1, $command->deletes);
-        $this->assertEquals($o->key, $command->deletes[0]->q->k);
+        self::assertCount(1, $command->deletes);
+        self::assertEquals($o->key, $command->deletes[0]->q->k);
     }
 
     public function testRefresh(): void
@@ -105,11 +105,11 @@ class ShardKeyTest extends BaseTest
 
         $queries   = $this->logger->getAll();
         $lastQuery = end($queries);
-        $this->assertSame('find', $lastQuery->getCommandName());
+        self::assertSame('find', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
-        $this->assertSame(1, $command->limit);
-        $this->assertEquals($o->key, $command->filter->k);
+        self::assertSame(1, $command->limit);
+        self::assertEquals($o->key, $command->filter->k);
     }
 
     public function testUpdateWithShardKeyChangeException(): void

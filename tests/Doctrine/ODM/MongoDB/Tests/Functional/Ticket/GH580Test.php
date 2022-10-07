@@ -19,7 +19,7 @@ class GH580Test extends BaseTest
 
         $repository = $this->dm->getRepository($class);
 
-        $this->assertCount(0, $repository->findAll());
+        self::assertEmpty($repository->findAll());
 
         // Create, persist and flush initial object
         $doc1       = new GH580Document();
@@ -58,7 +58,7 @@ class GH580Test extends BaseTest
         /* Repository should contain one object, but may contain two if the
          * DocumentPersister was not cleaned up.
          */
-        $this->assertCount(1, $repository->findAll());
+        self::assertCount(1, $repository->findAll());
     }
 }
 

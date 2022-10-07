@@ -25,7 +25,7 @@ class ProjectTest extends BaseTest
             ->field('product')
             ->multiply('$field', 5);
 
-        $this->assertSame(['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]], $projectStage->getExpression());
+        self::assertSame(['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]], $projectStage->getExpression());
     }
 
     public function testProjectFromBuilder(): void
@@ -38,7 +38,7 @@ class ProjectTest extends BaseTest
             ->field('product')
             ->multiply('$field', 5);
 
-        $this->assertSame([['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]]], $builder->getPipeline());
+        self::assertSame([['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]]], $builder->getPipeline());
     }
 
     /**
@@ -51,7 +51,7 @@ class ProjectTest extends BaseTest
             ->field('something')
             ->$operator('$expression1', '$expression2');
 
-        $this->assertSame(['$project' => ['something' => ['$' . $operator => ['$expression1', '$expression2']]]], $projectStage->getExpression());
+        self::assertSame(['$project' => ['something' => ['$' . $operator => ['$expression1', '$expression2']]]], $projectStage->getExpression());
     }
 
     public function provideAccumulators(): array
@@ -82,7 +82,7 @@ class ProjectTest extends BaseTest
         };
         $stage->setExpr($expr);
 
-        $this->assertSame($stage, $stage->$method(...$args));
+        self::assertSame($stage, $stage->$method(...$args));
     }
 
     /**

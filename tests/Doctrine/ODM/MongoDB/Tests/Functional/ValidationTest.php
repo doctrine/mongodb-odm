@@ -60,10 +60,10 @@ EOT;
             $assertNb++;
             $collectionOptionsBson = fromPHP($collection->getOptions());
             $collectionOptionsJson = toCanonicalExtendedJSON($collectionOptionsBson);
-            $this->assertJsonStringEqualsJsonString($expectedOptionsJson, $collectionOptionsJson);
+            self::assertJsonStringEqualsJsonString($expectedOptionsJson, $collectionOptionsJson);
         }
 
-        $this->assertEquals(1, $assertNb);
+        self::assertEquals(1, $assertNb);
 
         // Test updating the same collection, this time removing the validators and resetting to default options
         $cmUpdated = $this->dm->getClassMetadata(SchemaValidatedUpdate::class);
@@ -82,10 +82,10 @@ EOT;
             }
 
             $assertNb++;
-            $this->assertEquals($expectedOptions, $collection->getOptions());
+            self::assertEquals($expectedOptions, $collection->getOptions());
         }
 
-        $this->assertEquals(1, $assertNb);
+        self::assertEquals(1, $assertNb);
     }
 }
 

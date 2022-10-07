@@ -15,9 +15,9 @@ class IdTypeTest extends TestCase
         $identifier = new ObjectId();
         $type       = Type::getType('id');
 
-        $this->assertNull($type->convertToDatabaseValue(null), 'null is not converted');
-        $this->assertSame($identifier, $type->convertToDatabaseValue($identifier), 'ObjectId objects are not converted');
-        $this->assertEquals($identifier, $type->convertToDatabaseValue((string) $identifier), 'ObjectId strings are converted to ObjectId objects');
+        self::assertNull($type->convertToDatabaseValue(null), 'null is not converted');
+        self::assertSame($identifier, $type->convertToDatabaseValue($identifier), 'ObjectId objects are not converted');
+        self::assertEquals($identifier, $type->convertToDatabaseValue((string) $identifier), 'ObjectId strings are converted to ObjectId objects');
     }
 
     /**
@@ -29,7 +29,7 @@ class IdTypeTest extends TestCase
     {
         $type = Type::getType('id');
 
-        $this->assertInstanceOf(ObjectId::class, $type->convertToDatabaseValue($value));
+        self::assertInstanceOf(ObjectId::class, $type->convertToDatabaseValue($value));
     }
 
     public function provideInvalidObjectIdConstructorArguments(): array

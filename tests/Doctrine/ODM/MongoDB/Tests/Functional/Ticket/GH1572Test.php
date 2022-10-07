@@ -26,20 +26,20 @@ class GH1572Test extends BaseTest
         $this->dm->flush();
         $this->dm->refresh($blog);
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $blog->allPosts);
-        $this->assertFalse($blog->allPosts->isInitialized());
-        $this->assertCount(4, $blog->allPosts);
-        $this->assertTrue($blog->allPosts->isInitialized());
+        self::assertInstanceOf(PersistentCollectionInterface::class, $blog->allPosts);
+        self::assertFalse($blog->allPosts->isInitialized());
+        self::assertCount(4, $blog->allPosts);
+        self::assertTrue($blog->allPosts->isInitialized());
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $blog->latestPosts);
-        $this->assertFalse($blog->latestPosts->isInitialized());
-        $this->assertCount(2, $blog->latestPosts);
-        $this->assertTrue($blog->latestPosts->isInitialized());
+        self::assertInstanceOf(PersistentCollectionInterface::class, $blog->latestPosts);
+        self::assertFalse($blog->latestPosts->isInitialized());
+        self::assertCount(2, $blog->latestPosts);
+        self::assertTrue($blog->latestPosts->isInitialized());
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $blog->latestPostsRepositoryMethod);
-        $this->assertFalse($blog->latestPostsRepositoryMethod->isInitialized());
-        $this->assertCount(4, $blog->latestPostsRepositoryMethod);
-        $this->assertTrue($blog->latestPostsRepositoryMethod->isInitialized());
+        self::assertInstanceOf(PersistentCollectionInterface::class, $blog->latestPostsRepositoryMethod);
+        self::assertFalse($blog->latestPostsRepositoryMethod->isInitialized());
+        self::assertCount(4, $blog->latestPostsRepositoryMethod);
+        self::assertTrue($blog->latestPostsRepositoryMethod->isInitialized());
     }
 }
 

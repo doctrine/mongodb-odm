@@ -16,22 +16,22 @@ class LifecycleTest extends BaseTest
         $this->dm->persist($parent);
         $this->dm->flush();
 
-        $this->assertCount(1, $parent->getChildren());
+        self::assertCount(1, $parent->getChildren());
 
         $parent->setName('parent #changed');
 
         $this->dm->flush();
         $this->dm->flush();
 
-        $this->assertCount(1, $parent->getChildren());
+        self::assertCount(1, $parent->getChildren());
 
         $this->dm->clear();
 
         $parent = $this->dm->getRepository(ParentObject::class)->find($parent->getId());
-        $this->assertNotNull($parent);
-        $this->assertEquals('parent #changed', $parent->getName());
-        $this->assertCount(1, $parent->getChildren());
-        $this->assertEquals('changed', $parent->getChildEmbedded()->getName());
+        self::assertNotNull($parent);
+        self::assertEquals('parent #changed', $parent->getName());
+        self::assertCount(1, $parent->getChildren());
+        self::assertEquals('changed', $parent->getChildEmbedded()->getName());
     }
 
     public function testEventEmptyFlush(): void
@@ -47,8 +47,8 @@ class LifecycleTest extends BaseTest
         $this->dm->clear();
 
         $parent = $this->dm->getRepository(ParentObject::class)->find($parent->getId());
-        $this->assertNotNull($parent);
-        $this->assertCount(1, $parent->getChildren());
+        self::assertNotNull($parent);
+        self::assertCount(1, $parent->getChildren());
     }
 }
 

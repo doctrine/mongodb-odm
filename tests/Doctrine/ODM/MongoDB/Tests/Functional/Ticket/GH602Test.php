@@ -47,15 +47,15 @@ class GH602Test extends BaseTest
          * ideal, but it is the current behavior for hydrating the owning side
          * of a reference-many collection.
          */
-        $this->assertCount(2, $user1likes);
+        self::assertCount(2, $user1likes);
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $user1likes[0]);
-        $this->assertTrue($user1likes[0]->isProxyInitialized());
-        $this->assertEquals($thing1->getId(), $user1likes[0]->getId());
+        self::assertInstanceOf(GhostObjectInterface::class, $user1likes[0]);
+        self::assertTrue($user1likes[0]->isProxyInitialized());
+        self::assertEquals($thing1->getId(), $user1likes[0]->getId());
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $user1likes[1]);
-        $this->assertFalse($user1likes[1]->isProxyInitialized());
-        $this->assertEquals($thing2->getId(), $user1likes[1]->getId());
+        self::assertInstanceOf(GhostObjectInterface::class, $user1likes[1]);
+        self::assertFalse($user1likes[1]->isProxyInitialized());
+        self::assertEquals($thing2->getId(), $user1likes[1]->getId());
 
         $this->expectException(DocumentNotFoundException::class);
         $user1likes[1]->initializeProxy();
@@ -88,8 +88,8 @@ class GH602Test extends BaseTest
         $thing1        = $this->dm->find($thingClass, $thing1->getId());
         $thing1likedBy = iterator_to_array($thing1->likedBy, false);
 
-        $this->assertCount(1, $thing1likedBy);
-        $this->assertEquals($user1->getId(), $thing1likedBy[0]->getId());
+        self::assertCount(1, $thing1likedBy);
+        self::assertEquals($user1->getId(), $thing1likedBy[0]->getId());
     }
 
     /**

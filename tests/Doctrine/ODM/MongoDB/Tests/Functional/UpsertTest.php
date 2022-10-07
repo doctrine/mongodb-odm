@@ -29,11 +29,11 @@ class UpsertTest extends BaseTest
 
         $this->dm->persist($test);
 
-        $this->assertFalse($this->uow->isScheduledForInsert($test));
-        $this->assertTrue($this->uow->isScheduledForUpsert($test));
+        self::assertFalse($this->uow->isScheduledForInsert($test));
+        self::assertTrue($this->uow->isScheduledForUpsert($test));
 
-        $this->assertTrue($this->uow->isScheduledForInsert($embedded));
-        $this->assertFalse($this->uow->isScheduledForUpsert($embedded));
+        self::assertTrue($this->uow->isScheduledForInsert($embedded));
+        self::assertFalse($this->uow->isScheduledForUpsert($embedded));
 
         $this->dm->flush();
     }

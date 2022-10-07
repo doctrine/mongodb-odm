@@ -21,9 +21,9 @@ class GH1011Test extends BaseTest
         $doc->embeds->clear();
         $doc->embeds->add(new GH1011Embedded('test2'));
         $this->uow->computeChangeSets();
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc->embeds);
-        $this->assertTrue($this->uow->isCollectionScheduledForUpdate($doc->embeds));
-        $this->assertFalse($this->uow->isCollectionScheduledForDeletion($doc->embeds));
+        self::assertInstanceOf(PersistentCollectionInterface::class, $doc->embeds);
+        self::assertTrue($this->uow->isCollectionScheduledForUpdate($doc->embeds));
+        self::assertFalse($this->uow->isCollectionScheduledForDeletion($doc->embeds));
     }
 
     public function testReplaceCollection(): void
@@ -36,10 +36,10 @@ class GH1011Test extends BaseTest
         $doc->embeds   = new ArrayCollection();
         $doc->embeds->add(new GH1011Embedded('test2'));
         $this->uow->computeChangeSets();
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc->embeds);
-        $this->assertTrue($this->uow->isCollectionScheduledForUpdate($doc->embeds));
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $oldCollection);
-        $this->assertFalse($this->uow->isCollectionScheduledForDeletion($oldCollection));
+        self::assertInstanceOf(PersistentCollectionInterface::class, $doc->embeds);
+        self::assertTrue($this->uow->isCollectionScheduledForUpdate($doc->embeds));
+        self::assertInstanceOf(PersistentCollectionInterface::class, $oldCollection);
+        self::assertFalse($this->uow->isCollectionScheduledForDeletion($oldCollection));
     }
 }
 

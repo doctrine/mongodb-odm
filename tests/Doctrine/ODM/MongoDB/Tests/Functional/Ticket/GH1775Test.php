@@ -38,8 +38,8 @@ class GH1775Test extends BaseTest
         $blog  = $this->dm->find(GH1775Blog::class, $blogId);
         $image = $this->dm->find(GH1775Image::class, $imageId);
 
-        $this->assertInstanceOf(GH1775Blog::class, $blog);
-        $this->assertInstanceOf(GH1775Image::class, $image);
+        self::assertInstanceOf(GH1775Blog::class, $blog);
+        self::assertInstanceOf(GH1775Image::class, $image);
         $post2 = new GH1775Post([$blog], [$image]);
         $this->dm->persist($post2);
 
@@ -53,8 +53,8 @@ class GH1775Test extends BaseTest
         $post1 = $this->dm->find(GH1775Post::class, $post1Id);
         $blog  = $this->dm->find(GH1775Blog::class, $blogId);
 
-        $this->assertCount(1, $post1->getImages());
-        $this->assertCount(2, $blog->posts);
+        self::assertCount(1, $post1->getImages());
+        self::assertCount(2, $blog->posts);
     }
 }
 

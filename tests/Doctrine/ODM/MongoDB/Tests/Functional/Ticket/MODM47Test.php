@@ -19,7 +19,7 @@ class MODM47Test extends BaseTest
         $this->dm->getDocumentCollection(MODM47A::class)->insertOne($a);
 
         $a = $this->dm->find(MODM47A::class, $a['_id']);
-        $this->assertEquals('c value', $a->b);
+        self::assertEquals('c value', $a->b);
     }
 }
 

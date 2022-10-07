@@ -28,9 +28,9 @@ class GH520Test extends BaseTest
 
         $document = $query->getSingleResult();
 
-        $this->assertInstanceOf(GH520Document::class, $document);
-        $this->assertInstanceOf(GhostObjectInterface::class, $document->ref);
-        $this->assertTrue($document->ref->isProxyInitialized());
+        self::assertInstanceOf(GH520Document::class, $document);
+        self::assertInstanceOf(GhostObjectInterface::class, $document->ref);
+        self::assertTrue($document->ref->isProxyInitialized());
     }
 
     public function testPrimeWithGetSingleResultWillNotPrimeEntireResultSet(): void
@@ -59,8 +59,8 @@ class GH520Test extends BaseTest
 
         $query->getSingleResult();
 
-        $this->assertContains($document2->id, $primedIds);
-        $this->assertNotContains($document4->id, $primedIds, 'getSingleResult() does not prime the entire dataset');
+        self::assertContains($document2->id, $primedIds);
+        self::assertNotContains($document4->id, $primedIds, 'getSingleResult() does not prime the entire dataset');
     }
 }
 

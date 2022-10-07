@@ -52,10 +52,10 @@ class ResolveTargetDocumentListenerTest extends BaseTest
         $cm   = $this->dm->getClassMetadata(ResolveTargetDocument::class);
         $meta = $cm->associationMappings;
 
-        $this->assertSame(ResolveTargetDocument::class, $meta['refOne']['targetDocument']);
-        $this->assertSame(TargetDocument::class, $meta['refMany']['targetDocument']);
-        $this->assertSame(ResolveTargetDocument::class, $meta['embedOne']['targetDocument']);
-        $this->assertSame(TargetDocument::class, $meta['embedMany']['targetDocument']);
+        self::assertSame(ResolveTargetDocument::class, $meta['refOne']['targetDocument']);
+        self::assertSame(TargetDocument::class, $meta['refMany']['targetDocument']);
+        self::assertSame(ResolveTargetDocument::class, $meta['embedOne']['targetDocument']);
+        self::assertSame(TargetDocument::class, $meta['embedMany']['targetDocument']);
     }
 
     public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByInterfaceName(): void
@@ -66,7 +66,7 @@ class ResolveTargetDocumentListenerTest extends BaseTest
 
         $cm = $this->factory->getMetadataFor(ResolveTargetInterface::class);
 
-        $this->assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
+        self::assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
     }
 
     public function testResolveTargetDocumentListenerCanRetrieveTargetDocumentByAbstractClassName(): void
@@ -77,7 +77,7 @@ class ResolveTargetDocumentListenerTest extends BaseTest
 
         $cm = $this->factory->getMetadataFor(AbstractResolveTarget::class);
 
-        $this->assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
+        self::assertSame($this->factory->getMetadataFor(ResolveTargetDocument::class), $cm);
     }
 }
 

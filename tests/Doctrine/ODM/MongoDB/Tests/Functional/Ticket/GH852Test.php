@@ -48,33 +48,33 @@ class GH852Test extends BaseTest
         $this->dm->clear();
 
         $parent = $this->dm->find(get_class($parent), $idGenerator('parent'));
-        $this->assertNotNull($parent);
-        $this->assertEquals($idGenerator('parent'), $parent->id);
-        $this->assertEquals('parent', $parent->name);
+        self::assertNotNull($parent);
+        self::assertEquals($idGenerator('parent'), $parent->id);
+        self::assertEquals('parent', $parent->name);
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $parent->refOne);
-        $this->assertInstanceOf(GH852Document::class, $parent->refOne);
-        $this->assertFalse($parent->refOne->isProxyInitialized());
-        $this->assertEquals($idGenerator('childA'), $parent->refOne->id);
-        $this->assertEquals('childA', $parent->refOne->name);
-        $this->assertTrue($parent->refOne->isProxyInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $parent->refOne);
+        self::assertInstanceOf(GH852Document::class, $parent->refOne);
+        self::assertFalse($parent->refOne->isProxyInitialized());
+        self::assertEquals($idGenerator('childA'), $parent->refOne->id);
+        self::assertEquals('childA', $parent->refOne->name);
+        self::assertTrue($parent->refOne->isProxyInitialized());
 
-        $this->assertCount(2, $parent->refMany);
+        self::assertCount(2, $parent->refMany);
 
         /* These proxies will be initialized when we first access the collection
          * by DocumentPersister::loadReferenceManyCollectionOwningSide().
          */
-        $this->assertInstanceOf(GhostObjectInterface::class, $parent->refMany[0]);
-        $this->assertInstanceOf(GH852Document::class, $parent->refMany[0]);
-        $this->assertTrue($parent->refMany[0]->isProxyInitialized());
-        $this->assertEquals($idGenerator('childB'), $parent->refMany[0]->id);
-        $this->assertEquals('childB', $parent->refMany[0]->name);
+        self::assertInstanceOf(GhostObjectInterface::class, $parent->refMany[0]);
+        self::assertInstanceOf(GH852Document::class, $parent->refMany[0]);
+        self::assertTrue($parent->refMany[0]->isProxyInitialized());
+        self::assertEquals($idGenerator('childB'), $parent->refMany[0]->id);
+        self::assertEquals('childB', $parent->refMany[0]->name);
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $parent->refMany[1]);
-        $this->assertInstanceOf(GH852Document::class, $parent->refMany[1]);
-        $this->assertTrue($parent->refMany[1]->isProxyInitialized());
-        $this->assertEquals($idGenerator('childC'), $parent->refMany[1]->id);
-        $this->assertEquals('childC', $parent->refMany[1]->name);
+        self::assertInstanceOf(GhostObjectInterface::class, $parent->refMany[1]);
+        self::assertInstanceOf(GH852Document::class, $parent->refMany[1]);
+        self::assertTrue($parent->refMany[1]->isProxyInitialized());
+        self::assertEquals($idGenerator('childC'), $parent->refMany[1]->id);
+        self::assertEquals('childC', $parent->refMany[1]->name);
 
         // these lines are relevant for $useKeys = false in ReferencePrimer::__construct()
         $this->dm->clear();
@@ -82,20 +82,20 @@ class GH852Test extends BaseTest
                 ->field('name')->equals('parent')
                 ->field('refMany')->prime()
                 ->getQuery()->execute();
-        $this->assertInstanceOf(Iterator::class, $docs);
-        $this->assertCount(1, $docs);
-        $this->assertCount(2, $docs->current()->refMany);
+        self::assertInstanceOf(Iterator::class, $docs);
+        self::assertCount(1, $docs);
+        self::assertCount(2, $docs->current()->refMany);
 
         $this->dm->clear();
         $docs = $this->dm->createQueryBuilder(get_class($parent))
                 ->getQuery()->execute();
-        $this->assertCount(4, $docs);
+        self::assertCount(4, $docs);
 
         // these lines are relevant for $useKeys = false in DocumentRepository::matching()
         $this->dm->clear();
         $docs = $this->dm->getRepository(get_class($parent))
                 ->matching(new Criteria());
-        $this->assertCount(4, $docs);
+        self::assertCount(4, $docs);
     }
 
     public function provideIdGenerators(): array

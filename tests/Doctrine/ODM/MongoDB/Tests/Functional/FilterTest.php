@@ -85,15 +85,15 @@ class FilterTest extends BaseTest
 
     public function testRepositoryFind(): void
     {
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithFind());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithFind());
 
         $this->enableUserFilter();
         $this->dm->clear();
-        $this->assertEquals(['Tim'], $this->getUsernamesWithFind());
+        self::assertEquals(['Tim'], $this->getUsernamesWithFind());
 
         $this->fc->disable('testFilter');
         $this->dm->clear();
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithFind());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithFind());
     }
 
     protected function getUsernamesWithFind(): array
@@ -120,15 +120,15 @@ class FilterTest extends BaseTest
 
     public function testRepositoryFindBy(): void
     {
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithFindBy());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithFindBy());
 
         $this->enableUserFilter();
         $this->dm->clear();
-        $this->assertEquals(['Tim'], $this->getUsernamesWithFindBy());
+        self::assertEquals(['Tim'], $this->getUsernamesWithFindBy());
 
         $this->fc->disable('testFilter');
         $this->dm->clear();
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithFindBy());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithFindBy());
     }
 
     protected function getUsernamesWithFindBy(): array
@@ -147,15 +147,15 @@ class FilterTest extends BaseTest
 
     public function testRepositoryFindOneBy(): void
     {
-        $this->assertEquals('John', $this->getJohnsUsernameWithFindOneBy());
+        self::assertEquals('John', $this->getJohnsUsernameWithFindOneBy());
 
         $this->enableUserFilter();
         $this->dm->clear();
-        $this->assertEquals(null, $this->getJohnsUsernameWithFindOneBy());
+        self::assertEquals(null, $this->getJohnsUsernameWithFindOneBy());
 
         $this->fc->disable('testFilter');
         $this->dm->clear();
-        $this->assertEquals('John', $this->getJohnsUsernameWithFindOneBy());
+        self::assertEquals('John', $this->getJohnsUsernameWithFindOneBy());
     }
 
     protected function getJohnsUsernameWithFindOneBy(): ?string
@@ -167,15 +167,15 @@ class FilterTest extends BaseTest
 
     public function testRepositoryFindAll(): void
     {
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithFindAll());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithFindAll());
 
         $this->enableUserFilter();
         $this->dm->clear();
-        $this->assertEquals(['Tim'], $this->getUsernamesWithFindAll());
+        self::assertEquals(['Tim'], $this->getUsernamesWithFindAll());
 
         $this->fc->disable('testFilter');
         $this->dm->clear();
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithFindAll());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithFindAll());
     }
 
     protected function getUsernamesWithFindAll(): array
@@ -194,15 +194,15 @@ class FilterTest extends BaseTest
 
     public function testReferenceMany(): void
     {
-        $this->assertEquals(['groupA', 'groupB'], $this->getGroupsByReference());
+        self::assertEquals(['groupA', 'groupB'], $this->getGroupsByReference());
 
         $this->enableGroupFilter();
         $this->dm->clear();
-        $this->assertEquals(['groupA'], $this->getGroupsByReference());
+        self::assertEquals(['groupA'], $this->getGroupsByReference());
 
         $this->fc->disable('testFilter');
         $this->dm->clear();
-        $this->assertEquals(['groupA', 'groupB'], $this->getGroupsByReference());
+        self::assertEquals(['groupA', 'groupB'], $this->getGroupsByReference());
     }
 
     protected function getGroupsByReference(): array
@@ -225,15 +225,15 @@ class FilterTest extends BaseTest
 
     public function testReferenceOne(): void
     {
-        $this->assertEquals('Timothy', $this->getProfileByReference());
+        self::assertEquals('Timothy', $this->getProfileByReference());
 
         $this->enableProfileFilter();
         $this->dm->clear();
-        $this->assertEquals(null, $this->getProfileByReference());
+        self::assertEquals(null, $this->getProfileByReference());
 
         $this->fc->disable('testFilter');
         $this->dm->clear();
-        $this->assertEquals('Timothy', $this->getProfileByReference());
+        self::assertEquals('Timothy', $this->getProfileByReference());
     }
 
     protected function getProfileByReference(): ?string
@@ -251,15 +251,15 @@ class FilterTest extends BaseTest
 
     public function testDocumentManagerRef(): void
     {
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithDocumentManager());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithDocumentManager());
 
         $this->enableUserFilter();
         $this->dm->clear();
-        $this->assertEquals(['Tim'], $this->getUsernamesWithDocumentManager());
+        self::assertEquals(['Tim'], $this->getUsernamesWithDocumentManager());
 
         $this->fc->disable('testFilter');
         $this->dm->clear();
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithDocumentManager());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithDocumentManager());
     }
 
     protected function getUsernamesWithDocumentManager(): array
@@ -288,15 +288,15 @@ class FilterTest extends BaseTest
 
     public function testQuery(): void
     {
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithQuery());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithQuery());
 
         $this->enableUserFilter();
         $this->dm->clear();
-        $this->assertEquals(['Tim'], $this->getUsernamesWithQuery());
+        self::assertEquals(['Tim'], $this->getUsernamesWithQuery());
 
         $this->fc->disable('testFilter');
         $this->dm->clear();
-        $this->assertEquals(['John', 'Tim'], $this->getUsernamesWithQuery());
+        self::assertEquals(['John', 'Tim'], $this->getUsernamesWithQuery());
     }
 
     protected function getUsernamesWithQuery(): array
@@ -333,6 +333,6 @@ class FilterTest extends BaseTest
          * username to equal both "Tim" and "John", which is impossible for a
          * non-array, string field. No results should be returned.
          */
-        $this->assertCount(0, $this->getUsernamesWithFindAll());
+        self::assertEmpty($this->getUsernamesWithFindAll());
     }
 }

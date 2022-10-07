@@ -29,11 +29,11 @@ class NestedCollectionsTest extends BaseTest
         $this->dm->clear();
 
         $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
-        $this->assertCount(1, $doc->{$field});
+        self::assertCount(1, $doc->{$field});
         $privateBook = $doc->{$field}[0];
-        $this->assertEquals('Private', $privateBook->getTitle());
-        $this->assertCount(1, $privateBook->getPhonenumbers());
-        $this->assertEquals('12345678', $privateBook->getPhonenumbers()->get(0)->getPhonenumber());
+        self::assertEquals('Private', $privateBook->getTitle());
+        self::assertCount(1, $privateBook->getPhonenumbers());
+        self::assertEquals('12345678', $privateBook->getPhonenumbers()->get(0)->getPhonenumber());
 
         $privateBook->addPhonenumber(new Phonenumber('87654321'));
         $publicBook = new Phonebook('Public');
@@ -43,28 +43,28 @@ class NestedCollectionsTest extends BaseTest
         $this->dm->clear();
 
         $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
-        $this->assertCount(2, $doc->{$field});
+        self::assertCount(2, $doc->{$field});
         $privateBook = $doc->{$field}[0];
-        $this->assertEquals('Private', $privateBook->getTitle());
-        $this->assertCount(2, $privateBook->getPhonenumbers());
-        $this->assertEquals('12345678', $privateBook->getPhonenumbers()->get(0)->getPhonenumber());
-        $this->assertEquals('87654321', $privateBook->getPhonenumbers()->get(1)->getPhonenumber());
+        self::assertEquals('Private', $privateBook->getTitle());
+        self::assertCount(2, $privateBook->getPhonenumbers());
+        self::assertEquals('12345678', $privateBook->getPhonenumbers()->get(0)->getPhonenumber());
+        self::assertEquals('87654321', $privateBook->getPhonenumbers()->get(1)->getPhonenumber());
         $publicBook = $doc->{$field}[1];
-        $this->assertCount(1, $publicBook->getPhonenumbers());
-        $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
+        self::assertCount(1, $publicBook->getPhonenumbers());
+        self::assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
 
         $privateBook->getPhonenumbers()->clear();
         $this->dm->flush();
         $this->dm->clear();
 
         $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
-        $this->assertCount(2, $doc->{$field});
+        self::assertCount(2, $doc->{$field});
         $privateBook = $doc->{$field}[0];
-        $this->assertEquals('Private', $privateBook->getTitle());
-        $this->assertCount(0, $privateBook->getPhonenumbers());
+        self::assertEquals('Private', $privateBook->getTitle());
+        self::assertEmpty($privateBook->getPhonenumbers());
         $publicBook = $doc->{$field}[1];
-        $this->assertCount(1, $publicBook->getPhonenumbers());
-        $this->assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
+        self::assertCount(1, $publicBook->getPhonenumbers());
+        self::assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
 
     public function provideStrategy(): array

@@ -56,7 +56,7 @@ class ReferencesTest extends BaseTest
         $groups = $query->execute();
         assert($groups instanceof Iterator);
 
-        $this->assertCount(0, $groups->toArray());
+        self::assertEmpty($groups->toArray());
     }
 
     public function testLazyLoadReference(): void
@@ -82,13 +82,13 @@ class ReferencesTest extends BaseTest
         $profile = $user->getProfile();
         assert($profile instanceof Profile);
 
-        $this->assertInstanceOf(Profile::class, $profile);
-        $this->assertInstanceOf(GhostObjectInterface::class, $profile);
+        self::assertInstanceOf(Profile::class, $profile);
+        self::assertInstanceOf(GhostObjectInterface::class, $profile);
 
         $profile->getFirstName();
 
-        $this->assertEquals('Jonathan', $profile->getFirstName());
-        $this->assertEquals('Wage', $profile->getLastName());
+        self::assertEquals('Jonathan', $profile->getFirstName());
+        self::assertEquals('Wage', $profile->getLastName());
     }
 
     public function testLazyLoadedWithNotifyPropertyChanged(): void
@@ -104,16 +104,16 @@ class ReferencesTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(get_class($user), $user->getId());
-        $this->assertInstanceOf(GhostObjectInterface::class, $user->getProfileNotify());
-        $this->assertFalse($user->getProfileNotify()->isProxyInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $user->getProfileNotify());
+        self::assertFalse($user->getProfileNotify()->isProxyInitialized());
 
         $user->getProfileNotify()->setLastName('Malarz');
         $this->dm->flush();
         $this->dm->clear();
 
         $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
-        $this->assertEquals('Maciej', $profile->getFirstName());
-        $this->assertEquals('Malarz', $profile->getLastName());
+        self::assertEquals('Maciej', $profile->getFirstName());
+        self::assertEquals('Malarz', $profile->getLastName());
     }
 
     public function testOneEmbedded(): void
@@ -140,7 +140,7 @@ class ReferencesTest extends BaseTest
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
         assert($user2 instanceof User);
-        $this->assertEquals($user->getAddress(), $user2->getAddress());
+        self::assertEquals($user->getAddress(), $user2->getAddress());
     }
 
     public function testManyEmbedded(): void
@@ -158,7 +158,7 @@ class ReferencesTest extends BaseTest
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
         assert($user2 instanceof User);
-        $this->assertEquals($user->getPhonenumbers()->toArray(), $user2->getPhonenumbers()->toArray());
+        self::assertEquals($user->getPhonenumbers()->toArray(), $user2->getPhonenumbers()->toArray());
     }
 
     public function testOneReference(): void
@@ -175,13 +175,13 @@ class ReferencesTest extends BaseTest
 
         $this->dm->clear();
 
-        $this->assertNotNull($user->getAccount()->getId());
+        self::assertNotNull($user->getAccount()->getId());
 
         $qb    = $this->dm->createQueryBuilder(User::class)
             ->field('id')->equals($user->getId());
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
-        $this->assertInstanceOf(User::class, $user2);
+        self::assertInstanceOf(User::class, $user2);
     }
 
     public function testManyReference(): void
@@ -195,9 +195,9 @@ class ReferencesTest extends BaseTest
 
         $groups = $user->getGroups();
 
-        $this->assertInstanceOf(PersistentCollection::class, $groups);
-        $this->assertNotSame('', $groups[0]->getId());
-        $this->assertNotSame('', $groups[1]->getId());
+        self::assertInstanceOf(PersistentCollection::class, $groups);
+        self::assertNotSame('', $groups[0]->getId());
+        self::assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
         $qb    = $this->dm->createQueryBuilder(User::class)
@@ -207,22 +207,22 @@ class ReferencesTest extends BaseTest
         $user2 = $query->getSingleResult();
         assert($user2 instanceof User);
         $groups = $user2->getGroups();
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
-        $this->assertFalse($groups->isInitialized());
+        self::assertInstanceOf(PersistentCollectionInterface::class, $groups);
+        self::assertFalse($groups->isInitialized());
 
         $groups->count();
-        $this->assertTrue($groups->isInitialized());
+        self::assertTrue($groups->isInitialized());
 
         $groups->isEmpty();
-        $this->assertTrue($groups->isInitialized());
+        self::assertTrue($groups->isInitialized());
 
         $groups = $user2->getGroups();
 
-        $this->assertInstanceOf(PersistentCollection::class, $groups);
-        $this->assertInstanceOf(Group::class, $groups[0]);
-        $this->assertInstanceOf(Group::class, $groups[1]);
+        self::assertInstanceOf(PersistentCollection::class, $groups);
+        self::assertInstanceOf(Group::class, $groups[0]);
+        self::assertInstanceOf(Group::class, $groups[1]);
 
-        $this->assertTrue($groups->isInitialized());
+        self::assertTrue($groups->isInitialized());
 
         unset($groups[0]);
         $groups[1]->setName('test');
@@ -237,8 +237,8 @@ class ReferencesTest extends BaseTest
         assert($user3 instanceof User);
         $groups = $user3->getGroups();
 
-        $this->assertEquals('test', $groups[0]->getName());
-        $this->assertCount(1, $groups);
+        self::assertEquals('test', $groups[0]->getName());
+        self::assertCount(1, $groups);
     }
 
     public function testFlushInitializesEmptyPersistentCollection(): void
@@ -258,10 +258,10 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
 
         $groups = $user->getGroups();
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
-        $this->assertTrue($groups->isInitialized(), 'A flushed collection should be initialized');
-        $this->assertCount(2, $groups);
-        $this->assertCount(2, $groups->toArray());
+        self::assertInstanceOf(PersistentCollectionInterface::class, $groups);
+        self::assertTrue($groups->isInitialized(), 'A flushed collection should be initialized');
+        self::assertCount(2, $groups);
+        self::assertCount(2, $groups->toArray());
     }
 
     public function testFlushInitializesNotEmptyPersistentCollection(): void
@@ -282,10 +282,10 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
 
         $groups = $user->getGroups();
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $groups);
-        $this->assertTrue($groups->isInitialized(), 'A flushed collection should be initialized');
-        $this->assertCount(3, $groups);
-        $this->assertCount(3, $groups->toArray());
+        self::assertInstanceOf(PersistentCollectionInterface::class, $groups);
+        self::assertTrue($groups->isInitialized(), 'A flushed collection should be initialized');
+        self::assertCount(3, $groups);
+        self::assertCount(3, $groups->toArray());
     }
 
     public function testManyReferenceWithAddToSetStrategy(): void
@@ -299,11 +299,11 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
 
         $groups = $user->getUniqueGroups();
-        $this->assertCount(3, $groups);
+        self::assertCount(3, $groups);
 
-        $this->assertInstanceOf(PersistentCollection::class, $groups);
-        $this->assertNotSame('', $groups[0]->getId());
-        $this->assertNotSame('', $groups[1]->getId());
+        self::assertInstanceOf(PersistentCollection::class, $groups);
+        self::assertNotSame('', $groups[0]->getId());
+        self::assertNotSame('', $groups[1]->getId());
         $this->dm->clear();
 
         $qb    = $this->dm->createQueryBuilder(User::class)
@@ -314,22 +314,22 @@ class ReferencesTest extends BaseTest
         assert($user2 instanceof User);
 
         $groups = $user2->getUniqueGroups();
-        $this->assertInstanceOf(PersistentCollection\PersistentCollectionInterface::class, $groups);
-        $this->assertFalse($groups->isInitialized());
+        self::assertInstanceOf(PersistentCollection\PersistentCollectionInterface::class, $groups);
+        self::assertFalse($groups->isInitialized());
 
         $groups->count();
-        $this->assertTrue($groups->isInitialized());
+        self::assertTrue($groups->isInitialized());
 
         $groups->isEmpty();
-        $this->assertTrue($groups->isInitialized());
+        self::assertTrue($groups->isInitialized());
 
-        $this->assertCount(2, $groups);
+        self::assertCount(2, $groups);
 
-        $this->assertInstanceOf(PersistentCollection::class, $groups);
-        $this->assertInstanceOf(Group::class, $groups[0]);
-        $this->assertInstanceOf(Group::class, $groups[1]);
+        self::assertInstanceOf(PersistentCollection::class, $groups);
+        self::assertInstanceOf(Group::class, $groups[0]);
+        self::assertInstanceOf(Group::class, $groups[1]);
 
-        $this->assertTrue($groups->isInitialized());
+        self::assertTrue($groups->isInitialized());
 
         unset($groups[0]);
         $groups[1]->setName('test');
@@ -344,8 +344,8 @@ class ReferencesTest extends BaseTest
         assert($user3 instanceof User);
         $groups = $user3->getUniqueGroups();
 
-        $this->assertEquals('test', $groups[0]->getName());
-        $this->assertCount(1, $groups);
+        self::assertEquals('test', $groups[0]->getName());
+        self::assertCount(1, $groups);
     }
 
     public function testSortReferenceManyOwningSide(): void
@@ -361,16 +361,16 @@ class ReferencesTest extends BaseTest
         $user = $this->dm->find(get_class($user), $user->getId());
 
         $groups = $user->getSortedAscGroups();
-        $this->assertEquals(2, $groups->count());
-        $this->assertEquals('Group 1', $groups[0]->getName());
-        $this->assertEquals('Group 2', $groups[1]->getName());
+        self::assertEquals(2, $groups->count());
+        self::assertEquals('Group 1', $groups[0]->getName());
+        self::assertEquals('Group 2', $groups[1]->getName());
 
         $groups[1]->setName('Group 2a');
 
         $groups = $user->getSortedDescGroups();
-        $this->assertEquals(2, $groups->count());
-        $this->assertEquals('Group 2a', $groups[0]->getName());
-        $this->assertEquals('Group 1', $groups[1]->getName());
+        self::assertEquals(2, $groups->count());
+        self::assertEquals('Group 2a', $groups[0]->getName());
+        self::assertEquals('Group 1', $groups[1]->getName());
     }
 
     public function testDocumentNotFoundExceptionWithArrayId(): void
@@ -396,7 +396,7 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
-        $this->assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
+        self::assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier ' .
@@ -429,7 +429,7 @@ class ReferencesTest extends BaseTest
 
         $user    = $this->dm->find(get_class($user), $user->getId());
         $profile = $user->getProfile();
-        $this->assertInstanceOf(LazyLoadingInterface::class, $profile);
+        self::assertInstanceOf(LazyLoadingInterface::class, $profile);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.'
@@ -460,7 +460,7 @@ class ReferencesTest extends BaseTest
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
-        $this->assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
+        self::assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier ' .
@@ -494,15 +494,15 @@ class ReferencesTest extends BaseTest
         $user    = $this->dm->find(get_class($user), $user->getId());
         $profile = $user->getProfile();
 
-        $closure = function (DocumentNotFoundEventArgs $eventArgs) use ($profile) {
-            $this->assertFalse($eventArgs->isExceptionDisabled());
-            $this->assertSame($profile, $eventArgs->getObject());
+        $closure = static function (DocumentNotFoundEventArgs $eventArgs) use ($profile) {
+            self::assertFalse($eventArgs->isExceptionDisabled());
+            self::assertSame($profile, $eventArgs->getObject());
             $eventArgs->disableException();
         };
 
         $this->dm->getEventManager()->addEventListener(Events::documentNotFound, new DocumentNotFoundListener($closure));
 
-        $this->assertInstanceOf(LazyLoadingInterface::class, $profile);
+        self::assertInstanceOf(LazyLoadingInterface::class, $profile);
         $profile->initializeProxy();
     }
 }

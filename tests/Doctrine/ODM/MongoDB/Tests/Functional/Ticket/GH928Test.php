@@ -21,7 +21,7 @@ class GH928Test extends BaseTest
 
         $collection = $this->dm->getDocumentCollection(GH928Document::class);
 
-        $this->assertEquals(2, $collection->count());
+        self::assertEquals(2, $collection->count());
 
         $qb = $this->dm->createQueryBuilder(GH928Document::class)
             ->remove()
@@ -29,7 +29,7 @@ class GH928Test extends BaseTest
             ->getQuery()
             ->execute();
 
-        $this->assertEquals(2, $collection->count());
+        self::assertEquals(2, $collection->count());
     }
 }
 

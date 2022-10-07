@@ -21,19 +21,19 @@ class UnrewindableIteratorTest extends TestCase
     public function testTraversingGeneratorConsumesIt(): void
     {
         $iterator = $this->getTraversable([1, 2, 3]);
-        $this->assertSame([1, 2, 3], iterator_to_array($iterator));
+        self::assertSame([1, 2, 3], iterator_to_array($iterator));
         $this->expectException(Throwable::class);
         $this->expectExceptionMessage('Cannot traverse an already closed generator');
-        $this->assertSame([1, 2, 3], iterator_to_array($iterator));
+        self::assertSame([1, 2, 3], iterator_to_array($iterator));
     }
 
     public function testConstructorRewinds(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
 
-        $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
-        $this->assertSame(1, $iterator->current());
+        self::assertTrue($iterator->valid());
+        self::assertSame(0, $iterator->key());
+        self::assertSame(1, $iterator->current());
     }
 
     public function testIteration(): void
@@ -44,11 +44,11 @@ class UnrewindableIteratorTest extends TestCase
         $expectedItem = 1;
 
         foreach ($iterator as $key => $item) {
-            $this->assertSame($expectedKey++, $key);
-            $this->assertSame($expectedItem++, $item);
+            self::assertSame($expectedKey++, $key);
+            self::assertSame($expectedItem++, $item);
         }
 
-        $this->assertFalse($iterator->valid());
+        self::assertFalse($iterator->valid());
     }
 
     public function testIterationWithEmptySet(): void
@@ -56,14 +56,14 @@ class UnrewindableIteratorTest extends TestCase
         $iterator = new UnrewindableIterator($this->getTraversable([]));
 
         $iterator->rewind();
-        $this->assertFalse($iterator->valid());
+        self::assertFalse($iterator->valid());
     }
 
     public function testToArrayWithEmptySet(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([]));
 
-        $this->assertEquals([], $iterator->toArray());
+        self::assertEquals([], $iterator->toArray());
     }
 
     public function testPartialIterationDoesNotExhaust(): void
@@ -75,15 +75,15 @@ class UnrewindableIteratorTest extends TestCase
         $expectedItem = 1;
 
         foreach ($iterator as $key => $item) {
-            $this->assertSame($expectedKey++, $key);
-            $this->assertSame($expectedItem++, $item);
+            self::assertSame($expectedKey++, $key);
+            self::assertSame($expectedItem++, $item);
 
             if ($key === 1) {
                 break;
             }
         }
 
-        $this->assertTrue($iterator->valid());
+        self::assertTrue($iterator->valid());
     }
 
     public function testRewindAfterPartialIteration(): void
@@ -91,9 +91,9 @@ class UnrewindableIteratorTest extends TestCase
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
 
         $iterator->rewind();
-        $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
-        $this->assertSame(1, $iterator->current());
+        self::assertTrue($iterator->valid());
+        self::assertSame(0, $iterator->key());
+        self::assertSame(1, $iterator->current());
 
         $iterator->next();
         $this->expectException(LogicException::class);
@@ -103,7 +103,7 @@ class UnrewindableIteratorTest extends TestCase
     public function testToArray(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
-        $this->assertSame([1, 2, 3], $iterator->toArray());
+        self::assertSame([1, 2, 3], $iterator->toArray());
     }
 
     public function testToArrayAfterPartialIteration(): void
@@ -111,9 +111,9 @@ class UnrewindableIteratorTest extends TestCase
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
 
         $iterator->rewind();
-        $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
-        $this->assertSame(1, $iterator->current());
+        self::assertTrue($iterator->valid());
+        self::assertSame(0, $iterator->key());
+        self::assertSame(1, $iterator->current());
 
         $iterator->next();
         $this->expectException(LogicException::class);

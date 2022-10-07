@@ -46,13 +46,13 @@ class GH597Test extends BaseTest
 
         // trigger update
         $post = $this->dm->find(GH597Post::class, $post->getId());
-        $this->assertCount(3, $post->getComments());
+        self::assertCount(3, $post->getComments());
         $post->comments = null;
         $this->dm->flush();
         $this->dm->clear();
 
         $post = $this->dm->find(GH597Post::class, $post->getId());
-        $this->assertCount(0, $post->getComments());
+        self::assertEmpty($post->getComments());
 
         // make sure embedded documents got unset
         $expectedDocument = ['_id' => new ObjectId($post->getId())];
@@ -94,13 +94,13 @@ class GH597Test extends BaseTest
 
         // trigger update
         $post = $this->dm->find(GH597Post::class, $post->getId());
-        $this->assertCount(2, $post->getReferenceMany());
+        self::assertCount(2, $post->getReferenceMany());
         $post->referenceMany = null;
         $this->dm->flush();
         $this->dm->clear();
 
         $post = $this->dm->find(GH597Post::class, $post->getId());
-        $this->assertCount(0, $post->getReferenceMany());
+        self::assertEmpty($post->getReferenceMany());
 
         // make sure reference-many documents got unset
         $expectedDocument = ['_id' => new ObjectId($post->getId())];
@@ -116,7 +116,7 @@ class GH597Test extends BaseTest
     {
         $collection = $this->dm->getDocumentCollection(GH597Post::class);
         $document   = $collection->findOne(['_id' => new ObjectId($post->getId())]);
-        $this->assertEquals($expected, $document);
+        self::assertEquals($expected, $document);
     }
 }
 

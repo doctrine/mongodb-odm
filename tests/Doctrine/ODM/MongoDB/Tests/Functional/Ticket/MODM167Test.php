@@ -38,7 +38,7 @@ class MODM167Test extends BaseTest
         $repository = $this->dm->getRepository(get_class($test));
         $test       = $repository->find($test->getId());
 
-        $this->assertNull($test);
+        self::assertNull($test);
     }
 }
 

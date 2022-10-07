@@ -27,7 +27,7 @@ class RawTypeTest extends BaseTest
         $this->dm->flush();
 
         $result = $this->dm->getDocumentCollection(get_class($test))->findOne(['_id' => new ObjectId($test->id)]);
-        $this->assertEquals($value, $result['raw']);
+        self::assertEquals($value, $result['raw']);
     }
 
     public function getTestRawTypeData(): array

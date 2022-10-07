@@ -35,10 +35,10 @@ class RemoveTest extends BaseTest
         $this->dm->flush();
 
         $account = $this->dm->find(Account::class, $account->getId());
-        $this->assertNull($account);
+        self::assertNull($account);
 
         $user = $this->dm->find(User::class, $user->getId());
-        $this->assertNull($user);
+        self::assertNull($user);
     }
 
     public function testUnsetFromEmbeddedCollection(): void
@@ -54,7 +54,7 @@ class RemoveTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertCount(3, $user->getGroups());
+        self::assertCount(3, $user->getGroups());
 
         $user = $userRepository->find($user->getId());
         $user->getGroups()->remove(0);
@@ -64,7 +64,7 @@ class RemoveTest extends BaseTest
 
         $user = $userRepository->find($user->getId());
 
-        $this->assertCount(2, $user->getGroups());
+        self::assertCount(2, $user->getGroups());
     }
 
     public function testUnsetFromReferencedCollectionWithCascade(): void
@@ -89,10 +89,10 @@ class RemoveTest extends BaseTest
         $project2  = $projectRepository->find($project2->getId());
 
         // Persist is cascaded
-        $this->assertNotNull($developer);
-        $this->assertCount(2, $developer->getProjects());
-        $this->assertNotNull($project1);
-        $this->assertNotNull($project2);
+        self::assertNotNull($developer);
+        self::assertCount(2, $developer->getProjects());
+        self::assertNotNull($project1);
+        self::assertNotNull($project2);
 
         $developer->getProjects()->remove(0);
 
@@ -104,10 +104,10 @@ class RemoveTest extends BaseTest
         $project2  = $projectRepository->find($project2->getId());
 
         // Removing owner's reference does not cause referenced document to be removed
-        $this->assertNotNull($developer);
-        $this->assertCount(1, $developer->getProjects());
-        $this->assertNotNull($project1);
-        $this->assertNotNull($project2);
+        self::assertNotNull($developer);
+        self::assertCount(1, $developer->getProjects());
+        self::assertNotNull($project1);
+        self::assertNotNull($project2);
 
         $this->dm->remove($developer);
 
@@ -119,9 +119,9 @@ class RemoveTest extends BaseTest
         $project2  = $projectRepository->find($project2->getId());
 
         // Remove cascades to referenced documents
-        $this->assertNull($developer);
-        $this->assertNotNull($project1);
-        $this->assertNull($project2);
+        self::assertNull($developer);
+        self::assertNotNull($project1);
+        self::assertNull($project2);
     }
 
     public function testUnsetFromReferencedCollectionWithoutCascade(): void
@@ -163,10 +163,10 @@ class RemoveTest extends BaseTest
         $comment2 = $commentRepository->find($comment2->id);
 
         // Removing reference on owner does not cause referenced document to be removed
-        $this->assertNotNull($article);
-        $this->assertCount(1, $article->comments);
-        $this->assertNotNull($comment1);
-        $this->assertNotNull($comment2);
+        self::assertNotNull($article);
+        self::assertCount(1, $article->comments);
+        self::assertNotNull($comment1);
+        self::assertNotNull($comment2);
 
         $this->dm->remove($article);
 
@@ -178,9 +178,9 @@ class RemoveTest extends BaseTest
         $comment2 = $commentRepository->find($comment2->id);
 
         // Remove does not cascade to referenced documents
-        $this->assertNull($article);
-        $this->assertNotNull($comment1);
-        $this->assertNotNull($comment2);
+        self::assertNull($article);
+        self::assertNotNull($comment1);
+        self::assertNotNull($comment2);
     }
 
     public function testUnsetFromReferencedCollectionWithCascadeAndMappedBy(): void
@@ -207,10 +207,10 @@ class RemoveTest extends BaseTest
         $comment2 = $commentRepository->find($comment2->id);
 
         // Persist is cascaded
-        $this->assertNotNull($blogPost);
-        $this->assertCount(2, $blogPost->comments);
-        $this->assertNotNull($comment1);
-        $this->assertNotNull($comment2);
+        self::assertNotNull($blogPost);
+        self::assertCount(2, $blogPost->comments);
+        self::assertNotNull($comment1);
+        self::assertNotNull($comment2);
 
         unset($blogPost->comments[0]);
 
@@ -222,10 +222,10 @@ class RemoveTest extends BaseTest
         $comment2 = $commentRepository->find($comment2->id);
 
         // Non-owning side of mappedBy reference is immutable
-        $this->assertNotNull($blogPost);
-        $this->assertCount(2, $blogPost->comments);
-        $this->assertNotNull($comment1);
-        $this->assertNotNull($comment2);
+        self::assertNotNull($blogPost);
+        self::assertCount(2, $blogPost->comments);
+        self::assertNotNull($comment1);
+        self::assertNotNull($comment2);
 
         $this->dm->remove($blogPost);
 
@@ -237,8 +237,8 @@ class RemoveTest extends BaseTest
         $comment2 = $commentRepository->find($comment2->id);
 
         // Remove cascades to referenced documents
-        $this->assertNull($blogPost);
-        $this->assertNull($comment1);
-        $this->assertNull($comment2);
+        self::assertNull($blogPost);
+        self::assertNull($comment1);
+        self::assertNull($comment2);
     }
 }

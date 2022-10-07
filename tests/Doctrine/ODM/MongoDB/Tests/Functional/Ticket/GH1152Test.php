@@ -26,12 +26,12 @@ class GH1152Test extends BaseTest
         $this->dm->clear();
 
         $parent = $this->dm->find(GH1152Parent::CLASSNAME, $parent->id);
-        $this->assertNotNull($parent);
+        self::assertNotNull($parent);
 
-        $this->assertNotNull($parent->child->parentAssociation);
+        self::assertNotNull($parent->child->parentAssociation);
         [$mapping, $parentAssociation, $fieldName] = $parent->child->parentAssociation;
 
-        $this->assertSame($parent, $parentAssociation);
+        self::assertSame($parent, $parentAssociation);
     }
 }
 

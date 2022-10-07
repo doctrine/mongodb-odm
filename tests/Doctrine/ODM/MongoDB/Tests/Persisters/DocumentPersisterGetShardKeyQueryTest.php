@@ -33,7 +33,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
 
-        $this->assertSame(
+        self::assertSame(
             ['int' => $o->int, 'string' => $o->string, 'bool' => $o->bool, 'float' => $o->float],
             $method->invoke($persister, $o)
         );
@@ -53,16 +53,16 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 
-        $this->assertInstanceOf(ObjectId::class, $shardKeyQuery['oid']);
-        $this->assertSame($o->oid, (string) $shardKeyQuery['oid']);
+        self::assertInstanceOf(ObjectId::class, $shardKeyQuery['oid']);
+        self::assertSame($o->oid, (string) $shardKeyQuery['oid']);
 
-        $this->assertInstanceOf(Binary::class, $shardKeyQuery['bin']);
-        $this->assertSame($o->bin, $shardKeyQuery['bin']->getData());
+        self::assertInstanceOf(Binary::class, $shardKeyQuery['bin']);
+        self::assertSame($o->bin, $shardKeyQuery['bin']->getData());
 
-        $this->assertInstanceOf(UTCDateTime::class, $shardKeyQuery['date']);
-        $this->assertEquals($o->date->getTimestamp(), $shardKeyQuery['date']->toDateTime()->getTimestamp());
+        self::assertInstanceOf(UTCDateTime::class, $shardKeyQuery['date']);
+        self::assertEquals($o->date->getTimestamp(), $shardKeyQuery['date']->toDateTime()->getTimestamp());
 
-        $this->assertSame(
+        self::assertSame(
             (int) $o->date->format('v'),
             (int) $shardKeyQuery['date']->toDateTime()->format('v')
         );
@@ -80,7 +80,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 
-        $this->assertSame(['_id' => $o->identifier], $shardKeyQuery);
+        self::assertSame(['_id' => $o->identifier], $shardKeyQuery);
     }
 
     public function testShardByReference(): void
@@ -100,7 +100,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $method->setAccessible(true);
         $shardKeyQuery = $method->invoke($persister, $o);
 
-        $this->assertSame(['reference.$id' => $userId], $shardKeyQuery);
+        self::assertSame(['reference.$id' => $userId], $shardKeyQuery);
     }
 }
 

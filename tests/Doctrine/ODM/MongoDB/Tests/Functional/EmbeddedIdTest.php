@@ -18,7 +18,7 @@ class EmbeddedIdTest extends BaseTest
 
         $this->dm->persist($test);
 
-        $this->assertNotNull($test->id);
+        self::assertNotNull($test->id);
     }
 
     public function testEmbeddedIdsAreNotOverwritten(): void
@@ -29,7 +29,7 @@ class EmbeddedIdTest extends BaseTest
 
         $this->dm->persist($test);
 
-        $this->assertEquals($id, $test->id);
+        self::assertEquals($id, $test->id);
     }
 
     public function testEmbedOneDocumentWithMissingIdentifier(): void

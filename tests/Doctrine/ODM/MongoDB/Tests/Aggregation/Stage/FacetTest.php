@@ -27,7 +27,7 @@ class FacetTest extends BaseTest
             ->field('otherField')
             ->pipeline($this->getTestAggregationBuilder()->sortByCount('$comments'));
 
-        $this->assertSame([
+        self::assertSame([
             '$facet' => [
                 'someField' => [['$sortByCount' => '$tags']],
                 'otherField' => [['$sortByCount' => '$comments']],
@@ -47,7 +47,7 @@ class FacetTest extends BaseTest
             ->field('otherField')
             ->pipeline($this->getTestAggregationBuilder()->sortByCount('$comments'));
 
-        $this->assertSame([
+        self::assertSame([
             [
                 '$facet' => [
                     'someField' => [['$sortByCount' => '$tags']],

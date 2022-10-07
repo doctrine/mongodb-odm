@@ -18,8 +18,8 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->dm->clear();
 
         $rod = $this->dm->find(ReadOnlyDocument::class, $rod->id);
-        $this->assertNotNull($rod);
-        $this->assertSame('yay', $rod->value);
+        self::assertNotNull($rod);
+        self::assertSame('yay', $rod->value);
     }
 
     public function testCanBeUpserted(): void
@@ -31,8 +31,8 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->dm->clear();
 
         $rod = $this->dm->find(ReadOnlyDocument::class, $rod->id);
-        $this->assertNotNull($rod);
-        $this->assertSame('yay', $rod->value);
+        self::assertNotNull($rod);
+        self::assertSame('yay', $rod->value);
     }
 
     public function testCanBeRemoved(): void
@@ -48,7 +48,7 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->dm->clear();
 
         $rod = $this->dm->find(ReadOnlyDocument::class, $rod->id);
-        $this->assertNull($rod);
+        self::assertNull($rod);
     }
 
     public function testChangingValueDoesNotProduceChangeSet(): void
@@ -58,7 +58,7 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->dm->flush();
         $rod->value = 'o.O';
         $this->uow->recomputeSingleDocumentChangeSet($this->dm->getClassMetadata(ReadOnlyDocument::class), $rod);
-        $this->assertEmpty($this->uow->getDocumentChangeSet($rod));
+        self::assertEmpty($this->uow->getDocumentChangeSet($rod));
     }
 
     public function testCantBeUpdated(): void
@@ -74,7 +74,7 @@ class ReadOnlyDocumentTest extends BaseTest
         $this->dm->clear();
 
         $rod = $this->dm->find(ReadOnlyDocument::class, $rod->id);
-        $this->assertSame('yay', $rod->value);
+        self::assertSame('yay', $rod->value);
     }
 }
 

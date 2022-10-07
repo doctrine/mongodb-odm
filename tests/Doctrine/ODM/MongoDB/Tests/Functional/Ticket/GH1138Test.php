@@ -41,10 +41,10 @@ class GH1138Test extends BaseTest
         $this->dm->persist($doc);
         $this->dm->flush();
 
-        $this->assertCount(1, $this->logger, 'Changing a document before its insertion requires one query');
-        $this->assertEquals('foo-changed', $doc->name);
-        $this->assertEquals(1, $listener->inserts);
-        $this->assertEquals(0, $listener->updates);
+        self::assertCount(1, $this->logger, 'Changing a document before its insertion requires one query');
+        self::assertEquals('foo-changed', $doc->name);
+        self::assertEquals(1, $listener->inserts);
+        self::assertEquals(0, $listener->updates);
     }
 }
 

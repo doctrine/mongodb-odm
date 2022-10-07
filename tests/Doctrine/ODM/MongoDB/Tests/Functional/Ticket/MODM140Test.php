@@ -40,9 +40,9 @@ class MODM140Test extends BaseTest
 
         $category = $this->dm->getRepository(Category::class)->findOneBy(['name' => 'My Category']);
         // Should be: 1 Category, 2 Post, 2 PostVersion in each Post
-        $this->assertEquals(2, $category->posts->count());
-        $this->assertEquals(2, $category->posts->get(0)->versions->count());
-        $this->assertEquals(2, $category->posts->get(1)->versions->count());
+        self::assertEquals(2, $category->posts->count());
+        self::assertEquals(2, $category->posts->get(0)->versions->count());
+        self::assertEquals(2, $category->posts->get(1)->versions->count());
     }
 
     public function testInsertingEmbeddedCollectionWithRefMany(): void
@@ -63,8 +63,8 @@ class MODM140Test extends BaseTest
         $this->dm->clear();
 
         $category = $this->dm->getRepository(Category::class)->findOneBy(['name' => 'My Category']);
-        $this->assertEquals(1, $category->posts->count());
-        $this->assertEquals(1, $category->posts->get(0)->comments->count());
+        self::assertEquals(1, $category->posts->count());
+        self::assertEquals(1, $category->posts->get(0)->comments->count());
     }
 
     public function testAddingAnotherEmbeddedDocument(): void
@@ -77,7 +77,7 @@ class MODM140Test extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository(EmbeddedTestLevel0::class)->findOneBy(['name' => 'test']);
-        $this->assertInstanceOf(EmbeddedTestLevel0::class, $test);
+        self::assertInstanceOf(EmbeddedTestLevel0::class, $test);
 
         $level1       = new EmbeddedTestLevel1();
         $level1->name = 'test level 1 #1';
@@ -96,8 +96,8 @@ class MODM140Test extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository(EmbeddedTestLevel0::class)->findOneBy(['name' => 'test']);
-        $this->assertCount(1, $test->level1);
-        $this->assertCount(2, $test->level1[0]->level2);
+        self::assertCount(1, $test->level1);
+        self::assertCount(2, $test->level1[0]->level2);
 
         $level1       = new EmbeddedTestLevel1();
         $level1->name = 'test level 1 #2';
@@ -116,9 +116,9 @@ class MODM140Test extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository(EmbeddedTestLevel0::class)->findOneBy(['name' => 'test']);
-        $this->assertCount(2, $test->level1);
-        $this->assertCount(2, $test->level1[0]->level2);
-        $this->assertCount(2, $test->level1[1]->level2);
+        self::assertCount(2, $test->level1);
+        self::assertCount(2, $test->level1[0]->level2);
+        self::assertCount(2, $test->level1[1]->level2);
     }
 }
 

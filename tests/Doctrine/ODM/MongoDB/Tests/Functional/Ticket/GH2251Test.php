@@ -32,7 +32,7 @@ class GH2251Test extends BaseTest
             $elemMatch
         );
 
-        $this->assertSame(
+        self::assertSame(
             [
                 '$nor' => [
                     [

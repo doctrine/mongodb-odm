@@ -60,7 +60,7 @@ class PersistentCollectionCloneTest extends BaseTest
 
         $user1 = $this->dm->find(get_class($user1), $user1->id);
 
-        $this->assertCount(2, $user1->groups);
+        self::assertCount(2, $user1->groups);
     }
 
     public function testClonePersistentCollectionAndShare(): void
@@ -76,8 +76,8 @@ class PersistentCollectionCloneTest extends BaseTest
         $user1 = $this->dm->find(get_class($user1), $user1->id);
         $user2 = $this->dm->find(get_class($user1), $user2->id);
 
-        $this->assertCount(2, $user1->groups);
-        $this->assertCount(2, $user2->groups);
+        self::assertCount(2, $user1->groups);
+        self::assertCount(2, $user2->groups);
     }
 
     public function testCloneThenDirtyPersistentCollection(): void
@@ -97,8 +97,8 @@ class PersistentCollectionCloneTest extends BaseTest
         $user1 = $this->dm->find(get_class($user1), $user1->id);
         $user2 = $this->dm->find(get_class($user1), $user2->id);
 
-        $this->assertCount(3, $user2->groups);
-        $this->assertCount(2, $user1->groups);
+        self::assertCount(3, $user2->groups);
+        self::assertCount(2, $user1->groups);
     }
 
     public function testNotCloneAndPassAroundFlush(): void
@@ -111,8 +111,8 @@ class PersistentCollectionCloneTest extends BaseTest
         $user2->groups = $user1->groups;
         $user2->groups->add($group3);
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user1->groups);
-        $this->assertCount(1, $user1->groups->getInsertDiff());
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user1->groups);
+        self::assertCount(1, $user1->groups->getInsertDiff());
 
         $this->dm->persist($group3);
         $this->dm->flush();
@@ -121,7 +121,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $user1 = $this->dm->find(get_class($user1), $user1->id);
         $user2 = $this->dm->find(get_class($user1), $user2->id);
 
-        $this->assertCount(3, $user2->groups);
-        $this->assertCount(3, $user1->groups);
+        self::assertCount(3, $user2->groups);
+        self::assertCount(3, $user1->groups);
     }
 }

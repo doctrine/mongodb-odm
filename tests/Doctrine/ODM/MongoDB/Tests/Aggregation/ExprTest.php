@@ -24,8 +24,8 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
         $args = $this->resolveArgs($args);
 
-        $this->assertSame($expr, $expr->$operator(...$args));
-        $this->assertSame($expected, $expr->getExpression());
+        self::assertSame($expr, $expr->$operator(...$args));
+        self::assertSame($expected, $expr->getExpression());
     }
 
     /**
@@ -38,8 +38,8 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
         $args = $this->resolveArgs($args);
 
-        $this->assertSame($expr, $expr->field('foo')->$operator(...$args));
-        $this->assertSame(['foo' => $expected], $expr->getExpression());
+        self::assertSame($expr, $expr->field('foo')->$operator(...$args));
+        self::assertSame(['foo' => $expected], $expr->getExpression());
     }
 
     public function testExpr(): void
@@ -47,8 +47,8 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
 
         $newExpr = $expr->expr();
-        $this->assertInstanceOf(Expr::class, $newExpr);
-        $this->assertNotSame($newExpr, $expr);
+        self::assertInstanceOf(Expr::class, $newExpr);
+        self::assertNotSame($newExpr, $expr);
     }
 
     public function testExpression(): void
@@ -62,8 +62,8 @@ class ExprTest extends BaseTest
 
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->field('nested')->expression($nestedExpr));
-        $this->assertSame(
+        self::assertSame($expr, $expr->field('nested')->expression($nestedExpr));
+        self::assertSame(
             [
                 'nested' => [
                     'dayOfMonth' => ['$dayOfMonth' => '$dateField'],
@@ -100,7 +100,7 @@ class ExprTest extends BaseTest
             ->then('One element given')
             ->default($this->createExpr()->concat('$numElements', ' elements given'));
 
-        $this->assertSame(
+        self::assertSame(
             [
                 '$switch' => [
                     'branches' => [

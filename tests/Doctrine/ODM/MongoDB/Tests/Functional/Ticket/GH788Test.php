@@ -27,8 +27,8 @@ class GH788Test extends BaseTest
         $this->dm->clear();
 
         $doc = $this->dm->find(get_class($listed), $listed->id);
-        $this->assertInstanceOf(GH788DocumentListed::class, $doc);
-        $this->assertEquals('listed', $doc->name);
+        self::assertInstanceOf(GH788DocumentListed::class, $doc);
+        self::assertEquals('listed', $doc->name);
 
         $this->dm->persist($unlisted);
 

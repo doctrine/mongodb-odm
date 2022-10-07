@@ -30,7 +30,7 @@ class TypeTest extends BaseTest
      */
     public function testConversion(Type $type, $test): void
     {
-        $this->assertEquals($test, $type->convertToPHPValue($type->convertToDatabaseValue($test)));
+        self::assertEquals($test, $type->convertToPHPValue($type->convertToDatabaseValue($test)));
     }
 
     public function provideTypes(): array
@@ -70,7 +70,7 @@ class TypeTest extends BaseTest
      */
     public function testConversionIsIdempotent(Type $type, $test): void
     {
-        $this->assertEquals($test, $type->convertToDatabaseValue($test));
+        self::assertEquals($test, $type->convertToDatabaseValue($test));
     }
 
     public function provideTypesForIdempotent(): array
@@ -101,7 +101,7 @@ class TypeTest extends BaseTest
         $expectedDate->modify($date->format('H:i:s') . '.' . str_pad((string) $cleanMicroseconds, 6, '0', STR_PAD_LEFT));
 
         $type = Type::getType(Type::DATE);
-        $this->assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
+        self::assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
     }
 
     public function testConvertDateImmutablePreservesMilliseconds(): void
@@ -112,13 +112,13 @@ class TypeTest extends BaseTest
         $expectedDate      = $date->modify($date->format('H:i:s') . '.' . str_pad((string) $cleanMicroseconds, 6, '0', STR_PAD_LEFT));
 
         $type = Type::getType(Type::DATE_IMMUTABLE);
-        $this->assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
+        self::assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
     }
 
     public function testConvertImmutableDate(): void
     {
         $date = new DateTimeImmutable('now');
 
-        $this->assertInstanceOf(UTCDateTime::class, Type::convertPHPToDatabaseValue($date));
+        self::assertInstanceOf(UTCDateTime::class, Type::convertPHPToDatabaseValue($date));
     }
 }

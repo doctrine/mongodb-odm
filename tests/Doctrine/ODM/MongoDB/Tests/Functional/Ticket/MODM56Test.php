@@ -27,11 +27,11 @@ class MODM56Test extends BaseTest
 
         $test = $this->dm->getDocumentCollection(MODM56Parent::class)->findOne();
 
-        $this->assertEquals('Parent', $test['name']);
-        $this->assertInstanceOf(UTCDateTime::class, $test['updatedAt']);
-        $this->assertCount(2, $test['children']);
-        $this->assertEquals('Child One', $test['children'][0]['name']);
-        $this->assertEquals('Child Two', $test['children'][1]['name']);
+        self::assertEquals('Parent', $test['name']);
+        self::assertInstanceOf(UTCDateTime::class, $test['updatedAt']);
+        self::assertCount(2, $test['children']);
+        self::assertEquals('Child One', $test['children'][0]['name']);
+        self::assertEquals('Child Two', $test['children'][1]['name']);
     }
 }
 

@@ -30,7 +30,7 @@ class XmlDriverTest extends AbstractDriverTest
     {
         $classMetadata = new ClassMetadata(UserCustomIdGenerator::class);
         $this->driver->loadMetadataForClass(UserCustomIdGenerator::class, $classMetadata);
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'id',
             'strategy' => 'custom',
             'options' => [
@@ -57,14 +57,14 @@ class XmlDriverTest extends AbstractDriverTest
         $this->driver->loadMetadataForClass(UserNonStringOptions::class, $classMetadata);
 
         $profileMapping = $classMetadata->fieldMappings['profile'];
-        $this->assertSame(ClassMetadata::REFERENCE_STORE_AS_ID, $profileMapping['storeAs']);
-        $this->assertTrue($profileMapping['orphanRemoval']);
+        self::assertSame(ClassMetadata::REFERENCE_STORE_AS_ID, $profileMapping['storeAs']);
+        self::assertTrue($profileMapping['orphanRemoval']);
 
         $profileMapping = $classMetadata->fieldMappings['groups'];
-        $this->assertSame(ClassMetadata::REFERENCE_STORE_AS_DB_REF, $profileMapping['storeAs']);
-        $this->assertFalse($profileMapping['orphanRemoval']);
-        $this->assertSame(0, $profileMapping['limit']);
-        $this->assertSame(2, $profileMapping['skip']);
+        self::assertSame(ClassMetadata::REFERENCE_STORE_AS_DB_REF, $profileMapping['storeAs']);
+        self::assertFalse($profileMapping['orphanRemoval']);
+        self::assertSame(0, $profileMapping['limit']);
+        self::assertSame(2, $profileMapping['skip']);
     }
 
     public function testInvalidPartialFilterExpressions(): void
@@ -82,7 +82,7 @@ class XmlDriverTest extends AbstractDriverTest
         $classMetadata = new ClassMetadata(WildcardIndexDocument::class);
         $this->driver->loadMetadataForClass(WildcardIndexDocument::class, $classMetadata);
 
-        $this->assertSame([
+        self::assertSame([
             [
                 'keys' => ['fieldA.$**' => 1],
                 'options' => ['name' => 'fieldA.$**_1'],
@@ -95,7 +95,7 @@ class XmlDriverTest extends AbstractDriverTest
         $classMetadata = new ClassMetadata(AlsoLoadDocument::class);
         $this->driver->loadMetadataForClass(AlsoLoadDocument::class, $classMetadata);
 
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'createdAt',
             'name' => 'createdAt',
             'type' => 'date',
@@ -117,8 +117,8 @@ class XmlDriverTest extends AbstractDriverTest
     {
         $classMetadata = new ClassMetadata(SchemaValidatedDocument::class);
         $this->driver->loadMetadataForClass($classMetadata->name, $classMetadata);
-        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $classMetadata->getValidationAction());
-        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE, $classMetadata->getValidationLevel());
+        self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $classMetadata->getValidationAction());
+        self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE, $classMetadata->getValidationLevel());
         $expectedValidatorJson = <<<'EOT'
 {
     "$jsonSchema": {
@@ -139,7 +139,7 @@ class XmlDriverTest extends AbstractDriverTest
 EOT;
         $expectedValidatorBson = fromJSON($expectedValidatorJson);
         $expectedValidator     = toPHP($expectedValidatorBson, []);
-        $this->assertEquals($expectedValidator, $classMetadata->getValidator());
+        self::assertEquals($expectedValidator, $classMetadata->getValidator());
     }
 
     public function testWrongValueForValidationSchemaShouldThrowException(): void

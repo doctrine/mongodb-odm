@@ -49,7 +49,7 @@ class ReferenceEmbeddedDocumentsTest extends BaseTest
 
         $subProjects = $project->getSubProjects();
 
-        $this->assertEquals(2, $subProjects->count());
+        self::assertEquals(2, $subProjects->count());
 
         $this->assertFirstSubProject($subProjects->first());
         $this->assertLastSubProject($subProjects->last());
@@ -57,13 +57,13 @@ class ReferenceEmbeddedDocumentsTest extends BaseTest
 
     private function assertFirstSubProject(SubProject $project): void
     {
-        $this->assertEquals('Sub Project #1', $project->getName());
-        $this->assertEquals(2, $project->getIssues()->count());
+        self::assertEquals('Sub Project #1', $project->getName());
+        self::assertEquals(2, $project->getIssues()->count());
     }
 
     private function assertLastSubProject(SubProject $project): void
     {
-        $this->assertEquals('Sub Project #2', $project->getName());
-        $this->assertEquals(2, $project->getIssues()->count());
+        self::assertEquals('Sub Project #2', $project->getName());
+        self::assertEquals(2, $project->getIssues()->count());
     }
 }

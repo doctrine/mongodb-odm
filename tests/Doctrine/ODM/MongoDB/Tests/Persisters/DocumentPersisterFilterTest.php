@@ -32,7 +32,7 @@ class DocumentPersisterFilterTest extends BaseTest
             ],
         ];
 
-        $this->assertSame($expectedCriteria, $persister->addFilterToPreparedQuery($preparedQuery));
+        self::assertSame($expectedCriteria, $persister->addFilterToPreparedQuery($preparedQuery));
     }
 
     public function testFilterCrieriaShouldAndWithMappingCriteriaOwningSide(): void
@@ -56,11 +56,11 @@ class DocumentPersisterFilterTest extends BaseTest
         $blogPost = $this->dm->getRepository(BlogPost::class)->find($blogPost->id);
 
         // Admin comments should be removed by the filter
-        $this->assertCount(1, $blogPost->comments);
+        self::assertCount(1, $blogPost->comments);
 
         /* Admin comments should be removed by the filter, and user comments
          * should be removed by the mapping criteria.
          */
-        $this->assertCount(0, $blogPost->adminComments);
+        self::assertEmpty($blogPost->adminComments);
     }
 }
