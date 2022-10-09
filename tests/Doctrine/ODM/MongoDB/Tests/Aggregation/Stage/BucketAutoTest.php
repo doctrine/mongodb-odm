@@ -26,7 +26,7 @@ class BucketAutoTest extends BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame([
+        self::assertSame([
             '$bucketAuto' => [
                 'groupBy' => '$someField',
                 'buckets' => 3,
@@ -47,7 +47,7 @@ class BucketAutoTest extends BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame([
+        self::assertSame([
             [
                 '$bucketAuto' => [
                     'groupBy' => '$someField',
@@ -66,7 +66,7 @@ class BucketAutoTest extends BaseTest
             ->groupBy('$someField')
             ->buckets(3);
 
-        $this->assertSame([
+        self::assertSame([
             '$bucketAuto' => [
                 'groupBy' => '$someField',
                 'buckets' => 3,
@@ -86,7 +86,7 @@ class BucketAutoTest extends BaseTest
                 ->field('averageValue')
                 ->avg('$value');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 [
                     '$bucketAuto' => [

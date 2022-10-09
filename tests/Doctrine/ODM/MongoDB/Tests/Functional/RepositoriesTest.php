@@ -34,17 +34,17 @@ class RepositoriesTest extends BaseTest
     {
         $users = $this->repository->findAll();
 
-        $this->assertIsArray($users);
-        $this->assertCount(1, $users);
+        self::assertIsArray($users);
+        self::assertCount(1, $users);
     }
 
     public function testFind(): void
     {
         $user2 = $this->repository->find($this->user->getId());
-        $this->assertSame($this->user, $user2);
+        self::assertSame($this->user, $user2);
 
         $user3 = $this->repository->findOneBy(['username' => 'w00ting']);
-        $this->assertSame($user2, $user3);
+        self::assertSame($user2, $user3);
     }
 
     public function testCriteria(): void
@@ -53,11 +53,11 @@ class RepositoriesTest extends BaseTest
         $expr        = $exprBuilder->eq('username', 'lolcat');
 
         $users = $this->repository->matching(new Criteria($expr));
-        $this->assertCount(0, $users);
+        self::assertEmpty($users);
 
         $expr = $exprBuilder->eq('username', 'w00ting');
 
         $users = $this->repository->matching(new Criteria($expr));
-        $this->assertCount(1, $users);
+        self::assertCount(1, $users);
     }
 }

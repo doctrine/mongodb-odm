@@ -38,8 +38,8 @@ class QueryExpressionVisitorTest extends BaseTest
     {
         $expr = $this->visitor->dispatch($comparison);
 
-        $this->assertInstanceOf(Expr::class, $expr);
-        $this->assertEquals($expectedQuery, $expr->getQuery());
+        self::assertInstanceOf(Expr::class, $expr);
+        self::assertEquals($expectedQuery, $expr->getQuery());
     }
 
     public function provideComparisons(): array
@@ -87,8 +87,8 @@ class QueryExpressionVisitorTest extends BaseTest
 
         $expr = $this->visitor->dispatch($compositeExpr);
 
-        $this->assertInstanceOf(Expr::class, $expr);
-        $this->assertEquals($expectedQuery, $expr->getQuery());
+        self::assertInstanceOf(Expr::class, $expr);
+        self::assertEquals($expectedQuery, $expr->getQuery());
     }
 
     public function testWalkCompositeExpressionShouldThrowExceptionForUnsupportedComposite(): void
@@ -100,6 +100,6 @@ class QueryExpressionVisitorTest extends BaseTest
 
     public function testWalkValue(): void
     {
-        $this->assertEquals('value', $this->visitor->walkValue(new Value('value')));
+        self::assertEquals('value', $this->visitor->walkValue(new Value('value')));
     }
 }

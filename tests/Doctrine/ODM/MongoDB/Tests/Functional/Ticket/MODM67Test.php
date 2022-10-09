@@ -40,11 +40,11 @@ class MODM67Test extends BaseTest
         $dm->persist($testDoc);
         $dm->flush();
 
-        $this->assertTrue($testDoc->embedOne->prePersist);
-        $this->assertTrue($testDoc->embedOne->postPersist);
+        self::assertTrue($testDoc->embedOne->prePersist);
+        self::assertTrue($testDoc->embedOne->postPersist);
 
-        $this->assertFalse($testDoc->embedOne->preUpdate);
-        $this->assertFalse($testDoc->embedOne->postUpdate);
+        self::assertFalse($testDoc->embedOne->preUpdate);
+        self::assertFalse($testDoc->embedOne->postUpdate);
 
         $dm->clear();
 
@@ -52,8 +52,8 @@ class MODM67Test extends BaseTest
         $testDoc->embedOne->numAccesses = 1;
         $dm->flush();
 
-        $this->assertTrue($testDoc->embedOne->preUpdate);
-        $this->assertTrue($testDoc->embedOne->postUpdate);
+        self::assertTrue($testDoc->embedOne->preUpdate);
+        self::assertTrue($testDoc->embedOne->postUpdate);
     }
 }
 

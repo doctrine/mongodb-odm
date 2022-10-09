@@ -23,8 +23,8 @@ class GH1435Test extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->find(GH1435Document::class, $id);
-        $this->assertNotNull($document);
-        $this->assertEquals('test', $document->name);
+        self::assertNotNull($document);
+        self::assertEquals('test', $document->name);
     }
 
     public function testUpsertWithIncrement(): void
@@ -40,8 +40,8 @@ class GH1435Test extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->find(GH1435DocumentIncrement::class, $id);
-        $this->assertNotNull($document);
-        $this->assertEquals('test', $document->name);
+        self::assertNotNull($document);
+        self::assertEquals('test', $document->name);
     }
 
     public function testUpdateWithIncrement(): void
@@ -54,16 +54,16 @@ class GH1435Test extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->getRepository(GH1435DocumentIncrement::class)->findOneBy([]);
-        $this->assertNotNull($document);
-        $this->assertEquals('test', $document->name);
+        self::assertNotNull($document);
+        self::assertEquals('test', $document->name);
 
         $document->id += 5;
         $this->dm->flush();
         $this->dm->clear();
 
         $document = $this->dm->getRepository(GH1435DocumentIncrement::class)->findOneBy([]);
-        $this->assertNotNull($document);
-        $this->assertSame(1, $document->id);
+        self::assertNotNull($document);
+        self::assertSame(1, $document->id);
     }
 }
 

@@ -41,9 +41,9 @@ class GH566Test extends BaseTest
 
         $this->dm->flush();
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc1->children);
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc2->children);
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $doc3->children);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $doc1->children);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $doc2->children);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $doc3->children);
 
         /* The inverse-side $children PersistentCollection on these documents
          * is already initialized by this point, so we need to either clear the
@@ -56,18 +56,18 @@ class GH566Test extends BaseTest
         $doc1         = $this->dm->find($class, $doc1->id);
         $doc1Children = iterator_to_array($doc1->children, false);
 
-        $this->assertCount(0, $doc1Children);
+        self::assertEmpty($doc1Children);
 
         $doc2         = $this->dm->find($class, $doc2->id);
         $doc2Children = iterator_to_array($doc2->children, false);
 
-        $this->assertCount(1, $doc2Children);
-        $this->assertSame($doc3, $doc2Children[0]);
+        self::assertCount(1, $doc2Children);
+        self::assertSame($doc3, $doc2Children[0]);
 
         $doc3         = $this->dm->find($class, $doc3->id);
         $doc3Children = iterator_to_array($doc3->children, false);
 
-        $this->assertCount(0, $doc3Children);
+        self::assertEmpty($doc3Children);
     }
 }
 

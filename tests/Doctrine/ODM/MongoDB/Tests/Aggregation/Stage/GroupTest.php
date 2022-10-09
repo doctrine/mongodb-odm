@@ -39,7 +39,7 @@ class GroupTest extends BaseTest
         };
         $stage->setExpr($expr);
 
-        $this->assertSame($stage, $stage->$method(...$args));
+        self::assertSame($stage, $stage->$method(...$args));
     }
 
     public function provideProxiedExprMethods(): array
@@ -79,7 +79,7 @@ class GroupTest extends BaseTest
             ->field('count')
             ->sum(1);
 
-        $this->assertSame(['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]], $groupStage->getExpression());
+        self::assertSame(['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]], $groupStage->getExpression());
     }
 
     public function testGroupFromBuilder(): void
@@ -92,7 +92,7 @@ class GroupTest extends BaseTest
             ->field('count')
             ->sum(1);
 
-        $this->assertSame([['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]]], $builder->getPipeline());
+        self::assertSame([['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]]], $builder->getPipeline());
     }
 
     public function testGroupWithOperatorInId(): void
@@ -104,6 +104,6 @@ class GroupTest extends BaseTest
             ->field('count')
             ->sum(1);
 
-        $this->assertSame(['$group' => ['_id' => ['$year' => '$dateField'], 'count' => ['$sum' => 1]]], $groupStage->getExpression());
+        self::assertSame(['$group' => ['_id' => ['$year' => '$dateField'], 'count' => ['$sum' => 1]]], $groupStage->getExpression());
     }
 }

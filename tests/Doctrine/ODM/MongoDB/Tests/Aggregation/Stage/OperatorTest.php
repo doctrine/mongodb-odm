@@ -27,8 +27,8 @@ class OperatorTest extends BaseTest
         $stage = $this->getStubStage();
         $args  = $this->resolveArgs($args);
 
-        $this->assertSame($stage, $stage->$operator(...$args));
-        $this->assertSame($expected, $stage->getExpression());
+        self::assertSame($stage, $stage->$operator(...$args));
+        self::assertSame($expected, $stage->getExpression());
     }
 
     public function testExpression(): void
@@ -42,8 +42,8 @@ class OperatorTest extends BaseTest
             ->field('dayOfWeek')
             ->dayOfWeek('$dateField');
 
-        $this->assertSame($stage, $stage->field('nested')->expression($nestedExpr));
-        $this->assertSame(
+        self::assertSame($stage, $stage->field('nested')->expression($nestedExpr));
+        self::assertSame(
             [
                 'nested' => [
                     'dayOfMonth' => ['$dayOfMonth' => '$dateField'],
@@ -65,7 +65,7 @@ class OperatorTest extends BaseTest
             ->then('One element given')
             ->default($this->createExpr()->concat('$numElements', ' elements given'));
 
-        $this->assertSame(
+        self::assertSame(
             [
                 '$switch' => [
                     'branches' => [

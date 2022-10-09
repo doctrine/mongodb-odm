@@ -31,7 +31,7 @@ class GH683Test extends BaseTest
         $id = $parent->id;
 
         $parent = $this->dm->find(get_class($parent), $id);
-        $this->assertInstanceOf(get_class($sub1), $parent->embedOne);
+        self::assertInstanceOf(get_class($sub1), $parent->embedOne);
     }
 
     public function testEmbedMany(): void
@@ -58,7 +58,7 @@ class GH683Test extends BaseTest
         $parent    = $this->dm->find(get_class($parent), $id);
         $firstSub  = $parent->embedMany->get(0);
         $secondSub = $parent->embedMany->get(1);
-        $this->assertInstanceOf(get_class($sub1), $firstSub);
-        $this->assertInstanceOf(get_class($sub2), $secondSub);
+        self::assertInstanceOf(get_class($sub1), $firstSub);
+        self::assertInstanceOf(get_class($sub2), $secondSub);
     }
 }

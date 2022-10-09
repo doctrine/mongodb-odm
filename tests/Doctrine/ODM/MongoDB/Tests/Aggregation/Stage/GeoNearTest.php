@@ -21,7 +21,7 @@ class GeoNearTest extends BaseTest
             ->equals('someValue');
 
         $stage = ['near' => [0, 0], 'spherical' => false, 'distanceField' => 'distance', 'query' => ['someField' => 'someValue']];
-        $this->assertSame(['$geoNear' => $stage], $geoNearStage->getExpression());
+        self::assertSame(['$geoNear' => $stage], $geoNearStage->getExpression());
     }
 
     public function testGeoNearFromBuilder(): void
@@ -34,7 +34,7 @@ class GeoNearTest extends BaseTest
             ->equals('someValue');
 
         $stage = ['near' => [0, 0], 'spherical' => false, 'distanceField' => 'distance', 'query' => ['someField' => 'someValue']];
-        $this->assertSame([['$geoNear' => $stage]], $builder->getPipeline());
+        self::assertSame([['$geoNear' => $stage]], $builder->getPipeline());
     }
 
     /**
@@ -47,12 +47,12 @@ class GeoNearTest extends BaseTest
         $geoNearStage = new GeoNear($this->getTestAggregationBuilder(), 0, 0);
 
         $pipeline = $geoNearStage->getExpression();
-        $this->assertArrayNotHasKey($field, $pipeline['$geoNear']);
+        self::assertArrayNotHasKey($field, $pipeline['$geoNear']);
 
         $geoNearStage->$field($value);
         $pipeline = $geoNearStage->getExpression();
 
-        $this->assertSame($value, $pipeline['$geoNear'][$field]);
+        self::assertSame($value, $pipeline['$geoNear'][$field]);
     }
 
     public static function provideOptionalSettings(): array
@@ -75,6 +75,6 @@ class GeoNearTest extends BaseTest
             ->limit(1);
 
         $stage = ['near' => [0, 0], 'spherical' => false, 'distanceField' => null, 'query' => [], 'num' => 1];
-        $this->assertSame([['$geoNear' => $stage]], $builder->getPipeline());
+        self::assertSame([['$geoNear' => $stage]], $builder->getPipeline());
     }
 }

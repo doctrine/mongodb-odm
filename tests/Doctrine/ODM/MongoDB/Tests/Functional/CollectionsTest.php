@@ -24,7 +24,7 @@ class CollectionsTest extends BaseTest
 
         $bar = $this->dm->find(Bar::class, $bar->getId());
 
-        $this->assertNotNull($bar);
+        self::assertNotNull($bar);
         $locations = $bar->getLocations();
         unset($locations[0]);
         $locations[1]->setName('changed');
@@ -32,22 +32,22 @@ class CollectionsTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getDocumentCollection(Bar::class)->findOne();
-        $this->assertCount(2, $test['locations']);
+        self::assertCount(2, $test['locations']);
 
         $bar = $this->dm->find(Bar::class, $bar->getId());
-        $this->assertNotNull($bar);
+        self::assertNotNull($bar);
         $locations = $bar->getLocations();
-        $this->assertCount(2, $locations);
-        $this->assertEquals('changed', $locations[0]->getName());
+        self::assertCount(2, $locations);
+        self::assertEquals('changed', $locations[0]->getName());
 
         unset($locations[0], $locations[1]);
         $this->dm->flush();
         $this->dm->clear();
 
         $bar = $this->dm->find(Bar::class, $bar->getId());
-        $this->assertNotNull($bar);
+        self::assertNotNull($bar);
         $locations = $bar->getLocations();
-        $this->assertCount(0, $locations);
+        self::assertEmpty($locations);
 
         $bar->addLocation(new Location('West Nashville'));
         $bar->addLocation(new Location('East Nashville'));
@@ -56,27 +56,27 @@ class CollectionsTest extends BaseTest
         $this->dm->clear();
 
         $bar = $this->dm->find(Bar::class, $bar->getId());
-        $this->assertNotNull($bar);
-        $this->assertEquals($bar->getId(), $this->dm->getUnitOfWork()->getDocumentIdentifier($bar));
+        self::assertNotNull($bar);
+        self::assertEquals($bar->getId(), $this->dm->getUnitOfWork()->getDocumentIdentifier($bar));
 
         $locations = $bar->getLocations();
-        $this->assertCount(3, $locations);
+        self::assertCount(3, $locations);
         $locations = $bar->getLocations();
         $locations->clear();
-        $this->assertCount(0, $locations);
+        self::assertCount(0, $locations);
         $this->dm->flush();
         $this->dm->clear();
         $bar       = $this->dm->find(Bar::class, $bar->getId());
         $locations = $bar->getLocations();
-        $this->assertCount(0, $locations);
+        self::assertEmpty($locations);
         $this->dm->flush();
 
         $bar->setLocations(new ArrayCollection([new Location('Cracow')]));
         $this->uow->computeChangeSets();
         $changeSet = $this->uow->getDocumentChangeSet($bar);
-        $this->assertNotEmpty($changeSet['locations']);
-        $this->assertSame($locations, $changeSet['locations'][0]);
-        $this->assertSame($bar->getLocations(), $changeSet['locations'][1]);
+        self::assertNotEmpty($changeSet['locations']);
+        self::assertSame($locations, $changeSet['locations'][0]);
+        self::assertSame($bar->getLocations(), $changeSet['locations'][1]);
     }
 
     public function testCreateCollectionsBasic(): void
@@ -94,7 +94,7 @@ class CollectionsTest extends BaseTest
         $coll->insertMany($insert);
 
         $data = $coll->find()->toArray();
-        $this->assertCount(3, $data);
+        self::assertCount(3, $data);
     }
 
     public function testCreateCollectionsCapped(): void
@@ -112,7 +112,7 @@ class CollectionsTest extends BaseTest
         $coll->insertMany($insert);
 
         $data = $coll->find()->toArray();
-        $this->assertCount(1, $data);
+        self::assertCount(1, $data);
     }
 }
 

@@ -26,6 +26,6 @@ class BidirectionalInheritanceTest extends BaseTest
         $this->dm->persist($tournament);
         $this->dm->flush();
 
-        $this->assertTrue(true, 'Should not provoke an infinite loop');
+        self::assertTrue(true, 'Should not provoke an infinite loop');
     }
 }

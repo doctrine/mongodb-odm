@@ -30,10 +30,10 @@ class EnumTest extends BaseTest
         $this->dm->clear();
 
         $saved = $this->dm->find(Card::class, $doc->id);
-        $this->assertInstanceOf(Card::class, $saved);
-        $this->assertSame($doc->id, $saved->id);
-        $this->assertSame(Suit::Clubs, $saved->suit);
-        $this->assertNull($saved->nullableSuit);
+        self::assertInstanceOf(Card::class, $saved);
+        self::assertSame($doc->id, $saved->id);
+        self::assertSame(Suit::Clubs, $saved->suit);
+        self::assertNull($saved->nullableSuit);
     }
 
     public function testLoadingInvalidBackingValueThrowsError(): void
@@ -56,7 +56,7 @@ class EnumTest extends BaseTest
             ->field('suit')->equals(Suit::Spades)
             ->field('nullableSuit')->in([Suit::Hearts, Suit::Diamonds]);
 
-        $this->assertSame([
+        self::assertSame([
             'suit' => 'S',
             'nullableSuit' => [
                 '$in' => ['H', 'D'],
@@ -70,7 +70,7 @@ class EnumTest extends BaseTest
             ->field('suit')->equals('S') // Suit::Spades->value
             ->field('nullableSuit')->in(['H', 'D']);
 
-        $this->assertSame([
+        self::assertSame([
             'suit' => 'S',
             'nullableSuit' => [
                 '$in' => ['H', 'D'],
@@ -84,7 +84,7 @@ class EnumTest extends BaseTest
             ->field('nonExisting')->equals(Suit::Clubs)
             ->field('nonExistingArray')->equals([Suit::Clubs, Suit::Hearts]);
 
-        $this->assertSame(['nonExisting' => 'C', 'nonExistingArray' => ['C', 'H']], $qb->getQuery()->debug('query'));
+        self::assertSame(['nonExisting' => 'C', 'nonExistingArray' => ['C', 'H']], $qb->getQuery()->debug('query'));
     }
 
     public function testQueryWithMappedNonEnumFieldIsPassedToTypeDirectly(): void
@@ -94,7 +94,7 @@ class EnumTest extends BaseTest
 
         $qb = $this->dm->createQueryBuilder(Card::class)->field('_id')->equals(Suit::Clubs);
 
-        $this->assertSame(['_id' => 'C'], $qb->getQuery()->debug('query'));
+        self::assertSame(['_id' => 'C'], $qb->getQuery()->debug('query'));
     }
 
     protected function createMetadataDriverImpl(): MappingDriver

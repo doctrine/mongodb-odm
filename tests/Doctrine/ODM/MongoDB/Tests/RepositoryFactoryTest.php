@@ -28,7 +28,7 @@ class RepositoryFactoryTest extends BaseTest
     public function testRepositoriesAreSameForSameClasses(): void
     {
         $proxy = $this->dm->getPartialReference(User::class, 'abc');
-        $this->assertSame(
+        self::assertSame(
             $this->dm->getRepository(User::class),
             $this->dm->getRepository(get_class($proxy))
         );
@@ -42,7 +42,7 @@ class RepositoryFactoryTest extends BaseTest
         $dm1 = DocumentManager::create(null, $conf);
         $dm2 = DocumentManager::create(null, $conf);
 
-        $this->assertNotSame(
+        self::assertNotSame(
             $dm1->getRepository(User::class),
             $dm2->getRepository(User::class)
         );

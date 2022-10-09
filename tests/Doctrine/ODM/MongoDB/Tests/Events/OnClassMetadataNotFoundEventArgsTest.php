@@ -18,19 +18,19 @@ class OnClassMetadataNotFoundEventArgsTest extends TestCase
 
         $args = new OnClassMetadataNotFoundEventArgs(stdClass::class, $documentManager);
 
-        $this->assertSame(stdClass::class, $args->getClassName());
-        $this->assertSame($documentManager, $args->getObjectManager());
+        self::assertSame(stdClass::class, $args->getClassName());
+        self::assertSame($documentManager, $args->getObjectManager());
 
-        $this->assertNull($args->getFoundMetadata());
+        self::assertNull($args->getFoundMetadata());
 
         $metadata = $this->createMock(ClassMetadata::class);
 
         $args->setFoundMetadata($metadata);
 
-        $this->assertSame($metadata, $args->getFoundMetadata());
+        self::assertSame($metadata, $args->getFoundMetadata());
 
         $args->setFoundMetadata(null);
 
-        $this->assertNull($args->getFoundMetadata());
+        self::assertNull($args->getFoundMetadata());
     }
 }

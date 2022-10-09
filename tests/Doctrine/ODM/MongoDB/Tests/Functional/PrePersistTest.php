@@ -17,14 +17,14 @@ class PrePersistTest extends BaseTest
         $this->dm->flush();
         $this->dm->flush();
 
-        $this->assertEquals(1, $test->prePersist);
+        self::assertEquals(1, $test->prePersist);
 
         $test->field = 'test';
 
         $this->dm->flush();
         $this->dm->flush();
 
-        $this->assertEquals(1, $test->preUpdate);
+        self::assertEquals(1, $test->preUpdate);
     }
 }
 

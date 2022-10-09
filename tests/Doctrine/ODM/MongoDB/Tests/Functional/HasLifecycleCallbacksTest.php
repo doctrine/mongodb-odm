@@ -16,7 +16,7 @@ class HasLifecycleCallbacksTest extends BaseTest
         $this->dm->flush();
 
         // Neither class is annotated. No callback is invoked.
-        $this->assertCount(0, $document->invoked);
+        self::assertEmpty($document->invoked);
     }
 
     public function testHasLifecycleCallbacksSubExtendsSuperAnnotated(): void
@@ -28,8 +28,8 @@ class HasLifecycleCallbacksTest extends BaseTest
         /* The sub-class is not annotated, so the callback in the annotated
          * super-class is invokved.
          */
-        $this->assertCount(1, $document->invoked);
-        $this->assertEquals('super', $document->invoked[0]);
+        self::assertCount(1, $document->invoked);
+        self::assertEquals('super', $document->invoked[0]);
     }
 
     public function testHasLifecycleCallbacksSubAnnotatedExtendsSuper(): void
@@ -41,7 +41,7 @@ class HasLifecycleCallbacksTest extends BaseTest
         /* The sub-class is annotated, but the method is declared in the super-
          * class, which is not annotated. No callback is invoked.
          */
-        $this->assertCount(0, $document->invoked);
+        self::assertEmpty($document->invoked);
     }
 
     public function testHasLifecycleCallbacksSubAnnotatedExtendsSuperAnnotated(): void
@@ -53,8 +53,8 @@ class HasLifecycleCallbacksTest extends BaseTest
         /* The sub-class is annotated, but it doesn't override the method, so
          * the callback in the annotated super-class is invoked.
          */
-        $this->assertCount(1, $document->invoked);
-        $this->assertEquals('super', $document->invoked[0]);
+        self::assertCount(1, $document->invoked);
+        self::assertEquals('super', $document->invoked[0]);
     }
 
     public function testHasLifecycleCallbacksSubOverrideExtendsSuper(): void
@@ -64,7 +64,7 @@ class HasLifecycleCallbacksTest extends BaseTest
         $this->dm->flush();
 
         // Neither class is annotated. No callback is invoked.
-        $this->assertCount(0, $document->invoked);
+        self::assertEmpty($document->invoked);
     }
 
     public function testHasLifecycleCallbacksSubOverrideExtendsSuperAnnotated(): void
@@ -76,8 +76,8 @@ class HasLifecycleCallbacksTest extends BaseTest
         /* The sub-class is invoked because it overrides the method in the
          * annotated super-class.
          */
-        $this->assertCount(1, $document->invoked);
-        $this->assertEquals('sub', $document->invoked[0]);
+        self::assertCount(1, $document->invoked);
+        self::assertEquals('sub', $document->invoked[0]);
     }
 
     public function testHasLifecycleCallbacksSubOverrideAnnotatedExtendsSuper(): void
@@ -89,8 +89,8 @@ class HasLifecycleCallbacksTest extends BaseTest
         /* The sub-class is invoked because it overrides the method and is
          * annotated.
          */
-        $this->assertCount(1, $document->invoked);
-        $this->assertEquals('sub', $document->invoked[0]);
+        self::assertCount(1, $document->invoked);
+        self::assertEquals('sub', $document->invoked[0]);
     }
 
     public function testHasLifecycleCallbacksSubOverrideAnnotatedExtendsSuperAnnotated(): void
@@ -102,8 +102,8 @@ class HasLifecycleCallbacksTest extends BaseTest
         /* Since both classes are annotated and declare the method, the callback
          * is registered twice but the sub-class should be invoked only once.
          */
-        $this->assertCount(1, $document->invoked);
-        $this->assertEquals('sub', $document->invoked[0]);
+        self::assertCount(1, $document->invoked);
+        self::assertEquals('sub', $document->invoked[0]);
     }
 }
 

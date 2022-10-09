@@ -24,8 +24,8 @@ class GH529Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertNotNull($doc);
-        $this->assertEquals($identifier, $doc->id);
+        self::assertNotNull($doc);
+        self::assertEquals($identifier, $doc->id);
     }
 
     public function testCustomIdType(): void
@@ -42,8 +42,8 @@ class GH529Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertNotNull($doc);
-        $this->assertSame('foo', $doc->id);
+        self::assertNotNull($doc);
+        self::assertSame('foo', $doc->id);
     }
 
     public function testIntIdWithConsistentValues(): void
@@ -57,8 +57,8 @@ class GH529Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertNotNull($doc);
-        $this->assertSame(1, $doc->id);
+        self::assertNotNull($doc);
+        self::assertSame(1, $doc->id);
     }
 
     public function testIntIdWithInconsistentValues(): void
@@ -72,8 +72,8 @@ class GH529Test extends BaseTest
 
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertNotNull($doc);
-        $this->assertNotEquals(3.14, $doc->id);
+        self::assertNotNull($doc);
+        self::assertNotEquals(3.14, $doc->id);
     }
 }
 

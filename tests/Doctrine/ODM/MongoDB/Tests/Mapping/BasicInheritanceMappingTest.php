@@ -36,29 +36,29 @@ class BasicInheritanceMappingTest extends BaseTest
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass::class);
 
-        $this->assertEmpty($class->subClasses);
-        $this->assertEmpty($class->parentClasses);
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['name']));
+        self::assertEmpty($class->subClasses);
+        self::assertEmpty($class->parentClasses);
+        self::assertTrue(isset($class->fieldMappings['id']));
+        self::assertTrue(isset($class->fieldMappings['name']));
     }
 
     public function testGetMetadataForSubclassWithMappedSuperclass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
-        $this->assertEmpty($class->subClasses);
-        $this->assertEmpty($class->parentClasses);
+        self::assertEmpty($class->subClasses);
+        self::assertEmpty($class->parentClasses);
 
-        $this->assertTrue(isset($class->fieldMappings['mapped1']));
-        $this->assertTrue(isset($class->fieldMappings['mapped2']));
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['name']));
+        self::assertTrue(isset($class->fieldMappings['mapped1']));
+        self::assertTrue(isset($class->fieldMappings['mapped2']));
+        self::assertTrue(isset($class->fieldMappings['id']));
+        self::assertTrue(isset($class->fieldMappings['name']));
 
-        $this->assertFalse(isset($class->fieldMappings['mapped1']['inherited']));
-        $this->assertFalse(isset($class->fieldMappings['mapped2']['inherited']));
-        $this->assertFalse(isset($class->fieldMappings['transient']));
+        self::assertFalse(isset($class->fieldMappings['mapped1']['inherited']));
+        self::assertFalse(isset($class->fieldMappings['mapped2']['inherited']));
+        self::assertFalse(isset($class->fieldMappings['transient']));
 
-        $this->assertTrue(isset($class->fieldMappings['mappedRelated1']));
+        self::assertTrue(isset($class->fieldMappings['mappedRelated1']));
     }
 
     /**
@@ -70,26 +70,26 @@ class BasicInheritanceMappingTest extends BaseTest
 
         $class2 = unserialize(serialize($class));
 
-        $this->assertTrue(isset($class2->reflFields['mapped1']));
-        $this->assertTrue(isset($class2->reflFields['mapped2']));
-        $this->assertTrue(isset($class2->reflFields['mappedRelated1']));
+        self::assertTrue(isset($class2->reflFields['mapped1']));
+        self::assertTrue(isset($class2->reflFields['mapped2']));
+        self::assertTrue(isset($class2->reflFields['mappedRelated1']));
     }
 
     public function testReadPreferenceIsInherited(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
 
-        $this->assertSame('secondary', $class->readPreference);
-        $this->assertEquals([['dc' => 'east']], $class->readPreferenceTags);
+        self::assertSame('secondary', $class->readPreference);
+        self::assertEquals([['dc' => 'east']], $class->readPreferenceTags);
     }
 
     public function testGridFSOptionsAreInherited(): void
     {
         $class = $this->factory->getMetadataFor(GridFSChildClass::class);
 
-        $this->assertTrue($class->isFile);
-        $this->assertSame(112, $class->getChunkSizeBytes());
-        $this->assertSame('myFile', $class->getBucketName());
+        self::assertTrue($class->isFile);
+        self::assertSame(112, $class->getChunkSizeBytes());
+        self::assertSame('myFile', $class->getBucketName());
     }
 }
 

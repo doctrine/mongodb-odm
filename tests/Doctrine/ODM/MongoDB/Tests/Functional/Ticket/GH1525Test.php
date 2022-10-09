@@ -33,14 +33,14 @@ class GH1525Test extends BaseTest
         for ($i = 0; $i < 2; ++$i) {
             $test = $this->dm->getRepository(GH1525Document::class)->findOneBy(['name' => 'test' . $i]);
 
-            $this->assertInstanceOf(GH1525Document::class, $test);
+            self::assertInstanceOf(GH1525Document::class, $test);
 
-            $this->assertInstanceOf(GH1525Embedded::class, $test->embedded);
-            $this->assertSame($test->embedded->name, $embedded->name);
+            self::assertInstanceOf(GH1525Embedded::class, $test->embedded);
+            self::assertSame($test->embedded->name, $embedded->name);
 
-            $this->assertCount(1, $test->embedMany);
-            $this->assertInstanceOf(GH1525Embedded::class, $test->embedMany[0]);
-            $this->assertSame($test->embedMany[0]->name, $embedMany->name);
+            self::assertCount(1, $test->embedMany);
+            self::assertInstanceOf(GH1525Embedded::class, $test->embedMany[0]);
+            self::assertSame($test->embedMany[0]->name, $embedMany->name);
         }
     }
 
@@ -62,10 +62,10 @@ class GH1525Test extends BaseTest
         for ($i = 0; $i < $count; ++$i) {
             $test = $this->dm->getRepository(GH1525DocumentIdStrategyNone::class)->findOneBy(['name' => 'test' . $i]);
 
-            $this->assertInstanceOf(GH1525DocumentIdStrategyNone::class, $test);
+            self::assertInstanceOf(GH1525DocumentIdStrategyNone::class, $test);
 
-            $this->assertInstanceOf(GH1525Embedded::class, $test->embedded);
-            $this->assertSame($test->embedded->name, $embedded->name);
+            self::assertInstanceOf(GH1525Embedded::class, $test->embedded);
+            self::assertSame($test->embedded->name, $embedded->name);
         }
     }
 
@@ -87,10 +87,10 @@ class GH1525Test extends BaseTest
         for ($i = 0; $i < $count; ++$i) {
             $test = $this->dm->getRepository(GH1525DocumentIdStrategyNone::class)->findOneBy(['name' => 'test' . $i]);
 
-            $this->assertInstanceOf(GH1525DocumentIdStrategyNone::class, $test);
+            self::assertInstanceOf(GH1525DocumentIdStrategyNone::class, $test);
 
-            $this->assertInstanceOf(GH1525Embedded::class, $test->embedded);
-            $this->assertSame($test->embedded->name, $embedded->name);
+            self::assertInstanceOf(GH1525Embedded::class, $test->embedded);
+            self::assertSame($test->embedded->name, $embedded->name);
         }
     }
 }

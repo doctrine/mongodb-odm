@@ -47,7 +47,7 @@ class MODM29Test extends BaseTest
             $array[] = $value->get();
         }
 
-        $this->assertEquals(['1', 'tmp', '2'], $array);
+        self::assertEquals(['1', 'tmp', '2'], $array);
     }
 }
 

@@ -18,9 +18,9 @@ final class HydratingIteratorTest extends BaseTest
     {
         $iterator = new HydratingIterator($this->getTraversable(), $this->uow, $this->dm->getClassMetadata(User::class));
 
-        $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
-        $this->assertInstanceOf(User::class, $iterator->current());
+        self::assertTrue($iterator->valid());
+        self::assertSame(0, $iterator->key());
+        self::assertInstanceOf(User::class, $iterator->current());
     }
 
     public function testIteration(): void
@@ -31,13 +31,13 @@ final class HydratingIteratorTest extends BaseTest
         $expectedHits = 1;
 
         foreach ($iterator as $key => $item) {
-            $this->assertSame($expectedKey++, $key);
+            self::assertSame($expectedKey++, $key);
 
-            $this->assertInstanceOf(User::class, $item);
-            $this->assertSame($expectedHits++, $item->getHits());
+            self::assertInstanceOf(User::class, $item);
+            self::assertSame($expectedHits++, $item->getHits());
         }
 
-        $this->assertFalse($iterator->valid());
+        self::assertFalse($iterator->valid());
     }
 
     public function testIterationWithEmptySet(): void
@@ -45,7 +45,7 @@ final class HydratingIteratorTest extends BaseTest
         $iterator = new HydratingIterator($this->getTraversable([]), $this->uow, $this->dm->getClassMetadata(User::class));
 
         $iterator->rewind();
-        $this->assertFalse($iterator->valid());
+        self::assertFalse($iterator->valid());
     }
 
     private function getTraversable(?array $items = null): Generator

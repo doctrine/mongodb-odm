@@ -12,10 +12,10 @@ class GH927Test extends BaseTest
     public function testInheritedClassHasAssociationMapping(): void
     {
         $parentMetadata = $this->dm->getClassMetadata(GH927Parent::class);
-        $this->assertArrayHasKey('reference', $parentMetadata->associationMappings);
+        self::assertArrayHasKey('reference', $parentMetadata->associationMappings);
 
         $childMetadata = $this->dm->getClassMetadata(GH927Child::class);
-        $this->assertArrayHasKey('reference', $childMetadata->associationMappings);
+        self::assertArrayHasKey('reference', $childMetadata->associationMappings);
     }
 }
 

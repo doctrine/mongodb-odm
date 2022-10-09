@@ -23,20 +23,20 @@ class GH944Test extends BaseTest
         $this->dm->clear();
 
         $d = $this->dm->find(get_class($d), $d->id);
-        $this->assertCount(2, $d->data);
+        self::assertCount(2, $d->data);
         $d->removeByText('1');
-        $this->assertCount(1, $d->data);
+        self::assertCount(1, $d->data);
         $this->dm->flush();
 
         $d = $this->dm->find(get_class($d), $d->id);
-        $this->assertCount(1, $d->data);
+        self::assertCount(1, $d->data);
         $d->removeByText('2');
-        $this->assertCount(0, $d->data);
+        self::assertEmpty($d->data);
         $this->dm->flush();
         $this->dm->clear();
 
         $d = $this->dm->find(get_class($d), $d->id);
-        $this->assertCount(0, $d->data);
+        self::assertEmpty($d->data);
     }
 }
 

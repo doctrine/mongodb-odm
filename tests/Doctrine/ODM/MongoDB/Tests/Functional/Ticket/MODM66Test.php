@@ -24,9 +24,9 @@ class MODM66Test extends BaseTest
         $this->dm->refresh($a);
         $b = $a->getB()->toArray();
 
-        $this->assertCount(2, $b);
+        self::assertCount(2, $b);
 
-        $this->assertEquals([
+        self::assertEquals([
             $b1->getId(),
             $b2->getId(),
         ], [
@@ -50,9 +50,9 @@ class MODM66Test extends BaseTest
         $this->dm->refresh($a);
         $b = $a->getB()->toArray();
 
-        $this->assertCount(2, $b);
+        self::assertCount(2, $b);
 
-        $this->assertEquals([
+        self::assertEquals([
             $b1->getId(),
             $b2->getId(),
         ], [

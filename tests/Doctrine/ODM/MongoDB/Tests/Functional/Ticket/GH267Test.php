@@ -46,18 +46,18 @@ class GH267Test extends BaseTest
         $query  = $qb->getQuery();
         $result = $query->execute();
 
-        $this->assertInstanceOf(Iterator::class, $result);
+        self::assertInstanceOf(Iterator::class, $result);
 
         $dbUser = $result->current();
 
         // Assert user name
-        $this->assertEquals('Tom Petty', $dbUser->getName());
+        self::assertEquals('Tom Petty', $dbUser->getName());
 
         // Assert company id
-        $this->assertEquals($companyId, $dbUser->getCompany()->getId());
+        self::assertEquals($companyId, $dbUser->getCompany()->getId());
 
         // Assert number of users
-        $this->assertEquals(3, $dbUser->getCompany()->getUsers()->count(true));
+        self::assertEquals(3, $dbUser->getCompany()->getUsers()->count(true));
     }
 }
 

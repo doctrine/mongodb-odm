@@ -16,7 +16,7 @@ class CriteriaMergerTest extends TestCase
      */
     public function testMerge(array $args, array $merged): void
     {
-        $this->assertSame($merged, call_user_func_array([new CriteriaMerger(), 'merge'], $args));
+        self::assertSame($merged, call_user_func_array([new CriteriaMerger(), 'merge'], $args));
     }
 
     public function provideMerge(): array

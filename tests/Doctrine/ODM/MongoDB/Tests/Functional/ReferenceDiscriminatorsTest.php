@@ -39,10 +39,10 @@ class ReferenceDiscriminatorsTest extends BaseTest
         $userDashboardActivityStreamItem = $this->dm->find(UserDashboardActivityStreamItem::class, $userDashboardActivityStreamItem->getId());
         $userProfileActivityStreamItem   = $this->dm->find(UserProfileActivityStreamItem::class, $userProfileActivityStreamItem->getId());
 
-        $this->assertSame($commentableAction, $groupMainActivityStreamItem->getAction());
-        $this->assertSame($commentableAction, $groupMemberActivityStreamItem->getAction());
-        $this->assertSame($commentableAction, $userDashboardActivityStreamItem->getAction());
-        $this->assertSame($commentableAction, $userProfileActivityStreamItem->getAction());
+        self::assertSame($commentableAction, $groupMainActivityStreamItem->getAction());
+        self::assertSame($commentableAction, $groupMemberActivityStreamItem->getAction());
+        self::assertSame($commentableAction, $userDashboardActivityStreamItem->getAction());
+        self::assertSame($commentableAction, $userProfileActivityStreamItem->getAction());
     }
 
     /**
@@ -78,15 +78,15 @@ class ReferenceDiscriminatorsTest extends BaseTest
         $userDashboardActivityStreamItem2 = $this->dm->find(UserDashboardActivityStreamItem::class, $userDashboardActivityStreamItem2->getId());
         $userProfileActivityStreamItem2   = $this->dm->find(UserProfileActivityStreamItem::class, $userProfileActivityStreamItem2->getId());
 
-        $this->assertSame($commentableAction1, $groupMainActivityStreamItem1->getAction());
-        $this->assertSame($commentableAction1, $groupMemberActivityStreamItem1->getAction());
-        $this->assertSame($commentableAction1, $userDashboardActivityStreamItem1->getAction());
-        $this->assertSame($commentableAction1, $userProfileActivityStreamItem1->getAction());
+        self::assertSame($commentableAction1, $groupMainActivityStreamItem1->getAction());
+        self::assertSame($commentableAction1, $groupMemberActivityStreamItem1->getAction());
+        self::assertSame($commentableAction1, $userDashboardActivityStreamItem1->getAction());
+        self::assertSame($commentableAction1, $userProfileActivityStreamItem1->getAction());
 
-        $this->assertSame($commentableAction2, $groupMainActivityStreamItem2->getAction());
-        $this->assertSame($commentableAction2, $groupMemberActivityStreamItem2->getAction());
-        $this->assertSame($commentableAction2, $userDashboardActivityStreamItem2->getAction());
-        $this->assertSame($commentableAction2, $userProfileActivityStreamItem2->getAction());
+        self::assertSame($commentableAction2, $groupMainActivityStreamItem2->getAction());
+        self::assertSame($commentableAction2, $groupMemberActivityStreamItem2->getAction());
+        self::assertSame($commentableAction2, $userDashboardActivityStreamItem2->getAction());
+        self::assertSame($commentableAction2, $userProfileActivityStreamItem2->getAction());
     }
 }
 

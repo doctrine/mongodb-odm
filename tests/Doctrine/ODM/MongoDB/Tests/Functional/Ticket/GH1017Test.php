@@ -31,7 +31,7 @@ class GH1017Test extends BaseTest
             $oid             = spl_object_hash($owner->embedded);
             if (in_array($oid, $usedHashes)) {
                 // Collision found, let's test state of embedded doc
-                $this->assertEquals(
+                self::assertEquals(
                     UnitOfWork::STATE_NEW,
                     $this->uow->getDocumentState($owner->embedded),
                     'A newly created object should be treated as NEW by UOW'

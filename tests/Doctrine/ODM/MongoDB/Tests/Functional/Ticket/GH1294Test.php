@@ -31,9 +31,9 @@ class GH1294Test extends BaseTest
             ->equals(new Regex('^bbb.*$', 'i'))
             ->getQueryArray();
 
-        $this->assertInstanceOf(Regex::class, $res['_id']);
-        $this->assertEquals('^bbb.*$', $res['_id']->getPattern());
-        $this->assertEquals('i', $res['_id']->getFlags());
+        self::assertInstanceOf(Regex::class, $res['_id']);
+        self::assertEquals('^bbb.*$', $res['_id']->getPattern());
+        self::assertEquals('i', $res['_id']->getFlags());
     }
 }
 

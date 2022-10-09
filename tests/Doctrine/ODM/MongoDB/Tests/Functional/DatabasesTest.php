@@ -12,12 +12,12 @@ class DatabasesTest extends BaseTest
 {
     public function testCustomDatabase(): void
     {
-        $this->assertEquals('test_custom', $this->dm->getDocumentDatabase(CustomDatabaseTest::class)->getDatabaseName());
+        self::assertEquals('test_custom', $this->dm->getDocumentDatabase(CustomDatabaseTest::class)->getDatabaseName());
     }
 
     public function testDefaultDatabase(): void
     {
-        $this->assertEquals('test_default', $this->dm->getDocumentDatabase(DefaultDatabaseTest::class)->getDatabaseName());
+        self::assertEquals('test_default', $this->dm->getDocumentDatabase(DefaultDatabaseTest::class)->getDatabaseName());
     }
 
     protected function getConfiguration(): Configuration

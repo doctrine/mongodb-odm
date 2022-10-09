@@ -20,7 +20,7 @@ class GH1964Test extends BaseTest
             'someField2' => -1,
             'score' => ['$meta' => 'textScore'],
         ];
-        $this->assertEquals($expects, $query['sort']);
+        self::assertEquals($expects, $query['sort']);
     }
 }
 

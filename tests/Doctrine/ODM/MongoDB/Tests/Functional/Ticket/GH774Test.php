@@ -26,8 +26,8 @@ class GH774Test extends BaseTest
         $this->dm->clear();
 
         $thread = $this->dm->find(get_class($thread), $id);
-        $this->assertNotNull($thread);
-        $this->assertEquals('test', $thread->permalink);
+        self::assertNotNull($thread);
+        self::assertEquals('test', $thread->permalink);
     }
 
     protected function createMetadataDriverImpl(): MappingDriver

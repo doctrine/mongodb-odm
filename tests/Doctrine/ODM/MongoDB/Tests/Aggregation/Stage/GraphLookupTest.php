@@ -34,7 +34,7 @@ class GraphLookupTest extends BaseTest
             ->connectToField('name')
             ->alias('reportingHierarchy');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 '$graphLookup' => [
                     'from' => 'employees',
@@ -58,7 +58,7 @@ class GraphLookupTest extends BaseTest
             ->connectToField('name')
             ->alias('reportingHierarchy');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 [
                     '$graphLookup' => [
@@ -89,7 +89,7 @@ class GraphLookupTest extends BaseTest
             ->maxDepth(1)
             ->depthField('depth');
 
-        $this->assertSame(
+        self::assertSame(
             [
                 [
                     '$graphLookup' => [
@@ -168,18 +168,18 @@ class GraphLookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(6, $result);
+        self::assertCount(6, $result);
         foreach ($result as $reportingHierarchy) {
-            $this->assertInstanceOf(ReportingHierarchy::class, $reportingHierarchy);
+            self::assertInstanceOf(ReportingHierarchy::class, $reportingHierarchy);
             if ($reportingHierarchy->name === 'Dev') {
                 continue;
             }
 
-            $this->assertGreaterThan(0, count($reportingHierarchy->reportingHierarchy));
+            self::assertGreaterThan(0, count($reportingHierarchy->reportingHierarchy));
         }
     }
 
@@ -239,11 +239,11 @@ class GraphLookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
     }
 
     public function testGraphLookupToShardedCollectionThrowsException(): void
@@ -279,7 +279,7 @@ class GraphLookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testGraphLookupWithconnectFromFieldToDifferentTargetClass(): void

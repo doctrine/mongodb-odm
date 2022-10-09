@@ -23,13 +23,13 @@ class GH665Test extends BaseTest
 
         $check = $this->dm->getDocumentCollection(GH665Document::class)
             ->findOne(['embeddedPushAll.name' => 'foo']);
-        $this->assertNotNull($check);
-        $this->assertSame($document->id, (string) $check['_id']);
+        self::assertNotNull($check);
+        self::assertSame($document->id, (string) $check['_id']);
 
         $check = $this->dm->getDocumentCollection(GH665Document::class)
             ->findOne(['embeddedAddToSet.name' => 'bar']);
-        $this->assertNotNull($check);
-        $this->assertSame($document->id, (string) $check['_id']);
+        self::assertNotNull($check);
+        self::assertSame($document->id, (string) $check['_id']);
 
         $persisted = $this->dm->createQueryBuilder(GH665Document::class)
             ->hydrate(false)
@@ -43,7 +43,7 @@ class GH665Test extends BaseTest
             'embeddedAddToSet' => [['name' => 'bar']],
         ];
 
-        $this->assertEquals($expected, $persisted);
+        self::assertEquals($expected, $persisted);
     }
 }
 

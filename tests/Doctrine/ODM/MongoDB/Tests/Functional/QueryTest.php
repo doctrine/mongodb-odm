@@ -57,7 +57,7 @@ class QueryTest extends BaseTest
         $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('phonenumber')->equals('6155139185'));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
     }
 
     public function testAddElemMatchWithDeepFields(): void
@@ -80,7 +80,7 @@ class QueryTest extends BaseTest
         $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new ObjectId($user1->getId())));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
     }
 
     public function testAddNot(): void
@@ -95,12 +95,12 @@ class QueryTest extends BaseTest
         $qb->field('username')->not($qb->expr()->in(['boo']));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertNull($user);
+        self::assertNull($user);
 
         $qb->field('username')->not($qb->expr()->in(['1boo']));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
     }
 
     public function testNotAllowsRegex(): void
@@ -115,13 +115,13 @@ class QueryTest extends BaseTest
         $qb->field('username')->not(new Regex('Boo', 'i'));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertNull($user);
+        self::assertNull($user);
 
         $qb = $this->dm->createQueryBuilder(User::class);
         $qb->field('username')->not(new Regex('Boo'));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
     }
 
     public function testDistinct(): void
@@ -152,14 +152,14 @@ class QueryTest extends BaseTest
             ->field('username')->equals('distinct_test');
         $q       = $qb->getQuery();
         $results = $q->execute();
-        $this->assertEquals([1, 2, 3], $results);
+        self::assertEquals([1, 2, 3], $results);
 
         $results = $this->dm->createQueryBuilder(User::class)
             ->distinct('count')
             ->field('username')->equals('distinct_test')
             ->getQuery()
             ->execute();
-        $this->assertEquals([1, 2, 3], $results);
+        self::assertEquals([1, 2, 3], $results);
     }
 
     public function testDistinctWithDifferentDbName(): void
@@ -179,7 +179,7 @@ class QueryTest extends BaseTest
             ->distinct('authorIp')
             ->getQuery()
             ->execute();
-        $this->assertEquals(['127.0.0.1', '192.168.0.1'], $results);
+        self::assertEquals(['127.0.0.1', '192.168.0.1'], $results);
     }
 
     public function testFindQuery(): void
@@ -189,8 +189,8 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
 
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertEquals('boo', $user->getUsername());
+        self::assertInstanceOf(User::class, $user);
+        self::assertEquals('boo', $user->getUsername());
     }
 
     public function testUpdateQuery(): void
@@ -204,7 +204,7 @@ class QueryTest extends BaseTest
         $result = $query->execute();
 
         $this->dm->refresh($this->user);
-        $this->assertEquals('crap', $this->user->getUsername());
+        self::assertEquals('crap', $this->user->getUsername());
     }
 
     public function testUpsertUpdateQuery(): void
@@ -223,7 +223,7 @@ class QueryTest extends BaseTest
             ->field('username')->equals('crap');
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
     }
 
     public function testMultipleUpdateQuery(): void
@@ -261,10 +261,10 @@ class QueryTest extends BaseTest
             ->field('username')->equals('foo');
         $q      = $qb->getQuery();
         $result = $q->execute();
-        $this->assertInstanceOf(Iterator::class, $result);
+        self::assertInstanceOf(Iterator::class, $result);
         $users = array_values($result->toArray());
 
-        $this->assertCount(4, $users);
+        self::assertCount(4, $users);
     }
 
     public function testRemoveQuery(): void
@@ -290,7 +290,7 @@ class QueryTest extends BaseTest
             ->hydrate(false);
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertEquals(10, $user['hits']);
+        self::assertEquals(10, $user['hits']);
     }
 
     public function testUnsetFieldUpdateQuery(): void
@@ -306,7 +306,7 @@ class QueryTest extends BaseTest
             ->hydrate(false);
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertArrayNotHasKey('hits', $user);
+        self::assertArrayNotHasKey('hits', $user);
     }
 
     public function testUnsetField(): void
@@ -323,7 +323,7 @@ class QueryTest extends BaseTest
             ->field('nullTest')->type('null');
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
-        $this->assertNull($user);
+        self::assertNull($user);
     }
 
     public function testDateRange(): void
@@ -363,11 +363,11 @@ class QueryTest extends BaseTest
         );
         $query  = $qb->getQuery();
         $result = $query->execute();
-        $this->assertInstanceOf(Iterator::class, $result);
+        self::assertInstanceOf(Iterator::class, $result);
         $articles = array_values($result->toArray());
-        $this->assertCount(2, $articles);
-        $this->assertEquals('1985-09-02', $articles[0]->getCreatedAt()->format('Y-m-d'));
-        $this->assertEquals('1985-09-03', $articles[1]->getCreatedAt()->format('Y-m-d'));
+        self::assertCount(2, $articles);
+        self::assertEquals('1985-09-02', $articles[0]->getCreatedAt()->format('Y-m-d'));
+        self::assertEquals('1985-09-03', $articles[1]->getCreatedAt()->format('Y-m-d'));
     }
 
     public function testQueryIsIterable(): void
@@ -379,9 +379,9 @@ class QueryTest extends BaseTest
 
         $qb    = $this->dm->createQueryBuilder(Article::class);
         $query = $qb->getQuery();
-        $this->assertInstanceOf(IteratorAggregate::class, $query);
+        self::assertInstanceOf(IteratorAggregate::class, $query);
         foreach ($query as $article) {
-            $this->assertEquals(Article::class, get_class($article));
+            self::assertEquals(Article::class, get_class($article));
         }
     }
 
@@ -400,7 +400,7 @@ class QueryTest extends BaseTest
             ->field('groups')->references($group);
         $query = $qb->getQuery();
         $user2 = $query->getSingleResult();
-        $this->assertSame($user, $user2);
+        self::assertSame($user, $user2);
     }
 
     public function testNestedQueryReference(): void
@@ -432,8 +432,8 @@ class QueryTest extends BaseTest
 
         $referencedUsers = iterator_to_array($referencedUsersIterator, false);
 
-        $this->assertCount(1, $referencedUsers);
-        $this->assertSame($user, $referencedUsers[0]);
+        self::assertCount(1, $referencedUsers);
+        self::assertSame($user, $referencedUsers[0]);
     }
 
     public function testQueryWhereIn(): void
@@ -444,7 +444,7 @@ class QueryTest extends BaseTest
         $expected = [
             'username' => ['$in' => $choices],
         ];
-        $this->assertSame($expected, $qb->getQueryArray());
+        self::assertSame($expected, $qb->getQueryArray());
     }
 
     public function testQueryWhereInReferenceId(): void
@@ -455,8 +455,8 @@ class QueryTest extends BaseTest
         $expected = [
             'account.$id' => ['$in' => $choices],
         ];
-        $this->assertSame($expected, $qb->getQueryArray());
-        $this->assertSame($expected, $qb->getQuery()->debug('query'));
+        self::assertSame($expected, $qb->getQueryArray());
+        self::assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
     public function testQueryWhereOneValueOfCollection(): void
@@ -464,8 +464,8 @@ class QueryTest extends BaseTest
         $qb = $this->dm->createQueryBuilder(Article::class);
         $qb->field('tags')->equals('pet');
         $expected = ['tags' => 'pet'];
-        $this->assertSame($expected, $qb->getQueryArray());
-        $this->assertSame($expected, $qb->getQuery()->debug('query'));
+        self::assertSame($expected, $qb->getQueryArray());
+        self::assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
     /** search for articles where tags exactly equal [pet, blue] */
@@ -476,8 +476,8 @@ class QueryTest extends BaseTest
         $expected = [
             'tags' => ['pet', 'blue'],
         ];
-        $this->assertSame($expected, $qb->getQueryArray());
-        $this->assertSame($expected, $qb->getQuery()->debug('query'));
+        self::assertSame($expected, $qb->getQueryArray());
+        self::assertSame($expected, $qb->getQuery()->debug('query'));
     }
 
     public function testPopFirst(): void
@@ -503,7 +503,7 @@ class QueryTest extends BaseTest
             ->execute();
 
         $this->dm->refresh($article);
-        $this->assertSame([2, 3], $article->getTags());
+        self::assertSame([2, 3], $article->getTags());
     }
 
     public function testPopLast(): void
@@ -529,7 +529,7 @@ class QueryTest extends BaseTest
             ->execute();
 
         $this->dm->refresh($article);
-        $this->assertSame([1, 2], $article->getTags());
+        self::assertSame([1, 2], $article->getTags());
     }
 
     /**

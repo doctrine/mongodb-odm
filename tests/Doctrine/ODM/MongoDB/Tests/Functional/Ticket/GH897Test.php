@@ -38,7 +38,7 @@ class GH897Test extends BaseTest
 
         $documentA = $this->dm->find(GH897A::class, $documentA->id);
 
-        $this->assertSame('a-changed', $documentA->name);
+        self::assertSame('a-changed', $documentA->name);
     }
 }
 

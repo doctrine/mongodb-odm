@@ -35,7 +35,7 @@ class OrphanRemovalEmbedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNull($this->getAddressRepository()->find($address->id), 'Should have removed the address');
+        self::assertNull($this->getAddressRepository()->find($address->id), 'Should have removed the address');
     }
 
     /**
@@ -58,19 +58,19 @@ class OrphanRemovalEmbedTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertNotNull($this->getAddressRepository()->find($address1->id), 'Should have cascaded persist to address 1');
-        $this->assertNotNull($this->getAddressRepository()->find($address2->id), 'Should have cascaded persist to address 2');
+        self::assertNotNull($this->getAddressRepository()->find($address1->id), 'Should have cascaded persist to address 1');
+        self::assertNotNull($this->getAddressRepository()->find($address2->id), 'Should have cascaded persist to address 2');
 
         $user->profileMany->removeElement($profile1);
 
         $this->dm->flush();
 
         $user = $this->getUserRepository()->find($user->id);
-        $this->assertNotNull($user, 'Should retrieve user');
-        $this->assertFalse($user->profileMany->contains($profile1), 'Should not contain profile 1');
-        $this->assertNull($this->getAddressRepository()->find($address1->id), 'Should have removed address 1');
-        $this->assertTrue($user->profileMany->contains($profile2), 'Should contain profile 2');
-        $this->assertNotNull($this->getAddressRepository()->find($address2->id), 'Should have kept address 2');
+        self::assertNotNull($user, 'Should retrieve user');
+        self::assertFalse($user->profileMany->contains($profile1), 'Should not contain profile 1');
+        self::assertNull($this->getAddressRepository()->find($address1->id), 'Should have removed address 1');
+        self::assertTrue($user->profileMany->contains($profile2), 'Should contain profile 2');
+        self::assertNotNull($this->getAddressRepository()->find($address2->id), 'Should have kept address 2');
     }
 
     /**
@@ -98,8 +98,8 @@ class OrphanRemovalEmbedTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear(OrphanRemovalCascadeUser::class);
 
-        $this->assertNull($this->getAddressRepository()->find($address1->id), 'Should have removed address 1');
-        $this->assertNull($this->getAddressRepository()->find($address2->id), 'Should have removed address 2');
+        self::assertNull($this->getAddressRepository()->find($address1->id), 'Should have removed address 1');
+        self::assertNull($this->getAddressRepository()->find($address2->id), 'Should have removed address 2');
     }
 
     /**
@@ -132,13 +132,13 @@ class OrphanRemovalEmbedTest extends BaseTest
         $this->dm->flush();
 
         $user = $this->getUserRepository()->find($user->id);
-        $this->assertNotNull($user, 'Should retrieve user');
-        $this->assertFalse($user->profileMany->contains($profile1), 'Should not contain profile 1');
-        $this->assertNull($this->getAddressRepository()->find($address1->id), 'Should have removed address 1');
-        $this->assertFalse($user->profileMany->contains($profile2), 'Should not contain profile 2');
-        $this->assertNull($this->getAddressRepository()->find($address2->id), 'Should have removed address 2');
-        $this->assertTrue($user->profileMany->contains($profile3), 'Should contain profile 3');
-        $this->assertNotNull($this->getAddressRepository()->find($address3->id), 'Should have added address 3');
+        self::assertNotNull($user, 'Should retrieve user');
+        self::assertFalse($user->profileMany->contains($profile1), 'Should not contain profile 1');
+        self::assertNull($this->getAddressRepository()->find($address1->id), 'Should have removed address 1');
+        self::assertFalse($user->profileMany->contains($profile2), 'Should not contain profile 2');
+        self::assertNull($this->getAddressRepository()->find($address2->id), 'Should have removed address 2');
+        self::assertTrue($user->profileMany->contains($profile3), 'Should contain profile 3');
+        self::assertNotNull($this->getAddressRepository()->find($address3->id), 'Should have added address 3');
     }
 
     /**

@@ -21,7 +21,7 @@ class SortTest extends BaseTest
     {
         $sortStage = new Sort($this->getTestAggregationBuilder(), $field, $order);
 
-        $this->assertSame(['$sort' => $expectedSort], $sortStage->getExpression());
+        self::assertSame(['$sort' => $expectedSort], $sortStage->getExpression());
     }
 
     /**
@@ -34,7 +34,7 @@ class SortTest extends BaseTest
         $builder = $this->getTestAggregationBuilder();
         $builder->sort($field, $order);
 
-        $this->assertSame([['$sort' => $expectedSort]], $builder->getPipeline());
+        self::assertSame([['$sort' => $expectedSort]], $builder->getPipeline());
     }
 
     public static function provideSortOptions(): array

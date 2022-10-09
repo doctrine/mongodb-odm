@@ -24,17 +24,17 @@ class DateTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertInstanceOf(DateTime::class, $user->getCreatedAt());
+        self::assertInstanceOf(DateTime::class, $user->getCreatedAt());
 
         $user->setCreatedAt('1985-09-01 00:00:00');
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'w00ting']);
-        $this->assertNotNull($user);
-        $this->assertEquals('w00ting', $user->getUsername());
-        $this->assertInstanceOf(DateTime::class, $user->getCreatedAt());
-        $this->assertEquals('09/01/1985', $user->getCreatedAt()->format('m/d/Y'));
+        self::assertNotNull($user);
+        self::assertEquals('w00ting', $user->getUsername());
+        self::assertInstanceOf(DateTime::class, $user->getCreatedAt());
+        self::assertEquals('09/01/1985', $user->getCreatedAt()->format('m/d/Y'));
     }
 
     /**
@@ -55,7 +55,7 @@ class DateTest extends BaseTest
         $user->setCreatedAt($newValue);
         $this->dm->getUnitOfWork()->computeChangeSets();
         $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);
-        $this->assertEmpty($changeset);
+        self::assertEmpty($changeset);
     }
 
     public function provideEquivalentDates(): array
@@ -79,12 +79,12 @@ class DateTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(get_class($user))->findOneBy([]);
-        $this->assertInstanceOf(DateTime::class, $user->getCreatedAt());
+        self::assertInstanceOf(DateTime::class, $user->getCreatedAt());
         $user->getCreatedAt()->setTimestamp(time() - 3600);
 
         $this->dm->getUnitOfWork()->computeChangeSets();
         $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);
-        $this->assertNotEmpty($changeset);
+        self::assertNotEmpty($changeset);
     }
 
     public function testOldDate(): void
@@ -105,10 +105,10 @@ class DateTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getDocumentCollection(User::class)->findOne(['username' => 'datetest2']);
-        $this->assertArrayHasKey('createdAt', $test);
+        self::assertArrayHasKey('createdAt', $test);
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'datetest2']);
-        $this->assertInstanceOf(DateTime::class, $user->getCreatedAt());
-        $this->assertEquals('1900-01-01', $user->getCreatedAt()->format('Y-m-d'));
+        self::assertInstanceOf(DateTime::class, $user->getCreatedAt());
+        self::assertEquals('1900-01-01', $user->getCreatedAt()->format('Y-m-d'));
     }
 }

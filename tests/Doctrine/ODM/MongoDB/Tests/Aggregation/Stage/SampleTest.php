@@ -16,7 +16,7 @@ class SampleTest extends BaseTest
     {
         $sampleStage = new Sample($this->getTestAggregationBuilder(), 10);
 
-        $this->assertSame(['$sample' => ['size' => 10]], $sampleStage->getExpression());
+        self::assertSame(['$sample' => ['size' => 10]], $sampleStage->getExpression());
     }
 
     public function testSampleFromBuilder(): void
@@ -24,6 +24,6 @@ class SampleTest extends BaseTest
         $builder = $this->getTestAggregationBuilder();
         $builder->sample(10);
 
-        $this->assertSame([['$sample' => ['size' => 10]]], $builder->getPipeline());
+        self::assertSame([['$sample' => ['size' => 10]]], $builder->getPipeline());
     }
 }

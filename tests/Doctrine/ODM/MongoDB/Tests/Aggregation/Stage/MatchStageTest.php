@@ -25,7 +25,7 @@ class MatchStageTest extends BaseTest
             ->field('someField')
             ->equals('someValue');
 
-        $this->assertSame(['$match' => ['someField' => 'someValue']], $matchStage->getExpression());
+        self::assertSame(['$match' => ['someField' => 'someValue']], $matchStage->getExpression());
     }
 
     public function testMatchFromBuilder(): void
@@ -36,7 +36,7 @@ class MatchStageTest extends BaseTest
             ->field('someField')
             ->equals('someValue');
 
-        $this->assertSame([['$match' => ['someField' => 'someValue']]], $builder->getPipeline());
+        self::assertSame([['$match' => ['someField' => 'someValue']]], $builder->getPipeline());
     }
 
     /**
@@ -58,7 +58,7 @@ class MatchStageTest extends BaseTest
         };
         $stage->setQuery($expr);
 
-        $this->assertSame($stage, $stage->$method(...$args));
+        self::assertSame($stage, $stage->$method(...$args));
     }
 
     public function provideProxiedExprMethods(): array
@@ -108,7 +108,7 @@ class MatchStageTest extends BaseTest
                 ->field('createdAt')
                 ->lte($date);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 '$match' => [
                     'createdAt' => ['$lte' => $mongoDate],

@@ -34,10 +34,10 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $m->setAccessible(true);
         $m->invoke($driver, $class, $element);
 
-        $this->assertTrue($class->isSharded());
+        self::assertTrue($class->isSharded());
         $shardKey = $class->getShardKey();
-        $this->assertSame(['unique' => true, 'numInitialChunks' => 4096], $shardKey['options']);
-        $this->assertSame(['_id' => 1], $shardKey['keys']);
+        self::assertSame(['unique' => true, 'numInitialChunks' => 4096], $shardKey['options']);
+        self::assertSame(['_id' => 1], $shardKey['keys']);
     }
 
     public function testInvalidMappingFileTriggersException(): void

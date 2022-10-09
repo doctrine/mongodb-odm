@@ -25,7 +25,7 @@ class GH999Test extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->find(GH999Document::class, $document->getId());
-        $this->assertSame('name #changed', $document->getName());
+        self::assertSame('name #changed', $document->getName());
     }
 }
 

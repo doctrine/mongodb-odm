@@ -22,7 +22,7 @@ class GH880Test extends BaseTest
         $query  = $this->dm->createQueryBuilder(GH880Document::class);
         $cursor = $query->find()->getQuery()->execute();
         foreach ($cursor as $c) {
-            $this->assertEquals(1, $c->category);
+            self::assertEquals(1, $c->category);
         }
 
         $query = $this->dm->createQueryBuilder(GH880Document::class);
@@ -35,7 +35,7 @@ class GH880Test extends BaseTest
         // here ->refresh() was needed for the test to pass
         $cursor = $query->find()->refresh()->getQuery()->execute();
         foreach ($cursor as $c) {
-            $this->assertEquals(3, $c->category);
+            self::assertEquals(3, $c->category);
         }
     }
 }

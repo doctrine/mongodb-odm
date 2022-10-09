@@ -47,7 +47,7 @@ class ViewTest extends BaseTest
             ],
         ];
 
-        $this->assertSame($expectedPipeline, $builder->getPipeline());
+        self::assertSame($expectedPipeline, $builder->getPipeline());
     }
 
     public function testQueryOnView(): void
@@ -58,21 +58,21 @@ class ViewTest extends BaseTest
             ->getQuery()
             ->getIterator();
 
-        $this->assertCount(1, $results);
+        self::assertCount(1, $results);
         $user = $results->toArray()[0];
 
-        $this->assertInstanceOf(UserName::class, $user);
-        $this->assertSame('alcaeus', $user->getUsername());
+        self::assertInstanceOf(UserName::class, $user);
+        self::assertSame('alcaeus', $user->getUsername());
 
-        $this->assertSame(UnitOfWork::STATE_MANAGED, $this->dm->getUnitOfWork()->getDocumentState($user));
+        self::assertSame(UnitOfWork::STATE_MANAGED, $this->dm->getUnitOfWork()->getDocumentState($user));
     }
 
     public function testViewReferences(): void
     {
         $alcaeus = $this->dm->getRepository(UserName::class)->findOneBy(['username' => 'alcaeus']);
-        $this->assertInstanceOf(UserName::class, $alcaeus);
+        self::assertInstanceOf(UserName::class, $alcaeus);
         $malarzm = $this->dm->getRepository(UserName::class)->findOneBy(['username' => 'malarzm']);
-        $this->assertInstanceOf(UserName::class, $malarzm);
+        self::assertInstanceOf(UserName::class, $malarzm);
 
         $viewReference = new ViewReference($alcaeus->getId());
         $viewReference->setReferenceOneView($malarzm);
@@ -86,46 +86,46 @@ class ViewTest extends BaseTest
         // Load users to avoid proxy objects
 
         $alcaeus = $this->dm->getRepository(UserName::class)->findOneBy(['username' => 'alcaeus']);
-        $this->assertInstanceOf(UserName::class, $alcaeus);
+        self::assertInstanceOf(UserName::class, $alcaeus);
         $malarzm = $this->dm->getRepository(UserName::class)->findOneBy(['username' => 'malarzm']);
-        $this->assertInstanceOf(UserName::class, $malarzm);
+        self::assertInstanceOf(UserName::class, $malarzm);
 
         $viewReference = $this->dm->find(ViewReference::class, $alcaeus->getId());
-        $this->assertInstanceOf(ViewReference::class, $viewReference);
+        self::assertInstanceOf(ViewReference::class, $viewReference);
 
-        $this->assertSame($malarzm, $viewReference->getReferenceOneView());
+        self::assertSame($malarzm, $viewReference->getReferenceOneView());
 
         // No proxies for inverse referenceOne
-        $this->assertSame($alcaeus, $viewReference->getReferenceOneViewMappedBy());
+        self::assertSame($alcaeus, $viewReference->getReferenceOneViewMappedBy());
 
-        $this->assertCount(1, $viewReference->getReferenceManyView());
-        $this->assertSame($malarzm, $viewReference->getReferenceManyView()[0]);
+        self::assertCount(1, $viewReference->getReferenceManyView());
+        self::assertSame($malarzm, $viewReference->getReferenceManyView()[0]);
 
         // No proxies for inverse referenceMany
-        $this->assertCount(1, $viewReference->getReferenceManyViewMappedBy());
-        $this->assertSame($alcaeus, $viewReference->getReferenceManyViewMappedBy()[0]);
+        self::assertCount(1, $viewReference->getReferenceManyViewMappedBy());
+        self::assertSame($alcaeus, $viewReference->getReferenceManyViewMappedBy()[0]);
 
         // Clear document manager again, load ViewReference without loading users first
 
         $this->dm->clear();
 
         $viewReference = $this->dm->find(ViewReference::class, $alcaeus->getId());
-        $this->assertInstanceOf(ViewReference::class, $viewReference);
+        self::assertInstanceOf(ViewReference::class, $viewReference);
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $viewReference->getReferenceOneView());
-        $this->assertSame($malarzm->getId(), $viewReference->getReferenceOneView()->getId());
+        self::assertInstanceOf(GhostObjectInterface::class, $viewReference->getReferenceOneView());
+        self::assertSame($malarzm->getId(), $viewReference->getReferenceOneView()->getId());
 
         // No proxies for inverse referenceOne
-        $this->assertInstanceOf(UserName::class, $viewReference->getReferenceOneViewMappedBy());
-        $this->assertSame($alcaeus->getId(), $viewReference->getReferenceOneViewMappedBy()->getId());
+        self::assertInstanceOf(UserName::class, $viewReference->getReferenceOneViewMappedBy());
+        self::assertSame($alcaeus->getId(), $viewReference->getReferenceOneViewMappedBy()->getId());
 
-        $this->assertCount(1, $viewReference->getReferenceManyView());
-        $this->assertInstanceOf(GhostObjectInterface::class, $viewReference->getReferenceManyView()[0]);
-        $this->assertSame($malarzm->getId(), $viewReference->getReferenceManyView()[0]->getId());
+        self::assertCount(1, $viewReference->getReferenceManyView());
+        self::assertInstanceOf(GhostObjectInterface::class, $viewReference->getReferenceManyView()[0]);
+        self::assertSame($malarzm->getId(), $viewReference->getReferenceManyView()[0]->getId());
 
         // No proxies for inverse referenceMany
-        $this->assertCount(1, $viewReference->getReferenceManyViewMappedBy());
-        $this->assertInstanceOf(UserName::class, $viewReference->getReferenceManyViewMappedBy()[0]);
-        $this->assertSame($alcaeus->getId(), $viewReference->getReferenceManyViewMappedBy()[0]->getId());
+        self::assertCount(1, $viewReference->getReferenceManyViewMappedBy());
+        self::assertInstanceOf(UserName::class, $viewReference->getReferenceManyViewMappedBy()[0]);
+        self::assertSame($alcaeus->getId(), $viewReference->getReferenceManyViewMappedBy()[0]->getId());
     }
 }

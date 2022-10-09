@@ -15,7 +15,7 @@ class GH1107Test extends BaseTest
         $childObj->name = 'ChildObject';
         $this->dm->persist($childObj);
         $this->dm->flush();
-        $this->assertNotNull($childObj->id);
+        self::assertNotNull($childObj->id);
     }
 }
 

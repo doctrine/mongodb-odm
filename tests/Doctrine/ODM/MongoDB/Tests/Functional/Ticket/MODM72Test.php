@@ -12,7 +12,7 @@ class MODM72Test extends BaseTest
     public function testTest(): void
     {
         $class = $this->dm->getClassMetadata(MODM72User::class);
-        $this->assertEquals(['test' => 'test'], $class->fieldMappings['name']['options']);
+        self::assertEquals(['test' => 'test'], $class->fieldMappings['name']['options']);
     }
 }
 

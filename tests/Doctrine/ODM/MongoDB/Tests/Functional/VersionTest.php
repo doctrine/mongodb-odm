@@ -20,27 +20,27 @@ class VersionTest extends BaseTest
         $doc->embedMany[] = new VersionedEmbeddedDocument('embed 2');
         $this->dm->persist($doc);
         $this->dm->flush();
-        $this->assertEquals($expectedVersion++, $doc->version);
+        self::assertEquals($expectedVersion++, $doc->version);
 
         $doc->embedMany[] = new VersionedEmbeddedDocument('embed 3');
         $this->dm->flush();
-        $this->assertEquals($expectedVersion++, $doc->version);
+        self::assertEquals($expectedVersion++, $doc->version);
 
         $doc->embedMany[0]->embedMany[] = new VersionedEmbeddedDocument('deeply embed 1');
         $this->dm->flush();
-        $this->assertEquals($expectedVersion++, $doc->version);
+        self::assertEquals($expectedVersion++, $doc->version);
 
         unset($doc->embedMany[1]);
         $this->dm->flush();
-        $this->assertEquals($expectedVersion++, $doc->version);
+        self::assertEquals($expectedVersion++, $doc->version);
 
         $doc->embedMany->clear();
         $this->dm->flush();
-        $this->assertEquals($expectedVersion++, $doc->version);
+        self::assertEquals($expectedVersion++, $doc->version);
 
         $doc->embedMany = null;
         $this->dm->flush();
-        $this->assertEquals($expectedVersion++, $doc->version);
+        self::assertEquals($expectedVersion++, $doc->version);
     }
 }
 

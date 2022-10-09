@@ -28,7 +28,7 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
 
         $user          = $this->getUserRepository()->find($user->id);
         $user->profile = null;
@@ -36,7 +36,7 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
     public function testNoOrphanRemoval(): void
@@ -54,7 +54,7 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNotNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been left as-is');
+        self::assertNotNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been left as-is');
 
         $user                         = $this->getUserRepository()->find($user->id);
         $user->profileNoOrphanRemoval = null;
@@ -62,7 +62,7 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
+        self::assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
     }
 
     public function testOrphanRemovalOnReferenceMany(): void
@@ -81,8 +81,8 @@ class OrphanRemovalTest extends BaseTest
         $user->profileMany->removeElement($profile1);
         $this->dm->flush();
 
-        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
-        $this->assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
+        self::assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        self::assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
     }
 
     public function testNoOrphanRemovalOnReferenceMany(): void
@@ -101,8 +101,8 @@ class OrphanRemovalTest extends BaseTest
         $user->profileManyNoOrphanRemoval->removeElement($profile1);
         $this->dm->flush();
 
-        $this->assertNotNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been left as-is');
-        $this->assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
+        self::assertNotNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been left as-is');
+        self::assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
     }
 
     public function testOrphanRemovalOnReferenceManyUsingClear(): void
@@ -122,8 +122,8 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
-        $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
     public function testOrphanRemovalOnReferenceManyUsingClearUninitialized(): void
@@ -147,8 +147,8 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
-        $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
     public function testOrphanRemovalOnReferenceManyUsingClearAndAddingNewElements(): void
@@ -172,9 +172,9 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
-        $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
-        $this->assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
+        self::assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
+        self::assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
     }
 
     public function testOrphanRemovalOnReferenceManyRemovingAndAddingNewElements(): void
@@ -198,9 +198,9 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
-        $this->assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
-        $this->assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
+        self::assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        self::assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
+        self::assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
     }
 
     public function testOrphanRemovalOnReferenceManyUsingSet(): void
@@ -223,9 +223,9 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
-        $this->assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
-        $this->assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
+        self::assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        self::assertNotNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been left as-is');
+        self::assertNotNull($this->getProfileRepository()->find($profile3->id), 'Profile 3 should have been created');
     }
 
     public function testOrphanRemovalWhenRemovingAndAddingSameElement(): void
@@ -244,7 +244,7 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNotNull($this->getProfileRepository()->find($profile->id), 'Profile 1 should not have been removed');
+        self::assertNotNull($this->getProfileRepository()->find($profile->id), 'Profile 1 should not have been removed');
     }
 
     public function testOrphanRemovalOnRemoveWithoutCascade(): void
@@ -259,7 +259,7 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->remove($user);
         $this->dm->flush();
 
-        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
     }
 
     public function testOrphanRemovalReferenceManyOnRemoveWithoutCascade(): void
@@ -278,8 +278,8 @@ class OrphanRemovalTest extends BaseTest
         $this->dm->remove($user);
         $this->dm->flush();
 
-        $this->assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
-        $this->assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile1->id), 'Profile 1 should have been removed');
+        self::assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
     /**

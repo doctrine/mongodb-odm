@@ -56,15 +56,15 @@ class GH593Test extends BaseTest
          * ideal, but it is the current behavior for hydrating the owning side
          * of a reference-many collection.
          */
-        $this->assertCount(2, $user1following);
+        self::assertCount(2, $user1following);
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $user1following[0]);
-        $this->assertTrue($user1following[0]->isProxyInitialized());
-        $this->assertEquals($user2->getId(), $user1following[0]->getId());
+        self::assertInstanceOf(GhostObjectInterface::class, $user1following[0]);
+        self::assertTrue($user1following[0]->isProxyInitialized());
+        self::assertEquals($user2->getId(), $user1following[0]->getId());
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $user1following[1]);
-        $this->assertFalse($user1following[1]->isProxyInitialized());
-        $this->assertEquals($user3->getId(), $user1following[1]->getId());
+        self::assertInstanceOf(GhostObjectInterface::class, $user1following[1]);
+        self::assertFalse($user1following[1]->isProxyInitialized());
+        self::assertEquals($user3->getId(), $user1following[1]->getId());
 
         $this->expectException(DocumentNotFoundException::class);
         $user1following[1]->initializeProxy();
@@ -95,8 +95,8 @@ class GH593Test extends BaseTest
         $user3           = $this->dm->find($class, $user3->getId());
         $user3followedBy = iterator_to_array($user3->followedBy, false);
 
-        $this->assertCount(1, $user3followedBy);
-        $this->assertEquals($user1->getId(), $user3followedBy[0]->getId());
+        self::assertCount(1, $user3followedBy);
+        self::assertEquals($user1->getId(), $user3followedBy[0]->getId());
     }
 }
 

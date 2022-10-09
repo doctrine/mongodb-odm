@@ -22,11 +22,11 @@ class GH426Test extends BaseTest
 
         $form = $this->dm->find(GH426Form::class, $form->id);
 
-        $this->assertEquals(2, $form->fields->count());
-        $this->assertSame($form->fields[0], $form->firstField);
-        $this->assertSame($form->fields[1], $form->lastField);
-        $this->assertInstanceOf(GH426Field::class, $form->firstField);
-        $this->assertInstanceOf(GH426Field::class, $form->lastField);
+        self::assertEquals(2, $form->fields->count());
+        self::assertSame($form->fields[0], $form->firstField);
+        self::assertSame($form->fields[1], $form->lastField);
+        self::assertInstanceOf(GH426Field::class, $form->firstField);
+        self::assertInstanceOf(GH426Field::class, $form->lastField);
     }
 }
 

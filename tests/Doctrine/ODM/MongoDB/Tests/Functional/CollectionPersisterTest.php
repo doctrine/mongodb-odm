@@ -39,22 +39,22 @@ class CollectionPersisterTest extends BaseTest
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->categories);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->categories);
         $persister->delete($user, [$user->categories], []);
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
+        self::assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
 
     public function testDeleteEmbedMany(): void
     {
         $persister = $this->getCollectionPersister();
         $user      = $this->getTestUser('jwage');
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->phonenumbers);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->phonenumbers);
         $persister->delete($user, [$user->phonenumbers], []);
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
+        self::assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
     }
 
     public function testDeleteNestedEmbedMany(): void
@@ -68,12 +68,12 @@ class CollectionPersisterTest extends BaseTest
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             []
         );
-        $this->assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
+        self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
 
-        $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
-        $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
+        self::assertFalse(isset($check['categories']['0']['children'][0]['children']));
+        self::assertFalse(isset($check['categories']['0']['children'][1]['children']));
 
         $this->logger->clear();
         $persister->delete(
@@ -81,15 +81,15 @@ class CollectionPersisterTest extends BaseTest
             [$user->categories[0]->children, $user->categories[1]->children],
             []
         );
-        $this->assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
+        self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
 
-        $this->assertFalse(isset($check['categories'][0]['children']), 'Test that the nested children categories field was deleted');
-        $this->assertTrue(isset($check['categories'][0]), 'Test that the category with the children still exists');
+        self::assertFalse(isset($check['categories'][0]['children']), 'Test that the nested children categories field was deleted');
+        self::assertTrue(isset($check['categories'][0]), 'Test that the category with the children still exists');
 
-        $this->assertFalse(isset($check['categories'][1]['children']), 'Test that the nested children categories field was deleted');
-        $this->assertTrue(isset($check['categories'][1]), 'Test that the category with the children still exists');
+        self::assertFalse(isset($check['categories'][1]['children']), 'Test that the nested children categories field was deleted');
+        self::assertTrue(isset($check['categories'][1]), 'Test that the category with the children still exists');
     }
 
     public function testDeleteNestedEmbedManyAndNestedParent(): void
@@ -103,28 +103,28 @@ class CollectionPersisterTest extends BaseTest
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             []
         );
-        $this->assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
+        self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
 
-        $this->assertFalse(isset($check['categories']['0']['children'][0]['children']));
-        $this->assertFalse(isset($check['categories']['0']['children'][1]['children']));
+        self::assertFalse(isset($check['categories']['0']['children'][0]['children']));
+        self::assertFalse(isset($check['categories']['0']['children'][1]['children']));
 
         $this->logger->clear();
         $firstCategoryChildren = $user->categories[0]->children;
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren);
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren[1]->children);
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->categories);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren[1]->children);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->categories);
         $persister->delete(
             $user,
             [$firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories],
             []
         );
-        $this->assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
+        self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
 
-        $this->assertFalse(isset($check['categories']), 'Test that the nested categories field was deleted');
+        self::assertFalse(isset($check['categories']), 'Test that the nested categories field was deleted');
     }
 
     public function testDeleteRows(): void
@@ -142,28 +142,28 @@ class CollectionPersisterTest extends BaseTest
 
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(2, $this->logger, 'Modification of several embedded-many collections of one document requires two queries');
+        self::assertCount(2, $this->logger, 'Modification of several embedded-many collections of one document requires two queries');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
 
-        $this->assertFalse(isset($check['phonenumbers'][0]));
-        $this->assertFalse(isset($check['phonenumbers'][1]));
+        self::assertFalse(isset($check['phonenumbers'][0]));
+        self::assertFalse(isset($check['phonenumbers'][1]));
 
-        $this->assertFalse(isset($check['categories'][0]['children'][0]['children'][0]));
-        $this->assertFalse(isset($check['categories'][0]['children'][0]['children'][1]));
+        self::assertFalse(isset($check['categories'][0]['children'][0]['children'][0]));
+        self::assertFalse(isset($check['categories'][0]['children'][0]['children'][1]));
 
-        $this->assertFalse(isset($check['categories'][0]['children'][1]['children'][0]));
-        $this->assertFalse(isset($check['categories'][0]['children'][1]['children'][1]));
+        self::assertFalse(isset($check['categories'][0]['children'][1]['children'][0]));
+        self::assertFalse(isset($check['categories'][0]['children'][1]['children'][1]));
 
         unset($user->categories[0]);
         unset($user->categories[1]);
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(2, $this->logger, 'Modification of embedded-many collection of one document requires two queries');
+        self::assertCount(2, $this->logger, 'Modification of embedded-many collection of one document requires two queries');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertFalse(isset($check['categories'][0]));
-        $this->assertFalse(isset($check['categories'][1]));
+        self::assertFalse(isset($check['categories'][0]));
+        self::assertFalse(isset($check['categories'][1]));
     }
 
     public function testInsertRows(): void
@@ -173,25 +173,25 @@ class CollectionPersisterTest extends BaseTest
         $user->phonenumbers[] = new CollectionPersisterPhonenumber('6155139185');
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(2, $this->logger, 'Modification of embedded-many collection of one document requires two queries');
+        self::assertCount(2, $this->logger, 'Modification of embedded-many collection of one document requires two queries');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertCount(4, $check['phonenumbers']);
-        $this->assertEquals((string) $check['phonenumbers'][2]['$id'], $user->phonenumbers[2]->id);
-        $this->assertEquals((string) $check['phonenumbers'][3]['$id'], $user->phonenumbers[3]->id);
+        self::assertCount(4, $check['phonenumbers']);
+        self::assertEquals((string) $check['phonenumbers'][2]['$id'], $user->phonenumbers[2]->id);
+        self::assertEquals((string) $check['phonenumbers'][3]['$id'], $user->phonenumbers[3]->id);
 
         $user->categories[] = new CollectionPersisterCategory('Test');
         $user->categories[] = new CollectionPersisterCategory('Test');
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed'
         );
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertCount(4, $check['categories']);
+        self::assertCount(4, $check['categories']);
 
         $user->categories[3]->children[0]              = new CollectionPersisterCategory('Test');
         $user->categories[3]->children[1]              = new CollectionPersisterCategory('Test');
@@ -199,15 +199,15 @@ class CollectionPersisterTest extends BaseTest
         $user->categories[3]->children[1]->children[1] = new CollectionPersisterCategory('Test');
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed'
         );
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
-        $this->assertCount(2, $check['categories'][3]['children']);
-        $this->assertCount(2, $check['categories'][3]['children']['1']['children']);
+        self::assertCount(2, $check['categories'][3]['children']);
+        self::assertCount(2, $check['categories'][3]['children']['1']['children']);
     }
 
     private function getTestUser(string $username): CollectionPersisterUser
@@ -260,7 +260,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Insertion of embedded-many collection of one document requires no additional queries'
@@ -268,14 +268,14 @@ class CollectionPersisterTest extends BaseTest
 
         $doc = $this->dm->getDocumentCollection(CollectionPersisterPost::class)->findOne(['post' => 'postA']);
 
-        $this->assertCount(1, $doc['comments']);
-        $this->assertEquals($commentA->comment, $doc['comments']['a']['comment']);
-        $this->assertEquals($commentA->by, $doc['comments']['a']['by']);
-        $this->assertCount(2, $doc['comments']['a']['comments']);
-        $this->assertEquals($commentAA->comment, $doc['comments']['a']['comments']['a']['comment']);
-        $this->assertEquals($commentAA->by, $doc['comments']['a']['comments']['a']['by']);
-        $this->assertEquals($commentAB->comment, $doc['comments']['a']['comments']['b']['comment']);
-        $this->assertEquals($commentAB->by, $doc['comments']['a']['comments']['b']['by']);
+        self::assertCount(1, $doc['comments']);
+        self::assertEquals($commentA->comment, $doc['comments']['a']['comment']);
+        self::assertEquals($commentA->by, $doc['comments']['a']['by']);
+        self::assertCount(2, $doc['comments']['a']['comments']);
+        self::assertEquals($commentAA->comment, $doc['comments']['a']['comments']['a']['comment']);
+        self::assertEquals($commentAA->by, $doc['comments']['a']['comments']['a']['by']);
+        self::assertEquals($commentAB->comment, $doc['comments']['a']['comments']['b']['comment']);
+        self::assertEquals($commentAB->by, $doc['comments']['a']['comments']['b']['by']);
 
         // Add a new top-level comment with a nested comment
         $commentB  = new CollectionPersisterComment('commentB', 'userD');
@@ -287,7 +287,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed'
@@ -295,16 +295,16 @@ class CollectionPersisterTest extends BaseTest
 
         $doc = $this->dm->getDocumentCollection(CollectionPersisterPost::class)->findOne(['post' => 'postA']);
 
-        $this->assertCount(2, $doc['comments']);
-        $this->assertEquals($commentA->comment, $doc['comments']['a']['comment']);
-        $this->assertEquals($commentB->comment, $doc['comments']['b']['comment']);
-        $this->assertEquals($commentB->by, $doc['comments']['b']['by']);
-        $this->assertCount(2, $doc['comments']['a']['comments']);
-        $this->assertEquals($commentAA->comment, $doc['comments']['a']['comments']['a']['comment']);
-        $this->assertEquals($commentAB->comment, $doc['comments']['a']['comments']['b']['comment']);
-        $this->assertCount(1, $doc['comments']['b']['comments']);
-        $this->assertEquals($commentBA->comment, $doc['comments']['b']['comments']['a']['comment']);
-        $this->assertEquals($commentBA->by, $doc['comments']['b']['comments']['a']['by']);
+        self::assertCount(2, $doc['comments']);
+        self::assertEquals($commentA->comment, $doc['comments']['a']['comment']);
+        self::assertEquals($commentB->comment, $doc['comments']['b']['comment']);
+        self::assertEquals($commentB->by, $doc['comments']['b']['by']);
+        self::assertCount(2, $doc['comments']['a']['comments']);
+        self::assertEquals($commentAA->comment, $doc['comments']['a']['comments']['a']['comment']);
+        self::assertEquals($commentAB->comment, $doc['comments']['a']['comments']['b']['comment']);
+        self::assertCount(1, $doc['comments']['b']['comments']);
+        self::assertEquals($commentBA->comment, $doc['comments']['b']['comments']['a']['comment']);
+        self::assertEquals($commentBA->by, $doc['comments']['b']['comments']['a']['by']);
 
         // Update two comments
         $commentB->comment  = 'commentB-modified';
@@ -313,7 +313,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed'
@@ -321,14 +321,14 @@ class CollectionPersisterTest extends BaseTest
 
         $doc = $this->dm->getDocumentCollection(CollectionPersisterPost::class)->findOne(['post' => 'postA']);
 
-        $this->assertCount(2, $doc['comments']);
-        $this->assertEquals($commentA->comment, $doc['comments']['a']['comment']);
-        $this->assertEquals($commentB->comment, $doc['comments']['b']['comment']);
-        $this->assertCount(2, $doc['comments']['a']['comments']);
-        $this->assertEquals($commentAA->comment, $doc['comments']['a']['comments']['a']['comment']);
-        $this->assertEquals($commentAB->comment, $doc['comments']['a']['comments']['b']['comment']);
-        $this->assertCount(1, $doc['comments']['b']['comments']);
-        $this->assertEquals($commentBA->comment, $doc['comments']['b']['comments']['a']['comment']);
+        self::assertCount(2, $doc['comments']);
+        self::assertEquals($commentA->comment, $doc['comments']['a']['comment']);
+        self::assertEquals($commentB->comment, $doc['comments']['b']['comment']);
+        self::assertCount(2, $doc['comments']['a']['comments']);
+        self::assertEquals($commentAA->comment, $doc['comments']['a']['comments']['a']['comment']);
+        self::assertEquals($commentAB->comment, $doc['comments']['a']['comments']['b']['comment']);
+        self::assertCount(1, $doc['comments']['b']['comments']);
+        self::assertEquals($commentBA->comment, $doc['comments']['b']['comments']['a']['comment']);
 
         // Delete a comment
         unset($post->comments['b']);
@@ -336,7 +336,7 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Modification of embedded-many collection of one document requires one query since collection, from which element was removed, have "set" store strategy.'
@@ -344,12 +344,12 @@ class CollectionPersisterTest extends BaseTest
 
         $doc = $this->dm->getDocumentCollection(CollectionPersisterPost::class)->findOne(['post' => 'postA']);
 
-        $this->assertCount(1, $doc['comments']);
-        $this->assertEquals($commentA->comment, $doc['comments']['a']['comment']);
-        $this->assertCount(2, $doc['comments']['a']['comments']);
-        $this->assertEquals($commentAA->comment, $doc['comments']['a']['comments']['a']['comment']);
-        $this->assertEquals($commentAB->comment, $doc['comments']['a']['comments']['b']['comment']);
-        $this->assertFalse(isset($doc['comments']['b']));
+        self::assertCount(1, $doc['comments']);
+        self::assertEquals($commentA->comment, $doc['comments']['a']['comment']);
+        self::assertCount(2, $doc['comments']['a']['comments']);
+        self::assertEquals($commentAA->comment, $doc['comments']['a']['comments']['a']['comment']);
+        self::assertEquals($commentAB->comment, $doc['comments']['a']['comments']['b']['comment']);
+        self::assertFalse(isset($doc['comments']['b']));
     }
 
     public function testFindBySetStrategyKey(): void
@@ -364,8 +364,8 @@ class CollectionPersisterTest extends BaseTest
         $this->dm->persist($post);
         $this->dm->flush();
 
-        $this->assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.by' => 'userA']));
-        $this->assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.comments.b.by' => 'userB']));
+        self::assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.by' => 'userA']));
+        self::assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.comments.b.by' => 'userB']));
     }
 
     public function testPersistSeveralNestedEmbedManySetStrategy(): void
@@ -378,7 +378,7 @@ class CollectionPersisterTest extends BaseTest
 
         $this->dm->persist($structure);
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Insertion of embedded-many collections of one document by "set" strategy requires no additional queries'
@@ -390,13 +390,13 @@ class CollectionPersisterTest extends BaseTest
 
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Modification of embedded-many collections of one document by "set" strategy requires one query'
         );
 
-        $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManySetArrayStrategy(): void
@@ -409,7 +409,7 @@ class CollectionPersisterTest extends BaseTest
 
         $this->dm->persist($structure);
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Insertion of embedded-many collections of one document by "setArray" strategy requires no additional queries'
@@ -421,13 +421,13 @@ class CollectionPersisterTest extends BaseTest
 
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Modification of embedded-many collections of one document by "setArray" strategy requires one query'
         );
 
-        $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyAddToSetStrategy(): void
@@ -440,7 +440,7 @@ class CollectionPersisterTest extends BaseTest
 
         $this->dm->persist($structure);
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             2,
             $this->logger,
             'Insertion of embedded-many collections of one document by "addToSet" strategy requires one additional query'
@@ -452,13 +452,13 @@ class CollectionPersisterTest extends BaseTest
 
         $this->logger->clear();
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             2,
             $this->logger,
             'Modification of embedded-many collections of one document by "addToSet" strategy requires two queries'
         );
 
-        $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyPushAllStrategy(): void
@@ -471,7 +471,7 @@ class CollectionPersisterTest extends BaseTest
 
         $this->dm->persist($structure);
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Insertion of embedded-many collections of one document by "pushAll" strategy requires no additional queries'
@@ -483,13 +483,13 @@ class CollectionPersisterTest extends BaseTest
         $this->logger->clear();
         $this->dm->persist($structure);
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             2,
             $this->logger,
             'Modification of embedded-many collections of one document by "pushAll" strategy requires two queries'
         );
 
-        $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyDifferentStrategies(): void
@@ -501,7 +501,7 @@ class CollectionPersisterTest extends BaseTest
 
         $this->dm->persist($structure);
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Insertion of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires no additional queries'
@@ -517,13 +517,13 @@ class CollectionPersisterTest extends BaseTest
         $this->logger->clear();
         $this->dm->persist($structure);
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             4,
             $this->logger,
             'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries'
         );
 
-        $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyDifferentStrategiesDeepNesting(): void
@@ -541,7 +541,7 @@ class CollectionPersisterTest extends BaseTest
 
         $this->dm->persist($structure);
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             1,
             $this->logger,
             'Insertion of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires no additional queries'
@@ -557,13 +557,13 @@ class CollectionPersisterTest extends BaseTest
         $this->logger->clear();
         $this->dm->persist($structure);
         $this->dm->flush();
-        $this->assertCount(
+        self::assertCount(
             5,
             $this->logger,
             'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries'
         );
 
-        $this->assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
     }
 }
 

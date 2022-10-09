@@ -23,9 +23,9 @@ class BinDataTest extends BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(get_class($test))->findOne([]);
-        $this->assertInstanceOf(Binary::class, $check[$field]);
-        $this->assertEquals($type, $check[$field]->getType());
-        $this->assertEquals($data, $check[$field]->getData());
+        self::assertInstanceOf(Binary::class, $check[$field]);
+        self::assertEquals($type, $check[$field]->getType());
+        self::assertEquals($data, $check[$field]->getData());
     }
 
     public function provideData(): array

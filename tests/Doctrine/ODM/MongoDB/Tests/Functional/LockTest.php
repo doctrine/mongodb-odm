@@ -32,12 +32,12 @@ class LockTest extends BaseTest
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $this->assertEquals(1, $article->version);
+        self::assertEquals(1, $article->version);
 
         $article->title = 'test';
         $this->dm->flush();
 
-        $this->assertEquals(2, $article->version);
+        self::assertEquals(2, $article->version);
     }
 
     public function testOptimisticLockIntSetInitialVersionOnUpsert(): void
@@ -50,13 +50,13 @@ class LockTest extends BaseTest
         $this->dm->persist($article);
         $this->dm->flush();
 
-        $this->assertSame($id, $article->id);
-        $this->assertEquals(1, $article->version);
+        self::assertSame($id, $article->id);
+        self::assertEquals(1, $article->version);
 
         $article->title = 'test';
         $this->dm->flush();
 
-        $this->assertEquals(2, $article->version);
+        self::assertEquals(2, $article->version);
     }
 
     public function testOptimisticLockingIntThrowsException(): void
@@ -85,8 +85,8 @@ class LockTest extends BaseTest
             $this->dm->persist($test);
             $this->dm->flush();
 
-            $this->assertIsInt($test->getVersion());
-            $this->assertEquals($i + 1, $test->getVersion());
+            self::assertIsInt($test->getVersion());
+            self::assertEquals($i + 1, $test->getVersion());
         }
     }
 
@@ -95,19 +95,19 @@ class LockTest extends BaseTest
         $test        = new LockDate();
         $test->title = 'Testing';
 
-        $this->assertNull($test->version, 'Pre-Condition');
+        self::assertNull($test->version, 'Pre-Condition');
 
         $this->dm->persist($test);
         $this->dm->flush();
 
         $date1 = $test->version;
 
-        $this->assertInstanceOf('DateTime', $date1);
+        self::assertInstanceOf('DateTime', $date1);
 
         $test->title = 'changed';
         $this->dm->flush();
 
-        $this->assertNotSame($date1, $test->version);
+        self::assertNotSame($date1, $test->version);
 
         return $test;
     }
@@ -117,19 +117,19 @@ class LockTest extends BaseTest
         $test        = new LockDateImmutable();
         $test->title = 'Testing';
 
-        $this->assertNull($test->version, 'Pre-Condition');
+        self::assertNull($test->version, 'Pre-Condition');
 
         $this->dm->persist($test);
         $this->dm->flush();
 
         $date1 = $test->version;
 
-        $this->assertInstanceOf('DateTimeImmutable', $date1);
+        self::assertInstanceOf('DateTimeImmutable', $date1);
 
         $test->title = 'changed';
         $this->dm->flush();
 
-        $this->assertNotSame($date1, $test->version);
+        self::assertNotSame($date1, $test->version);
 
         return $test;
     }
@@ -139,19 +139,19 @@ class LockTest extends BaseTest
         $test        = new LockDecimal128();
         $test->title = 'Testing';
 
-        $this->assertNull($test->version, 'Pre-Condition');
+        self::assertNull($test->version, 'Pre-Condition');
 
         $this->dm->persist($test);
         $this->dm->flush();
 
         $version = $test->version;
 
-        $this->assertSame('1', $version);
+        self::assertSame('1', $version);
 
         $test->title = 'changed';
         $this->dm->flush();
 
-        $this->assertNotSame($version, $test->version);
+        self::assertNotSame($version, $test->version);
 
         return $test;
     }
@@ -164,20 +164,20 @@ class LockTest extends BaseTest
         $test->title = 'Testing';
         $test->id    = $id;
 
-        $this->assertNull($test->version, 'Pre-Condition');
+        self::assertNull($test->version, 'Pre-Condition');
 
         $this->dm->persist($test);
         $this->dm->flush();
 
         $date1 = $test->version;
 
-        $this->assertSame($id, $test->id);
-        $this->assertInstanceOf('DateTime', $date1);
+        self::assertSame($id, $test->id);
+        self::assertInstanceOf('DateTime', $date1);
 
         $test->title = 'changed';
         $this->dm->flush();
 
-        $this->assertNotSame($date1, $test->version);
+        self::assertNotSame($date1, $test->version);
 
         return $test;
     }
@@ -190,20 +190,20 @@ class LockTest extends BaseTest
         $test->title = 'Testing';
         $test->id    = $id;
 
-        $this->assertNull($test->version, 'Pre-Condition');
+        self::assertNull($test->version, 'Pre-Condition');
 
         $this->dm->persist($test);
         $this->dm->flush();
 
         $date1 = $test->version;
 
-        $this->assertSame($id, $test->id);
-        $this->assertInstanceOf('DateTimeImmutable', $date1);
+        self::assertSame($id, $test->id);
+        self::assertInstanceOf('DateTimeImmutable', $date1);
 
         $test->title = 'changed';
         $this->dm->flush();
 
-        $this->assertNotSame($date1, $test->version);
+        self::assertNotSame($date1, $test->version);
 
         return $test;
     }
@@ -216,20 +216,20 @@ class LockTest extends BaseTest
         $test->title = 'Testing';
         $test->id    = $id;
 
-        $this->assertNull($test->version, 'Pre-Condition');
+        self::assertNull($test->version, 'Pre-Condition');
 
         $this->dm->persist($test);
         $this->dm->flush();
 
         $version = $test->version;
 
-        $this->assertSame($id, $test->id);
-        $this->assertSame('1', $version);
+        self::assertSame($id, $test->id);
+        self::assertSame('1', $version);
 
         $test->title = 'changed';
         $this->dm->flush();
 
-        $this->assertNotSame($version, $test->version);
+        self::assertNotSame($version, $test->version);
 
         return $test;
     }
@@ -347,7 +347,7 @@ class LockTest extends BaseTest
         $this->dm->lock($article, LockMode::PESSIMISTIC_WRITE);
 
         $check = $this->dm->getDocumentCollection(get_class($article))->findOne();
-        $this->assertEquals(LockMode::PESSIMISTIC_WRITE, $check['locked']);
+        self::assertEquals(LockMode::PESSIMISTIC_WRITE, $check['locked']);
     }
 
     public function testLockPessimisticRead(): void
@@ -361,7 +361,7 @@ class LockTest extends BaseTest
         $this->dm->lock($article, LockMode::PESSIMISTIC_READ);
 
         $check = $this->dm->getDocumentCollection(get_class($article))->findOne();
-        $this->assertEquals(LockMode::PESSIMISTIC_READ, $check['locked']);
+        self::assertEquals(LockMode::PESSIMISTIC_READ, $check['locked']);
     }
 
     public function testUnlock(): void
@@ -375,14 +375,14 @@ class LockTest extends BaseTest
         $this->dm->lock($article, LockMode::PESSIMISTIC_READ);
 
         $check = $this->dm->getDocumentCollection(get_class($article))->findOne();
-        $this->assertEquals(LockMode::PESSIMISTIC_READ, $check['locked']);
-        $this->assertEquals(LockMode::PESSIMISTIC_READ, $article->locked);
+        self::assertEquals(LockMode::PESSIMISTIC_READ, $check['locked']);
+        self::assertEquals(LockMode::PESSIMISTIC_READ, $article->locked);
 
         $this->dm->unlock($article);
 
         $check = $this->dm->getDocumentCollection(get_class($article))->findOne();
-        $this->assertArrayNotHasKey('locked', $check);
-        $this->assertNull($article->locked);
+        self::assertArrayNotHasKey('locked', $check);
+        self::assertNull($article->locked);
     }
 
     public function testPessimisticReadLockThrowsExceptionOnRemove(): void
@@ -484,9 +484,9 @@ class LockTest extends BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(LockInt::class)->findOne();
-        $this->assertEquals(2, $check['version']);
-        $this->assertArrayNotHasKey('locked', $check);
-        $this->assertEquals('test', $check['title']);
+        self::assertEquals(2, $check['version']);
+        self::assertArrayNotHasKey('locked', $check);
+        self::assertEquals('test', $check['title']);
     }
 
     public function testPessimisticWriteLockFunctional(): void
@@ -503,9 +503,9 @@ class LockTest extends BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(LockInt::class)->findOne();
-        $this->assertEquals(2, $check['version']);
-        $this->assertArrayNotHasKey('locked', $check);
-        $this->assertEquals('test', $check['title']);
+        self::assertEquals(2, $check['version']);
+        self::assertArrayNotHasKey('locked', $check);
+        self::assertEquals('test', $check['title']);
     }
 
     public function testInvalidLockDocument(): void
@@ -537,7 +537,7 @@ class LockTest extends BaseTest
 
         $d->issues->add(new Issue('oops', 'version mismatch'));
         $this->uow->scheduleCollectionUpdate($d->issues);
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $d->issues);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $d->issues);
         $this->expectException(LockException::class);
         $this->uow->getCollectionPersister()->update($d, [$d->issues], []);
     }
@@ -555,7 +555,7 @@ class LockTest extends BaseTest
             ['$set' => ['version' => 2]]
         );
 
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $d->issues);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $d->issues);
         $this->expectException(LockException::class);
         $this->uow->getCollectionPersister()->delete($d, [$d->issues], []);
     }

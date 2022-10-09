@@ -20,12 +20,12 @@ class MODM65Test extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getDocumentCollection(MODM65User::class)->findOne();
-        $this->assertTrue(isset($user['snu']['lN']));
-        $this->assertTrue(isset($user['snu']['fN']));
+        self::assertTrue(isset($user['snu']['lN']));
+        self::assertTrue(isset($user['snu']['fN']));
 
         $user = $this->dm->find(MODM65User::class, $user['_id']);
-        $this->assertEquals('Jonathan', $user->socialNetworkUser->firstName);
-        $this->assertEquals('Wage', $user->socialNetworkUser->lastName);
+        self::assertEquals('Jonathan', $user->socialNetworkUser->firstName);
+        self::assertEquals('Wage', $user->socialNetworkUser->lastName);
     }
 }
 

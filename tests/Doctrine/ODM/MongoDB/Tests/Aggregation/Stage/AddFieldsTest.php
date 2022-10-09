@@ -19,7 +19,7 @@ class AddFieldsTest extends BaseTest
             ->field('product')
             ->multiply('$field', 5);
 
-        $this->assertSame(['$addFields' => ['product' => ['$multiply' => ['$field', 5]]]], $addFieldsStage->getExpression());
+        self::assertSame(['$addFields' => ['product' => ['$multiply' => ['$field', 5]]]], $addFieldsStage->getExpression());
     }
 
     public function testProjectFromBuilder(): void
@@ -30,6 +30,6 @@ class AddFieldsTest extends BaseTest
             ->field('product')
             ->multiply('$field', 5);
 
-        $this->assertSame([['$addFields' => ['product' => ['$multiply' => ['$field', 5]]]]], $builder->getPipeline());
+        self::assertSame([['$addFields' => ['product' => ['$multiply' => ['$field', 5]]]]], $builder->getPipeline());
     }
 }

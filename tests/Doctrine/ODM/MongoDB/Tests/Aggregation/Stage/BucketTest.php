@@ -26,7 +26,7 @@ class BucketTest extends BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame([
+        self::assertSame([
             '$bucket' => [
                 'groupBy' => '$someField',
                 'boundaries' => [1, 2, 3],
@@ -47,7 +47,7 @@ class BucketTest extends BaseTest
             ->field('averageValue')
             ->avg('$value');
 
-        $this->assertSame([
+        self::assertSame([
             [
                 '$bucket' => [
                     'groupBy' => '$someField',
@@ -66,7 +66,7 @@ class BucketTest extends BaseTest
             ->groupBy('$someField')
             ->boundaries(1, 2, 3);
 
-        $this->assertSame([
+        self::assertSame([
             '$bucket' => [
                 'groupBy' => '$someField',
                 'boundaries' => [1, 2, 3],
@@ -86,7 +86,7 @@ class BucketTest extends BaseTest
                 ->field('averageValue')
                 ->avg('$value');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 [
                     '$bucket' => [

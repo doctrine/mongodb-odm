@@ -38,7 +38,7 @@ class GH971Test extends BaseTest
             ->getQuery()->execute();
 
         $results = $this->dm->getRepository(Car::class)->findAll();
-        $this->assertCount(1, $results);
+        self::assertCount(1, $results);
     }
 
     public function testUpsertThrowsExceptionWithIndecisiveDiscriminator(): void
@@ -67,7 +67,7 @@ class GH971Test extends BaseTest
             ->getQuery()->execute();
 
         $results = $this->dm->getRepository(Tandem::class)->findAll();
-        $this->assertCount(1, $results);
+        self::assertCount(1, $results);
     }
 }
 

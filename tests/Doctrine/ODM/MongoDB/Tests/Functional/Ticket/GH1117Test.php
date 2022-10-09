@@ -27,9 +27,9 @@ class GH1117Test extends BaseTest
         $this->dm->clear();
 
         $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
-        $this->assertCount(2, $doc->embeds);
-        $this->assertEquals('one', $doc->embeds[0]->value);
-        $this->assertEquals('two', $doc->embeds[1]->value);
+        self::assertCount(2, $doc->embeds);
+        self::assertEquals('one', $doc->embeds[0]->value);
+        self::assertEquals('two', $doc->embeds[1]->value);
     }
 }
 

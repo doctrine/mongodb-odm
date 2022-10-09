@@ -20,13 +20,13 @@ class BsonFilterTest extends BaseTest
     {
         $filter = new Filter($this->dm);
         $filter->setParameter('username', 'Tim');
-        $this->assertEquals('Tim', $filter->getParameter('username'));
+        self::assertEquals('Tim', $filter->getParameter('username'));
     }
 
     public function testGetNullParameter(): void
     {
         $filter = new Filter($this->dm);
         $filter->setParameter('foo', null);
-        $this->assertNull($filter->getParameter('foo'));
+        self::assertNull($filter->getParameter('foo'));
     }
 }

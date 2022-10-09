@@ -25,8 +25,8 @@ class DocumentRepositoryTest extends BaseTest
         $repository = $this->dm->getRepository(User::class);
         $criteria   = new Criteria();
 
-        $this->assertNull($criteria->getWhereExpression());
-        $this->assertInstanceOf(Collection::class, $repository->matching($criteria));
+        self::assertNull($criteria->getWhereExpression());
+        self::assertInstanceOf(Collection::class, $repository->matching($criteria));
     }
 
     public function testFindByRefOneFull(): void
@@ -43,9 +43,9 @@ class DocumentRepositoryTest extends BaseTest
             ->getDocumentPersister(User::class)
             ->prepareQueryOrNewObj(['account' => $account]);
         $expectedQuery = ['account.$id' => new ObjectId($account->getId())];
-        $this->assertEquals($expectedQuery, $query);
+        self::assertEquals($expectedQuery, $query);
 
-        $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['account' => $account]));
+        self::assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['account' => $account]));
     }
 
     public function testFindByRefOneWithoutTargetDocumentFull(): void
@@ -66,9 +66,9 @@ class DocumentRepositoryTest extends BaseTest
             'user.$id' => new ObjectId($user->getId()),
             'user.$db' => DOCTRINE_MONGODB_DATABASE,
         ];
-        $this->assertEquals($expectedQuery, $query);
+        self::assertEquals($expectedQuery, $query);
 
-        $this->assertSame($account, $this->dm->getRepository(Account::class)->findOneBy(['user' => $user]));
+        self::assertSame($account, $this->dm->getRepository(Account::class)->findOneBy(['user' => $user]));
     }
 
     public function testFindByRefOneWithoutTargetDocumentStoredAsDbRef(): void
@@ -88,9 +88,9 @@ class DocumentRepositoryTest extends BaseTest
             'userDbRef.$ref' => 'users',
             'userDbRef.$id' => new ObjectId($user->getId()),
         ];
-        $this->assertEquals($expectedQuery, $query);
+        self::assertEquals($expectedQuery, $query);
 
-        $this->assertSame($account, $this->dm->getRepository(Account::class)->findOneBy(['userDbRef' => $user]));
+        self::assertSame($account, $this->dm->getRepository(Account::class)->findOneBy(['userDbRef' => $user]));
     }
 
     public function testFindDiscriminatedByRefManyFull(): void
@@ -106,9 +106,9 @@ class DocumentRepositoryTest extends BaseTest
             ->getDocumentPersister(Developer::class)
             ->prepareQueryOrNewObj(['projects' => $project]);
         $expectedQuery = ['projects' => ['$elemMatch' => ['$id' => new ObjectId($project->getId())]]];
-        $this->assertEquals($expectedQuery, $query);
+        self::assertEquals($expectedQuery, $query);
 
-        $this->assertSame($developer, $this->dm->getRepository(Developer::class)->findOneBy(['projects' => $project]));
+        self::assertSame($developer, $this->dm->getRepository(Developer::class)->findOneBy(['projects' => $project]));
     }
 
     public function testFindByRefOneSimple(): void
@@ -119,7 +119,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->persist($account);
         $this->dm->flush();
-        $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['accountSimple' => $account]));
+        self::assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['accountSimple' => $account]));
     }
 
     public function testFindByEmbedOne(): void
@@ -130,7 +130,7 @@ class DocumentRepositoryTest extends BaseTest
         $user->setAddress($address);
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['address' => $address]));
+        self::assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['address' => $address]));
     }
 
     public function testFindByRefManyFull(): void
@@ -154,9 +154,9 @@ class DocumentRepositoryTest extends BaseTest
                 ],
             ],
         ];
-        $this->assertEquals($expectedQuery, $query);
+        self::assertEquals($expectedQuery, $query);
 
-        $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['groups' => $group]));
+        self::assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['groups' => $group]));
     }
 
     public function testFindByRefManySimple(): void
@@ -167,7 +167,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->dm->persist($user);
         $this->dm->persist($group);
         $this->dm->flush();
-        $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['groupsSimple' => $group]));
+        self::assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['groupsSimple' => $group]));
     }
 
     public function testFindByEmbedMany(): void
@@ -177,7 +177,7 @@ class DocumentRepositoryTest extends BaseTest
         $user->addPhonenumber($phonenumber);
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['phonenumbers' => $phonenumber]));
+        self::assertSame($user, $this->dm->getRepository(User::class)->findOneBy(['phonenumbers' => $phonenumber]));
     }
 
     public function testFindOneByWithSort(): void
@@ -189,7 +189,7 @@ class DocumentRepositoryTest extends BaseTest
         $this->dm->persist($george);
         $this->dm->persist($andy);
         $this->dm->flush();
-        $this->assertSame($andy, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'ASC']));
-        $this->assertSame($george, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'DESC']));
+        self::assertSame($andy, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'ASC']));
+        self::assertSame($george, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'DESC']));
     }
 }

@@ -15,24 +15,24 @@ class FilterCollectionTest extends BaseTest
     {
         $filterCollection = $this->dm->getFilterCollection();
 
-        $this->assertCount(0, $filterCollection->getEnabledFilters());
+        self::assertEmpty($filterCollection->getEnabledFilters());
 
         $filterCollection->enable('testFilter');
 
         $enabledFilters = $filterCollection->getEnabledFilters();
-        $this->assertCount(1, $enabledFilters);
-        $this->assertContainsOnly(BsonFilter::class, $enabledFilters);
+        self::assertCount(1, $enabledFilters);
+        self::assertContainsOnly(BsonFilter::class, $enabledFilters);
 
         $filterCollection->disable('testFilter');
-        $this->assertCount(0, $filterCollection->getEnabledFilters());
+        self::assertEmpty($filterCollection->getEnabledFilters());
     }
 
     public function testHasFilter(): void
     {
         $filterCollection = $this->dm->getFilterCollection();
 
-        $this->assertTrue($filterCollection->has('testFilter'));
-        $this->assertFalse($filterCollection->has('fakeFilter'));
+        self::assertTrue($filterCollection->has('testFilter'));
+        self::assertFalse($filterCollection->has('fakeFilter'));
     }
 
     /**
@@ -42,11 +42,11 @@ class FilterCollectionTest extends BaseTest
     {
         $filterCollection = $this->dm->getFilterCollection();
 
-        $this->assertFalse($filterCollection->isEnabled('testFilter'));
+        self::assertFalse($filterCollection->isEnabled('testFilter'));
 
         $filterCollection->enable('testFilter');
 
-        $this->assertTrue($filterCollection->isEnabled('testFilter'));
+        self::assertTrue($filterCollection->isEnabled('testFilter'));
     }
 
     public function testGetFilterInvalidArgument(): void
@@ -60,7 +60,7 @@ class FilterCollectionTest extends BaseTest
     {
         $filterCollection = $this->dm->getFilterCollection();
         $filterCollection->enable('testFilter');
-        $this->assertInstanceOf(Filter\Filter::class, $filterCollection->getFilter('testFilter'));
+        self::assertInstanceOf(Filter\Filter::class, $filterCollection->getFilter('testFilter'));
     }
 
     public function testGetFilterCriteria(): void
@@ -68,7 +68,7 @@ class FilterCollectionTest extends BaseTest
         $class            = $this->dm->getClassMetadata(User::class);
         $filterCollection = $this->dm->getFilterCollection();
 
-        $this->assertEmpty($filterCollection->getFilterCriteria($class));
+        self::assertEmpty($filterCollection->getFilterCriteria($class));
 
         $filterCollection->enable('testFilter');
         $testFilter = $filterCollection->getFilter('testFilter');
@@ -76,7 +76,7 @@ class FilterCollectionTest extends BaseTest
         $testFilter->setParameter('field', 'username');
         $testFilter->setParameter('value', 'Tim');
 
-        $this->assertSame(['username' => 'Tim'], $filterCollection->getFilterCriteria($class));
+        self::assertSame(['username' => 'Tim'], $filterCollection->getFilterCriteria($class));
     }
 
     public function testGetFilterCriteriaMergesCriteria(): void
@@ -103,6 +103,6 @@ class FilterCollectionTest extends BaseTest
             ],
         ];
 
-        $this->assertSame($expectedCriteria, $filterCollection->getFilterCriteria($class));
+        self::assertSame($expectedCriteria, $filterCollection->getFilterCriteria($class));
     }
 }

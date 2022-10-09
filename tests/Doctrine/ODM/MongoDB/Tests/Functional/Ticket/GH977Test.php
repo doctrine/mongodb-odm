@@ -31,8 +31,8 @@ class GH977Test extends BaseTest
         $this->dm->clear();
 
         $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Changed']);
-        $this->assertNotNull($d);
-        $this->assertEquals('v1 has changed', $d->value2);
+        self::assertNotNull($d);
+        self::assertEquals('v1 has changed', $d->value2);
     }
 
     public function testRefreshClearsChangeSet(): void
@@ -51,7 +51,7 @@ class GH977Test extends BaseTest
         $this->dm->clear();
 
         $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Value 1']);
-        $this->assertNotNull($d);
+        self::assertNotNull($d);
     }
 }
 

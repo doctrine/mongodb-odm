@@ -31,8 +31,8 @@ class GH499Test extends BaseTest
 
         $a = $collection->findOne(['_id' => new ObjectId($a->getId())]);
 
-        $this->assertEquals(new ObjectId($b->getId()), $a['refMany'][$b->getId()]);
-        $this->assertEquals(new ObjectId($c->getId()), $a['refMany'][$c->getId()]);
+        self::assertEquals(new ObjectId($b->getId()), $a['refMany'][$b->getId()]);
+        self::assertEquals(new ObjectId($c->getId()), $a['refMany'][$c->getId()]);
     }
 }
 

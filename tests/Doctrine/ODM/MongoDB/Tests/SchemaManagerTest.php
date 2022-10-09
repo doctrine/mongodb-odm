@@ -771,7 +771,7 @@ EOT;
         $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
-        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
+        self::assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
     }
 
     public function dataIsMongoIndexEquivalentToDocumentIndex(): array
@@ -985,7 +985,7 @@ EOT;
         $mongoIndex    += $defaultMongoIndex;
         $documentIndex += $defaultDocumentIndex;
 
-        $this->assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
+        self::assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
     }
 
     public function dataIsMongoTextIndexEquivalentToDocumentIndex(): array

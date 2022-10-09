@@ -21,8 +21,8 @@ class MODM43Test extends BaseTest
         ];
         $this->dm->getDocumentCollection(Person::class)->insertOne($person);
         $user = $this->dm->find(Person::class, $person['_id']);
-        $this->assertEquals('Jonathan', $user->firstName);
-        $this->assertEquals('Wage', $user->lastName);
+        self::assertEquals('Jonathan', $user->firstName);
+        self::assertEquals('Wage', $user->lastName);
     }
 }
 

@@ -29,13 +29,13 @@ class MODM116Test extends BaseTest
 
         $check = $this->dm->getDocumentCollection(get_class($parent))->find()->toArray();
         $check = array_values($check);
-        $this->assertCount(1, $check);
-        $this->assertEquals('test', $check[0]['name']);
+        self::assertCount(1, $check);
+        self::assertEquals('test', $check[0]['name']);
 
         $check = $this->dm->getDocumentCollection(get_class($parent->getChild()))->find()->toArray();
         $check = array_values($check);
-        $this->assertCount(1, $check);
-        $this->assertEquals('ok', $check[0]['name']);
+        self::assertCount(1, $check);
+        self::assertEquals('ok', $check[0]['name']);
     }
 }
 
