@@ -85,7 +85,7 @@ class SplObjectHashCollisionsTest extends BaseTest
         $ro = new ReflectionObject($this->uow);
         $rp = $ro->getProperty($prop);
         $rp->setAccessible(true);
-        $this->assertCount($expected, $rp->getValue($this->uow));
+        self::assertCount($expected, $rp->getValue($this->uow));
     }
 }
 

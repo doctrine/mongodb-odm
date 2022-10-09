@@ -46,15 +46,15 @@ class CommitImprovementTest extends BaseTest
         $user->addPhonebook($privateBook);
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertCount(1, $this->logger, 'Inserting a document includes all nested collections and requires one query');
+        self::assertCount(1, $this->logger, 'Inserting a document includes all nested collections and requires one query');
         $this->dm->clear();
 
         $user = $this->dm->find(get_class($user), $user->getId());
-        $this->assertEquals('malarzm', $user->getUsername());
-        $this->assertCount(1, $user->getPhonebooks());
-        $this->assertEquals('Private', $user->getPhonebooks()->first()->getTitle());
-        $this->assertCount(1, $user->getPhonebooks()->first()->getPhonenumbers());
-        $this->assertEquals('12345678', $user->getPhonebooks()->first()->getPhonenumbers()->first()->getPhonenumber());
+        self::assertEquals('malarzm', $user->getUsername());
+        self::assertCount(1, $user->getPhonebooks());
+        self::assertEquals('Private', $user->getPhonebooks()->first()->getTitle());
+        self::assertCount(1, $user->getPhonebooks()->first()->getPhonenumbers());
+        self::assertEquals('12345678', $user->getPhonebooks()->first()->getPhonenumbers()->first()->getPhonenumber());
     }
 
     public function testCollectionsAreUpdatedJustAfterOwningDocument(): void
@@ -81,9 +81,9 @@ class CommitImprovementTest extends BaseTest
         $this->dm->clear();
         $user         = $this->dm->find(get_class($user), $user->getId());
         $phonenumbers = $user->getPhonebooks()->first()->getPhonenumbers();
-        $this->assertCount(2, $phonenumbers);
-        $this->assertEquals('12345678', $phonenumbers[0]->getPhonenumber());
-        $this->assertEquals('87654321', $phonenumbers[1]->getPhonenumber());
+        self::assertCount(2, $phonenumbers);
+        self::assertEquals('12345678', $phonenumbers[0]->getPhonenumber());
+        self::assertEquals('87654321', $phonenumbers[1]->getPhonenumber());
     }
 
     /**
@@ -102,23 +102,23 @@ class CommitImprovementTest extends BaseTest
         $this->dm->flush();
 
         $phoneNumbers = $user->getPhonenumbers();
-        $this->assertCount(1, $phoneNumbers); // so we got a number on postPersist
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $phoneNumbers); // so we got a number on postPersist
-        $this->assertTrue($phoneNumbers->isDirty()); // but they should be dirty
+        self::assertCount(1, $phoneNumbers); // so we got a number on postPersist
+        self::assertInstanceOf(PersistentCollectionInterface::class, $phoneNumbers); // so we got a number on postPersist
+        self::assertTrue($phoneNumbers->isDirty()); // but they should be dirty
 
         $collection = $this->dm->getDocumentCollection(get_class($user));
         $inDb       = $collection->findOne();
-        $this->assertArrayNotHasKey('phonenumbers', $inDb, 'Collection modified in postPersist should not be in database without recomputing change set');
+        self::assertArrayNotHasKey('phonenumbers', $inDb, 'Collection modified in postPersist should not be in database without recomputing change set');
 
         $this->dm->flush();
 
         $phoneNumbers = $user->getPhonenumbers();
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $phoneNumbers);
-        $this->assertCount(2, $phoneNumbers); // so we got a number on postUpdate
-        $this->assertTrue($phoneNumbers->isDirty()); // but they should be dirty
+        self::assertInstanceOf(PersistentCollectionInterface::class, $phoneNumbers);
+        self::assertCount(2, $phoneNumbers); // so we got a number on postUpdate
+        self::assertTrue($phoneNumbers->isDirty()); // but they should be dirty
 
         $inDb = $collection->findOne();
-        $this->assertCount(1, $inDb['phonenumbers'], 'Collection changes from postUpdate should not be in database');
+        self::assertCount(1, $inDb['phonenumbers'], 'Collection changes from postUpdate should not be in database');
     }
 
     public function testSchedulingCollectionDeletionAfterSchedulingForUpdate(): void
@@ -130,19 +130,19 @@ class CommitImprovementTest extends BaseTest
 
         $user->addPhonenumber(new Phonenumber('87654321'));
         $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($user)), $user);
-        $this->assertTrue($this->uow->isCollectionScheduledForUpdate($user->getPhonenumbers()));
-        $this->assertFalse($this->uow->isCollectionScheduledForDeletion($user->getPhonenumbers()));
+        self::assertTrue($this->uow->isCollectionScheduledForUpdate($user->getPhonenumbers()));
+        self::assertFalse($this->uow->isCollectionScheduledForDeletion($user->getPhonenumbers()));
 
         $user->getPhonenumbers()->clear();
         $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($user)), $user);
-        $this->assertFalse($this->uow->isCollectionScheduledForUpdate($user->getPhonenumbers()));
-        $this->assertTrue($this->uow->isCollectionScheduledForDeletion($user->getPhonenumbers()));
+        self::assertFalse($this->uow->isCollectionScheduledForUpdate($user->getPhonenumbers()));
+        self::assertTrue($this->uow->isCollectionScheduledForDeletion($user->getPhonenumbers()));
         $this->logger->clear();
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->find(get_class($user), $user->getId());
-        $this->assertCount(0, $user->getPhonenumbers());
+        self::assertEmpty($user->getPhonenumbers());
     }
 }
 

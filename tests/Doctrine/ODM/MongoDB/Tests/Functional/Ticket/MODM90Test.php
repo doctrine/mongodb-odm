@@ -49,7 +49,7 @@ class MODM90Test extends BaseTest
 
         // no update events should be called
         $called = [];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
     }
 
     /**
@@ -70,8 +70,8 @@ class MODM90Test extends BaseTest
 
         $testDoc = $dm->find(MODM90TestDocument::class, $testDoc->id);
 
-        $this->assertInstanceOf(MODM90Test2EmbeddedDocument::class, $testDoc->embedded);
-        $this->assertEquals('test2', $testDoc->embedded->type);
+        self::assertInstanceOf(MODM90Test2EmbeddedDocument::class, $testDoc->embedded);
+        self::assertEquals('test2', $testDoc->embedded->type);
     }
 }
 

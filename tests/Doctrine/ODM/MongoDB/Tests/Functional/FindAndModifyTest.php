@@ -24,10 +24,10 @@ class FindAndModifyTest extends BaseTest
             ->getQuery();
         $result = $q->execute();
 
-        $this->assertInstanceOf(User::class, $result);
+        self::assertInstanceOf(User::class, $result);
         // Test the username was set and count incremented
-        $this->assertEquals('jwage', $result->getUsername());
-        $this->assertEquals(5, $result->getCount());
+        self::assertEquals('jwage', $result->getUsername());
+        self::assertEquals(5, $result->getCount());
 
         // Test remove findAndModify
         $q      = $this->dm->createQueryBuilder()
@@ -36,12 +36,12 @@ class FindAndModifyTest extends BaseTest
             ->getQuery();
         $result = $q->execute();
 
-        $this->assertInstanceOf(User::class, $result);
+        self::assertInstanceOf(User::class, $result);
         // Test the object was returned
-        $this->assertEquals('jwage', $result->getUsername());
+        self::assertEquals('jwage', $result->getUsername());
 
         // Test the object was removed
-        $this->assertEquals(1, $this->dm->getDocumentCollection(User::class)->count());
+        self::assertEquals(1, $this->dm->getDocumentCollection(User::class)->count());
     }
 
     public function testFindAndModifyAlt(): void
@@ -61,8 +61,8 @@ class FindAndModifyTest extends BaseTest
             ->getQuery();
         $result = $q->execute();
 
-        $this->assertInstanceOf(User::class, $result);
+        self::assertInstanceOf(User::class, $result);
         // Test the username was set
-        $this->assertEquals('Romain Neutron', $result->getUsername());
+        self::assertEquals('Romain Neutron', $result->getUsername());
     }
 }

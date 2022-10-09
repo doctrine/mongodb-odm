@@ -48,11 +48,11 @@ class GH1229Test extends BaseTest
     {
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
         assert($firstParent instanceof GH1229Parent);
-        $this->assertNotNull($firstParent);
+        self::assertNotNull($firstParent);
 
         $secondParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->secondParentId);
         assert($secondParent instanceof GH1229Parent);
-        $this->assertNotNull($secondParent);
+        self::assertNotNull($secondParent);
 
         foreach ($firstParent->getChildren() as $child) {
             if ($child->getOrder() !== 0) {
@@ -65,28 +65,28 @@ class GH1229Test extends BaseTest
             $this->dm->flush();
             $actualChildren = $secondParent->getChildren();
 
-            $this->assertNotSame($actualChildren, $child);
+            self::assertNotSame($actualChildren, $child);
 
             [, $parent] = $this->uow->getParentAssociation(end($actualChildren));
-            $this->assertSame($this->secondParentId, $parent->id);
+            self::assertSame($this->secondParentId, $parent->id);
         }
 
         $this->dm->clear();
 
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
         assert($firstParent instanceof GH1229Parent);
-        $this->assertNotNull($firstParent);
-        $this->assertCount(0, $firstParent->getChildren());
+        self::assertNotNull($firstParent);
+        self::assertEmpty($firstParent->getChildren());
 
         $secondParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->secondParentId);
         assert($secondParent instanceof GH1229Parent);
-        $this->assertNotNull($secondParent);
-        $this->assertCount(2, $secondParent->getChildren());
+        self::assertNotNull($secondParent);
+        self::assertCount(2, $secondParent->getChildren());
 
         $children = $secondParent->getChildren();
 
-        $this->assertInstanceOf(GH1229Child::CLASSNAME, $children[0]);
-        $this->assertInstanceOf(GH1229ChildTypeB::CLASSNAME, $children[1]);
+        self::assertInstanceOf(GH1229Child::CLASSNAME, $children[0]);
+        self::assertInstanceOf(GH1229ChildTypeB::CLASSNAME, $children[1]);
     }
 
     /**
@@ -96,11 +96,11 @@ class GH1229Test extends BaseTest
     {
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
         assert($firstParent instanceof GH1229Parent);
-        $this->assertNotNull($firstParent);
+        self::assertNotNull($firstParent);
 
         $secondParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->secondParentId);
         assert($secondParent instanceof GH1229Parent);
-        $this->assertNotNull($secondParent);
+        self::assertNotNull($secondParent);
 
         foreach ($firstParent->getChildren() as $child) {
             if ($child->getOrder() !== 0) {
@@ -117,18 +117,18 @@ class GH1229Test extends BaseTest
 
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
         assert($firstParent instanceof GH1229Parent);
-        $this->assertNotNull($firstParent);
-        $this->assertCount(0, $firstParent->getChildren());
+        self::assertNotNull($firstParent);
+        self::assertEmpty($firstParent->getChildren());
 
         $secondParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->secondParentId);
         assert($secondParent instanceof GH1229Parent);
-        $this->assertNotNull($secondParent);
-        $this->assertCount(2, $secondParent->getChildren());
+        self::assertNotNull($secondParent);
+        self::assertCount(2, $secondParent->getChildren());
 
         $children = $secondParent->getChildren();
 
-        $this->assertInstanceOf(GH1229Child::CLASSNAME, $children[0]);
-        $this->assertInstanceOf(GH1229ChildTypeB::CLASSNAME, $children[1]);
+        self::assertInstanceOf(GH1229Child::CLASSNAME, $children[0]);
+        self::assertInstanceOf(GH1229ChildTypeB::CLASSNAME, $children[1]);
     }
 }
 

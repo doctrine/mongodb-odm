@@ -14,22 +14,22 @@ class GH816Test extends BaseTest
     {
         $d     = new GH816Document();
         $d->id = new ObjectId();
-        $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
+        self::assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
         $this->dm->flush();
-        $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
+        self::assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
     }
 
     public function testPersistAfterDetachWithTitleSet(): void
     {
         $d        = new GH816Document();
         $d->title = 'Test';
-        $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
+        self::assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
         $this->dm->persist($d);
         $this->dm->detach($d);
         $this->dm->flush();
-        $this->assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
+        self::assertEmpty($this->dm->getRepository(GH816Document::class)->findAll());
     }
 }
 

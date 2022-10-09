@@ -50,7 +50,7 @@ class UpdateCommandTest extends AbstractCommandTest
             ]
         );
         $output = $this->commandTester->getDisplay();
-        $this->assertStringContainsString('Updated validation for Documents\SchemaValidated', $output);
+        self::assertStringContainsString('Updated validation for Documents\SchemaValidated', $output);
     }
 
     public function testDisabledValidatorProcessing(): void
@@ -62,7 +62,7 @@ class UpdateCommandTest extends AbstractCommandTest
             ]
         );
         $output = $this->commandTester->getDisplay();
-        $this->assertStringNotContainsString('Updated validation for Documents\SchemaValidated', $output);
+        self::assertStringNotContainsString('Updated validation for Documents\SchemaValidated', $output);
     }
 
     public function testProcessValidators(): void
@@ -72,7 +72,7 @@ class UpdateCommandTest extends AbstractCommandTest
         $this->dm->getConfiguration()->setMetadataDriverImpl($annotationDriver);
         $this->commandTester->execute([]);
         $output = $this->commandTester->getDisplay();
-        $this->assertStringContainsString('Updated validation for all classes', $output);
+        self::assertStringContainsString('Updated validation for all classes', $output);
     }
 
     public function testDisabledValidatorsProcessing(): void
@@ -82,6 +82,6 @@ class UpdateCommandTest extends AbstractCommandTest
         $this->dm->getConfiguration()->setMetadataDriverImpl($annotationDriver);
         $this->commandTester->execute(['--disable-validators' => true]);
         $output = $this->commandTester->getDisplay();
-        $this->assertStringNotContainsString('Updated validation for all classes', $output);
+        self::assertStringNotContainsString('Updated validation for all classes', $output);
     }
 }

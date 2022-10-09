@@ -39,7 +39,7 @@ abstract class AbstractDriverTest extends TestCase
         $classMetadata = new ClassMetadata(User::class);
         $this->driver->loadMetadataForClass(User::class, $classMetadata);
 
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'id',
             'id' => true,
             'name' => '_id',
@@ -54,7 +54,7 @@ abstract class AbstractDriverTest extends TestCase
             'nullable' => false,
         ], $classMetadata->fieldMappings['id']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'username',
             'name' => 'username',
             'type' => 'string',
@@ -71,14 +71,14 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $classMetadata->fieldMappings['username']);
 
-        $this->assertEquals([
+        self::assertEquals([
             [
                 'keys' => ['username' => 1],
                 'options' => ['unique' => true, 'sparse' => true],
             ],
         ], $classMetadata->getIndexes());
 
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'createdAt',
             'name' => 'createdAt',
             'type' => 'date',
@@ -93,7 +93,7 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $classMetadata->fieldMappings['createdAt']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'tags',
             'name' => 'tags',
             'type' => 'collection',
@@ -108,7 +108,7 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $classMetadata->fieldMappings['tags']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => 3,
             'fieldName' => 'address',
             'name' => 'address',
@@ -127,7 +127,7 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $classMetadata->fieldMappings['address']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => 4,
             'fieldName' => 'phonenumbers',
             'name' => 'phonenumbers',
@@ -146,7 +146,7 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
         ], $classMetadata->fieldMappings['phonenumbers']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => 1,
             'fieldName' => 'profile',
             'name' => 'profile',
@@ -174,7 +174,7 @@ abstract class AbstractDriverTest extends TestCase
             'prime' => [],
         ], $classMetadata->fieldMappings['profile']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => 1,
             'fieldName' => 'account',
             'name' => 'account',
@@ -202,7 +202,7 @@ abstract class AbstractDriverTest extends TestCase
             'prime' => [],
         ], $classMetadata->fieldMappings['account']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => 2,
             'fieldName' => 'groups',
             'name' => 'groups',
@@ -230,7 +230,7 @@ abstract class AbstractDriverTest extends TestCase
             'prime' => [],
         ], $classMetadata->fieldMappings['groups']);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'postPersist' => ['doStuffOnPostPersist', 'doOtherStuffOnPostPersist'],
                 'prePersist' => ['doStuffOnPrePersist'],
@@ -238,7 +238,7 @@ abstract class AbstractDriverTest extends TestCase
             $classMetadata->lifecycleCallbacks
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'doStuffOnAlsoLoad' => ['unmappedField'],
             ],
@@ -248,7 +248,7 @@ abstract class AbstractDriverTest extends TestCase
         $classMetadata = new ClassMetadata(EmbeddedDocument::class);
         $this->driver->loadMetadataForClass(EmbeddedDocument::class, $classMetadata);
 
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'name',
             'name' => 'name',
             'type' => 'string',
@@ -266,7 +266,7 @@ abstract class AbstractDriverTest extends TestCase
         $classMetadata = new ClassMetadata(QueryResultDocument::class);
         $this->driver->loadMetadataForClass(QueryResultDocument::class, $classMetadata);
 
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'name',
             'name' => 'name',
             'type' => 'string',
@@ -281,7 +281,7 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $classMetadata->fieldMappings['name']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'count',
             'name' => 'count',
             'type' => 'int',
@@ -302,7 +302,7 @@ abstract class AbstractDriverTest extends TestCase
         $classMetadata = new ClassMetadata(PartialFilterDocument::class);
         $this->driver->loadMetadataForClass(PartialFilterDocument::class, $classMetadata);
 
-        $this->assertEquals([
+        self::assertEquals([
             [
                 'keys' => ['fieldA' => 1],
                 'options' => [
@@ -340,7 +340,7 @@ abstract class AbstractDriverTest extends TestCase
         $classMetadata = new ClassMetadata(PrimedCollectionDocument::class);
         $this->driver->loadMetadataForClass(PrimedCollectionDocument::class, $classMetadata);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => 2,
             'fieldName' => 'references',
             'name' => 'references',
@@ -368,7 +368,7 @@ abstract class AbstractDriverTest extends TestCase
             'prime' => [],
         ], $classMetadata->fieldMappings['references']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => 2,
             'fieldName' => 'inverseMappedBy',
             'name' => 'inverseMappedBy',
@@ -402,7 +402,7 @@ abstract class AbstractDriverTest extends TestCase
         $classMetadata = new ClassMetadata(NullableFieldsDocument::class);
         $this->driver->loadMetadataForClass(NullableFieldsDocument::class, $classMetadata);
 
-        $this->assertEquals([
+        self::assertEquals([
             'fieldName' => 'username',
             'name' => 'username',
             'type' => 'string',
@@ -417,7 +417,7 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $classMetadata->fieldMappings['username']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => ClassMetadata::EMBED_ONE,
             'fieldName' => 'address',
             'name' => 'address',
@@ -436,7 +436,7 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
         ], $classMetadata->fieldMappings['address']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => ClassMetadata::EMBED_MANY,
             'fieldName' => 'phonenumbers',
             'name' => 'phonenumbers',
@@ -455,7 +455,7 @@ abstract class AbstractDriverTest extends TestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
         ], $classMetadata->fieldMappings['phonenumbers']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => ClassMetadata::REFERENCE_ONE,
             'fieldName' => 'profile',
             'name' => 'profile',
@@ -483,7 +483,7 @@ abstract class AbstractDriverTest extends TestCase
             'prime' => [],
         ], $classMetadata->fieldMappings['profile']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'association' => ClassMetadata::REFERENCE_MANY,
             'fieldName' => 'groups',
             'name' => 'groups',

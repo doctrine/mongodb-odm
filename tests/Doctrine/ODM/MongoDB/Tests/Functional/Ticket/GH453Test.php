@@ -31,7 +31,7 @@ class GH453Test extends BaseTest
         // Check that the value is hydrated properly
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertSame($hash, $doc->hash);
+        self::assertSame($hash, $doc->hash);
 
         $this->dm->clear();
 
@@ -62,7 +62,7 @@ class GH453Test extends BaseTest
         // Check that the value is hydrated properly
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertSame($hash, $doc->hash);
+        self::assertSame($hash, $doc->hash);
 
         $this->dm->clear();
 
@@ -95,8 +95,8 @@ class GH453Test extends BaseTest
         // Check that the value is hydrated properly
         $doc = $this->dm->find(get_class($doc), $doc->id);
 
-        $this->assertSame($col, $doc->colPush);
-        $this->assertSame($col, $doc->colSet);
+        self::assertSame($col, $doc->colPush);
+        self::assertSame($col, $doc->colSet);
 
         $this->dm->clear();
 
@@ -258,7 +258,7 @@ class GH453Test extends BaseTest
             $criteria[$fieldName] = ['$type' => $bsonType];
         }
 
-        $this->assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
+        self::assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
     }
 
     /**
@@ -303,7 +303,7 @@ class GH453Test extends BaseTest
             $criteria['$and'][] = [$fieldName => ['$type' => $bsonType]];
         }
 
-        $this->assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
+        self::assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
     }
 }
 

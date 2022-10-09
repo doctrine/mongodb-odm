@@ -28,6 +28,6 @@ class SimpleTest extends BaseTest
         $this->dm->flush();
 
         $test = $this->dm->getDocumentCollection(Bar::class)->findOne();
-        $this->assertCount(2, $test['locations']);
+        self::assertCount(2, $test['locations']);
     }
 }

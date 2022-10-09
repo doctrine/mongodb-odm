@@ -17,7 +17,7 @@ class IndexStatsTest extends BaseTest
     {
         $indexStatsStage = new IndexStats($this->getTestAggregationBuilder());
 
-        $this->assertEquals(['$indexStats' => new stdClass()], $indexStatsStage->getExpression());
+        self::assertEquals(['$indexStats' => new stdClass()], $indexStatsStage->getExpression());
     }
 
     public function testIndexStatsFromBuilder(): void
@@ -25,6 +25,6 @@ class IndexStatsTest extends BaseTest
         $builder = $this->getTestAggregationBuilder();
         $builder->indexStats();
 
-        $this->assertEquals([['$indexStats' => new stdClass()]], $builder->getPipeline());
+        self::assertEquals([['$indexStats' => new stdClass()]], $builder->getPipeline());
     }
 }

@@ -31,11 +31,11 @@ class TypedPropertiesTest extends BaseTest
         $ref   = $this->dm->find(TypedDocument::class, $ref->id);
         $saved = $this->dm->find(TypedDocument::class, $doc->id);
         assert($saved instanceof TypedDocument);
-        $this->assertEquals($doc->id, $saved->id);
-        $this->assertSame($doc->name, $saved->name);
-        $this->assertEquals($doc->embedOne, $saved->embedOne);
-        $this->assertSame($ref, $saved->referenceOne);
-        $this->assertEquals($doc->getEmbedMany()->getValues(), $saved->getEmbedMany()->getValues());
+        self::assertEquals($doc->id, $saved->id);
+        self::assertSame($doc->name, $saved->name);
+        self::assertEquals($doc->embedOne, $saved->embedOne);
+        self::assertSame($ref, $saved->referenceOne);
+        self::assertEquals($doc->getEmbedMany()->getValues(), $saved->getEmbedMany()->getValues());
     }
 
     public function testMerge(): void
@@ -53,11 +53,11 @@ class TypedPropertiesTest extends BaseTest
 
         $merged = $this->dm->merge($doc);
         assert($merged instanceof TypedDocument);
-        $this->assertEquals($doc->id, $merged->id);
-        $this->assertSame($doc->name, $merged->name);
-        $this->assertEquals($doc->embedOne, $merged->embedOne);
-        $this->assertEquals($doc->referenceOne, $merged->referenceOne);
-        $this->assertEquals($doc->getEmbedMany()->getValues(), $merged->getEmbedMany()->getValues());
+        self::assertEquals($doc->id, $merged->id);
+        self::assertSame($doc->name, $merged->name);
+        self::assertEquals($doc->embedOne, $merged->embedOne);
+        self::assertEquals($doc->referenceOne, $merged->referenceOne);
+        self::assertEquals($doc->getEmbedMany()->getValues(), $merged->getEmbedMany()->getValues());
     }
 
     public function testMergeWithUninitializedAssociations(): void
@@ -69,9 +69,9 @@ class TypedPropertiesTest extends BaseTest
 
         $merged = $this->dm->merge($doc);
         assert($merged instanceof TypedDocument);
-        $this->assertEquals($doc->id, $merged->id);
-        $this->assertSame($doc->name, $merged->name);
-        $this->assertEquals($doc->getEmbedMany()->getValues(), $merged->getEmbedMany()->getValues());
+        self::assertEquals($doc->id, $merged->id);
+        self::assertSame($doc->name, $merged->name);
+        self::assertEquals($doc->getEmbedMany()->getValues(), $merged->getEmbedMany()->getValues());
     }
 
     public function testProxying(): void
@@ -86,10 +86,10 @@ class TypedPropertiesTest extends BaseTest
 
         $proxy = $this->dm->getReference(TypedDocument::class, $doc->id);
         assert($proxy instanceof TypedDocument);
-        $this->assertEquals($doc->id, $proxy->id);
-        $this->assertSame($doc->name, $proxy->name);
-        $this->assertEquals($doc->embedOne, $proxy->embedOne);
-        $this->assertEquals($doc->getEmbedMany()->getValues(), $proxy->getEmbedMany()->getValues());
+        self::assertEquals($doc->id, $proxy->id);
+        self::assertSame($doc->name, $proxy->name);
+        self::assertEquals($doc->embedOne, $proxy->embedOne);
+        self::assertEquals($doc->getEmbedMany()->getValues(), $proxy->getEmbedMany()->getValues());
     }
 
     public function testNullableProperties(): void
@@ -102,9 +102,9 @@ class TypedPropertiesTest extends BaseTest
 
         $saved = $this->dm->find(TypedDocument::class, $doc->id);
         assert($saved instanceof TypedDocument);
-        $this->assertNull($saved->nullableEmbedOne);
-        $this->assertNull($saved->initializedNullableEmbedOne);
-        $this->assertNull($saved->nullableReferenceOne);
-        $this->assertNull($saved->initializedNullableReferenceOne);
+        self::assertNull($saved->nullableEmbedOne);
+        self::assertNull($saved->initializedNullableEmbedOne);
+        self::assertNull($saved->nullableReferenceOne);
+        self::assertNull($saved->initializedNullableReferenceOne);
     }
 }

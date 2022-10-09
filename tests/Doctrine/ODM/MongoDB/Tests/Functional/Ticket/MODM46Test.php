@@ -20,8 +20,8 @@ class MODM46Test extends BaseTest
 
         $a = $this->dm->find(MODM46A::class, $a['_id']);
 
-        $this->assertTrue(isset($a->b));
-        $this->assertEquals('value', $a->b->value);
+        self::assertTrue(isset($a->b));
+        self::assertEquals('value', $a->b->value);
     }
 }
 

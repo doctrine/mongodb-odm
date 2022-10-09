@@ -40,8 +40,8 @@ class EmbeddedTest extends BaseTest
         $userId = $user->getId();
 
         $user = $this->dm->getRepository(User::class)->find($userId);
-        $this->assertEquals($userId, $user->getId());
-        $this->assertNull($user->getAddress());
+        self::assertEquals($userId, $user->getId());
+        self::assertNull($user->getAddress());
     }
 
     public function testFlushEmbedded(): void
@@ -54,7 +54,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository(EmbeddedTestLevel0::class)->findOneBy(['name' => 'test']);
-        $this->assertInstanceOf(EmbeddedTestLevel0::class, $test);
+        self::assertInstanceOf(EmbeddedTestLevel0::class, $test);
 
         // Adding this flush here makes level1 not to be inserted.
         $this->dm->flush();
@@ -67,8 +67,8 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->find(EmbeddedTestLevel0::class, $test->id);
-        $this->assertInstanceOf(EmbeddedTestLevel0::class, $test);
-        $this->assertInstanceOf(EmbeddedTestLevel1::class, $test->level1[0]);
+        self::assertInstanceOf(EmbeddedTestLevel0::class, $test);
+        self::assertInstanceOf(EmbeddedTestLevel1::class, $test->level1[0]);
 
         $test->level1[0]->name = 'changed';
         $level1                = new EmbeddedTestLevel1();
@@ -78,15 +78,15 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->find(EmbeddedTestLevel0::class, $test->id);
-        $this->assertCount(2, $test->level1);
-        $this->assertEquals('changed', $test->level1[0]->name);
-        $this->assertEquals('testing', $test->level1[1]->name);
+        self::assertCount(2, $test->level1);
+        self::assertEquals('changed', $test->level1[0]->name);
+        self::assertEquals('testing', $test->level1[1]->name);
 
         unset($test->level1[0]);
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertCount(1, $test->level1);
+        self::assertCount(1, $test->level1);
     }
 
     public function testOneEmbedded(): void
@@ -115,8 +115,8 @@ class EmbeddedTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($user instanceof User);
-        $this->assertNotNull($user);
-        $this->assertEquals($addressClone, $user->getAddress());
+        self::assertNotNull($user);
+        self::assertEquals($addressClone, $user->getAddress());
 
         $oldAddress = $user->getAddress();
         $address    = new Address();
@@ -124,9 +124,9 @@ class EmbeddedTest extends BaseTest
         $user->setAddress($address);
         $this->uow->computeChangeSets();
         $changeSet = $this->uow->getDocumentChangeSet($user);
-        $this->assertNotEmpty($changeSet['address']);
-        $this->assertSame($oldAddress, $changeSet['address'][0]);
-        $this->assertSame($user->getAddress(), $changeSet['address'][1]);
+        self::assertNotEmpty($changeSet['address']);
+        self::assertSame($oldAddress, $changeSet['address'][0]);
+        self::assertSame($user->getAddress(), $changeSet['address'][1]);
     }
 
     public function testRemoveOneEmbedded(): void
@@ -142,7 +142,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
 
         $user->removeAddress();
-        $this->assertNull($user->getAddress());
+        self::assertNull($user->getAddress());
 
         $this->dm->flush();
         $this->dm->clear();
@@ -152,8 +152,8 @@ class EmbeddedTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($user instanceof User);
-        $this->assertNotNull($user);
-        $this->assertNull($user->getAddress());
+        self::assertNotNull($user);
+        self::assertNull($user->getAddress());
     }
 
     public function testManyEmbedded(): void
@@ -171,8 +171,8 @@ class EmbeddedTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($user2 instanceof User);
-        $this->assertNotNull($user2);
-        $this->assertEquals($user->getPhonenumbers()->toArray(), $user2->getPhonenumbers()->toArray());
+        self::assertNotNull($user2);
+        self::assertEquals($user->getPhonenumbers()->toArray(), $user2->getPhonenumbers()->toArray());
     }
 
     public function testPostRemoveEventOnEmbeddedManyDocument(): void
@@ -200,15 +200,15 @@ class EmbeddedTest extends BaseTest
         $level1 = $test->level1[0];
 
         // $test->level1[0] is available
-        $this->assertEquals('test level1 #1', $level1->name);
+        self::assertEquals('test level1 #1', $level1->name);
 
         // remove all level1 from test
         $test->level1->clear();
         $this->dm->flush();
 
         // verify that level1 lifecycle callbacks have been called
-        $this->assertTrue($level1->preRemove, 'the removed embedded document executed the PreRemove lifecycle callback');
-        $this->assertTrue($level1->postRemove, 'the removed embedded document executed the PostRemove lifecycle callback');
+        self::assertTrue($level1->preRemove, 'the removed embedded document executed the PreRemove lifecycle callback');
+        self::assertTrue($level1->postRemove, 'the removed embedded document executed the PostRemove lifecycle callback');
     }
 
     public function testRemoveEmbeddedManyDocument(): void
@@ -235,7 +235,7 @@ class EmbeddedTest extends BaseTest
 
         assert($test instanceof EmbeddedTestLevel0b);
         // $test->level1[0] is available
-        $this->assertEquals('test level1 #1', $test->level1[0]->name);
+        self::assertEquals('test level1 #1', $test->level1[0]->name);
 
         // remove all level1 from test
         $test->level1->clear();
@@ -243,7 +243,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         // verify that test has no more level1
-        $this->assertEquals(0, $test->level1->count());
+        self::assertEquals(0, $test->level1->count());
 
         // retrieve test
         $test = $this->dm->createQueryBuilder(get_class($test))
@@ -253,10 +253,10 @@ class EmbeddedTest extends BaseTest
 
         assert($test instanceof EmbeddedTestLevel0b);
 
-        $this->assertInstanceOf(PersistentCollection::class, $test->level1);
+        self::assertInstanceOf(PersistentCollection::class, $test->level1);
 
         // verify that test has no more level1
-        $this->assertEquals(0, $test->level1->count());
+        self::assertEquals(0, $test->level1->count());
     }
 
     public function testRemoveDeepEmbeddedManyDocument(): void
@@ -290,7 +290,7 @@ class EmbeddedTest extends BaseTest
         $level2 = $level1->level2[0];
 
         // $test->oneLevel1->level2[0] is available
-        $this->assertEquals('test level2 #1', $level2->name);
+        self::assertEquals('test level2 #1', $level2->name);
 
         // remove all level2 from level1
         $level1->level2->clear();
@@ -298,7 +298,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         // verify that level1 has no more level2
-        $this->assertEquals(0, $level1->level2->count());
+        self::assertEquals(0, $level1->level2->count());
 
         // retrieve test
         $test = $this->dm->createQueryBuilder(get_class($test))
@@ -309,7 +309,7 @@ class EmbeddedTest extends BaseTest
         $level1 = $test->oneLevel1;
 
         // verify that level1 has no more level2
-        $this->assertEquals(0, $level1->level2->count());
+        self::assertEquals(0, $level1->level2->count());
     }
 
     public function testPostRemoveEventOnDeepEmbeddedManyDocument(): void
@@ -343,15 +343,15 @@ class EmbeddedTest extends BaseTest
         $level2 = $level1->level2[0];
 
         // $test->oneLevel1->level2[0] is available
-        $this->assertEquals('test level2 #1', $level2->name);
+        self::assertEquals('test level2 #1', $level2->name);
 
         // remove all level2 from level1
         $level1->level2->clear();
         $this->dm->flush();
 
         // verify that level2 lifecycle callbacks have been called
-        $this->assertTrue($level2->preRemove, 'the removed embedded document executed the PreRemove lifecycle callback');
-        $this->assertTrue($level2->postRemove, 'the removed embedded document executed the PostRemove lifecycle callback');
+        self::assertTrue($level2->preRemove, 'the removed embedded document executed the PreRemove lifecycle callback');
+        self::assertTrue($level2->postRemove, 'the removed embedded document executed the PostRemove lifecycle callback');
     }
 
     public function testEmbeddedLoadEvents(): void
@@ -380,10 +380,10 @@ class EmbeddedTest extends BaseTest
         $level1 = $test->oneLevel1;
         $level2 = $level1->level2[0];
 
-        $this->assertTrue($level1->preLoad);
-        $this->assertTrue($level1->postLoad);
-        $this->assertTrue($level2->preLoad);
-        $this->assertTrue($level2->postLoad);
+        self::assertTrue($level1->preLoad);
+        self::assertTrue($level1->postLoad);
+        self::assertTrue($level2->preLoad);
+        self::assertTrue($level2->postLoad);
     }
 
     public function testEmbeddedDocumentChangesParent(): void
@@ -398,7 +398,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(User::class, $user->getId());
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
         $address = $user->getAddress();
         $address->setAddress('changed');
 
@@ -406,7 +406,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(User::class, $user->getId());
-        $this->assertEquals('changed', $user->getAddress()->getAddress());
+        self::assertEquals('changed', $user->getAddress()->getAddress());
     }
 
     public function testRemoveEmbeddedDocument(): void
@@ -430,9 +430,9 @@ class EmbeddedTest extends BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(User::class)->findOne();
-        $this->assertEmpty($check['phonenumbers']);
-        $this->assertNull($check['addressNullable']);
-        $this->assertArrayNotHasKey('address', $check);
+        self::assertEmpty($check['phonenumbers']);
+        self::assertNull($check['addressNullable']);
+        self::assertArrayNotHasKey('address', $check);
     }
 
     public function testRemoveAddDeepEmbedded(): void
@@ -465,7 +465,7 @@ class EmbeddedTest extends BaseTest
         $vhost = $this->dm->find(VirtualHost::class, $vhost->getId());
 
         foreach ($vhost->getVHostDirective()->getDirectives() as $directive) {
-            $this->assertNotEmpty($directive->getName());
+            self::assertNotEmpty($directive->getName());
         }
     }
 
@@ -482,8 +482,8 @@ class EmbeddedTest extends BaseTest
 
         $document = $this->dm->find(NotSaved::class, $document->id);
 
-        $this->assertEquals('foo', $document->embedded->name);
-        $this->assertNull($document->embedded->notSaved);
+        self::assertEquals('foo', $document->embedded->name);
+        self::assertNull($document->embedded->notSaved);
     }
 
     public function testChangeEmbedOneDocumentId(): void
@@ -506,7 +506,7 @@ class EmbeddedTest extends BaseTest
 
         $test = $this->dm->find(get_class($test), $test->id);
 
-        $this->assertEquals($newId, $test->embed->id);
+        self::assertEquals($newId, $test->embed->id);
     }
 
     public function testChangeEmbedManyDocumentId(): void
@@ -529,7 +529,7 @@ class EmbeddedTest extends BaseTest
 
         $test = $this->dm->find(get_class($test), $test->id);
 
-        $this->assertEquals($newId, $test->embedMany[0]->id);
+        self::assertEquals($newId, $test->embedMany[0]->id);
     }
 
     public function testEmbeddedDocumentsWithSameIdAreNotSameInstance(): void
@@ -547,8 +547,8 @@ class EmbeddedTest extends BaseTest
 
         $test = $this->dm->find(get_class($test), $test->id);
 
-        $this->assertNotSame($test->embed, $test->embedMany[0]);
-        $this->assertNotSame($test->embed, $test->embedMany[1]);
+        self::assertNotSame($test->embed, $test->embedMany[0]);
+        self::assertNotSame($test->embed, $test->embedMany[1]);
     }
 
     public function testWhenCopyingManyEmbedSubDocumentsFromOneDocumentToAnotherWillNotAffectTheSourceDocument(): void
@@ -568,7 +568,7 @@ class EmbeddedTest extends BaseTest
         $test2->embedMany = $test1->embedMany; //using clone will work
         $this->dm->persist($test2);
 
-        $this->assertNotSame($test1->embedMany->first(), $test2->embedMany->first());
+        self::assertNotSame($test1->embedMany->first(), $test2->embedMany->first());
 
         $this->dm->flush();
 
@@ -579,7 +579,7 @@ class EmbeddedTest extends BaseTest
         $this->dm->clear(); //get clean results from mongo
         $test1 = $this->dm->find(get_class($test1), $test1->id);
 
-        $this->assertCount(1, $test1->embedMany);
+        self::assertCount(1, $test1->embedMany);
     }
 
     public function testReusedEmbeddedDocumentsAreClonedInFact(): void
@@ -598,12 +598,12 @@ class EmbeddedTest extends BaseTest
 
         $this->dm->flush();
 
-        $this->assertNotSame($test1->embed, $test2->embed);
+        self::assertNotSame($test1->embed, $test2->embed);
 
         $originalTest1 = $this->uow->getOriginalDocumentData($test1);
-        $this->assertSame($originalTest1['embed'], $test1->embed);
+        self::assertSame($originalTest1['embed'], $test1->embed);
         $originalTest2 = $this->uow->getOriginalDocumentData($test2);
-        $this->assertSame($originalTest2['embed'], $test2->embed);
+        self::assertSame($originalTest2['embed'], $test2->embed);
     }
 
     public function testEmbeddedDocumentWithDifferentFieldNameAnnotation(): void
@@ -632,9 +632,9 @@ class EmbeddedTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertIsArray($test1Data);
+        self::assertIsArray($test1Data);
 
-        $this->assertArrayHasKey('m_id', $test1Data['embedOne']);
+        self::assertArrayHasKey('m_id', $test1Data['embedOne']);
     }
 }
 

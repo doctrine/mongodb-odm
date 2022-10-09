@@ -44,12 +44,12 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->clear();
 
         $customer = $this->dm->getRepository(Customer::class)->find($customer->id);
-        $this->assertInstanceOf(Cart::class, $customer->cart);
-        $this->assertEquals($customer->cart->id, $customer->cart->id);
+        self::assertInstanceOf(Cart::class, $customer->cart);
+        self::assertEquals($customer->cart->id, $customer->cart->id);
 
         $check = $this->dm->getDocumentCollection(get_class($customer))->findOne();
-        $this->assertArrayHasKey('cartTest', $check);
-        $this->assertEquals('test', $check['cartTest']);
+        self::assertArrayHasKey('cartTest', $check);
+        self::assertEquals('test', $check['cartTest']);
 
         $customer->cart     = null;
         $customer->cartTest = 'ok';
@@ -57,12 +57,12 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(get_class($customer))->findOne();
-        $this->assertArrayHasKey('cartTest', $check);
-        $this->assertEquals('ok', $check['cartTest']);
+        self::assertArrayHasKey('cartTest', $check);
+        self::assertEquals('ok', $check['cartTest']);
 
         $customer = $this->dm->getRepository(Customer::class)->find($customer->id);
-        $this->assertInstanceOf(Cart::class, $customer->cart);
-        $this->assertEquals('ok', $customer->cartTest);
+        self::assertInstanceOf(Cart::class, $customer->cart);
+        self::assertEquals('ok', $customer->cartTest);
     }
 
     public function testOneToManyBiDirectional(): void
@@ -75,19 +75,19 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(get_class($product))->findOne();
-        $this->assertArrayNotHasKey('tags', $check);
+        self::assertArrayNotHasKey('tags', $check);
 
         $check = $this->dm->getDocumentCollection(Feature::class)->findOne();
-        $this->assertArrayHasKey('product', $check);
+        self::assertArrayHasKey('product', $check);
 
         $product = $this->dm->createQueryBuilder(get_class($product))
             ->getQuery()
             ->getSingleResult();
         assert($product instanceof Product);
         $features = $product->features;
-        $this->assertCount(2, $features);
-        $this->assertEquals('Pages', $features[0]->name);
-        $this->assertEquals('Cover', $features[1]->name);
+        self::assertCount(2, $features);
+        self::assertEquals('Pages', $features[0]->name);
+        self::assertEquals('Cover', $features[1]->name);
     }
 
     public function testOneToManySelfReferencing(): void
@@ -101,24 +101,24 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(get_class($node))->findOne(['parent' => ['$exists' => false]]);
-        $this->assertNotNull($check);
-        $this->assertArrayNotHasKey('children', $check);
+        self::assertNotNull($check);
+        self::assertArrayNotHasKey('children', $check);
 
         $root = $this->dm->createQueryBuilder(get_class($node))
             ->field('children')->exists(false)
             ->getQuery()
             ->getSingleResult();
         assert($root instanceof BrowseNode);
-        $this->assertInstanceOf(BrowseNode::class, $root);
-        $this->assertCount(2, $root->children);
+        self::assertInstanceOf(BrowseNode::class, $root);
+        self::assertCount(2, $root->children);
 
         unset($root->children[0]);
         $this->dm->flush();
 
-        $this->assertCount(1, $root->children);
+        self::assertCount(1, $root->children);
 
         $this->dm->refresh($root);
-        $this->assertCount(2, $root->children);
+        self::assertCount(2, $root->children);
     }
 
     public function testManyToMany(): void
@@ -133,26 +133,26 @@ class OwningAndInverseReferencesTest extends BaseTest
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection(get_class($blogPost))->findOne();
-        $this->assertCount(1, $check['tags']);
+        self::assertCount(1, $check['tags']);
 
         $check = $this->dm->getDocumentCollection(Tag::class)->findOne();
-        $this->assertArrayNotHasKey('blogPosts', $check);
+        self::assertArrayNotHasKey('blogPosts', $check);
 
         $blogPost = $this->dm->createQueryBuilder(BlogPost::class)
             ->getQuery()
             ->getSingleResult();
         assert($blogPost instanceof BlogPost);
-        $this->assertCount(1, $blogPost->tags);
+        self::assertCount(1, $blogPost->tags);
 
         $this->dm->clear();
 
         $tag = $this->dm->createQueryBuilder(Tag::class)
             ->getQuery()
             ->getSingleResult();
-        $this->assertInstanceOf(Tag::class, $tag);
-        $this->assertEquals('baseball', $tag->name);
-        $this->assertEquals(1, $tag->blogPosts->count());
-        $this->assertEquals('Test', $tag->blogPosts[0]->name);
+        self::assertInstanceOf(Tag::class, $tag);
+        self::assertEquals('baseball', $tag->name);
+        self::assertEquals(1, $tag->blogPosts->count());
+        self::assertEquals('Test', $tag->blogPosts[0]->name);
     }
 
     public function testManyToManySelfReferencing(): void
@@ -176,15 +176,15 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->hydrate(false)
             ->getQuery()
             ->getSingleResult();
-        $this->assertArrayNotHasKey('friendsWithMe', $check);
+        self::assertArrayNotHasKey('friendsWithMe', $check);
 
         $user = $this->dm->createQueryBuilder(FriendUser::class)
             ->field('name')->equals('fabpot')
             ->getQuery()
             ->getSingleResult();
         assert($user instanceof FriendUser);
-        $this->assertCount(1, $user->friendsWithMe);
-        $this->assertEquals('jwage', $user->friendsWithMe[0]->name);
+        self::assertCount(1, $user->friendsWithMe);
+        self::assertEquals('jwage', $user->friendsWithMe[0]->name);
 
         $this->dm->clear();
 
@@ -193,8 +193,8 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($user instanceof FriendUser);
-        $this->assertCount(1, $user->friendsWithMe);
-        $this->assertEquals('jwage', $user->friendsWithMe[0]->name);
+        self::assertCount(1, $user->friendsWithMe);
+        self::assertEquals('jwage', $user->friendsWithMe[0]->name);
 
         $this->dm->clear();
 
@@ -203,13 +203,13 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($user instanceof FriendUser);
-        $this->assertCount(2, $user->myFriends);
-        $this->assertEquals('fabpot', $user->myFriends[0]->name);
-        $this->assertEquals('romanb', $user->myFriends[1]->name);
+        self::assertCount(2, $user->myFriends);
+        self::assertEquals('fabpot', $user->myFriends[0]->name);
+        self::assertEquals('romanb', $user->myFriends[1]->name);
 
-        $this->assertCount(2, $user->friendsWithMe);
-        $this->assertEquals('fabpot', $user->friendsWithMe[0]->name);
-        $this->assertEquals('romanb', $user->friendsWithMe[1]->name);
+        self::assertCount(2, $user->friendsWithMe);
+        self::assertEquals('fabpot', $user->friendsWithMe[0]->name);
+        self::assertEquals('romanb', $user->friendsWithMe[1]->name);
 
         $this->dm->clear();
     }
@@ -234,10 +234,10 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($blogPost instanceof BlogPost);
-        $this->assertEquals('Comment 1', $blogPost->comments[0]->text);
-        $this->assertEquals('Comment 2', $blogPost->comments[1]->text);
-        $this->assertEquals('Test', $blogPost->comments[0]->parent->name);
-        $this->assertEquals('Test', $blogPost->comments[1]->parent->name);
+        self::assertEquals('Comment 1', $blogPost->comments[0]->text);
+        self::assertEquals('Comment 2', $blogPost->comments[1]->text);
+        self::assertEquals('Test', $blogPost->comments[0]->parent->name);
+        self::assertEquals('Test', $blogPost->comments[1]->parent->name);
 
         $this->dm->clear();
 
@@ -245,7 +245,7 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($comment instanceof Comment);
-        $this->assertEquals('Test', $comment->parent->getName());
+        self::assertEquals('Test', $comment->parent->getName());
 
         $this->dm->clear();
 
@@ -253,12 +253,12 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($blogPost instanceof BlogPost);
-        $this->assertEquals('Comment 1', $blogPost->firstComment->getText());
-        $this->assertEquals('Comment 2', $blogPost->latestComment->getText());
-        $this->assertCount(2, $blogPost->last5Comments);
+        self::assertEquals('Comment 1', $blogPost->firstComment->getText());
+        self::assertEquals('Comment 2', $blogPost->latestComment->getText());
+        self::assertCount(2, $blogPost->last5Comments);
 
-        $this->assertEquals('Comment 2', $blogPost->last5Comments[0]->getText());
-        $this->assertEquals('Comment 1', $blogPost->last5Comments[1]->getText());
+        self::assertEquals('Comment 2', $blogPost->last5Comments[0]->getText());
+        self::assertEquals('Comment 1', $blogPost->last5Comments[1]->getText());
 
         $this->dm->clear();
 
@@ -276,8 +276,8 @@ class OwningAndInverseReferencesTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($blogPost instanceof BlogPost);
-        $this->assertCount(2, $blogPost->adminComments);
-        $this->assertEquals('Comment 4 by admin', $blogPost->adminComments[0]->getText());
-        $this->assertEquals('Comment 3 by admin', $blogPost->adminComments[1]->getText());
+        self::assertCount(2, $blogPost->adminComments);
+        self::assertEquals('Comment 4 by admin', $blogPost->adminComments[0]->getText());
+        self::assertEquals('Comment 3 by admin', $blogPost->adminComments[1]->getText());
     }
 }

@@ -20,7 +20,7 @@ class ClassMetadataLoadEventTest extends BaseTest
         $evm             = $this->dm->getEventManager();
         $evm->addEventListener(Events::loadClassMetadata, $this);
         $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestDocument::class);
-        $this->assertTrue($classMetadata->hasField('about'));
+        self::assertTrue($classMetadata->hasField('about'));
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs): void

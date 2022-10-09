@@ -16,7 +16,7 @@ class CollStatsTest extends BaseTest
     {
         $collStatsStage = new CollStats($this->getTestAggregationBuilder());
 
-        $this->assertSame(['$collStats' => []], $collStatsStage->getExpression());
+        self::assertSame(['$collStats' => []], $collStatsStage->getExpression());
     }
 
     public function testCollStatsStageWithLatencyStats(): void
@@ -24,7 +24,7 @@ class CollStatsTest extends BaseTest
         $collStatsStage = new CollStats($this->getTestAggregationBuilder());
         $collStatsStage->showLatencyStats();
 
-        $this->assertSame(['$collStats' => ['latencyStats' => ['histograms' => false]]], $collStatsStage->getExpression());
+        self::assertSame(['$collStats' => ['latencyStats' => ['histograms' => false]]], $collStatsStage->getExpression());
     }
 
     public function testCollStatsStageWithLatencyStatsHistograms(): void
@@ -32,7 +32,7 @@ class CollStatsTest extends BaseTest
         $collStatsStage = new CollStats($this->getTestAggregationBuilder());
         $collStatsStage->showLatencyStats(true);
 
-        $this->assertSame(['$collStats' => ['latencyStats' => ['histograms' => true]]], $collStatsStage->getExpression());
+        self::assertSame(['$collStats' => ['latencyStats' => ['histograms' => true]]], $collStatsStage->getExpression());
     }
 
     public function testCollStatsStageWithStorageStats(): void
@@ -40,7 +40,7 @@ class CollStatsTest extends BaseTest
         $collStatsStage = new CollStats($this->getTestAggregationBuilder());
         $collStatsStage->showStorageStats();
 
-        $this->assertSame(['$collStats' => ['storageStats' => []]], $collStatsStage->getExpression());
+        self::assertSame(['$collStats' => ['storageStats' => []]], $collStatsStage->getExpression());
     }
 
     public function testCollStatsFromBuilder(): void
@@ -50,7 +50,7 @@ class CollStatsTest extends BaseTest
             ->showLatencyStats(true)
             ->showStorageStats();
 
-        $this->assertSame([
+        self::assertSame([
             [
                 '$collStats' => [
                     'latencyStats' => ['histograms' => true],

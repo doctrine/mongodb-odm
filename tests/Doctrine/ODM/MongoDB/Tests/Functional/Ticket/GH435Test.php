@@ -13,14 +13,14 @@ class GH435Test extends BaseTest
     {
         $parent = $this->dm->getClassMetadata(GH435Parent::class);
 
-        $this->assertArrayHasKey('id', $parent->fieldMappings['id']);
-        $this->assertTrue($parent->fieldMappings['id']['id']);
-        $this->assertEquals('id', $parent->fieldMappings['id']['type']);
-        $this->assertEquals('int', $parent->fieldMappings['test']['type']);
+        self::assertArrayHasKey('id', $parent->fieldMappings['id']);
+        self::assertTrue($parent->fieldMappings['id']['id']);
+        self::assertEquals('id', $parent->fieldMappings['id']['type']);
+        self::assertEquals('int', $parent->fieldMappings['test']['type']);
 
         $child = $this->dm->getClassMetadata(GH435Child::class);
 
-        $this->assertEquals('string', $child->fieldMappings['test']['type']);
+        self::assertEquals('string', $child->fieldMappings['test']['type']);
     }
 }
 

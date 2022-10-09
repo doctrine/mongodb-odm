@@ -21,11 +21,11 @@ class GH467Test extends BaseTest
 
         $doc = $this->dm->merge($doc);
 
-        $this->assertNull($doc->col, 'Unset basic collections are not initialized');
-        $this->assertInstanceOf(PersistentCollection::class, $doc->embedMany, 'Unset EmbedMany collections are initialized as empty PersistentCollections');
-        $this->assertCount(0, $doc->embedMany, 'Unset EmbedMany collections are initialized as empty PersistentCollections');
-        $this->assertInstanceOf(PersistentCollection::class, $doc->refMany, 'Unset ReferenceMany collections are initialized as empty PersistentCollections');
-        $this->assertCount(0, $doc->refMany, 'Unset ReferenceMany collections are initialized as empty PersistentCollections');
+        self::assertNull($doc->col, 'Unset basic collections are not initialized');
+        self::assertInstanceOf(PersistentCollection::class, $doc->embedMany, 'Unset EmbedMany collections are initialized as empty PersistentCollections');
+        self::assertEmpty($doc->embedMany, 'Unset EmbedMany collections are initialized as empty PersistentCollections');
+        self::assertInstanceOf(PersistentCollection::class, $doc->refMany, 'Unset ReferenceMany collections are initialized as empty PersistentCollections');
+        self::assertEmpty($doc->refMany, 'Unset ReferenceMany collections are initialized as empty PersistentCollections');
     }
 }
 

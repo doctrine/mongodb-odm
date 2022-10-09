@@ -53,7 +53,7 @@ class LifecycleListenersTest extends BaseTest
             Events::prePersist => [TestDocument::class],
             Events::postPersist => [TestDocument::class],
         ];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
         $this->listener->called = [];
 
         $test->embedded[0]       = new TestEmbeddedDocument();
@@ -67,17 +67,17 @@ class LifecycleListenersTest extends BaseTest
             Events::postUpdate => [TestDocument::class],
             Events::postPersist => [TestEmbeddedDocument::class],
         ];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
         $this->listener->called = [];
 
         $document = $dm->find(TestDocument::class, $test->id);
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
         $document->embedded->initialize();
         $called = [
             Events::preLoad => [TestDocument::class, TestEmbeddedDocument::class],
             Events::postLoad => [TestDocument::class, TestEmbeddedDocument::class],
         ];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
         $this->listener->called = [];
 
         $document->embedded[0]->name = 'changed';
@@ -87,7 +87,7 @@ class LifecycleListenersTest extends BaseTest
             Events::preUpdate => [TestDocument::class, TestEmbeddedDocument::class],
             Events::postUpdate => [TestDocument::class, TestEmbeddedDocument::class],
         ];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
         $this->listener->called = [];
 
         $dm->remove($document);
@@ -97,7 +97,7 @@ class LifecycleListenersTest extends BaseTest
             Events::preRemove => [TestEmbeddedDocument::class, TestDocument::class],
             Events::postRemove => [TestEmbeddedDocument::class, TestDocument::class],
         ];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
         $this->listener->called = [];
 
         $test                    = new TestDocument();
@@ -117,7 +117,7 @@ class LifecycleListenersTest extends BaseTest
             Events::preUpdate => [TestDocument::class],
             Events::postUpdate => [TestDocument::class],
         ];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
         $this->listener->called = [];
     }
 
@@ -144,7 +144,7 @@ class LifecycleListenersTest extends BaseTest
             Events::postUpdate => [TestProfile::class, Image::class],
             Events::postPersist => [Thumbnail::class],
         ];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
         $this->listener->called = [];
 
         $test->image->thumbnails[0]->name = 'ok';
@@ -153,7 +153,7 @@ class LifecycleListenersTest extends BaseTest
             Events::preUpdate => [TestProfile::class, Image::class, Thumbnail::class],
             Events::postUpdate => [TestProfile::class, Image::class, Thumbnail::class],
         ];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
         $this->listener->called = [];
     }
 
@@ -181,7 +181,7 @@ class LifecycleListenersTest extends BaseTest
         $document->profile      = $profile;
         $dm->flush();
         $dm->clear();
-        $this->assertEquals($called, $this->listener->called, 'Changing ReferenceOne field did not dispatched proper events.');
+        self::assertEquals($called, $this->listener->called, 'Changing ReferenceOne field did not dispatched proper events.');
         $this->listener->called = [];
 
         $document               = $dm->getRepository(get_class($document))->find($document->id);
@@ -189,7 +189,7 @@ class LifecycleListenersTest extends BaseTest
         $this->listener->called = [];
         $document->profiles[]   = $profile;
         $dm->flush();
-        $this->assertEquals($called, $this->listener->called, 'Changing ReferenceMany field did not dispatched proper events.');
+        self::assertEquals($called, $this->listener->called, 'Changing ReferenceMany field did not dispatched proper events.');
         $this->listener->called = [];
     }
 
@@ -205,7 +205,7 @@ class LifecycleListenersTest extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->getRepository(get_class($document))->find($document->id);
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
         $document->embedded->add(new TestEmbeddedDocument('For mock at 1'));
         // mock at 0, despite adding postCollectionLoad will have empty collection
         $document->embedded->initialize();
@@ -213,7 +213,7 @@ class LifecycleListenersTest extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->getRepository(get_class($document))->find($document->id);
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
+        self::assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
         $document->embedded->add(new TestEmbeddedDocument('Will not be seen'));
         // mock at 1, collection should have 1 element after
         $document->embedded->initialize();

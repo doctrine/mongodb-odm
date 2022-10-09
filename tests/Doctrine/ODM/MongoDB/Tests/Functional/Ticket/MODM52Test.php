@@ -31,8 +31,8 @@ class MODM52Test extends BaseTest
         $this->dm->refresh($doc);
 
         $after = count($doc->getItem(0)->getItems());
-        $this->assertEquals(1, $before);
-        $this->assertEquals(1, $after);
+        self::assertEquals(1, $before);
+        self::assertEquals(1, $after);
     }
 }
 

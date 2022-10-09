@@ -27,15 +27,15 @@ class GH936Test extends BaseTest
 
         $foo = $this->dm->find(GH936Document::class, $foo->id);
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $foo->ref);
+        self::assertInstanceOf(GhostObjectInterface::class, $foo->ref);
 
         $this->dm->remove($foo);
         $this->dm->flush();
 
-        $this->assertCount(3, $listener->removed);
-        $this->assertNull($this->dm->find(GH936Document::class, $foo->id));
-        $this->assertNull($this->dm->find(GH936Document::class, $bar->id));
-        $this->assertNull($this->dm->find(GH936Document::class, $baz->id));
+        self::assertCount(3, $listener->removed);
+        self::assertNull($this->dm->find(GH936Document::class, $foo->id));
+        self::assertNull($this->dm->find(GH936Document::class, $bar->id));
+        self::assertNull($this->dm->find(GH936Document::class, $baz->id));
     }
 }
 

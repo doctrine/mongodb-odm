@@ -18,8 +18,8 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->flush();
 
         $test = $this->dm->getDocumentCollection(CustomFieldName::class)->findOne();
-        $this->assertArrayHasKey('login', $test);
-        $this->assertEquals('test', $test['login']);
+        self::assertArrayHasKey('login', $test);
+        self::assertEquals('test', $test['login']);
     }
 
     public function testHydration(): void
@@ -32,8 +32,8 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->find(CustomFieldName::class, $test->id);
-        $this->assertNotNull($test);
-        $this->assertEquals('test', $test->username);
+        self::assertNotNull($test);
+        self::assertEquals('test', $test->username);
     }
 
     public function testUpdateSetsLoginInsteadOfUsername(): void
@@ -51,8 +51,8 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->flush();
 
         $test = $this->dm->getDocumentCollection(CustomFieldName::class)->findOne();
-        $this->assertArrayHasKey('login', $test);
-        $this->assertEquals('ok', $test['login']);
+        self::assertArrayHasKey('login', $test);
+        self::assertEquals('ok', $test['login']);
     }
 
     public function testFindOneQueryIsPrepared(): void
@@ -65,8 +65,8 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository(CustomFieldName::class)->findOneBy(['username' => 'test']);
-        $this->assertNotNull($test);
-        $this->assertEquals('test', $test->username);
+        self::assertNotNull($test);
+        self::assertEquals('test', $test->username);
     }
 
     public function testFindQueryIsPrepared(): void
@@ -79,8 +79,8 @@ class CustomFieldNameTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getRepository(CustomFieldName::class)->findOneBy(['username' => 'test']);
-        $this->assertNotNull($test);
-        $this->assertEquals('test', $test->username);
+        self::assertNotNull($test);
+        self::assertEquals('test', $test->username);
     }
 
     public function testQueryBuilderAndDqlArePrepared(): void
@@ -95,8 +95,8 @@ class CustomFieldNameTest extends BaseTest
         $qb    = $this->dm->createQueryBuilder(CustomFieldName::class)->field('username')->equals('test');
         $query = $qb->getQuery();
         $test  = $query->getSingleResult();
-        $this->assertInstanceOf(CustomFieldName::class, $test);
-        $this->assertEquals('test', $test->username);
+        self::assertInstanceOf(CustomFieldName::class, $test);
+        self::assertEquals('test', $test->username);
     }
 }
 

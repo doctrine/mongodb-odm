@@ -22,7 +22,7 @@ class ExprTest extends BaseTest
             ->select('id');
         $query = $qb->getQuery();
 
-        $this->assertEquals(['_id' => 1], $query->debug('select'));
+        self::assertEquals(['_id' => 1], $query->debug('select'));
     }
 
     public function testInIsPrepared(): void
@@ -35,8 +35,8 @@ class ExprTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$in'][0]);
-        $this->assertEquals($ids[0], (string) $debug['groups.$id']['$in'][0]);
+        self::assertInstanceOf(ObjectId::class, $debug['groups.$id']['$in'][0]);
+        self::assertEquals($ids[0], (string) $debug['groups.$id']['$in'][0]);
     }
 
     public function testAllIsPrepared(): void
@@ -49,8 +49,8 @@ class ExprTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$all'][0]);
-        $this->assertEquals($ids[0], (string) $debug['groups.$id']['$all'][0]);
+        self::assertInstanceOf(ObjectId::class, $debug['groups.$id']['$all'][0]);
+        self::assertEquals($ids[0], (string) $debug['groups.$id']['$all'][0]);
     }
 
     public function testNotEqualIsPrepared(): void
@@ -63,8 +63,8 @@ class ExprTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$ne']);
-        $this->assertEquals($id, (string) $debug['groups.$id']['$ne']);
+        self::assertInstanceOf(ObjectId::class, $debug['groups.$id']['$ne']);
+        self::assertEquals($id, (string) $debug['groups.$id']['$ne']);
     }
 
     public function testNotInIsPrepared(): void
@@ -77,8 +77,8 @@ class ExprTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$nin'][0]);
-        $this->assertEquals($ids[0], (string) $debug['groups.$id']['$nin'][0]);
+        self::assertInstanceOf(ObjectId::class, $debug['groups.$id']['$nin'][0]);
+        self::assertEquals($ids[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 
     public function testAndIsPrepared(): void
@@ -92,8 +92,8 @@ class ExprTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(ObjectId::class, $debug['$and'][0]['groups.$id']['$in'][0]);
-        $this->assertEquals($ids[0], (string) $debug['$and'][0]['groups.$id']['$in'][0]);
+        self::assertInstanceOf(ObjectId::class, $debug['$and'][0]['groups.$id']['$in'][0]);
+        self::assertEquals($ids[0], (string) $debug['$and'][0]['groups.$id']['$in'][0]);
     }
 
     public function testOrIsPrepared(): void
@@ -107,8 +107,8 @@ class ExprTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(ObjectId::class, $debug['$or'][0]['groups.$id']['$in'][0]);
-        $this->assertEquals($ids[0], (string) $debug['$or'][0]['groups.$id']['$in'][0]);
+        self::assertInstanceOf(ObjectId::class, $debug['$or'][0]['groups.$id']['$in'][0]);
+        self::assertEquals($ids[0], (string) $debug['$or'][0]['groups.$id']['$in'][0]);
     }
 
     public function testMultipleQueryOperatorsArePrepared(): void
@@ -127,14 +127,14 @@ class ExprTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$all'][0]);
-        $this->assertEquals($all[0], (string) $debug['groups.$id']['$all'][0]);
-        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$in'][0]);
-        $this->assertEquals($in[0], (string) $debug['groups.$id']['$in'][0]);
-        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$ne']);
-        $this->assertEquals($ne, (string) $debug['groups.$id']['$ne']);
-        $this->assertInstanceOf(ObjectId::class, $debug['groups.$id']['$nin'][0]);
-        $this->assertEquals($nin[0], (string) $debug['groups.$id']['$nin'][0]);
+        self::assertInstanceOf(ObjectId::class, $debug['groups.$id']['$all'][0]);
+        self::assertEquals($all[0], (string) $debug['groups.$id']['$all'][0]);
+        self::assertInstanceOf(ObjectId::class, $debug['groups.$id']['$in'][0]);
+        self::assertEquals($in[0], (string) $debug['groups.$id']['$in'][0]);
+        self::assertInstanceOf(ObjectId::class, $debug['groups.$id']['$ne']);
+        self::assertEquals($ne, (string) $debug['groups.$id']['$ne']);
+        self::assertInstanceOf(ObjectId::class, $debug['groups.$id']['$nin'][0]);
+        self::assertEquals($nin[0], (string) $debug['groups.$id']['$nin'][0]);
     }
 
     public function testPrepareNestedDocuments(): void
@@ -143,7 +143,7 @@ class ExprTest extends BaseTest
             ->field('address.subAddress.subAddress.subAddress.test')->equals('test');
         $query = $qb->getQuery();
         $debug = $query->debug('query');
-        $this->assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => 'test'], $debug);
+        self::assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => 'test'], $debug);
     }
 
     public function testPreparePositionalOperator(): void
@@ -153,8 +153,8 @@ class ExprTest extends BaseTest
             ->field('phonenumbers.$.phonenumber')->equals('foo')
             ->field('phonenumbers.$')->set(['phonenumber' => 'bar']);
 
-        $this->assertEquals(['phonenumbers.$.phonenumber' => 'foo'], $qb->getQueryArray());
-        $this->assertEquals(['$set' => ['phonenumbers.$' => ['phonenumber' => 'bar']]], $qb->getNewObj());
+        self::assertEquals(['phonenumbers.$.phonenumber' => 'foo'], $qb->getQueryArray());
+        self::assertEquals(['$set' => ['phonenumbers.$' => ['phonenumber' => 'bar']]], $qb->getNewObj());
     }
 
     public function testSortIsPrepared(): void
@@ -163,13 +163,13 @@ class ExprTest extends BaseTest
             ->sort('id', 'desc');
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(['_id' => -1], $query['sort']);
+        self::assertEquals(['_id' => -1], $query['sort']);
 
         $qb    = $this->dm->createQueryBuilder(User::class)
             ->sort('address.subAddress.subAddress.subAddress.test', 'asc');
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => 1], $query['sort']);
+        self::assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => 1], $query['sort']);
     }
 
     public function testNestedWithOperator(): void
@@ -178,7 +178,7 @@ class ExprTest extends BaseTest
             ->field('address.subAddress.subAddress.subAddress.test')->notIn(['test']);
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => ['$nin' => ['test']]], $query['query']);
+        self::assertEquals(['address.subAddress.subAddress.subAddress.testFieldName' => ['$nin' => ['test']]], $query['query']);
     }
 
     public function testNewObjectIsPrepared(): void
@@ -188,7 +188,7 @@ class ExprTest extends BaseTest
             ->field('address.subAddress.subAddress.subAddress.test')->popFirst();
         $query = $qb->getQuery();
         $query = $query->getQuery();
-        $this->assertEquals(['$pop' => ['address.subAddress.subAddress.subAddress.testFieldName' => -1]], $query['newObj']);
+        self::assertEquals(['$pop' => ['address.subAddress.subAddress.subAddress.testFieldName' => -1]], $query['newObj']);
     }
 
     public function testReferencesUsesMinimalKeys(): void
@@ -200,7 +200,7 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
         $expr->field('profile')->references($profile);
 
-        $this->assertEquals(
+        self::assertEquals(
             ['profile.$id' => $profile->getProfileId()],
             $expr->getQuery(),
             '->references() uses just $id if a targetDocument is set'
@@ -216,7 +216,7 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
         $expr->field('referenceToAnything')->references($profile);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'referenceToAnything.$id' => $profile->getProfileId(),
                 'referenceToAnything.$db' => 'doctrine_odm_tests',
@@ -236,7 +236,7 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
         $expr->field('referenceToAnythingWithoutDb')->references($profile);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'referenceToAnythingWithoutDb.$id' => $profile->getProfileId(),
                 'referenceToAnythingWithoutDb.$ref' => 'Profile',
@@ -250,8 +250,8 @@ class ExprTest extends BaseTest
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->field('a')->addToSet(1));
-        $this->assertEquals(['$addToSet' => ['a' => 1]], $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->addToSet(1));
+        self::assertEquals(['$addToSet' => ['a' => 1]], $expr->getNewObj());
     }
 
     public function testAddToSetWithExpression(): void
@@ -260,8 +260,8 @@ class ExprTest extends BaseTest
         $eachExpr = $this->createExpr();
         $eachExpr->each([1, 2]);
 
-        $this->assertSame($expr, $expr->field('a')->addToSet($eachExpr));
-        $this->assertEquals(['$addToSet' => ['a' => ['$each' => [1, 2]]]], $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->addToSet($eachExpr));
+        self::assertEquals(['$addToSet' => ['a' => ['$each' => [1, 2]]]], $expr->getNewObj());
     }
 
     public function testLanguageWithText(): void
@@ -269,8 +269,8 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
         $expr->text('foo');
 
-        $this->assertSame($expr, $expr->language('en'));
-        $this->assertEquals(['$text' => ['$search' => 'foo', '$language' => 'en']], $expr->getQuery());
+        self::assertSame($expr, $expr->language('en'));
+        self::assertEquals(['$text' => ['$search' => 'foo', '$language' => 'en']], $expr->getQuery());
     }
 
     public function testLanguageRequiresTextOperator(): void
@@ -285,8 +285,8 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
         $expr->text('foo');
 
-        $this->assertSame($expr, $expr->caseSensitive(true));
-        $this->assertEquals(['$text' => ['$search' => 'foo', '$caseSensitive' => true]], $expr->getQuery());
+        self::assertSame($expr, $expr->caseSensitive(true));
+        self::assertEquals(['$text' => ['$search' => 'foo', '$caseSensitive' => true]], $expr->getQuery());
     }
 
     public function testCaseSensitiveFalseRemovesOption(): void
@@ -296,7 +296,7 @@ class ExprTest extends BaseTest
 
         $expr->caseSensitive(true);
         $expr->caseSensitive(false);
-        $this->assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
+        self::assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
     }
 
     public function testCaseSensitiveRequiresTextOperator(): void
@@ -311,8 +311,8 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
         $expr->text('foo');
 
-        $this->assertSame($expr, $expr->diacriticSensitive(true));
-        $this->assertEquals(['$text' => ['$search' => 'foo', '$diacriticSensitive' => true]], $expr->getQuery());
+        self::assertSame($expr, $expr->diacriticSensitive(true));
+        self::assertEquals(['$text' => ['$search' => 'foo', '$diacriticSensitive' => true]], $expr->getQuery());
     }
 
     public function testDiacriticSensitiveFalseRemovesOption(): void
@@ -322,7 +322,7 @@ class ExprTest extends BaseTest
 
         $expr->diacriticSensitive(true);
         $expr->diacriticSensitive(false);
-        $this->assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
+        self::assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
     }
 
     public function testDiacriticSensitiveRequiresTextOperator(): void
@@ -337,22 +337,22 @@ class ExprTest extends BaseTest
         $expr = $this->createExpr();
         $expr->field('field');
 
-        $this->assertSame($expr, $expr->operator('$op', 'value'));
-        $this->assertEquals(['field' => ['$op' => 'value']], $expr->getQuery());
+        self::assertSame($expr, $expr->operator('$op', 'value'));
+        self::assertEquals(['field' => ['$op' => 'value']], $expr->getQuery());
     }
 
     public function testOperatorWithCurrentFieldWrapsEqualityCriteria(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->field('a')->equals(1));
-        $this->assertSame($expr, $expr->field('a')->lt(2));
-        $this->assertSame($expr, $expr->field('b')->equals(null));
-        $this->assertSame($expr, $expr->field('b')->lt(2));
-        $this->assertSame($expr, $expr->field('c')->equals([]));
-        $this->assertSame($expr, $expr->field('c')->lt(2));
-        $this->assertSame($expr, $expr->field('d')->equals(['x' => 1]));
-        $this->assertSame($expr, $expr->field('d')->lt(2));
+        self::assertSame($expr, $expr->field('a')->equals(1));
+        self::assertSame($expr, $expr->field('a')->lt(2));
+        self::assertSame($expr, $expr->field('b')->equals(null));
+        self::assertSame($expr, $expr->field('b')->lt(2));
+        self::assertSame($expr, $expr->field('c')->equals([]));
+        self::assertSame($expr, $expr->field('c')->lt(2));
+        self::assertSame($expr, $expr->field('d')->equals(['x' => 1]));
+        self::assertSame($expr, $expr->field('d')->lt(2));
 
         $expectedQuery = [
             'a' => ['$in' => [1], '$lt' => 2],
@@ -362,39 +362,39 @@ class ExprTest extends BaseTest
             'd' => ['$in' => [['x' => 1]], '$lt' => 2],
         ];
 
-        $this->assertEquals($expectedQuery, $expr->getQuery());
+        self::assertEquals($expectedQuery, $expr->getQuery());
     }
 
     public function testOperatorWithoutCurrentField(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->operator('$op', 'value'));
-        $this->assertEquals(['$op' => 'value'], $expr->getQuery());
+        self::assertSame($expr, $expr->operator('$op', 'value'));
+        self::assertEquals(['$op' => 'value'], $expr->getQuery());
     }
 
     public function testOperatorWithoutCurrentFieldWrapsEqualityCriteria(): void
     {
         $expr = $this->createExpr();
-        $this->assertSame($expr, $expr->equals(1));
-        $this->assertSame($expr, $expr->lt(2));
-        $this->assertEquals(['$in' => [1], '$lt' => 2], $expr->getQuery());
+        self::assertSame($expr, $expr->equals(1));
+        self::assertSame($expr, $expr->lt(2));
+        self::assertEquals(['$in' => [1], '$lt' => 2], $expr->getQuery());
 
         $expr = $this->createExpr();
-        $this->assertSame($expr, $expr->equals(null));
-        $this->assertSame($expr, $expr->lt(2));
-        $this->assertEquals(['$in' => [null], '$lt' => 2], $expr->getQuery());
+        self::assertSame($expr, $expr->equals(null));
+        self::assertSame($expr, $expr->lt(2));
+        self::assertEquals(['$in' => [null], '$lt' => 2], $expr->getQuery());
 
         $expr = $this->createExpr();
-        $this->assertSame($expr, $expr->equals([]));
-        $this->assertSame($expr, $expr->lt(2));
+        self::assertSame($expr, $expr->equals([]));
+        self::assertSame($expr, $expr->lt(2));
         // Equality match on empty array cannot be distinguished from no criteria and will be overridden
-        $this->assertEquals(['$lt' => 2], $expr->getQuery());
+        self::assertEquals(['$lt' => 2], $expr->getQuery());
 
         $expr = $this->createExpr();
-        $this->assertSame($expr, $expr->equals(['x' => 1]));
-        $this->assertSame($expr, $expr->lt(2));
-        $this->assertEquals(['$in' => [['x' => 1]], '$lt' => 2], $expr->getQuery());
+        self::assertSame($expr, $expr->equals(['x' => 1]));
+        self::assertSame($expr, $expr->lt(2));
+        self::assertEquals(['$in' => [['x' => 1]], '$lt' => 2], $expr->getQuery());
     }
 
     public function provideGeoJsonPoint(): array
@@ -417,16 +417,16 @@ class ExprTest extends BaseTest
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->near($point));
-        $this->assertEquals(['$near' => $expected], $expr->getQuery());
+        self::assertSame($expr, $expr->near($point));
+        self::assertEquals(['$near' => $expected], $expr->getQuery());
     }
 
     public function testNearWithLegacyCoordinates(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->near(1, 2));
-        $this->assertEquals(['$near' => [1, 2]], $expr->getQuery());
+        self::assertSame($expr, $expr->near(1, 2));
+        self::assertEquals(['$near' => [1, 2]], $expr->getQuery());
     }
 
     /**
@@ -438,24 +438,24 @@ class ExprTest extends BaseTest
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->nearSphere($point));
-        $this->assertEquals(['$nearSphere' => $expected], $expr->getQuery());
+        self::assertSame($expr, $expr->nearSphere($point));
+        self::assertEquals(['$nearSphere' => $expected], $expr->getQuery());
     }
 
     public function testNearSphereWithLegacyCoordinates(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->nearSphere(1, 2));
-        $this->assertEquals(['$nearSphere' => [1, 2]], $expr->getQuery());
+        self::assertSame($expr, $expr->nearSphere(1, 2));
+        self::assertEquals(['$nearSphere' => [1, 2]], $expr->getQuery());
     }
 
     public function testPullWithValue(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->field('a')->pull(1));
-        $this->assertEquals(['$pull' => ['a' => 1]], $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->pull(1));
+        self::assertEquals(['$pull' => ['a' => 1]], $expr->getNewObj());
     }
 
     public function testPullWithExpression(): void
@@ -464,16 +464,16 @@ class ExprTest extends BaseTest
         $nestedExpr = $this->createExpr();
         $nestedExpr->gt(3);
 
-        $this->assertSame($expr, $expr->field('a')->pull($nestedExpr));
-        $this->assertEquals(['$pull' => ['a' => ['$gt' => 3]]], $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->pull($nestedExpr));
+        self::assertEquals(['$pull' => ['a' => ['$gt' => 3]]], $expr->getNewObj());
     }
 
     public function testPushWithValue(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->field('a')->push(1));
-        $this->assertEquals(['$push' => ['a' => 1]], $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->push(1));
+        self::assertEquals(['$push' => ['a' => 1]], $expr->getNewObj());
     }
 
     public function testPushWithExpression(): void
@@ -495,8 +495,8 @@ class ExprTest extends BaseTest
             ],
         ];
 
-        $this->assertSame($expr, $expr->field('a')->push($innerExpr));
-        $this->assertEquals($expectedNewObj, $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->push($innerExpr));
+        self::assertEquals($expectedNewObj, $expr->getNewObj());
     }
 
     public function testPushWithExpressionShouldEnsureEachOperatorAppearsFirst(): void
@@ -518,8 +518,8 @@ class ExprTest extends BaseTest
             ],
         ];
 
-        $this->assertSame($expr, $expr->field('a')->push($innerExpr));
-        $this->assertSame($expectedNewObj, $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->push($innerExpr));
+        self::assertSame($expectedNewObj, $expr->getNewObj());
     }
 
     public function testPushWithPosition(): void
@@ -539,8 +539,8 @@ class ExprTest extends BaseTest
             ],
         ];
 
-        $this->assertSame($expr, $expr->field('a')->push($innerExpr));
-        $this->assertEquals($expectedNewObj, $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->push($innerExpr));
+        self::assertEquals($expectedNewObj, $expr->getNewObj());
     }
 
     /**
@@ -552,8 +552,8 @@ class ExprTest extends BaseTest
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->geoIntersects($geometry));
-        $this->assertEquals(['$geoIntersects' => $expected], $expr->getQuery());
+        self::assertSame($expr, $expr->geoIntersects($geometry));
+        self::assertEquals(['$geoIntersects' => $expected], $expr->getQuery());
     }
 
     public function provideGeoJsonPolygon(): array
@@ -580,32 +580,32 @@ class ExprTest extends BaseTest
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->geoWithin($geometry));
-        $this->assertEquals(['$geoWithin' => $expected], $expr->getQuery());
+        self::assertSame($expr, $expr->geoWithin($geometry));
+        self::assertEquals(['$geoWithin' => $expected], $expr->getQuery());
     }
 
     public function testGeoWithinBox(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->geoWithinBox(1, 2, 3, 4));
-        $this->assertEquals(['$geoWithin' => ['$box' => [[1, 2], [3, 4]]]], $expr->getQuery());
+        self::assertSame($expr, $expr->geoWithinBox(1, 2, 3, 4));
+        self::assertEquals(['$geoWithin' => ['$box' => [[1, 2], [3, 4]]]], $expr->getQuery());
     }
 
     public function testGeoWithinCenter(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->geoWithinCenter(1, 2, 3));
-        $this->assertEquals(['$geoWithin' => ['$center' => [[1, 2], 3]]], $expr->getQuery());
+        self::assertSame($expr, $expr->geoWithinCenter(1, 2, 3));
+        self::assertEquals(['$geoWithin' => ['$center' => [[1, 2], 3]]], $expr->getQuery());
     }
 
     public function testGeoWithinCenterSphere(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->geoWithinCenterSphere(1, 2, 3));
-        $this->assertEquals(['$geoWithin' => ['$centerSphere' => [[1, 2], 3]]], $expr->getQuery());
+        self::assertSame($expr, $expr->geoWithinCenterSphere(1, 2, 3));
+        self::assertEquals(['$geoWithin' => ['$centerSphere' => [[1, 2], 3]]], $expr->getQuery());
     }
 
     public function testGeoWithinPolygon(): void
@@ -613,82 +613,82 @@ class ExprTest extends BaseTest
         $expr          = $this->createExpr();
         $expectedQuery = ['$geoWithin' => ['$polygon' => [[0, 0], [1, 1], [1, 0]]]];
 
-        $this->assertSame($expr, $expr->geoWithinPolygon([0, 0], [1, 1], [1, 0]));
-        $this->assertEquals($expectedQuery, $expr->getQuery());
+        self::assertSame($expr, $expr->geoWithinPolygon([0, 0], [1, 1], [1, 0]));
+        self::assertEquals($expectedQuery, $expr->getQuery());
     }
 
     public function testSetWithAtomic(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->field('a')->set(1, true));
-        $this->assertEquals(['$set' => ['a' => 1]], $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->set(1, true));
+        self::assertEquals(['$set' => ['a' => 1]], $expr->getNewObj());
     }
 
     public function testSetWithoutAtomicWithTopLevelField(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->field('a')->set(1, false));
-        $this->assertEquals(['a' => 1], $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a')->set(1, false));
+        self::assertEquals(['a' => 1], $expr->getNewObj());
     }
 
     public function testSetWithoutAtomicWithNestedField(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->field('a.b.c')->set(1, false));
-        $this->assertEquals(['a' => ['b' => ['c' => 1]]], $expr->getNewObj());
+        self::assertSame($expr, $expr->field('a.b.c')->set(1, false));
+        self::assertEquals(['a' => ['b' => ['c' => 1]]], $expr->getNewObj());
     }
 
     public function testText(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->text('foo'));
-        $this->assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
-        $this->assertNull($expr->getCurrentField());
+        self::assertSame($expr, $expr->text('foo'));
+        self::assertEquals(['$text' => ['$search' => 'foo']], $expr->getQuery());
+        self::assertNull($expr->getCurrentField());
     }
 
     public function testWhere(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->where('javascript'));
-        $this->assertEquals(['$where' => 'javascript'], $expr->getQuery());
-        $this->assertNull($expr->getCurrentField());
+        self::assertSame($expr, $expr->where('javascript'));
+        self::assertEquals(['$where' => 'javascript'], $expr->getQuery());
+        self::assertNull($expr->getCurrentField());
     }
 
     public function testIn(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->in(['value1', 'value2']));
-        $this->assertEquals(['$in' => ['value1', 'value2']], $expr->getQuery());
+        self::assertSame($expr, $expr->in(['value1', 'value2']));
+        self::assertEquals(['$in' => ['value1', 'value2']], $expr->getQuery());
     }
 
     public function testInWillStripKeysToYieldBsonArray(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->in([1 => 'value1', 'some' => 'value2']));
-        $this->assertEquals(['$in' => ['value1', 'value2']], $expr->getQuery());
+        self::assertSame($expr, $expr->in([1 => 'value1', 'some' => 'value2']));
+        self::assertEquals(['$in' => ['value1', 'value2']], $expr->getQuery());
     }
 
     public function testNotIn(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->notIn(['value1', 'value2']));
-        $this->assertEquals(['$nin' => ['value1', 'value2']], $expr->getQuery());
+        self::assertSame($expr, $expr->notIn(['value1', 'value2']));
+        self::assertEquals(['$nin' => ['value1', 'value2']], $expr->getQuery());
     }
 
     public function testNotInWillStripKeysToYieldBsonArray(): void
     {
         $expr = $this->createExpr();
 
-        $this->assertSame($expr, $expr->notIn([1 => 'value1', 'some' => 'value2']));
-        $this->assertEquals(['$nin' => ['value1', 'value2']], $expr->getQuery());
+        self::assertSame($expr, $expr->notIn([1 => 'value1', 'some' => 'value2']));
+        self::assertEquals(['$nin' => ['value1', 'value2']], $expr->getQuery());
     }
 
     private function createExpr(): Expr

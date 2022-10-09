@@ -38,13 +38,13 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['user']);
-        $this->assertSame('alcaeus', $result[0]['user'][0]['username']);
+        self::assertCount(1, $result);
+        self::assertCount(1, $result[0]['user']);
+        self::assertSame('alcaeus', $result[0]['user'][0]['username']);
     }
 
     public function testLookupStageWithPipeline(): void
@@ -156,7 +156,7 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testLookupStageWithClassName(): void
@@ -179,13 +179,13 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['user']);
-        $this->assertSame('alcaeus', $result[0]['user'][0]['username']);
+        self::assertCount(1, $result);
+        self::assertCount(1, $result[0]['user']);
+        self::assertSame('alcaeus', $result[0]['user'][0]['username']);
     }
 
     public function testLookupStageWithCollectionName(): void
@@ -208,12 +208,12 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(1, $result);
-        $this->assertCount(0, $result[0]['user']);
+        self::assertCount(1, $result);
+        self::assertEmpty($result[0]['user']);
     }
 
     public function testLookupStageReferenceMany(): void
@@ -236,15 +236,15 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(2, $result);
-        $this->assertCount(1, $result[0]['users']);
-        $this->assertSame('alcaeus', $result[0]['users'][0]['username']);
-        $this->assertCount(1, $result[1]['users']);
-        $this->assertSame('malarzm', $result[1]['users'][0]['username']);
+        self::assertCount(2, $result);
+        self::assertCount(1, $result[0]['users']);
+        self::assertSame('alcaeus', $result[0]['users'][0]['username']);
+        self::assertCount(1, $result[1]['users']);
+        self::assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
     public function testLookupStageReferenceManyStoreAsRef(): void
@@ -267,15 +267,15 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(2, $result);
-        $this->assertCount(1, $result[0]['users']);
-        $this->assertSame('alcaeus', $result[0]['users'][0]['username']);
-        $this->assertCount(1, $result[1]['users']);
-        $this->assertSame('malarzm', $result[1]['users'][0]['username']);
+        self::assertCount(2, $result);
+        self::assertCount(1, $result[0]['users']);
+        self::assertSame('alcaeus', $result[0]['users'][0]['username']);
+        self::assertCount(1, $result[1]['users']);
+        self::assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
     public function testLookupStageReferenceManyWithoutUnwindMongoDB34(): void
@@ -296,14 +296,14 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(1, $result);
-        $this->assertCount(2, $result[0]['users']);
-        $this->assertSame('alcaeus', $result[0]['users'][0]['username']);
-        $this->assertSame('malarzm', $result[0]['users'][1]['username']);
+        self::assertCount(1, $result);
+        self::assertCount(2, $result[0]['users']);
+        self::assertSame('alcaeus', $result[0]['users'][0]['username']);
+        self::assertSame('malarzm', $result[0]['users'][1]['username']);
     }
 
     public function testLookupStageReferenceOneInverse(): void
@@ -330,12 +330,12 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['simpleReferenceOneInverse']);
+        self::assertCount(1, $result);
+        self::assertCount(1, $result[0]['simpleReferenceOneInverse']);
     }
 
     public function testLookupStageReferenceManyInverse(): void
@@ -362,12 +362,12 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['simpleReferenceManyInverse']);
+        self::assertCount(1, $result);
+        self::assertCount(1, $result[0]['simpleReferenceManyInverse']);
     }
 
     public function testLookupStageReferenceOneInverseStoreAsRef(): void
@@ -394,12 +394,12 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['embeddedReferenceOneInverse']);
+        self::assertCount(1, $result);
+        self::assertCount(1, $result[0]['embeddedReferenceOneInverse']);
     }
 
     public function testLookupStageReferenceManyInverseStoreAsRef(): void
@@ -426,12 +426,12 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
 
-        $this->assertCount(1, $result);
-        $this->assertCount(1, $result[0]['embeddedReferenceManyInverse']);
+        self::assertCount(1, $result);
+        self::assertCount(1, $result[0]['embeddedReferenceManyInverse']);
     }
 
     public function testLookupToShardedCollectionThrowsException(): void
@@ -498,10 +498,10 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
-        $this->assertCount(1, $result[0]['simpleReferenceOneInverse']);
+        self::assertCount(1, $result[0]['simpleReferenceOneInverse']);
     }
 
     public function testLookupStageAndDefaultAliasOverride(): void
@@ -522,9 +522,9 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
 
         $result = $builder->execute()->toArray();
-        $this->assertCount(1, $result[0]['override']);
+        self::assertCount(1, $result[0]['override']);
     }
 }

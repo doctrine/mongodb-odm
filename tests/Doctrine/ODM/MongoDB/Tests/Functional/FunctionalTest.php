@@ -98,12 +98,12 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection($className)->findOne(['_id' => $id]);
-        $this->assertNotNull($check);
-        $this->assertEquals((string) $id, (string) $check['_id']);
-        $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
-        $this->assertEquals($discriminator, $check['discriminator']);
-        $this->assertArrayHasKey('nullableField', $check);
-        $this->assertNull($check['nullableField']);
+        self::assertNotNull($check);
+        self::assertEquals((string) $id, (string) $check['_id']);
+        self::assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
+        self::assertEquals($discriminator, $check['discriminator']);
+        self::assertArrayHasKey('nullableField', $check);
+        self::assertNull($check['nullableField']);
 
         $group2 = new Group('Group');
 
@@ -118,15 +118,15 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $check = $this->dm->getDocumentCollection($className)->findOne(['_id' => $id]);
-        $this->assertEquals($discriminator, $check['discriminator']);
-        $this->assertEquals(3, $check['count']);
-        $this->assertEquals(5, $check['hits']);
-        $this->assertCount(2, $check['groups']);
-        $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
-        $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
-        $this->assertArrayHasKey('username', $check);
-        $this->assertEquals('test', $check['username']);
-        $this->assertEquals('foo', $check['nullableField']);
+        self::assertEquals($discriminator, $check['discriminator']);
+        self::assertEquals(3, $check['count']);
+        self::assertEquals(5, $check['hits']);
+        self::assertCount(2, $check['groups']);
+        self::assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
+        self::assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
+        self::assertArrayHasKey('username', $check);
+        self::assertEquals('test', $check['username']);
+        self::assertEquals('foo', $check['nullableField']);
 
         $user       = new $className();
         $user->id   = $id;
@@ -135,21 +135,21 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection($className)->findOne(['_id' => $id]);
-        $this->assertEquals($discriminator, $check['discriminator']);
-        $this->assertEquals(3, $check['count']);
-        $this->assertEquals(100, $check['hits']);
-        $this->assertCount(2, $check['groups']);
-        $this->assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
-        $this->assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
-        $this->assertArrayHasKey('username', $check);
-        $this->assertEquals('test', $check['username']);
-        $this->assertEquals('foo', $check['nullableField']);
+        self::assertEquals($discriminator, $check['discriminator']);
+        self::assertEquals(3, $check['count']);
+        self::assertEquals(100, $check['hits']);
+        self::assertCount(2, $check['groups']);
+        self::assertEquals($group->getId(), (string) $check['groups'][0]['$id']);
+        self::assertEquals($group2->getId(), (string) $check['groups'][1]['$id']);
+        self::assertArrayHasKey('username', $check);
+        self::assertEquals('test', $check['username']);
+        self::assertEquals('foo', $check['nullableField']);
     }
 
     public function testInheritedAssociationMappings(): void
     {
         $class = $this->dm->getClassMetadata(UserUpsertChild::class);
-        $this->assertTrue(isset($class->associationMappings['groups']));
+        self::assertTrue(isset($class->associationMappings['groups']));
     }
 
     public function testNestedCategories(): void
@@ -169,9 +169,9 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
 
         $test = $this->dm->getDocumentCollection(Category::class)->findOne();
-        $this->assertEquals('Child 1 Changed', $test['children'][0]['name']);
-        $this->assertEquals('Child 2 Changed', $test['children'][0]['children'][0]['name']);
-        $this->assertEquals('Root Changed', $test['name']);
+        self::assertEquals('Child 1 Changed', $test['children'][0]['name']);
+        self::assertEquals('Child 2 Changed', $test['children'][0]['children'][0]['name']);
+        self::assertEquals('Root Changed', $test['name']);
     }
 
     public function testManyEmbedded(): void
@@ -189,7 +189,7 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
 
         $test = $this->dm->getDocumentCollection(Album::class)->findOne(['name' => 'Jon']);
-        $this->assertEquals('Song #1 Changed', $test['songs'][0]['name']);
+        self::assertEquals('Song #1 Changed', $test['songs'][0]['name']);
 
         $album->setName('jwage');
         $songs[1]->setName('ok');
@@ -200,19 +200,19 @@ class FunctionalTest extends BaseTest
 
         $test = $this->dm->getDocumentCollection(Album::class)->findOne(['name' => 'jwage']);
 
-        $this->assertEquals('jwage', $test['name']);
-        $this->assertEquals('ok', $test['songs'][0]['name']);
-        $this->assertEquals('Song #3', $test['songs'][1]['name']);
-        $this->assertEquals('Song #4', $test['songs'][2]['name']);
-        $this->assertEquals('Song #5', $test['songs'][3]['name']);
-        $this->assertCount(4, $test['songs']);
+        self::assertEquals('jwage', $test['name']);
+        self::assertEquals('ok', $test['songs'][0]['name']);
+        self::assertEquals('Song #3', $test['songs'][1]['name']);
+        self::assertEquals('Song #4', $test['songs'][2]['name']);
+        self::assertEquals('Song #5', $test['songs'][3]['name']);
+        self::assertCount(4, $test['songs']);
 
         $songs->clear();
         $this->dm->flush();
         $this->dm->clear();
 
         $test = $this->dm->getDocumentCollection(Album::class)->findOne(['name' => 'jwage']);
-        $this->assertFalse(isset($test['songs']));
+        self::assertFalse(isset($test['songs']));
     }
 
     public function testNewEmbedded(): void
@@ -235,8 +235,8 @@ class FunctionalTest extends BaseTest
 
         $test = $this->dm->getDocumentCollection(Project::class)->findOne(['name' => 'Project']);
 
-        $this->assertEquals('New Sub-City', $test['address']['subAddress']['city']);
-        $this->assertEquals('New City', $test['address']['city']);
+        self::assertEquals('New Sub-City', $test['address']['subAddress']['city']);
+        self::assertEquals('New City', $test['address']['city']);
     }
 
     public function testPersistingNewDocumentWithOnlyOneReference(): void
@@ -259,9 +259,9 @@ class FunctionalTest extends BaseTest
 
         $test = $this->dm->getDocumentCollection(Agent::class)->findOne();
 
-        $this->assertEquals('servers', $test['server']['$ref']);
-        $this->assertTrue(isset($test['server']['$id']));
-        $this->assertEquals('server_guest', $test['server']['_doctrine_class_name']);
+        self::assertEquals('servers', $test['server']['$ref']);
+        self::assertTrue(isset($test['server']['$id']));
+        self::assertEquals('server_guest', $test['server']['_doctrine_class_name']);
     }
 
     public function testCollection(): void
@@ -276,22 +276,22 @@ class FunctionalTest extends BaseTest
 
         $coll     = $this->dm->getDocumentCollection(User::class);
         $document = $coll->findOne(['username' => 'joncolltest']);
-        $this->assertCount(2, $document['logs']);
+        self::assertCount(2, $document['logs']);
 
         $document = $this->dm->getRepository(User::class)->findOneBy(['username' => 'joncolltest']);
-        $this->assertCount(2, $document->getLogs());
+        self::assertCount(2, $document->getLogs());
         $document->log('test');
         $this->dm->flush();
         $this->dm->clear();
 
         $document = $this->dm->getRepository(User::class)->findOneBy(['username' => 'joncolltest']);
-        $this->assertCount(3, $document->getLogs());
+        self::assertCount(3, $document->getLogs());
         $document->setLogs(['ok', 'test']);
         $this->dm->flush();
         $this->dm->clear();
 
         $document = $this->dm->getRepository(User::class)->findOneBy(['username' => 'joncolltest']);
-        $this->assertEquals(['ok', 'test'], $document->getLogs());
+        self::assertEquals(['ok', 'test'], $document->getLogs());
     }
 
     public function testSameObjectValuesInCollection(): void
@@ -305,7 +305,7 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'testing']);
-        $this->assertCount(2, $user->getPhonenumbers());
+        self::assertCount(2, $user->getPhonenumbers());
     }
 
     public function testIncrement(): void
@@ -329,9 +329,9 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
-        $this->assertSame(105, $user->getCount());
-        $this->assertSame(105.0, $user->getFloatCount());
-        $this->assertSame('0.70', $user->getDecimal128Count());
+        self::assertSame(105, $user->getCount());
+        self::assertSame(105.0, $user->getFloatCount());
+        self::assertSame('0.70', $user->getDecimal128Count());
 
         $user->setCount(50);
         $user->setFloatCount(50);
@@ -340,9 +340,9 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
-        $this->assertSame(50, $user->getCount());
-        $this->assertSame(50.0, $user->getFloatCount());
-        $this->assertSame('9.99', $user->getDecimal128Count());
+        self::assertSame(50, $user->getCount());
+        self::assertSame(50.0, $user->getFloatCount());
+        self::assertSame('9.99', $user->getDecimal128Count());
     }
 
     public function testIncrementWithFloat(): void
@@ -364,8 +364,8 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
-        $this->assertSame(101, $user->getCount());
-        $this->assertSame(101.337, $user->getFloatCount());
+        self::assertSame(101, $user->getCount());
+        self::assertSame(101.337, $user->getFloatCount());
 
         $user->incrementCount(9.163);
         $user->incrementFloatCount(9.163);
@@ -373,8 +373,8 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
-        $this->assertSame(110, $user->getCount());
-        $this->assertSame(110.5, $user->getFloatCount());
+        self::assertSame(110, $user->getCount());
+        self::assertSame(110.5, $user->getFloatCount());
     }
 
     public function testIncrementSetsNull(): void
@@ -390,9 +390,9 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
-        $this->assertSame(10, $user->getCount());
-        $this->assertSame(10.0, $user->getFloatCount());
-        $this->assertSame('10.00', $user->getDecimal128Count());
+        self::assertSame(10, $user->getCount());
+        self::assertSame(10.0, $user->getFloatCount());
+        self::assertSame('10.00', $user->getDecimal128Count());
 
         $user->incrementCount(1);
         $user->incrementFloatCount(1);
@@ -401,9 +401,9 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
-        $this->assertSame(11, $user->getCount());
-        $this->assertSame(11.0, $user->getFloatCount());
-        $this->assertSame('11.00', $user->getDecimal128Count());
+        self::assertSame(11, $user->getCount());
+        self::assertSame(11.0, $user->getFloatCount());
+        self::assertSame('11.00', $user->getDecimal128Count());
 
         $user->setCount(null);
         $user->setFloatCount(null);
@@ -412,9 +412,9 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->getRepository(User::class)->findOneBy(['username' => 'jon']);
-        $this->assertNull($user->getCount());
-        $this->assertNull($user->getFloatCount());
-        $this->assertNull($user->getDecimal128Count());
+        self::assertNull($user->getCount());
+        self::assertNull($user->getFloatCount());
+        self::assertNull($user->getDecimal128Count());
     }
 
     public function testTest(): void
@@ -459,10 +459,10 @@ class FunctionalTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertEquals(200000.00, $result['salary']);
-        $this->assertCount(2, $result['projects']);
-        $this->assertCount(1, $result['notes']);
-        $this->assertEquals('Gave user 100k a year raise', $result['notes'][0]);
+        self::assertEquals(200000.00, $result['salary']);
+        self::assertCount(2, $result['projects']);
+        self::assertCount(1, $result['notes']);
+        self::assertEquals('Gave user 100k a year raise', $result['notes'][0]);
     }
 
     public function testNotAnnotatedDocument(): void
@@ -477,8 +477,8 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->find(NotAnnotatedDocument::class, $test->id);
-        $this->assertNotNull($test);
-        $this->assertFalse(isset($test->transientField));
+        self::assertNotNull($test);
+        self::assertFalse(isset($test->transientField));
     }
 
     public function testNullFieldValuesAllowed(): void
@@ -495,8 +495,8 @@ class FunctionalTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
 
-        $this->assertNotNull($document);
-        $this->assertNull($document['field']);
+        self::assertNotNull($document);
+        self::assertNull($document['field']);
 
         $document        = $this->dm->find(NullFieldValues::class, $test->id);
         $document->field = 'test';
@@ -504,7 +504,7 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $document = $this->dm->find(NullFieldValues::class, $test->id);
-        $this->assertEquals('test', $document->field);
+        self::assertEquals('test', $document->field);
         $document->field = null;
         $this->dm->flush();
         $this->dm->clear();
@@ -513,17 +513,17 @@ class FunctionalTest extends BaseTest
             ->hydrate(false)
             ->getQuery()
             ->getSingleResult();
-        $this->assertNull($test['field']);
-        $this->assertFalse(isset($test['transientField']));
+        self::assertNull($test['field']);
+        self::assertFalse(isset($test['transientField']));
     }
 
     public function testSimplerEmbedAndReference(): void
     {
         $class = $this->dm->getClassMetadata(SimpleEmbedAndReference::class);
-        $this->assertEquals('many', $class->fieldMappings['embedMany']['type']);
-        $this->assertEquals('one', $class->fieldMappings['embedOne']['type']);
-        $this->assertEquals('many', $class->fieldMappings['referenceMany']['type']);
-        $this->assertEquals('one', $class->fieldMappings['referenceOne']['type']);
+        self::assertEquals('many', $class->fieldMappings['embedMany']['type']);
+        self::assertEquals('one', $class->fieldMappings['embedOne']['type']);
+        self::assertEquals('many', $class->fieldMappings['referenceMany']['type']);
+        self::assertEquals('one', $class->fieldMappings['referenceOne']['type']);
     }
 
     public function testNotSavedFields(): void
@@ -537,8 +537,8 @@ class FunctionalTest extends BaseTest
         ];
         $collection->insertOne($test);
         $notSaved = $this->dm->find(NotSaved::class, $test['_id']);
-        $this->assertEquals('Jonathan Wage', $notSaved->name);
-        $this->assertEquals('test', $notSaved->notSaved);
+        self::assertEquals('Jonathan Wage', $notSaved->name);
+        self::assertEquals('test', $notSaved->notSaved);
 
         $notSaved           = new NotSaved();
         $notSaved->name     = 'Roman Borschel';
@@ -548,8 +548,8 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $notSaved = $collection->findOne(['name' => 'Roman Borschel']);
-        $this->assertEquals('Roman Borschel', $notSaved['name']);
-        $this->assertFalse(isset($notSaved['notSaved']));
+        self::assertEquals('Roman Borschel', $notSaved['name']);
+        self::assertFalse(isset($notSaved['notSaved']));
     }
 
     public function testTypeClassMissing(): void
@@ -594,7 +594,7 @@ class FunctionalTest extends BaseTest
 
         $collection = $test->getLocations();
         assert($collection instanceof PersistentCollection);
-        $this->assertInstanceOf(ClassMetadata::class, $collection->getTypeClass());
+        self::assertInstanceOf(ClassMetadata::class, $collection->getTypeClass());
     }
 
     public function testFavoritesReference(): void
@@ -630,23 +630,23 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->getDocumentCollection(FavoritesUser::class)->findOne(['name' => 'favorites']);
-        $this->assertTrue(isset($test['favorites'][0]['type']));
-        $this->assertEquals('project', $test['favorites'][0]['type']);
-        $this->assertEquals('group', $test['favorites'][1]['type']);
-        $this->assertTrue(isset($test['favorite']['_doctrine_class_name']));
-        $this->assertEquals(Project::class, $test['favorite']['_doctrine_class_name']);
+        self::assertTrue(isset($test['favorites'][0]['type']));
+        self::assertEquals('project', $test['favorites'][0]['type']);
+        self::assertEquals('group', $test['favorites'][1]['type']);
+        self::assertTrue(isset($test['favorite']['_doctrine_class_name']));
+        self::assertEquals(Project::class, $test['favorite']['_doctrine_class_name']);
 
         $user      = $this->dm->getRepository(FavoritesUser::class)->findOneBy(['name' => 'favorites']);
         $favorites = $user->getFavorites();
-        $this->assertInstanceOf(Project::class, $favorites[0]);
-        $this->assertInstanceOf(Group::class, $favorites[1]);
+        self::assertInstanceOf(Project::class, $favorites[0]);
+        self::assertInstanceOf(Group::class, $favorites[1]);
 
         $embedded = $user->getEmbedded();
-        $this->assertInstanceOf(Address::class, $embedded[0]);
-        $this->assertInstanceOf(Phonenumber::class, $embedded[1]);
+        self::assertInstanceOf(Address::class, $embedded[0]);
+        self::assertInstanceOf(Phonenumber::class, $embedded[1]);
 
-        $this->assertInstanceOf(Address::class, $user->getEmbed());
-        $this->assertInstanceOf(Project::class, $user->getFavorite());
+        self::assertInstanceOf(Address::class, $user->getEmbed());
+        self::assertInstanceOf(Project::class, $user->getFavorite());
     }
 
     public function testPreUpdate(): void
@@ -672,9 +672,9 @@ class FunctionalTest extends BaseTest
 
         $product = $this->dm->getRepository(PreUpdateTestProduct::class)->findOneBy(['name' => 'Product']);
 
-        $this->assertInstanceOf(PreUpdateTestSellable::class, $product->sellable);
-        $this->assertInstanceOf(PreUpdateTestProduct::class, $product->sellable->getProduct());
-        $this->assertInstanceOf(PreUpdateTestSeller::class, $product->sellable->getSeller());
+        self::assertInstanceOf(PreUpdateTestSellable::class, $product->sellable);
+        self::assertInstanceOf(PreUpdateTestProduct::class, $product->sellable->getProduct());
+        self::assertInstanceOf(PreUpdateTestSeller::class, $product->sellable->getSeller());
 
         $product       = new PreUpdateTestProduct();
         $product->name = 'Product2';
@@ -692,8 +692,8 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $product = $this->dm->getRepository(PreUpdateTestProduct::class)->findOneBy(['name' => 'Product2']);
-        $this->assertEquals('Seller', $product->sellable->getSeller()->getName());
-        $this->assertEquals('Product2', $product->sellable->getProduct()->getName());
+        self::assertEquals('Seller', $product->sellable->getSeller()->getName());
+        self::assertEquals('Product2', $product->sellable->getProduct()->getName());
     }
 
     public function testSameCollectionTest(): void
@@ -713,19 +713,19 @@ class FunctionalTest extends BaseTest
         $this->dm->flush();
 
         $test = $this->dm->getRepository(SameCollection1::class)->findOneBy(['name' => 'test1']);
-        $this->assertNotNull($test);
-        $this->assertInstanceOf(SameCollection1::class, $test);
+        self::assertNotNull($test);
+        self::assertInstanceOf(SameCollection1::class, $test);
 
         $test = $this->dm->getRepository(SameCollection2::class)->findOneBy(['name' => 'test2']);
-        $this->assertNotNull($test);
-        $this->assertInstanceOf(SameCollection2::class, $test);
+        self::assertNotNull($test);
+        self::assertInstanceOf(SameCollection2::class, $test);
 
         $test = $this->dm->getRepository(SameCollection1::class)->findOneBy(['name' => 'test3']);
-        $this->assertNotNull($test);
-        $this->assertInstanceOf(SameCollection1::class, $test);
+        self::assertNotNull($test);
+        self::assertInstanceOf(SameCollection1::class, $test);
 
         $test = $this->dm->getRepository(SameCollection2::class)->findOneBy(['name' => 'test1']);
-        $this->assertNull($test);
+        self::assertNull($test);
 
         $qb     = $this->dm->createQueryBuilder([
             SameCollection1::class,
@@ -733,19 +733,19 @@ class FunctionalTest extends BaseTest
         ]);
         $q      = $qb->getQuery();
         $result = $q->execute();
-        $this->assertInstanceOf(Iterator::class, $result);
+        self::assertInstanceOf(Iterator::class, $result);
         $test = $result->toArray();
-        $this->assertCount(3, $test);
+        self::assertCount(3, $test);
 
         $test = $this->dm->getRepository(SameCollection1::class)->findAll();
-        $this->assertCount(2, $test);
+        self::assertCount(2, $test);
 
         $qb     = $this->dm->createQueryBuilder(SameCollection1::class);
         $query  = $qb->getQuery();
         $result = $query->execute();
-        $this->assertInstanceOf(Iterator::class, $result);
+        self::assertInstanceOf(Iterator::class, $result);
         $test = $result->toArray();
-        $this->assertCount(2, $test);
+        self::assertCount(2, $test);
     }
 
     public function testNotSameCollectionThrowsException(): void
@@ -783,13 +783,13 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $check = $this->dm->getRepository(EmbeddedTestLevel0::class)->find($test->id);
-        $this->assertEquals('test', $check->name);
-        $this->assertInstanceOf(EmbeddedTestLevel1::class, $check->level1[0]);
-        $this->assertInstanceOf(EmbeddedTestLevel1::class, $check->level1[1]);
-        $this->assertInstanceOf(EmbeddedTestLevel2::class, $check->level1[1]->level2[0]);
-        $this->assertInstanceOf(EmbeddedTestLevel2::class, $check->level1[1]->level2[1]);
-        $this->assertCount(2, $check->level1);
-        $this->assertCount(2, $check->level1[1]->level2);
+        self::assertEquals('test', $check->name);
+        self::assertInstanceOf(EmbeddedTestLevel1::class, $check->level1[0]);
+        self::assertInstanceOf(EmbeddedTestLevel1::class, $check->level1[1]);
+        self::assertInstanceOf(EmbeddedTestLevel2::class, $check->level1[1]->level2[0]);
+        self::assertInstanceOf(EmbeddedTestLevel2::class, $check->level1[1]->level2[1]);
+        self::assertCount(2, $check->level1);
+        self::assertCount(2, $check->level1[1]->level2);
     }
 
     public function testEmbeddedInheritance(): void
@@ -817,7 +817,7 @@ class FunctionalTest extends BaseTest
         $test->oneLevel1->level2[] = $level2;
 
         // OK, there is one level2
-        $this->assertCount(1, $test->oneLevel1->level2);
+        self::assertCount(1, $test->oneLevel1->level2);
 
         // save again
         $this->dm->flush();
@@ -827,7 +827,7 @@ class FunctionalTest extends BaseTest
         $test = $this->dm->find(EmbeddedTestLevel0b::class, $test->id);
 
         // Uh oh, the level2 was not persisted!
-        $this->assertCount(1, $test->oneLevel1->level2);
+        self::assertCount(1, $test->oneLevel1->level2);
     }
 
     public function testModifyGroupsArrayDirectly(): void
@@ -849,7 +849,7 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(User::class, $user->getId());
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
 
         // remove two of the groups and pass the groups back into the User
         $groups = $user->getGroups();
@@ -858,13 +858,13 @@ class FunctionalTest extends BaseTest
 
         $user->setGroups($groups);
 
-        $this->assertCount(1, $user->getGroups());
+        self::assertCount(1, $user->getGroups());
 
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->find(User::class, $user->getId());
-        $this->assertCount(1, $user->getGroups());
+        self::assertCount(1, $user->getGroups());
     }
 
     public function testReplaceEntireGroupsArray(): void
@@ -887,7 +887,7 @@ class FunctionalTest extends BaseTest
         $this->dm->clear();
 
         $user = $this->dm->find(User::class, $user->getId());
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
 
         // Issue is collection must be initialized
         $groups = $user->getGroups();
@@ -899,13 +899,13 @@ class FunctionalTest extends BaseTest
 
         $user->setGroups([$group2]);
 
-        $this->assertCount(1, $user->getGroups());
+        self::assertCount(1, $user->getGroups());
 
         $this->dm->flush();
         $this->dm->clear();
 
         $user = $this->dm->find(User::class, $user->getId());
-        $this->assertCount(1, $user->getGroups());
+        self::assertCount(1, $user->getGroups());
     }
 
     public function testFunctionalParentAssociations(): void
@@ -920,13 +920,13 @@ class FunctionalTest extends BaseTest
         $unitOfWork = $this->dm->getUnitOfWork();
 
         [$mapping, $document] = $unitOfWork->getParentAssociation($a->child->children[0]);
-        $this->assertSame($a->child, $document);
+        self::assertSame($a->child, $document);
 
         [$mapping, $document] = $unitOfWork->getParentAssociation($a->child->children[1]);
-        $this->assertSame($a->child, $document);
+        self::assertSame($a->child, $document);
 
         [$mapping, $document] = $unitOfWork->getParentAssociation($a->child);
-        $this->assertSame($a, $document);
+        self::assertSame($a, $document);
     }
 }
 

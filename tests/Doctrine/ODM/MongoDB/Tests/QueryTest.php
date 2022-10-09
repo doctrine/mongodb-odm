@@ -40,7 +40,7 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertEquals(['comments' => ['$slice' => [0, 10]]], $query->getQuery()['select']);
+        self::assertEquals(['comments' => ['$slice' => [0, 10]]], $query->getQuery()['select']);
 
         $query = $qb->getQuery();
         $query->execute();
@@ -62,7 +62,7 @@ class QueryTest extends BaseTest
         $qb->addOr($qb->expr()->field('firstName')->equals('Kris'));
         $qb->addOr($qb->expr()->field('firstName')->equals('Chris'));
 
-        $this->assertEquals([
+        self::assertEquals([
             '$or' => [
                 ['firstName' => 'Kris'],
                 ['firstName' => 'Chris'],
@@ -72,8 +72,8 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $users = $query->execute();
 
-        $this->assertInstanceOf(Iterator::class, $users);
-        $this->assertCount(2, $users->toArray());
+        self::assertInstanceOf(Iterator::class, $users);
+        self::assertCount(2, $users->toArray());
     }
 
     public function testReferences(): void
@@ -92,7 +92,7 @@ class QueryTest extends BaseTest
         $qb->field('bestFriend')->references($jon);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals([
+        self::assertEquals([
             'bestFriend.$ref' => 'people',
             'bestFriend.$id' => new ObjectId($jon->id),
             'bestFriend.$db' => DOCTRINE_MONGODB_DATABASE,
@@ -100,8 +100,8 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertCount(1, $query->toArray());
-        $this->assertSame($kris, $query->getSingleResult());
+        self::assertCount(1, $query->toArray());
+        self::assertSame($kris, $query->getSingleResult());
     }
 
     public function testReferencesStoreAsId(): void
@@ -120,14 +120,14 @@ class QueryTest extends BaseTest
         $qb->field('bestFriendSimple')->references($jon);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals([
+        self::assertEquals([
             'bestFriendSimple' => new ObjectId($jon->id),
         ], $queryArray);
 
         $query = $qb->getQuery();
 
-        $this->assertCount(1, $query->toArray());
-        $this->assertSame($kris, $query->getSingleResult());
+        self::assertCount(1, $query->toArray());
+        self::assertSame($kris, $query->getSingleResult());
     }
 
     public function testReferencesStoreAsDbRef(): void
@@ -146,15 +146,15 @@ class QueryTest extends BaseTest
         $qb->field('bestFriendPartial')->references($jon);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals([
+        self::assertEquals([
             'bestFriendPartial.$ref' => 'people',
             'bestFriendPartial.$id' => new ObjectId($jon->id),
         ], $queryArray);
 
         $query = $qb->getQuery();
 
-        $this->assertCount(1, $query->toArray());
-        $this->assertSame($kris, $query->getSingleResult());
+        self::assertCount(1, $query->toArray());
+        self::assertSame($kris, $query->getSingleResult());
     }
 
     public function testIncludesReferenceToWithStoreAsDbRefWithDb(): void
@@ -173,7 +173,7 @@ class QueryTest extends BaseTest
         $qb->field('friends')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals([
+        self::assertEquals([
             'friends' => [
                 '$elemMatch' => [
                     '$ref' => 'people',
@@ -185,8 +185,8 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertCount(1, $query->toArray());
-        $this->assertSame($jon, $query->getSingleResult());
+        self::assertCount(1, $query->toArray());
+        self::assertSame($jon, $query->getSingleResult());
     }
 
     public function testIncludesReferenceToWithStoreAsId(): void
@@ -208,14 +208,14 @@ class QueryTest extends BaseTest
         $qb->field('friendsSimple')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals([
+        self::assertEquals([
             'friendsSimple' =>  new ObjectId($kris->id),
         ], $queryArray);
 
         $query = $qb->getQuery();
 
-        $this->assertCount(1, $query->toArray());
-        $this->assertSame($jon, $query->getSingleResult());
+        self::assertCount(1, $query->toArray());
+        self::assertSame($jon, $query->getSingleResult());
     }
 
     public function testIncludesReferenceToWithStoreAsDbRef(): void
@@ -234,7 +234,7 @@ class QueryTest extends BaseTest
         $qb->field('friendsPartial')->includesReferenceTo($kris);
 
         $queryArray = $qb->getQueryArray();
-        $this->assertEquals([
+        self::assertEquals([
             'friendsPartial' => [
                 '$elemMatch' => [
                     '$ref' => 'people',
@@ -245,8 +245,8 @@ class QueryTest extends BaseTest
 
         $query = $qb->getQuery();
 
-        $this->assertCount(1, $query->toArray());
-        $this->assertSame($jon, $query->getSingleResult());
+        self::assertCount(1, $query->toArray());
+        self::assertSame($jon, $query->getSingleResult());
     }
 
     public function testQueryIdIn(): void
@@ -263,7 +263,7 @@ class QueryTest extends BaseTest
             ->field('_id')->in($ids);
         $query   = $qb->getQuery();
         $results = $query->toArray();
-        $this->assertCount(1, $results);
+        self::assertCount(1, $results);
     }
 
     public function testEmbeddedSet(): void
@@ -273,7 +273,7 @@ class QueryTest extends BaseTest
             ->field('testInt')->set('0')
             ->field('intfields.intone')->set('1')
             ->field('intfields.inttwo')->set('2');
-        $this->assertEquals(['testInt' => 0, 'intfields' => ['intone' => 1, 'inttwo' => 2]], $qb->getNewObj());
+        self::assertEquals(['testInt' => 0, 'intfields' => ['intone' => 1, 'inttwo' => 2]], $qb->getNewObj());
     }
 
     public function testElemMatch(): void
@@ -288,7 +288,7 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
 
         $expectedQuery = ['phonenumbers' => ['$elemMatch' => ['lastCalledBy.$id' => new ObjectId($refId)]]];
-        $this->assertEquals($expectedQuery, $query->debug('query'));
+        self::assertEquals($expectedQuery, $query->debug('query'));
     }
 
     public function testQueryWithMultipleEmbeddedDocuments(): void
@@ -297,7 +297,7 @@ class QueryTest extends BaseTest
             ->find()
             ->field('embeddedOne.embeddedOne.embeddedMany.embeddedOne.name')->equals('Foo');
         $query = $qb->getQuery();
-        $this->assertEquals(['eO.eO.e1.eO.n' => 'Foo'], $query->debug('query'));
+        self::assertEquals(['eO.eO.e1.eO.n' => 'Foo'], $query->debug('query'));
     }
 
     public function testQueryWithMultipleEmbeddedDocumentsAndReference(): void
@@ -310,8 +310,8 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertArrayHasKey('eO.eO.e1.eO.eP.pO.$id', $debug);
-        $this->assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO.$id']);
+        self::assertArrayHasKey('eO.eO.e1.eO.eP.pO.$id', $debug);
+        self::assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO.$id']);
     }
 
     public function testQueryWithMultipleEmbeddedDocumentsAndReferenceUsingDollarSign(): void
@@ -324,8 +324,8 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         $debug = $query->debug('query');
 
-        $this->assertArrayHasKey('eO.eO.e1.eO.eP.pO.$id', $debug);
-        $this->assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO.$id']);
+        self::assertArrayHasKey('eO.eO.e1.eO.eP.pO.$id', $debug);
+        self::assertEquals($identifier, $debug['eO.eO.e1.eO.eP.pO.$id']);
     }
 
     public function testSelectVsSingleCollectionInheritance(): void
@@ -340,9 +340,9 @@ class QueryTest extends BaseTest
                 ->select(['name'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
-        $this->assertNotNull($test);
-        $this->assertInstanceOf(SubProject::class, $test);
-        $this->assertEquals('SubProject', $test->getName());
+        self::assertNotNull($test);
+        self::assertInstanceOf(SubProject::class, $test);
+        self::assertEquals('SubProject', $test->getName());
     }
 
     public function testEmptySelectVsSingleCollectionInheritance(): void
@@ -357,9 +357,9 @@ class QueryTest extends BaseTest
                 ->select([])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
-        $this->assertNotNull($test);
-        $this->assertInstanceOf(SubProject::class, $test);
-        $this->assertEquals('SubProject', $test->getName());
+        self::assertNotNull($test);
+        self::assertInstanceOf(SubProject::class, $test);
+        self::assertEquals('SubProject', $test->getName());
     }
 
     public function testDiscriminatorFieldNotAddedWithoutHydration(): void
@@ -374,8 +374,8 @@ class QueryTest extends BaseTest
                 ->select(['name'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
-        $this->assertNotNull($test);
-        $this->assertEquals(['_id', 'name'], array_keys($test));
+        self::assertNotNull($test);
+        self::assertEquals(['_id', 'name'], array_keys($test));
     }
 
     public function testExcludeVsSingleCollectionInheritance(): void
@@ -390,9 +390,9 @@ class QueryTest extends BaseTest
                 ->exclude(['name', 'issues'])
                 ->field('id')->equals($p->getId())
                 ->getQuery()->getSingleResult();
-        $this->assertNotNull($test);
-        $this->assertInstanceOf(SubProject::class, $test);
-        $this->assertNull($test->getName());
+        self::assertNotNull($test);
+        self::assertInstanceOf(SubProject::class, $test);
+        self::assertNull($test->getName());
     }
 
     public function testReadOnly(): void
@@ -408,11 +408,11 @@ class QueryTest extends BaseTest
             ->readOnly(true)
             ->getQuery()->getSingleResult();
 
-        $this->assertInstanceOf(Person::class, $readOnly);
-        $this->assertNotSame($p, $readOnly);
-        $this->assertTrue($this->uow->isInIdentityMap($p));
-        $this->assertFalse($this->uow->isInIdentityMap($readOnly));
-        $this->assertFalse($this->uow->isInIdentityMap($readOnly->pet));
+        self::assertInstanceOf(Person::class, $readOnly);
+        self::assertNotSame($p, $readOnly);
+        self::assertTrue($this->uow->isInIdentityMap($p));
+        self::assertFalse($this->uow->isInIdentityMap($readOnly));
+        self::assertFalse($this->uow->isInIdentityMap($readOnly->pet));
     }
 
     public function testConstructorShouldThrowExceptionForInvalidType(): void
@@ -492,7 +492,7 @@ class QueryTest extends BaseTest
 
         $query = new Query($this->dm, new ClassMetadata(User::class), $collection, $queryArray, $options);
 
-        $this->assertSame(100, $query->execute());
+        self::assertSame(100, $query->execute());
     }
 
     public function testFindWithHint(): void
@@ -516,7 +516,7 @@ class QueryTest extends BaseTest
 
         /* Do not expect the same object returned by Collection::find(), since
          * Query::makeIterator() wraps the return value with CachingIterator. */
-        $this->assertInstanceOf(Traversable::class, $query->execute());
+        self::assertInstanceOf(Traversable::class, $query->execute());
     }
 
     public function testFindOptionInheritance(): void
@@ -548,7 +548,7 @@ class QueryTest extends BaseTest
 
         /* Do not expect the same object returned by Collection::find(), since
          * Query::makeIterator() wraps the return value with CachingIterator. */
-        $this->assertInstanceOf(Traversable::class, $query->execute());
+        self::assertInstanceOf(Traversable::class, $query->execute());
     }
 
     public function testNonRewindable(): void
@@ -571,7 +571,7 @@ class QueryTest extends BaseTest
 
         $iterator = $query->execute();
 
-        $this->assertInstanceOf(UnrewindableIterator::class, $iterator);
+        self::assertInstanceOf(UnrewindableIterator::class, $iterator);
         iterator_to_array($iterator);
 
         $this->expectException(LogicException::class);

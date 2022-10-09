@@ -19,10 +19,10 @@ class PreLoadEventArgsTest extends BaseTest
         $eventArgs     = new PreLoadEventArgs($document, $dm, $data);
         $eventArgsData =& $eventArgs->getData();
 
-        $this->assertEquals('test', $eventArgsData['name']);
+        self::assertEquals('test', $eventArgsData['name']);
 
         $eventArgsData['name'] = 'alt name';
 
-        $this->assertEquals('alt name', $data['name']);
+        self::assertEquals('alt name', $data['name']);
     }
 }

@@ -34,9 +34,9 @@ class EnsureShardingTest extends BaseTest
         $indexes    = iterator_to_array($collection->listIndexes());
         $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
-        $this->assertCount(2, $indexes);
-        $this->assertSame(['k' => 1], $indexes[1]['key']);
-        $this->assertTrue($stats['sharded']);
+        self::assertCount(2, $indexes);
+        self::assertSame(['k' => 1], $indexes[1]['key']);
+        self::assertTrue($stats['sharded']);
     }
 
     public function testEnsureShardingForNewCollectionWithoutCreatingIndexes(): void
@@ -48,9 +48,9 @@ class EnsureShardingTest extends BaseTest
         $indexes    = iterator_to_array($collection->listIndexes());
         $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
-        $this->assertCount(2, $indexes);
-        $this->assertSame(['k' => 1], $indexes[1]['key']);
-        $this->assertTrue($stats['sharded']);
+        self::assertCount(2, $indexes);
+        self::assertSame(['k' => 1], $indexes[1]['key']);
+        self::assertTrue($stats['sharded']);
     }
 
     public function testEnsureShardingForCollectionWithDocuments(): void
@@ -67,7 +67,7 @@ class EnsureShardingTest extends BaseTest
         $collection = $this->dm->getDocumentCollection($class);
         $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
-        $this->assertTrue($stats['sharded']);
+        self::assertTrue($stats['sharded']);
     }
 
     public function testEnsureShardingForCollectionWithDocumentsThrowsIndexError(): void
@@ -86,7 +86,7 @@ class EnsureShardingTest extends BaseTest
         $collection = $this->dm->getDocumentCollection($class);
         $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
-        $this->assertFalse($stats['sharded']);
+        self::assertFalse($stats['sharded']);
     }
 
     public function testEnsureShardingForCollectionWithShardingEnabled(): void
@@ -100,7 +100,7 @@ class EnsureShardingTest extends BaseTest
         $collection = $this->dm->getDocumentCollection($class);
         $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
 
-        $this->assertTrue($stats['sharded']);
+        self::assertTrue($stats['sharded']);
     }
 
     public function testEnsureDocumentShardingWithShardByReference(): void
@@ -114,9 +114,9 @@ class EnsureShardingTest extends BaseTest
         $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
         $indexes    = iterator_to_array($collection->listIndexes());
 
-        $this->assertTrue($stats['sharded']);
+        self::assertTrue($stats['sharded']);
 
-        $this->assertCount(2, $indexes);
-        $this->assertSame(['db_user.$id' => 1], $indexes[1]->getKey());
+        self::assertCount(2, $indexes);
+        self::assertSame(['db_user.$id' => 1], $indexes[1]->getKey());
     }
 }

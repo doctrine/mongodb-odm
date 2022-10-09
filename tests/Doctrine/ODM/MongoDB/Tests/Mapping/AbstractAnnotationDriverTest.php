@@ -24,49 +24,49 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $parent = $this->dm->getClassMetadata(AnnotationDriverTestParent::class);
         $child  = $this->dm->getClassMetadata(AnnotationDriverTestChild::class);
 
-        $this->assertFalse($super->hasField('id'), 'MappedSuperclass does not register its own public field');
-        $this->assertFalse($super->hasField('protected'), 'MappedSuperclass does not register its own protected field');
-        $this->assertTrue($super->hasField('private'), 'MappedSuperclass does register its own private field');
-        $this->assertFalse($super->isInheritedField('private'), 'MappedSuperclass does not inherit its own field');
-        $this->assertFalse($super->hasField('foo'), 'MappedSuperclass does not have field declared in child Document');
-        $this->assertFalse($super->hasField('bar'), 'MappedSuperclass does not have field declared in grandchild Document');
+        self::assertFalse($super->hasField('id'), 'MappedSuperclass does not register its own public field');
+        self::assertFalse($super->hasField('protected'), 'MappedSuperclass does not register its own protected field');
+        self::assertTrue($super->hasField('private'), 'MappedSuperclass does register its own private field');
+        self::assertFalse($super->isInheritedField('private'), 'MappedSuperclass does not inherit its own field');
+        self::assertFalse($super->hasField('foo'), 'MappedSuperclass does not have field declared in child Document');
+        self::assertFalse($super->hasField('bar'), 'MappedSuperclass does not have field declared in grandchild Document');
 
-        $this->assertArrayNotHasKey('declared', $super->fieldMappings['private'], 'MappedSuperclass does not track "declared" for non-inherited field');
+        self::assertArrayNotHasKey('declared', $super->fieldMappings['private'], 'MappedSuperclass does not track "declared" for non-inherited field');
 
-        $this->assertTrue($parent->hasField('id'), 'Document does have public field from MappedSuperclass parent');
-        $this->assertFalse($parent->isInheritedField('id'), 'Document does not inherit public field from MappedSuperclass parent');
-        $this->assertTrue($parent->hasField('protected'), 'Document does have protected field from MappedSuperclass parent');
-        $this->assertFalse($parent->isInheritedField('protected'), 'Document does not inherit protected field from MappedSuperclass parent');
-        $this->assertTrue($parent->hasField('private'), 'Document does have private field from MappedSuperclass parent');
+        self::assertTrue($parent->hasField('id'), 'Document does have public field from MappedSuperclass parent');
+        self::assertFalse($parent->isInheritedField('id'), 'Document does not inherit public field from MappedSuperclass parent');
+        self::assertTrue($parent->hasField('protected'), 'Document does have protected field from MappedSuperclass parent');
+        self::assertFalse($parent->isInheritedField('protected'), 'Document does not inherit protected field from MappedSuperclass parent');
+        self::assertTrue($parent->hasField('private'), 'Document does have private field from MappedSuperclass parent');
         /* MappedSuperclass fields are never considered "inherited", but the
          * field is still considered "declared" in the MappedSuperclass, since
          * we need its ReflectionProperty to access it. This is a bit weird.
          */
-        $this->assertFalse($parent->isInheritedField('private'), 'Document does not inherit private field from MappedSuperclass parent');
-        $this->assertTrue($parent->hasField('foo'), 'Document does register its own public field');
-        $this->assertFalse($parent->isInheritedField('foo'), 'Document does not inherit its own field');
-        $this->assertFalse($parent->hasField('bar'), 'Document does not have field declared in child Document');
+        self::assertFalse($parent->isInheritedField('private'), 'Document does not inherit private field from MappedSuperclass parent');
+        self::assertTrue($parent->hasField('foo'), 'Document does register its own public field');
+        self::assertFalse($parent->isInheritedField('foo'), 'Document does not inherit its own field');
+        self::assertFalse($parent->hasField('bar'), 'Document does not have field declared in child Document');
 
-        $this->assertArrayNotHasKey('declared', $parent->fieldMappings['id'], 'Document does not track "declared" for non-inherited public field from MappedSuperclass parent');
-        $this->assertArrayNotHasKey('declared', $parent->fieldMappings['protected'], 'Document does not track "declared" for non-inherited protected field from MappedSuperclass parent');
-        $this->assertEquals(AnnotationDriverTestSuper::class, $parent->fieldMappings['private']['declared'], 'Non-inherited private field from MappedSuperclass parent is declared in MappedSuperclass parent');
-        $this->assertArrayNotHasKey('declared', $parent->fieldMappings['foo'], 'Document does not track "declared" for its own public field');
+        self::assertArrayNotHasKey('declared', $parent->fieldMappings['id'], 'Document does not track "declared" for non-inherited public field from MappedSuperclass parent');
+        self::assertArrayNotHasKey('declared', $parent->fieldMappings['protected'], 'Document does not track "declared" for non-inherited protected field from MappedSuperclass parent');
+        self::assertEquals(AnnotationDriverTestSuper::class, $parent->fieldMappings['private']['declared'], 'Non-inherited private field from MappedSuperclass parent is declared in MappedSuperclass parent');
+        self::assertArrayNotHasKey('declared', $parent->fieldMappings['foo'], 'Document does not track "declared" for its own public field');
 
-        $this->assertTrue($child->hasField('id'), 'Document does have public field from MappedSuperclass grandparent');
-        $this->assertTrue($child->isInheritedField('id'), 'Document does inherit public field from MappedSuperclass grandparent');
-        $this->assertTrue($child->hasField('protected'), 'Document does have protected field from MappedSuperclass grandparent');
-        $this->assertTrue($child->isInheritedField('protected'), 'Document does inherit protected field from MappedSuperclass grandparent');
-        $this->assertTrue($child->hasField('private'), 'Document does have private field from MappedSuperclass grandparent');
-        $this->assertTrue($child->isInheritedField('private'), 'Document does inherit private field from MappedSuperclass grandparent');
-        $this->assertTrue($child->hasField('foo'), 'Document does have public field from Document parent');
-        $this->assertTrue($child->isInheritedField('foo'), 'Document field declared in Document parent is inherited');
-        $this->assertTrue($child->hasField('bar'), 'Document does register its own public field');
-        $this->assertFalse($child->isInheritedField('bar'), 'Document does not inherit its own field');
+        self::assertTrue($child->hasField('id'), 'Document does have public field from MappedSuperclass grandparent');
+        self::assertTrue($child->isInheritedField('id'), 'Document does inherit public field from MappedSuperclass grandparent');
+        self::assertTrue($child->hasField('protected'), 'Document does have protected field from MappedSuperclass grandparent');
+        self::assertTrue($child->isInheritedField('protected'), 'Document does inherit protected field from MappedSuperclass grandparent');
+        self::assertTrue($child->hasField('private'), 'Document does have private field from MappedSuperclass grandparent');
+        self::assertTrue($child->isInheritedField('private'), 'Document does inherit private field from MappedSuperclass grandparent');
+        self::assertTrue($child->hasField('foo'), 'Document does have public field from Document parent');
+        self::assertTrue($child->isInheritedField('foo'), 'Document field declared in Document parent is inherited');
+        self::assertTrue($child->hasField('bar'), 'Document does register its own public field');
+        self::assertFalse($child->isInheritedField('bar'), 'Document does not inherit its own field');
 
-        $this->assertEquals(AnnotationDriverTestParent::class, $child->fieldMappings['id']['declared'], 'Inherited public field from MappedSuperclass grandparent is declared in Document parent');
-        $this->assertEquals(AnnotationDriverTestParent::class, $child->fieldMappings['protected']['declared'], 'Inherited protected field from MappedSuperclass grandparent is declared in Document parent');
-        $this->assertEquals(AnnotationDriverTestSuper::class, $child->fieldMappings['private']['declared'], 'Inherited private field from MappedSuperclass grandparent is declared in MappedSuperclass grandparent');
-        $this->assertEquals(AnnotationDriverTestParent::class, $child->fieldMappings['foo']['declared'], 'Inherited public field from Document parent is declared in Document parent');
+        self::assertEquals(AnnotationDriverTestParent::class, $child->fieldMappings['id']['declared'], 'Inherited public field from MappedSuperclass grandparent is declared in Document parent');
+        self::assertEquals(AnnotationDriverTestParent::class, $child->fieldMappings['protected']['declared'], 'Inherited protected field from MappedSuperclass grandparent is declared in Document parent');
+        self::assertEquals(AnnotationDriverTestSuper::class, $child->fieldMappings['private']['declared'], 'Inherited private field from MappedSuperclass grandparent is declared in MappedSuperclass grandparent');
+        self::assertEquals(AnnotationDriverTestParent::class, $child->fieldMappings['foo']['declared'], 'Inherited public field from Document parent is declared in Document parent');
     }
 
     /**
@@ -92,7 +92,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = new AnnotationDriver($reader);
 
         $annotationDriver->loadMetadataForClass(stdClass::class, $cm);
-        $this->assertEquals('id', $cm->fieldMappings['id']['type']);
+        self::assertEquals('id', $cm->fieldMappings['id']['type']);
     }
 
     /**
@@ -106,7 +106,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->loadDriverForCMSDocuments();
         $afterTestReset   = $annotationDriver->getAllClassNames();
 
-        $this->assertEquals($original, $afterTestReset);
+        self::assertEquals($original, $afterTestReset);
     }
 
     /**
@@ -120,7 +120,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->loadDriverForCMSDocuments();
         $afterTestReset   = $annotationDriver->getAllClassNames();
 
-        $this->assertEquals($original, $afterTestReset);
+        self::assertEquals($original, $afterTestReset);
     }
 
     /**
@@ -131,7 +131,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->loadDriverForCMSDocuments();
         $classes          = $annotationDriver->getAllClassNames();
 
-        $this->assertContains(CmsUser::class, $classes);
+        self::assertContains(CmsUser::class, $classes);
     }
 
     /**
@@ -144,7 +144,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver = $this->loadDriverForCMSDocuments();
         $classes          = $annotationDriver->getAllClassNames();
 
-        $this->assertNotContains($extraneousClassName, $classes);
+        self::assertNotContains($extraneousClassName, $classes);
     }
 
     public function testEmbeddedClassCantHaveShardKey(): void
@@ -157,13 +157,13 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
     public function testDocumentAnnotationCanSpecifyWriteConcern(): void
     {
         $cm = $this->dm->getClassMetadata(AnnotationDriverTestWriteConcernMajority::class);
-        $this->assertEquals('majority', $cm->writeConcern);
+        self::assertEquals('majority', $cm->writeConcern);
 
         $cm = $this->dm->getClassMetadata(AnnotationDriverTestWriteConcernUnacknowledged::class);
-        $this->assertSame(0, $cm->writeConcern);
+        self::assertSame(0, $cm->writeConcern);
 
         $cm = $this->dm->getClassMetadata(ColumnWithoutType::class);
-        $this->assertNull($cm->writeConcern);
+        self::assertNull($cm->writeConcern);
     }
 
     /**

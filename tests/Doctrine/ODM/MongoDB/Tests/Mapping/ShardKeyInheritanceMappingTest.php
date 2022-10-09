@@ -26,16 +26,16 @@ class ShardKeyInheritanceMappingTest extends BaseTest
     {
         $class = $this->factory->getMetadataFor(ShardedSubclass::class);
 
-        $this->assertTrue($class->isSharded());
-        $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
+        self::assertTrue($class->isSharded());
+        self::assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
     public function testShardKeySingleCollectionInheritance(): void
     {
         $class = $this->factory->getMetadataFor(ShardedSingleCollInheritance2::class);
 
-        $this->assertTrue($class->isSharded());
-        $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
+        self::assertTrue($class->isSharded());
+        self::assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
     public function testShardKeySingleCollectionInheritanceOverriding(): void
@@ -48,16 +48,16 @@ class ShardKeyInheritanceMappingTest extends BaseTest
     {
         $class = $this->factory->getMetadataFor(ShardedCollectionPerClass2::class);
 
-        $this->assertTrue($class->isSharded());
-        $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
+        self::assertTrue($class->isSharded());
+        self::assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
     public function testShardKeyCollectionPerClassInheritanceOverriding(): void
     {
         $class = $this->factory->getMetadataFor(ShardedCollectionPerClass3::class);
 
-        $this->assertTrue($class->isSharded());
-        $this->assertEquals(['keys' => ['_id' => 'hashed'], 'options' => []], $class->getShardKey());
+        self::assertTrue($class->isSharded());
+        self::assertEquals(['keys' => ['_id' => 'hashed'], 'options' => []], $class->getShardKey());
     }
 }
 

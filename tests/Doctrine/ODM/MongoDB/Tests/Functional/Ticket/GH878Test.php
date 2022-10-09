@@ -16,7 +16,7 @@ class GH878Test extends BaseTest
 
         // should be detached as coming from cache
         $state = $this->uow->getDocumentState($document);
-        $this->assertEquals(UnitOfWork::STATE_DETACHED, $state);
+        self::assertEquals(UnitOfWork::STATE_DETACHED, $state);
         // clear to have again clear state
         $this->dm->clear();
 
@@ -25,18 +25,18 @@ class GH878Test extends BaseTest
         $this->dm->flush();
 
         $state = $this->uow->getDocumentState($first);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $state);
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $state);
 
         $second = $this->dm->merge($document);
         $this->dm->flush();
 
         $state = $this->uow->getDocumentState($second);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $state);
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $state);
 
         $someOtherDocument = new GH878OtherDocument();
 
         $state = $this->uow->getDocumentState($someOtherDocument);
-        $this->assertEquals(UnitOfWork::STATE_NEW, $state);
+        self::assertEquals(UnitOfWork::STATE_NEW, $state);
     }
 
     private function getPersistedButDetachedDocument(): GH878Document

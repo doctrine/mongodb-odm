@@ -29,7 +29,7 @@ class PreUpdateEventArgsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
         $a = $this->dm->find(Article::class, $a->getId());
-        $this->assertEquals('Changed', $a->getBody());
+        self::assertEquals('Changed', $a->getBody());
     }
 
     /**

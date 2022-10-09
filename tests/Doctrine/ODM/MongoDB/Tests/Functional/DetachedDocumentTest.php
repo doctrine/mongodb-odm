@@ -28,17 +28,17 @@ class DetachedDocumentTest extends BaseTest
 
         // $user is now detached
 
-        $this->assertFalse($this->dm->contains($user));
+        self::assertFalse($this->dm->contains($user));
 
         $user->name = 'Roman B.';
 
-        //$this->assertEquals(UnitOfWork::STATE_DETACHED, $this->dm->getUnitOfWork()->getEntityState($user));
+        //self::assertEquals(UnitOfWork::STATE_DETACHED, $this->dm->getUnitOfWork()->getEntityState($user));
 
         $user2 = $this->dm->merge($user);
 
-        $this->assertNotSame($user, $user2);
-        $this->assertTrue($this->dm->contains($user2));
-        $this->assertEquals('Roman B.', $user2->name);
+        self::assertNotSame($user, $user2);
+        self::assertTrue($this->dm->contains($user2));
+        self::assertEquals('Roman B.', $user2->name);
     }
 
     public function testSerializeUnserializeModifyMerge(): void
@@ -54,14 +54,14 @@ class DetachedDocumentTest extends BaseTest
 
         $this->dm->persist($user);
         $this->dm->flush();
-        $this->assertTrue($this->dm->contains($user));
-        $this->assertInstanceOf(PersistentCollectionInterface::class, $user->phonenumbers);
-        $this->assertTrue($user->phonenumbers->isInitialized());
+        self::assertTrue($this->dm->contains($user));
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->phonenumbers);
+        self::assertTrue($user->phonenumbers->isInitialized());
 
         $serialized = serialize($user);
 
         $this->dm->clear();
-        $this->assertFalse($this->dm->contains($user));
+        self::assertFalse($this->dm->contains($user));
         unset($user);
 
         $user = unserialize($serialized);
@@ -69,8 +69,8 @@ class DetachedDocumentTest extends BaseTest
         $ph2              = new CmsPhonenumber();
         $ph2->phonenumber = '56789';
         $user->addPhonenumber($ph2);
-        $this->assertCount(2, $user->getPhonenumbers());
-        $this->assertFalse($this->dm->contains($user));
+        self::assertCount(2, $user->getPhonenumbers());
+        self::assertFalse($this->dm->contains($user));
 
         $this->dm->persist($ph2);
 
@@ -79,17 +79,17 @@ class DetachedDocumentTest extends BaseTest
 
         $phonenumbers = $user->getPhonenumbers();
 
-        $this->assertCount(2, $phonenumbers);
-        $this->assertSame($user, $phonenumbers[0]->getUser());
-        $this->assertSame($user, $phonenumbers[1]->getUser());
+        self::assertCount(2, $phonenumbers);
+        self::assertSame($user, $phonenumbers[0]->getUser());
+        self::assertSame($user, $phonenumbers[1]->getUser());
 
         $this->dm->flush();
 
-        $this->assertTrue($this->dm->contains($user));
-        $this->assertCount(2, $user->getPhonenumbers());
+        self::assertTrue($this->dm->contains($user));
+        self::assertCount(2, $user->getPhonenumbers());
         $phonenumbers = $user->getPhonenumbers();
-        $this->assertTrue($this->dm->contains($phonenumbers[0]));
-        $this->assertTrue($this->dm->contains($phonenumbers[1]));
+        self::assertTrue($this->dm->contains($phonenumbers[0]));
+        self::assertTrue($this->dm->contains($phonenumbers[1]));
     }
 
     public function testMergeWithReference(): void
@@ -107,12 +107,12 @@ class DetachedDocumentTest extends BaseTest
 
         $cmsArticle = $this->dm->find(CmsArticle::class, $cmsArticle->id);
         assert($cmsArticle instanceof CmsArticle);
-        $this->assertInstanceOf(CmsArticle::class, $cmsArticle);
-        $this->assertSame('alcaeus', $cmsArticle->user->getUsername());
+        self::assertInstanceOf(CmsArticle::class, $cmsArticle);
+        self::assertSame('alcaeus', $cmsArticle->user->getUsername());
         $this->dm->clear();
 
         $cmsArticle = $this->dm->merge($cmsArticle);
 
-        $this->assertSame('alcaeus', $cmsArticle->user->getUsername());
+        self::assertSame('alcaeus', $cmsArticle->user->getUsername());
     }
 }

@@ -31,10 +31,10 @@ final class PrimingIteratorTest extends BaseTest
             'profileNotify' => $this->createPrimerCallback(),
         ]);
 
-        $this->assertCount(3, $iterator->toArray());
-        $this->assertCount(3, $iterator->toArray());
+        self::assertCount(3, $iterator->toArray());
+        self::assertCount(3, $iterator->toArray());
 
-        $this->assertSame([Profile::class, ProfileNotify::class], $this->callbackCalls);
+        self::assertSame([Profile::class, ProfileNotify::class], $this->callbackCalls);
     }
 
     private function createPrimerCallback(): Closure

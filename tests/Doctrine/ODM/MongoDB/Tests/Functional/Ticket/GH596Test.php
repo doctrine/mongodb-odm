@@ -44,7 +44,7 @@ class GH596Test extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expected, $query['query']);
+        self::assertEquals($expected, $query['query']);
     }
 }
 

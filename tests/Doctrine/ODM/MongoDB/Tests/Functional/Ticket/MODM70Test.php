@@ -26,8 +26,8 @@ class MODM70Test extends BaseTest
         $this->dm->refresh($avatar);
 
         $parts = $avatar->getAvatarParts();
-        $this->assertCount(2, $parts);
-        $this->assertEquals('#FFF', $parts[1]->getColor());
+        self::assertCount(2, $parts);
+        self::assertEquals('#FFF', $parts[1]->getColor());
     }
 }
 

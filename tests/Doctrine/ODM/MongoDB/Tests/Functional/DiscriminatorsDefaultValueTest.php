@@ -31,15 +31,15 @@ class DiscriminatorsDefaultValueTest extends BaseTest
         $this->dm->clear();
 
         $childWithDiscriminator = $this->dm->find(ChildDocumentWithDiscriminator::class, $firstChildWithoutDiscriminator->getId());
-        $this->assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $childWithDiscriminator);
-        $this->assertSame('firstWithoutDiscriminator', $childWithDiscriminator->getType(), 'New mapping correctly loads legacy document');
+        self::assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $childWithDiscriminator);
+        self::assertSame('firstWithoutDiscriminator', $childWithDiscriminator->getType(), 'New mapping correctly loads legacy document');
 
         $parentWithDiscriminator = $this->dm->find(ParentDocumentWithDiscriminator::class, $parentWithoutDiscriminator->getId());
-        $this->assertNotNull($parentWithDiscriminator);
-        $this->assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getReferencedChild(), 'Referenced document correctly respects defaultDiscriminatorValue in referenceOne mapping');
-        $this->assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getEmbeddedChild(), 'Embedded document correctly respects defaultDiscriminatorValue in referenceOne mapping');
-        $this->assertContainsOnlyInstancesOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getReferencedChildren(), 'Referenced document correctly respects defaultDiscriminatorValue in referenceMany mapping');
-        $this->assertContainsOnlyInstancesOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getEmbeddedChildren(), 'Embedded document correctly respects defaultDiscriminatorValue in referenceMany mapping');
+        self::assertNotNull($parentWithDiscriminator);
+        self::assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getReferencedChild(), 'Referenced document correctly respects defaultDiscriminatorValue in referenceOne mapping');
+        self::assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getEmbeddedChild(), 'Embedded document correctly respects defaultDiscriminatorValue in referenceOne mapping');
+        self::assertContainsOnlyInstancesOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getReferencedChildren(), 'Referenced document correctly respects defaultDiscriminatorValue in referenceMany mapping');
+        self::assertContainsOnlyInstancesOf(ChildDocumentWithDiscriminatorSimple::class, $parentWithDiscriminator->getEmbeddedChildren(), 'Embedded document correctly respects defaultDiscriminatorValue in referenceMany mapping');
     }
 
     /**
@@ -57,25 +57,25 @@ class DiscriminatorsDefaultValueTest extends BaseTest
         $this->dm->clear();
 
         $parentWithDiscriminator = $this->dm->find(ParentDocumentWithDiscriminator::class, $parentWithDiscriminator->getId());
-        $this->assertNotNull($parentWithDiscriminator);
-        $this->assertInstanceOf(ChildDocumentWithDiscriminatorComplex::class, $parentWithDiscriminator->getReferencedChild(), 'Referenced document respects discriminatorValue if it is present in referenceOne mapping');
-        $this->assertInstanceOf(ChildDocumentWithDiscriminatorComplex::class, $parentWithDiscriminator->getEmbeddedChild(), 'Embedded document respects discriminatorValue if it is present in referenceOne mapping');
+        self::assertNotNull($parentWithDiscriminator);
+        self::assertInstanceOf(ChildDocumentWithDiscriminatorComplex::class, $parentWithDiscriminator->getReferencedChild(), 'Referenced document respects discriminatorValue if it is present in referenceOne mapping');
+        self::assertInstanceOf(ChildDocumentWithDiscriminatorComplex::class, $parentWithDiscriminator->getEmbeddedChild(), 'Embedded document respects discriminatorValue if it is present in referenceOne mapping');
 
         // Check referenceMany mapping
         $referencedChildren = $parentWithDiscriminator->getReferencedChildren()->toArray();
-        $this->assertInstanceOf(ChildDocumentWithDiscriminatorComplex::class, $referencedChildren[0], 'Referenced document respects discriminatorValue if it is present in referenceMany mapping');
-        $this->assertSame('firstWithDiscriminator', $referencedChildren[0]->getType());
+        self::assertInstanceOf(ChildDocumentWithDiscriminatorComplex::class, $referencedChildren[0], 'Referenced document respects discriminatorValue if it is present in referenceMany mapping');
+        self::assertSame('firstWithDiscriminator', $referencedChildren[0]->getType());
 
-        $this->assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $referencedChildren[1], 'Referenced document respects discriminatorValue if it is present in referenceMany mapping');
-        $this->assertSame('secondWithDiscriminator', $referencedChildren[1]->getType());
+        self::assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $referencedChildren[1], 'Referenced document respects discriminatorValue if it is present in referenceMany mapping');
+        self::assertSame('secondWithDiscriminator', $referencedChildren[1]->getType());
 
         // Check embedMany mapping
         $referencedChildren = $parentWithDiscriminator->getEmbeddedChildren()->toArray();
-        $this->assertInstanceOf(ChildDocumentWithDiscriminatorComplex::class, $referencedChildren[0], 'Referenced document respects discriminatorValue if it is present in referenceMany mapping');
-        $this->assertSame('firstWithDiscriminator', $referencedChildren[0]->getType());
+        self::assertInstanceOf(ChildDocumentWithDiscriminatorComplex::class, $referencedChildren[0], 'Referenced document respects discriminatorValue if it is present in referenceMany mapping');
+        self::assertSame('firstWithDiscriminator', $referencedChildren[0]->getType());
 
-        $this->assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $referencedChildren[1], 'Referenced document respects discriminatorValue if it is present in referenceMany mapping');
-        $this->assertSame('secondWithDiscriminator', $referencedChildren[1]->getType());
+        self::assertInstanceOf(ChildDocumentWithDiscriminatorSimple::class, $referencedChildren[1], 'Referenced document respects discriminatorValue if it is present in referenceMany mapping');
+        self::assertSame('secondWithDiscriminator', $referencedChildren[1]->getType());
     }
 }
 

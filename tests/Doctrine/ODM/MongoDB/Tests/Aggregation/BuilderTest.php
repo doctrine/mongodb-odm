@@ -170,7 +170,7 @@ class BuilderTest extends BaseTest
             ->addStage(new TestStage($builder))
             ->out('collectionName');
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testAggregationBuilder(): void
@@ -190,14 +190,14 @@ class BuilderTest extends BaseTest
             ->sort('numPosts', 'desc')
             ->execute();
 
-        $this->assertInstanceOf(Iterator::class, $resultCursor);
+        self::assertInstanceOf(Iterator::class, $resultCursor);
 
         $results = $resultCursor->toArray();
-        $this->assertCount(2, $results);
-        $this->assertInstanceOf(BlogTagAggregation::class, $results[0]);
+        self::assertCount(2, $results);
+        self::assertInstanceOf(BlogTagAggregation::class, $results[0]);
 
-        $this->assertSame('baseball', $results[0]->tag->name);
-        $this->assertSame(3, $results[0]->numPosts);
+        self::assertSame('baseball', $results[0]->tag->name);
+        self::assertSame(3, $results[0]->numPosts);
     }
 
     public function testAggregationBuilderResetHydration(): void
@@ -218,14 +218,14 @@ class BuilderTest extends BaseTest
             ->getAggregation()
             ->getIterator();
 
-        $this->assertInstanceOf(Iterator::class, $resultCursor);
+        self::assertInstanceOf(Iterator::class, $resultCursor);
 
         $results = $resultCursor->toArray();
-        $this->assertCount(2, $results);
-        $this->assertIsArray($results[0]);
-        $this->assertInstanceOf(ObjectId::class, $results[0]['_id']['$id']);
-        $this->assertSame('Tag', $results[0]['_id']['$ref']);
-        $this->assertSame(3, $results[0]['numPosts']);
+        self::assertCount(2, $results);
+        self::assertIsArray($results[0]);
+        self::assertInstanceOf(ObjectId::class, $results[0]['_id']['$id']);
+        self::assertSame('Tag', $results[0]['_id']['$ref']);
+        self::assertSame(3, $results[0]['numPosts']);
     }
 
     public function testGetAggregation(): void
@@ -245,18 +245,18 @@ class BuilderTest extends BaseTest
             ->sort('numPosts', 'desc')
             ->getAggregation();
 
-        $this->assertInstanceOf(Aggregation::class, $aggregation);
+        self::assertInstanceOf(Aggregation::class, $aggregation);
 
         $resultCursor = $aggregation->getIterator();
 
-        $this->assertInstanceOf(Iterator::class, $resultCursor);
+        self::assertInstanceOf(Iterator::class, $resultCursor);
 
         $results = $resultCursor->toArray();
-        $this->assertCount(2, $results);
-        $this->assertInstanceOf(BlogTagAggregation::class, $results[0]);
+        self::assertCount(2, $results);
+        self::assertInstanceOf(BlogTagAggregation::class, $results[0]);
 
-        $this->assertSame('baseball', $results[0]->tag->name);
-        $this->assertSame(3, $results[0]->numPosts);
+        self::assertSame('baseball', $results[0]->tag->name);
+        self::assertSame(3, $results[0]->numPosts);
     }
 
     public function testPipelineConvertsTypes(): void
@@ -304,7 +304,7 @@ class BuilderTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testFieldNameConversion(): void
@@ -334,7 +334,7 @@ class BuilderTest extends BaseTest
             ['$replaceRoot' => ['newRoot' => '$ip']],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testBuilderAppliesFilterAndDiscriminatorWithMatchStage(): void
@@ -365,7 +365,7 @@ class BuilderTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testBuilderAppliesFilterAndDiscriminatorWithGeoNearStage(): void
@@ -396,7 +396,7 @@ class BuilderTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testBuilderWithOutStageReturnsNoData(): void
@@ -408,7 +408,7 @@ class BuilderTest extends BaseTest
             ->out('sampleCollection');
 
         $result = $builder->execute()->toArray();
-        $this->assertCount(0, $result);
+        self::assertEmpty($result);
     }
 
     public function testBuilderWithIndexStatsStageDoesNotApplyFilters(): void
@@ -417,7 +417,7 @@ class BuilderTest extends BaseTest
             ->createAggregationBuilder(BlogPost::class)
             ->indexStats();
 
-        $this->assertSame('$indexStats', array_keys($builder->getPipeline()[0])[0]);
+        self::assertSame('$indexStats', array_keys($builder->getPipeline()[0])[0]);
     }
 
     public function testNonRewindableBuilder(): void
@@ -428,7 +428,7 @@ class BuilderTest extends BaseTest
             ->rewindable(false);
 
         $iterator = $builder->execute();
-        $this->assertInstanceOf(UnrewindableIterator::class, $iterator);
+        self::assertInstanceOf(UnrewindableIterator::class, $iterator);
     }
 
     private function insertTestData(): void

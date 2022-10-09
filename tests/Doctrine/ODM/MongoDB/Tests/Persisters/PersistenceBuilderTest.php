@@ -57,7 +57,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $this->dm->refresh($testCollection);
 
-        $this->assertEquals('OK! TEST', $testCollection->test);
+        self::assertEquals('OK! TEST', $testCollection->test);
     }
 
     public function testFindWithOrOnCollectionWithDiscriminatorMap(): void
@@ -99,14 +99,14 @@ class PersistenceBuilderTest extends BaseTest
         $debug   = $query->debug('query');
         $results = $query->execute();
 
-        $this->assertInstanceOf(Iterator::class, $results);
+        self::assertInstanceOf(Iterator::class, $results);
 
         $targetClass = $this->dm->getClassMetadata(SameCollection2::class);
         $identifier1 = $targetClass->getDatabaseIdentifierValue($ids[1]);
 
-        $this->assertEquals($identifier1, $debug['_id']['$in'][1]);
+        self::assertEquals($identifier1, $debug['_id']['$in'][1]);
 
-        $this->assertCount(2, $results->toArray());
+        self::assertCount(2, $results->toArray());
     }
 
     public function testPrepareUpdateDataDoesNotIncludeId(): void
@@ -123,7 +123,7 @@ class PersistenceBuilderTest extends BaseTest
 
         $this->uow->computeChangeSets();
         $data = $this->pb->prepareUpdateData($article);
-        $this->assertFalse(isset($data['$unset']['_id']));
+        self::assertFalse(isset($data['$unset']['_id']));
     }
 
     public function testPrepareInsertDataWithCreatedReferenceOne(): void
@@ -202,7 +202,7 @@ class PersistenceBuilderTest extends BaseTest
             ],
             '$setOnInsert' => ['nullableField' => null],
         ];
-        $this->assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
+        self::assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
     }
 
     /**
@@ -233,11 +233,11 @@ class PersistenceBuilderTest extends BaseTest
     {
         foreach ($preparedData as $key => $value) {
             if ($key === '_id') {
-                $this->assertInstanceOf(ObjectId::class, $value);
+                self::assertInstanceOf(ObjectId::class, $value);
                 continue;
             }
 
-            $this->assertEquals($expectedData[$key], $value);
+            self::assertEquals($expectedData[$key], $value);
         }
 
         if (! isset($preparedData['_id'])) {
@@ -245,7 +245,7 @@ class PersistenceBuilderTest extends BaseTest
         }
 
         unset($preparedData['_id']);
-        $this->assertEquals(array_keys($expectedData), array_keys($preparedData));
+        self::assertEquals(array_keys($expectedData), array_keys($preparedData));
     }
 
     public function testAdvancedQueriesOnReferenceWithDiscriminatorMap(): void
@@ -273,16 +273,16 @@ class PersistenceBuilderTest extends BaseTest
         $query   = $qb->getQuery();
         $results = $query->execute();
 
-        $this->assertInstanceOf(Iterator::class, $results);
+        self::assertInstanceOf(Iterator::class, $results);
 
         $singleResult = $query->getSingleResult();
-        $this->assertInstanceOf(CmsComment::class, $singleResult);
+        self::assertInstanceOf(CmsComment::class, $singleResult);
 
-        $this->assertEquals($commentId, $singleResult->id);
+        self::assertEquals($commentId, $singleResult->id);
 
-        $this->assertInstanceOf(CmsArticle::class, $singleResult->article);
+        self::assertInstanceOf(CmsArticle::class, $singleResult->article);
 
-        $this->assertEquals($articleId, $singleResult->article->id);
-        $this->assertCount(1, $results->toArray());
+        self::assertEquals($articleId, $singleResult->article->id);
+        self::assertCount(1, $results->toArray());
     }
 }

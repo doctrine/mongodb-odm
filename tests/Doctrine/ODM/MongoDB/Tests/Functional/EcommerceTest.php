@@ -49,17 +49,17 @@ class EcommerceTest extends BaseTest
         $product  = $this->getProduct();
         $price    =  $product->getOption('small')->getPrice(true);
         $currency = $price->getCurrency();
-        $this->assertInstanceOf(Currency::class, $currency);
-        $this->assertCount(3, $product->getOptions());
-        $this->assertEquals(12.99, $product->getOption('small')->getPrice());
+        self::assertInstanceOf(Currency::class, $currency);
+        self::assertCount(3, $product->getOptions());
+        self::assertEquals(12.99, $product->getOption('small')->getPrice());
 
         $usdCurrency = $this->dm->getRepository(Currency::class)->findOneBy(['name' => 'USD']);
-        $this->assertNotNull($usdCurrency);
+        self::assertNotNull($usdCurrency);
         $usdCurrency->setMultiplier('2');
 
-        $this->assertInstanceOf(StockItem::class, $product->getOption('small')->getStockItem());
-        $this->assertNotNull($product->getOption('small')->getStockItem()->getId());
-        $this->assertEquals(12.99 * 2, $product->getOption('small')->getPrice());
+        self::assertInstanceOf(StockItem::class, $product->getOption('small')->getStockItem());
+        self::assertNotNull($product->getOption('small')->getStockItem()->getId());
+        self::assertEquals(12.99 * 2, $product->getOption('small')->getPrice());
     }
 
     public function testMoneyDocumentsAvailableForReference(): void
@@ -67,24 +67,24 @@ class EcommerceTest extends BaseTest
         $product  = $this->getProduct();
         $price    =  $product->getOption('small')->getPrice(true);
         $currency = $price->getCurrency();
-        $this->assertInstanceOf(Currency::class, $currency);
-        $this->assertNotNull($currency->getId());
-        $this->assertEquals($currency, $this->dm->getRepository(Currency::class)->findOneBy(['name' => Currency::USD]));
+        self::assertInstanceOf(Currency::class, $currency);
+        self::assertNotNull($currency->getId());
+        self::assertEquals($currency, $this->dm->getRepository(Currency::class)->findOneBy(['name' => Currency::USD]));
     }
 
     public function testRemoveOption(): void
     {
         $product = $this->getProduct();
 
-        $this->assertCount(3, $product->getOptions());
+        self::assertCount(3, $product->getOptions());
         $product->removeOption('small');
-        $this->assertCount(2, $product->getOptions());
+        self::assertCount(2, $product->getOptions());
         $this->dm->flush();
         $this->dm->detach($product);
         unset($product);
 
         $product = $this->getProduct();
-        $this->assertCount(2, $product->getOptions());
+        self::assertCount(2, $product->getOptions());
     }
 
     protected function getProduct(): ConfigurableProduct
@@ -94,7 +94,7 @@ class EcommerceTest extends BaseTest
             ->getQuery()
             ->execute();
 
-        $this->assertInstanceOf(Iterator::class, $products);
+        self::assertInstanceOf(Iterator::class, $products);
 
         $products->valid() ?: $products->next();
 

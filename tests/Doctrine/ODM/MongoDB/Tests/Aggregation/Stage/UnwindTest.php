@@ -16,7 +16,7 @@ class UnwindTest extends BaseTest
     {
         $unwindStage = new Unwind($this->getTestAggregationBuilder(), 'fieldName');
 
-        $this->assertSame(['$unwind' => 'fieldName'], $unwindStage->getExpression());
+        self::assertSame(['$unwind' => 'fieldName'], $unwindStage->getExpression());
     }
 
     public function testUnwindStageWithNewFields(): void
@@ -26,7 +26,7 @@ class UnwindTest extends BaseTest
             ->preserveNullAndEmptyArrays()
             ->includeArrayIndex('index');
 
-        $this->assertSame(['$unwind' => ['path' => 'fieldName', 'includeArrayIndex' => 'index', 'preserveNullAndEmptyArrays' => true]], $unwindStage->getExpression());
+        self::assertSame(['$unwind' => ['path' => 'fieldName', 'includeArrayIndex' => 'index', 'preserveNullAndEmptyArrays' => true]], $unwindStage->getExpression());
     }
 
     public function testUnwindFromBuilder(): void
@@ -34,7 +34,7 @@ class UnwindTest extends BaseTest
         $builder = $this->getTestAggregationBuilder();
         $builder->unwind('fieldName');
 
-        $this->assertSame([['$unwind' => 'fieldName']], $builder->getPipeline());
+        self::assertSame([['$unwind' => 'fieldName']], $builder->getPipeline());
     }
 
     public function testSubsequentUnwindStagesArePreserved(): void
@@ -44,6 +44,6 @@ class UnwindTest extends BaseTest
             ->unwind('fieldName')
             ->unwind('otherField');
 
-        $this->assertSame([['$unwind' => 'fieldName'], ['$unwind' => 'otherField']], $builder->getPipeline());
+        self::assertSame([['$unwind' => 'fieldName'], ['$unwind' => 'otherField']], $builder->getPipeline());
     }
 }

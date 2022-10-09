@@ -23,15 +23,15 @@ class MODM88Test extends BaseTest
         $q        = $qb->getQuery();
         $document = $q->getSingleResult();
 
-        $this->assertInstanceOf(Article::class, $document);
-        $this->assertEquals('Test Title', $document->getTitle());
-        $this->assertNull($document->getBody());
+        self::assertInstanceOf(Article::class, $document);
+        self::assertEquals('Test Title', $document->getTitle());
+        self::assertNull($document->getBody());
 
         $document->setTitle('changed');
         $this->dm->flush();
 
         $check = $this->dm->getDocumentCollection(Article::class)->findOne();
-        $this->assertEquals('changed', $check['title']);
-        $this->assertEquals('Test Body', $check['body']);
+        self::assertEquals('changed', $check['title']);
+        self::assertEquals('Test Body', $check['body']);
     }
 }

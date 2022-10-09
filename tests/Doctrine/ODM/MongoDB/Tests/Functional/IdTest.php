@@ -37,17 +37,17 @@ class IdTest extends BaseTest
 
         $this->dm->clear();
         $check1 = $this->dm->getRepository(UuidUser::class)->findOneBy(['id' => $id]);
-        $this->assertNotNull($check1);
+        self::assertNotNull($check1);
 
         $check2 = $this->dm->createQueryBuilder(UuidUser::class)
             ->field('id')->equals($id)->getQuery()->getSingleResult();
-        $this->assertNotNull($check2);
-        $this->assertSame($check1, $check2);
+        self::assertNotNull($check2);
+        self::assertSame($check1, $check2);
 
         $check3 = $this->dm->createQueryBuilder(UuidUser::class)
             ->field('name')->equals('Jonathan H. Wage')->getQuery()->getSingleResult();
-        $this->assertNotNull($check3);
-        $this->assertSame($check2, $check3);
+        self::assertNotNull($check3);
+        self::assertSame($check2, $check3);
     }
 
     public function testAlnumIdChars(): void
@@ -60,17 +60,17 @@ class IdTest extends BaseTest
 
         $this->dm->clear();
         $check1 = $this->dm->getRepository(AlnumCharsUser::class)->findOneBy(['id' => 'x']);
-        $this->assertNotNull($check1);
+        self::assertNotNull($check1);
 
         $check2 = $this->dm->createQueryBuilder(AlnumCharsUser::class)
             ->field('id')->equals('x')->getQuery()->getSingleResult();
-        $this->assertNotNull($check2);
-        $this->assertSame($check1, $check2);
+        self::assertNotNull($check2);
+        self::assertSame($check1, $check2);
 
         $check3 = $this->dm->createQueryBuilder(AlnumCharsUser::class)
             ->field('name')->equals('Kathrine R. Cage')->getQuery()->getSingleResult();
-        $this->assertNotNull($check3);
-        $this->assertSame($check2, $check3);
+        self::assertNotNull($check3);
+        self::assertSame($check2, $check3);
     }
 
     public function testCollectionId(): void
@@ -89,22 +89,22 @@ class IdTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertEquals(1, $user1->id);
-        $this->assertEquals(2, $user2->id);
+        self::assertEquals(1, $user1->id);
+        self::assertEquals(2, $user2->id);
 
-        $this->assertEquals(1, $reference1->id);
-        $this->assertEquals(2, $reference2->id);
+        self::assertEquals(1, $reference1->id);
+        self::assertEquals(2, $reference2->id);
 
         $check1 = $this->dm->getRepository(CollectionIdUser::class)->findOneBy(['id' => $user1->id]);
         $check2 = $this->dm->getRepository(CollectionIdUser::class)->findOneBy(['id' => $user2->id]);
-        $this->assertNotNull($check1);
-        $this->assertNotNull($check2);
+        self::assertNotNull($check1);
+        self::assertNotNull($check2);
 
-        $this->assertEquals('referenced 1', $check1->reference->getName());
-        $this->assertEquals('referenced 2', $check2->reference->getName());
+        self::assertEquals('referenced 1', $check1->reference->getName());
+        self::assertEquals('referenced 2', $check2->reference->getName());
 
         $check = $this->dm->getRepository(CollectionIdUser::class)->find($user1->id);
-        $this->assertNotNull($check);
+        self::assertNotNull($check);
     }
 
     public function testCollectionIdWithStartingId(): void
@@ -117,8 +117,8 @@ class IdTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertEquals(10, $user1->id);
-        $this->assertEquals(11, $user2->id);
+        self::assertEquals(10, $user1->id);
+        self::assertEquals(11, $user2->id);
     }
 
     public function testEmbeddedDocumentWithId(): void
@@ -135,31 +135,31 @@ class IdTest extends BaseTest
         $this->dm->persist($user2);
         $this->dm->flush();
 
-        $this->assertEquals(1, $user1->id);
-        $this->assertEquals(2, $user2->id);
+        self::assertEquals(1, $user1->id);
+        self::assertEquals(2, $user2->id);
 
-        $this->assertEquals(1, $user1->embedded[0]->id);
-        $this->assertEquals(2, $user1->embedded[1]->id);
+        self::assertEquals(1, $user1->embedded[0]->id);
+        self::assertEquals(2, $user1->embedded[1]->id);
 
-        $this->assertEquals(3, $user2->embedded[0]->id);
-        $this->assertEquals(4, $user2->embedded[1]->id);
+        self::assertEquals(3, $user2->embedded[0]->id);
+        self::assertEquals(4, $user2->embedded[1]->id);
     }
 
     public function testIdGeneratorInstance(): void
     {
         $class = $this->dm->getClassMetadata(UuidUser::class);
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
-        $this->assertEquals(['salt' => 'test'], $class->generatorOptions);
-        $this->assertInstanceOf(UuidGenerator::class, $class->idGenerator);
-        $this->assertEquals('test', $class->idGenerator->getSalt());
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
+        self::assertEquals(['salt' => 'test'], $class->generatorOptions);
+        self::assertInstanceOf(UuidGenerator::class, $class->idGenerator);
+        self::assertEquals('test', $class->idGenerator->getSalt());
 
         $serialized = serialize($class);
         $class      = unserialize($serialized);
 
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
-        $this->assertEquals(['salt' => 'test'], $class->generatorOptions);
-        $this->assertInstanceOf(UuidGenerator::class, $class->idGenerator);
-        $this->assertEquals('test', $class->idGenerator->getSalt());
+        self::assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
+        self::assertEquals(['salt' => 'test'], $class->generatorOptions);
+        self::assertInstanceOf(UuidGenerator::class, $class->idGenerator);
+        self::assertEquals('test', $class->idGenerator->getSalt());
     }
 
     /**
@@ -169,7 +169,7 @@ class IdTest extends BaseTest
      */
     public function testEqualButNotIdenticalIds(string $user1Id, $user2Id): void
     {
-        $this->assertNotSame($user1Id, $user2Id);
+        self::assertNotSame($user1Id, $user2Id);
 
         $user1     = new CustomIdUser(sprintf('User1 with %s ID', gettype($user1Id)));
         $user1->id = $user1Id;
@@ -182,15 +182,15 @@ class IdTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertSame($user1->id, $user1Id);
-        $this->assertSame($user2->id, $user2Id);
+        self::assertSame($user1->id, $user1Id);
+        self::assertSame($user2->id, $user2Id);
 
         $user1 = $this->dm->find(CustomIdUser::class, $user1Id);
         $user2 = $this->dm->find(CustomIdUser::class, $user2Id);
 
-        $this->assertNotSame($user1, $user2);
-        $this->assertSame($user1->id, $user1Id);
-        $this->assertSame($user2->id, $user2Id);
+        self::assertNotSame($user1, $user2);
+        self::assertSame($user1->id, $user1Id);
+        self::assertSame($user2->id, $user2Id);
     }
 
     public function provideEqualButNotIdenticalIds(): array
@@ -225,22 +225,22 @@ class IdTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->assertNotNull($object->id);
+        self::assertNotNull($object->id);
 
         if ($expectedMongoType !== null) {
             $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
-            $this->assertEquals($expectedMongoType, is_object($check['_id']) ? get_class($check['_id']) : gettype($check['_id']));
+            self::assertEquals($expectedMongoType, is_object($check['_id']) ? get_class($check['_id']) : gettype($check['_id']));
         }
 
         if ($expected !== null) {
-            $this->assertEquals($expected, $object->id);
+            self::assertEquals($expected, $object->id);
         }
 
         $object = $this->dm->find(get_class($object), $object->id);
-        $this->assertNotNull($object);
+        self::assertNotNull($object);
 
         if ($expected !== null) {
-            $this->assertEquals($expected, $object->id);
+            self::assertEquals($expected, $object->id);
         }
 
         $object->test = 'changed';
@@ -248,7 +248,7 @@ class IdTest extends BaseTest
         $this->dm->clear();
 
         $object = $this->dm->find(get_class($object), $object->id);
-        $this->assertEquals('changed', $object->test);
+        self::assertEquals('changed', $object->test);
     }
 
     public function getTestIdTypesAndStrategiesData(): array
@@ -324,8 +324,8 @@ class IdTest extends BaseTest
 
         $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
 
-        $this->assertEquals(Binary::class, get_class($check['_id']));
-        $this->assertEquals($expectedMongoBinDataType, $check['_id']->getType());
+        self::assertEquals(Binary::class, get_class($check['_id']));
+        self::assertEquals($expectedMongoBinDataType, $check['_id']->getType());
     }
 
     public function getTestBinIdsData(): array

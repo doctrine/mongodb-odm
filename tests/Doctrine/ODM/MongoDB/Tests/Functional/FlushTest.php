@@ -61,6 +61,6 @@ class FlushTest extends BaseTest
 
     protected function assertSize(int $size): void
     {
-        $this->assertEquals($size, $this->dm->getUnitOfWork()->size());
+        self::assertEquals($size, $this->dm->getUnitOfWork()->size());
     }
 }

@@ -18,7 +18,7 @@ class MODM48Test extends BaseTest
         $this->dm->clear();
 
         $a = $this->dm->find(MODM48A::class, $a->id);
-        $this->assertNotNull($a);
+        self::assertNotNull($a);
 
         $a->getB()->setVal('test');
 
@@ -26,7 +26,7 @@ class MODM48Test extends BaseTest
         $this->dm->clear();
 
         $a = $this->dm->find(MODM48A::class, $a->id);
-        $this->assertEquals('test', $a->getB()->getVal());
+        self::assertEquals('test', $a->getB()->getVal());
     }
 }
 

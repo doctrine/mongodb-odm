@@ -51,7 +51,7 @@ class MODM166Test extends BaseTest
 
         sort($phonenumbers);
 
-        $this->assertEquals(['1111', '2222'], $phonenumbers);
+        self::assertEquals(['1111', '2222'], $phonenumbers);
     }
 }
 

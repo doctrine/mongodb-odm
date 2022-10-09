@@ -18,7 +18,7 @@ class GH628Test extends BaseTest
 
         $expected = ['f.bar.baz' => 1];
 
-        $this->assertEquals($expected, $query['query']);
+        self::assertEquals($expected, $query['query']);
     }
 }
 

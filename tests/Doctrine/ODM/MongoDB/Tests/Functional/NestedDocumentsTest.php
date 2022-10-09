@@ -37,24 +37,24 @@ class NestedDocumentsTest extends BaseTest
 
         $test = $this->dm->getDocumentCollection(Order::class)->findOne();
 
-        $this->assertInstanceOf(ObjectId::class, $test['product']['_id']);
-        $this->assertEquals('Order', $test['title']);
-        $this->assertEquals('Product', $test['product']['title']);
+        self::assertInstanceOf(ObjectId::class, $test['product']['_id']);
+        self::assertEquals('Order', $test['title']);
+        self::assertEquals('Product', $test['product']['title']);
 
         $doc = $this->dm->find(Order::class, $order->id);
-        $this->assertInstanceOf(Order::class, $order);
-        $this->assertIsString($doc->product->id);
-        $this->assertEquals((string) $test['product']['_id'], $doc->product->id);
-        $this->assertEquals('Order', $doc->title);
-        $this->assertEquals('Product', $doc->product->title);
+        self::assertInstanceOf(Order::class, $order);
+        self::assertIsString($doc->product->id);
+        self::assertEquals((string) $test['product']['_id'], $doc->product->id);
+        self::assertEquals('Order', $doc->title);
+        self::assertEquals('Product', $doc->product->title);
 
         $this->dm->clear();
 
         $order = $this->dm->find(Order::class, $order->id);
-        $this->assertInstanceOf(Order::class, $order);
+        self::assertInstanceOf(Order::class, $order);
 
         $product = $this->dm->find(Product::class, $product->id);
-        $this->assertInstanceOf(Product::class, $product);
+        self::assertInstanceOf(Product::class, $product);
 
         $order->product->title = 'tesgttttt';
         $this->dm->flush();
@@ -62,11 +62,11 @@ class NestedDocumentsTest extends BaseTest
 
         $test1 = $this->dm->getDocumentCollection(Product::class)->findOne();
         $test2 = $this->dm->getDocumentCollection(Order::class)->findOne();
-        $this->assertNotEquals($test1['title'], $test2['product']['title']);
+        self::assertNotEquals($test1['title'], $test2['product']['title']);
 
         $order   = $this->dm->find(Order::class, $order->id);
         $product = $this->dm->find(Product::class, $product->id);
-        $this->assertNotEquals($product->title, $order->product->title);
+        self::assertNotEquals($product->title, $order->product->title);
     }
 
     public function testNestedCategories(): void
@@ -79,7 +79,7 @@ class NestedDocumentsTest extends BaseTest
         $this->dm->clear();
 
         $category = $this->dm->find(Category::class, $category->getId());
-        $this->assertNotNull($category);
+        self::assertNotNull($category);
         $category->setName('Root Changed');
         $children = $category->getChildren();
 
@@ -92,10 +92,10 @@ class NestedDocumentsTest extends BaseTest
         $category = $this->dm->find(Category::class, $category->getId());
 
         $children = $category->getChildren();
-        $this->assertEquals('Child 1 Changed', $children[0]->getName());
-        $this->assertEquals('Child 2 Changed', $children[0]->getChild(0)->getName());
-        $this->assertEquals('Root Changed', $category->getName());
-        $this->assertCount(2, $category->getChildren());
+        self::assertEquals('Child 1 Changed', $children[0]->getName());
+        self::assertEquals('Child 2 Changed', $children[0]->getChild(0)->getName());
+        self::assertEquals('Root Changed', $category->getName());
+        self::assertCount(2, $category->getChildren());
     }
 
     public function testNestedReference(): void
@@ -111,7 +111,7 @@ class NestedDocumentsTest extends BaseTest
 
         $test = $this->dm->getRepository(Hierarchy::class)->findOneBy(['name' => 'Root']);
 
-        $this->assertNotNull($test);
+        self::assertNotNull($test);
         $test->getChild('Child 1')->setName('Child 1 Changed');
         $test->getChild('Child 2')->setName('Child 2 Changed');
         $test->setName('Root Changed');
@@ -121,22 +121,22 @@ class NestedDocumentsTest extends BaseTest
         $this->dm->clear();
 
         $test = $this->dm->find(Hierarchy::class, $test->getId());
-        $this->assertNotNull($test);
-        $this->assertEquals('Root Changed', $test->getName());
-        $this->assertEquals('Child 1 Changed', $test->getChild(0)->getName());
-        $this->assertEquals('Child 2 Changed', $test->getChild(1)->getName());
+        self::assertNotNull($test);
+        self::assertEquals('Root Changed', $test->getName());
+        self::assertEquals('Child 1 Changed', $test->getChild(0)->getName());
+        self::assertEquals('Child 2 Changed', $test->getChild(1)->getName());
 
         $child3 = $this->dm->getRepository(Hierarchy::class)->findOneBy(['name' => 'Child 3']);
-        $this->assertNotNull($child3);
+        self::assertNotNull($child3);
         $child3->setName('Child 3 Changed');
         $this->dm->flush();
 
         $child3 = $this->dm->getRepository(Hierarchy::class)->findOneBy(['name' => 'Child 3 Changed']);
-        $this->assertNotNull($child3);
-        $this->assertEquals('Child 3 Changed', $child3->getName());
+        self::assertNotNull($child3);
+        self::assertEquals('Child 3 Changed', $child3->getName());
 
         $test = $this->dm->getDocumentCollection(Hierarchy::class)->findOne(['name' => 'Child 1 Changed']);
-        $this->assertArrayNotHasKey('children', $test, 'Test empty array is not stored');
+        self::assertArrayNotHasKey('children', $test, 'Test empty array is not stored');
     }
 }
 

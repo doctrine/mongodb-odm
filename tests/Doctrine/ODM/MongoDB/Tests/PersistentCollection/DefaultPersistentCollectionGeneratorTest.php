@@ -29,21 +29,21 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
     {
         $class = $this->generator->loadClass(CollNoReturnType::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollNoReturnType(), $this->dm, $this->uow);
-        $this->assertInstanceOf(CollNoReturnType::class, $coll);
+        self::assertInstanceOf(CollNoReturnType::class, $coll);
     }
 
     public function testWithReturnType(): void
     {
         $class = $this->generator->loadClass(CollWithReturnType::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollWithReturnType(), $this->dm, $this->uow);
-        $this->assertInstanceOf(CollWithReturnType::class, $coll);
+        self::assertInstanceOf(CollWithReturnType::class, $coll);
     }
 
     public function testWithNullableReturnType(): void
     {
         $class = $this->generator->loadClass(CollWithNullableReturnType::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollWithNullableReturnType(), $this->dm, $this->uow);
-        $this->assertInstanceOf(CollWithNullableReturnType::class, $coll);
+        self::assertInstanceOf(CollWithNullableReturnType::class, $coll);
     }
 
     /**
@@ -53,7 +53,7 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
     {
         $class = $this->generator->loadClass(CollWithPHP80Types::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollWithPHP80Types(), $this->dm, $this->uow);
-        $this->assertInstanceOf(CollWithPHP80Types::class, $coll);
+        self::assertInstanceOf(CollWithPHP80Types::class, $coll);
     }
 
     /**
@@ -63,6 +63,6 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
     {
         $class = $this->generator->loadClass(CollWithPHP81Types::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollWithPHP81Types(), $this->dm, $this->uow);
-        $this->assertInstanceOf(CollWithPHP81Types::class, $coll);
+        self::assertInstanceOf(CollWithPHP81Types::class, $coll);
     }
 }

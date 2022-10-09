@@ -37,7 +37,7 @@ class GH560Test extends BaseTest
             [Events::postPersist, GH560Document::class],
         ];
 
-        $this->assertEquals($called, $listener->called);
+        self::assertEquals($called, $listener->called);
     }
 
     /**
@@ -53,7 +53,7 @@ class GH560Test extends BaseTest
         $this->dm->clear();
 
         $doc = $this->dm->find(GH560Document::class, $id);
-        $this->assertEquals($id, $doc->id);
+        self::assertEquals($id, $doc->id);
     }
 
     /**
@@ -83,7 +83,7 @@ class GH560Test extends BaseTest
             [Events::postUpdate, GH560Document::class],
         ];
 
-        $this->assertEquals($called, $listener->called);
+        self::assertEquals($called, $listener->called);
     }
 
     public function provideDocumentIds(): array

@@ -80,7 +80,7 @@ class PersistentCollectionTest extends BaseTest
 
         $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('phonebooks'));
         $unserialized->setDocumentManager($this->dm);
-        $this->assertInstanceOf(ClassMetadata::class, $unserialized->getTypeClass());
+        self::assertInstanceOf(ClassMetadata::class, $unserialized->getTypeClass());
     }
 
     public function testMongoDataIsPreservedDuringSerialization(): void
@@ -106,7 +106,7 @@ class PersistentCollectionTest extends BaseTest
         $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('groups'));
         $unserialized->setDocumentManager($this->dm);
 
-        $this->assertCount(2, $unserialized->getMongoData());
+        self::assertCount(2, $unserialized->getMongoData());
     }
 
     public function testSnapshotIsPreservedDuringSerialization(): void
@@ -116,9 +116,9 @@ class PersistentCollectionTest extends BaseTest
         $collection->add($obj);
         $collection->takeSnapshot();
 
-        $this->assertCount(1, $collection->getSnapshot());
-        $this->assertFalse($collection->isDirty());
-        $this->assertCount(1, $collection->unwrap());
+        self::assertCount(1, $collection->getSnapshot());
+        self::assertFalse($collection->isDirty());
+        self::assertCount(1, $collection->unwrap());
 
         $serialized   = serialize($collection);
         $unserialized = unserialize($serialized);
@@ -127,9 +127,9 @@ class PersistentCollectionTest extends BaseTest
         $unserialized->setOwner(new User(), $this->dm->getClassMetadata(User::class)->getFieldMapping('groups'));
         $unserialized->setDocumentManager($this->dm);
 
-        $this->assertCount(1, $unserialized->getSnapshot());
-        $this->assertFalse($unserialized->isDirty());
-        $this->assertCount(1, $unserialized->unwrap());
+        self::assertCount(1, $unserialized->getSnapshot());
+        self::assertFalse($unserialized->isDirty());
+        self::assertCount(1, $unserialized->unwrap());
     }
 
     /**
@@ -149,7 +149,7 @@ class PersistentCollectionTest extends BaseTest
         $collection->takeSnapshot();
         $callback($collection);
 
-        $this->assertSame($expected, $collection->getDeletedDocuments());
+        self::assertSame($expected, $collection->getDeletedDocuments());
     }
 
     public static function dataGetDeletedDocuments(): array
@@ -223,7 +223,7 @@ class PersistentCollectionTest extends BaseTest
         $collection->takeSnapshot();
         $callback($collection);
 
-        $this->assertSame($expected, $collection->getInsertedDocuments());
+        self::assertSame($expected, $collection->getInsertedDocuments());
     }
 
     public static function dataGetInsertedDocuments(): array
@@ -271,7 +271,7 @@ class PersistentCollectionTest extends BaseTest
         $collection = $this->getMockCollection();
         $collection->expects($this->once())->method('offsetExists')->willReturn(false);
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
-        $this->assertArrayNotHasKey(0, $pcoll);
+        self::assertArrayNotHasKey(0, $pcoll);
     }
 
     public function testOffsetGetIsForwarded(): void
@@ -280,7 +280,7 @@ class PersistentCollectionTest extends BaseTest
         $object     = new stdClass();
         $collection->expects($this->once())->method('offsetGet')->willReturn($object);
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
-        $this->assertSame($object, $pcoll[0]);
+        self::assertSame($object, $pcoll[0]);
     }
 
     public function testOffsetUnsetIsForwarded(): void
@@ -289,7 +289,7 @@ class PersistentCollectionTest extends BaseTest
         $collection->expects($this->once())->method('offsetUnset');
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         unset($pcoll[0]);
-        $this->assertTrue($pcoll->isDirty());
+        self::assertTrue($pcoll->isDirty());
     }
 
     public function testRemoveIsForwarded(): void
@@ -298,7 +298,7 @@ class PersistentCollectionTest extends BaseTest
         $collection->expects($this->once())->method('remove')->willReturn(2);
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll->remove(0);
-        $this->assertTrue($pcoll->isDirty());
+        self::assertTrue($pcoll->isDirty());
     }
 
     public function testOffsetSetIsForwarded(): void
@@ -320,7 +320,7 @@ class PersistentCollectionTest extends BaseTest
         $collection->expects($this->once())->method('isEmpty')->willReturn(true);
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll->setInitialized(true);
-        $this->assertTrue($pcoll->isEmpty());
+        self::assertTrue($pcoll->isEmpty());
     }
 
     public function testIsEmptyUsesCountWhenCollectionIsNotInitialized(): void
@@ -330,7 +330,7 @@ class PersistentCollectionTest extends BaseTest
         $collection->expects($this->once())->method('count')->willReturn(0);
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll->setInitialized(false);
-        $this->assertTrue($pcoll->isEmpty());
+        self::assertTrue($pcoll->isEmpty());
     }
 
     /**

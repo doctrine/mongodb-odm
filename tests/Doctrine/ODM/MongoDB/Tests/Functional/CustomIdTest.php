@@ -22,29 +22,29 @@ class CustomIdTest extends BaseTest
         $user->setPassword('changeme');
         $user->setAccount($account);
 
-        $this->assertEquals('userId', $user->getId());
+        self::assertEquals('userId', $user->getId());
 
         $this->dm->persist($user);
         $this->dm->flush();
 
-        $this->assertEquals('userId', $user->getId());
+        self::assertEquals('userId', $user->getId());
 
         $this->dm->clear();
 
         $user = $this->dm->find(CustomUser::class, $user->getId());
 
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
 
-        $this->assertEquals('userId', $user->getId());
+        self::assertEquals('userId', $user->getId());
 
         $this->dm->clear();
         unset($user);
 
         $user = $this->dm->find(CustomUser::class, 'userId');
 
-        $this->assertNotNull($user);
+        self::assertNotNull($user);
 
-        $this->assertEquals('userId', $user->getId());
+        self::assertEquals('userId', $user->getId());
     }
 
     public function testBatchInsertCustomId(): void
@@ -79,7 +79,7 @@ class CustomIdTest extends BaseTest
 
         $users = $this->dm->getRepository(User::class)->findAll();
 
-        $this->assertCount(2, $users);
+        self::assertCount(2, $users);
 
         $results = ['userId' => false];
         foreach ($users as $user) {
@@ -87,25 +87,25 @@ class CustomIdTest extends BaseTest
                 $results['userId'] = true;
             }
 
-            $this->assertNotNull($user->getId());
+            self::assertNotNull($user->getId());
             $results['ids'][] = $user->getId();
         }
 
         $users = $this->dm->getRepository(CustomUser::class)->findAll();
 
-        $this->assertCount(1, $users);
+        self::assertCount(1, $users);
 
         foreach ($users as $user) {
             if ($user->getId() === 'userId') {
                 $results['userId'] = true;
             }
 
-            $this->assertNotNull($user->getId());
+            self::assertNotNull($user->getId());
             $results['ids'][] = $user->getId();
         }
 
-        $this->assertTrue($results['userId']);
-        $this->assertCount(3, $results['ids']);
+        self::assertTrue($results['userId']);
+        self::assertCount(3, $results['ids']);
     }
 
     public function testFindUser(): void
@@ -140,14 +140,14 @@ class CustomIdTest extends BaseTest
 
         $user = $this->dm->find(CustomUser::class, 'userId');
 
-        $this->assertNotNull($user);
-        $this->assertEquals('userId', $user->getId());
-        $this->assertEquals('user1', $user->getUsername());
+        self::assertNotNull($user);
+        self::assertEquals('userId', $user->getId());
+        self::assertEquals('user1', $user->getUsername());
 
         $this->dm->clear();
         unset($user);
 
-        $this->assertNull($this->dm->find(User::class, 'userId'));
-        $this->assertNull($this->dm->find(CustomUser::class, 'asd'));
+        self::assertNull($this->dm->find(User::class, 'userId'));
+        self::assertNull($this->dm->find(CustomUser::class, 'asd'));
     }
 }

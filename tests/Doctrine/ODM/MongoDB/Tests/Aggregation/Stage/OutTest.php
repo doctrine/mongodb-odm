@@ -22,7 +22,7 @@ class OutTest extends BaseTest
             ['$out' => 'users'],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testOutStageWithCollectionName(): void
@@ -35,7 +35,7 @@ class OutTest extends BaseTest
             ['$out' => 'someRandomCollectionName'],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+        self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testOutStageWithShardedClassName(): void
@@ -53,6 +53,6 @@ class OutTest extends BaseTest
             ->out('someCollection')
             ->out('otherCollection');
 
-        $this->assertSame([['$out' => 'otherCollection']], $builder->getPipeline());
+        self::assertSame([['$out' => 'otherCollection']], $builder->getPipeline());
     }
 }

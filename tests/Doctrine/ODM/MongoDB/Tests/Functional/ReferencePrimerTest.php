@@ -96,17 +96,17 @@ class ReferencePrimerTest extends BaseTest
             ->field('groups')->prime(true);
 
         foreach ($qb->getQuery() as $user) {
-            $this->assertInstanceOf(GhostObjectInterface::class, $user->getAccount());
-            $this->assertTrue($user->getAccount()->isProxyInitialized());
+            self::assertInstanceOf(GhostObjectInterface::class, $user->getAccount());
+            self::assertTrue($user->getAccount()->isProxyInitialized());
 
-            $this->assertCount(2, $user->getGroups());
+            self::assertCount(2, $user->getGroups());
 
             /* Since the Groups are primed before the PersistentCollection is
              * initialized, they will not be hydrated as proxy objects.
              */
             foreach ($user->getGroups() as $group) {
-                $this->assertNotInstanceOf(GhostObjectInterface::class, $group);
-                $this->assertInstanceOf(Group::class, $group);
+                self::assertNotInstanceOf(GhostObjectInterface::class, $group);
+                self::assertInstanceOf(Group::class, $group);
             }
         }
     }
@@ -134,14 +134,14 @@ class ReferencePrimerTest extends BaseTest
             ->field('users')->prime(true);
 
         foreach ($qb->getQuery() as $simpleUser) {
-            $this->assertInstanceOf(GhostObjectInterface::class, $simpleUser->getUser());
-            $this->assertTrue($simpleUser->getUser()->isProxyInitialized());
+            self::assertInstanceOf(GhostObjectInterface::class, $simpleUser->getUser());
+            self::assertTrue($simpleUser->getUser()->isProxyInitialized());
 
-            $this->assertCount(2, $simpleUser->getUsers());
+            self::assertCount(2, $simpleUser->getUsers());
 
             foreach ($simpleUser->getUsers() as $user) {
-                $this->assertNotInstanceOf(GhostObjectInterface::class, $user);
-                $this->assertInstanceOf(User::class, $user);
+                self::assertNotInstanceOf(GhostObjectInterface::class, $user);
+                self::assertInstanceOf(User::class, $user);
             }
         }
     }
@@ -189,21 +189,21 @@ class ReferencePrimerTest extends BaseTest
             ->field('embeddedDocs.referencedDocs')->prime(true);
 
         foreach ($qb->getQuery() as $root) {
-            $this->assertNotInstanceOf(GhostObjectInterface::class, $root->embeddedDoc);
-            $this->assertInstanceOf(EmbeddedWhichReferences::class, $root->embeddedDoc);
+            self::assertNotInstanceOf(GhostObjectInterface::class, $root->embeddedDoc);
+            self::assertInstanceOf(EmbeddedWhichReferences::class, $root->embeddedDoc);
 
-            $this->assertCount(2, $root->embeddedDocs);
+            self::assertCount(2, $root->embeddedDocs);
             foreach ($root->embeddedDocs as $embeddedDoc) {
-                $this->assertNotInstanceOf(GhostObjectInterface::class, $embeddedDoc);
-                $this->assertInstanceOf(EmbeddedWhichReferences::class, $embeddedDoc);
+                self::assertNotInstanceOf(GhostObjectInterface::class, $embeddedDoc);
+                self::assertInstanceOf(EmbeddedWhichReferences::class, $embeddedDoc);
 
-                $this->assertInstanceOf(GhostObjectInterface::class, $embeddedDoc->referencedDoc);
-                $this->assertTrue($embeddedDoc->referencedDoc->isProxyInitialized());
+                self::assertInstanceOf(GhostObjectInterface::class, $embeddedDoc->referencedDoc);
+                self::assertTrue($embeddedDoc->referencedDoc->isProxyInitialized());
 
-                $this->assertCount(2, $embeddedDoc->referencedDocs);
+                self::assertCount(2, $embeddedDoc->referencedDocs);
                 foreach ($embeddedDoc->referencedDocs as $referencedDoc) {
-                    $this->assertNotInstanceOf(GhostObjectInterface::class, $referencedDoc);
-                    $this->assertInstanceOf(Reference::class, $referencedDoc);
+                    self::assertNotInstanceOf(GhostObjectInterface::class, $referencedDoc);
+                    self::assertInstanceOf(Reference::class, $referencedDoc);
                 }
             }
         }
@@ -252,39 +252,39 @@ class ReferencePrimerTest extends BaseTest
         foreach ($qb->getQuery() as $referenceUser) {
             assert($referenceUser instanceof ReferenceUser);
             $user = $referenceUser->getUser();
-            $this->assertInstanceOf(User::class, $user);
-            $this->assertInstanceOf(GhostObjectInterface::class, $user);
-            $this->assertTrue($user->isProxyInitialized());
+            self::assertInstanceOf(User::class, $user);
+            self::assertInstanceOf(GhostObjectInterface::class, $user);
+            self::assertTrue($user->isProxyInitialized());
 
-            $this->assertCount(1, $referenceUser->getUsers());
+            self::assertCount(1, $referenceUser->getUsers());
 
             foreach ($referenceUser->getUsers() as $user) {
-                $this->assertNotInstanceOf(GhostObjectInterface::class, $user);
-                $this->assertInstanceOf(User::class, $user);
+                self::assertNotInstanceOf(GhostObjectInterface::class, $user);
+                self::assertInstanceOf(User::class, $user);
             }
 
             $parentUser = $referenceUser->getParentUser();
-            $this->assertInstanceOf(GhostObjectInterface::class, $parentUser);
-            $this->assertInstanceOf(User::class, $parentUser);
-            $this->assertTrue($parentUser->isProxyInitialized());
+            self::assertInstanceOf(GhostObjectInterface::class, $parentUser);
+            self::assertInstanceOf(User::class, $parentUser);
+            self::assertTrue($parentUser->isProxyInitialized());
 
-            $this->assertCount(1, $referenceUser->getParentUsers());
+            self::assertCount(1, $referenceUser->getParentUsers());
 
             foreach ($referenceUser->getParentUsers() as $user) {
-                $this->assertNotInstanceOf(GhostObjectInterface::class, $user);
-                $this->assertInstanceOf(User::class, $user);
+                self::assertNotInstanceOf(GhostObjectInterface::class, $user);
+                self::assertInstanceOf(User::class, $user);
             }
 
             $otherUser = $referenceUser->getOtherUser();
-            $this->assertInstanceOf(User::class, $otherUser);
-            $this->assertInstanceOf(GhostObjectInterface::class, $otherUser);
-            $this->assertTrue($otherUser->isProxyInitialized());
+            self::assertInstanceOf(User::class, $otherUser);
+            self::assertInstanceOf(GhostObjectInterface::class, $otherUser);
+            self::assertTrue($otherUser->isProxyInitialized());
 
-            $this->assertCount(1, $referenceUser->getOtherUsers());
+            self::assertCount(1, $referenceUser->getOtherUsers());
 
             foreach ($referenceUser->getOtherUsers() as $user) {
-                $this->assertNotInstanceOf(GhostObjectInterface::class, $user);
-                $this->assertInstanceOf(User::class, $user);
+                self::assertNotInstanceOf(GhostObjectInterface::class, $user);
+                self::assertInstanceOf(User::class, $user);
             }
         }
     }
@@ -310,11 +310,11 @@ class ReferencePrimerTest extends BaseTest
         foreach ($qb->getQuery() as $user) {
             $favorites = $user->getFavorites()->toArray();
 
-            $this->assertNotInstanceOf(GhostObjectInterface::class, $favorites[0]);
-            $this->assertInstanceOf(Group::class, $favorites[0]);
+            self::assertNotInstanceOf(GhostObjectInterface::class, $favorites[0]);
+            self::assertInstanceOf(Group::class, $favorites[0]);
 
-            $this->assertNotInstanceOf(GhostObjectInterface::class, $favorites[1]);
-            $this->assertInstanceOf(Project::class, $favorites[1]);
+            self::assertNotInstanceOf(GhostObjectInterface::class, $favorites[1]);
+            self::assertInstanceOf(Project::class, $favorites[1]);
         }
     }
 
@@ -332,8 +332,8 @@ class ReferencePrimerTest extends BaseTest
             ->field('server')->prime(true);
 
         foreach ($qb->getQuery() as $agent) {
-            $this->assertInstanceOf(GhostObjectInterface::class, $agent->server);
-            $this->assertTrue($agent->server->isProxyInitialized());
+            self::assertInstanceOf(GhostObjectInterface::class, $agent->server);
+            self::assertTrue($agent->server->isProxyInitialized());
         }
     }
 
@@ -358,15 +358,15 @@ class ReferencePrimerTest extends BaseTest
             ->field('groups')->prime($primer);
 
         foreach ($qb->getQuery() as $user) {
-            $this->assertCount(2, $user->getGroups());
+            self::assertCount(2, $user->getGroups());
 
             foreach ($user->getGroups() as $group) {
-                $this->assertNotInstanceOf(GhostObjectInterface::class, $group);
-                $this->assertInstanceOf(Group::class, $group);
+                self::assertNotInstanceOf(GhostObjectInterface::class, $group);
+                self::assertInstanceOf(Group::class, $group);
             }
         }
 
-        $this->assertEquals(0, $invoked, 'Primer was not invoked when all references were already managed.');
+        self::assertEquals(0, $invoked, 'Primer was not invoked when all references were already managed.');
     }
 
     public function testPrimeReferencesInvokesPrimer(): void
@@ -397,15 +397,15 @@ class ReferencePrimerTest extends BaseTest
             ->getQuery()
             ->toArray();
 
-        $this->assertCount(2, $invokedArgs, 'Primer was invoked once for each referenced class.');
-        $this->assertArrayHasKey(Query::HINT_READ_PREFERENCE, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
-        $this->assertSame($readPreference, $invokedArgs[0][3][Query::HINT_READ_PREFERENCE], 'Primer was invoked with UnitOfWork hints from original query.');
+        self::assertCount(2, $invokedArgs, 'Primer was invoked once for each referenced class.');
+        self::assertArrayHasKey(Query::HINT_READ_PREFERENCE, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
+        self::assertSame($readPreference, $invokedArgs[0][3][Query::HINT_READ_PREFERENCE], 'Primer was invoked with UnitOfWork hints from original query.');
 
         $accountIds = [$account->getId()];
         $groupIds   = [$group1->getId(), $group2->getId()];
 
-        $this->assertEquals($accountIds, $invokedArgs[0][2]);
-        $this->assertEquals($groupIds, $invokedArgs[1][2]);
+        self::assertEquals($accountIds, $invokedArgs[0][2]);
+        self::assertEquals($groupIds, $invokedArgs[1][2]);
     }
 
     public function testPrimeReferencesInFindAndModifyResult(): void
@@ -433,11 +433,11 @@ class ReferencePrimerTest extends BaseTest
 
         assert($user instanceof User);
 
-        $this->assertCount(1, $user->getGroups());
+        self::assertCount(1, $user->getGroups());
 
         foreach ($user->getGroups() as $group) {
-            $this->assertNotInstanceOf(GhostObjectInterface::class, $group);
-            $this->assertInstanceOf(Group::class, $group);
+            self::assertNotInstanceOf(GhostObjectInterface::class, $group);
+            self::assertInstanceOf(Group::class, $group);
         }
     }
 
@@ -464,12 +464,12 @@ class ReferencePrimerTest extends BaseTest
         assert($user instanceof User);
         $phonenumbers = $user->getPhonenumbers();
 
-        $this->assertCount(1, $phonenumbers);
+        self::assertCount(1, $phonenumbers);
 
         $phonenumber = $phonenumbers->current();
 
-        $this->assertNotInstanceOf(GhostObjectInterface::class, $phonenumber);
-        $this->assertInstanceOf(Phonenumber::class, $phonenumber);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $phonenumber);
+        self::assertInstanceOf(Phonenumber::class, $phonenumber);
     }
 
     public function testPrimeEmbeddedReferenceTwoLevelsDeep(): void
@@ -519,9 +519,9 @@ class ReferencePrimerTest extends BaseTest
 
         $currency = $money->getCurrency();
 
-        $this->assertInstanceOf(GhostObjectInterface::class, $currency);
-        $this->assertInstanceOf(Currency::class, $currency);
-        $this->assertTrue($currency->isProxyInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $currency);
+        self::assertInstanceOf(Currency::class, $currency);
+        self::assertTrue($currency->isProxyInitialized());
     }
 
     public function testPrimeReferencesInReferenceMany(): void
@@ -544,11 +544,11 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->clear();
 
         $post = $this->dm->find(BlogPost::class, $post->id);
-        $this->assertInstanceOf(BlogPost::class, $post);
+        self::assertInstanceOf(BlogPost::class, $post);
 
         $comment = $post->comments->first();
-        $this->assertInstanceOf(GhostObjectInterface::class, $comment->author);
-        $this->assertTrue($comment->author->isProxyInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $comment->author);
+        self::assertTrue($comment->author->isProxyInitialized());
     }
 
     public function testPrimeReferencesInReferenceManyWithRepositoryMethodEager(): void
@@ -571,10 +571,10 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->clear();
 
         $post = $this->dm->find(BlogPost::class, $post->id);
-        $this->assertInstanceOf(BlogPost::class, $post);
+        self::assertInstanceOf(BlogPost::class, $post);
 
         $comment = $post->repoCommentsWithPrimer->first();
-        $this->assertInstanceOf(GhostObjectInterface::class, $comment->author);
-        $this->assertTrue($comment->author->isProxyInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $comment->author);
+        self::assertTrue($comment->author->isProxyInitialized());
     }
 }

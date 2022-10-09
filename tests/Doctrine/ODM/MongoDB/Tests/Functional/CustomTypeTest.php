@@ -34,7 +34,7 @@ class CustomTypeTest extends BaseTest
 
         $country = $this->dm->find(Country::class, $country->id);
 
-        $this->assertContainsOnly('DateTime', $country->nationalHolidays);
+        self::assertContainsOnly('DateTime', $country->nationalHolidays);
     }
 
     public function testConvertToDatabaseValueExpectsArray(): void

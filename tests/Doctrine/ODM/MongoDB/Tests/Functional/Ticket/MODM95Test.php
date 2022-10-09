@@ -26,23 +26,23 @@ class MODM95Test extends BaseTest
 
         $testDoc = $this->dm->find(MODM95TestDocument::class, $testDoc->id);
 
-        $this->assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
+        self::assertEquals($embeddedDocuments, $testDoc->embeddedDocuments->toArray());
 
         $this->dm->remove($testDoc);
         $this->dm->flush();
         $this->dm->clear();
 
         $testDocLoad = $this->dm->find(MODM95TestDocument::class, $testDoc->id);
-        $this->assertNull($testDocLoad);
+        self::assertNull($testDocLoad);
 
         $this->dm->persist($testDoc);
         $this->dm->flush();
         $this->dm->clear();
 
         $testDocLoad = $this->dm->find(MODM95TestDocument::class, $testDoc->id);
-        $this->assertNotNull($testDocLoad);
+        self::assertNotNull($testDocLoad);
 
-        $this->assertEquals($embeddedDocuments, $testDocLoad->embeddedDocuments->toArray());
+        self::assertEquals($embeddedDocuments, $testDocLoad->embeddedDocuments->toArray());
     }
 }
 

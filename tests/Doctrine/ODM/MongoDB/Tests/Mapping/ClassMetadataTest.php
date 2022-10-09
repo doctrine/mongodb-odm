@@ -54,13 +54,13 @@ class ClassMetadataTest extends BaseTest
         $cm = new ClassMetadata(CmsUser::class);
 
         // Test initial state
-        $this->assertCount(0, $cm->getReflectionProperties());
-        $this->assertInstanceOf(ReflectionClass::class, $cm->reflClass);
-        $this->assertEquals(CmsUser::class, $cm->name);
-        $this->assertEquals(CmsUser::class, $cm->rootDocumentName);
-        $this->assertEquals([], $cm->subClasses);
-        $this->assertEquals([], $cm->parentClasses);
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
+        self::assertEmpty($cm->getReflectionProperties());
+        self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
+        self::assertEquals(CmsUser::class, $cm->name);
+        self::assertEquals(CmsUser::class, $cm->rootDocumentName);
+        self::assertEquals([], $cm->subClasses);
+        self::assertEquals([], $cm->parentClasses);
+        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
 
         // Customize state
         $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION);
@@ -81,49 +81,49 @@ class ClassMetadataTest extends BaseTest
         $cm->setValidator(toPHP(fromJSON($validatorJson)));
         $cm->setValidationAction(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN);
         $cm->setValidationLevel(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF);
-        $this->assertIsArray($cm->getFieldMapping('phonenumbers'));
-        $this->assertCount(1, $cm->fieldMappings);
-        $this->assertCount(1, $cm->associationMappings);
+        self::assertIsArray($cm->getFieldMapping('phonenumbers'));
+        self::assertCount(1, $cm->fieldMappings);
+        self::assertCount(1, $cm->associationMappings);
 
         $serialized = serialize($cm);
         $cm         = unserialize($serialized);
 
         // Check state
-        $this->assertGreaterThan(0, $cm->getReflectionProperties());
-        $this->assertInstanceOf(ReflectionClass::class, $cm->reflClass);
-        $this->assertEquals(CmsUser::class, $cm->name);
-        $this->assertEquals(stdClass::class, $cm->rootDocumentName);
-        $this->assertEquals([User::class, UserName::class], $cm->subClasses);
-        $this->assertEquals([stdClass::class], $cm->parentClasses);
-        $this->assertEquals(UserRepository::class, $cm->customRepositoryClassName);
-        $this->assertEquals('disc', $cm->discriminatorField);
-        $this->assertIsArray($cm->getFieldMapping('phonenumbers'));
-        $this->assertCount(1, $cm->fieldMappings);
-        $this->assertCount(1, $cm->associationMappings);
-        $this->assertEquals(['keys' => ['_id' => 1], 'options' => []], $cm->getShardKey());
+        self::assertGreaterThan(0, $cm->getReflectionProperties());
+        self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
+        self::assertEquals(CmsUser::class, $cm->name);
+        self::assertEquals(stdClass::class, $cm->rootDocumentName);
+        self::assertEquals([User::class, UserName::class], $cm->subClasses);
+        self::assertEquals([stdClass::class], $cm->parentClasses);
+        self::assertEquals(UserRepository::class, $cm->customRepositoryClassName);
+        self::assertEquals('disc', $cm->discriminatorField);
+        self::assertIsArray($cm->getFieldMapping('phonenumbers'));
+        self::assertCount(1, $cm->fieldMappings);
+        self::assertCount(1, $cm->associationMappings);
+        self::assertEquals(['keys' => ['_id' => 1], 'options' => []], $cm->getShardKey());
         $mapping = $cm->getFieldMapping('phonenumbers');
-        $this->assertEquals(Bar::class, $mapping['targetDocument']);
-        $this->assertTrue($cm->getCollectionCapped());
-        $this->assertEquals(1000, $cm->getCollectionMax());
-        $this->assertEquals(500, $cm->getCollectionSize());
-        $this->assertEquals(true, $cm->isLockable);
-        $this->assertEquals('lock', $cm->lockField);
-        $this->assertEquals(true, $cm->isVersioned);
-        $this->assertEquals('version', $cm->versionField);
-        $this->assertEquals(toPHP(fromJSON($validatorJson)), $cm->getValidator());
-        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $cm->getValidationAction());
-        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF, $cm->getValidationLevel());
+        self::assertEquals(Bar::class, $mapping['targetDocument']);
+        self::assertTrue($cm->getCollectionCapped());
+        self::assertEquals(1000, $cm->getCollectionMax());
+        self::assertEquals(500, $cm->getCollectionSize());
+        self::assertEquals(true, $cm->isLockable);
+        self::assertEquals('lock', $cm->lockField);
+        self::assertEquals(true, $cm->isVersioned);
+        self::assertEquals('version', $cm->versionField);
+        self::assertEquals(toPHP(fromJSON($validatorJson)), $cm->getValidator());
+        self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $cm->getValidationAction());
+        self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF, $cm->getValidationLevel());
     }
 
     public function testOwningSideAndInverseSide(): void
     {
         $cm = new ClassMetadata(User::class);
         $cm->mapOneReference(['fieldName' => 'account', 'targetDocument' => Account::class, 'inversedBy' => 'user']);
-        $this->assertTrue($cm->fieldMappings['account']['isOwningSide']);
+        self::assertTrue($cm->fieldMappings['account']['isOwningSide']);
 
         $cm = new ClassMetadata(Account::class);
         $cm->mapOneReference(['fieldName' => 'user', 'targetDocument' => Account::class, 'mappedBy' => 'account']);
-        $this->assertTrue($cm->fieldMappings['user']['isInverseSide']);
+        self::assertTrue($cm->fieldMappings['user']['isInverseSide']);
     }
 
     public function testFieldIsNullable(): void
@@ -132,15 +132,15 @@ class ClassMetadataTest extends BaseTest
 
         // Explicit Nullable
         $cm->mapField(['fieldName' => 'status', 'nullable' => true, 'type' => 'string', 'length' => 50]);
-        $this->assertTrue($cm->isNullable('status'));
+        self::assertTrue($cm->isNullable('status'));
 
         // Explicit Not Nullable
         $cm->mapField(['fieldName' => 'username', 'nullable' => false, 'type' => 'string', 'length' => 50]);
-        $this->assertFalse($cm->isNullable('username'));
+        self::assertFalse($cm->isNullable('username'));
 
         // Implicit Not Nullable
         $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
-        $this->assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
+        self::assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
     }
 
     public function testFieldTypeFromReflection(): void
@@ -292,7 +292,7 @@ class ClassMetadataTest extends BaseTest
             'targetDocument' => DoctrineGlobal_User::class,
         ]);
 
-        $this->assertEquals(DoctrineGlobal_User::class, $cm->fieldMappings['author']['targetDocument']);
+        self::assertEquals(DoctrineGlobal_User::class, $cm->fieldMappings['author']['targetDocument']);
     }
 
     public function testMapManyToManyJoinTableDefaults(): void
@@ -306,7 +306,7 @@ class ClassMetadataTest extends BaseTest
         );
 
         $assoc = $cm->fieldMappings['groups'];
-        $this->assertIsArray($assoc);
+        self::assertIsArray($assoc);
     }
 
     public function testGetAssociationTargetClassWithoutTargetDocument(): void
@@ -319,7 +319,7 @@ class ClassMetadataTest extends BaseTest
             ]
         );
 
-        $this->assertNull($cm->getAssociationTargetClass('groups'));
+        self::assertNull($cm->getAssociationTargetClass('groups'));
     }
 
     /**
@@ -332,8 +332,8 @@ class ClassMetadataTest extends BaseTest
         $cm = new ClassMetadata(DoctrineGlobal_User::class);
         $cm->setDiscriminatorMap(['descr' => DoctrineGlobal_Article::class, 'foo' => DoctrineGlobal_User::class]);
 
-        $this->assertEquals(DoctrineGlobal_Article::class, $cm->discriminatorMap['descr']);
-        $this->assertEquals(DoctrineGlobal_User::class, $cm->discriminatorMap['foo']);
+        self::assertEquals(DoctrineGlobal_Article::class, $cm->discriminatorMap['descr']);
+        self::assertEquals(DoctrineGlobal_User::class, $cm->discriminatorMap['foo']);
     }
 
     /**
@@ -346,7 +346,7 @@ class ClassMetadataTest extends BaseTest
         $cm = new ClassMetadata(DoctrineGlobal_User::class);
         $cm->setSubclasses([DoctrineGlobal_Article::class]);
 
-        $this->assertEquals(DoctrineGlobal_Article::class, $cm->subClasses[0]);
+        self::assertEquals(DoctrineGlobal_Article::class, $cm->subClasses[0]);
     }
 
     public function testDuplicateFieldMapping(): void
@@ -358,7 +358,7 @@ class ClassMetadataTest extends BaseTest
         $cm->mapField($a1);
         $cm->mapField($a2);
 
-        $this->assertEquals('string', $cm->fieldMappings['name']['type']);
+        self::assertEquals('string', $cm->fieldMappings['name']['type']);
     }
 
     public function testDuplicateColumnNameDiscriminatorColumnThrowsMappingException(): void
@@ -385,7 +385,7 @@ class ClassMetadataTest extends BaseTest
         $cm->mapField(['fieldName' => 'name', 'type' => Type::STRING]);
         $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => CmsUser::class]);
 
-        $this->assertEquals('one', $cm->fieldMappings['name']['type']);
+        self::assertEquals('one', $cm->fieldMappings['name']['type']);
     }
 
     public function testDuplicateFieldAndAssocationMapping2(): void
@@ -394,7 +394,7 @@ class ClassMetadataTest extends BaseTest
         $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => CmsUser::class]);
         $cm->mapField(['fieldName' => 'name', 'columnName' => 'name', 'type' => 'string']);
 
-        $this->assertEquals('string', $cm->fieldMappings['name']['type']);
+        self::assertEquals('string', $cm->fieldMappings['name']['type']);
     }
 
     public function testMapNotExistingFieldThrowsException(): void
@@ -417,8 +417,8 @@ class ClassMetadataTest extends BaseTest
         $serialized = serialize($cm);
         $cm         = unserialize($serialized);
 
-        $this->assertSame('discriminator', $cm->discriminatorField);
-        $this->assertSame('discriminatorValue', $cm->discriminatorValue);
+        self::assertSame('discriminator', $cm->discriminatorField);
+        self::assertSame('discriminatorValue', $cm->discriminatorValue);
     }
 
     public static function dataProviderMetadataClasses(): array
@@ -475,7 +475,7 @@ class ClassMetadataTest extends BaseTest
 
         $mapping = $cm->getFieldMapping('assoc');
 
-        $this->assertEquals(
+        self::assertEquals(
             ClassMetadata::DEFAULT_DISCRIMINATOR_FIELD,
             $mapping['discriminatorField'],
             'Default discriminator field is set for associations without targetDocument and discriminatorField options'
@@ -483,7 +483,7 @@ class ClassMetadataTest extends BaseTest
 
         $mapping = $cm->getFieldMapping('assocWithTargetDocument');
 
-        $this->assertArrayNotHasKey(
+        self::assertArrayNotHasKey(
             'discriminatorField',
             $mapping,
             'Default discriminator field is not set for associations with targetDocument option'
@@ -491,7 +491,7 @@ class ClassMetadataTest extends BaseTest
 
         $mapping = $cm->getFieldMapping('assocWithDiscriminatorField');
 
-        $this->assertEquals(
+        self::assertEquals(
             'type',
             $mapping['discriminatorField'],
             'Default discriminator field is not set for associations with discriminatorField option'
@@ -503,7 +503,7 @@ class ClassMetadataTest extends BaseTest
         $document = new Album('ten');
         $metadata = $this->dm->getClassMetadata(Album::class);
 
-        $this->assertEquals($document->getName(), $metadata->getFieldValue($document, 'name'));
+        self::assertEquals($document->getName(), $metadata->getFieldValue($document, 'name'));
     }
 
     public function testGetFieldValueInitializesProxy(): void
@@ -516,9 +516,9 @@ class ClassMetadataTest extends BaseTest
         $proxy    = $this->dm->getReference(Album::class, $document->getId());
         $metadata = $this->dm->getClassMetadata(Album::class);
 
-        $this->assertEquals($document->getName(), $metadata->getFieldValue($proxy, 'name'));
-        $this->assertInstanceOf(GhostObjectInterface::class, $proxy);
-        $this->assertTrue($proxy->isProxyInitialized());
+        self::assertEquals($document->getName(), $metadata->getFieldValue($proxy, 'name'));
+        self::assertInstanceOf(GhostObjectInterface::class, $proxy);
+        self::assertTrue($proxy->isProxyInitialized());
     }
 
     public function testGetFieldValueOfIdentifierDoesNotInitializeProxy(): void
@@ -531,9 +531,9 @@ class ClassMetadataTest extends BaseTest
         $proxy    = $this->dm->getReference(Album::class, $document->getId());
         $metadata = $this->dm->getClassMetadata(Album::class);
 
-        $this->assertEquals($document->getId(), $metadata->getFieldValue($proxy, 'id'));
-        $this->assertInstanceOf(GhostObjectInterface::class, $proxy);
-        $this->assertFalse($proxy->isProxyInitialized());
+        self::assertEquals($document->getId(), $metadata->getFieldValue($proxy, 'id'));
+        self::assertInstanceOf(GhostObjectInterface::class, $proxy);
+        self::assertFalse($proxy->isProxyInitialized());
     }
 
     public function testSetFieldValue(): void
@@ -543,7 +543,7 @@ class ClassMetadataTest extends BaseTest
 
         $metadata->setFieldValue($document, 'name', 'nevermind');
 
-        $this->assertEquals('nevermind', $document->getName());
+        self::assertEquals('nevermind', $document->getName());
     }
 
     public function testSetFieldValueWithProxy(): void
@@ -554,7 +554,7 @@ class ClassMetadataTest extends BaseTest
         $this->dm->clear();
 
         $proxy = $this->dm->getReference(Album::class, $document->getId());
-        $this->assertInstanceOf(GhostObjectInterface::class, $proxy);
+        self::assertInstanceOf(GhostObjectInterface::class, $proxy);
 
         $metadata = $this->dm->getClassMetadata(Album::class);
         $metadata->setFieldValue($proxy, 'name', 'nevermind');
@@ -563,9 +563,9 @@ class ClassMetadataTest extends BaseTest
         $this->dm->clear();
 
         $proxy = $this->dm->getReference(Album::class, $document->getId());
-        $this->assertInstanceOf(GhostObjectInterface::class, $proxy);
+        self::assertInstanceOf(GhostObjectInterface::class, $proxy);
 
-        $this->assertEquals('nevermind', $proxy->getName());
+        self::assertEquals('nevermind', $proxy->getName());
     }
 
     public function testSetCustomRepositoryClass(): void
@@ -574,28 +574,28 @@ class ClassMetadataTest extends BaseTest
 
         $cm->setCustomRepositoryClass(Repository::class);
 
-        $this->assertEquals(Repository::class, $cm->customRepositoryClassName);
+        self::assertEquals(Repository::class, $cm->customRepositoryClassName);
 
         $cm->setCustomRepositoryClass(TestCustomRepositoryClass::class);
 
-        $this->assertEquals(TestCustomRepositoryClass::class, $cm->customRepositoryClassName);
+        self::assertEquals(TestCustomRepositoryClass::class, $cm->customRepositoryClassName);
     }
 
     public function testEmbeddedAssociationsAlwaysCascade(): void
     {
         $class = $this->dm->getClassMetadata(EmbeddedAssociationsCascadeTest::class);
 
-        $this->assertTrue($class->fieldMappings['address']['isCascadeRemove']);
-        $this->assertTrue($class->fieldMappings['address']['isCascadePersist']);
-        $this->assertTrue($class->fieldMappings['address']['isCascadeRefresh']);
-        $this->assertTrue($class->fieldMappings['address']['isCascadeMerge']);
-        $this->assertTrue($class->fieldMappings['address']['isCascadeDetach']);
+        self::assertTrue($class->fieldMappings['address']['isCascadeRemove']);
+        self::assertTrue($class->fieldMappings['address']['isCascadePersist']);
+        self::assertTrue($class->fieldMappings['address']['isCascadeRefresh']);
+        self::assertTrue($class->fieldMappings['address']['isCascadeMerge']);
+        self::assertTrue($class->fieldMappings['address']['isCascadeDetach']);
 
-        $this->assertTrue($class->fieldMappings['addresses']['isCascadeRemove']);
-        $this->assertTrue($class->fieldMappings['addresses']['isCascadePersist']);
-        $this->assertTrue($class->fieldMappings['addresses']['isCascadeRefresh']);
-        $this->assertTrue($class->fieldMappings['addresses']['isCascadeMerge']);
-        $this->assertTrue($class->fieldMappings['addresses']['isCascadeDetach']);
+        self::assertTrue($class->fieldMappings['addresses']['isCascadeRemove']);
+        self::assertTrue($class->fieldMappings['addresses']['isCascadePersist']);
+        self::assertTrue($class->fieldMappings['addresses']['isCascadeRefresh']);
+        self::assertTrue($class->fieldMappings['addresses']['isCascadeMerge']);
+        self::assertTrue($class->fieldMappings['addresses']['isCascadeDetach']);
     }
 
     public function testEmbedWithCascadeThrowsMappingException(): void
@@ -617,7 +617,7 @@ class ClassMetadataTest extends BaseTest
         $class    = $this->dm->getClassMetadata(User::class);
         $document = new stdClass();
 
-        $this->assertInstanceOf(stdClass::class, $document);
+        self::assertInstanceOf(stdClass::class, $document);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Expected document class "Documents\User"; found: "stdClass"');
@@ -629,7 +629,7 @@ class ClassMetadataTest extends BaseTest
         $class    = $this->dm->getClassMetadata(User::class);
         $document = new SpecialUser();
 
-        $this->assertInstanceOf(SpecialUser::class, $document);
+        self::assertInstanceOf(SpecialUser::class, $document);
 
         $class->invokeLifecycleCallbacks(Events::prePersist, $document);
     }
@@ -644,7 +644,7 @@ class ClassMetadataTest extends BaseTest
         $class = $this->dm->getClassMetadata(User::class);
         $proxy = $this->dm->getReference(User::class, $document->getId());
 
-        $this->assertInstanceOf(User::class, $proxy);
+        self::assertInstanceOf(User::class, $proxy);
 
         $class->invokeLifecycleCallbacks(Events::prePersist, $proxy);
     }
@@ -802,7 +802,7 @@ class ClassMetadataTest extends BaseTest
 
         $expected = ['assoc' => $mapping];
 
-        $this->assertEquals($expected, $cm->associationMappings);
+        self::assertEquals($expected, $cm->associationMappings);
     }
 
     public function testIdFieldsTypeMustNotBeOverridden(): void
@@ -841,7 +841,7 @@ class ClassMetadataTest extends BaseTest
 
         $shardKey = $cm->getShardKey();
 
-        $this->assertEquals(['id' => 1], $shardKey['keys']);
+        self::assertEquals(['id' => 1], $shardKey['keys']);
     }
 
     public function testSetShardKeyForClassWithSingleCollectionInheritance(): void
@@ -852,7 +852,7 @@ class ClassMetadataTest extends BaseTest
 
         $shardKey = $cm->getShardKey();
 
-        $this->assertEquals(['id' => 1], $shardKey['keys']);
+        self::assertEquals(['id' => 1], $shardKey['keys']);
     }
 
     public function testSetShardKeyForClassWithSingleCollectionInheritanceWhichAlreadyHasIt(): void
@@ -874,14 +874,14 @@ class ClassMetadataTest extends BaseTest
 
         $shardKey = $cm->getShardKey();
 
-        $this->assertEquals(['id' => 1], $shardKey['keys']);
+        self::assertEquals(['id' => 1], $shardKey['keys']);
     }
 
     public function testIsNotShardedIfThereIsNoShardKey(): void
     {
         $cm = new ClassMetadata('stdClass');
 
-        $this->assertFalse($cm->isSharded());
+        self::assertFalse($cm->isSharded());
     }
 
     public function testIsShardedIfThereIsAShardKey(): void
@@ -889,7 +889,7 @@ class ClassMetadataTest extends BaseTest
         $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(['id' => 'asc']);
 
-        $this->assertTrue($cm->isSharded());
+        self::assertTrue($cm->isSharded());
     }
 
     public function testEmbeddedDocumentCantHaveShardKey(): void
@@ -983,19 +983,19 @@ class ClassMetadataTest extends BaseTest
     public function testDefaultValueForValidator(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $this->assertNull($cm->getValidator());
+        self::assertNull($cm->getValidator());
     }
 
     public function testDefaultValueForValidationAction(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR, $cm->getValidationAction());
+        self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR, $cm->getValidationAction());
     }
 
     public function testDefaultValueForValidationLevel(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $this->assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT, $cm->getValidationLevel());
+        self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT, $cm->getValidationLevel());
     }
 }
 

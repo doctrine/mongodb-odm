@@ -23,8 +23,8 @@ class GH942Test extends BaseTest
         $doc = $this->dm->getDocumentCollection(GH942Document::CLASSNAME)
             ->findOne(['_id' => new ObjectId($doc->id)]);
 
-        $this->assertSame('foo', $doc['name']);
-        $this->assertSame(GH942Document::CLASSNAME, $doc['type']);
+        self::assertSame('foo', $doc['name']);
+        self::assertSame(GH942Document::CLASSNAME, $doc['type']);
     }
 
     public function testDiscriminatorValueUsesClassNameIfNotInMap(): void
@@ -41,8 +41,8 @@ class GH942Test extends BaseTest
         $parent = $this->dm->getDocumentCollection(GH942DocumentParent::CLASSNAME)
             ->findOne(['_id' => new ObjectId($parent->id)]);
 
-        $this->assertSame('parent', $parent['name']);
-        $this->assertSame('p', $parent['type']);
+        self::assertSame('parent', $parent['name']);
+        self::assertSame('p', $parent['type']);
 
         $this->dm->persist($child);
 

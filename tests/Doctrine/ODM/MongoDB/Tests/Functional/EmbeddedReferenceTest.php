@@ -53,8 +53,8 @@ class EmbeddedReferenceTest extends BaseTest
 
         // Should be: 1 Link, 5 referenced documents
         // Actual Result: 1 link, 10 referenced documents
-        $this->assertEquals(1, $offer->links->count());
-        $this->assertEquals(5, $offer->links[0]->referencedDocuments->count());
+        self::assertEquals(1, $offer->links->count());
+        self::assertEquals(5, $offer->links[0]->referencedDocuments->count());
     }
 }
 

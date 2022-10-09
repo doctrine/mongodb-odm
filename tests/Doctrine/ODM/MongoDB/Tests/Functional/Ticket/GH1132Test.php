@@ -27,10 +27,10 @@ class GH1132Test extends BaseTest
         $this->dm->clear();
 
         $u = $this->dm->find(get_class($u), $u->getId());
-        $this->assertCount(1, $u->getPhonenumbers());
+        self::assertCount(1, $u->getPhonenumbers());
 
         $u2 = $this->dm->find(get_class($u2), $u2->getId());
-        $this->assertCount(0, $u2->getPhonenumbers());
+        self::assertEmpty($u2->getPhonenumbers());
     }
 
     public function testClonedPersistentCollectionCanBeClearedAndUsedInManagedDocument(): void
@@ -49,10 +49,10 @@ class GH1132Test extends BaseTest
         $this->dm->clear();
 
         $u = $this->dm->find(get_class($u), $u->getId());
-        $this->assertCount(1, $u->getPhonenumbers());
+        self::assertCount(1, $u->getPhonenumbers());
 
         $u2 = $this->dm->find(get_class($u2), $u2->getId());
-        $this->assertCount(0, $u2->getPhonenumbers());
+        self::assertEmpty($u2->getPhonenumbers());
     }
 
     public function testClonedPersistentCollectionUpdatesCorrectly(): void
@@ -72,10 +72,10 @@ class GH1132Test extends BaseTest
         $this->dm->clear();
 
         $u = $this->dm->find(get_class($u), $u->getId());
-        $this->assertCount(1, $u->getPhonenumbers());
+        self::assertCount(1, $u->getPhonenumbers());
 
         $u2 = $this->dm->find(get_class($u2), $u2->getId());
-        $this->assertCount(1, $u2->getPhonenumbers());
-        $this->assertSame('123456', $u2->getPhonenumbers()->first()->getPhonenumber());
+        self::assertCount(1, $u2->getPhonenumbers());
+        self::assertSame('123456', $u2->getPhonenumbers()->first()->getPhonenumber());
     }
 }

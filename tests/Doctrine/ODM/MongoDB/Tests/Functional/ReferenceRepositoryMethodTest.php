@@ -36,9 +36,9 @@ class ReferenceRepositoryMethodTest extends BaseTest
 
         assert($blogPost instanceof BlogPost);
 
-        $this->assertEquals('Comment 2', $blogPost->repoComment->getText());
-        $this->assertEquals('Comment 1', $blogPost->repoComments[0]->getText());
-        $this->assertEquals('Comment 2', $blogPost->repoComments[1]->getText());
+        self::assertEquals('Comment 2', $blogPost->repoComment->getText());
+        self::assertEquals('Comment 1', $blogPost->repoComments[0]->getText());
+        self::assertEquals('Comment 2', $blogPost->repoComments[1]->getText());
     }
 
     /**
@@ -73,7 +73,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
         $post1->setUser(null);
         $this->dm->flush();
 
-        $this->assertNull($post1->user);
+        self::assertNull($post1->user);
     }
 
     public function testSetStrategy(): void
@@ -91,7 +91,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
                   ->getQuery()
                   ->getSingleResult();
         assert($blogPost instanceof BlogPost);
-        $this->assertEquals('Comment', $blogPost->repoCommentsSet[0]->getText());
+        self::assertEquals('Comment', $blogPost->repoCommentsSet[0]->getText());
     }
 
     public function testRepositoryMethodWithoutMappedBy(): void
@@ -107,7 +107,7 @@ class ReferenceRepositoryMethodTest extends BaseTest
             ->getQuery()
             ->getSingleResult();
         assert($blogPost instanceof BlogPost);
-        $this->assertCount(1, $blogPost->repoCommentsWithoutMappedBy);
-        $this->assertEquals('Comment', $blogPost->repoCommentsWithoutMappedBy[0]->getText());
+        self::assertCount(1, $blogPost->repoCommentsWithoutMappedBy);
+        self::assertEquals('Comment', $blogPost->repoCommentsWithoutMappedBy[0]->getText());
     }
 }

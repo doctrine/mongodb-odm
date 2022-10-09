@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use ReflectionMethod;
-use SimpleXmlElement;
+use SimpleXMLElement;
 use stdClass;
 
 use function get_class;
@@ -27,17 +27,17 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $class   = new ClassMetadata(stdClass::class);
         $driver  = $this->loadDriver();
-        $element = new SimpleXmlElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
+        $element = new SimpleXMLElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
 
         /** @uses XmlDriver::setShardKey */
         $m = new ReflectionMethod(get_class($driver), 'setShardKey');
         $m->setAccessible(true);
         $m->invoke($driver, $class, $element);
 
-        $this->assertTrue($class->isSharded());
+        self::assertTrue($class->isSharded());
         $shardKey = $class->getShardKey();
-        $this->assertSame(['unique' => true, 'numInitialChunks' => 4096], $shardKey['options']);
-        $this->assertSame(['_id' => 1], $shardKey['keys']);
+        self::assertSame(['unique' => true, 'numInitialChunks' => 4096], $shardKey['options']);
+        self::assertSame(['_id' => 1], $shardKey['keys']);
     }
 
     public function testInvalidMappingFileTriggersException(): void

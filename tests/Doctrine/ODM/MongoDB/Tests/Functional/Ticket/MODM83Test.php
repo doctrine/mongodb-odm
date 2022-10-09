@@ -54,7 +54,7 @@ class MODM83Test extends BaseTest
             Events::preUpdate  => [MODM83OtherDocument::class],
             Events::postUpdate => [MODM83OtherDocument::class],
         ];
-        $this->assertEquals($called, $this->listener->called);
+        self::assertEquals($called, $this->listener->called);
     }
 }
 

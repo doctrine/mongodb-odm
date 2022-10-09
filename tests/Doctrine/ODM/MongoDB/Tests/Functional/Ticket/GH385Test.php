@@ -23,15 +23,15 @@ class GH385Test extends BaseTest
 
         $debug = $qb->getQuery()->getQuery();
 
-        $this->assertEquals(['$inc' => ['foo.bar.level3a' => 1, 'foo.bar.level3b' => 1]], $debug['newObj']);
+        self::assertEquals(['$inc' => ['foo.bar.level3a' => 1, 'foo.bar.level3b' => 1]], $debug['newObj']);
 
         $qb->getQuery()->execute();
 
         $check = $this->dm->getDocumentCollection(User::class)->findOne(['_id' => $identifier]);
-        $this->assertNotNull($check);
-        $this->assertTrue(isset($check['foo']['bar']['level3a']));
-        $this->assertTrue(isset($check['foo']['bar']['level3b']));
-        $this->assertEquals(1, $check['foo']['bar']['level3a']);
-        $this->assertEquals(1, $check['foo']['bar']['level3b']);
+        self::assertNotNull($check);
+        self::assertTrue(isset($check['foo']['bar']['level3a']));
+        self::assertTrue(isset($check['foo']['bar']['level3b']));
+        self::assertEquals(1, $check['foo']['bar']['level3a']);
+        self::assertEquals(1, $check['foo']['bar']['level3b']);
     }
 }

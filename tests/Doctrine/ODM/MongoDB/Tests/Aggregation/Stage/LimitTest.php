@@ -16,7 +16,7 @@ class LimitTest extends BaseTest
     {
         $limitStage = new Limit($this->getTestAggregationBuilder(), 10);
 
-        $this->assertSame(['$limit' => 10], $limitStage->getExpression());
+        self::assertSame(['$limit' => 10], $limitStage->getExpression());
     }
 
     public function testLimitFromBuilder(): void
@@ -24,6 +24,6 @@ class LimitTest extends BaseTest
         $builder = $this->getTestAggregationBuilder();
         $builder->limit(10);
 
-        $this->assertSame([['$limit' => 10]], $builder->getPipeline());
+        self::assertSame([['$limit' => 10]], $builder->getPipeline());
     }
 }

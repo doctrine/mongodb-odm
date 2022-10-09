@@ -29,7 +29,7 @@ class GH1225Test extends BaseTest
         $this->dm->clear();
 
         $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
-        $this->assertCount(1, $doc->embeds);
+        self::assertCount(1, $doc->embeds);
     }
 }
 
