@@ -805,9 +805,7 @@ use const PHP_VERSION_ID;
         return $this->reflClass;
     }
 
-    /**
-     * @param string $fieldName
-     */
+    /** @param string $fieldName */
     public function isIdentifier($fieldName): bool
     {
         return $this->identifier === $fieldName;
@@ -845,9 +843,7 @@ use const PHP_VERSION_ID;
         return [$this->identifier];
     }
 
-    /**
-     * @param string $fieldName
-     */
+    /** @param string $fieldName */
     public function hasField($fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
@@ -1211,9 +1207,7 @@ use const PHP_VERSION_ID;
         ];
     }
 
-    /**
-     * @psalm-return ShardKey
-     */
+    /** @psalm-return ShardKey */
     public function getShardKey(): array
     {
         return $this->shardKey;
@@ -1286,9 +1280,7 @@ use const PHP_VERSION_ID;
         $this->writeConcern = $writeConcern;
     }
 
-    /**
-     * @return int|string|null
-     */
+    /** @return int|string|null */
     public function getWriteConcern()
     {
         return $this->writeConcern;
@@ -1355,9 +1347,7 @@ use const PHP_VERSION_ID;
         return $this->reflFields[$name];
     }
 
-    /**
-     * @psalm-return class-string<T>
-     */
+    /** @psalm-return class-string<T> */
     public function getName(): string
     {
         return $this->name;
@@ -2086,9 +2076,7 @@ use const PHP_VERSION_ID;
         return $this->isView;
     }
 
-    /**
-     * @psalm-param class-string $rootClass
-     */
+    /** @psalm-param class-string $rootClass */
     public function markViewOf(string $rootClass): void
     {
         $this->isView    = true;
@@ -2105,9 +2093,7 @@ use const PHP_VERSION_ID;
         return array_keys($this->associationMappings);
     }
 
-    /**
-     * @param string $fieldName
-     */
+    /** @param string $fieldName */
     public function getTypeOfField($fieldName): ?string
     {
         return isset($this->fieldMappings[$fieldName]) ?
@@ -2146,17 +2132,13 @@ use const PHP_VERSION_ID;
         return $this->associationMappings[$assocName]['collectionClass'];
     }
 
-    /**
-     * @param string $assocName
-     */
+    /** @param string $assocName */
     public function isAssociationInverseSide($assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
-    /**
-     * @param string $assocName
-     */
+    /** @param string $assocName */
     public function getAssociationMappedByTargetField($assocName)
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
@@ -2557,9 +2539,7 @@ use const PHP_VERSION_ID;
         return in_array($name, self::ALLOWED_GRIDFS_FIELDS, true);
     }
 
-    /**
-     * @psalm-param FieldMapping $mapping
-     */
+    /** @psalm-param FieldMapping $mapping */
     private function typeRequirementsAreMet(array $mapping): void
     {
         if ($mapping['type'] === Type::DECIMAL128 && ! extension_loaded('bcmath')) {
@@ -2567,9 +2547,7 @@ use const PHP_VERSION_ID;
         }
     }
 
-    /**
-     * @psalm-param FieldMapping $mapping
-     */
+    /** @psalm-param FieldMapping $mapping */
     private function checkDuplicateMapping(array $mapping): void
     {
         if ($mapping['notSaved'] ?? false) {

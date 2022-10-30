@@ -564,9 +564,7 @@ class QueryTest extends BaseTest
             ->execute();
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testFindAndReplaceDocumentRunsFindAndReplaceOperation(): void
     {
         $this->dm->createQueryBuilder(Article::class)

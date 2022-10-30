@@ -14,9 +14,7 @@ use function assert;
 use function end;
 use function get_class;
 
-/**
- * @group sharding
- */
+/** @group sharding */
 class ShardKeyTest extends BaseTest
 {
     private CommandLogger $logger;

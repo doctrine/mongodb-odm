@@ -10,8 +10,6 @@ namespace Doctrine\ODM\MongoDB\Iterator;
  */
 interface Iterator extends \Iterator
 {
-    /**
-     * @psalm-return array<mixed, TValue>
-     */
+    /** @psalm-return array<mixed, TValue> */
     public function toArray(): array;
 }

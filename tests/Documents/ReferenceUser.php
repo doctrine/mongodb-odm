@@ -106,9 +106,7 @@ class ReferenceUser
         $this->users[] = $user;
     }
 
-    /**
-     * @return Collection<int, User>|array<User>
-     */
+    /** @return Collection<int, User>|array<User> */
     public function getUsers()
     {
         return $this->users;
@@ -129,9 +127,7 @@ class ReferenceUser
         $this->parentUsers[] = $parentUser;
     }
 
-    /**
-     * @return Collection<int, User>|array<User>
-     */
+    /** @return Collection<int, User>|array<User> */
     public function getParentUsers()
     {
         return $this->parentUsers;
@@ -152,9 +148,7 @@ class ReferenceUser
         $this->otherUsers[] = $otherUser;
     }
 
-    /**
-     * @return Collection<int, User>|array<User>
-     */
+    /** @return Collection<int, User>|array<User> */
     public function getOtherUsers()
     {
         return $this->otherUsers;
@@ -175,9 +169,7 @@ class ReferenceUser
         $this->referencedUsers[] = $referencedUser;
     }
 
-    /**
-     * @return Collection<int, User>|array<User>
-     */
+    /** @return Collection<int, User>|array<User> */
     public function getReferencedUsers()
     {
         return $this->referencedUsers;

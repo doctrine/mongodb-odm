@@ -17,9 +17,7 @@ use function sprintf;
 
 class UpdateCommand extends AbstractCommand
 {
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function configure()
     {
         parent::configure();
@@ -31,9 +29,7 @@ class UpdateCommand extends AbstractCommand
             ->setDescription('Update indexes and validation rules for your documents');
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $class            = $input->getOption('class');
@@ -78,49 +74,37 @@ class UpdateCommand extends AbstractCommand
         $sm->updateIndexes($maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function processDocumentValidator(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $sm->updateDocumentValidator($document, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function processValidators(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $sm->updateValidators($maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @throws BadMethodCallException
-     */
+    /** @throws BadMethodCallException */
     protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a document collection');
     }
 
-    /**
-     * @throws BadMethodCallException
-     */
+    /** @throws BadMethodCallException */
     protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a collection');
     }
 
-    /**
-     * @throws BadMethodCallException
-     */
+    /** @throws BadMethodCallException */
     protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a document database');
     }
 
-    /**
-     * @throws BadMethodCallException
-     */
+    /** @throws BadMethodCallException */
     protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a database');

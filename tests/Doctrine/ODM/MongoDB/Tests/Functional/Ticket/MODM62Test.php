@@ -42,9 +42,7 @@ class MODM62Document
      */
     public $b = ['ok'];
 
-    /**
-     * @param string[] $b
-     */
+    /** @param string[] $b */
     public function setB(array $b): void
     {
         $this->b = $b;

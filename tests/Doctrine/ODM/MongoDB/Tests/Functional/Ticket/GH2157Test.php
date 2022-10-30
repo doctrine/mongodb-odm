@@ -54,16 +54,12 @@ abstract class GH2157Abstract
     protected $id;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2157FirstType extends GH2157Abstract
 {
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2157SecondType extends GH2157Abstract
 {
 }

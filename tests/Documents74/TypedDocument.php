@@ -8,9 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document()
- */
+/** @ODM\Document() */
 class TypedDocument
 {
     /** @ODM\Id() */
@@ -49,9 +47,7 @@ class TypedDocument
         $this->embedMany = new ArrayCollection();
     }
 
-    /**
-     * @return Collection<int, TypedEmbeddedDocument>
-     */
+    /** @return Collection<int, TypedEmbeddedDocument> */
     public function getEmbedMany(): Collection
     {
         return $this->embedMany;

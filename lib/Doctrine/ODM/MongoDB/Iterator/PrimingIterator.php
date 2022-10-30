@@ -59,9 +59,7 @@ final class PrimingIterator implements Iterator
         return iterator_to_array($this);
     }
 
-    /**
-     * @return TValue|null
-     */
+    /** @return TValue|null */
     #[ReturnTypeWillChange]
     public function current()
     {
@@ -75,9 +73,7 @@ final class PrimingIterator implements Iterator
         $this->iterator->next();
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     #[ReturnTypeWillChange]
     public function key()
     {

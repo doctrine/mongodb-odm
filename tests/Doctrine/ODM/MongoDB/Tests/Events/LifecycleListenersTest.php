@@ -225,9 +225,7 @@ class MyEventListener
     /** @psalm-var array<string, list<class-string>> */
     public array $called = [];
 
-    /**
-     * @param array{LifecycleEventArgs} $args
-     */
+    /** @param array{LifecycleEventArgs} $args */
     public function __call(string $method, array $args): void
     {
         $document                = $args[0]->getDocument();
@@ -244,9 +242,7 @@ class PostCollectionLoadEventListener
 {
     private int $at = 0;
 
-    /**
-     * @param PostCollectionLoadEventArgs<int, TestEmbeddedDocument> $e
-     */
+    /** @param PostCollectionLoadEventArgs<int, TestEmbeddedDocument> $e */
     public function postCollectionLoad(PostCollectionLoadEventArgs $e): void
     {
         switch ($this->at++) {
@@ -351,9 +347,7 @@ class TestProfile
     public $image;
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class Image
 {
     /**
@@ -376,9 +370,7 @@ class Image
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class Thumbnail
 {
     /**

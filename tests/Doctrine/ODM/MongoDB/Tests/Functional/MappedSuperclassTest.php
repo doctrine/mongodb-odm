@@ -62,17 +62,13 @@ class MappedSuperclassBase
      */
     private $mappedRelated1;
 
-    /**
-     * @param int|string $val
-     */
+    /** @param int|string $val */
     public function setMapped1($val): void
     {
         $this->mapped1 = $val;
     }
 
-    /**
-     * @return int|string|null
-     */
+    /** @return int|string|null */
     public function getMapped1()
     {
         return $this->mapped1;

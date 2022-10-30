@@ -20,9 +20,7 @@ use function is_array;
 use function is_string;
 use function substr;
 
-/**
- * @psalm-import-type FieldMapping from ClassMetadata
- */
+/** @psalm-import-type FieldMapping from ClassMetadata */
 class GraphLookup extends Stage
 {
     private ?string $from;
@@ -232,9 +230,7 @@ class GraphLookup extends Stage
         return $this;
     }
 
-    /**
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function fromReference(string $fieldName): self
     {
         if (! $this->class->hasReference($fieldName)) {
@@ -301,9 +297,7 @@ class GraphLookup extends Stage
         return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
     }
 
-    /**
-     * @psalm-param FieldMapping $mapping
-     */
+    /** @psalm-param FieldMapping $mapping */
     private function getReferencedFieldName(string $fieldName, array $mapping): string
     {
         if (! $this->targetClass) {

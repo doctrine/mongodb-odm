@@ -18,9 +18,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 
 use function get_class;
 
-/**
- * @internal
- */
+/** @internal */
 final class LifecycleEventManager
 {
     private DocumentManager $dm;
@@ -236,9 +234,7 @@ final class LifecycleEventManager
         }
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function dispatchEvent(ClassMetadata $class, string $eventName, ?EventArgs $eventArgs = null): void
     {
         if ($class->isView()) {

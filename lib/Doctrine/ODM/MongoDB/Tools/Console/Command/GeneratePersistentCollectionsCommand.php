@@ -50,15 +50,13 @@ class GeneratePersistentCollectionsCommand extends Console\Command\Command
                     'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.'
                 ),
             ])
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 Generates persistent collection classes for custom collections.
 EOT
             );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $filter = $input->getOption('filter');

@@ -14,9 +14,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
  */
 class CommentRepository extends DocumentRepository
 {
-    /**
-     * @return Comment|false
-     */
+    /** @return Comment|false */
     public function findOneComment()
     {
         return $this->getDocumentPersister()
@@ -24,9 +22,7 @@ class CommentRepository extends DocumentRepository
             ->current();
     }
 
-    /**
-     * @return Iterator<Comment>
-     */
+    /** @return Iterator<Comment> */
     public function findManyComments(): Iterator
     {
         return $this->getDocumentPersister()->loadAll();

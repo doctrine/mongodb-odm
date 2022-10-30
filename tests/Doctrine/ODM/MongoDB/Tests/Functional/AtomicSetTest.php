@@ -548,9 +548,7 @@ class AtomicSetTest extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class AtomicSetUser
 {
     /**
@@ -627,9 +625,7 @@ class AtomicSetUser
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class AtomicSetInception
 {
     /**

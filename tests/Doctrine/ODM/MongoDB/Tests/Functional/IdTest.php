@@ -308,9 +308,7 @@ class IdTest extends BaseTest
         ];
     }
 
-    /**
-     * @dataProvider getTestBinIdsData
-     */
+    /** @dataProvider getTestBinIdsData */
     public function testBinIds(string $type, int $expectedMongoBinDataType, string $id): void
     {
         $className = $this->createIdTestClass($type, 'none');

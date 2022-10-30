@@ -80,9 +80,7 @@ class MODM90EventListener
     /** @var array<string, class-string[]> */
     public $called = [];
 
-    /**
-     * @param array{LifecycleEventArgs} $args
-     */
+    /** @param array{LifecycleEventArgs} $args */
     public function __call(string $method, array $args): void
     {
         $document                = $args[0]->getDocument();

@@ -63,15 +63,13 @@ class QueryCommand extends Console\Command\Command
                 'The number of documents to return.'
             ),
         ])
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Execute a query and output the results.
 EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $query = $input->getArgument('query');

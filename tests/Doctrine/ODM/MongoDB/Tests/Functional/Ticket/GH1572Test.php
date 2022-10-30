@@ -99,14 +99,10 @@ class GH1572Post
     }
 }
 
-/**
- * @template-extends DocumentRepository<GH1572Blog>
- */
+/** @template-extends DocumentRepository<GH1572Blog> */
 class GH1572PostRepository extends DocumentRepository
 {
-    /**
-     * @return Iterator<GH1572Blog>
-     */
+    /** @return Iterator<GH1572Blog> */
     public function getPostsForBlog(GH1572Blog $blog): Iterator
     {
         return $this->createQueryBuilder()

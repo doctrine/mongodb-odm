@@ -19,9 +19,7 @@ use function sprintf;
 
 use const PHP_EOL;
 
-/**
- * @group performance
- */
+/** @group performance */
 class MemoryUsageTest extends BaseTest
 {
     /**

@@ -71,25 +71,19 @@ class MODM29Doc
      */
     protected $collection;
 
-    /**
-     * @param Collection<int, MODM29Embedded> $c
-     */
+    /** @param Collection<int, MODM29Embedded> $c */
     public function __construct(Collection $c)
     {
         $this->set($c);
     }
 
-    /**
-     * @param Collection<int, MODM29Embedded> $c
-     */
+    /** @param Collection<int, MODM29Embedded> $c */
     public function set(Collection $c): void
     {
         $this->collection = $c;
     }
 
-    /**
-     * @return Collection<int, MODM29Embedded>
-     */
+    /** @return Collection<int, MODM29Embedded> */
     public function get(): Collection
     {
         return $this->collection;

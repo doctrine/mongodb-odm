@@ -9,9 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class TargetDocumentTest extends BaseTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testMappedSuperClassAsTargetDocument(): void
     {
         $test            = new TargetDocumentTestDocument();
@@ -51,9 +49,7 @@ abstract class AbstractTargetDocumentTestReference
     public $id;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class TargetDocumentTestReference extends AbstractTargetDocumentTestReference
 {
 }

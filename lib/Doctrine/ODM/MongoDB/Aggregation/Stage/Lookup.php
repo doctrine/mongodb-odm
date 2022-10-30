@@ -205,9 +205,7 @@ class Lookup extends Stage
         return $this->getDocumentPersister($class)->prepareFieldName($fieldName);
     }
 
-    /**
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function fromReference(string $fieldName): self
     {
         if (! $this->class->hasReference($fieldName)) {

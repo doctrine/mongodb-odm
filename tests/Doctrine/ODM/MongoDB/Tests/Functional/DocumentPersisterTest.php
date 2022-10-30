@@ -120,9 +120,7 @@ class DocumentPersisterTest extends BaseTest
         self::assertCount(1, $documents);
     }
 
-    /**
-     * @dataProvider getTestPrepareFieldNameData
-     */
+    /** @dataProvider getTestPrepareFieldNameData */
     public function testPrepareFieldName(string $fieldName, string $expected): void
     {
         self::assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
@@ -242,9 +240,7 @@ class DocumentPersisterTest extends BaseTest
         );
     }
 
-    /**
-     * @dataProvider queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId
-     */
+    /** @dataProvider queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId */
     public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId(Closure $getTestCase): void
     {
         Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
@@ -624,9 +620,7 @@ class DocumentPersisterTest extends BaseTest
         self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
-    /**
-     * @return array
-     */
+    /** @return array */
     public static function dataProviderTestWriteConcern(): array
     {
         return [
@@ -1080,9 +1074,7 @@ final class DocumentPersisterCustomIdType extends Type
         throw self::createException($value);
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     private static function createException($value): InvalidArgumentException
     {
         return new InvalidArgumentException(

@@ -1158,9 +1158,7 @@ EOT;
         ];
     }
 
-    /**
-     * @param ClassMetadata<object> $cm
-     */
+    /** @param ClassMetadata<object> $cm */
     private function getDatabaseName(ClassMetadata $cm): string
     {
         return ($cm->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB()) ?: 'doctrine';
@@ -1203,9 +1201,7 @@ EOT;
         return $db;
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
     private function writeOptions(array $expectedWriteOptions): Constraint
     {
         return new Callback(static function (array $value) use ($expectedWriteOptions) {

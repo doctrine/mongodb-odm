@@ -188,9 +188,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         return $this->getDocumentPersister()->load($criteria, null, [], 0, $sort);
     }
 
-    /**
-     * @psalm-return class-string<T>
-     */
+    /** @psalm-return class-string<T> */
     public function getDocumentName(): string
     {
         return $this->documentName;
@@ -201,17 +199,13 @@ class DocumentRepository implements ObjectRepository, Selectable
         return $this->dm;
     }
 
-    /**
-     * @psalm-return ClassMetadata<T>
-     */
+    /** @psalm-return ClassMetadata<T> */
     public function getClassMetadata(): ClassMetadata
     {
         return $this->class;
     }
 
-    /**
-     * @psalm-return class-string<T>
-     */
+    /** @psalm-return class-string<T> */
     public function getClassName(): string
     {
         return $this->getDocumentName();
@@ -253,9 +247,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         return new ArrayCollection($iterator->toArray());
     }
 
-    /**
-     * @psalm-return DocumentPersister<T>
-     */
+    /** @psalm-return DocumentPersister<T> */
     protected function getDocumentPersister(): DocumentPersister
     {
         return $this->uow->getDocumentPersister($this->documentName);

@@ -43,9 +43,7 @@ class Profile
         $this->profileId = $profileId;
     }
 
-    /**
-     * @return ObjectId|string|null
-     */
+    /** @return ObjectId|string|null */
     public function getProfileId()
     {
         return $this->profileId;

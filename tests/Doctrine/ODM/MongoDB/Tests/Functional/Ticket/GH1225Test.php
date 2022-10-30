@@ -58,17 +58,13 @@ class GH1225Document
         $this->embeds = new ArrayCollection();
     }
 
-    /**
-     * @ODM\PreUpdate
-     */
+    /** @ODM\PreUpdate */
     public function exampleHook(): void
     {
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class GH1225EmbeddedDocument
 {
     /**

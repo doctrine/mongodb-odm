@@ -44,9 +44,7 @@ abstract class BaseCategory
         $this->children[] = $child;
     }
 
-    /**
-     * @return Collection<int, SubCategory>|array<SubCategory>
-     */
+    /** @return Collection<int, SubCategory>|array<SubCategory> */
     public function getChildren()
     {
         return $this->children;

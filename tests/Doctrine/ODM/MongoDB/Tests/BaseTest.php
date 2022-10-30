@@ -120,9 +120,7 @@ abstract class BaseTest extends TestCase
         return $result['version'];
     }
 
-    /**
-     * @psalm-param class-string $className
-     */
+    /** @psalm-param class-string $className */
     protected function skipTestIfNotSharded(string $className): void
     {
         $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
@@ -134,9 +132,7 @@ abstract class BaseTest extends TestCase
         $this->markTestSkipped('Test skipped because server does not support sharding');
     }
 
-    /**
-     * @psalm-param class-string $className
-     */
+    /** @psalm-param class-string $className */
     protected function skipTestIfSharded(string $className): void
     {
         $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];

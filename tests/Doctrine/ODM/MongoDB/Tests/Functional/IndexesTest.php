@@ -11,9 +11,7 @@ use MongoDB\Driver\Exception\BulkWriteException;
 
 class IndexesTest extends BaseTest
 {
-    /**
-     * @param class-string $class
-     */
+    /** @param class-string $class */
     private function uniqueTest(string $class): void
     {
         $this->dm->getSchemaManager()->ensureDocumentIndexes($class);

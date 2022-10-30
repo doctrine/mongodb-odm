@@ -141,9 +141,7 @@ class CollectionTestCapped
     public $username;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class CollectionTestBasic
 {
     /**

@@ -9,9 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1428Test extends BaseTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testShortNameLossOnReplacingMiddleEmbeddedDocOfNestedEmbedding(): void
     {
         $owner          = new GH1428Document();

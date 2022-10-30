@@ -22,9 +22,7 @@ class GH850Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH850Document
 {
     /**

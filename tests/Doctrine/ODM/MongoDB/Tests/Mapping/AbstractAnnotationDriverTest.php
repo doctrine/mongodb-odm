@@ -69,9 +69,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         self::assertEquals(AnnotationDriverTestParent::class, $child->fieldMappings['foo']['declared'], 'Inherited public field from Document parent is declared in Document parent');
     }
 
-    /**
-     * @group DDC-268
-     */
+    /** @group DDC-268 */
     public function testLoadMetadataForNonDocumentThrowsException(): void
     {
         $cm               = new ClassMetadata('stdClass');
@@ -82,9 +80,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
     }
 
-    /**
-     * @group DDC-268
-     */
+    /** @group DDC-268 */
     public function testColumnWithMissingTypeDefaultsToString(): void
     {
         $cm               = new ClassMetadata(ColumnWithoutType::class);
@@ -95,9 +91,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         self::assertEquals('id', $cm->fieldMappings['id']['type']);
     }
 
-    /**
-     * @group DDC-318
-     */
+    /** @group DDC-318 */
     public function testGetAllClassNamesIsIdempotent(): void
     {
         $annotationDriver = $this->loadDriverForCMSDocuments();
@@ -109,9 +103,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         self::assertEquals($original, $afterTestReset);
     }
 
-    /**
-     * @group DDC-318
-     */
+    /** @group DDC-318 */
     public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances(): void
     {
         $annotationDriver = $this->loadDriverForCMSDocuments();
@@ -123,9 +115,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         self::assertEquals($original, $afterTestReset);
     }
 
-    /**
-     * @group DDC-318
-     */
+    /** @group DDC-318 */
     public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate(): void
     {
         $annotationDriver = $this->loadDriverForCMSDocuments();
@@ -134,9 +124,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         self::assertContains(CmsUser::class, $classes);
     }
 
-    /**
-     * @group DDC-318
-     */
+    /** @group DDC-318 */
     public function testGetClassNamesReturnsOnlyTheAppropriateClasses(): void
     {
         $extraneousClassName = ColumnWithoutType::class;
@@ -166,9 +154,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         self::assertNull($cm->writeConcern);
     }
 
-    /**
-     * @dataProvider provideClassCanBeMappedByOneAbstractDocument
-     */
+    /** @dataProvider provideClassCanBeMappedByOneAbstractDocument */
     public function testClassCanBeMappedByOneAbstractDocument(object $wrong, string $messageRegExp): void
     {
         $this->expectException(MappingException::class);
@@ -348,9 +334,7 @@ class AnnotationDriverEmbeddedWithShardKey
     public $foo;
 }
 
-/**
- * @ODM\Document(writeConcern="majority")
- */
+/** @ODM\Document(writeConcern="majority") */
 #[ODM\Document(writeConcern: 'majority')]
 class AnnotationDriverTestWriteConcernMajority
 {
@@ -363,9 +347,7 @@ class AnnotationDriverTestWriteConcernMajority
     public $id;
 }
 
-/**
- * @ODM\Document(writeConcern=0)
- */
+/** @ODM\Document(writeConcern=0) */
 #[ODM\Document(writeConcern: 0)]
 class AnnotationDriverTestWriteConcernUnacknowledged
 {

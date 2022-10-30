@@ -9,9 +9,7 @@ use Documents\Functional\Ticket\MODM160;
 
 class MODM160Test extends BaseTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testEmbedManyInArrayMergeNew(): void
     {
         // create a test document
@@ -29,9 +27,7 @@ class MODM160Test extends BaseTest
         $this->dm->merge($test);
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testEmbedManyInArrayCollectionMergeNew(): void
     {
         // create a test document
@@ -49,9 +45,7 @@ class MODM160Test extends BaseTest
         $this->dm->merge($test);
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testEmbedOneMergeNew(): void
     {
         // create a test document

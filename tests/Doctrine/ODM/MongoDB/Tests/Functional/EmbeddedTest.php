@@ -638,9 +638,7 @@ class EmbeddedTest extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ChangeEmbeddedIdTest
 {
     /**
@@ -670,9 +668,7 @@ class ChangeEmbeddedIdTest
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class EmbeddedDocumentWithId
 {
     /**
@@ -683,9 +679,7 @@ class EmbeddedDocumentWithId
     public $id;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ChangeEmbeddedWithNameAnnotationTest
 {
     /**
@@ -710,9 +704,7 @@ class ChangeEmbeddedWithNameAnnotationTest
     public $embedTwo;
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class EmbeddedDocumentWithAnotherEmbedded
 {
     /**

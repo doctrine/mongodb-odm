@@ -32,9 +32,7 @@ final class EmbedOne extends AbstractField
     /** @var string|null */
     public $defaultDiscriminatorValue;
 
-    /**
-     * @param array<string, class-string>|null $discriminatorMap
-     */
+    /** @param array<string, class-string>|null $discriminatorMap */
     public function __construct(
         ?string $name = null,
         bool $nullable = false,

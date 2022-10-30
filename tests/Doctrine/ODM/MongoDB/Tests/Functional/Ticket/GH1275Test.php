@@ -145,9 +145,7 @@ class GH1275Test extends BaseTest
         ];
     }
 
-    /**
-     * @dataProvider getCollectionStrategies
-     */
+    /** @dataProvider getCollectionStrategies */
     public function testResortEmbedManyCollection(string $strategy): void
     {
         $getNameCallback = static fn (Element $element) => $element->name;
@@ -182,9 +180,7 @@ class GH1275Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document(collection="item")
- */
+/** @ODM\Document(collection="item") */
 class Item
 {
     /**
@@ -211,9 +207,7 @@ class Item
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class Element
 {
     /**
@@ -236,9 +230,7 @@ class Element
     }
 }
 
-/**
- * @ODM\Document(collection="container")
- */
+/** @ODM\Document(collection="container") */
 class Container
 {
     /**

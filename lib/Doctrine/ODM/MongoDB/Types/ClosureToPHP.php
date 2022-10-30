@@ -8,9 +8,7 @@ use function sprintf;
 
 trait ClosureToPHP
 {
-    /**
-     * @return string Redirects to the method convertToPHPValue from child class
-     */
+    /** @return string Redirects to the method convertToPHPValue from child class */
     final public function closureToPHP(): string
     {
         return sprintf('

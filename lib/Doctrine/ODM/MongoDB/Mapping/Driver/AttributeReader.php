@@ -14,9 +14,7 @@ use ReflectionProperty;
 use function assert;
 use function is_subclass_of;
 
-/**
- * @internal
- */
+/** @internal */
 final class AttributeReader implements Reader
 {
     public function getClassAnnotations(ReflectionClass $class): array

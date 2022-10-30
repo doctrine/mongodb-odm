@@ -17,9 +17,7 @@ use function getenv;
 use function in_array;
 use function iterator_to_array;
 
-/**
- * @BeforeMethods({"initDocumentManager", "clearDatabase"})
- */
+/** @BeforeMethods({"initDocumentManager", "clearDatabase"}) */
 abstract class BaseBench
 {
     public const DATABASE_NAME           = 'doctrine_odm_performance';

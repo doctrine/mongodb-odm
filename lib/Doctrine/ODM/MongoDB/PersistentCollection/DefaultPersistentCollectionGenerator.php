@@ -109,9 +109,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
         return $className;
     }
 
-    /**
-     * @param string|false $fileName Filename to write collection class code or false to eval it.
-     */
+    /** @param string|false $fileName Filename to write collection class code or false to eval it. */
     private function generateCollectionClass(string $for, string $targetFqcn, $fileName): void
     {
         $exploded  = explode('\\', $targetFqcn);

@@ -8,9 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-/**
- * @psalm-import-type SortShape from Sort
- */
+/** @psalm-import-type SortShape from Sort */
 class SortTest extends BaseTest
 {
     use AggregationTestTrait;

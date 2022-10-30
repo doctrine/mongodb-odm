@@ -17,9 +17,7 @@ use const JSON_THROW_ON_ERROR;
  */
 final class DocumentNotFoundException extends MongoDBException
 {
-    /**
-     * @param mixed $identifier
-     */
+    /** @param mixed $identifier */
     public static function documentNotFound(string $className, $identifier): self
     {
         try {

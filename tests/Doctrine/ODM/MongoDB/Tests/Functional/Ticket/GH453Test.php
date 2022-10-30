@@ -228,25 +228,19 @@ class GH453Test extends BaseTest
         $this->assertBsonArray($doc->id, 'referenceManyAddToSet');
     }
 
-    /**
-     * @param mixed $documentId
-     */
+    /** @param mixed $documentId */
     private function assertBsonArray($documentId, string $fieldName): void
     {
         $this->assertBsonType(4, $documentId, $fieldName);
     }
 
-    /**
-     * @param mixed $documentId
-     */
+    /** @param mixed $documentId */
     private function assertBsonObject($documentId, string $fieldName): void
     {
         $this->assertBsonType(3, $documentId, $fieldName);
     }
 
-    /**
-     * @param mixed $documentId
-     */
+    /** @param mixed $documentId */
     private function assertBsonType(int $bsonType, $documentId, string $fieldName): void
     {
         $criteria = ['_id' => $documentId];

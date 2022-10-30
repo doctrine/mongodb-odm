@@ -58,9 +58,7 @@ class Album
         $this->songs[] = $song;
     }
 
-    /**
-     * @return Collection<int, Song>
-     */
+    /** @return Collection<int, Song> */
     public function getSongs(): Collection
     {
         return $this->songs;

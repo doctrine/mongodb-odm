@@ -123,9 +123,7 @@ interface PersistentCollectionInterface extends Collection
      */
     public function getSnapshot();
 
-    /**
-     * @return array<string, object>
-     */
+    /** @return array<string, object> */
     public function getDeleteDiff();
 
     /**
@@ -135,9 +133,7 @@ interface PersistentCollectionInterface extends Collection
      */
     public function getDeletedDocuments();
 
-    /**
-     * @return array<string, object>
-     */
+    /** @return array<string, object> */
     public function getInsertDiff();
 
     /**

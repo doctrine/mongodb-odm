@@ -21,9 +21,7 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     /** @var ClassMetadata<object>|null */
     private ?ClassMetadata $foundMetadata = null;
 
-    /**
-     * @psalm-param class-string $className
-     */
+    /** @psalm-param class-string $className */
     public function __construct(string $className, DocumentManager $dm)
     {
         $this->className = $className;
@@ -31,17 +29,13 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
         parent::__construct($dm);
     }
 
-    /**
-     * @param ClassMetadata<object>|null $classMetadata
-     */
+    /** @param ClassMetadata<object>|null $classMetadata */
     public function setFoundMetadata(?ClassMetadata $classMetadata = null): void
     {
         $this->foundMetadata = $classMetadata;
     }
 
-    /**
-     * @return ClassMetadata<object>|null
-     */
+    /** @return ClassMetadata<object>|null */
     public function getFoundMetadata(): ?ClassMetadata
     {
         return $this->foundMetadata;

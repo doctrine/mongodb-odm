@@ -17,9 +17,7 @@ class Manager extends BaseEmployee
      */
     private $projects = [];
 
-    /**
-     * @return Collection<int, Project>|array<Project>
-     */
+    /** @return Collection<int, Project>|array<Project> */
     public function getProjects()
     {
         return $this->projects;

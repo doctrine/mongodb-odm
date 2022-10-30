@@ -16,9 +16,7 @@ use function get_class;
 
 class GH1058Test extends BaseTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testModifyingDuringOnFlushEventNewDocument(): void
     {
         $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());
@@ -28,9 +26,7 @@ class GH1058Test extends BaseTest
         $this->dm->flush();
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testModifyingDuringOnFlushEventNewDocumentWithId(): void
     {
         $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());

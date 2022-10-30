@@ -147,9 +147,7 @@ class GH1775Post extends GH1775MetaDocument
         }
     }
 
-    /**
-     * @return Collection<int, GH1775Image>
-     */
+    /** @return Collection<int, GH1775Image> */
     public function getImages()
     {
         return $this->images;

@@ -1353,9 +1353,7 @@ class Expr
         }
     }
 
-    /**
-     * @param int|string $order
-     */
+    /** @param int|string $order */
     private function normalizeSortOrder($order): int
     {
         if (is_string($order)) {

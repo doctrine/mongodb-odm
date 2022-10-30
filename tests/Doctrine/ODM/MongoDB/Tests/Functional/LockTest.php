@@ -285,9 +285,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testLockVersionedDocument(): void
     {
         $article        = new LockInt();
@@ -601,9 +599,7 @@ abstract class AbstractVersionBase
         $this->title  = $title;
     }
 
-    /**
-     * @return ObjectId|string|null
-     */
+    /** @return ObjectId|string|null */
     public function getId()
     {
         return $this->id;
@@ -614,9 +610,7 @@ abstract class AbstractVersionBase
         return $this->title;
     }
 
-    /**
-     * @return int|string|DateTime|DateTimeImmutable|null
-     */
+    /** @return int|string|DateTime|DateTimeImmutable|null */
     public function getVersion()
     {
         return $this->version;

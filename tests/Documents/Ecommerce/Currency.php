@@ -10,9 +10,7 @@ use InvalidArgumentException;
 use function implode;
 use function in_array;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Currency
 {
     public const USD  = 'USD';
@@ -40,9 +38,7 @@ class Currency
      */
     protected $multiplier;
 
-    /**
-     * @param float|int $multiplier
-     */
+    /** @param float|int $multiplier */
     public function __construct(string $name, $multiplier = 1)
     {
         if (! in_array($name, self::getAll())) {
@@ -71,9 +67,7 @@ class Currency
         return $this->multiplier;
     }
 
-    /**
-     * @param float|int|string $multiplier
-     */
+    /** @param float|int|string $multiplier */
     public function setMultiplier($multiplier): void
     {
         $multiplier = (float) $multiplier;
@@ -86,9 +80,7 @@ class Currency
         $this->multiplier = $multiplier;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public static function getAll(): array
     {
         return [

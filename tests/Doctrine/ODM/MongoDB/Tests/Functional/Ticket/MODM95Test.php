@@ -66,9 +66,7 @@ class MODM95TestDocument
         $this->embeddedDocuments = new ArrayCollection();
     }
 
-    /**
-     * @param iterable<MODM95TestEmbeddedDocument> $embeddedDocuments
-     */
+    /** @param iterable<MODM95TestEmbeddedDocument> $embeddedDocuments */
     public function setEmbeddedDocuments(iterable $embeddedDocuments): void
     {
         $this->embeddedDocuments->clear();

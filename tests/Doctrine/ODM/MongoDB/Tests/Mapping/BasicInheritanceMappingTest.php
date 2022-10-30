@@ -60,9 +60,7 @@ class BasicInheritanceMappingTest extends BaseTest
         self::assertTrue(isset($class->fieldMappings['mappedRelated1']));
     }
 
-    /**
-     * @group DDC-388
-     */
+    /** @group DDC-388 */
     public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
@@ -182,9 +180,7 @@ class GridFSParentClass
     private $id;
 }
 
-/**
- * @ODM\File
- */
+/** @ODM\File */
 class GridFSChildClass extends GridFSParentClass
 {
     /**

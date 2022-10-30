@@ -64,9 +64,7 @@ class GH499Document
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, GH499Document>
-     */
+    /** @return Collection<int, GH499Document> */
     public function getRefMany(): Collection
     {
         return $this->refMany;

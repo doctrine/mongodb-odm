@@ -8,9 +8,7 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document()
- */
+/** @ODM\Document() */
 #[ODM\Document]
 class UserTyped
 {

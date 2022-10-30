@@ -78,9 +78,7 @@ final class CommandLogger implements Countable, CommandLoggerInterface
         return count($this->commands);
     }
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function getAll(): array
     {
         return $this->commands;

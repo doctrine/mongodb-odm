@@ -531,9 +531,7 @@ class Expr
         return $this->operator('$floor', $number);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function getExpression(): array
     {
         return $this->expr;
@@ -1602,9 +1600,7 @@ class Expr
         }
     }
 
-    /**
-     * @throws BadMethodCallException If there is no current switch operator.
-     */
+    /** @throws BadMethodCallException If there is no current switch operator. */
     private function requiresSwitchStatement(?string $method = null): void
     {
         $message = ($method ?: 'This method') . ' requires a valid switch statement (call switch() first).';

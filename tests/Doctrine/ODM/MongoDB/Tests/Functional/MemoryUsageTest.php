@@ -17,9 +17,7 @@ use function memory_get_usage;
 use function round;
 use function sprintf;
 
-/**
- * @group performance
- */
+/** @group performance */
 class MemoryUsageTest extends BaseTest
 {
     /**
@@ -58,9 +56,7 @@ class MemoryUsageTest extends BaseTest
         echo sprintf('Memory increased by %s', $this->formatMemory($increase));
     }
 
-    /**
-     * @param int|float $size
-     */
+    /** @param int|float $size */
     private function formatMemory($size): string
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];

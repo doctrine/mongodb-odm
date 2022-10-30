@@ -66,9 +66,7 @@ class FacetTest extends BaseTest
         $facetStage->pipeline($this->getTestAggregationBuilder());
     }
 
-    /**
-     * @psalm-suppress InvalidArgument on purpose to throw exception
-     */
+    /** @psalm-suppress InvalidArgument on purpose to throw exception */
     public function testFacetThrowsExceptionOnInvalidPipeline(): void
     {
         $facetStage = new Facet($this->getTestAggregationBuilder());

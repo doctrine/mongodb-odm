@@ -18,9 +18,7 @@ final class PostCollectionLoadEventArgs extends ManagerEventArgs
     /** @var PersistentCollectionInterface<TKey, T> */
     private PersistentCollectionInterface $collection;
 
-    /**
-     * @param PersistentCollectionInterface<TKey, T> $collection
-     */
+    /** @param PersistentCollectionInterface<TKey, T> $collection */
     public function __construct(PersistentCollectionInterface $collection, DocumentManager $dm)
     {
         parent::__construct($dm);

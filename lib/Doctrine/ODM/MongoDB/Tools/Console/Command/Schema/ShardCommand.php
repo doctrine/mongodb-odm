@@ -17,9 +17,7 @@ use function sprintf;
 
 class ShardCommand extends AbstractCommand
 {
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function configure()
     {
         parent::configure();
@@ -30,9 +28,7 @@ class ShardCommand extends AbstractCommand
             ->setDescription('Enable sharding for selected documents');
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $class = $input->getOption('class');
@@ -66,33 +62,25 @@ class ShardCommand extends AbstractCommand
         $sm->ensureSharding($writeConcern);
     }
 
-    /**
-     * @throws BadMethodCallException
-     */
+    /** @throws BadMethodCallException */
     protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a document collection');
     }
 
-    /**
-     * @throws BadMethodCallException
-     */
+    /** @throws BadMethodCallException */
     protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a collection');
     }
 
-    /**
-     * @throws BadMethodCallException
-     */
+    /** @throws BadMethodCallException */
     protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a document database');
     }
 
-    /**
-     * @throws BadMethodCallException
-     */
+    /** @throws BadMethodCallException */
     protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         throw new BadMethodCallException('Cannot update a database');

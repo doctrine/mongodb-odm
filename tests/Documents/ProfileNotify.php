@@ -109,9 +109,7 @@ class ProfileNotify implements NotifyPropertyChanged
         return $this->image;
     }
 
-    /**
-     * @return ProfileNotifyImagesCollection<int, File>
-     */
+    /** @return ProfileNotifyImagesCollection<int, File> */
     public function getImages(): ProfileNotifyImagesCollection
     {
         return $this->images;

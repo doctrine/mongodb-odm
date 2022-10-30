@@ -13,9 +13,7 @@ use function microtime;
 
 use const PHP_EOL;
 
-/**
- * @group performance
- */
+/** @group performance */
 class InsertPerformanceTest extends BaseTest
 {
     /**

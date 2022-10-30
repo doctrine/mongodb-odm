@@ -220,9 +220,7 @@ class Hierarchy
         return $child;
     }
 
-    /**
-     * @return Collection<int, Hierarchy>|array<Hierarchy>
-     */
+    /** @return Collection<int, Hierarchy>|array<Hierarchy> */
     public function getChildren()
     {
         return $this->children;
@@ -298,9 +296,7 @@ class BaseCategory
         return $child;
     }
 
-    /**
-     * @return Collection<int, ChildCategory>
-     */
+    /** @return Collection<int, ChildCategory> */
     public function getChildren(): Collection
     {
         return $this->children;

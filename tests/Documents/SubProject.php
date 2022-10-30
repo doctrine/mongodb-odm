@@ -17,17 +17,13 @@ class SubProject extends Project
      */
     private $issues;
 
-    /**
-     * @return Collection<int, Issue>
-     */
+    /** @return Collection<int, Issue> */
     public function getIssues(): Collection
     {
         return $this->issues;
     }
 
-    /**
-     * @param Collection<int, Issue> $issues
-     */
+    /** @param Collection<int, Issue> $issues */
     public function setIssues(Collection $issues): void
     {
         $this->issues = $issues;

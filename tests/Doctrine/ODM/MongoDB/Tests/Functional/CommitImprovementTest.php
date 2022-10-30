@@ -161,9 +161,7 @@ class PhonenumberMachine implements EventSubscriber
         ];
     }
 
-    /**
-     * @param array{LifecycleEventArgs} $args
-     */
+    /** @param array{LifecycleEventArgs} $args */
     public function __call(string $eventName, array $args): void
     {
         $document = $args[0]->getDocument();

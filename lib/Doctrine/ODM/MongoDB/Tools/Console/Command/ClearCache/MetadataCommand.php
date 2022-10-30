@@ -30,15 +30,13 @@ class MetadataCommand extends Command
         ->setName('odm:clear-cache:metadata')
         ->setDescription('Clear all metadata cache of the various cache drivers.')
         ->setDefinition([])
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Clear all metadata cache of the various cache drivers.
 EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
