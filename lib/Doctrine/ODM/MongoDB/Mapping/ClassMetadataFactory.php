@@ -202,12 +202,10 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $class->setParentClasses($nonSuperclassParents);
 
-        if (! $this->evm->hasListeners(Events::loadClassMetadata)) {
-            return;
-        }
-
-        $eventArgs = new LoadClassMetadataEventArgs($class, $this->dm);
-        $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+        $this->evm->dispatchEvent(
+            Events::loadClassMetadata,
+            new LoadClassMetadataEventArgs($class, $this->dm)
+        );
 
         // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
         if ($class->isChangeTrackingNotify()) {
