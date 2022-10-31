@@ -416,9 +416,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function commit(array $options = []): void
     {
         // Raise preFlush
-        if ($this->evm->hasListeners(Events::preFlush)) {
-            $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->dm));
-        }
+        $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->dm));
 
         // Compute changes done since last commit.
         $this->computeChangeSets();
@@ -448,9 +446,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             // Raise onFlush
-            if ($this->evm->hasListeners(Events::onFlush)) {
-                $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
-            }
+            $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
 
             foreach ($this->getClassesForCommitAction($this->documentUpserts) as $classAndDocuments) {
                 [$class, $documents] = $classAndDocuments;
@@ -473,9 +469,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             // Raise postFlush
-            if ($this->evm->hasListeners(Events::postFlush)) {
-                $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
-            }
+            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
 
             // Clear up
             $this->documentInsertions          =
@@ -2435,10 +2429,6 @@ final class UnitOfWork implements PropertyChangedListener
                     $this->doDetach($document, $visited);
                 }
             }
-        }
-
-        if (! $this->evm->hasListeners(Events::onClear)) {
-            return;
         }
 
         $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->dm, $documentName));

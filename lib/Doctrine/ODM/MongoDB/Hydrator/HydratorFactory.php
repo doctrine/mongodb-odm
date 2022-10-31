@@ -472,9 +472,7 @@ EOF
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
 
-        if ($this->evm->hasListeners(Events::preLoad)) {
-            $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
-        }
+        $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
 
         // alsoLoadMethods may transform the document before hydration
         if (! empty($metadata->alsoLoadMethods)) {
@@ -511,9 +509,7 @@ EOF
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document, [new LifecycleEventArgs($document, $this->dm)]);
         }
 
-        if ($this->evm->hasListeners(Events::postLoad)) {
-            $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
-        }
+        $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
 
         return $data;
     }
