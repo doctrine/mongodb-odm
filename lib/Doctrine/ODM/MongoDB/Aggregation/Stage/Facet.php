@@ -45,6 +45,7 @@ class Facet extends Stage
      */
     public function pipeline($builder): self
     {
+        /** @psalm-suppress RedundantPropertyInitializationCheck because the property might not be set yet */
         if (! isset($this->field)) {
             throw new LogicException(__METHOD__ . ' requires you set a current field using field().');
         }

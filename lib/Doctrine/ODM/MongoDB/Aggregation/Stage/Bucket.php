@@ -70,6 +70,7 @@ class Bucket extends AbstractBucket
      */
     protected function getExtraPipelineFields(): array
     {
+        /** @psalm-suppress RedundantPropertyInitializationCheck because the property might not be set yet */
         $fields = ['boundaries' => $this->boundaries ?? null];
         if ($this->default !== null) {
             $fields['default'] = $this->default;
