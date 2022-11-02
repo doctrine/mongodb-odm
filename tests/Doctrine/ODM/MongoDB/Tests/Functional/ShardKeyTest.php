@@ -19,8 +19,7 @@ use function get_class;
  */
 class ShardKeyTest extends BaseTest
 {
-    /** @var CommandLogger */
-    private $logger;
+    private CommandLogger $logger;
 
     public function setUp(): void
     {

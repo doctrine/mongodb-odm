@@ -30,10 +30,10 @@ use function sprintf;
 class DocumentPersisterTest extends BaseTest
 {
     /** @var class-string<DocumentPersisterTestDocument> */
-    private $class;
+    private string $class;
 
     /** @var DocumentPersister<DocumentPersisterTestDocument> */
-    private $documentPersister;
+    private DocumentPersister $documentPersister;
 
     public function setUp(): void
     {

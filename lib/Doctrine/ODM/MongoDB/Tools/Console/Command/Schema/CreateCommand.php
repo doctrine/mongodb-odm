@@ -22,7 +22,7 @@ use function ucfirst;
 class CreateCommand extends AbstractCommand
 {
     /** @var string[] */
-    private $createOrder = [self::COLLECTION, self::INDEX];
+    private array $createOrder = [self::COLLECTION, self::INDEX];
 
     /**
      * @return void

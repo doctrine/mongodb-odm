@@ -83,7 +83,6 @@ class Configuration
     /**
      * Array of attributes for this configuration instance.
      *
-     * @var array
      * @psalm-var array{
      *      autoGenerateHydratorClasses?: self::AUTOGENERATE_*,
      *      autoGeneratePersistentCollectionClasses?: self::AUTOGENERATE_*,
@@ -108,16 +107,13 @@ class Configuration
      *      repositoryFactory?: RepositoryFactory
      * }
      */
-    private $attributes = [];
+    private array $attributes = [];
 
-    /** @var CacheItemPoolInterface|null */
-    private $metadataCache;
+    private ?CacheItemPoolInterface $metadataCache = null;
 
-    /** @var ProxyManagerConfiguration */
-    private $proxyManagerConfiguration;
+    private ProxyManagerConfiguration $proxyManagerConfiguration;
 
-    /** @var int */
-    private $autoGenerateProxyClasses = self::AUTOGENERATE_EVAL;
+    private int $autoGenerateProxyClasses = self::AUTOGENERATE_EVAL;
 
     public function __construct()
     {

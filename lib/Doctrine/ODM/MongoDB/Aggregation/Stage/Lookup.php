@@ -17,35 +17,25 @@ use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
  */
 class Lookup extends Stage
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ClassMetadata $class;
 
-    /** @var ClassMetadata */
-    private $targetClass;
+    private ?ClassMetadata $targetClass = null;
 
-    /** @var string */
-    private $from;
+    private string $from;
 
-    /** @var string */
-    private $localField;
+    private ?string $localField = null;
 
-    /** @var string */
-    private $foreignField;
+    private ?string $foreignField = null;
 
-    /** @var string */
-    private $as;
+    private ?string $as = null;
 
-    /** @var array */
-    private $let;
+    private ?array $let = null;
 
-    /** @var array */
-    private $pipeline;
+    private ?array $pipeline = null;
 
-    /** @var bool */
-    private $excludeLocalAndForeignField = false;
+    private bool $excludeLocalAndForeignField = false;
 
     public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
     {

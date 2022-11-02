@@ -15,14 +15,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
-    /**
-     * @var string
-     * @psalm-var class-string
-     */
-    private $className;
+    /** @psalm-var class-string */
+    private string $className;
 
     /** @var ClassMetadata<object>|null */
-    private $foundMetadata;
+    private ?ClassMetadata $foundMetadata = null;
 
     /**
      * @psalm-param class-string $className

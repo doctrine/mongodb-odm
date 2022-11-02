@@ -33,17 +33,13 @@ final class PersistenceBuilder
 {
     /**
      * The DocumentManager instance.
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The UnitOfWork instance.
-     *
-     * @var UnitOfWork
      */
-    private $uow;
+    private UnitOfWork $uow;
 
     /**
      * Initializes a new PersistenceBuilder instance.

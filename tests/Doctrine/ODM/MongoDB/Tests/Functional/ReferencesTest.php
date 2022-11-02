@@ -568,8 +568,7 @@ class DocumentWithMongoBinDataId
 
 class DocumentNotFoundListener
 {
-    /** @var Closure */
-    private $closure;
+    private Closure $closure;
 
     public function __construct(Closure $closure)
     {

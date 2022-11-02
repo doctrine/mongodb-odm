@@ -18,11 +18,8 @@ use function sprintf;
  */
 final class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /**
-     * @var array
-     * @psalm-var array<string, ChangeSet>
-     */
-    private $documentChangeSet;
+    /** @psalm-var array<string, ChangeSet> */
+    private array $documentChangeSet;
 
     /**
      * @psalm-param array<string, ChangeSet> $changeSet

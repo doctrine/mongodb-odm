@@ -28,17 +28,16 @@ final class HydratingIterator implements Iterator
     /** @var Generator<mixed, TValue>|null */
     private $iterator;
 
-    /** @var UnitOfWork */
-    private $unitOfWork;
+    private UnitOfWork $unitOfWork;
 
     /** @var ClassMetadata<TDocument> */
-    private $class;
+    private ClassMetadata $class;
 
     /**
      * @var array<int, mixed>
      * @psalm-var Hints
      */
-    private $unitOfWorkHints;
+    private array $unitOfWorkHints;
 
     /**
      * @param Traversable<mixed, TValue> $traversable

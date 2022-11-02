@@ -52,13 +52,13 @@ abstract class Type
     public const DECIMAL128         = 'decimal128';
 
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
-    private static $typeObjects = [];
+    private static array $typeObjects = [];
 
     /**
      * @var string[] The map of supported doctrine mapping types.
      * @psalm-var array<string, class-string>
      */
-    private static $typesMap = [
+    private static array $typesMap = [
         self::ID => Types\IdType::class,
         self::INTID => Types\IntIdType::class,
         self::CUSTOMID => Types\CustomIdType::class,

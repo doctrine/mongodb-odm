@@ -14,8 +14,7 @@ use ProxyManager\Proxy\ProxyInterface;
  */
 final class ProxyManagerClassNameResolver implements ClassNameResolver, ProxyClassNameResolver
 {
-    /** @var Configuration */
-    private $configuration;
+    private Configuration $configuration;
 
     public function __construct(Configuration $configuration)
     {

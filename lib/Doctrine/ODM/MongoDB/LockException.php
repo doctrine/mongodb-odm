@@ -6,8 +6,7 @@ namespace Doctrine\ODM\MongoDB;
 
 final class LockException extends MongoDBException
 {
-    /** @var object|null */
-    private $document;
+    private ?object $document;
 
     public function __construct(string $msg, ?object $document = null)
     {

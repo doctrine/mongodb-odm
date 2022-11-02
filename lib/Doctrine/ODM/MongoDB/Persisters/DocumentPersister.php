@@ -82,49 +82,38 @@ use function trigger_deprecation;
  */
 final class DocumentPersister
 {
-    /** @var PersistenceBuilder */
-    private $pb;
+    private PersistenceBuilder $pb;
 
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var UnitOfWork */
-    private $uow;
+    private UnitOfWork $uow;
 
-    /**
-     * @var ClassMetadata
-     * @psalm-var ClassMetadata<T>
-     */
-    private $class;
+    /** @psalm-var ClassMetadata<T> */
+    private ClassMetadata $class;
 
-    /** @var Collection|null */
-    private $collection;
+    private ?Collection $collection = null;
 
-    /** @var Bucket|null */
-    private $bucket;
+    private ?Bucket $bucket = null;
 
     /**
      * Array of queued inserts for the persister to insert.
      *
      * @var array<string, object>
      */
-    private $queuedInserts = [];
+    private array $queuedInserts = [];
 
     /**
      * Array of queued inserts for the persister to insert.
      *
      * @var array<string, object>
      */
-    private $queuedUpserts = [];
+    private array $queuedUpserts = [];
 
-    /** @var CriteriaMerger */
-    private $cm;
+    private CriteriaMerger $cm;
 
-    /** @var CollectionPersister */
-    private $cp;
+    private CollectionPersister $cp;
 
-    /** @var HydratorFactory */
-    private $hydratorFactory;
+    private HydratorFactory $hydratorFactory;
 
     /**
      * @psalm-param ClassMetadata<T> $class

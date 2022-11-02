@@ -11,8 +11,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class ShardKeyInheritanceMappingTest extends BaseTest
 {
-    /** @var ClassMetadataFactory */
-    private $factory;
+    private ClassMetadataFactory $factory;
 
     public function setUp(): void
     {

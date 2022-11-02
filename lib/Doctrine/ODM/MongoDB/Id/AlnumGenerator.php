@@ -29,17 +29,13 @@ use const STR_PAD_LEFT;
  */
 final class AlnumGenerator extends IncrementGenerator
 {
-    /** @var int|null */
-    protected $pad = null;
+    protected ?int $pad = null;
 
-    /** @var bool */
-    protected $awkwardSafeMode = false;
+    protected bool $awkwardSafeMode = false;
 
-    /** @var string */
-    protected $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    protected string $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-    /** @var string */
-    protected $awkwardSafeChars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
+    protected string $awkwardSafeChars = '0123456789BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz';
 
     /**
      * Set padding on generated id

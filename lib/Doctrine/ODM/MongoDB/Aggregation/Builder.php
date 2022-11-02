@@ -34,36 +34,26 @@ class Builder
 {
     /**
      * The DocumentManager instance for this query
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The ClassMetadata instance.
-     *
-     * @var ClassMetadata
      */
-    private $class;
+    private ClassMetadata $class;
 
-    /**
-     * @var string
-     * @psalm-var class-string
-     */
-    private $hydrationClass;
+    /** @psalm-var class-string */
+    private ?string $hydrationClass = null;
 
     /**
      * The Collection instance.
-     *
-     * @var Collection
      */
-    private $collection;
+    private Collection $collection;
 
     /** @var Stage[] */
-    private $stages = [];
+    private array $stages = [];
 
-    /** @var bool */
-    private $rewindable = true;
+    private bool $rewindable = true;
 
     /**
      * Create a new aggregation builder.

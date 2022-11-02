@@ -174,9 +174,6 @@ class CustomCollectionsTest extends BaseTest
         self::assertEquals($f1->getId(), $profile->getImages()[1]->getId());
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testMethodWithVoidReturnType(): void
     {
         $d = new DocumentWithCustomCollection();
@@ -184,6 +181,7 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->flush();
 
         $d = $this->dm->find(get_class($d), $d->id);
+        self::assertInstanceOf(MyEmbedsCollection::class, $d->coll);
         $d->coll->nothingReally();
     }
 }

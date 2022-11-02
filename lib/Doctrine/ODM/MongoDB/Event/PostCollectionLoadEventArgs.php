@@ -16,7 +16,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 final class PostCollectionLoadEventArgs extends ManagerEventArgs
 {
     /** @var PersistentCollectionInterface<TKey, T> */
-    private $collection;
+    private PersistentCollectionInterface $collection;
 
     /**
      * @param PersistentCollectionInterface<TKey, T> $collection

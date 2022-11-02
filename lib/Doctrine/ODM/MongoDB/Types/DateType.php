@@ -52,7 +52,7 @@ class DateType extends Type implements Versionable
             $value         = (float) $value;
             $seconds       = (int) $value;
             $microseconds  = abs(round($value - $seconds, 6));
-            $microseconds *= 1000000;
+            $microseconds *= 1_000_000;
 
             $datetime = static::craftDateTime($seconds, (int) $microseconds);
         } elseif (is_string($value)) {

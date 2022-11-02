@@ -20,8 +20,7 @@ use function get_class;
 
 class PersistenceBuilderTest extends BaseTest
 {
-    /** @var PersistenceBuilder */
-    private $pb;
+    private PersistenceBuilder $pb;
 
     public function setUp(): void
     {

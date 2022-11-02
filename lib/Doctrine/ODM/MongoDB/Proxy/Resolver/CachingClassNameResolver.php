@@ -11,11 +11,10 @@ use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
  */
 final class CachingClassNameResolver implements ClassNameResolver, ProxyClassNameResolver
 {
-    /** @var ProxyClassNameResolver */
-    private $resolver;
+    private ProxyClassNameResolver $resolver;
 
     /** @var array<string, string> */
-    private $resolvedNames = [];
+    private array $resolvedNames = [];
 
     public function __construct(ProxyClassNameResolver $resolver)
     {

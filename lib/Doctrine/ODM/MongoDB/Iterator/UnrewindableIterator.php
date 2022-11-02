@@ -24,10 +24,9 @@ use function sprintf;
 final class UnrewindableIterator implements Iterator
 {
     /** @var Generator<mixed, TValue>|null */
-    private $iterator;
+    private ?Generator $iterator;
 
-    /** @var bool */
-    private $iteratorAdvanced = false;
+    private bool $iteratorAdvanced = false;
 
     /**
      * Initialize the iterator. This effectively rewinds the Traversable and

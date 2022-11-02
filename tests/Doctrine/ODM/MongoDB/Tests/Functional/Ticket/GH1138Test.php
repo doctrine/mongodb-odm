@@ -12,8 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1138Test extends BaseTest
 {
-    /** @var CommandLogger */
-    private $logger;
+    private CommandLogger $logger;
 
     public function setUp(): void
     {

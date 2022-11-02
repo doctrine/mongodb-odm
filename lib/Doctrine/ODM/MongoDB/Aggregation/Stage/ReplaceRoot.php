@@ -18,11 +18,9 @@ use function substr;
 
 class ReplaceRoot extends Operator
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ClassMetadata $class;
 
     /** @var string|mixed[]|Expr|null */
     private $expression;

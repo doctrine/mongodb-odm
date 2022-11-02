@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 final class PreLoadEventArgs extends LifecycleEventArgs
 {
     /** @var array<string, mixed> */
-    private $data;
+    private array $data;
 
     /**
      * @param array<string, mixed> $data

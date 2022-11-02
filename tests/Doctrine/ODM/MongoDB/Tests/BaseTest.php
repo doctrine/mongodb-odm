@@ -27,10 +27,8 @@ use const DOCTRINE_MONGODB_SERVER;
 
 abstract class BaseTest extends TestCase
 {
-    /** @var DocumentManager|null */
-    protected $dm;
-    /** @var UnitOfWork */
-    protected $uow;
+    protected ?DocumentManager $dm;
+    protected UnitOfWork $uow;
 
     public function setUp(): void
     {

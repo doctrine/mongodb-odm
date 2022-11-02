@@ -21,7 +21,7 @@ use function strtolower;
 class Sort extends Stage
 {
     /** @var array<string, -1|1|SortMeta> */
-    private $sort = [];
+    private array $sort = [];
 
     /**
      * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs

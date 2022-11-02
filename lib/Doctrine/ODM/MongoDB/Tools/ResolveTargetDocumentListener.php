@@ -24,11 +24,8 @@ use function ltrim;
  */
 class ResolveTargetDocumentListener implements EventSubscriber
 {
-    /**
-     * @var array
-     * @psalm-var array<class-string, array{targetDocument: class-string}>
-     */
-    private $resolveTargetDocuments = [];
+    /** @psalm-var array<class-string, array{targetDocument: class-string}> */
+    private array $resolveTargetDocuments = [];
 
     public function getSubscribedEvents()
     {

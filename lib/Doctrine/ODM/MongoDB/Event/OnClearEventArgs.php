@@ -23,7 +23,7 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
      *
      * @var class-string|null
      */
-    private $entityClass;
+    private ?string $entityClass;
 
     /**
      * @param class-string|null $entityClass

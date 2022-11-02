@@ -40,7 +40,7 @@ class Expr
     /**
      * The query criteria array.
      *
-     * @var array<string, mixed>
+     * @var array<string, mixed>|mixed
      */
     private $query = [];
 
@@ -52,28 +52,22 @@ class Expr
      *
      * @var array<string, mixed>
      */
-    private $newObj = [];
+    private array $newObj = [];
 
     /**
      * The current field we are operating on.
-     *
-     * @var string|null
      */
-    private $currentField;
+    private ?string $currentField = null;
 
     /**
      * The DocumentManager instance for this query
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The ClassMetadata instance for the document being queried
-     *
-     * @var ClassMetadata
      */
-    private $class;
+    private ?ClassMetadata $class = null;
 
     public function __construct(DocumentManager $dm)
     {

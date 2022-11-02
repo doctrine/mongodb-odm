@@ -25,24 +25,20 @@ use function substr;
  */
 class Expr
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ClassMetadata $class;
 
     /** @var array<string, mixed> */
-    private $expr = [];
+    private array $expr = [];
 
     /**
      * The current field we are operating on.
-     *
-     * @var string
      */
-    private $currentField;
+    private ?string $currentField = null;
 
     /** @var array{case: mixed|self, then?: mixed|self}|null */
-    private $switchBranch;
+    private ?array $switchBranch = null;
 
     public function __construct(DocumentManager $dm, ClassMetadataInterface $class)
     {

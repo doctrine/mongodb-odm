@@ -23,7 +23,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      *
      * @var ObjectRepository<object>[]
      */
-    private $repositoryList = [];
+    private array $repositoryList = [];
 
     /**
      * @psalm-param class-string<T> $documentName

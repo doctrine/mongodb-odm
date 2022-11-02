@@ -20,7 +20,7 @@ use MongoDB\BSON\ObjectId;
 final class PrimingIteratorTest extends BaseTest
 {
     /** @var class-string[] */
-    private $callbackCalls = [];
+    private array $callbackCalls = [];
 
     public function testPrimerIsCalledOnceForEveryField(): void
     {

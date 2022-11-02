@@ -18,8 +18,7 @@ use function get_class;
 
 class LifecycleListenersTest extends BaseTest
 {
-    /** @var MyEventListener */
-    private $listener;
+    private MyEventListener $listener;
 
     private function getDocumentManager(): ?DocumentManager
     {
@@ -223,7 +222,7 @@ class LifecycleListenersTest extends BaseTest
 class MyEventListener
 {
     /** @psalm-var array<string, list<class-string>> */
-    public $called = [];
+    public array $called = [];
 
     public function __call(string $method, array $args): void
     {
@@ -239,11 +238,9 @@ class MyEventListener
  */
 class PostCollectionLoadEventListener
 {
-    /** @var int */
-    private $at = 0;
+    private int $at = 0;
 
-    /** @var TestCase */
-    private $phpunit;
+    private TestCase $phpunit;
 
     public function __construct(TestCase $phpunit)
     {
