@@ -175,6 +175,13 @@ class CachingIteratorTest extends TestCase
         $this->assertCount(1, $iterator);
     }
 
+    /**
+     * @param T[] $items
+     *
+     * @return Generator<T>
+     *
+     * @template T
+     */
     private function getTraversable(array $items): Generator
     {
         foreach ($items as $item) {
@@ -182,6 +189,11 @@ class CachingIteratorTest extends TestCase
         }
     }
 
+    /**
+     * @param array<mixed|Exception> $items
+     *
+     * @return Generator<mixed>
+     */
     private function getTraversableThatThrows(array $items): Generator
     {
         foreach ($items as $item) {

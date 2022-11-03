@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.22.0@fc2c6ab4d5fa5d644d8617089f012f3bb84b8703">
+<files psalm-version="4.29.0@7ec5ffbd5f68ae03782d7fd33fff0c45a69f95b3">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php">
     <InvalidArgument occurrences="1">
       <code>$fields</code>
@@ -23,11 +23,6 @@
       <code>TValue|false</code>
     </ImplementedReturnTypeMismatch>
   </file>
-  <file src="lib/Doctrine/ODM/MongoDB/Iterator/HydratingIterator.php">
-    <ImplementedReturnTypeMismatch occurrences="1">
-      <code>TDocument|null</code>
-    </ImplementedReturnTypeMismatch>
-  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php">
     <ImplementedReturnTypeMismatch occurrences="2">
       <code>array&lt;string|null&gt;</code>
@@ -36,8 +31,7 @@
     <InvalidArrayOffset occurrences="1">
       <code>[$this-&gt;identifier =&gt; $this-&gt;getIdentifierValue($object)]</code>
     </InvalidArrayOffset>
-    <LessSpecificImplementedReturnType occurrences="2">
-      <code>?string</code>
+    <LessSpecificImplementedReturnType occurrences="1">
       <code>array</code>
     </LessSpecificImplementedReturnType>
   </file>
@@ -80,12 +74,6 @@
       <code>$p</code>
       <code>$p</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="1">
-      <code>getMapping</code>
-    </InvalidNullableReturnType>
-    <InvalidReturnType occurrences="1">
-      <code>getTypeClass</code>
-    </InvalidReturnType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php">
     <RedundantFunctionCall occurrences="1">
@@ -122,10 +110,6 @@
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/UnitOfWork.php">
-    <InvalidPropertyAssignmentValue occurrences="2">
-      <code>$this-&gt;identityMap</code>
-      <code>$this-&gt;originalDocumentData</code>
-    </InvalidPropertyAssignmentValue>
     <NullableReturnStatement occurrences="1">
       <code>$mapping['targetDocument']</code>
     </NullableReturnStatement>
@@ -181,11 +165,6 @@
     <InvalidScalarArgument occurrences="1">
       <code>1</code>
     </InvalidScalarArgument>
-  </file>
-  <file src="tests/Doctrine/ODM/MongoDB/Tests/Query/QueryExpressionVisitorTest.php">
-    <TooManyArguments occurrences="1">
-      <code>andX</code>
-    </TooManyArguments>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php">
     <InvalidArgument occurrences="1">

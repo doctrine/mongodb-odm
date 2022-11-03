@@ -17,19 +17,19 @@ use PhpBench\Benchmark\Metadata\Annotations\Warmup;
  */
 final class HydrateDocumentBench extends BaseBench
 {
-    /** @var array */
+    /** @var array<string, mixed> */
     private static $data;
 
-    /** @var array */
+    /** @var array<string, mixed> */
     private static $embedOneData;
 
-    /** @var array */
+    /** @var array<string, mixed[]> */
     private static $embedManyData;
 
-    /** @var array */
+    /** @var array<string, mixed[]> */
     private static $referenceOneData;
 
-    /** @var array */
+    /** @var array<string, mixed[]> */
     private static $referenceManyData;
 
     /** @var HydratorInterface */

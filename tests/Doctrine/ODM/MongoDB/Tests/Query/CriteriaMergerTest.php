@@ -12,6 +12,9 @@ use function call_user_func_array;
 class CriteriaMergerTest extends TestCase
 {
     /**
+     * @param array<array<string, mixed>> $args
+     * @param array<string, mixed>        $merged
+     *
      * @dataProvider provideMerge
      */
     public function testMerge(array $args, array $merged): void

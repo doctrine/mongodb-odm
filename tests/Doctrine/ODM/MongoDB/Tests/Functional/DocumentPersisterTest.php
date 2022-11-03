@@ -224,6 +224,9 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $expected
+     * @param array<string, mixed> $query
+     *
      * @dataProvider queryProviderForCustomTypeId
      */
     public function testPrepareQueryOrNewObjWithCustomTypedId(array $expected, array $query): void
@@ -503,6 +506,9 @@ class DocumentPersisterTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $expected
+     * @param array<string, mixed> $query
+     *
      * @dataProvider queryProviderForComplexRefWithObjectValue
      */
     public function testPrepareQueryOrNewObjWithComplexRefToTargetDocumentFieldWithObjectValue(array $expected, array $query): void

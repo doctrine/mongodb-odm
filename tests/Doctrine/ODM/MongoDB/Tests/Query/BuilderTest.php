@@ -474,6 +474,8 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param mixed[] $args
+     *
      * @dataProvider provideProxiedExprMethods
      */
     public function testProxiedExprMethods(string $method, array $args = []): void
@@ -567,6 +569,9 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param string[]         $args
+     * @param array<string, 1> $expected
+     *
      * @dataProvider provideSelectProjections
      */
     public function testSelect(array $args, array $expected): void
@@ -583,6 +588,9 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param string[]         $args
+     * @param array<string, 0> $expected
+     *
      * @dataProvider provideExcludeProjections
      */
     public function testExclude(array $args, array $expected): void
@@ -875,6 +883,8 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $json
+     *
      * @return MockObject&Point
      */
     private function getMockPoint(array $json)

@@ -62,6 +62,8 @@ class ProjectTest extends BaseTest
     }
 
     /**
+     * @param string[] $args
+     *
      * @dataProvider provideProxiedExprMethods
      */
     public function testProxiedExprMethods(string $method, array $args = []): void

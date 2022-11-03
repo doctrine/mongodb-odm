@@ -606,7 +606,9 @@ trait AggregationOperatorsProviderTrait
     }
 
     /**
-     * @param mixed $args
+     * @param Closure(Expr): mixed[]|mixed[] $args
+     *
+     * @return mixed[]
      */
     protected function resolveArgs($args): array
     {

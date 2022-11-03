@@ -17,7 +17,7 @@ class GroupTest extends BaseTest
     use AggregationOperatorsProviderTrait;
 
     /**
-     * @param Closure|array $args
+     * @param Closure(Expr): Expr[]|mixed[] $args
      *
      * @dataProvider provideProxiedExprMethods
      */

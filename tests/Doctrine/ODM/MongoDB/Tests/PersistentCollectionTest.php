@@ -133,8 +133,8 @@ class PersistentCollectionTest extends BaseTest
     }
 
     /**
-     * @param array $expected
-     * @param array $snapshot
+     * @param stdClass[] $expected
+     * @param stdClass[] $snapshot
      *
      * @dataProvider dataGetDeletedDocuments
      */
@@ -207,8 +207,8 @@ class PersistentCollectionTest extends BaseTest
     }
 
     /**
-     * @param array $expected
-     * @param array $snapshot
+     * @param stdClass[] $expected
+     * @param stdClass[] $snapshot
      *
      * @dataProvider dataGetInsertedDocuments
      */

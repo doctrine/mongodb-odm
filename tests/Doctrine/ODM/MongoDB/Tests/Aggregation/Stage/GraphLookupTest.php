@@ -148,6 +148,9 @@ class GraphLookupTest extends BaseTest
     }
 
     /**
+     * @param Closure(Builder): GraphLookup $addGraphLookupStage
+     * @param array<string, string>         $expectedFields
+     *
      * @dataProvider provideEmployeeAggregations
      */
     public function testGraphLookupWithEmployees(Closure $addGraphLookupStage, array $expectedFields): void
@@ -218,6 +221,9 @@ class GraphLookupTest extends BaseTest
     }
 
     /**
+     * @param Closure(Builder): GraphLookup $addGraphLookupStage
+     * @param array<string, string>         $expectedFields
+     *
      * @dataProvider provideTravellerAggregations
      */
     public function testGraphLookupWithTraveller(Closure $addGraphLookupStage, array $expectedFields): void

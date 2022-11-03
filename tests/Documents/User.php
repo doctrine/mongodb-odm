@@ -250,6 +250,9 @@ class User extends BaseDocument
         $this->id = $id;
     }
 
+    /**
+     * @return string[]
+     */
     public function getLogs(): array
     {
         return $this->logs;

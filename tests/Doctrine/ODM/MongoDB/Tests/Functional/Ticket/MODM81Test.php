@@ -108,7 +108,7 @@ class MODM81TestDocument
     }
 
     /**
-     * @param array $documents
+     * @param MODM81TestEmbeddedDocument[] $documents
      */
     public function setEmbeddedDocuments(array $documents): void
     {
