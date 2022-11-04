@@ -465,13 +465,13 @@ class Expr
     /**
      * Returns a new expression object
      *
-     * @deprecated use createExpr instead
+     * @deprecated use createAggregationExpression instead
      */
     public function expr(): self
     {
         trigger_deprecation(
             'doctrine/mongodb-odm',
-            '2.3',
+            '2.5',
             'The "%s" method is deprecated. Please use "%s::createAggregationExpression" instead.',
             __METHOD__,
             static::class

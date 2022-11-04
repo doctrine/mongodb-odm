@@ -497,13 +497,13 @@ class Builder
     /**
      * Create a new Expr instance that can be used as an expression with the Builder
      *
-     * @deprecated use createExpr instead
+     * @deprecated use createQueryExpression instead
      */
     public function expr(): Expr
     {
         trigger_deprecation(
             'doctrine/mongodb-odm',
-            '2.3',
+            '2.5',
             'The "%s" method is deprecated. Please use "%s::createQueryExpression" instead.',
             __METHOD__,
             static::class

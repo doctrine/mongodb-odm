@@ -183,7 +183,7 @@ class MatchStage extends Stage
     {
         trigger_deprecation(
             'doctrine/mongodb-odm',
-            '2.3',
+            '2.5',
             'The "%s" method is deprecated. Please use "%s::createQueryExpression" instead.',
             __METHOD__,
             static::class
