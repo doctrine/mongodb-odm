@@ -8,6 +8,7 @@ use Generator;
 use LogicException;
 use RuntimeException;
 use Traversable;
+use ReturnTypeWillChange;
 
 use function iterator_to_array;
 use function sprintf;

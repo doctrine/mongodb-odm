@@ -10,6 +10,7 @@ use Generator;
 use Iterator;
 use RuntimeException;
 use Traversable;
+use ReturnTypeWillChange;
 
 /**
  * Iterator that wraps a traversable and hydrates results into objects

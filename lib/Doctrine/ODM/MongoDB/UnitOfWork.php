@@ -25,6 +25,7 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Driver\WriteConcern;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
 use UnexpectedValueException;
@@ -54,7 +55,7 @@ use function sprintf;
  *      1: mixed
  * }
  * @psalm-type Hints = array<int, mixed>
- * @psalm-type CommitOptions array{
+ * @psalm-type CommitOptions = array{
  *      fsync?: bool,
  *      safe?: int,
  *      w?: int,

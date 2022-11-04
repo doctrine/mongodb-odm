@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Hydrator;
 
+use Doctrine\ODM\MongoDB\UnitOfWork;
+
 /**
  * The HydratorInterface defines methods all hydrator need to implement
  *

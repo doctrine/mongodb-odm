@@ -8,6 +8,7 @@ use Countable;
 use Generator;
 use RuntimeException;
 use Traversable;
+use ReturnTypeWillChange;
 
 use function count;
 use function current;
