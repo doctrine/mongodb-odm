@@ -41,7 +41,6 @@ final class HydratingIterator implements Iterator
     /**
      * @param Traversable<mixed, TValue> $traversable
      * @param ClassMetadata<TDocument>   $class
-     *
      * @psalm-param Hints $unitOfWorkHints
      */
     public function __construct(Traversable $traversable, UnitOfWork $unitOfWork, ClassMetadata $class, array $unitOfWorkHints = [])

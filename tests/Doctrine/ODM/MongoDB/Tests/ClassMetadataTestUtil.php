@@ -15,6 +15,7 @@ class ClassMetadataTestUtil
 {
     /**
      * @psalm-param FieldMappingConfig $mapping
+     *
      * @psalm-return FieldMapping
      */
     public static function getFieldMapping(array $mapping): array

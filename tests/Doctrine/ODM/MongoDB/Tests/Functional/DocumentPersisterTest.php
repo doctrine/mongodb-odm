@@ -645,8 +645,8 @@ class DocumentPersisterTest extends BaseTest
 
     /**
      * @param int|string $writeConcern
-     *
      * @psalm-param class-string $class
+     *
      * @dataProvider dataProviderTestWriteConcern
      */
     public function testExecuteInsertsRespectsWriteConcern(string $class, $writeConcern): void
@@ -669,8 +669,8 @@ class DocumentPersisterTest extends BaseTest
 
     /**
      * @param int|string $writeConcern
-     *
      * @psalm-param class-string $class
+     *
      * @dataProvider dataProviderTestWriteConcern
      */
     public function testExecuteUpsertsRespectsWriteConcern(string $class, $writeConcern): void
@@ -694,8 +694,8 @@ class DocumentPersisterTest extends BaseTest
 
     /**
      * @param int|string $writeConcern
-     *
      * @psalm-param class-string $class
+     *
      * @dataProvider dataProviderTestWriteConcern
      */
     public function testRemoveRespectsWriteConcern(string $class, $writeConcern): void

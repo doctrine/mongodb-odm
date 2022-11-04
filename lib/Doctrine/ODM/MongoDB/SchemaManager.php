@@ -104,9 +104,9 @@ final class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      *
-     * @throws InvalidArgumentException
-     *
      * @psalm-param class-string $documentName
+     *
+     * @throws InvalidArgumentException
      */
     public function updateDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
@@ -152,6 +152,7 @@ final class SchemaManager
 
     /**
      * @psalm-param class-string $documentName
+     *
      * @psalm-return IndexMapping[]
      */
     public function getDocumentIndexes(string $documentName): array
@@ -164,6 +165,7 @@ final class SchemaManager
     /**
      * @psalm-param class-string $documentName
      * @psalm-param array<class-string, bool> $visited
+     *
      * @psalm-return IndexMapping[]
      */
     private function doGetDocumentIndexes(string $documentName, array &$visited): array
@@ -265,9 +267,9 @@ final class SchemaManager
     /**
      * Ensure the given document's indexes are created.
      *
-     * @throws InvalidArgumentException
-     *
      * @psalm-param class-string $documentName
+     *
+     * @throws InvalidArgumentException
      */
     public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
@@ -310,9 +312,9 @@ final class SchemaManager
     /**
      * Delete the given document's indexes.
      *
-     * @throws InvalidArgumentException
-     *
      * @psalm-param class-string $documentName
+     *
+     * @throws InvalidArgumentException
      */
     public function deleteDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
@@ -412,9 +414,9 @@ final class SchemaManager
     /**
      * Create the document collection for a mapped class.
      *
-     * @throws InvalidArgumentException
-     *
      * @psalm-param class-string $documentName
+     *
+     * @throws InvalidArgumentException
      */
     public function createDocumentCollection(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
@@ -491,9 +493,9 @@ final class SchemaManager
     /**
      * Drop the document collection for a mapped class.
      *
-     * @throws InvalidArgumentException
-     *
      * @psalm-param class-string $documentName
+     *
+     * @throws InvalidArgumentException
      */
     public function dropDocumentCollection(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
@@ -531,9 +533,9 @@ final class SchemaManager
     /**
      * Drop the document database for a mapped class.
      *
-     * @throws InvalidArgumentException
-     *
      * @psalm-param class-string $documentName
+     *
+     * @throws InvalidArgumentException
      */
     public function dropDocumentDatabase(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
@@ -753,9 +755,9 @@ final class SchemaManager
     /**
      * Ensure sharding for collection by document name.
      *
-     * @throws MongoDBException
-     *
      * @psalm-param class-string $documentName
+     *
+     * @throws MongoDBException
      */
     public function ensureDocumentSharding(string $documentName, ?WriteConcern $writeConcern = null): void
     {
@@ -780,9 +782,9 @@ final class SchemaManager
     /**
      * Enable sharding for database which contains documents with given name.
      *
-     * @throws MongoDBException
-     *
      * @psalm-param class-string $documentName
+     *
+     * @throws MongoDBException
      */
     public function enableShardingForDbByDocumentName(string $documentName): void
     {

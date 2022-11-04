@@ -515,10 +515,10 @@ class Builder
     /**
      * Specify $expr criteria for the current field.
      *
-     * @param array|Aggregation\Expr $expression
      * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
-     *
      * @see Aggregation\Expr::aggregationExpression()
+     *
+     * @param array|Aggregation\Expr $expression
      */
     public function aggregationExpression($expression): self
     {

@@ -65,6 +65,7 @@ final class LifecycleEventManager
      *
      * @psalm-param ClassMetadata<T> $class
      * @psalm-param T $document
+     *
      * @template T of object
      */
     public function postPersist(ClassMetadata $class, object $document): void
@@ -79,6 +80,7 @@ final class LifecycleEventManager
      *
      * @psalm-param ClassMetadata<T> $class
      * @psalm-param T $document
+     *
      * @template T of object
      */
     public function postRemove(ClassMetadata $class, object $document): void
@@ -93,6 +95,7 @@ final class LifecycleEventManager
      *
      * @psalm-param ClassMetadata<T> $class
      * @psalm-param T $document
+     *
      * @template T of object
      */
     public function postUpdate(ClassMetadata $class, object $document): void
