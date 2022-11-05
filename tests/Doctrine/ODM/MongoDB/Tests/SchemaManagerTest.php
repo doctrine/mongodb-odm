@@ -32,7 +32,6 @@ use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\IndexInfo;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\Constraint\ArrayHasKey;
-use PHPUnit\Framework\Constraint\ArraySubset;
 use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
@@ -41,7 +40,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use function array_count_values;
 use function array_map;
 use function assert;
-use function class_exists;
 use function in_array;
 use function MongoDB\BSON\fromJSON;
 use function MongoDB\BSON\toPHP;
@@ -1209,10 +1207,6 @@ EOT;
      */
     private function writeOptions(array $expectedWriteOptions): Constraint
     {
-        if (class_exists(ArraySubset::class)) {
-            return new ArraySubset($expectedWriteOptions);
-        }
-
         return new Callback(static function (array $value) use ($expectedWriteOptions) {
             foreach ($expectedWriteOptions as $writeOption => $expectedValue) {
                 if (! (new ArrayHasKey($writeOption))->evaluate($value, '', true)) {

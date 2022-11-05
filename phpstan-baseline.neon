@@ -58,11 +58,6 @@ parameters:
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
 
-        -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:writeOptions\\(\\) should return PHPUnit\\\\Framework\\\\Constraint\\\\Constraint but returns PHPUnit\\\\Framework\\\\Constraint\\\\ArraySubset\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
-
         # Support for doctrine/collections v1
         -
             message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:add\(\) with return type void returns true but should not return anything\.$#'
