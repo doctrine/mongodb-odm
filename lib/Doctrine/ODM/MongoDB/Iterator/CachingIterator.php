@@ -8,7 +8,6 @@ use Countable;
 use Generator;
 use RuntimeException;
 use Traversable;
-use ReturnTypeWillChange;
 
 use function count;
 use function current;
@@ -80,7 +79,7 @@ final class CachingIterator implements Countable, Iterator
     /**
      * @return TValue|false
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->items);
@@ -89,7 +88,7 @@ final class CachingIterator implements Countable, Iterator
     /**
      * @return mixed
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->items);

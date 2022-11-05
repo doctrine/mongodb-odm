@@ -10,7 +10,6 @@ use Generator;
 use Iterator;
 use RuntimeException;
 use Traversable;
-use ReturnTypeWillChange;
 
 /**
  * Iterator that wraps a traversable and hydrates results into objects
@@ -60,7 +59,7 @@ final class HydratingIterator implements Iterator
     /**
      * @return TDocument|null
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->hydrate($this->getIterator()->current());
@@ -69,7 +68,7 @@ final class HydratingIterator implements Iterator
     /**
      * @return mixed
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->getIterator()->key();
