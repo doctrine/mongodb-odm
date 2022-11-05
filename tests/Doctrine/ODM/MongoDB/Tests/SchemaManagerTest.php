@@ -46,6 +46,7 @@ use function MongoDB\BSON\toPHP;
 
 /**
  * @psalm-import-type IndexMapping from ClassMetadata
+ * @psalm-import-type IndexOptions from ClassMetadata
  */
 class SchemaManagerTest extends BaseTest
 {
@@ -161,7 +162,7 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getIndexCreationWriteOptions
      */
@@ -210,7 +211,7 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getIndexCreationWriteOptions
      */
@@ -232,7 +233,7 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getIndexCreationWriteOptions
      */
@@ -276,7 +277,7 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getIndexCreationWriteOptions
      */
@@ -293,7 +294,7 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -318,7 +319,7 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -351,7 +352,7 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -377,7 +378,7 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -421,7 +422,7 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -472,7 +473,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -496,7 +497,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -525,7 +526,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -544,7 +545,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -589,7 +590,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -628,7 +629,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -658,7 +659,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -674,7 +675,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -695,7 +696,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -732,7 +733,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -753,7 +754,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -775,7 +776,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      *
      * @dataProvider getWriteOptions
      */
@@ -1203,7 +1204,7 @@ EOT;
     }
 
     /**
-     * @param array<string, mixed> $expectedWriteOptions
+     * @psalm-param IndexOptions $expectedWriteOptions
      */
     private function writeOptions(array $expectedWriteOptions): Constraint
     {

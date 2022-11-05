@@ -36,9 +36,10 @@
     </LessSpecificImplementedReturnType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php">
-    <InvalidArgument occurrences="2">
+    <InvalidArgument occurrences="3">
       <code>$mapping</code>
       <code>$mapping</code>
+      <code>$options</code>
     </InvalidArgument>
     <RedundantCondition occurrences="15">
       <code>assert($attributes instanceof SimpleXMLElement)</code>
