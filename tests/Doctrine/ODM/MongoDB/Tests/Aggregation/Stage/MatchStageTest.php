@@ -40,8 +40,6 @@ class MatchStageTest extends BaseTest
     }
 
     /**
-     * @param mixed[] $args
-     *
      * @dataProvider provideProxiedExprMethods
      */
     public function testProxiedExprMethods(string $method, array $args = []): void

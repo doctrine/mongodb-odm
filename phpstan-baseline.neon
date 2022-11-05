@@ -237,3 +237,8 @@ parameters:
             message: "#^Call to an undefined method ReflectionEnum\\:\\:getBackingType\\(\\)\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+
+        -
+            message: "#has parameter \\$[^\\s]+ with no value type specified in iterable type array\\.$#"
+            count: 6
+            path: tests/*

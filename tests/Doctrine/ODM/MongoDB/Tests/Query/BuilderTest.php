@@ -474,8 +474,6 @@ class BuilderTest extends BaseTest
     }
 
     /**
-     * @param mixed[] $args
-     *
      * @dataProvider provideProxiedExprMethods
      */
     public function testProxiedExprMethods(string $method, array $args = []): void
@@ -569,8 +567,7 @@ class BuilderTest extends BaseTest
     }
 
     /**
-     * @param string[]         $args
-     * @param array<string, 1> $expected
+     * @param string[] $args
      *
      * @dataProvider provideSelectProjections
      */
@@ -588,8 +585,7 @@ class BuilderTest extends BaseTest
     }
 
     /**
-     * @param string[]         $args
-     * @param array<string, 0> $expected
+     * @param string[] $args
      *
      * @dataProvider provideExcludeProjections
      */
