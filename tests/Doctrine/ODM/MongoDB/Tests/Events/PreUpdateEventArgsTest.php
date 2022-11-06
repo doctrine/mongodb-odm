@@ -83,6 +83,7 @@ class CollectionsAreInChangeSetListener
         $this->phpunit = $phpunit;
     }
 
+    /** @param list<class-string> $allowed */
     public function checkOnly(array $allowed): void
     {
         $this->allowed = $allowed;

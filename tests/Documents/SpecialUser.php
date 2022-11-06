@@ -16,11 +16,17 @@ class SpecialUser extends User
      */
     private $rules = [];
 
+    /**
+     * @param string[] $rules
+     */
     public function setRules(array $rules): void
     {
         $this->rules = $rules;
     }
 
+    /**
+     * @return string[]
+     */
     public function getRules(): array
     {
         return $this->rules;

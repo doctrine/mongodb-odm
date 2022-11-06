@@ -205,6 +205,8 @@ class PersistenceBuilderTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $expectedData
+     *
      * @dataProvider getDocumentsAndExpectedData
      */
     public function testPrepareInsertData(object $document, array $expectedData): void
@@ -228,7 +230,11 @@ class PersistenceBuilderTest extends BaseTest
         ];
     }
 
-    private function assertDocumentInsertData(array $expectedData, ?array $preparedData = null): void
+    /**
+     * @param array<string, mixed> $expectedData
+     * @param array<string, mixed> $preparedData
+     */
+    private function assertDocumentInsertData(array $expectedData, array $preparedData): void
     {
         foreach ($preparedData as $key => $value) {
             if ($key === '_id') {

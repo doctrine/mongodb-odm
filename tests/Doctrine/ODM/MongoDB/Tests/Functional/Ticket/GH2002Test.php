@@ -14,6 +14,8 @@ use function sprintf;
 class GH2002Test extends BaseTest
 {
     /**
+     * @param array<string, mixed> $expectedReference
+     *
      * @dataProvider getValidReferenceData
      */
     public function testBuildingReferenceCreatesCorrectStructure(array $expectedReference, object $document): void

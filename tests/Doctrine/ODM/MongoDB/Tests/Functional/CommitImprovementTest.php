@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
@@ -160,6 +161,9 @@ class PhonenumberMachine implements EventSubscriber
         ];
     }
 
+    /**
+     * @param array{LifecycleEventArgs} $args
+     */
     public function __call(string $eventName, array $args): void
     {
         $document = $args[0]->getDocument();

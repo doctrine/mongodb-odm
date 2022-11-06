@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Events;
 use BadMethodCallException;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -224,6 +225,9 @@ class MyEventListener
     /** @psalm-var array<string, list<class-string>> */
     public array $called = [];
 
+    /**
+     * @param array{LifecycleEventArgs} $args
+     */
     public function __call(string $method, array $args): void
     {
         $document                = $args[0]->getDocument();

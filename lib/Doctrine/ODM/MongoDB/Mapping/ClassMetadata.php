@@ -198,7 +198,15 @@ use const PHP_VERSION_ID;
  *      alsoLoadFields?: list<string>,
  * }
  * @psalm-type IndexKeys = array<string, mixed>
- * @psalm-type IndexOptions = array<string, mixed>
+ * @psalm-type IndexOptions = array{
+ *      background?: bool,
+ *      unique?: bool,
+ *      name?: string,
+ *      partialFilterExpression?: mixed[],
+ *      sparse?: bool,
+ *      expireAfterSeconds?: int,
+ *      storageEngine?: mixed[],
+ * }
  * @psalm-type IndexMapping = array{
  *      keys: IndexKeys,
  *      options: IndexOptions

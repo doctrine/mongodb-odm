@@ -18,7 +18,8 @@ class OperatorTest extends BaseTest
     use AggregationOperatorsProviderTrait;
 
     /**
-     * @param Closure|array $args
+     * @param array<string, mixed>           $expected
+     * @param Closure(Expr): mixed[]|mixed[] $args
      *
      * @dataProvider provideExpressionOperators
      */

@@ -409,7 +409,8 @@ class ExprTest extends BaseTest
     }
 
     /**
-     * @param mixed $point
+     * @param Point|array<string, mixed> $point
+     * @param array<string, mixed>       $expected
      *
      * @dataProvider provideGeoJsonPoint
      */
@@ -430,7 +431,8 @@ class ExprTest extends BaseTest
     }
 
     /**
-     * @param mixed $point
+     * @param Point|array<string, mixed> $point
+     * @param array<string, mixed>       $expected
      *
      * @dataProvider provideGeoJsonPoint
      */
@@ -544,7 +546,8 @@ class ExprTest extends BaseTest
     }
 
     /**
-     * @param mixed $geometry
+     * @param Polygon|array<string, array<string, mixed>> $geometry
+     * @param array<string, mixed>                        $expected
      *
      * @dataProvider provideGeoJsonPolygon
      */
@@ -572,7 +575,8 @@ class ExprTest extends BaseTest
     }
 
     /**
-     * @param mixed $geometry
+     * @param Polygon|array<string, array<string, mixed>> $geometry
+     * @param array<string, mixed>                        $expected
      *
      * @dataProvider provideGeoJsonPolygon
      */
@@ -700,6 +704,8 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $json
+     *
      * @return MockObject&Point
      */
     private function getMockPoint(array $json)
@@ -714,6 +720,8 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $json
+     *
      * @return MockObject&Polygon
      */
     private function getMockPolygon(array $json)

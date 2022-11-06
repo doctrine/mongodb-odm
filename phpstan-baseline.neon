@@ -58,11 +58,6 @@ parameters:
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
 
-        -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:writeOptions\\(\\) should return PHPUnit\\\\Framework\\\\Constraint\\\\Constraint but returns PHPUnit\\\\Framework\\\\Constraint\\\\ArraySubset\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
-
         # Support for doctrine/collections v1
         -
             message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:add\(\) with return type void returns true but should not return anything\.$#'
@@ -142,12 +137,6 @@ parameters:
             message: "#^Parameter \\#2 \\$projects of class Documents\\\\Developer constructor expects Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Documents\\\\Project\\>\\|null, Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<int, Documents\\\\SubProject\\> given\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
-
-        # 'strategy' offset is defined as nullable, but here there is no check here
-        -
-            message: "#^Offset 'strategy' does not exist on array\\{\\}\\|array\\{type\\?\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\}\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
 
         # When iterating over SimpleXMLElement, we cannot know the key values
         -
@@ -248,3 +237,8 @@ parameters:
             message: "#^Call to an undefined method ReflectionEnum\\:\\:getBackingType\\(\\)\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+
+        -
+            message: "#has parameter \\$[^\\s]+ with no value type specified in iterable type array\\.$#"
+            count: 6
+            path: tests/*

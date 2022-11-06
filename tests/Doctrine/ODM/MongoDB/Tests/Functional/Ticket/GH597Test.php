@@ -110,7 +110,7 @@ class GH597Test extends BaseTest
     /**
      * Asserts that raw document matches expected document.
      *
-     * @param array $expected
+     * @param array<string, mixed> $expected
      */
     private function assertPostDocument(array $expected, GH597Post $post): void
     {

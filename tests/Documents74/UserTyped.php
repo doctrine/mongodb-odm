@@ -30,7 +30,11 @@ class UserTyped
     #[ODM\Field]
     public DateTimeImmutable $dateTimeImmutable;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var mixed[]
+     */
     #[ODM\Field]
     public array $array;
 
@@ -46,11 +50,19 @@ class UserTyped
     #[ODM\Field]
     public int $int;
 
-    /** @ODM\EmbedMany  */
+    /**
+     * @ODM\EmbedMany
+     *
+     * @var CustomCollection<array-key, object>
+     */
     #[ODM\EmbedMany]
     public CustomCollection $embedMany;
 
-    /** @ODM\ReferenceMany  */
+    /**
+     * @ODM\ReferenceMany
+     *
+     * @var CustomCollection<array-key, object>
+     */
     #[ODM\ReferenceMany]
     public CustomCollection $referenceMany;
 }

@@ -567,6 +567,8 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param string[] $args
+     *
      * @dataProvider provideSelectProjections
      */
     public function testSelect(array $args, array $expected): void
@@ -583,6 +585,8 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param string[] $args
+     *
      * @dataProvider provideExcludeProjections
      */
     public function testExclude(array $args, array $expected): void
@@ -875,6 +879,8 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $json
+     *
      * @return MockObject&Point
      */
     private function getMockPoint(array $json)

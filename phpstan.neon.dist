@@ -16,9 +16,13 @@ parameters:
     - tests/PersistentCollections/
     - tests/Proxies/
   treatPhpDocTypesAsCertain: false
+  ignoreErrors:
+      # Ignore typing providers in tests
+      - '#^Method Doctrine\\ODM\\MongoDB\\Tests\\[^:]+(Test)::(get\w+|data\w+|provide\w+)\(\) return type has no value type specified in iterable type (array|iterable)\.#'
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true
+  checkMissingIterableValueType: true
 
 # To be removed when reaching phpstan level 6
 rules:

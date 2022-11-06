@@ -106,6 +106,9 @@ class Article
         unset($this->tags[array_search($tag, $this->tags)]);
     }
 
+    /**
+     * @return int[]
+     */
     public function getTags(): array
     {
         return $this->tags;

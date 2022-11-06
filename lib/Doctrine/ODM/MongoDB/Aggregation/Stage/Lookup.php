@@ -31,8 +31,10 @@ class Lookup extends Stage
 
     private ?string $as = null;
 
+    /** @var array<string, string>|null */
     private ?array $let = null;
 
+    /** @var array<array<string, mixed>>|null */
     private ?array $pipeline = null;
 
     private bool $excludeLocalAndForeignField = false;
@@ -155,6 +157,8 @@ class Lookup extends Stage
      *
      * Use the variable expressions to access the fields from
      * the joined collection's documents that are input to the pipeline.
+     *
+     * @param array<string, string> $let
      */
     public function let(array $let): self
     {
@@ -172,6 +176,8 @@ class Lookup extends Stage
      * The pipeline cannot directly access the joined document fields.
      * Instead, define variables for the joined document fields using the let option
      * and then reference the variables in the pipeline stages.
+     *
+     * @param array<array<string, mixed>> $pipeline
      */
     public function pipeline(array $pipeline): self
     {

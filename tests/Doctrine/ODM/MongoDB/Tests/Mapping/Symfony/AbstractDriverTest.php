@@ -92,6 +92,8 @@ abstract class AbstractDriverTest extends TestCase
     abstract protected function getFileExtension(): string;
 
     /**
+     * @param string[] $paths
+     *
      * @return FileDriver
      */
     abstract protected function getDriver(array $paths = []);

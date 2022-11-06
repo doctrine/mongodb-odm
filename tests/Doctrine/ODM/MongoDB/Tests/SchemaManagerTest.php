@@ -32,7 +32,6 @@ use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\IndexInfo;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\Constraint\ArrayHasKey;
-use PHPUnit\Framework\Constraint\ArraySubset;
 use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
@@ -41,11 +40,14 @@ use PHPUnit\Framework\MockObject\MockObject;
 use function array_count_values;
 use function array_map;
 use function assert;
-use function class_exists;
 use function in_array;
 use function MongoDB\BSON\fromJSON;
 use function MongoDB\BSON\toPHP;
 
+/**
+ * @psalm-import-type IndexMapping from ClassMetadata
+ * @psalm-import-type IndexOptions from ClassMetadata
+ */
 class SchemaManagerTest extends BaseTest
 {
     /** @psalm-var list<class-string> */
@@ -160,6 +162,8 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getIndexCreationWriteOptions
      */
     public function testEnsureIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
@@ -207,6 +211,8 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getIndexCreationWriteOptions
      */
     public function testEnsureDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
@@ -227,6 +233,8 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getIndexCreationWriteOptions
      */
     public function testEnsureDocumentIndexesForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
@@ -269,6 +277,8 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getIndexCreationWriteOptions
      */
     public function testEnsureDocumentIndexesWithTwoLevelInheritance(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
@@ -284,6 +294,8 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testUpdateDocumentIndexesShouldCreateMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -307,6 +319,8 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -338,6 +352,8 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testDeleteIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -362,6 +378,8 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testDeleteDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -404,6 +422,8 @@ class SchemaManagerTest extends BaseTest
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testUpdateDocumentValidator(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -453,6 +473,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testUpdateDocumentValidatorReset(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -475,6 +497,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testCreateDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -502,6 +526,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testCreateDocumentCollectionForFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -519,6 +545,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testCreateDocumentCollectionWithValidator(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -562,6 +590,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testCreateView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -599,6 +629,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -627,6 +659,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testDropCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -641,6 +675,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testDropDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -660,6 +696,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testDropDocumentCollectionForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -695,6 +733,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testDropView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -714,6 +754,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testDropDocumentDatabase(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -734,6 +776,8 @@ EOT;
     }
 
     /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     *
      * @dataProvider getWriteOptions
      */
     public function testDropDatabases(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
@@ -749,6 +793,9 @@ EOT;
     }
 
     /**
+     * @param array<string, mixed> $mongoIndex
+     * @psalm-param IndexMapping $documentIndex
+     *
      * @dataProvider dataIsMongoIndexEquivalentToDocumentIndex
      */
     public function testIsMongoIndexEquivalentToDocumentIndex(bool $expected, array $mongoIndex, array $documentIndex): void
@@ -959,6 +1006,9 @@ EOT;
     }
 
     /**
+     * @param array<string, mixed> $mongoIndex
+     * @psalm-param IndexMapping $documentIndex
+     *
      * @dataProvider dataIsMongoTextIndexEquivalentToDocumentIndex
      */
     public function testIsMongoIndexEquivalentToDocumentIndexWithTextIndexes(bool $expected, array $mongoIndex, array $documentIndex): void
@@ -1153,13 +1203,12 @@ EOT;
         return $db;
     }
 
+    /**
+     * @psalm-param IndexOptions $expectedWriteOptions
+     */
     private function writeOptions(array $expectedWriteOptions): Constraint
     {
-        if (class_exists(ArraySubset::class)) {
-            return new ArraySubset($expectedWriteOptions);
-        }
-
-        return new Callback(static function ($value) use ($expectedWriteOptions) {
+        return new Callback(static function (array $value) use ($expectedWriteOptions) {
             foreach ($expectedWriteOptions as $writeOption => $expectedValue) {
                 if (! (new ArrayHasKey($writeOption))->evaluate($value, '', true)) {
                     return false;

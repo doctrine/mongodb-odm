@@ -48,6 +48,11 @@ final class HydratingIteratorTest extends BaseTest
         self::assertFalse($iterator->valid());
     }
 
+    /**
+     * @param array<string, mixed>|null $items
+     *
+     * @return Generator<array<string, mixed>>
+     */
     private function getTraversable(?array $items = null): Generator
     {
         if (! is_array($items)) {

@@ -249,6 +249,9 @@ class UnitOfWorkTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed>|null $origData
+     * @param array<string, mixed>|null $updateData
+     *
      * @dataProvider getScheduleForUpdateWithArraysTests
      */
     public function testScheduleForUpdateWithArrays(?array $origData, ?array $updateData, bool $shouldInUpdate): void
@@ -712,10 +715,13 @@ class ArrayTest
     /**
      * @ODM\Field(type="hash")
      *
-     * @var array<array-key, mixed>|null
+     * @var array<string, mixed>|null
      */
     public $data;
 
+    /**
+     * @param array<string, mixed>|null $data
+     */
     public function __construct(?array $data)
     {
         $this->data = $data;

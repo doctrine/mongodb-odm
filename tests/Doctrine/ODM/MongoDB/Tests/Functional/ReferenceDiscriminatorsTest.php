@@ -134,16 +134,22 @@ class CommentableAction extends Action
     /**
      * @ODM\Field(type="collection") *
      *
-     * @var array
+     * @var string[]
      */
     protected $comments = [];
 
+    /**
+     * @param string[] $comments
+     */
     public function __construct(string $type, array $comments = [])
     {
         parent::__construct($type);
         $this->comments = $comments;
     }
 
+    /**
+     * @return string[]
+     */
     public function getComments(): array
     {
         return $this->comments;

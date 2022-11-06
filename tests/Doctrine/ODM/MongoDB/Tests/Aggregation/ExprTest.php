@@ -15,7 +15,8 @@ class ExprTest extends BaseTest
     use AggregationOperatorsProviderTrait;
 
     /**
-     * @param array|Closure $args
+     * @param array<string, string>          $expected
+     * @param Closure(Expr): mixed[]|mixed[] $args
      *
      * @dataProvider provideAllOperators
      */
@@ -29,7 +30,8 @@ class ExprTest extends BaseTest
     }
 
     /**
-     * @param array|Closure $args
+     * @param array<string, string>          $expected
+     * @param Closure(Expr): mixed[]|mixed[] $args
      *
      * @dataProvider provideAllOperators
      */

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -103,6 +104,9 @@ class GH560EventSubscriber implements EventSubscriber
     /** @var string[] */
     public $events;
 
+    /**
+     * @param string[] $events
+     */
     public function __construct(array $events)
     {
         $this->events = $events;
@@ -113,6 +117,9 @@ class GH560EventSubscriber implements EventSubscriber
         return $this->events;
     }
 
+    /**
+     * @param array{LifecycleEventArgs} $args
+     */
     public function __call(string $eventName, array $args): void
     {
         $this->called[] = [$eventName, get_class($args[0]->getDocument())];

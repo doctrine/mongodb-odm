@@ -761,6 +761,8 @@ class ClassMetadataTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $config
+     *
      * @dataProvider provideOwningAndInversedRefsNeedTargetDocument
      */
     public function testOwningAndInversedRefsNeedTargetDocument(array $config): void

@@ -30,6 +30,8 @@ class QueryExpressionVisitorTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $expectedQuery
+     *
      * @dataProvider provideComparisons
      */
     public function testWalkComparison(Comparison $comparison, array $expectedQuery): void
