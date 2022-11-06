@@ -25,7 +25,7 @@ class MatchStage extends Stage
     {
         parent::__construct($builder);
 
-        $this->query = $this->expr();
+        $this->query = $this->createQueryExpression();
     }
 
     /**

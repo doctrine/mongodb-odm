@@ -87,7 +87,7 @@ class ExprTest extends BaseTest
 
         $qb = $this->dm->createQueryBuilder(User::class);
         $qb
-            ->addAnd($qb->expr()->field('groups.id')->in($ids))
+            ->addAnd($qb->createQueryExpression()->field('groups.id')->in($ids))
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
         $debug = $query->debug('query');
@@ -102,7 +102,7 @@ class ExprTest extends BaseTest
 
         $qb = $this->dm->createQueryBuilder(User::class);
         $qb
-            ->addOr($qb->expr()->field('groups.id')->in($ids))
+            ->addOr($qb->createQueryExpression()->field('groups.id')->in($ids))
             ->select('id')->hydrate(false);
         $query = $qb->getQuery();
         $debug = $query->debug('query');

@@ -59,8 +59,8 @@ class QueryTest extends BaseTest
         $expression2 = ['firstName' => 'Chris'];
 
         $qb = $this->dm->createQueryBuilder($class);
-        $qb->addOr($qb->expr()->field('firstName')->equals('Kris'));
-        $qb->addOr($qb->expr()->field('firstName')->equals('Chris'));
+        $qb->addOr($qb->createQueryExpression()->field('firstName')->equals('Kris'));
+        $qb->addOr($qb->createQueryExpression()->field('firstName')->equals('Chris'));
 
         self::assertEquals([
             '$or' => [
@@ -283,7 +283,7 @@ class QueryTest extends BaseTest
         $qb         = $this->dm->createQueryBuilder(User::class);
         $embeddedQb = $this->dm->createQueryBuilder(Phonenumber::class);
 
-        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()
+        $qb->field('phonenumbers')->elemMatch($embeddedQb->createQueryExpression()
             ->field('lastCalledBy.id')->equals($refId));
         $query = $qb->getQuery();
 

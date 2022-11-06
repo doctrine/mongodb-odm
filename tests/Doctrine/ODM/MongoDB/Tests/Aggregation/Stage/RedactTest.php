@@ -19,7 +19,7 @@ class RedactTest extends BaseTest
         $redactStage = new Redact($builder);
         $redactStage
             ->cond(
-                $builder->expr()->lte('$accessLevel', 3),
+                $builder->createAggregationExpression()->lte('$accessLevel', 3),
                 '$$KEEP',
                 '$$REDACT'
             );
@@ -33,7 +33,7 @@ class RedactTest extends BaseTest
         $builder
             ->redact()
             ->cond(
-                $builder->expr()->lte('$accessLevel', 3),
+                $builder->createAggregationExpression()->lte('$accessLevel', 3),
                 '$$KEEP',
                 '$$REDACT'
             );

@@ -71,14 +71,14 @@ final class QueryExpressionVisitor extends ExpressionVisitor
             case Comparison::NIN:
                 $method = self::$operatorMethods[$comparison->getOperator()];
 
-                return $this->builder->expr()
+                return $this->builder->createQueryExpression()
                     ->field($comparison->getField())
                     ->{$method}($this->walkValue($comparison->getValue()));
 
             case Comparison::CONTAINS:
                 $value = $this->walkValue($comparison->getValue());
 
-                return $this->builder->expr()
+                return $this->builder->createQueryExpression()
                     ->field($comparison->getField())
                     ->equals(new Regex($value, ''));
 
@@ -99,7 +99,7 @@ final class QueryExpressionVisitor extends ExpressionVisitor
         }
 
         $method     = self::$compositeMethods[$expr->getType()];
-        $outputExpr = $this->builder->expr();
+        $outputExpr = $this->builder->createQueryExpression();
 
         foreach ($expr->getExpressionList() as $child) {
             $outputExpr->{$method}($this->dispatch($child));

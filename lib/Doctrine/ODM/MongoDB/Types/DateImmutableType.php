@@ -16,6 +16,8 @@ class DateImmutableType extends DateType
 {
     /**
      * @return DateTimeImmutable
+     *
+     * @param \MongoDB\BSON\UTCDateTime|float $value
      */
     public static function getDateTime($value): DateTimeInterface
     {

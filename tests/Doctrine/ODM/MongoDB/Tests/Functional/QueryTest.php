@@ -53,7 +53,7 @@ class QueryTest extends BaseTest
         $qb         = $this->dm->createQueryBuilder(User::class);
         $embeddedQb = $this->dm->createQueryBuilder(Phonenumber::class);
 
-        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('phonenumber')->equals('6155139185'));
+        $qb->field('phonenumbers')->elemMatch($embeddedQb->createQueryExpression()->field('phonenumber')->equals('6155139185'));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
         self::assertNotNull($user);
@@ -76,7 +76,8 @@ class QueryTest extends BaseTest
         $qb         = $this->dm->createQueryBuilder(User::class);
         $embeddedQb = $this->dm->createQueryBuilder(Phonenumber::class);
 
-        $qb->field('phonenumbers')->elemMatch($embeddedQb->expr()->field('lastCalledBy.$id')->equals(new ObjectId($user1->getId())));
+        $qb->field('phonenumbers')->elemMatch($embeddedQb->createQueryExpression()->field('lastCalledBy.$id')->equals(new ObjectId
+        ($user1->getId())));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
         self::assertNotNull($user);
@@ -91,12 +92,12 @@ class QueryTest extends BaseTest
         $this->dm->flush();
 
         $qb = $this->dm->createQueryBuilder(User::class);
-        $qb->field('username')->not($qb->expr()->in(['boo']));
+        $qb->field('username')->not($qb->createQueryExpression()->in(['boo']));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
         self::assertNull($user);
 
-        $qb->field('username')->not($qb->expr()->in(['1boo']));
+        $qb->field('username')->not($qb->createQueryExpression()->in(['1boo']));
         $query = $qb->getQuery();
         $user  = $query->getSingleResult();
         self::assertNotNull($user);

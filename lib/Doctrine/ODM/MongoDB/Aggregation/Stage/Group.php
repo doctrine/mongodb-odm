@@ -19,7 +19,7 @@ class Group extends Operator
     {
         parent::__construct($builder);
 
-        $this->expr = $builder->expr();
+        $this->expr = $builder->createAggregationExpression();
     }
 
     public function getExpression(): array

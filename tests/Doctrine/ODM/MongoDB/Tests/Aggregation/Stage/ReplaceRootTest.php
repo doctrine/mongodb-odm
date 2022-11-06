@@ -43,7 +43,7 @@ class ReplaceRootTest extends BaseTest
         $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
         $stage     = $builder
             ->replaceRoot(
-                $builder->expr()
+                $builder->createAggregationExpression()
                     ->field('isToday')
                     ->eq('$createdAt', $dateTime)
             );

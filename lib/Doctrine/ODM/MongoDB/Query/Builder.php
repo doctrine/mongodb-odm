@@ -122,7 +122,7 @@ class Builder
     /**
      * Add one or more $and clauses to the current query.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::addAnd()
      * @see https://docs.mongodb.com/manual/reference/operator/and/
@@ -140,7 +140,7 @@ class Builder
     /**
      * Add one or more $nor clauses to the current query.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::addNor()
      * @see https://docs.mongodb.com/manual/reference/operator/nor/
@@ -158,7 +158,7 @@ class Builder
     /**
      * Add one or more $or clauses to the current query.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::addOr()
      * @see https://docs.mongodb.com/manual/reference/operator/or/
@@ -430,7 +430,7 @@ class Builder
     /**
      * Specify $elemMatch criteria for the current field.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::elemMatch()
      * @see https://docs.mongodb.com/manual/reference/operator/elemMatch/
@@ -465,6 +465,9 @@ class Builder
      * excluded.
      *
      * @param string[]|string $fieldName,...
+     * @param null|string|string[] $fieldName
+     *
+     * @psalm-param 'comments'|array{0: 'name', 1: 'issues'}|null $fieldName
      */
     public function exclude($fieldName = null): self
     {
@@ -1054,7 +1057,7 @@ class Builder
     /**
      * Negates an expression for the current field.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::not()
      * @see https://docs.mongodb.com/manual/reference/operator/not/
@@ -1288,7 +1291,9 @@ class Builder
     /**
      * Set one or more fields to be included in the query projection.
      *
-     * @param string[]|string $fieldName,...
+     * @param null|string|string[] $fieldName
+     *
+     * @return Builder
      */
     public function select($fieldName = null): self
     {
