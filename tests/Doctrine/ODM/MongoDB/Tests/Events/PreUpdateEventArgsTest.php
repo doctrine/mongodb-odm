@@ -11,6 +11,7 @@ use Documents\Article;
 use Documents\Book;
 use Documents\Chapter;
 use Documents\Page;
+use PHPUnit\Framework\Assert;
 
 use function get_class;
 use function in_array;
@@ -34,7 +35,7 @@ class PreUpdateEventArgsTest extends BaseTest
 
     public function testCollectionsAreInChangeSet(): void
     {
-        $listener = new CollectionsAreInChangeSetListener($this);
+        $listener = new CollectionsAreInChangeSetListener();
         $this->dm->getEventManager()->addEventListener(Events::preUpdate, $listener);
 
         $book = new Book();
@@ -76,13 +77,6 @@ class CollectionsAreInChangeSetListener
     /** @var list<class-string> */
     private array $allowed = [Book::class, Chapter::class];
 
-    private PreUpdateEventArgsTest $phpunit;
-
-    public function __construct(PreUpdateEventArgsTest $phpunit)
-    {
-        $this->phpunit = $phpunit;
-    }
-
     /** @param list<class-string> $allowed */
     public function checkOnly(array $allowed): void
     {
@@ -94,13 +88,13 @@ class CollectionsAreInChangeSetListener
         switch (get_class($e->getDocument())) {
             case Book::class:
                 if (in_array(Book::class, $this->allowed, true)) {
-                    $this->phpunit->assertTrue($e->hasChangedField('chapters'));
+                    Assert::assertTrue($e->hasChangedField('chapters'));
                 }
 
                 break;
             case Chapter::class:
                 if (in_array(Chapter::class, $this->allowed, true)) {
-                    $this->phpunit->assertTrue($e->hasChangedField('pages'));
+                    Assert::assertTrue($e->hasChangedField('pages'));
                 }
 
                 break;
