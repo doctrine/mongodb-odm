@@ -13,7 +13,7 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Assert;
 
 use function get_class;
 
@@ -196,7 +196,7 @@ class LifecycleListenersTest extends BaseTest
     public function testPostCollectionLoad(): void
     {
         $evm = $this->dm->getEventManager();
-        $evm->addEventListener([Events::postCollectionLoad], new PostCollectionLoadEventListener($this));
+        $evm->addEventListener([Events::postCollectionLoad], new PostCollectionLoadEventListener());
 
         $document       = new TestDocument();
         $document->name = 'Maciej';
@@ -244,13 +244,6 @@ class PostCollectionLoadEventListener
 {
     private int $at = 0;
 
-    private TestCase $phpunit;
-
-    public function __construct(TestCase $phpunit)
-    {
-        $this->phpunit = $phpunit;
-    }
-
     /**
      * @param PostCollectionLoadEventArgs<int, TestEmbeddedDocument> $e
      */
@@ -258,11 +251,11 @@ class PostCollectionLoadEventListener
     {
         switch ($this->at++) {
             case 0:
-                $this->phpunit->assertCount(0, $e->getCollection());
+                Assert::assertCount(0, $e->getCollection());
                 break;
             case 1:
-                $this->phpunit->assertCount(1, $e->getCollection());
-                $this->phpunit->assertEquals(new TestEmbeddedDocument('For mock at 1'), $e->getCollection()[0]);
+                Assert::assertCount(1, $e->getCollection());
+                Assert::assertEquals(new TestEmbeddedDocument('For mock at 1'), $e->getCollection()[0]);
                 break;
             default:
                 throw new BadMethodCallException('This was not expected');
