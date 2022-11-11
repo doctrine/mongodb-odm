@@ -1120,6 +1120,20 @@ class Expr
     }
 
     /**
+     * Performs a regular expression (regex) pattern matching
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/regexMatch/
+     *
+     * @param mixed|self $input   The value to compare. (Use "$<field>" format to test your regex on a field)
+     * @param mixed|self $regex   The regular expression (regex)
+     * @param mixed|self $options A string containing regex flags options. See mongodb doc. above for details
+     */
+    public function regexMatch($input, $regex, $options): self
+    {
+        return $this->operator('$regexMatch', ['input' => $input, 'regex' => $regex, 'options' => $options]);
+    }
+
+    /**
      * Accepts an array expression as an argument and returns an array with the
      * elements in reverse order.
      *
