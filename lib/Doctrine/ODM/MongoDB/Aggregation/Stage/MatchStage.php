@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
+use Doctrine\ODM\MongoDB\Aggregation;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use GeoJson\Geometry\Geometry;
 
 use function func_get_args;
+use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -23,7 +25,7 @@ class MatchStage extends Stage
     {
         parent::__construct($builder);
 
-        $this->query = $this->expr();
+        $this->query = $this->createQueryExpression();
     }
 
     /**
@@ -115,6 +117,15 @@ class MatchStage extends Stage
     }
 
     /**
+     * Create a new Expr instance that can be used to build partial expressions
+     * for other operator methods.
+     */
+    public function createQueryExpression(): Expr
+    {
+        return $this->builder->matchExpr();
+    }
+
+    /**
      * Specify $elemMatch criteria for the current field.
      *
      * You can create a new expression using the {@link Builder::matchExpr()}
@@ -166,12 +177,34 @@ class MatchStage extends Stage
     }
 
     /**
-     * Create a new Expr instance that can be used to build partial expressions
-     * for other operator methods.
+     * @deprecated use createExpr instead
      */
     public function expr(): Expr
     {
-        return $this->builder->matchExpr();
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.5',
+            'The "%s" method is deprecated. Please use "%s::createQueryExpression" instead.',
+            __METHOD__,
+            static::class
+        );
+
+        return $this->createQueryExpression();
+    }
+
+    /**
+     * Specify $expr criteria for the current field.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
+     * @see Expr::aggregationExpression()
+     *
+     * @param array|Aggregation\Expr $expression
+     */
+    public function aggregationExpression($expression): self
+    {
+        $this->query->aggregationExpression($expression);
+
+        return $this;
     }
 
     /**

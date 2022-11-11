@@ -161,6 +161,14 @@ class Builder
     }
 
     /**
+     * Create a new Expr instance that can be used as an expression with the Builder
+     */
+    public function createAggregationExpression(): Expr
+    {
+        return new Expr($this->dm, $this->class);
+    }
+
+    /**
      * Executes the aggregation pipeline
      *
      * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
@@ -180,9 +188,20 @@ class Builder
         return $this->getAggregation($options)->getIterator();
     }
 
+    /**
+     * @deprecated use createAggregationExpression instead
+     */
     public function expr(): Expr
     {
-        return new Expr($this->dm, $this->class);
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.5',
+            'The "%s" method is deprecated. Please use "%s::createAggregationExpression" instead.',
+            __METHOD__,
+            static::class
+        );
+
+        return $this->createAggregationExpression();
     }
 
     /**

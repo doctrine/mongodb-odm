@@ -104,7 +104,8 @@ class Configuration
      *      persistentCollectionGenerator?: PersistentCollectionGenerator,
      *      persistentCollectionDir?: string,
      *      persistentCollectionNamespace?: string,
-     *      repositoryFactory?: RepositoryFactory
+     *      repositoryFactory?: RepositoryFactory,
+     *      writeConcern?: WriteConcern
      * }
      */
     private array $attributes = [];

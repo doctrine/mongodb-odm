@@ -26,8 +26,8 @@ class GH596Test extends BaseTest
 
         $repository = $this->dm->getRepository($class);
         $qb         = $repository->createQueryBuilder();
-        $qb->addOr($qb->expr()->field('name')->equals('foo'));
-        $qb->addOr($qb->expr()->field('name')->equals('bar'));
+        $qb->addOr($qb->createQueryExpression()->field('name')->equals('foo'));
+        $qb->addOr($qb->createQueryExpression()->field('name')->equals('bar'));
 
         $query = $qb->getQuery();
         $query = $query->getQuery();

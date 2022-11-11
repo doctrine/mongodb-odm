@@ -55,7 +55,7 @@ use function sprintf;
  *      1: mixed
  * }
  * @psalm-type Hints = array<int, mixed>
- * @psalm-type CommitOptions array{
+ * @psalm-type CommitOptions = array{
  *      fsync?: bool,
  *      safe?: int,
  *      w?: int,
@@ -1601,7 +1601,6 @@ final class UnitOfWork implements PropertyChangedListener
      * @throws InvalidArgumentException If the class does not have an identifier.
      *
      * @template T of object
-     *
      * @psalm-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
     public function getById($id, ClassMetadata $class): object
@@ -1630,7 +1629,6 @@ final class UnitOfWork implements PropertyChangedListener
      * @throws InvalidArgumentException If the class does not have an identifier.
      *
      * @template T of object
-     *
      * @psalm-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
     public function tryGetById($id, ClassMetadata $class)

@@ -18,7 +18,7 @@ class GH1674Test extends BaseTest
         $builder
             ->field('embedded')
             ->elemMatch(
-                $builder->expr()
+                $builder->createQueryExpression()
                     ->field('id')
                     ->equals(1)
             );

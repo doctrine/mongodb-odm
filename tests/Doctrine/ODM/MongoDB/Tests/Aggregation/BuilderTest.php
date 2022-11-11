@@ -135,7 +135,7 @@ class BuilderTest extends BaseTest
             ->unwind('b')
             ->redact()
                 ->cond(
-                    $builder->expr()->lte('$accessLevel', 3),
+                    $builder->createAggregationExpression()->lte('$accessLevel', 3),
                     '$$KEEP',
                     '$$REDACT'
                 )
@@ -144,9 +144,9 @@ class BuilderTest extends BaseTest
                 ->includeFields(['user', 'amount', 'invoiceAddress'])
                 ->field('deliveryAddress')
                 ->cond(
-                    $builder->expr()
-                        ->addAnd($builder->expr()->eq('$useAlternateDeliveryAddress', true))
-                        ->addAnd($builder->expr()->ne('$deliveryAddress', null)),
+                    $builder->createAggregationExpression()
+                        ->addAnd($builder->createAggregationExpression()->eq('$useAlternateDeliveryAddress', true))
+                        ->addAnd($builder->createAggregationExpression()->ne('$deliveryAddress', null)),
                     '$deliveryAddress',
                     '$invoiceAddress'
                 )
@@ -157,7 +157,7 @@ class BuilderTest extends BaseTest
                 ->sum(1)
                 ->field('amount')
                 ->expression(
-                    $builder->expr()
+                    $builder->createAggregationExpression()
                         ->field('total')
                         ->sum('$amount')
                         ->field('avg')
@@ -267,9 +267,9 @@ class BuilderTest extends BaseTest
             ->group()
                 ->field('id')
                 ->expression(
-                    $builder->expr()
+                    $builder->createAggregationExpression()
                         ->cond(
-                            $builder->expr()->lt('$createdAt', $dateTime),
+                            $builder->createAggregationExpression()->lt('$createdAt', $dateTime),
                             true,
                             false
                         )

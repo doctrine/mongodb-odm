@@ -27,7 +27,7 @@ abstract class Operator extends Stage
     {
         parent::__construct($builder);
 
-        $this->expr = $builder->expr();
+        $this->expr = $builder->createAggregationExpression();
     }
 
     /**

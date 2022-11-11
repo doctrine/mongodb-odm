@@ -284,7 +284,6 @@ class DocumentManager implements ObjectManager
      * @psalm-return ClassMetadata<T>
      *
      * @template T of object
-     *
      * @psalm-suppress InvalidReturnType, InvalidReturnStatement see https://github.com/vimeo/psalm/issues/5788
      */
     public function getClassMetadata($className): ClassMetadata

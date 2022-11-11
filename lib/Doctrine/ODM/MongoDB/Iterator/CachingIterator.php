@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Countable;
 use Generator;
-use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 
@@ -80,7 +79,7 @@ final class CachingIterator implements Countable, Iterator
     /**
      * @return TValue|false
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->items);
@@ -89,7 +88,7 @@ final class CachingIterator implements Countable, Iterator
     /**
      * @return mixed
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->items);

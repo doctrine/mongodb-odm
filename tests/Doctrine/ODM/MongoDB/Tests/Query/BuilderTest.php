@@ -242,8 +242,8 @@ class BuilderTest extends BaseTest
     public function testThatOrAcceptsAnotherQuery(): void
     {
         $qb = $this->getTestQueryBuilder();
-        $qb->addOr($qb->expr()->field('firstName')->equals('Kris'));
-        $qb->addOr($qb->expr()->field('firstName')->equals('Chris'));
+        $qb->addOr($qb->createQueryExpression()->field('firstName')->equals('Kris'));
+        $qb->addOr($qb->createQueryExpression()->field('firstName')->equals('Chris'));
 
         self::assertEquals([
             '$or' => [
@@ -256,8 +256,8 @@ class BuilderTest extends BaseTest
     public function testThatAndAcceptsAnotherQuery(): void
     {
         $qb = $this->getTestQueryBuilder();
-        $qb->addAnd($qb->expr()->field('hits')->gte(1));
-        $qb->addAnd($qb->expr()->field('hits')->lt(5));
+        $qb->addAnd($qb->createQueryExpression()->field('hits')->gte(1));
+        $qb->addAnd($qb->createQueryExpression()->field('hits')->lt(5));
 
         self::assertEquals([
             '$and' => [
@@ -270,8 +270,8 @@ class BuilderTest extends BaseTest
     public function testThatNorAcceptsAnotherQuery(): void
     {
         $qb = $this->getTestQueryBuilder();
-        $qb->addNor($qb->expr()->field('firstName')->equals('Kris'));
-        $qb->addNor($qb->expr()->field('firstName')->equals('Chris'));
+        $qb->addNor($qb->createQueryExpression()->field('firstName')->equals('Kris'));
+        $qb->addNor($qb->createQueryExpression()->field('firstName')->equals('Chris'));
 
         self::assertEquals([
             '$nor' => [
@@ -284,7 +284,7 @@ class BuilderTest extends BaseTest
     public function testAddElemMatch(): void
     {
         $qb = $this->getTestQueryBuilder();
-        $qb->field('phonenumbers')->elemMatch($qb->expr()->field('phonenumber')->equals('6155139185'));
+        $qb->field('phonenumbers')->elemMatch($qb->createQueryExpression()->field('phonenumber')->equals('6155139185'));
         $expected = [
             'phonenumbers' => [
                 '$elemMatch' => ['phonenumber' => '6155139185'],
@@ -296,7 +296,7 @@ class BuilderTest extends BaseTest
     public function testAddNot(): void
     {
         $qb = $this->getTestQueryBuilder();
-        $qb->field('username')->not($qb->expr()->in(['boo']));
+        $qb->field('username')->not($qb->createQueryExpression()->in(['boo']));
         $expected = [
             'username' => [
                 '$not' => [
@@ -666,7 +666,7 @@ class BuilderTest extends BaseTest
     public function testSelectElemMatchWithExpr(): void
     {
         $qb = $this->getTestQueryBuilder();
-        $qb->selectElemMatch('addresses', $qb->expr()->field('state')->equals('ny'));
+        $qb->selectElemMatch('addresses', $qb->createQueryExpression()->field('state')->equals('ny'));
 
         $expected = ['addresses' => ['$elemMatch' => ['state' => 'ny']]];
 

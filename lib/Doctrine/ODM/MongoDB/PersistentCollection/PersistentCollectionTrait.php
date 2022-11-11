@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-use ReturnTypeWillChange;
 use Traversable;
 
 use function array_combine;
@@ -410,7 +409,7 @@ trait PersistentCollectionTrait
     /**
      * @return int
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function count()
     {
         // Workaround around not being able to directly count inverse collections anymore
@@ -438,7 +437,7 @@ trait PersistentCollectionTrait
      * @return Traversable
      * @psalm-return Traversable<TKey, T>
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $this->initialize();
@@ -537,7 +536,7 @@ trait PersistentCollectionTrait
      *
      * @return bool
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         $this->initialize();
@@ -551,7 +550,7 @@ trait PersistentCollectionTrait
      * @return mixed
      * @psalm-return T|null
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $this->initialize();
@@ -565,7 +564,7 @@ trait PersistentCollectionTrait
      *
      * @return void
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (! isset($offset)) {
@@ -582,7 +581,7 @@ trait PersistentCollectionTrait
      *
      * @return void
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->doRemove($offset, true);

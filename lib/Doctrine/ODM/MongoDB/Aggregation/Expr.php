@@ -19,6 +19,7 @@ use function func_get_args;
 use function is_array;
 use function is_string;
 use function substr;
+use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -325,6 +326,16 @@ class Expr
     }
 
     /**
+     * Returns a new expression object
+     *
+     * @return static
+     */
+    public function createAggregationExpression(): self
+    {
+        return new static($this->dm, $this->class);
+    }
+
+    /**
      * Converts a date object to a string according to a user-specified format.
      *
      * The format string can be any string literal, containing 0 or more format
@@ -453,10 +464,20 @@ class Expr
 
     /**
      * Returns a new expression object
+     *
+     * @deprecated use createAggregationExpression instead
      */
     public function expr(): self
     {
-        return new static($this->dm, $this->class);
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.5',
+            'The "%s" method is deprecated. Please use "%s::createAggregationExpression" instead.',
+            __METHOD__,
+            static::class
+        );
+
+        return $this->createAggregationExpression();
     }
 
     /**
@@ -1096,6 +1117,20 @@ class Expr
     public function reduce($input, $initialValue, $in): self
     {
         return $this->operator('$reduce', ['input' => $input, 'initialValue' => $initialValue, 'in' => $in]);
+    }
+
+    /**
+     * Performs a regular expression (regex) pattern matching
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/regexMatch/
+     *
+     * @param mixed|self $input   The value to compare. (Use "$<field>" format to test your regex on a field)
+     * @param mixed|self $regex   The regular expression (regex)
+     * @param mixed|self $options A string containing regex flags options. See mongodb doc. above for details
+     */
+    public function regexMatch($input, $regex, $options): self
+    {
+        return $this->operator('$regexMatch', ['input' => $input, 'regex' => $regex, 'options' => $options]);
     }
 
     /**

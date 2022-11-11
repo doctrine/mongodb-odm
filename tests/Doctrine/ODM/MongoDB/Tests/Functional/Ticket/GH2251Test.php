@@ -23,8 +23,8 @@ class GH2251Test extends BaseTest
             new ObjectId('5fae9a775ef4492e3c72b3f4'),
         ];
 
-        $notIn     = $builder->expr()->notIn($objectIds);
-        $elemMatch = $builder->expr()
+        $notIn     = $builder->createQueryExpression()->notIn($objectIds);
+        $elemMatch = $builder->createQueryExpression()
             ->field($fieldName)
             ->elemMatch($notIn);
 

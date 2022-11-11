@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Aggregation;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use GeoJson\Geometry\Geometry;
@@ -25,6 +26,7 @@ use function is_bool;
 use function is_callable;
 use function is_string;
 use function strtolower;
+use function trigger_deprecation;
 
 /**
  * Query builder for ODM.
@@ -120,7 +122,7 @@ class Builder
     /**
      * Add one or more $and clauses to the current query.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::addAnd()
      * @see https://docs.mongodb.com/manual/reference/operator/and/
@@ -138,7 +140,7 @@ class Builder
     /**
      * Add one or more $nor clauses to the current query.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::addNor()
      * @see https://docs.mongodb.com/manual/reference/operator/nor/
@@ -156,7 +158,7 @@ class Builder
     /**
      * Add one or more $or clauses to the current query.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::addOr()
      * @see https://docs.mongodb.com/manual/reference/operator/or/
@@ -357,6 +359,17 @@ class Builder
     }
 
     /**
+     * Create a new Expr instance that can be used as an expression with the Builder
+     */
+    public function createQueryExpression(): Expr
+    {
+        $expr = new Expr($this->dm);
+        $expr->setClassMetadata($this->class);
+
+        return $expr;
+    }
+
+    /**
      * Sets the value of the current field to the current date, either as a date or a timestamp.
      *
      * @see Expr::currentDate()
@@ -417,7 +430,7 @@ class Builder
     /**
      * Specify $elemMatch criteria for the current field.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::elemMatch()
      * @see https://docs.mongodb.com/manual/reference/operator/elemMatch/
@@ -452,6 +465,9 @@ class Builder
      * excluded.
      *
      * @param string[]|string $fieldName,...
+     * @param null|string|string[] $fieldName
+     *
+     * @psalm-param 'comments'|array{0: 'name', 1: 'issues'}|null $fieldName
      */
     public function exclude($fieldName = null): self
     {
@@ -483,13 +499,35 @@ class Builder
 
     /**
      * Create a new Expr instance that can be used as an expression with the Builder
+     *
+     * @deprecated use createQueryExpression instead
      */
     public function expr(): Expr
     {
-        $expr = new Expr($this->dm);
-        $expr->setClassMetadata($this->class);
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.5',
+            'The "%s" method is deprecated. Please use "%s::createQueryExpression" instead.',
+            __METHOD__,
+            static::class
+        );
 
-        return $expr;
+        return $this->createQueryExpression();
+    }
+
+    /**
+     * Specify $expr criteria for the current field.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/query/expr/
+     * @see Aggregation\Expr::aggregationExpression()
+     *
+     * @param array|Aggregation\Expr $expression
+     */
+    public function aggregationExpression($expression): self
+    {
+        $this->expr->aggregationExpression($expression);
+
+        return $this;
     }
 
     /**
@@ -1019,7 +1057,7 @@ class Builder
     /**
      * Negates an expression for the current field.
      *
-     * You can create a new expression using the {@link Builder::expr()} method.
+     * You can create a new expression using the {@link Builder::createAggregationExpression()} method.
      *
      * @see Expr::not()
      * @see https://docs.mongodb.com/manual/reference/operator/not/
@@ -1253,7 +1291,9 @@ class Builder
     /**
      * Set one or more fields to be included in the query projection.
      *
-     * @param string[]|string $fieldName,...
+     * @param null|string|string[] $fieldName
+     *
+     * @return Builder
      */
     public function select($fieldName = null): self
     {
