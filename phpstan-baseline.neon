@@ -172,7 +172,7 @@ parameters:
         # compatibility layer for doctrine/persistence ^2.4 || ^3.0
         -
             message: "#.*#"
-            count: 3
+            count: 1
             path: lib/Doctrine/ODM/MongoDB/Event/OnClearEventArgs
 
         -
