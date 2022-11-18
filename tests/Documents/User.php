@@ -242,25 +242,19 @@ class User extends BaseDocument
         $this->createdAt        = new DateTime();
     }
 
-    /**
-     * @param ObjectId|string $id
-     */
+    /** @param ObjectId|string $id */
     public function setId($id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getLogs(): array
     {
         return $this->logs;
     }
 
-    /**
-     * @param string[] $logs
-     */
+    /** @param string[] $logs */
     public function setLogs(array $logs): void
     {
         $this->logs = $logs;
@@ -271,9 +265,7 @@ class User extends BaseDocument
         $this->logs[] = $log;
     }
 
-    /**
-     * @return ObjectId|string|null
-     */
+    /** @return ObjectId|string|null */
     public function getId()
     {
         return $this->id;
@@ -299,17 +291,13 @@ class User extends BaseDocument
         return $this->password;
     }
 
-    /**
-     * @param UTCDateTime|DateTimeInterface|string $createdAt
-     */
+    /** @param UTCDateTime|DateTimeInterface|string $createdAt */
     public function setCreatedAt($createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return UTCDateTime|DateTime|DateTimeInterface|string
-     */
+    /** @return UTCDateTime|DateTime|DateTimeInterface|string */
     public function getCreatedAt()
     {
         return $this->createdAt;
@@ -374,9 +362,7 @@ class User extends BaseDocument
         return $this->accountSimple;
     }
 
-    /**
-     * @return Collection<int, Phonenumber>
-     */
+    /** @return Collection<int, Phonenumber> */
     public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
@@ -387,33 +373,25 @@ class User extends BaseDocument
         $this->phonenumbers[] = $phonenumber;
     }
 
-    /**
-     * @return Collection<int, Group>
-     */
+    /** @return Collection<int, Group> */
     public function getSortedAscGroups(): Collection
     {
         return $this->sortedAscGroups;
     }
 
-    /**
-     * @return Collection<int, Group>
-     */
+    /** @return Collection<int, Group> */
     public function getSortedDescGroups(): Collection
     {
         return $this->sortedDescGroups;
     }
 
-    /**
-     * @return Collection<int, Group>|array<Group>
-     */
+    /** @return Collection<int, Group>|array<Group> */
     public function getGroups()
     {
         return $this->groups;
     }
 
-    /**
-     * @param Collection<int, Group>|array<Group> $groups
-     */
+    /** @param Collection<int, Group>|array<Group> $groups */
     public function setGroups($groups): void
     {
         $this->groups = $groups;
@@ -442,17 +420,13 @@ class User extends BaseDocument
         $this->groupsSimple[] = $group;
     }
 
-    /**
-     * @return Collection<int, Group>
-     */
+    /** @return Collection<int, Group> */
     public function getUniqueGroups(): Collection
     {
         return $this->uniqueGroups;
     }
 
-    /**
-     * @param Collection<int, Group> $groups
-     */
+    /** @param Collection<int, Group> $groups */
     public function setUniqueGroups(Collection $groups): void
     {
         $this->uniqueGroups = $groups;
@@ -508,17 +482,13 @@ class User extends BaseDocument
         return $this->simpleReferenceOneInverse;
     }
 
-    /**
-     * @return Collection<int, SimpleReferenceUser>
-     */
+    /** @return Collection<int, SimpleReferenceUser> */
     public function getSimpleReferenceManyInverse(): Collection
     {
         return $this->simpleReferenceManyInverse;
     }
 
-    /**
-     * @param float|int|null $num
-     */
+    /** @param float|int|null $num */
     public function incrementCount($num = null): void
     {
         if ($num === null) {
@@ -528,9 +498,7 @@ class User extends BaseDocument
         }
     }
 
-    /**
-     * @param float|int|null $num
-     */
+    /** @param float|int|null $num */
     public function incrementFloatCount($num = null): void
     {
         if ($num === null) {
@@ -545,9 +513,7 @@ class User extends BaseDocument
         $this->decimal128Count = bcadd($this->decimal128Count, $num ?? '1');
     }
 
-    /**
-     * @param Collection<int, BlogPost> $posts
-     */
+    /** @param Collection<int, BlogPost> $posts */
     public function setPosts(Collection $posts): void
     {
         $this->posts = $posts;
@@ -571,17 +537,13 @@ class User extends BaseDocument
         return false;
     }
 
-    /**
-     * @return Collection<int, BlogPost>
-     */
+    /** @return Collection<int, BlogPost> */
     public function getPosts(): Collection
     {
         return $this->posts;
     }
 
-    /**
-     * @param Collection<int, Phonenumber> $phonenumbers
-     */
+    /** @param Collection<int, Phonenumber> $phonenumbers */
     public function setPhonenumbers(Collection $phonenumbers): void
     {
         $this->phonenumbers = $phonenumbers;
@@ -592,9 +554,7 @@ class User extends BaseDocument
         $this->phonebooks->add($phonebook);
     }
 
-    /**
-     * @return Collection<int, Phonebook>
-     */
+    /** @return Collection<int, Phonebook> */
     public function getPhonebooks(): Collection
     {
         return $this->phonebooks;

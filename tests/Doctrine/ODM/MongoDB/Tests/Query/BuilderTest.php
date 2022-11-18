@@ -473,9 +473,7 @@ class BuilderTest extends BaseTest
         self::assertCount(1, $qb->getQueryArray());
     }
 
-    /**
-     * @dataProvider provideProxiedExprMethods
-     */
+    /** @dataProvider provideProxiedExprMethods */
     public function testProxiedExprMethods(string $method, array $args = []): void
     {
         $expr = $this->getMockExpr();
@@ -757,9 +755,7 @@ class BuilderTest extends BaseTest
         self::assertEquals(['score' => ['$meta' => 'textScore']], $qb->debug('sort'));
     }
 
-    /**
-     * @dataProvider provideCurrentDateOptions
-     */
+    /** @dataProvider provideCurrentDateOptions */
     public function testCurrentDateUpdateQuery(string $type): void
     {
         $qb = $this->getTestQueryBuilder()
@@ -862,17 +858,13 @@ class BuilderTest extends BaseTest
         return new Builder($this->dm, User::class);
     }
 
-    /**
-     * @return MockObject&Expr
-     */
+    /** @return MockObject&Expr */
     private function getMockExpr()
     {
         return $this->createMock(Expr::class);
     }
 
-    /**
-     * @return MockObject&Geometry
-     */
+    /** @return MockObject&Geometry */
     private function getMockGeometry()
     {
         return $this->createMock(Geometry::class);
@@ -911,9 +903,7 @@ class ParentClass
     public $id;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ChildA extends ParentClass
 {
     /**
@@ -945,9 +935,7 @@ class ChildA extends ParentClass
     public $conflictMany;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ChildB extends ParentClass
 {
     /**
@@ -979,9 +967,7 @@ class ChildB extends ParentClass
     public $conflictMany;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ChildC extends ParentClass
 {
     /**

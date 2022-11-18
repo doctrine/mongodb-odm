@@ -55,9 +55,7 @@ final class CachingIterator implements Countable, Iterator
         $this->storeCurrentItem();
     }
 
-    /**
-     * @see https://php.net/countable.count
-     */
+    /** @see https://php.net/countable.count */
     public function count(): int
     {
         $this->exhaustIterator();
@@ -77,27 +75,21 @@ final class CachingIterator implements Countable, Iterator
         return $this->items;
     }
 
-    /**
-     * @return TValue|false
-     */
+    /** @return TValue|false */
     #[ReturnTypeWillChange]
     public function current()
     {
         return current($this->items);
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     #[ReturnTypeWillChange]
     public function key()
     {
         return key($this->items);
     }
 
-    /**
-     * @see http://php.net/iterator.next
-     */
+    /** @see http://php.net/iterator.next */
     public function next(): void
     {
         if (! $this->iteratorExhausted) {
@@ -108,9 +100,7 @@ final class CachingIterator implements Countable, Iterator
         next($this->items);
     }
 
-    /**
-     * @see http://php.net/iterator.rewind
-     */
+    /** @see http://php.net/iterator.rewind */
     public function rewind(): void
     {
         /* If the iterator has advanced, exhaust it now so that future iteration
@@ -123,9 +113,7 @@ final class CachingIterator implements Countable, Iterator
         reset($this->items);
     }
 
-    /**
-     * @see http://php.net/iterator.valid
-     */
+    /** @see http://php.net/iterator.valid */
     public function valid(): bool
     {
         return $this->key() !== null;
@@ -143,9 +131,7 @@ final class CachingIterator implements Countable, Iterator
         $this->iterator = null;
     }
 
-    /**
-     * @return Generator<mixed, TValue>
-     */
+    /** @return Generator<mixed, TValue> */
     private function getIterator(): Generator
     {
         if ($this->iterator === null) {

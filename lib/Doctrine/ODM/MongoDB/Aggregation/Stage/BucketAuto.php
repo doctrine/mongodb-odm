@@ -6,9 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use function assert;
 
-/**
- * @method BucketAuto groupBy($expression)
- */
+/** @method BucketAuto groupBy($expression) */
 class BucketAuto extends AbstractBucket
 {
     private ?int $buckets = null;
@@ -54,9 +52,7 @@ class BucketAuto extends AbstractBucket
         return $this->output;
     }
 
-    /**
-     * @return array{buckets: int, granularity?: string}
-     */
+    /** @return array{buckets: int, granularity?: string} */
     protected function getExtraPipelineFields(): array
     {
         $fields = ['buckets' => $this->buckets];

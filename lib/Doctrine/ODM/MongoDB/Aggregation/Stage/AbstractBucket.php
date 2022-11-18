@@ -70,9 +70,7 @@ abstract class AbstractBucket extends Stage
         return $stage;
     }
 
-    /**
-     * @return mixed[]
-     */
+    /** @return mixed[] */
     abstract protected function getExtraPipelineFields(): array;
 
     /**

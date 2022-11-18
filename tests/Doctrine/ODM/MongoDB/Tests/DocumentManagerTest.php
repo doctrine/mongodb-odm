@@ -131,9 +131,7 @@ class DocumentManagerTest extends BaseTest
         ];
     }
 
-    /**
-     * @dataProvider dataMethodsAffectedByNoObjectArguments
-     */
+    /** @dataProvider dataMethodsAffectedByNoObjectArguments */
     public function testThrowsExceptionOnNonObjectValues(string $methodName): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -151,9 +149,7 @@ class DocumentManagerTest extends BaseTest
         ];
     }
 
-    /**
-     * @dataProvider dataAffectedByErrorIfClosedException
-     */
+    /** @dataProvider dataAffectedByErrorIfClosedException */
     public function testAffectedByErrorIfClosedException(string $methodName): void
     {
         $this->expectException(MongoDBException::class);

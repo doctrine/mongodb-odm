@@ -31,9 +31,7 @@ class ForumUser
      */
     public $avatar;
 
-    /**
-     * @return int|ObjectId|null
-     */
+    /** @return int|ObjectId|null */
     public function getId()
     {
         return $this->id;

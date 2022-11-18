@@ -92,9 +92,7 @@ class GH602Test extends BaseTest
         self::assertEquals($user1->getId(), $thing1likedBy[0]->getId());
     }
 
-    /**
-     * @psaml-param class-string $class
-     */
+    /** @psaml-param class-string $class */
     private function enableDeletedFilter(string $class): void
     {
         $this->dm->getFilterCollection()->enable('testFilter');

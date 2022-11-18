@@ -25,9 +25,7 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
      */
     private ?string $entityClass;
 
-    /**
-     * @param class-string|null $entityClass
-     */
+    /** @param class-string|null $entityClass */
     public function __construct($objectManager, $entityClass = null)
     {
         if (method_exists(parent::class, 'getEntityClass') && $entityClass !== null) {
@@ -88,9 +86,7 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
         return $this->entityClass !== null;
     }
 
-    /**
-     * @deprecated no replacement planned
-     */
+    /** @deprecated no replacement planned */
     public function clearsAllEntities(): bool
     {
         if (method_exists(parent::class, 'clearsAllEntities')) {

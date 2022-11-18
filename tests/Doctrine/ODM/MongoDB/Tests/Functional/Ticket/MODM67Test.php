@@ -107,9 +107,7 @@ class MODM67TestEventListener
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class MODM67DerivedClass
 {
     /**
@@ -127,9 +125,7 @@ class MODM67DerivedClass
     public $embedOne;
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class MODM67EmbeddedObject
 {
     /**

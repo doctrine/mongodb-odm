@@ -333,9 +333,7 @@ class PersistentCollectionTest extends BaseTest
         self::assertTrue($pcoll->isEmpty());
     }
 
-    /**
-     * @return Collection<int, object>&MockObject
-     */
+    /** @return Collection<int, object>&MockObject */
     private function getMockCollection()
     {
         return $this->createMock(Collection::class);

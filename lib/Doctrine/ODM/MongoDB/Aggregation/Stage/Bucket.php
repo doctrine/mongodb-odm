@@ -6,9 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use function assert;
 
-/**
- * @method Bucket groupBy($expression)
- */
+/** @method Bucket groupBy($expression) */
 class Bucket extends AbstractBucket
 {
     /** @var mixed[] */
@@ -65,9 +63,7 @@ class Bucket extends AbstractBucket
         return $this->output;
     }
 
-    /**
-     * @return array{boundaries: mixed[], default: mixed}
-     */
+    /** @return array{boundaries: mixed[], default: mixed} */
     protected function getExtraPipelineFields(): array
     {
         /** @psalm-suppress RedundantPropertyInitializationCheck because the property might not be set yet */

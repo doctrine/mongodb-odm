@@ -7,9 +7,7 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class SimpleReferenceUser
 {
     /**
@@ -55,9 +53,7 @@ class SimpleReferenceUser
         $this->users[] = $user;
     }
 
-    /**
-     * @return Collection<int, User>|array<User>
-     */
+    /** @return Collection<int, User>|array<User> */
     public function getUsers()
     {
         return $this->users;

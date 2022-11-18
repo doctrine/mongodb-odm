@@ -30,9 +30,7 @@ abstract class Operator extends Stage
         $this->expr = $builder->expr();
     }
 
-    /**
-     * @param mixed[] $args
-     */
+    /** @param mixed[] $args */
     public function __call(string $method, array $args): self
     {
         $this->expr->$method(...$args);

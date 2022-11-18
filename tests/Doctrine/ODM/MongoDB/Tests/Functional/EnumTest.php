@@ -15,9 +15,7 @@ use ValueError;
 
 use function sprintf;
 
-/**
- * @requires PHP 8.1
- */
+/** @requires PHP >= 8.1 */
 class EnumTest extends BaseTest
 {
     public function testPersistNew(): void

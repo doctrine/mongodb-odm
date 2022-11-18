@@ -21,18 +21,14 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
     /** @psalm-var array<string, ChangeSet> */
     private array $documentChangeSet;
 
-    /**
-     * @psalm-param array<string, ChangeSet> $changeSet
-     */
+    /** @psalm-param array<string, ChangeSet> $changeSet */
     public function __construct(object $document, DocumentManager $dm, array $changeSet)
     {
         parent::__construct($document, $dm);
         $this->documentChangeSet = $changeSet;
     }
 
-    /**
-     * @return array<string, ChangeSet>
-     */
+    /** @return array<string, ChangeSet> */
     public function getDocumentChangeSet(): array
     {
         return $this->documentChangeSet;

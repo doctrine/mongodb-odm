@@ -70,9 +70,7 @@ class DateType extends Type implements Versionable
         return $datetime;
     }
 
-    /**
-     * @return DateTime|false
-     */
+    /** @return DateTime|false */
     private static function craftDateTime(int $seconds, int $microseconds = 0)
     {
         $datetime = new DateTime();

@@ -77,9 +77,7 @@ class ResolveTargetDocumentListenerTest extends BaseTest
 
 interface ResolveTargetInterface
 {
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getId();
 }
 
@@ -91,9 +89,7 @@ abstract class AbstractResolveTarget implements ResolveTargetInterface
 {
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTargetInterface
 {
     /**
@@ -137,9 +133,7 @@ class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTarg
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class TargetDocument implements TargetInterface
 {
     /**

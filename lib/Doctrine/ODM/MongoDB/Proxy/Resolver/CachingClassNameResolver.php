@@ -6,9 +6,7 @@ namespace Doctrine\ODM\MongoDB\Proxy\Resolver;
 
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 
-/**
- * @internal
- */
+/** @internal */
 final class CachingClassNameResolver implements ClassNameResolver, ProxyClassNameResolver
 {
     private ProxyClassNameResolver $resolver;

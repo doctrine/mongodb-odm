@@ -70,17 +70,13 @@ class MODM76A
         $this->c = new ArrayCollection($c);
     }
 
-    /**
-     * @return Collection<int, MODM76B>
-     */
+    /** @return Collection<int, MODM76B> */
     public function getB(): Collection
     {
         return $this->b;
     }
 
-    /**
-     * @return Collection<int, MODM76C>
-     */
+    /** @return Collection<int, MODM76C> */
     public function getC(): Collection
     {
         return $this->c;

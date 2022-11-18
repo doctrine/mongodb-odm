@@ -182,9 +182,7 @@ class ClassMetadataTest extends BaseTest
         self::assertEquals(CustomCollection::class, $cm->getAssociationCollectionClass('referenceMany'));
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumTypeFromReflection(): void
     {
         $cm = new ClassMetadata(Card::class);
@@ -205,9 +203,7 @@ class ClassMetadataTest extends BaseTest
         self::assertFalse($cm->isNullable('nullableSuit'));
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumReflectionPropertySerialization(): void
     {
         $cm = new ClassMetadata(Card::class);
@@ -221,9 +217,7 @@ class ClassMetadataTest extends BaseTest
         self::assertInstanceOf(EnumReflectionProperty::class, $cm->reflFields['suit']);
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumTypeFromReflectionMustBeBacked(): void
     {
         $cm = new ClassMetadata(Card::class);
@@ -235,9 +229,7 @@ class ClassMetadataTest extends BaseTest
         $cm->mapField(['fieldName' => 'suitNonBacked']);
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumTypeMustPointToAnEnum(): void
     {
         $object = new class {
@@ -257,9 +249,7 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumTypeMustPointToABackedEnum(): void
     {
         $object = new class {
@@ -279,9 +269,7 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    /**
-     * @group DDC-115
-     */
+    /** @group DDC-115 */
     public function testMapAssocationInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
@@ -322,9 +310,7 @@ class ClassMetadataTest extends BaseTest
         self::assertNull($cm->getAssociationTargetClass('groups'));
     }
 
-    /**
-     * @group DDC-115
-     */
+    /** @group DDC-115 */
     public function testSetDiscriminatorMapInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
@@ -336,9 +322,7 @@ class ClassMetadataTest extends BaseTest
         self::assertEquals(DoctrineGlobal_User::class, $cm->discriminatorMap['foo']);
     }
 
-    /**
-     * @group DDC-115
-     */
+    /** @group DDC-115 */
     public function testSetSubClassesInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
@@ -1001,9 +985,7 @@ class ClassMetadataTest extends BaseTest
     }
 }
 
-/**
- * @template-extends DocumentRepository<self>
- */
+/** @template-extends DocumentRepository<self> */
 class TestCustomRepositoryClass extends DocumentRepository
 {
 }

@@ -6,9 +6,7 @@ namespace Documents74;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document()
- */
+/** @ODM\Document() */
 class GH2310Container
 {
     /** @ODM\Id */
@@ -24,9 +22,7 @@ class GH2310Container
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class GH2310Embedded
 {
     /** @ODM\Field(type="integer") */

@@ -41,9 +41,7 @@ class Chapter
         $this->pages = new ArrayCollection();
     }
 
-    /**
-     * @ODM\PostUpdate
-     */
+    /** @ODM\PostUpdate */
     public function doThisAfterAnUpdate(): void
     {
         /* Do not do this at home, it is here only to see if nothing breaks,

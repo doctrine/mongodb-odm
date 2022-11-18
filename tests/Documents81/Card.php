@@ -6,9 +6,7 @@ namespace Documents81;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 #[ODM\Document]
 class Card
 {

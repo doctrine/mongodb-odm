@@ -36,9 +36,7 @@ final class EmbedMany extends AbstractField
     /** @var string|null */
     public $collectionClass;
 
-    /**
-     * @param array<string, class-string>|null $discriminatorMap
-     */
+    /** @param array<string, class-string>|null $discriminatorMap */
     public function __construct(
         ?string $name = null,
         bool $nullable = false,

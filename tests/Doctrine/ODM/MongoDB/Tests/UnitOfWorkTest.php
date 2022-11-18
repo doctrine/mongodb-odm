@@ -156,9 +156,7 @@ class UnitOfWorkTest extends BaseTest
         self::assertEquals([$mappingD, $c, 'b.c.d'], $this->uow->getParentAssociation($d));
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testPreUpdateTriggeredWithEmptyChangeset(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
@@ -626,17 +624,13 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->data = $data;
     }
 
-    /**
-     * @return Collection<int, NotifyChangedRelatedItem>
-     */
+    /** @return Collection<int, NotifyChangedRelatedItem> */
     public function getItems(): Collection
     {
         return $this->items;
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function setTransient($value): void
     {
         if ($value === $this->transient) {
@@ -719,9 +713,7 @@ class ArrayTest
      */
     public $data;
 
-    /**
-     * @param array<string, mixed>|null $data
-     */
+    /** @param array<string, mixed>|null $data */
     public function __construct(?array $data)
     {
         $this->data = $data;

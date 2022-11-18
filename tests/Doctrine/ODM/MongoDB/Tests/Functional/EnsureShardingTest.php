@@ -12,9 +12,7 @@ use Documents\Sharded\ShardedOneWithDifferentKey;
 
 use function iterator_to_array;
 
-/**
- * @group sharding
- */
+/** @group sharding */
 class EnsureShardingTest extends BaseTest
 {
     public function setUp(): void

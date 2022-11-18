@@ -14,9 +14,7 @@ use function sprintf;
 
 class DateImmutableType extends DateType
 {
-    /**
-     * @return DateTimeImmutable
-     */
+    /** @return DateTimeImmutable */
     public static function getDateTime($value): DateTimeInterface
     {
         $datetime = parent::getDateTime($value);

@@ -409,17 +409,13 @@ class Configuration
         return $this->attributes['defaultDB'] ?? null;
     }
 
-    /**
-     * @psalm-param class-string<ClassMetadataFactory> $cmfName
-     */
+    /** @psalm-param class-string<ClassMetadataFactory> $cmfName */
     public function setClassMetadataFactoryName(string $cmfName): void
     {
         $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 
-    /**
-     * @psalm-return class-string<ClassMetadataFactory>
-     */
+    /** @psalm-return class-string<ClassMetadataFactory> */
     public function getClassMetadataFactoryName(): string
     {
         if (! isset($this->attributes['classMetadataFactoryName'])) {
@@ -429,9 +425,7 @@ class Configuration
         return $this->attributes['classMetadataFactoryName'];
     }
 
-    /**
-     * @psalm-return CommitOptions
-     */
+    /** @psalm-return CommitOptions */
     public function getDefaultCommitOptions(): array
     {
         if (! isset($this->attributes['defaultCommitOptions'])) {
@@ -441,9 +435,7 @@ class Configuration
         return $this->attributes['defaultCommitOptions'];
     }
 
-    /**
-     * @psalm-param CommitOptions $defaultCommitOptions
-     */
+    /** @psalm-param CommitOptions $defaultCommitOptions */
     public function setDefaultCommitOptions(array $defaultCommitOptions): void
     {
         $this->attributes['defaultCommitOptions'] = $defaultCommitOptions;
@@ -463,9 +455,7 @@ class Configuration
         ];
     }
 
-    /**
-     * @psalm-return class-string|null
-     */
+    /** @psalm-return class-string|null */
     public function getFilterClassName(string $name): ?string
     {
         return isset($this->attributes['filters'][$name])
@@ -473,9 +463,7 @@ class Configuration
             : null;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function getFilterParameters(string $name): array
     {
         return isset($this->attributes['filters'][$name])
@@ -499,9 +487,7 @@ class Configuration
         $this->attributes['defaultDocumentRepositoryClassName'] = $className;
     }
 
-    /**
-     * @psalm-return class-string<ObjectRepository<object>>
-     */
+    /** @psalm-return class-string<ObjectRepository<object>> */
     public function getDefaultDocumentRepositoryClassName(): string
     {
         return $this->attributes['defaultDocumentRepositoryClassName'] ?? DocumentRepository::class;
@@ -523,9 +509,7 @@ class Configuration
         $this->attributes['defaultGridFSRepositoryClassName'] = $className;
     }
 
-    /**
-     * @psalm-return class-string<GridFSRepository<object>>
-     */
+    /** @psalm-return class-string<GridFSRepository<object>> */
     public function getDefaultGridFSRepositoryClassName(): string
     {
         return $this->attributes['defaultGridFSRepositoryClassName'] ?? DefaultGridFSRepository::class;

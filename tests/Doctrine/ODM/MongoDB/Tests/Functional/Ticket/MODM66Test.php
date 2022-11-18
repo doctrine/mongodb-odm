@@ -79,17 +79,13 @@ class MODM52A
      */
     protected $b;
 
-    /**
-     * @param array<MODM52B> $b
-     */
+    /** @param array<MODM52B> $b */
     public function __construct(array $b)
     {
         $this->b = new ArrayCollection($b);
     }
 
-    /**
-     * @return Collection<int, MODM52B>
-     */
+    /** @return Collection<int, MODM52B> */
     public function getB(): Collection
     {
         return $this->b;

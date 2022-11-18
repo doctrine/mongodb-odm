@@ -44,9 +44,7 @@ class Project
      */
     private $subProjects;
 
-    /**
-     * @param Collection<int, SubProject>|null $subProjects
-     */
+    /** @param Collection<int, SubProject>|null $subProjects */
     public function __construct(string $name, ?Collection $subProjects = null)
     {
         $this->name        = $name;
@@ -78,17 +76,13 @@ class Project
         return $this->address;
     }
 
-    /**
-     * @param Collection<int, SubProject> $subProjects
-     */
+    /** @param Collection<int, SubProject> $subProjects */
     public function setSubProjects(Collection $subProjects): void
     {
         $this->subProjects = $subProjects;
     }
 
-    /**
-     * @return Collection<int, SubProject>
-     */
+    /** @return Collection<int, SubProject> */
     public function getSubProjects()
     {
         return $this->subProjects;

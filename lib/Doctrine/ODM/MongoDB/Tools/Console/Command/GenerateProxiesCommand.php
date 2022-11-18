@@ -49,15 +49,13 @@ class GenerateProxiesCommand extends Console\Command\Command
                 'A string pattern used to match documents that should be processed.'
             ),
         ])
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Generates proxy classes for document classes.
 EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $filter = $input->getOption('filter');

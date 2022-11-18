@@ -22,9 +22,7 @@ final class AlsoLoad implements Annotation
     /** @var string|null */
     public $name;
 
-    /**
-     * @param string|string[] $value
-     */
+    /** @param string|string[] $value */
     public function __construct($value, ?string $name = null)
     {
         $this->value = $value;

@@ -83,9 +83,7 @@ class VirtualHostDirective
         $this->value = $value;
     }
 
-    /**
-     * @return Collection<int, VirtualHostDirective>
-     */
+    /** @return Collection<int, VirtualHostDirective> */
     public function getDirectives(): Collection
     {
         if (! $this->directives) {
@@ -95,9 +93,7 @@ class VirtualHostDirective
         return $this->directives;
     }
 
-    /**
-     * @param Collection<int, VirtualHostDirective> $value
-     */
+    /** @param Collection<int, VirtualHostDirective> $value */
     public function setDirectives(Collection $value): VirtualHostDirective
     {
         $this->directives = $value;

@@ -6,9 +6,7 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document(collection="pre_update_test_product")
- */
+/** @ODM\Document(collection="pre_update_test_product") */
 class PreUpdateTestProduct
 {
     /**

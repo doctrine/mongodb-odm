@@ -186,9 +186,7 @@ class CustomCollectionsTest extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class DocumentWithCustomCollection
 {
     /**
@@ -248,9 +246,7 @@ class DocumentWithCustomCollection
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class EmbeddedDocumentInCustomCollection
 {
     /**
@@ -281,17 +277,13 @@ class EmbeddedDocumentInCustomCollection
  */
 class MyEmbedsCollection extends ArrayCollection
 {
-    /**
-     * @return MyEmbedsCollection<TKey, TElement>
-     */
+    /** @return MyEmbedsCollection<TKey, TElement> */
     public function getByName(string $name): MyEmbedsCollection
     {
         return $this->filter(static fn ($item) => $item->name === $name);
     }
 
-    /**
-     * @return MyEmbedsCollection<TKey, TElement>
-     */
+    /** @return MyEmbedsCollection<TKey, TElement> */
     public function getEnabled(): MyEmbedsCollection
     {
         return $this->filter(static fn ($item) => $item->enabled);
@@ -316,9 +308,7 @@ class MyEmbedsCollection extends ArrayCollection
  */
 class MyDocumentsCollection extends ArrayCollection
 {
-    /**
-     * @return MyDocumentsCollection<TKey, TElement>
-     */
+    /** @return MyDocumentsCollection<TKey, TElement> */
     public function havingEmbeds(): MyDocumentsCollection
     {
         return $this->filter(static fn ($item) => $item->coll->count());

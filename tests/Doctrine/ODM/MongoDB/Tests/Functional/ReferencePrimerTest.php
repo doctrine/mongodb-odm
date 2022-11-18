@@ -69,9 +69,7 @@ class ReferencePrimerTest extends BaseTest
             ->toArray();
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testFieldPrimingCanBeToggled(): void
     {
         $this->dm->createQueryBuilder(User::class)

@@ -89,9 +89,7 @@ EOT;
     }
 }
 
-/**
- * @ODM\Document(collection="SchemaValidated")
- */
+/** @ODM\Document(collection="SchemaValidated") */
 class SchemaValidatedUpdate extends SchemaValidated
 {
 }

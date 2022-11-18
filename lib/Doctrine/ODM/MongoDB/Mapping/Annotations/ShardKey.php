@@ -23,9 +23,7 @@ final class ShardKey implements Annotation
     /** @var int|null */
     public $numInitialChunks;
 
-    /**
-     * @param string[] $keys
-     */
+    /** @param string[] $keys */
     public function __construct(array $keys = [], ?bool $unique = null, ?int $numInitialChunks = null)
     {
         $this->keys             = $keys;

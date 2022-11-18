@@ -101,23 +101,17 @@ class Vehicle
     public $features;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Car extends Vehicle
 {
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Bicycle extends Vehicle
 {
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Tandem extends Bicycle
 {
 }

@@ -35,9 +35,7 @@ class FilterCollectionTest extends BaseTest
         self::assertFalse($filterCollection->has('fakeFilter'));
     }
 
-    /**
-     * @depends testEnable
-     */
+    /** @depends testEnable */
     public function testIsEnabled(): void
     {
         $filterCollection = $this->dm->getFilterCollection();

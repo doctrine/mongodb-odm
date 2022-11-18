@@ -6,9 +6,7 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
-/**
- * @template-extends DocumentRepository<User>
- */
+/** @template-extends DocumentRepository<User> */
 class UserRepository extends DocumentRepository
 {
 }

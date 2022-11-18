@@ -6,9 +6,7 @@ namespace Documents74;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\EmbeddedDocument()
- */
+/** @ODM\EmbeddedDocument() */
 class TypedEmbeddedDocument
 {
     /** @ODM\Field(type="string") */

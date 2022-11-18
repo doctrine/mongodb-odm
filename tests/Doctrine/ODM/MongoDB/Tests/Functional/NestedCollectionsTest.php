@@ -15,9 +15,7 @@ use function get_class;
 
 class NestedCollectionsTest extends BaseTest
 {
-    /**
-     * @dataProvider provideStrategy
-     */
+    /** @dataProvider provideStrategy */
     public function testStrategy(string $field): void
     {
         $doc         = new DocWithNestedCollections();
@@ -80,9 +78,7 @@ class NestedCollectionsTest extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class DocWithNestedCollections
 {
     /**

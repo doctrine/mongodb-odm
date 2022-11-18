@@ -357,9 +357,7 @@ trait PersistentCollectionTrait
         return $this->coll->containsKey($key);
     }
 
-    /**
-     * @template TMaybeContained
-     */
+    /** @template TMaybeContained */
     public function contains($element)
     {
         $this->initialize();
@@ -407,9 +405,7 @@ trait PersistentCollectionTrait
         return $this->coll->getValues();
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     #[ReturnTypeWillChange]
     public function count()
     {

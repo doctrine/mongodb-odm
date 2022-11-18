@@ -18,9 +18,7 @@ use function get_class;
 
 class GH852Test extends BaseTest
 {
-    /**
-     * @dataProvider provideIdGenerators
-     */
+    /** @dataProvider provideIdGenerators */
     public function testA(Closure $idGenerator): void
     {
         $parent       = new GH852Document();

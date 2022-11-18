@@ -29,17 +29,13 @@ class PrimedCollectionDocument
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, PrimedCollectionDocument>
-     */
+    /** @return Collection<int, PrimedCollectionDocument> */
     public function getInverseMappedBy(): Collection
     {
         return $this->inverseMappedBy;
     }
 
-    /**
-     * @return Collection<int, PrimedCollectionDocument>
-     */
+    /** @return Collection<int, PrimedCollectionDocument> */
     public function getReferences(): Collection
     {
         return $this->references;

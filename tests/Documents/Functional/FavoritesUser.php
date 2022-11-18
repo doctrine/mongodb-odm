@@ -96,9 +96,7 @@ class FavoritesUser
         $this->embedded[] = $document;
     }
 
-    /**
-     * @return Collection<int, object>|array<object>
-     */
+    /** @return Collection<int, object>|array<object> */
     public function getEmbedded()
     {
         return $this->embedded;
@@ -114,17 +112,13 @@ class FavoritesUser
         $this->name = $name;
     }
 
-    /**
-     * @param Group|Project $favorite
-     */
+    /** @param Group|Project $favorite */
     public function addFavorite($favorite): void
     {
         $this->favorites[] = $favorite;
     }
 
-    /**
-     * @return Collection<int, Group|Project>
-     */
+    /** @return Collection<int, Group|Project> */
     public function getFavorites(): Collection
     {
         return $this->favorites;

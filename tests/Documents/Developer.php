@@ -8,9 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Developer
 {
     /**
@@ -34,9 +32,7 @@ class Developer
      */
     private $projects;
 
-    /**
-     * @param Collection<int, Project>|null $projects
-     */
+    /** @param Collection<int, Project>|null $projects */
     public function __construct(string $name, ?Collection $projects = null)
     {
         $this->name     = $name;
@@ -48,9 +44,7 @@ class Developer
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, Project>
-     */
+    /** @return Collection<int, Project> */
     public function getProjects(): Collection
     {
         return $this->projects;

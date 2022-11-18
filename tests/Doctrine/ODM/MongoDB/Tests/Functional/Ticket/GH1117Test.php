@@ -33,9 +33,7 @@ class GH1117Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH1117Document
 {
     /**
@@ -58,9 +56,7 @@ class GH1117Document
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class GH1117EmbeddedDocument
 {
     /**

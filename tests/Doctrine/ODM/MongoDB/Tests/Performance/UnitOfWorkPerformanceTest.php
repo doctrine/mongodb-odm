@@ -12,9 +12,7 @@ use function str_replace;
 
 use const PHP_EOL;
 
-/**
- * @group performance
- */
+/** @group performance */
 class UnitOfWorkPerformanceTest extends BaseTest
 {
     /**

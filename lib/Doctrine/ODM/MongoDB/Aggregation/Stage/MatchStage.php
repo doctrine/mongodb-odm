@@ -26,9 +26,7 @@ class MatchStage extends Stage
         $this->query = $this->expr();
     }
 
-    /**
-     * @see http://php.net/manual/en/language.oop5.cloning.php
-     */
+    /** @see http://php.net/manual/en/language.oop5.cloning.php */
     public function __clone()
     {
         $this->query = clone $this->query;
@@ -368,9 +366,7 @@ class MatchStage extends Stage
         return $this;
     }
 
-    /**
-     * @return static
-     */
+    /** @return static */
     public function includesReferenceTo(object $document): self
     {
         $this->query->includesReferenceTo($document);
@@ -521,9 +517,7 @@ class MatchStage extends Stage
         return $this;
     }
 
-    /**
-     * @return static
-     */
+    /** @return static */
     public function references(object $document): self
     {
         $this->query->references($document);

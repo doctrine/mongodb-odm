@@ -9,9 +9,7 @@ use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use ProxyManager\Inflector\ClassNameInflectorInterface;
 use ProxyManager\Proxy\ProxyInterface;
 
-/**
- * @internal
- */
+/** @internal */
 final class ProxyManagerClassNameResolver implements ClassNameResolver, ProxyClassNameResolver
 {
     private Configuration $configuration;

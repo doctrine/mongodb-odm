@@ -15,9 +15,7 @@ use function assert;
 
 class GH1232Test extends BaseTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testRemoveDoesNotCauseErrors(): void
     {
         $post = new GH1232Post();
@@ -90,14 +88,10 @@ class GH1232Comment
     public $post;
 }
 
-/**
- * @template-extends DocumentRepository<GH1232Comment>
- */
+/** @template-extends DocumentRepository<GH1232Comment> */
 class GH1232CommentRepository extends DocumentRepository
 {
-    /**
-     * @return Iterator<GH1232Comment>
-     */
+    /** @return Iterator<GH1232Comment> */
     public function getLongComments(GH1232Post $post)
     {
         $comments = $this

@@ -104,9 +104,7 @@ class GH560EventSubscriber implements EventSubscriber
     /** @var string[] */
     public $events;
 
-    /**
-     * @param string[] $events
-     */
+    /** @param string[] $events */
     public function __construct(array $events)
     {
         $this->events = $events;
@@ -117,9 +115,7 @@ class GH560EventSubscriber implements EventSubscriber
         return $this->events;
     }
 
-    /**
-     * @param array{LifecycleEventArgs} $args
-     */
+    /** @param array{LifecycleEventArgs} $args */
     public function __call(string $eventName, array $args): void
     {
         $this->called[] = [$eventName, get_class($args[0]->getDocument())];
@@ -143,9 +139,7 @@ class GH560Document
      */
     public $name;
 
-    /**
-     * @param int|string $id
-     */
+    /** @param int|string $id */
     public function __construct($id, string $name)
     {
         $this->id   = $id;

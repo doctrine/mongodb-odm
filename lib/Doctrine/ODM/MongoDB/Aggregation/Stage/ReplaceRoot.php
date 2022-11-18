@@ -25,9 +25,7 @@ class ReplaceRoot extends Operator
     /** @var string|mixed[]|Expr|null */
     private $expression;
 
-    /**
-     * @param string|mixed[]|Expr|null $expression
-     */
+    /** @param string|mixed[]|Expr|null $expression */
     public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class, $expression = null)
     {
         parent::__construct($builder);

@@ -12,9 +12,7 @@ use function get_class;
 
 class BinDataTest extends BaseTest
 {
-    /**
-     * @dataProvider provideData
-     */
+    /** @dataProvider provideData */
     public function testBinData(string $field, string $data, int $type): void
     {
         $test         = new BinDataTestUser();

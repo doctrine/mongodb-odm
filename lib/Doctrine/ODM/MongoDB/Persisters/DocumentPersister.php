@@ -115,9 +115,7 @@ final class DocumentPersister
 
     private HydratorFactory $hydratorFactory;
 
-    /**
-     * @psalm-param ClassMetadata<T> $class
-     */
+    /** @psalm-param ClassMetadata<T> $class */
     public function __construct(
         PersistenceBuilder $pb,
         DocumentManager $dm,
@@ -147,9 +145,7 @@ final class DocumentPersister
         $this->bucket = $dm->getDocumentBucket($class->name);
     }
 
-    /**
-     * @return array<string, object>
-     */
+    /** @return array<string, object> */
     public function getInserts(): array
     {
         return $this->queuedInserts;
@@ -169,9 +165,7 @@ final class DocumentPersister
         $this->queuedInserts[spl_object_hash($document)] = $document;
     }
 
-    /**
-     * @return array<string, object>
-     */
+    /** @return array<string, object> */
     public function getUpserts(): array
     {
         return $this->queuedUpserts;
@@ -1500,9 +1494,7 @@ final class DocumentPersister
         return $discriminatorValues;
     }
 
-    /**
-     * @param array<string, mixed> $options
-     */
+    /** @param array<string, mixed> $options */
     private function handleCollections(object $document, array $options): void
     {
         // Collection deletions (deletions of complete collections)

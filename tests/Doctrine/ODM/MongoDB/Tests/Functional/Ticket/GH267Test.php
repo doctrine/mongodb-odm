@@ -61,9 +61,7 @@ class GH267Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document(collection="users")
- */
+/** @ODM\Document(collection="users") */
 class GH267User
 {
     /**
@@ -155,33 +153,25 @@ class GH267Company
         return $this->id;
     }
 
-    /**
-     * @param Collection<int, GH267User> $users
-     */
+    /** @param Collection<int, GH267User> $users */
     public function setUsers(Collection $users): void
     {
         $this->users = $users;
     }
 
-    /**
-     * @return Collection<int, GH267User>
-     */
+    /** @return Collection<int, GH267User> */
     public function getUsers(): Collection
     {
         return $this->users;
     }
 }
 
-/**
- * @ODM\Document(collection="companies")
- */
+/** @ODM\Document(collection="companies") */
 class GH267BuyerCompany extends GH267Company
 {
 }
 
-/**
- * @ODM\Document(collection="companies")
- */
+/** @ODM\Document(collection="companies") */
 class GH267SellerCompany extends GH267Company
 {
 }

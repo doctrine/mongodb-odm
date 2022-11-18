@@ -11,9 +11,7 @@ use Doctrine\Common\Annotations\Reader;
  */
 class AttributeDriver extends AnnotationDriver
 {
-    /**
-     * @param string|string[]|null $paths
-     */
+    /** @param string|string[]|null $paths */
     public function __construct($paths = null, ?Reader $reader = null)
     {
         parent::__construct($reader ?? new AttributeReader(), $paths);

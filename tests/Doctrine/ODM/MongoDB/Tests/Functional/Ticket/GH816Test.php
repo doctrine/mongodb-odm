@@ -33,9 +33,7 @@ class GH816Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH816Document
 {
     /**

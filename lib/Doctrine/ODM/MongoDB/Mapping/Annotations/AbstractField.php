@@ -24,9 +24,7 @@ abstract class AbstractField implements Annotation
     /** @var bool */
     public $notSaved;
 
-    /**
-     * @param mixed[] $options
-     */
+    /** @param mixed[] $options */
     public function __construct(
         ?string $name = null,
         ?string $type = null,

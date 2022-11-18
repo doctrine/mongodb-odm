@@ -11,9 +11,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class GH1346Test extends BaseTest
 {
-    /**
-     * @group GH1346Test
-     */
+    /** @group GH1346Test */
     public function testPublicProperty(): void
     {
         $referenced1    = new GH1346ReferencedDocument();
@@ -42,9 +40,7 @@ class GH1346Test extends BaseTest
 }
 
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH1346Document
 {
     /**
@@ -76,18 +72,14 @@ class GH1346Document
         $this->references->add($otherReference);
     }
 
-    /**
-     * @return Collection<int, GH1346ReferencedDocument>
-     */
+    /** @return Collection<int, GH1346ReferencedDocument> */
     public function getReferences(): Collection
     {
         return $this->references;
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH1346ReferencedDocument
 {
     /**

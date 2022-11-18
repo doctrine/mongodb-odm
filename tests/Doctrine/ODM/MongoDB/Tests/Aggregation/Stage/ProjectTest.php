@@ -41,9 +41,7 @@ class ProjectTest extends BaseTest
         self::assertSame([['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]]], $builder->getPipeline());
     }
 
-    /**
-     * @dataProvider provideAccumulators
-     */
+    /** @dataProvider provideAccumulators */
     public function testAccumulatorsWithMultipleArguments(string $operator): void
     {
         $projectStage = new Project($this->getTestAggregationBuilder());
@@ -85,9 +83,7 @@ class ProjectTest extends BaseTest
         self::assertSame($stage, $stage->$method(...$args));
     }
 
-    /**
-     * @return array<array{string, string[]}>
-     */
+    /** @return array<array{string, string[]}> */
     public static function provideProxiedExprMethods(): array
     {
         return [

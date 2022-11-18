@@ -115,9 +115,7 @@ class GH921User
         $this->posts[] = $post;
     }
 
-    /**
-     * @return Collection<int, GH921Post>
-     */
+    /** @return Collection<int, GH921Post> */
     public function getPosts(): Collection
     {
         return $this->posts;

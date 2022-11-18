@@ -6,8 +6,7 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="test_functional_virtual_host")
- */
+/** @ODM\Document(collection="test_functional_virtual_host") */
 class VirtualHost
 {
     /**
