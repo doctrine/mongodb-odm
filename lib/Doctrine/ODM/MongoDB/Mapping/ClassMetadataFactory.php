@@ -37,7 +37,7 @@ use function ucfirst;
  *
  * @internal
  *
- * @method ClassMetadata[] getAllMetadata()
+ * @method list<ClassMetadata> getAllMetadata()
  * @method ClassMetadata[] getLoadedMetadata()
  * @method ClassMetadata getMetadataFor($className)
  */
