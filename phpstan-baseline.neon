@@ -137,12 +137,6 @@ parameters:
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
 
-        # 'strategy' offset is defined as nullable, but here there is no check here
-        -
-            message: "#^Offset 'strategy' does not exist on array\\{\\}\\|array\\{type\\?\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\}\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
-
         # When iterating over SimpleXMLElement, we cannot know the key values
         -
             message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array#"
@@ -177,7 +171,7 @@ parameters:
         # compatibility layer for doctrine/persistence ^2.4 || ^3.0
         -
             message: "#.*#"
-            count: 3
+            count: 1
             path: lib/Doctrine/ODM/MongoDB/Event/OnClearEventArgs
 
         -
