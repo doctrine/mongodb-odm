@@ -34,8 +34,8 @@ class Lookup extends Stage
     /** @var array<string, string>|null */
     private ?array $let = null;
 
-    /** @var array<array<string, mixed>>|null */
-    private ?array $pipeline = null;
+    /** @var Builder|null */
+    private $pipeline = null;
 
     private bool $excludeLocalAndForeignField = false;
 
@@ -109,8 +109,8 @@ class Lookup extends Stage
             $expression['$lookup']['let'] = $this->let;
         }
 
-        if (! empty($this->pipeline)) {
-            $expression['$lookup']['pipeline'] = $this->pipeline;
+        if ($this->pipeline instanceof Builder) {
+            $expression['$lookup']['pipeline'] = $this->pipeline->getPipeline(false);
         }
 
         return $expression;
@@ -171,11 +171,15 @@ class Lookup extends Stage
      * Instead, define variables for the joined document fields using the let option
      * and then reference the variables in the pipeline stages.
      *
-     * @param array<array<string, mixed>> $pipeline
+     * @param Builder|Stage $pipeline
      */
-    public function pipeline(array $pipeline): self
+    public function pipeline($pipeline): self
     {
-        $this->pipeline = $pipeline;
+        if ($pipeline instanceof Stage) {
+            $this->pipeline = $pipeline->builder;
+        } else {
+            $this->pipeline = $pipeline;
+        }
 
         return $this;
     }
