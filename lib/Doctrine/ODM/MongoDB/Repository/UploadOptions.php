@@ -12,9 +12,9 @@ final class UploadOptions
     /** @var bool|null */
     public $disableMD5;
 
-    /** @var object|null */
-    public $metadata;
-
     /** @var int|null */
     public $chunkSizeBytes;
+
+    /** @var object|null */
+    public $metadata;
 }
