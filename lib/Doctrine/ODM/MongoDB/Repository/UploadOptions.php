@@ -11,4 +11,7 @@ final class UploadOptions
 
     /** @var int|null */
     public $chunkSizeBytes;
+
+    /** @var mixed */
+    public $_id;
 }
