@@ -182,6 +182,7 @@ can pass an ``UploadOptions`` object as the last argument to the
     $uploadOptions = new UploadOptions();
     $uploadOptions->metadata = new Documents\ImageMetadata('image/jpeg');
     $uploadOptions->chunkSizeBytes = 1024 * 1024;
+    $uploadOptions->_id = 'custom-id';
 
     $repository = $documentManager->getRepository(Documents\Image::class);
     $file = $repository->uploadFromFile('/tmp/path/to/image', 'image.jpg', $uploadOptions);
