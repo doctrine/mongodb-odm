@@ -95,6 +95,8 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
 
     /**
      * @psalm-return array{
+     *     _id?: mixed,
+     *     disableMD5?: bool,
      *     chunkSizeBytes?: int,
      *     metadata?: object
      * }
@@ -107,6 +109,14 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
 
         $chunkSizeBytes = $uploadOptions->chunkSizeBytes ?: $this->class->getChunkSizeBytes();
         $options        = [];
+
+        if ($uploadOptions->_id !== null) {
+            $options['_id'] = $this->class->getDatabaseIdentifierValue($uploadOptions->_id);
+        }
+
+        if ($uploadOptions->disableMD5 !== null) {
+            $options['disableMD5'] = $uploadOptions->disableMD5;
+        }
 
         if ($chunkSizeBytes !== null) {
             $options['chunkSizeBytes'] = $chunkSizeBytes;
