@@ -105,7 +105,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
             $uploadOptions = new UploadOptions();
         }
 
-        $_id            = $uploadOptions->_id ?: $this->class->getDatabaseIdentifierValue($uploadOptions->_id);
+        $_id            = $uploadOptions->_id ? $this->class->getDatabaseIdentifierValue($uploadOptions->_id) : null;
         $chunkSizeBytes = $uploadOptions->chunkSizeBytes ?: $this->class->getChunkSizeBytes();
         $options        = [];
 
