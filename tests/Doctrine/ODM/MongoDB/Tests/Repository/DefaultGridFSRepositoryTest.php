@@ -46,6 +46,51 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertNull($file->getMetadata());
     }
 
+    public function testOpenUploadStreamUsesIdFromOptions(): void
+    {
+        $uploadOptions     = new UploadOptions();
+        $uploadOptions->id = '1234567890abcdef12345678';
+
+        $uploadStream = $this->getRepository()->openUploadStream('somefile.txt', $uploadOptions);
+        self::assertIsResource($uploadStream);
+
+        fwrite($uploadStream, 'contents');
+        fclose($uploadStream);
+
+        $file = $this->getRepository()->findOneBy(['filename' => 'somefile.txt']);
+        assert($file instanceof File);
+        self::assertInstanceOf(File::class, $file);
+
+        self::assertSame('somefile.txt', $file->getFilename());
+        self::assertSame('1234567890abcdef12345678', $file->getId());
+        self::assertSame(8, $file->getLength());
+        self::assertSame(12345, $file->getChunkSize());
+        self::assertEqualsWithDelta(new DateTime(), $file->getUploadDate(), 1);
+        self::assertNull($file->getMetadata());
+    }
+
+    public function testOpenUploadStreamUsesDisableMD5FromOptions(): void
+    {
+        $uploadOptions             = new UploadOptions();
+        $uploadOptions->disableMD5 = true;
+
+        $uploadStream = $this->getRepository()->openUploadStream('somefile.txt', $uploadOptions);
+        self::assertIsResource($uploadStream);
+
+        fwrite($uploadStream, 'contents');
+        fclose($uploadStream);
+
+        $file = $this->getRepository()->findOneBy(['filename' => 'somefile.txt']);
+        assert($file instanceof File);
+        self::assertInstanceOf(File::class, $file);
+
+        self::assertSame('somefile.txt', $file->getFilename());
+        self::assertSame(8, $file->getLength());
+        self::assertSame(12345, $file->getChunkSize());
+        self::assertEqualsWithDelta(new DateTime(), $file->getUploadDate(), 1);
+        self::assertNull($file->getMetadata());
+    }
+
     public function testOpenUploadStreamUsesChunkSizeFromOptions(): void
     {
         $uploadOptions                 = new UploadOptions();

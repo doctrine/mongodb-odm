@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Repository;
 final class UploadOptions
 {
     /** @var mixed */
-    public $_id;
+    public $id;
 
     /** @var bool|null */
     public $disableMD5;
