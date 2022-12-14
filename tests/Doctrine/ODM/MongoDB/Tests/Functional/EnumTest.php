@@ -13,6 +13,7 @@ use Error;
 use MongoDB\BSON\ObjectId;
 use ValueError;
 
+use function preg_quote;
 use function sprintf;
 
 /** @requires PHP >= 8.1 */
@@ -44,7 +45,7 @@ class EnumTest extends BaseTest
         $this->dm->getDocumentCollection(Card::class)->insertOne($document);
 
         $this->expectException(ValueError::class);
-        $this->expectExceptionMessage(sprintf('"ABC" is not a valid backing value for enum "%s"', Suit::class));
+        $this->expectExceptionMessageMatches(sprintf('/^"ABC" is not a valid backing value for enum "?%s"?$/', preg_quote(Suit::class)));
         $this->dm->getRepository(Card::class)->findOneBy([]);
     }
 

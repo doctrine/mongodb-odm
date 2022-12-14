@@ -278,34 +278,6 @@ class LookupTest extends BaseTest
         self::assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
-    public function testLookupStageReferenceManyWithoutUnwindMongoDB34(): void
-    {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
-        $builder
-            ->lookup('users')
-                ->alias('users');
-
-        $expectedPipeline = [
-            [
-                '$lookup' => [
-                    'from' => 'users',
-                    'localField' => 'users',
-                    'foreignField' => '_id',
-                    'as' => 'users',
-                ],
-            ],
-        ];
-
-        self::assertEquals($expectedPipeline, $builder->getPipeline());
-
-        $result = $builder->execute()->toArray();
-
-        self::assertCount(1, $result);
-        self::assertCount(2, $result[0]['users']);
-        self::assertSame('alcaeus', $result[0]['users'][0]['username']);
-        self::assertSame('malarzm', $result[0]['users'][1]['username']);
-    }
-
     public function testLookupStageReferenceOneInverse(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);

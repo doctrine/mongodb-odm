@@ -29,6 +29,7 @@ class MODM29Test extends BaseTest
 
         assert(isset($collection[0], $collection[1], $collection[2]));
         // place element '0' after '1'
+        /** @var ArrayCollection<int, MODM29Embedded> $collection */
         $collection = new ArrayCollection([
             $collection[1],
             $collection[0],
