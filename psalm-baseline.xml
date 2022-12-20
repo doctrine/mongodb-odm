@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.29.0@7ec5ffbd5f68ae03782d7fd33fff0c45a69f95b3">
+<files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php">
     <InvalidArgument occurrences="1">
       <code>$fields</code>
@@ -104,6 +104,41 @@
     <LessSpecificImplementedReturnType occurrences="1">
       <code>array</code>
     </LessSpecificImplementedReturnType>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/ClearCache/MetadataCommand.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>getDocumentManager</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GenerateHydratorsCommand.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>getDocumentManager</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GeneratePersistentCollectionsCommand.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>getDocumentManager</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GenerateProxiesCommand.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>getDocumentManager</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/QueryCommand.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>getDocumentManager</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/AbstractCommand.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>getDocumentManager</code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/ValidateCommand.php">
+    <UndefinedInterfaceMethod occurrences="1">
+      <code>getDocumentManager</code>
+    </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Types/DateImmutableType.php">
     <RedundantCondition occurrences="1">
