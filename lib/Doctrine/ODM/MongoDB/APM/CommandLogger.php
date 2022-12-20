@@ -43,12 +43,12 @@ final class CommandLogger implements Countable, CommandLoggerInterface
         $this->registered = false;
     }
 
-    public function commandStarted(CommandStartedEvent $event)
+    public function commandStarted(CommandStartedEvent $event): void
     {
         $this->startedCommands[$event->getRequestId()] = $event;
     }
 
-    public function commandSucceeded(CommandSucceededEvent $event)
+    public function commandSucceeded(CommandSucceededEvent $event): void
     {
         $commandStartedEvent = $this->findAndRemoveCommandStartedEvent($event->getRequestId());
         if (! $commandStartedEvent) {
@@ -58,7 +58,7 @@ final class CommandLogger implements Countable, CommandLoggerInterface
         $this->logCommand(Command::createForSucceededCommand($commandStartedEvent, $event));
     }
 
-    public function commandFailed(CommandFailedEvent $event)
+    public function commandFailed(CommandFailedEvent $event): void
     {
         $commandStartedEvent = $this->findAndRemoveCommandStartedEvent($event->getRequestId());
         if (! $commandStartedEvent) {
