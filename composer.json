@@ -14,12 +14,11 @@
     "homepage": "https://www.doctrine-project.org/projects/mongodb-odm.html",
     "license": "MIT",
     "authors": [
-        { "name": "Bulat Shakirzyanov", "email": "mallluhuct@gmail.com" },
-        { "name": "Kris Wallsmith", "email": "kris.wallsmith@gmail.com" },
-        { "name": "Jonathan H. Wage", "email": "jonwage@gmail.com" },
         { "name": "Jeremy Mikola", "email": "jmikola@gmail.com" },
         { "name": "Maciej Malarz", "email": "malarzm@gmail.com" },
-        { "name": "Andreas Braun", "email": "alcaeus@alcaeus.org" }
+        { "name": "Andreas Braun", "email": "alcaeus@alcaeus.org" },
+        { "name": "Ion Bazan", "email": "ion.bazan@gmail.com" },
+        { "name": "Fran Moreno", "email": "franmomu@gmail.com" }
     ],
     "require": {
         "php": "^7.4 || ^8.0",
