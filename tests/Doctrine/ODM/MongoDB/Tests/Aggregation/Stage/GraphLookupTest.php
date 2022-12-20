@@ -15,7 +15,6 @@ use Documents\GraphLookup\Airport;
 use Documents\GraphLookup\Employee;
 use Documents\GraphLookup\ReportingHierarchy;
 use Documents\GraphLookup\Traveller;
-use Documents\Sharded\ShardedOne;
 use Documents\User;
 
 use function array_merge;
@@ -250,15 +249,6 @@ class GraphLookupTest extends BaseTest
         $result = $builder->execute()->toArray();
 
         self::assertCount(3, $result);
-    }
-
-    public function testGraphLookupToShardedCollectionThrowsException(): void
-    {
-        $builder = $this->dm->createAggregationBuilder(User::class);
-
-        $this->expectException(MappingException::class);
-        $builder
-            ->graphLookup(ShardedOne::class);
     }
 
     public function testGraphLookupWithUnmappedFields(): void

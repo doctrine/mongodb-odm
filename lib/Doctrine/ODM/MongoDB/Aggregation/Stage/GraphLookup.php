@@ -136,9 +136,6 @@ class GraphLookup extends Stage
      * Target collection for the $graphLookup operation to search, recursively
      * matching the connectFromField to the connectToField.
      *
-     * The from collection cannot be sharded and must be in the same database as
-     * any other collections used in the operation.
-     *
      * @psalm-param class-string|string $from
      */
     public function from(string $from): self
@@ -159,10 +156,6 @@ class GraphLookup extends Stage
             $this->from = $from;
 
             return $this;
-        }
-
-        if ($this->targetClass->isSharded()) {
-            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
         }
 
         $this->from = $this->targetClass->getCollection();
@@ -239,9 +232,6 @@ class GraphLookup extends Stage
 
         $referenceMapping  = $this->class->getFieldMapping($fieldName);
         $this->targetClass = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
-        if ($this->targetClass->isSharded()) {
-            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
-        }
 
         $this->from = $this->targetClass->getCollection();
 
