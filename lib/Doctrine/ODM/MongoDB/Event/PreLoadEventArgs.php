@@ -18,6 +18,7 @@ final class PreLoadEventArgs extends LifecycleEventArgs
     public function __construct(object $document, DocumentManager $dm, array &$data)
     {
         parent::__construct($document, $dm);
+
         $this->data =& $data;
     }
 

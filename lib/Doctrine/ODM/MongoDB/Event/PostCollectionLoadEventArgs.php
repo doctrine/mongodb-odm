@@ -22,6 +22,7 @@ final class PostCollectionLoadEventArgs extends ManagerEventArgs
     public function __construct(PersistentCollectionInterface $collection, DocumentManager $dm)
     {
         parent::__construct($dm);
+
         $this->collection = $collection;
     }
 

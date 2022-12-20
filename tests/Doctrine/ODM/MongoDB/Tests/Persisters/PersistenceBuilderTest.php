@@ -25,12 +25,14 @@ class PersistenceBuilderTest extends BaseTest
     public function setUp(): void
     {
         parent::setUp();
+
         $this->pb = $this->dm->getUnitOfWork()->getPersistenceBuilder();
     }
 
     public function tearDown(): void
     {
         unset($this->pb);
+
         parent::tearDown();
     }
 

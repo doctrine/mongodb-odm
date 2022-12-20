@@ -31,6 +31,7 @@ abstract class AbstractCommandTest extends BaseTest
     public function tearDown(): void
     {
         parent::tearDown();
+
         unset($this->application);
     }
 }

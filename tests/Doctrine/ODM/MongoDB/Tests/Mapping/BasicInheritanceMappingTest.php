@@ -20,6 +20,7 @@ class BasicInheritanceMappingTest extends BaseTest
     public function setUp(): void
     {
         parent::setUp();
+
         $this->factory = new ClassMetadataFactory();
         $this->factory->setDocumentManager($this->dm);
         $this->factory->setConfiguration($this->dm->getConfiguration());

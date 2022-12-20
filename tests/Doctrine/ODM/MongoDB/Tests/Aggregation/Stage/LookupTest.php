@@ -17,6 +17,7 @@ class LookupTest extends BaseTest
     public function setUp(): void
     {
         parent::setUp();
+
         $this->insertTestData();
     }
 

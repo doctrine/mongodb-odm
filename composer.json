@@ -40,7 +40,7 @@
     },
     "require-dev": {
         "ext-bcmath": "*",
-        "doctrine/coding-standard": "^10.0",
+        "doctrine/coding-standard": "^11.0",
         "jmikola/geojson": "^1.0",
         "phpbench/phpbench": "^1.0.0",
         "phpstan/phpstan": "^1.9.4",
