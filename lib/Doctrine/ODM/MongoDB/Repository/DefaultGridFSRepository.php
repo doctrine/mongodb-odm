@@ -111,7 +111,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         $options        = [];
 
         if ($uploadOptions->id !== null) {
-            $options['_id'] = $this->class->getDatabaseIdentifierValue($uploadOptions->id);
+            $options['_id'] = $uploadOptions->id;
         }
 
         if ($uploadOptions->disableMD5 !== null) {

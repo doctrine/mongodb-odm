@@ -14,6 +14,7 @@ use Documents\FileMetadata;
 use Documents\FileWithoutChunkSize;
 use Documents\FileWithoutMetadata;
 use Documents\User;
+use MongoDB\BSON\ObjectId;
 
 use function assert;
 use function fclose;
@@ -49,7 +50,7 @@ class DefaultGridFSRepositoryTest extends BaseTest
     public function testOpenUploadStreamUsesIdFromOptions(): void
     {
         $uploadOptions     = new UploadOptions();
-        $uploadOptions->id = '1234567890abcdef12345678';
+        $uploadOptions->id = new ObjectId('1234567890abcdef12345678');
 
         $uploadStream = $this->getRepository()->openUploadStream('somefile.txt', $uploadOptions);
         self::assertIsResource($uploadStream);
