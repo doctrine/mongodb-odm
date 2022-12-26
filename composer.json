@@ -23,7 +23,6 @@
     "require": {
         "php": "^8.1",
         "ext-mongodb": "^1.11",
-        "doctrine/annotations": "^1.12 || ^2.0",
         "doctrine/cache": "^1.11 || ^2.0",
         "doctrine/collections": "^1.5 || ^2.0",
         "doctrine/event-manager": "^1.0 || ^2.0",
@@ -39,6 +38,7 @@
     },
     "require-dev": {
         "ext-bcmath": "*",
+        "doctrine/annotations": "^1.12 || ^2.0",
         "doctrine/coding-standard": "^12.0",
         "jmikola/geojson": "^1.0",
         "phpbench/phpbench": "^1.0.0",
@@ -49,7 +49,11 @@
         "symfony/cache": "^5.4 || ^6.0 || ^7.0",
         "vimeo/psalm": "^5.9.0"
     },
+    "conflict": {
+        "doctrine/annotations": "<1.12 || >=3.0"
+    },
     "suggest": {
+        "doctrine/annotations": "For annotation mapping support",
         "ext-bcmath": "Decimal128 type support"
     },
     "autoload": {

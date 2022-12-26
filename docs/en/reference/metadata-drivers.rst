@@ -37,8 +37,9 @@ a document.
 
         $em->getConfiguration()->setMetadataCacheImpl(new ApcCache());
 
-If you want to use one of the included core metadata drivers you
-just need to configure it. All the drivers are in the
+If you want to use one of the included core metadata drivers you need to
+configure it. If you pick the annotation driver, you will additionally
+need to install ``doctrine/annotations``. All the drivers are in the
 ``Doctrine\ODM\MongoDB\Mapping\Driver`` namespace:
 
 .. code-block:: php
