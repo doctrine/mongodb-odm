@@ -11,6 +11,7 @@ final class LockException extends MongoDBException
     public function __construct(string $msg, ?object $document = null)
     {
         parent::__construct($msg);
+
         $this->document = $document;
     }
 

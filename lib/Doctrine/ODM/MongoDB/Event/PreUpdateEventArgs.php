@@ -25,6 +25,7 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
     public function __construct(object $document, DocumentManager $dm, array $changeSet)
     {
         parent::__construct($document, $dm);
+
         $this->documentChangeSet = $changeSet;
     }
 

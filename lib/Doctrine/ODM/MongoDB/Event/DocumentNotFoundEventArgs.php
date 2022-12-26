@@ -20,6 +20,7 @@ final class DocumentNotFoundEventArgs extends LifecycleEventArgs
     public function __construct(object $document, DocumentManager $dm, $identifier)
     {
         parent::__construct($document, $dm);
+
         $this->identifier = $identifier;
     }
 

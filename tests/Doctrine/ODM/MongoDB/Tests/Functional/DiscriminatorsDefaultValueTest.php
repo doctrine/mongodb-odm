@@ -272,6 +272,7 @@ class ChildDocumentWithDiscriminatorComplex extends ChildDocumentWithDiscriminat
     public function __construct(string $type, string $value)
     {
         parent::__construct($type);
+
         $this->value = $value;
     }
 

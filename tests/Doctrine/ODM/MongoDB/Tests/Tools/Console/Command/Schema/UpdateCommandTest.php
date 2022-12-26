@@ -38,6 +38,7 @@ class UpdateCommandTest extends AbstractCommandTest
     public function tearDown(): void
     {
         parent::tearDown();
+
         unset($this->command);
         unset($this->commandTester);
     }

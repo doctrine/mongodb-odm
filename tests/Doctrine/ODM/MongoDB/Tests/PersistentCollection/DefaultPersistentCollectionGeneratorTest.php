@@ -18,6 +18,7 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
     public function setUp(): void
     {
         parent::setUp();
+
         $this->generator = new DefaultPersistentCollectionGenerator(
             $this->dm->getConfiguration()->getPersistentCollectionDir(),
             $this->dm->getConfiguration()->getPersistentCollectionNamespace()
