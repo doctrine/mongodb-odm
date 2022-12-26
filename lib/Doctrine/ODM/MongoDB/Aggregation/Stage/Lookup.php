@@ -65,8 +65,6 @@ class Lookup extends Stage
 
     /**
      * Specifies the collection or field name in the same database to perform the join with.
-     *
-     * Starting in MongoDB 5.1, the from collection can be sharded.
      */
     public function from(string $from): self
     {
@@ -86,10 +84,6 @@ class Lookup extends Stage
             $this->from = $from;
 
             return $this;
-        }
-
-        if ($this->targetClass->isSharded()) {
-            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
         }
 
         $this->from = $this->targetClass->getCollection();
@@ -214,9 +208,6 @@ class Lookup extends Stage
 
         $referenceMapping  = $this->class->getFieldMapping($fieldName);
         $this->targetClass = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
-        if ($this->targetClass->isSharded()) {
-            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
-        }
 
         $this->from = $this->targetClass->getCollection();
 

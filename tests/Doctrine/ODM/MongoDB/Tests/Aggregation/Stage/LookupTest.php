@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsComment;
 use Documents\ReferenceUser;
-use Documents\Sharded\ShardedOne;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 
@@ -404,26 +402,6 @@ class LookupTest extends BaseTest
 
         self::assertCount(1, $result);
         self::assertCount(1, $result[0]['embeddedReferenceManyInverse']);
-    }
-
-    public function testLookupToShardedCollectionThrowsException(): void
-    {
-        $builder = $this->dm->createAggregationBuilder(User::class);
-
-        $this->expectException(MappingException::class);
-        $builder
-            ->lookup(ShardedOne::class)
-                ->localField('id')
-                ->foreignField('id');
-    }
-
-    public function testLookupToShardedReferenceThrowsException(): void
-    {
-        $builder = $this->dm->createAggregationBuilder(ShardedOne::class);
-
-        $this->expectException(MappingException::class);
-        $builder
-            ->lookup('user');
     }
 
     private function insertTestData(): void
