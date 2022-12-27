@@ -427,15 +427,11 @@ more paths) and register the annotations for the driver:
 
     <?php
 
-    use Doctrine\Common\Annotations\AnnotationRegistry;
-
     // ...
 
     $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
 
-    $loader = require_once('path/to/vendor/autoload.php');
-
-    AnnotationRegistry::registerLoader([$loader, 'loadClass']);
+    require_once('path/to/vendor/autoload.php');
 
 At this point, we have everything necessary to construct a ``DocumentManager``:
 
@@ -453,7 +449,6 @@ The final ``bootstrap.php`` file should look like this:
 
     <?php
 
-    use Doctrine\Common\Annotations\AnnotationRegistry;
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
     use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
@@ -462,10 +457,7 @@ The final ``bootstrap.php`` file should look like this:
         throw new RuntimeException('Install dependencies to run this script.');
     }
 
-    $loader = require_once $file;
-    $loader->add('Documents', __DIR__);
-
-    AnnotationRegistry::registerLoader([$loader, 'loadClass']);
+    require_once $file;
 
     $config = new Configuration();
     $config->setProxyDir(__DIR__ . '/Proxies');

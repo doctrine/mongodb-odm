@@ -23,7 +23,7 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "ext-mongodb": "^1.5",
-        "doctrine/annotations": "^1.12",
+        "doctrine/annotations": "^1.12 || ^2.0",
         "doctrine/cache": "^1.11 || ^2.0",
         "doctrine/collections": "^1.5 || ^2.0",
         "doctrine/event-manager": "^1.0 || ^2.0",
@@ -41,7 +41,7 @@
         "ext-bcmath": "*",
         "doctrine/coding-standard": "^11.0",
         "jmikola/geojson": "^1.0",
-        "phpbench/phpbench": "^1.0.0",
+        "phpbench/phpbench": "^1.0.0@dev",
         "phpstan/phpstan": "^1.9.4",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^9.5.5",
