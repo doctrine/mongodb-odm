@@ -190,7 +190,7 @@ final class HydratorFactory
 
 EOF
                         ,
-                        $mapping['name']
+                        $mapping['name'],
                     );
                 }
             }
@@ -211,7 +211,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP()
+                    Type::getType($mapping['type'])->closureToPHP(),
                 );
             } elseif (! isset($mapping['association'])) {
                 $code .= sprintf(
@@ -234,7 +234,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP()
+                    Type::getType($mapping['type'])->closureToPHP(),
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 $code .= sprintf(
@@ -263,7 +263,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    $class->getName()
+                    $class->getName(),
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isInverseSide']) {
                 if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
@@ -279,7 +279,7 @@ EOF
                         ,
                         $mapping['name'],
                         $mapping['fieldName'],
-                        $mapping['repositoryMethod']
+                        $mapping['repositoryMethod'],
                     );
                 } else {
                     $code .= sprintf(
@@ -302,7 +302,7 @@ EOF
 EOF
                         ,
                         $mapping['name'],
-                        $mapping['fieldName']
+                        $mapping['fieldName'],
                     );
                 }
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY || $mapping['association'] === ClassMetadata::EMBED_MANY) {
@@ -330,7 +330,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    $class->getName()
+                    $class->getName(),
                 );
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 $code .= sprintf(
@@ -368,7 +368,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    $class->getName()
+                    $class->getName(),
                 );
             }
         }
@@ -411,7 +411,7 @@ class $hydratorClassName implements HydratorInterface
 }
 EOF
             ,
-            $code
+            $code,
         );
 
         if ($fileName === null) {

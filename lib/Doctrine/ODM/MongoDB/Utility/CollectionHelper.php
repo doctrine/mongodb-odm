@@ -53,7 +53,7 @@ final class CollectionHelper
                 ClassMetadata::STORAGE_STRATEGY_SET_ARRAY,
                 ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET,
                 ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET_ARRAY,
-            ]
+            ],
         );
     }
 }

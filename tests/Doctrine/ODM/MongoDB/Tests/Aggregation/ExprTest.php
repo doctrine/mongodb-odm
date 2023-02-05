@@ -72,7 +72,7 @@ class ExprTest extends BaseTest
                     'dayOfWeek' => ['$dayOfWeek' => '$dateField'],
                 ],
             ],
-            $expr->getExpression()
+            $expr->getExpression(),
         );
     }
 
@@ -112,7 +112,7 @@ class ExprTest extends BaseTest
                     'default' => ['$concat' => ['$numElements', ' elements given']],
                 ],
             ],
-            $expr->getExpression()
+            $expr->getExpression(),
         );
     }
 

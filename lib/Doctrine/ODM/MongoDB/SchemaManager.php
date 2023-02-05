@@ -382,7 +382,7 @@ final class SchemaManager
                 'validationAction' => $class->getValidationAction(),
                 'validationLevel' => $class->getValidationLevel(),
             ],
-            $this->getWriteOptions($maxTimeMs, $writeConcern)
+            $this->getWriteOptions($maxTimeMs, $writeConcern),
         );
     }
 
@@ -471,7 +471,7 @@ final class SchemaManager
 
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
-            $this->getWriteOptions($maxTimeMs, $writeConcern, $options)
+            $this->getWriteOptions($maxTimeMs, $writeConcern, $options),
         );
     }
 
@@ -829,8 +829,8 @@ final class SchemaManager
                     'shardCollection' => $dbName . '.' . $class->getCollection(),
                     'key'             => $shardKeyPart,
                 ],
-                $this->getWriteOptions(null, $writeConcern)
-            )
+                $this->getWriteOptions(null, $writeConcern),
+            ),
         );
     }
 
@@ -853,7 +853,7 @@ final class SchemaManager
 
         $chunksCollection->createIndex(
             self::GRIDFS_FILE_COLLECTION_INDEX,
-            $this->getWriteOptions($maxTimeMs, $writeConcern, ['unique' => true, 'background' => $background])
+            $this->getWriteOptions($maxTimeMs, $writeConcern, ['unique' => true, 'background' => $background]),
         );
     }
 

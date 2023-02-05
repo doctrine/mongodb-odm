@@ -529,7 +529,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'Field "bar" in class "Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverDuplicateDatabaseName" ' .
-            'is mapped to field "baz" in the database, but that name is already in use by field "foo".'
+            'is mapped to field "baz" in the database, but that name is already in use by field "foo".',
         );
         $this->dm->getClassMetadata(AbstractMappingDriverDuplicateDatabaseName::class);
     }
@@ -550,7 +550,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
             'Invalid repository class "%s" for mapped class "%s". It must be an instance of "%s".',
             DocumentRepository::class,
             AbstractMappingDriverViewWithoutRepository::class,
-            ViewRepository::class
+            ViewRepository::class,
         ));
 
         $this->dm->getRepository(AbstractMappingDriverViewWithoutRepository::class);
@@ -563,7 +563,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
             'Invalid repository class "%s" for mapped class "%s". It must be an instance of "%s".',
             DocumentRepository::class,
             AbstractMappingDriverViewWithWrongRepository::class,
-            ViewRepository::class
+            ViewRepository::class,
         ));
 
         $this->dm->getRepository(AbstractMappingDriverViewWithWrongRepository::class);
@@ -574,7 +574,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(sprintf(
             'Class "%s" mapped as view without must have a root class.',
-            AbstractMappingDriverViewWithoutRootClass::class
+            AbstractMappingDriverViewWithoutRootClass::class,
         ));
 
         $this->dm->getClassMetadata(AbstractMappingDriverViewWithoutRootClass::class);
@@ -586,7 +586,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->expectExceptionMessage(sprintf(
             'Root class "%s" for view "%s" could not be found.',
             'Doctrine\ODM\MongoDB\LolNo',
-            AbstractMappingDriverViewWithNonExistingRootClass::class
+            AbstractMappingDriverViewWithNonExistingRootClass::class,
         ));
 
         $this->dm->getClassMetadata(AbstractMappingDriverViewWithNonExistingRootClass::class);

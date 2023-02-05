@@ -91,7 +91,7 @@ class Expr
 
         $this->query['$and'] = array_merge(
             $this->query['$and'],
-            func_get_args()
+            func_get_args(),
         );
 
         return $this;
@@ -114,7 +114,7 @@ class Expr
 
         $this->query['$nor'] = array_merge(
             $this->query['$nor'],
-            func_get_args()
+            func_get_args(),
         );
 
         return $this;
@@ -137,7 +137,7 @@ class Expr
 
         $this->query['$or'] = array_merge(
             $this->query['$or'],
-            func_get_args()
+            func_get_args(),
         );
 
         return $this;
@@ -1020,7 +1020,7 @@ class Expr
         if ($valueOrExpression instanceof Expr) {
             $valueOrExpression = array_merge(
                 ['$each' => []],
-                $valueOrExpression->getQuery()
+                $valueOrExpression->getQuery(),
             );
         }
 

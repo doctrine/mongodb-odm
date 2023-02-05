@@ -21,7 +21,7 @@ abstract class AbstractCommandTest extends BaseTest
         $helperSet   = new HelperSet(
             [
                 'dm' => new DocumentManagerHelper($this->dm),
-            ]
+            ],
         );
         $application = new Application('Doctrine MongoDB ODM');
         $application->setHelperSet($helperSet);

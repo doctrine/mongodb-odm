@@ -49,7 +49,7 @@ final class StaticProxyFactory implements ProxyFactory
                 $this->createInitializer($metadata, $documentPersister),
                 [
                     'skippedProperties' => $this->skippedFieldsFqns($metadata),
-                ]
+                ],
             );
 
         $metadata->setIdentifierValue($ghostObject, $identifier);
@@ -69,7 +69,7 @@ final class StaticProxyFactory implements ProxyFactory
                     static fn (): bool => true, // empty closure, serves its purpose, for now
                     [
                         'skippedProperties' => $this->skippedFieldsFqns($metadata),
-                    ]
+                    ],
                 );
         }
 

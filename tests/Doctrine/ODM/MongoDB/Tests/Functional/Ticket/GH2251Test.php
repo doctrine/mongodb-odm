@@ -29,7 +29,7 @@ class GH2251Test extends BaseTest
             ->elemMatch($notIn);
 
         $builder->addNor(
-            $elemMatch
+            $elemMatch,
         );
 
         self::assertSame(
@@ -42,7 +42,7 @@ class GH2251Test extends BaseTest
                     ],
                 ],
             ],
-            $builder->getQueryArray()
+            $builder->getQueryArray(),
         );
     }
 }

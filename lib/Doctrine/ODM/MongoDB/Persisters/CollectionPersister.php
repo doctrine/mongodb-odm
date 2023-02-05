@@ -173,7 +173,7 @@ final class CollectionPersister
             $mapping                   = $coll->getMapping();
             $setData                   = $this->pb->prepareAssociatedCollectionValue(
                 $coll,
-                CollectionHelper::usesSet($mapping['strategy'])
+                CollectionHelper::usesSet($mapping['strategy']),
             );
             $setPayload[$propertyPath] = $setData;
         }
@@ -305,7 +305,7 @@ final class CollectionPersister
                 $pushAllPaths,
                 $pushAllPathCollMap,
                 $diffsMap,
-                $options
+                $options,
             );
         }
 
@@ -318,7 +318,7 @@ final class CollectionPersister
             $addToSetPaths,
             $addToSetPathCollMap,
             $diffsMap,
-            $options
+            $options,
         );
     }
 

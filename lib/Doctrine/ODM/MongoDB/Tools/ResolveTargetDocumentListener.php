@@ -66,7 +66,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
         $args->setFoundMetadata(
             $args
                 ->getDocumentManager()
-                ->getClassMetadata($this->resolveTargetDocuments[$args->getClassName()]['targetDocument'])
+                ->getClassMetadata($this->resolveTargetDocuments[$args->getClassName()]['targetDocument']),
         );
     }
 

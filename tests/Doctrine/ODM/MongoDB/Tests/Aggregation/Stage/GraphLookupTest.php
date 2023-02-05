@@ -44,7 +44,7 @@ class GraphLookupTest extends BaseTest
                     'restrictSearchWithMatch' => (object) [],
                 ],
             ],
-            $graphLookupStage->getExpression()
+            $graphLookupStage->getExpression(),
         );
     }
 
@@ -70,7 +70,7 @@ class GraphLookupTest extends BaseTest
                     ],
                 ],
             ],
-            $builder->getPipeline()
+            $builder->getPipeline(),
         );
     }
 
@@ -103,7 +103,7 @@ class GraphLookupTest extends BaseTest
                     ],
                 ],
             ],
-            $builder->getPipeline()
+            $builder->getPipeline(),
         );
     }
 

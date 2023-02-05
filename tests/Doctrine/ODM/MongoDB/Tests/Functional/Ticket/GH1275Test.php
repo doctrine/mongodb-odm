@@ -38,7 +38,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Two', 'Number Three'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->flip(1, 2);
@@ -50,7 +50,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Three', 'Number Two'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
     }
 
@@ -77,7 +77,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Two', 'Number Three'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemOne, -1);
@@ -87,7 +87,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Two', 'Number Three'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemOne, 1);
@@ -97,7 +97,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number Two', 'Number One', 'Number Three'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemTwo, 2);
@@ -107,7 +107,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Three', 'Number Two'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemTwo, 2);
@@ -117,7 +117,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Three', 'Number Two'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemThree, -1);
@@ -127,7 +127,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number Three', 'Number One', 'Number Two'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         self::assertCount(3, $container->items);
@@ -161,7 +161,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['one', 'two', 'three'],
-            array_map($getNameCallback, $container->$strategy->toArray())
+            array_map($getNameCallback, $container->$strategy->toArray()),
         );
 
         $two   = $container->$strategy->get(1);
@@ -175,7 +175,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['one', 'three', 'two'],
-            array_map($getNameCallback, $container->$strategy->toArray())
+            array_map($getNameCallback, $container->$strategy->toArray()),
         );
     }
 }

@@ -49,7 +49,7 @@ class BuilderTest extends BaseTest
                 'featureFull.$id' => new ObjectId($f->id),
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q1['query']
+            $q1['query'],
         );
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
@@ -61,7 +61,7 @@ class BuilderTest extends BaseTest
                 'featureSimple' => new ObjectId($f->id),
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q2['query']
+            $q2['query'],
         );
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
@@ -74,7 +74,7 @@ class BuilderTest extends BaseTest
                 'featurePartial.$ref' => 'Feature',
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q3['query']
+            $q3['query'],
         );
     }
 
@@ -86,7 +86,7 @@ class BuilderTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'No mapping found for field \'nope\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ParentClass\' nor ' .
-            'its descendants.'
+            'its descendants.',
         );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('nope')->references($f)
@@ -101,7 +101,7 @@ class BuilderTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'Reference mapping for field \'conflict\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildA\' ' .
-            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.'
+            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.',
         );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('conflict')->references($f)
@@ -124,7 +124,7 @@ class BuilderTest extends BaseTest
                 ],
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q1['query']
+            $q1['query'],
         );
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
@@ -136,7 +136,7 @@ class BuilderTest extends BaseTest
                 'featureSimpleMany' => new ObjectId($f->id),
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q2['query']
+            $q2['query'],
         );
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
@@ -153,7 +153,7 @@ class BuilderTest extends BaseTest
                 ],
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q3['query']
+            $q3['query'],
         );
     }
 
@@ -165,7 +165,7 @@ class BuilderTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'No mapping found for field \'nope\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ParentClass\' nor ' .
-            'its descendants.'
+            'its descendants.',
         );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('nope')->includesReferenceTo($f)
@@ -180,7 +180,7 @@ class BuilderTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'Reference mapping for field \'conflictMany\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildA\' ' .
-            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.'
+            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.',
         );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('conflictMany')->includesReferenceTo($f)

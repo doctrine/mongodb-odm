@@ -582,7 +582,7 @@ final class DocumentPersister
                     $key,
                     $data[$mapping['fieldName']],
                     $mapping,
-                    false
+                    false,
                 );
                 foreach ($reference as $keyValue) {
                     $shardKeyQueryPart[$keyValue[0]] = $keyValue[1];
@@ -779,7 +779,7 @@ final class DocumentPersister
             $criteria        = $this->cm->merge(
                 ['_id' => ['$in' => array_values($ids)]],
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
-                $mapping['criteria'] ?? []
+                $mapping['criteria'] ?? [],
             );
             $criteria        = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
 
@@ -847,7 +847,7 @@ final class DocumentPersister
         $criteria = $this->cm->merge(
             [$mappedByFieldName => $ownerClass->getIdentifierObject($owner)],
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
-            $mapping['criteria'] ?? []
+            $mapping['criteria'] ?? [],
         );
         $criteria = $this->uow->getDocumentPersister($mapping['targetDocument'])->prepareQueryOrNewObj($criteria);
         $qb       = $this->dm->createQueryBuilder($mapping['targetDocument'])
@@ -1128,7 +1128,7 @@ final class DocumentPersister
 
         if (! Type::hasType($typeName)) {
             throw new InvalidArgumentException(
-                sprintf('Mapping type "%s" does not exist', $typeName)
+                sprintf('Mapping type "%s" does not exist', $typeName),
             );
         }
 
@@ -1591,7 +1591,7 @@ final class DocumentPersister
                 'doctrine/mongodb-odm',
                 '2.2',
                 'The "w" option as commit option is deprecated, please pass "%s" object in "writeConcern" option.',
-                WriteConcern::class
+                WriteConcern::class,
             );
             $writeOptions['writeConcern'] = new WriteConcern($writeOptions['w']);
             unset($writeOptions['w']);
@@ -1644,7 +1644,7 @@ final class DocumentPersister
 
         return array_map(
             static fn ($key) => [$fieldName . '.' . $key, $reference[$key]],
-            array_keys($keys)
+            array_keys($keys),
         );
     }
 }

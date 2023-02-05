@@ -94,7 +94,7 @@ final class UuidGenerator extends AbstractIdGenerator
             // 48 bits for "node"
             random_int(0, 0xffff),
             random_int(0, 0xffff),
-            random_int(0, 0xffff)
+            random_int(0, 0xffff),
         );
     }
 
@@ -137,7 +137,7 @@ final class UuidGenerator extends AbstractIdGenerator
             // two most significant bits holds zero and one for variant DCE1.1
             (hexdec(substr($hash, 16, 4)) & 0x3fff) | 0x8000,
             // 48 bits for "node"
-            substr($hash, 20, 12)
+            substr($hash, 20, 12),
         );
     }
 }

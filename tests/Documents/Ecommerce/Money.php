@@ -28,7 +28,7 @@ class Money
     {
         if (empty($amount) || $amount <= 0) {
             throw new InvalidArgumentException(
-                'money amount cannot be empty, equal or less than 0'
+                'money amount cannot be empty, equal or less than 0',
             );
         }
 

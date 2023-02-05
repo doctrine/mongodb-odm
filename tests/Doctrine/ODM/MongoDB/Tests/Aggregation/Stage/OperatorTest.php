@@ -51,7 +51,7 @@ class OperatorTest extends BaseTest
                     'dayOfWeek' => ['$dayOfWeek' => '$dateField'],
                 ],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 
@@ -76,7 +76,7 @@ class OperatorTest extends BaseTest
                     'default' => ['$concat' => ['$numElements', ' elements given']],
                 ],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 

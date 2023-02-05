@@ -35,7 +35,7 @@ final class HydratorException extends MongoDBException
             $fieldName,
             $className,
             $expectedType,
-            $actualType
+            $actualType,
         ));
     }
 
@@ -48,7 +48,7 @@ final class HydratorException extends MongoDBException
             $fieldName,
             $className,
             $expectedType,
-            $actualType
+            $actualType,
         ));
     }
 }

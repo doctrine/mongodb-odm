@@ -714,7 +714,7 @@ class Builder
             $this->refresh,
             $this->primers,
             $this->readOnly,
-            $this->rewindable
+            $this->rewindable,
         );
     }
 

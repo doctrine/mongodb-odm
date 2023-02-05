@@ -224,7 +224,7 @@ class ClassMetadataTest extends BaseTest
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-backed enum Documents81\SuitNonBacked: Documents81\Card::suitNonBacked'
+            'Attempting to map a non-backed enum Documents81\SuitNonBacked: Documents81\Card::suitNonBacked',
         );
         $cm->mapField(['fieldName' => 'suitNonBacked']);
     }
@@ -241,7 +241,7 @@ class ClassMetadataTest extends BaseTest
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-enum type Documents81\Card as an enum: '
+            'Attempting to map a non-enum type Documents81\Card as an enum: ',
         );
         $cm->mapField([
             'fieldName' => 'enum',
@@ -261,7 +261,7 @@ class ClassMetadataTest extends BaseTest
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-backed enum Documents81\SuitNonBacked: '
+            'Attempting to map a non-backed enum Documents81\SuitNonBacked: ',
         );
         $cm->mapField([
             'fieldName' => 'enum',
@@ -290,7 +290,7 @@ class ClassMetadataTest extends BaseTest
             [
                 'fieldName' => 'groups',
                 'targetDocument' => CmsGroup::class,
-            ]
+            ],
         );
 
         $assoc = $cm->fieldMappings['groups'];
@@ -304,7 +304,7 @@ class ClassMetadataTest extends BaseTest
             [
                 'fieldName' => 'groups',
                 'targetDocument' => null,
-            ]
+            ],
         );
 
         self::assertNull($cm->getAssociationTargetClass('groups'));
@@ -462,7 +462,7 @@ class ClassMetadataTest extends BaseTest
         self::assertEquals(
             ClassMetadata::DEFAULT_DISCRIMINATOR_FIELD,
             $mapping['discriminatorField'],
-            'Default discriminator field is set for associations without targetDocument and discriminatorField options'
+            'Default discriminator field is set for associations without targetDocument and discriminatorField options',
         );
 
         $mapping = $cm->getFieldMapping('assocWithTargetDocument');
@@ -470,7 +470,7 @@ class ClassMetadataTest extends BaseTest
         self::assertArrayNotHasKey(
             'discriminatorField',
             $mapping,
-            'Default discriminator field is not set for associations with targetDocument option'
+            'Default discriminator field is not set for associations with targetDocument option',
         );
 
         $mapping = $cm->getFieldMapping('assocWithDiscriminatorField');
@@ -478,7 +478,7 @@ class ClassMetadataTest extends BaseTest
         self::assertEquals(
             'type',
             $mapping['discriminatorField'],
-            'Default discriminator field is not set for associations with discriminatorField option'
+            'Default discriminator field is not set for associations with discriminatorField option',
         );
     }
 
@@ -587,7 +587,7 @@ class ClassMetadataTest extends BaseTest
         $class = new ClassMetadata(EmbedWithCascadeTest::class);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Cascade on Doctrine\ODM\MongoDB\Tests\Mapping\EmbedWithCascadeTest::address is not allowed.'
+            'Cascade on Doctrine\ODM\MongoDB\Tests\Mapping\EmbedWithCascadeTest::address is not allowed.',
         );
         $class->mapOneEmbedded([
             'fieldName' => 'address',
@@ -673,7 +673,7 @@ class ClassMetadataTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             '\'repositoryMethod\' used on \'assoc\' in class \'stdClass\' can not be combined with skip, ' .
-            'limit or sort.'
+            'limit or sort.',
         );
         $cm->mapField([
             'fieldName' => 'assoc',
@@ -809,7 +809,7 @@ class ClassMetadataTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'ReferenceMany\'s sort can not be used with addToSet and pushAll strategies, ' .
-            'pushAll used in stdClass::ref'
+            'pushAll used in stdClass::ref',
         );
         $cm->mapField([
             'fieldName' => 'ref',

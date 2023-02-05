@@ -169,7 +169,7 @@ class DocumentManagerTest extends BaseTest
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage(
             'Cannot create a DBRef for class Documents\User without an identifier. ' .
-            'Have you forgotten to persist/merge the document first?'
+            'Have you forgotten to persist/merge the document first?',
         );
         $this->dm->createReference($d, ['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF]);
     }
@@ -197,7 +197,7 @@ class DocumentManagerTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'Identifier reference must not target document using Single Collection Inheritance, ' .
-            'Documents\Tournament\Participant targeted.'
+            'Documents\Tournament\Participant targeted.',
         );
         $this->dm->createReference($r, $class->associationMappings['ref']);
     }

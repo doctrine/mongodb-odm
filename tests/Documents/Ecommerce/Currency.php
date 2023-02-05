@@ -44,7 +44,7 @@ class Currency
         if (! in_array($name, self::getAll())) {
             throw new InvalidArgumentException(
                 'Currency must be one of ' . implode(', ', self::getAll()) .
-                $name . 'given'
+                $name . 'given',
             );
         }
 
@@ -73,7 +73,7 @@ class Currency
         $multiplier = (float) $multiplier;
         if (empty($multiplier) || $multiplier <= 0) {
             throw new InvalidArgumentException(
-                'currency multiplier must be a positive float number'
+                'currency multiplier must be a positive float number',
             );
         }
 

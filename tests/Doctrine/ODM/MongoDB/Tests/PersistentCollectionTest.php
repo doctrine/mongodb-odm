@@ -48,7 +48,7 @@ class PersistentCollectionTest extends BaseTest
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage(
             'No DocumentManager is associated with this PersistentCollection, ' .
-            'please set one using setDocumentManager method.'
+            'please set one using setDocumentManager method.',
         );
         $unserialized->getTypeClass();
     }
@@ -65,7 +65,7 @@ class PersistentCollectionTest extends BaseTest
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage(
             'No mapping is associated with this PersistentCollection, ' .
-            'please set one using setOwner method.'
+            'please set one using setOwner method.',
         );
         $unserialized->getTypeClass();
     }

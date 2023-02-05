@@ -200,7 +200,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $this->evm->dispatchEvent(
             Events::loadClassMetadata,
-            new LoadClassMetadataEventArgs($class, $this->dm)
+            new LoadClassMetadataEventArgs($class, $this->dm),
         );
 
         // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
@@ -209,7 +209,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
                 'doctrine/mongodb-odm',
                 '2.4',
                 'NOTIFY tracking policy used in class "%s" is deprecated. Please use DEFERRED_EXPLICIT instead.',
-                $class->name
+                $class->name,
             );
         }
     }
@@ -373,7 +373,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $subClass->setShardKey(
             $parentClass->shardKey['keys'],
-            $parentClass->shardKey['options']
+            $parentClass->shardKey['options'],
         );
     }
 }

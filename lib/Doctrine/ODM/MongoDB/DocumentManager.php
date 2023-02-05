@@ -152,7 +152,7 @@ class DocumentManager implements ObjectManager
                     'name' => 'doctrine-odm',
                     'version' => self::getVersion(),
                 ],
-            ]
+            ],
         );
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
@@ -172,7 +172,7 @@ class DocumentManager implements ObjectManager
             $this->eventManager,
             $hydratorDir,
             $hydratorNs,
-            $this->config->getAutoGenerateHydratorClasses()
+            $this->config->getAutoGenerateHydratorClasses(),
         );
 
         $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
@@ -689,7 +689,7 @@ class DocumentManager implements ObjectManager
                 'doctrine/mongodb-odm',
                 '2.4',
                 'Calling %s() with any arguments to clear specific documents is deprecated and will not be supported in Doctrine ODM 3.0.',
-                __METHOD__
+                __METHOD__,
             );
         }
 
@@ -754,7 +754,7 @@ class DocumentManager implements ObjectManager
 
         if ($id === null) {
             throw new RuntimeException(
-                sprintf('Cannot create a DBRef for class %s without an identifier. Have you forgotten to persist/merge the document first?', $class->name)
+                sprintf('Cannot create a DBRef for class %s without an identifier. Have you forgotten to persist/merge the document first?', $class->name),
             );
         }
 

@@ -21,7 +21,7 @@ class RedactTest extends BaseTest
             ->cond(
                 $builder->expr()->lte('$accessLevel', 3),
                 '$$KEEP',
-                '$$REDACT'
+                '$$REDACT',
             );
 
         self::assertSame(['$redact' => ['$cond' => ['if' => ['$lte' => ['$accessLevel', 3]], 'then' => '$$KEEP', 'else' => '$$REDACT']]], $redactStage->getExpression());
@@ -35,7 +35,7 @@ class RedactTest extends BaseTest
             ->cond(
                 $builder->expr()->lte('$accessLevel', 3),
                 '$$KEEP',
-                '$$REDACT'
+                '$$REDACT',
             );
 
         self::assertSame([['$redact' => ['$cond' => ['if' => ['$lte' => ['$accessLevel', 3]], 'then' => '$$KEEP', 'else' => '$$REDACT']]]], $builder->getPipeline());

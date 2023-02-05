@@ -372,7 +372,7 @@ final class Query implements IteratorAggregate
     {
         return array_filter(
             array_intersect_key($this->query, array_flip($keys)),
-            static fn ($value) => $value !== null
+            static fn ($value) => $value !== null,
         );
     }
 
@@ -419,9 +419,9 @@ final class Query implements IteratorAggregate
         $options = array_combine(
             array_map(
                 static fn ($key) => $rename[$key] ?? $key,
-                array_keys($options)
+                array_keys($options),
             ),
-            array_values($options)
+            array_values($options),
         );
 
         return $options;
@@ -449,7 +449,7 @@ final class Query implements IteratorAggregate
 
                 $cursor = $this->collection->find(
                     $this->query['query'],
-                    array_merge($options, $queryOptions)
+                    array_merge($options, $queryOptions),
                 );
 
                 return $this->makeIterator($cursor);
@@ -473,7 +473,7 @@ final class Query implements IteratorAggregate
 
                 return $this->collection->findOneAndDelete(
                     $this->query['query'],
-                    array_merge($options, $queryOptions)
+                    array_merge($options, $queryOptions),
                 );
 
             case self::TYPE_INSERT:
@@ -496,7 +496,7 @@ final class Query implements IteratorAggregate
                     return $this->collection->updateMany(
                         $this->query['query'],
                         $this->query['newObj'],
-                        array_merge($options, $this->getQueryOptions('upsert'))
+                        array_merge($options, $this->getQueryOptions('upsert')),
                     );
                 }
 
@@ -516,7 +516,7 @@ final class Query implements IteratorAggregate
                 return $collection->distinct(
                     $query['distinct'],
                     $query['query'],
-                    array_merge($options, $this->getQueryOptions('readPreference'))
+                    array_merge($options, $this->getQueryOptions('readPreference')),
                 );
 
             case self::TYPE_COUNT:
@@ -525,7 +525,7 @@ final class Query implements IteratorAggregate
 
                 return $collection->count(
                     $query['query'],
-                    array_merge($options, $this->getQueryOptions('hint', 'limit', 'skip', 'readPreference'))
+                    array_merge($options, $this->getQueryOptions('hint', 'limit', 'skip', 'readPreference')),
                 );
 
             default:

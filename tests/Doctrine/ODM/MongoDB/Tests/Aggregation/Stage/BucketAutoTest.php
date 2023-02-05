@@ -97,7 +97,7 @@ class BucketAutoTest extends BaseTest
                     ],
                 ],
             ],
-            $builder->getPipeline()
+            $builder->getPipeline(),
         );
     }
 }

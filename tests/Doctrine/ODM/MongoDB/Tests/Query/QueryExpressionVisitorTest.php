@@ -75,7 +75,7 @@ class QueryExpressionVisitorTest extends BaseTest
         $compositeExpr = $builder->andX(
             $builder->eq('a', 1),
             $builder->neq('a', 2),
-            $builder->eq('b', 3)
+            $builder->eq('b', 3),
         );
 
         $expectedQuery = [

@@ -160,7 +160,7 @@ class UnitOfWorkTest extends BaseTest
     public function testPreUpdateTriggeredWithEmptyChangeset(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
-            new PreUpdateListenerMock()
+            new PreUpdateListenerMock(),
         );
         $user           = new ForumUser();
         $user->username = '12345';
@@ -528,7 +528,7 @@ class UnitOfWorkTest extends BaseTest
     public function testCommitsInProgressIsUpdatedOnException(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
-            new ExceptionThrowingListenerMock()
+            new ExceptionThrowingListenerMock(),
         );
         $user           = new ForumUser();
         $user->username = '12345';

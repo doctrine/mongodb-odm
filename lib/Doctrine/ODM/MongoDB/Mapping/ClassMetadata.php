@@ -2278,7 +2278,7 @@ use const PHP_VERSION_ID;
                 '2.2',
                 'Mapping both "targetDocument" and "discriminatorMap" on field "%s" in class "%s" is deprecated. Only one of them can be used at a time',
                 $mapping['fieldName'],
-                $this->name
+                $this->name,
             );
         }
 
@@ -2358,7 +2358,7 @@ use const PHP_VERSION_ID;
                 '2.1',
                 'The "%s" mapping type is deprecated. Use "%s" instead.',
                 $mapping['type'],
-                $deprecatedTypes[$mapping['type']]
+                $deprecatedTypes[$mapping['type']],
             );
         }
 
