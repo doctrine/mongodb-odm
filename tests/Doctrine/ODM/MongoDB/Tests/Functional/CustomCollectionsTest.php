@@ -44,7 +44,7 @@ class CustomCollectionsTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'stdClass used as custom collection class for stdClass::assoc has to implement ' .
-            'Doctrine\Common\Collections\Collection interface.'
+            'Doctrine\Common\Collections\Collection interface.',
         );
         $cm->mapField([
             'fieldName' => 'assoc',
@@ -60,7 +60,7 @@ class CustomCollectionsTest extends BaseTest
         $pcoll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create(
             $this->dm,
             ClassMetadataTestUtil::getFieldMapping(['collectionClass' => MyEmbedsCollection::class]),
-            $coll
+            $coll,
         );
         self::assertInstanceOf(PersistentCollectionInterface::class, $pcoll);
         self::assertInstanceOf(MyEmbedsCollection::class, $pcoll);

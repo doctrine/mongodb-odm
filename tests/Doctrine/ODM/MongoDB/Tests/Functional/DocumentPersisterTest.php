@@ -150,7 +150,7 @@ class DocumentPersisterTest extends BaseTest
 
         self::assertSame(
             ['$currentDate' => ['createdAt' => ['$type' => 'date']]],
-            $qb->getQuery()->debug('newObj')
+            $qb->getQuery()->debug('newObj'),
         );
     }
 
@@ -165,7 +165,7 @@ class DocumentPersisterTest extends BaseTest
                 'title' => ['$exists' => false],
                 'createdAt' => ['$exists' => true],
             ],
-            $qb->getQuery()->debug('query')
+            $qb->getQuery()->debug('query'),
         );
     }
 
@@ -236,7 +236,7 @@ class DocumentPersisterTest extends BaseTest
 
         self::assertEquals(
             $expected,
-            $documentPersister->prepareQueryOrNewObj($query)
+            $documentPersister->prepareQueryOrNewObj($query),
         );
     }
 
@@ -252,7 +252,7 @@ class DocumentPersisterTest extends BaseTest
 
         self::assertEquals(
             $expected,
-            $documentPersister->prepareQueryOrNewObj($query)
+            $documentPersister->prepareQueryOrNewObj($query),
         );
     }
 
@@ -335,7 +335,7 @@ class DocumentPersisterTest extends BaseTest
 
             return $dm->getReference(
                 DocumentPersisterTestDocumentWithCustomId::class,
-                $customId
+                $customId,
             );
         };
 
@@ -514,7 +514,7 @@ class DocumentPersisterTest extends BaseTest
 
         self::assertEquals(
             $expected,
-            $documentPersister->prepareQueryOrNewObj($query)
+            $documentPersister->prepareQueryOrNewObj($query),
         );
     }
 
@@ -1082,8 +1082,8 @@ final class DocumentPersisterCustomIdType extends Type
                 'Expected "%s" or "%s", got "%s"',
                 DocumentPersisterCustomTypedId::class,
                 ObjectId::class,
-                is_object($value) ? get_class($value) : gettype($value)
-            )
+                is_object($value) ? get_class($value) : gettype($value),
+            ),
         );
     }
 }

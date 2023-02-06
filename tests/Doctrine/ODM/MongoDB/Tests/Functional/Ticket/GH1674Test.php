@@ -20,7 +20,7 @@ class GH1674Test extends BaseTest
             ->elemMatch(
                 $builder->expr()
                     ->field('id')
-                    ->equals(1)
+                    ->equals(1),
             );
 
         self::assertSame(
@@ -29,7 +29,7 @@ class GH1674Test extends BaseTest
                     '$elemMatch' => ['id' => '1'],
                 ],
             ],
-            $builder->getQueryArray()
+            $builder->getQueryArray(),
         );
     }
 }

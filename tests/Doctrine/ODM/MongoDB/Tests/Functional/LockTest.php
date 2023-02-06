@@ -530,7 +530,7 @@ class LockTest extends BaseTest
         // simulate another request updating document in the meantime
         $this->dm->getDocumentCollection(LockInt::class)->updateOne(
             ['_id' => new ObjectId($d->id)],
-            ['$set' => ['version' => 2]]
+            ['$set' => ['version' => 2]],
         );
 
         $d->issues->add(new Issue('oops', 'version mismatch'));
@@ -550,7 +550,7 @@ class LockTest extends BaseTest
         // simulate another request updating document in the meantime
         $this->dm->getDocumentCollection(LockInt::class)->updateOne(
             ['_id' => new ObjectId($d->id)],
-            ['$set' => ['version' => 2]]
+            ['$set' => ['version' => 2]],
         );
 
         self::assertInstanceOf(PersistentCollectionInterface::class, $d->issues);

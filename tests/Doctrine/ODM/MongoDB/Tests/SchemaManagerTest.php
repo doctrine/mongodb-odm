@@ -170,7 +170,7 @@ class SchemaManagerTest extends BaseTest
     {
         $indexedCollections = array_map(
             fn (string $fqcn) => $this->dm->getClassMetadata($fqcn)->getCollection(),
-            $this->indexedClasses
+            $this->indexedClasses,
         );
         foreach ($this->documentCollections as $collectionName => $collection) {
             if (in_array($collectionName, $indexedCollections)) {
@@ -360,7 +360,7 @@ class SchemaManagerTest extends BaseTest
     {
         $views = array_map(
             fn (string $fqcn) => $this->dm->getClassMetadata($fqcn)->getCollection(),
-            $this->views
+            $this->views,
         );
 
         foreach ($this->documentCollections as $collectionName => $collection) {
@@ -460,7 +460,7 @@ EOT;
                     'validationAction' => ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
                     'validationLevel' => ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
                 ],
-                $expectedWriteOptions
+                $expectedWriteOptions,
             );
         $this->schemaManager->updateDocumentValidator($class->name, $maxTimeMs, $writeConcern);
     }
@@ -491,7 +491,7 @@ EOT;
                     'validationAction' => ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR,
                     'validationLevel' => ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT,
                 ],
-                $expectedWriteOptions
+                $expectedWriteOptions,
             );
         $this->schemaManager->updateDocumentValidator($class->name, $maxTimeMs, $writeConcern);
     }
@@ -519,7 +519,7 @@ EOT;
             ->method('createCollection')
             ->with(
                 'CmsArticle',
-                $this->writeOptions($options + $expectedWriteOptions)
+                $this->writeOptions($options + $expectedWriteOptions),
             );
 
         $this->schemaManager->createDocumentCollection(CmsArticle::class, $maxTimeMs, $writeConcern);
@@ -538,7 +538,7 @@ EOT;
             ->method('createCollection')
             ->withConsecutive(
                 ['fs.files', $this->writeOptions($expectedWriteOptions)],
-                ['fs.chunks', $this->writeOptions($expectedWriteOptions)]
+                ['fs.chunks', $this->writeOptions($expectedWriteOptions)],
             );
 
         $this->schemaManager->createDocumentCollection(File::class, $maxTimeMs, $writeConcern);
@@ -617,7 +617,7 @@ EOT;
                         ],
                     ],
                 ],
-                $this->writeOptions($options + $expectedWriteOptions)
+                $this->writeOptions($options + $expectedWriteOptions),
             );
 
         $rootCollection = $this->documentCollections['CmsUser'];

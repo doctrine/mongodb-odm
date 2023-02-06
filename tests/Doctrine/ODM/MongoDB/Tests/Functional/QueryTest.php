@@ -358,7 +358,7 @@ class QueryTest extends BaseTest
         $qb = $this->dm->createQueryBuilder(Article::class);
         $qb->field('createdAt')->range(
             new UTCDateTime(strtotime('1985-09-01 01:00:00') * 1000),
-            new UTCDateTime(strtotime('1985-09-04') * 1000)
+            new UTCDateTime(strtotime('1985-09-04') * 1000),
         );
         $query  = $qb->getQuery();
         $result = $query->execute();

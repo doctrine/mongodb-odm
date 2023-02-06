@@ -203,7 +203,7 @@ class ExprTest extends BaseTest
         self::assertEquals(
             ['profile.$id' => $profile->getProfileId()],
             $expr->getQuery(),
-            '->references() uses just $id if a targetDocument is set'
+            '->references() uses just $id if a targetDocument is set',
         );
     }
 
@@ -223,7 +223,7 @@ class ExprTest extends BaseTest
                 'referenceToAnything.$ref' => 'Profile',
             ],
             $expr->getQuery(),
-            '->references() uses all keys if no targetDocument is set'
+            '->references() uses all keys if no targetDocument is set',
         );
     }
 
@@ -242,7 +242,7 @@ class ExprTest extends BaseTest
                 'referenceToAnythingWithoutDb.$ref' => 'Profile',
             ],
             $expr->getQuery(),
-            '->references() uses some keys if storeAs=dbRef is set'
+            '->references() uses some keys if storeAs=dbRef is set',
         );
     }
 

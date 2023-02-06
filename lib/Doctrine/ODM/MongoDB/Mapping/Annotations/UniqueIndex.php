@@ -35,7 +35,7 @@ final class UniqueIndex extends AbstractIndex
             true,
             $sparse,
             $options,
-            $partialFilterExpression
+            $partialFilterExpression,
         );
     }
 }

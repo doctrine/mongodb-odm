@@ -25,10 +25,10 @@ class GH978Test extends BaseTest
                 'foo option',
                 new Money(
                     10.0,
-                    new Currency('EURO')
+                    new Currency('EURO'),
                 ),
-                new StockItem('foo item')
-            )
+                new StockItem('foo item'),
+            ),
         );
         //option 2
         $document->addOption(
@@ -36,10 +36,10 @@ class GH978Test extends BaseTest
                 'bar option',
                 new Money(
                     20.0,
-                    new Currency('EURO')
+                    new Currency('EURO'),
                 ),
-                new StockItem('bar item')
-            )
+                new StockItem('bar item'),
+            ),
         );
         //persist document
         $this->dm->persist($document);

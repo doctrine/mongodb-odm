@@ -30,7 +30,7 @@ class DateImmutableType extends DateType
         throw new RuntimeException(sprintf(
             '%s::getDateTime has returned an unsupported implementation of DateTimeInterface: %s',
             parent::class,
-            get_class($datetime)
+            get_class($datetime),
         ));
     }
 

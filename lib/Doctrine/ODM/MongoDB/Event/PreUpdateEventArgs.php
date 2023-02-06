@@ -88,7 +88,7 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
             throw new InvalidArgumentException(sprintf(
                 'Field "%s" is not a valid field of the document "%s" in PreUpdateEventArgs.',
                 $field,
-                get_class($this->getDocument())
+                get_class($this->getDocument()),
             ));
         }
     }

@@ -31,7 +31,7 @@ class ReplaceRootTest extends BaseTest
                     ],
                 ],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 
@@ -45,7 +45,7 @@ class ReplaceRootTest extends BaseTest
             ->replaceRoot(
                 $builder->expr()
                     ->field('isToday')
-                    ->eq('$createdAt', $dateTime)
+                    ->eq('$createdAt', $dateTime),
             );
 
         self::assertEquals(
@@ -56,7 +56,7 @@ class ReplaceRootTest extends BaseTest
                     ],
                 ],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 
@@ -77,7 +77,7 @@ class ReplaceRootTest extends BaseTest
                     ],
                 ],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 
@@ -92,7 +92,7 @@ class ReplaceRootTest extends BaseTest
             [
                 '$replaceRoot' => ['newRoot' => '$ip'],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 }

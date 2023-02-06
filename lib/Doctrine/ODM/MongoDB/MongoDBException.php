@@ -73,7 +73,7 @@ class MongoDBException extends Exception
             $expected = sprintf(
                 '%s or %s',
                 implode(', ', array_slice($expected, 0, -1)),
-                end($expected)
+                end($expected),
             );
         }
 
@@ -103,7 +103,7 @@ class MongoDBException extends Exception
         return new self(sprintf(
             'Failed to enable sharding for database "%s". Error from MongoDB: %s',
             $dbName,
-            $errorMessage
+            $errorMessage,
         ));
     }
 
@@ -112,7 +112,7 @@ class MongoDBException extends Exception
         return new self(sprintf(
             'Failed to ensure sharding for document "%s". Error from MongoDB: %s',
             $className,
-            $errorMessage
+            $errorMessage,
         ));
     }
 

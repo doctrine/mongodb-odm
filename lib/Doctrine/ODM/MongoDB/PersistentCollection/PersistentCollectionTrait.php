@@ -249,7 +249,7 @@ trait PersistentCollectionTrait
         return array_udiff_assoc(
             $this->snapshot,
             $this->coll->toArray(),
-            static fn ($a, $b) => $a === $b ? 0 : 1
+            static fn ($a, $b) => $a === $b ? 0 : 1,
         );
     }
 
@@ -267,7 +267,7 @@ trait PersistentCollectionTrait
         return array_udiff_assoc(
             $this->coll->toArray(),
             $this->snapshot,
-            static fn ($a, $b) => $a === $b ? 0 : 1
+            static fn ($a, $b) => $a === $b ? 0 : 1,
         );
     }
 

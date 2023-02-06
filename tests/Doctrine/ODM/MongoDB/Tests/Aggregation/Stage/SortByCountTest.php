@@ -16,7 +16,7 @@ class SortByCountTest extends BaseTest
 
         self::assertEquals(
             [['$sortByCount' => '$ip']],
-            $builder->getPipeline()
+            $builder->getPipeline(),
         );
     }
 }

@@ -152,8 +152,8 @@ final class FilterCollection
         return $this->cm->merge(
             ...array_map(
                 static fn ($filter) => $filter->addFilterCriteria($class),
-                array_values($this->enabledFilters)
-            )
+                array_values($this->enabledFilters),
+            ),
         );
     }
 }

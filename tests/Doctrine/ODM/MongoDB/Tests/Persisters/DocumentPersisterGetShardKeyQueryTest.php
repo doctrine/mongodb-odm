@@ -35,7 +35,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 
         self::assertSame(
             ['int' => $o->int, 'string' => $o->string, 'bool' => $o->bool, 'float' => $o->float],
-            $method->invoke($persister, $o)
+            $method->invoke($persister, $o),
         );
     }
 
@@ -64,7 +64,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
 
         self::assertSame(
             (int) $o->date->format('v'),
-            (int) $shardKeyQuery['date']->toDateTime()->format('v')
+            (int) $shardKeyQuery['date']->toDateTime()->format('v'),
         );
     }
 

@@ -137,7 +137,7 @@ class BuilderTest extends BaseTest
                 ->cond(
                     $builder->expr()->lte('$accessLevel', 3),
                     '$$KEEP',
-                    '$$REDACT'
+                    '$$REDACT',
                 )
             ->project()
                 ->excludeFields(['_id'])
@@ -148,7 +148,7 @@ class BuilderTest extends BaseTest
                         ->addAnd($builder->expr()->eq('$useAlternateDeliveryAddress', true))
                         ->addAnd($builder->expr()->ne('$deliveryAddress', null)),
                     '$deliveryAddress',
-                    '$invoiceAddress'
+                    '$invoiceAddress',
                 )
             ->group()
                 ->field('_id')
@@ -161,7 +161,7 @@ class BuilderTest extends BaseTest
                         ->field('total')
                         ->sum('$amount')
                         ->field('avg')
-                        ->avg('$amount')
+                        ->avg('$amount'),
                 )
             ->sort('totalAmount')
             ->sort(['numOrders' => 'desc', 'avgAmount' => 'asc']) // Multiple subsequent sorts are combined into a single stage
@@ -271,8 +271,8 @@ class BuilderTest extends BaseTest
                         ->cond(
                             $builder->expr()->lt('$createdAt', $dateTime),
                             true,
-                            false
-                        )
+                            false,
+                        ),
                 )
                 ->field('numPosts')
                 ->sum(1)

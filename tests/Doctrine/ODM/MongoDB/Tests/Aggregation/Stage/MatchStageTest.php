@@ -112,7 +112,7 @@ class MatchStageTest extends BaseTest
                     'createdAt' => ['$lte' => $mongoDate],
                 ],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 

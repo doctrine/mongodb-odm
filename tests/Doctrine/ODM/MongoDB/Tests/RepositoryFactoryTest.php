@@ -30,7 +30,7 @@ class RepositoryFactoryTest extends BaseTest
         $proxy = $this->dm->getPartialReference(User::class, 'abc');
         self::assertSame(
             $this->dm->getRepository(User::class),
-            $this->dm->getRepository(get_class($proxy))
+            $this->dm->getRepository(get_class($proxy)),
         );
     }
 
@@ -44,7 +44,7 @@ class RepositoryFactoryTest extends BaseTest
 
         self::assertNotSame(
             $dm1->getRepository(User::class),
-            $dm2->getRepository(User::class)
+            $dm2->getRepository(User::class),
         );
     }
 }

@@ -32,13 +32,13 @@ class ResolveTargetDocumentListenerTest extends BaseTest
         $this->listener->addResolveTargetDocument(
             ResolveTargetInterface::class,
             ResolveTargetDocument::class,
-            []
+            [],
         );
 
         $this->listener->addResolveTargetDocument(
             TargetInterface::class,
             TargetDocument::class,
-            []
+            [],
         );
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);

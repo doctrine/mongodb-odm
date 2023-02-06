@@ -9,7 +9,7 @@
     <!-- Ignore warnings and show progress of the run -->
     <arg value="np"/>
 
-    <config name="php_version" value="70200"/>
+    <config name="php_version" value="70400"/>
 
     <file>benchmark</file>
     <file>lib</file>
@@ -33,9 +33,10 @@
         <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification" />
 
         <!-- Will cause BC breaks to method signatures - disabled for now -->
-        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint" />
-        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint" />
-        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint"/>
 
         <!-- Disabled to avoid class renaming - to be handled in a separate PR -->
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
@@ -80,12 +81,8 @@
         <!-- We do want to test generating collections without return types -->
         <exclude-pattern>*/tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/Coll*</exclude-pattern>
     </rule>
-    <rule ref="Generic.WhiteSpace.ScopeIndent.Incorrect">
-        <!-- see https://github.com/squizlabs/PHP_CodeSniffer/issues/3474 -->
-        <exclude-pattern>tests/Documents81/Suit*</exclude-pattern>
-    </rule>
-    <rule ref="Generic.WhiteSpace.ScopeIndent.IncorrectExact">
-        <!-- see https://github.com/squizlabs/PHP_CodeSniffer/issues/3474 -->
-        <exclude-pattern>tests/Documents81/Suit*</exclude-pattern>
+    <!-- It fails when using Nowdoc in method call -->
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall.MissingTrailingComma">
+        <exclude-pattern>lib/Doctrine/ODM/MongoDB/Tools/Console/Command/*</exclude-pattern>
     </rule>
 </ruleset>

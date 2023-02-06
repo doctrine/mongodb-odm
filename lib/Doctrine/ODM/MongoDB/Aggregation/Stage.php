@@ -45,7 +45,7 @@ abstract class Stage
             '2.2',
             'Using "%s" is deprecated, use "%s::getAggregation()" instead.',
             __METHOD__,
-            self::class
+            self::class,
         );
 
         return $this->builder->execute($options);

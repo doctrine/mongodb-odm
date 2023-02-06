@@ -183,7 +183,7 @@ class PhonenumberMachine implements EventSubscriber
         $dm = $args[0]->getDocumentManager();
         $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet(
             $dm->getClassMetadata(get_class($document)),
-            $document
+            $document,
         );
     }
 }

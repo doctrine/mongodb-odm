@@ -275,7 +275,7 @@ CODE;
 
                 return $name . '$' . $parameter->name;
             },
-            $parameters
+            $parameters,
         );
     }
 
@@ -297,14 +297,14 @@ CODE;
         if ($type instanceof ReflectionUnionType) {
             return implode('|', array_map(
                 fn (ReflectionType $unionedType) => $this->formatType($unionedType, $method, $parameter),
-                $type->getTypes()
+                $type->getTypes(),
             ));
         }
 
         if ($type instanceof ReflectionIntersectionType) {
             return implode('&', array_map(
                 fn (ReflectionType $intersectedType) => $this->formatType($intersectedType, $method, $parameter),
-                $type->getTypes()
+                $type->getTypes(),
             ));
         }
 
@@ -329,13 +329,13 @@ CODE;
                 throw PersistentCollectionException::invalidParameterTypeHint(
                     $method->getDeclaringClass()->getName(),
                     $method->getName(),
-                    $parameter->getName()
+                    $parameter->getName(),
                 );
             }
 
             throw PersistentCollectionException::invalidReturnTypeHint(
                 $method->getDeclaringClass()->getName(),
-                $method->getName()
+                $method->getName(),
             );
         }
 

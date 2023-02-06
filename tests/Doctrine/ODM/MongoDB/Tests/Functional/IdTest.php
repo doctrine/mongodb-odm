@@ -343,7 +343,7 @@ class IdTest extends BaseTest
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             'Doctrine\ODM\MongoDB\Tests\Functional\CustomIdUser uses NONE identifier generation strategy but ' .
-            'no identifier was provided when persisting.'
+            'no identifier was provided when persisting.',
         );
         $this->dm->persist(new CustomIdUser('Maciej'));
     }
@@ -355,7 +355,7 @@ class IdTest extends BaseTest
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             'Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy ' .
-            'but provided identifier is not a valid ObjectId.'
+            'but provided identifier is not a valid ObjectId.',
         );
         $this->dm->persist($user);
     }
@@ -382,7 +382,7 @@ class %s
 }',
                 $shortClassName,
                 $strategy,
-                $type
+                $type,
             );
 
             eval($code);

@@ -140,7 +140,7 @@ class Configuration
             'doctrine/mongodb-odm',
             '2.3',
             'Document short namespace aliases such as "%s" are deprecated, use ::class constant instead.',
-            $documentNamespaceAlias
+            $documentNamespaceAlias,
         );
 
         if (! isset($this->attributes['documentNamespaces'][$documentNamespaceAlias])) {
@@ -208,7 +208,7 @@ class Configuration
             '2.2',
             'Using "%s" is deprecated. Please use "%s::getMetadataCache" instead.',
             __METHOD__,
-            self::class
+            self::class,
         );
 
         return $this->attributes['metadataCacheImpl'] ?? null;
@@ -221,7 +221,7 @@ class Configuration
             '2.2',
             'Using "%s" is deprecated. Please use "%s::setMetadataCache" instead.',
             __METHOD__,
-            self::class
+            self::class,
         );
 
         $this->attributes['metadataCacheImpl'] = $cacheImpl;
@@ -285,7 +285,7 @@ class Configuration
         switch ($mode) {
             case self::AUTOGENERATE_FILE_NOT_EXISTS:
                 $proxyManagerConfig->setGeneratorStrategy(new FileWriterGeneratorStrategy(
-                    new FileLocator($proxyManagerConfig->getProxiesTargetDir())
+                    new FileLocator($proxyManagerConfig->getProxiesTargetDir()),
                 ));
 
                 break;
@@ -557,7 +557,7 @@ class Configuration
 
             $this->attributes['persistentCollectionGenerator'] = new DefaultPersistentCollectionGenerator(
                 $this->getPersistentCollectionDir(),
-                $this->getPersistentCollectionNamespace()
+                $this->getPersistentCollectionNamespace(),
             );
         }
 

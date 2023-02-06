@@ -48,7 +48,7 @@ abstract class BaseBench
         $client = new Client(
             getenv('DOCTRINE_MONGODB_SERVER') ?: self::DEFAULT_MONGODB_SERVER,
             [],
-            ['typeMap' => ['root' => 'array', 'document' => 'array']]
+            ['typeMap' => ['root' => 'array', 'document' => 'array']],
         );
 
         self::$documentManager = DocumentManager::create($client, $config);

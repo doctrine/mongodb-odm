@@ -89,7 +89,7 @@ class XmlDriver extends FileDriver
             }
         } elseif ($xmlRoot->getName() === 'mapped-superclass') {
             $metadata->setCustomRepositoryClass(
-                isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null
+                isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null,
             );
             $metadata->isMappedSuperclass = true;
         } elseif ($xmlRoot->getName() === 'embedded-document') {

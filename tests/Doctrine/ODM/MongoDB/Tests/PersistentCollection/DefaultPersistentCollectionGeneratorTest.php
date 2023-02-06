@@ -21,7 +21,7 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
 
         $this->generator = new DefaultPersistentCollectionGenerator(
             $this->dm->getConfiguration()->getPersistentCollectionDir(),
-            $this->dm->getConfiguration()->getPersistentCollectionNamespace()
+            $this->dm->getConfiguration()->getPersistentCollectionNamespace(),
         );
     }
 

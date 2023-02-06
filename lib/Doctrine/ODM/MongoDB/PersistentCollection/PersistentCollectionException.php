@@ -40,10 +40,10 @@ final class PersistentCollectionException extends MongoDBException
                 'The type hint of parameter "%s" in method "%s" in class "%s" is invalid.',
                 $parameterName,
                 $methodName,
-                $className
+                $className,
             ),
             0,
-            $previous
+            $previous,
         );
     }
 
@@ -53,10 +53,10 @@ final class PersistentCollectionException extends MongoDBException
             sprintf(
                 'The return type of method "%s" in class "%s" is invalid.',
                 $methodName,
-                $className
+                $className,
             ),
             0,
-            $previous
+            $previous,
         );
     }
 
@@ -66,8 +66,8 @@ final class PersistentCollectionException extends MongoDBException
             sprintf(
                 'The method "%s" in class "%s" defines a parent return type, but the class does not extend any class.',
                 $methodName,
-                $className
-            )
+                $className,
+            ),
         );
     }
 

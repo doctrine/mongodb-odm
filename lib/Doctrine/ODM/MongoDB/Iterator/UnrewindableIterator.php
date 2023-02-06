@@ -103,7 +103,7 @@ final class UnrewindableIterator implements Iterator
         if ($this->iteratorAdvanced) {
             throw new LogicException(sprintf(
                 'Cannot call %s for iterator that already yielded results',
-                $method
+                $method,
             ));
         }
     }

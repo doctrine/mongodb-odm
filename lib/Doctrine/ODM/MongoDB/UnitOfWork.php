@@ -967,7 +967,7 @@ final class UnitOfWork implements PropertyChangedListener
         foreach ($unwrappedValue as $key => $entry) {
             if (! is_object($entry)) {
                 throw new InvalidArgumentException(
-                    sprintf('Expected object, found "%s" in %s::%s', $entry, get_class($parentDocument), $assoc['name'])
+                    sprintf('Expected object, found "%s" in %s::%s', $entry, get_class($parentDocument), $assoc['name']),
                 );
             }
 
@@ -1098,14 +1098,14 @@ final class UnitOfWork implements PropertyChangedListener
             if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
                 throw new InvalidArgumentException(sprintf(
                     '%s uses NONE identifier generation strategy but no identifier was provided when persisting.',
-                    get_class($document)
+                    get_class($document),
                 ));
             }
 
             if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! preg_match('#^[0-9a-f]{24}$#', (string) $idValue)) {
                 throw new InvalidArgumentException(sprintf(
                     '%s uses AUTO identifier generation strategy but provided identifier is not a valid ObjectId.',
-                    get_class($document)
+                    get_class($document),
                 ));
             }
 
@@ -1232,7 +1232,7 @@ final class UnitOfWork implements PropertyChangedListener
             unset(
                 $this->documentDeletions[$oid],
                 $this->documentIdentifiers[$oid],
-                $this->originalDocumentData[$oid]
+                $this->originalDocumentData[$oid],
             );
 
             // Clear snapshot information for any referenced PersistentCollection
@@ -1773,7 +1773,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             case self::STATE_DETACHED:
                 throw new InvalidArgumentException(
-                    'Behavior of persist() for a detached document is not yet defined.'
+                    'Behavior of persist() for a detached document is not yet defined.',
                 );
 
             default:
@@ -2089,7 +2089,7 @@ final class UnitOfWork implements PropertyChangedListener
                     $this->parentAssociations[$oid],
                     $this->documentUpserts[$oid],
                     $this->hasScheduledCollections[$oid],
-                    $this->embeddedDocumentsRegistry[$oid]
+                    $this->embeddedDocumentsRegistry[$oid],
                 );
                 break;
             case self::STATE_NEW:

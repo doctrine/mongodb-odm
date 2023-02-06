@@ -24,12 +24,12 @@ class GH2157Test extends BaseTest
                 ->field('count')
                 ->pipeline(
                     $this->dm->createAggregationBuilder(GH2157FirstType::class)
-                        ->count('count')
+                        ->count('count'),
                 )
                 ->field('limitedResults')
                 ->pipeline(
                     $this->dm->createAggregationBuilder(GH2157FirstType::class)
-                        ->limit(2)
+                        ->limit(2),
                 )
             ->execute()->toArray();
 
