@@ -9,6 +9,7 @@ use Documents\CmsComment;
 use Documents\ReferenceUser;
 use Documents\SimpleReferenceUser;
 use Documents\User;
+use InvalidArgumentException;
 
 class LookupTest extends BaseTest
 {
@@ -46,7 +47,51 @@ class LookupTest extends BaseTest
         self::assertSame('alcaeus', $result[0]['user'][0]['username']);
     }
 
-    public function testLookupStageWithPipeline(): void
+    public function testLookupStageWithPipelineAsArray(): void
+    {
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder
+            ->lookup('user')
+            ->excludeLocalAndForeignField()
+            ->alias('user')
+            ->let(['name' => '$username'])
+            ->pipeline([
+                [
+                    '$match' => ['username' => 'alcaeus'],
+                ],
+                [
+                    '$project' => [
+                        '_id' => 0,
+                        'username' => 1,
+                    ],
+                ],
+            ]);
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'as' => 'user',
+                    'let' => ['name' => '$username'],
+                    'pipeline' => [
+                        [
+                            '$match' => ['username' => 'alcaeus'],
+                        ],
+                        [
+                            '$project' => [
+                                '_id' => 0,
+                                'username' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
+    public function testLookupStageWithPipelineAsStage(): void
     {
         $builder               = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $lookupPipelineBuilder = $this->dm->createAggregationBuilder(User::class);
@@ -61,7 +106,7 @@ class LookupTest extends BaseTest
                         ->field('username')->equals('alcaeus')
                 ->project()
                 ->includeFields(['username'])
-                ->excludeFields(['_id'])
+                ->excludeFields(['_id']),
             );
 
         $expectedPipeline = [
@@ -85,7 +130,25 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline(false));
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
+    public function testLookupThrowsExceptionUsingSameBuilderForPipeline(): void
+    {
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $builder
+            ->lookup('user')
+            ->excludeLocalAndForeignField()
+            ->alias('user')
+            ->let(['name' => '$username'])
+            ->pipeline(
+                $builder
+                    ->match()
+                        ->field('username')->equals('alcaeus'),
+            );
     }
 
     public function testLookupStageWithPipelineAndLocalForeignFields(): void
@@ -100,7 +163,7 @@ class LookupTest extends BaseTest
                 $lookupPipelineBuilder->match()->field('username')->equals('alcaeus')
                     ->project()
                     ->includeFields(['username'])
-                    ->excludeFields(['_id'])
+                    ->excludeFields(['_id']),
             );
 
         $expectedPipeline = [
@@ -126,7 +189,7 @@ class LookupTest extends BaseTest
             ],
         ];
 
-        $this->assertEquals($expectedPipeline, $builder->getPipeline(false));
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testLookupStageWithFieldNameTranslation(): void

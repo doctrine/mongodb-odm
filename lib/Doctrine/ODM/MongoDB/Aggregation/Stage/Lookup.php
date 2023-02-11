@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
+use InvalidArgumentException;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -34,7 +35,7 @@ class Lookup extends Stage
     /** @var array<string, string>|null */
     private ?array $let = null;
 
-    /** @var Builder|null */
+    /** @var Builder|array<array<string, mixed>>|null */
     private $pipeline = null;
 
     private bool $excludeLocalAndForeignField = false;
@@ -109,8 +110,12 @@ class Lookup extends Stage
             $expression['$lookup']['let'] = $this->let;
         }
 
-        if ($this->pipeline instanceof Builder) {
-            $expression['$lookup']['pipeline'] = $this->pipeline->getPipeline(false);
+        if ($this->pipeline !== null) {
+            if ($this->pipeline instanceof Builder) {
+                $expression['$lookup']['pipeline'] = $this->pipeline->getPipeline(false);
+            } else {
+                $expression['$lookup']['pipeline'] = $this->pipeline;
+            }
         }
 
         return $expression;
@@ -171,7 +176,7 @@ class Lookup extends Stage
      * Instead, define variables for the joined document fields using the let option
      * and then reference the variables in the pipeline stages.
      *
-     * @param Builder|Stage $pipeline
+     * @param Builder|Stage|array<array<string, mixed>> $pipeline
      */
     public function pipeline($pipeline): self
     {
@@ -179,6 +184,10 @@ class Lookup extends Stage
             $this->pipeline = $pipeline->builder;
         } else {
             $this->pipeline = $pipeline;
+        }
+
+        if ($this->builder === $this->pipeline) {
+            throw new InvalidArgumentException('Cannot use the same Builder instance for $lookup pipeline.');
         }
 
         return $this;
