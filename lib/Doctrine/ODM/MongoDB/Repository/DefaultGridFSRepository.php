@@ -96,7 +96,6 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     /**
      * @psalm-return array{
      *     _id?: mixed,
-     *     disableMD5?: bool,
      *     chunkSizeBytes?: int,
      *     metadata?: object
      * }
@@ -112,10 +111,6 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
 
         if ($uploadOptions->id !== null) {
             $options['_id'] = $uploadOptions->id;
-        }
-
-        if ($uploadOptions->disableMD5 !== null) {
-            $options['disableMD5'] = $uploadOptions->disableMD5;
         }
 
         if ($chunkSizeBytes !== null) {

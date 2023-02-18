@@ -9,9 +9,6 @@ final class UploadOptions
     /** @var mixed */
     public $id;
 
-    /** @var bool|null */
-    public $disableMD5;
-
     /** @var int|null */
     public $chunkSizeBytes;
 
