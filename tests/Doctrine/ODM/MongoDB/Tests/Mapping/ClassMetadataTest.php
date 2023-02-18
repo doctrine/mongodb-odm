@@ -131,15 +131,15 @@ class ClassMetadataTest extends BaseTest
         $cm = new ClassMetadata(CmsUser::class);
 
         // Explicit Nullable
-        $cm->mapField(['fieldName' => 'status', 'nullable' => true, 'type' => 'string', 'length' => 50]);
+        $cm->mapField(['fieldName' => 'status', 'nullable' => true, 'type' => 'string']);
         self::assertTrue($cm->isNullable('status'));
 
         // Explicit Not Nullable
-        $cm->mapField(['fieldName' => 'username', 'nullable' => false, 'type' => 'string', 'length' => 50]);
+        $cm->mapField(['fieldName' => 'username', 'nullable' => false, 'type' => 'string']);
         self::assertFalse($cm->isNullable('username'));
 
         // Implicit Not Nullable
-        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
+        $cm->mapField(['fieldName' => 'name', 'type' => 'string']);
         self::assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
     }
 
@@ -148,7 +148,7 @@ class ClassMetadataTest extends BaseTest
         $cm = new ClassMetadata(UserTyped::class);
 
         // String
-        $cm->mapField(['fieldName' => 'username', 'length' => 50]);
+        $cm->mapField(['fieldName' => 'username']);
         self::assertEquals(Type::STRING, $cm->getTypeOfField('username'));
 
         // DateTime object
@@ -376,7 +376,7 @@ class ClassMetadataTest extends BaseTest
     {
         $cm = new ClassMetadata(CmsUser::class);
         $cm->mapOneEmbedded(['fieldName' => 'name', 'targetDocument' => CmsUser::class]);
-        $cm->mapField(['fieldName' => 'name', 'columnName' => 'name', 'type' => 'string']);
+        $cm->mapField(['fieldName' => 'name', 'type' => 'string']);
 
         self::assertEquals('string', $cm->fieldMappings['name']['type']);
     }
@@ -385,7 +385,7 @@ class ClassMetadataTest extends BaseTest
     {
         $cm = new ClassMetadata(CmsUser::class);
         $this->expectException(ReflectionException::class);
-        $cm->mapField(['fieldName' => 'namee', 'columnName' => 'name', 'type' => 'string']);
+        $cm->mapField(['fieldName' => 'namee', 'type' => 'string']);
     }
 
     /**
