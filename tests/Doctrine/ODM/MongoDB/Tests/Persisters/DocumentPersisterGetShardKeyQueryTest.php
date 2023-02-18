@@ -28,7 +28,6 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $o->float  = 1.2;
 
         $persister = $this->uow->getDocumentPersister(get_class($o));
-        assert($persister instanceof DocumentPersister);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
@@ -47,7 +46,6 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $o->date = new DateTime();
 
         $persister = $this->uow->getDocumentPersister(get_class($o));
-        assert($persister instanceof DocumentPersister);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
@@ -74,7 +72,6 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $o->identifier = new ObjectId();
 
         $persister = $this->uow->getDocumentPersister(get_class($o));
-        assert($persister instanceof DocumentPersister);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
@@ -94,7 +91,6 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $this->dm->persist($o->reference);
 
         $persister = $this->uow->getDocumentPersister(get_class($o));
-        assert($persister instanceof DocumentPersister);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);

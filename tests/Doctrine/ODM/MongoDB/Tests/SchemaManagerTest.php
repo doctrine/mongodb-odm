@@ -86,7 +86,6 @@ class SchemaManagerTest extends BaseTest
         $this->dm = DocumentManager::create($client, $this->dm->getConfiguration(), $this->createMock(EventManager::class));
 
         foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
-            assert($cm instanceof ClassMetadata);
             if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument) {
                 continue;
             }
@@ -403,7 +402,6 @@ class SchemaManagerTest extends BaseTest
     {
         $dbCommands = [];
         foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
-            assert($cm instanceof ClassMetadata);
             if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument || $cm->isView() || $cm->isFile) {
                 continue;
             }

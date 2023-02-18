@@ -300,7 +300,6 @@ class DocumentManager implements ObjectManager
     public function getDocumentDatabase(string $className): Database
     {
         $metadata = $this->metadataFactory->getMetadataFor($className);
-        assert($metadata instanceof ClassMetadata);
 
         $className = $metadata->getName();
 
@@ -334,7 +333,6 @@ class DocumentManager implements ObjectManager
     public function getDocumentCollection(string $className): Collection
     {
         $metadata = $this->metadataFactory->getMetadataFor($className);
-        assert($metadata instanceof ClassMetadata);
 
         if ($metadata->isFile) {
             return $this->getDocumentBucket($className)->getFilesCollection();
@@ -368,7 +366,6 @@ class DocumentManager implements ObjectManager
     public function getDocumentBucket(string $className): Bucket
     {
         $metadata = $this->metadataFactory->getMetadataFor($className);
-        assert($metadata instanceof ClassMetadata);
 
         if (! $metadata->isFile) {
             throw MongoDBException::documentBucketOnlyAvailableForGridFSFiles($className);
@@ -632,7 +629,6 @@ class DocumentManager implements ObjectManager
     public function getPartialReference(string $documentName, $identifier): object
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
-        assert($class instanceof ClassMetadata);
 
         $document = $this->unitOfWork->tryGetById($identifier, $class);
 

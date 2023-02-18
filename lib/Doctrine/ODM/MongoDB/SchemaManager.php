@@ -71,7 +71,6 @@ final class SchemaManager
     public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
@@ -89,7 +88,6 @@ final class SchemaManager
     public function updateIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
@@ -300,7 +298,6 @@ final class SchemaManager
     public function deleteIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
@@ -332,7 +329,6 @@ final class SchemaManager
     public function updateValidators(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isFile) {
                 continue;
             }
@@ -394,7 +390,6 @@ final class SchemaManager
         $singleInheritanceProcessed = [];
 
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
@@ -481,7 +476,6 @@ final class SchemaManager
     public function dropCollections(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
@@ -521,7 +515,6 @@ final class SchemaManager
     public function dropDatabases(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
@@ -739,7 +732,6 @@ final class SchemaManager
     public function ensureSharding(?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            assert($class instanceof ClassMetadata);
             if ($class->isMappedSuperclass || ! $class->isSharded()) {
                 continue;
             }
