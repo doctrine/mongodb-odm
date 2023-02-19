@@ -6,11 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function get_class;
 
-class GH897Test extends BaseTest
+class GH897Test extends BaseTestCase
 {
     public function testRecomputeSingleDocumentChangesetForManagedDocumentWithoutChangeset(): void
     {

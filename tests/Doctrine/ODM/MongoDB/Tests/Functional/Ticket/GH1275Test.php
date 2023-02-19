@@ -8,12 +8,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use InvalidArgumentException;
 
 use function array_map;
 
-class GH1275Test extends BaseTest
+class GH1275Test extends BaseTestCase
 {
     public function testResortAtomicCollectionsFlipItems(): void
     {

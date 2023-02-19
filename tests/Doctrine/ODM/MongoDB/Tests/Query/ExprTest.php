@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Profile;
 use Documents\User;
 use GeoJson\Geometry\Point;
@@ -14,7 +14,7 @@ use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class ExprTest extends BaseTest
+class ExprTest extends BaseTestCase
 {
     public function testSelectIsPrepared(): void
     {

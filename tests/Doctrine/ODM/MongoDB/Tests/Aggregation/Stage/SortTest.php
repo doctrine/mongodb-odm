@@ -6,10 +6,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 /** @psalm-import-type SortShape from Sort */
-class SortTest extends BaseTest
+class SortTest extends BaseTestCase
 {
     use AggregationTestTrait;
 

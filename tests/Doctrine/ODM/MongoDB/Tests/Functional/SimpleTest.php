@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Bars\Bar;
 use Documents\Bars\Location;
 
-class SimpleTest extends BaseTest
+class SimpleTest extends BaseTestCase
 {
     public function testSimple(): void
     {

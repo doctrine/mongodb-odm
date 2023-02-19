@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Exception;
@@ -15,7 +15,7 @@ use function array_map;
 use function array_values;
 use function is_array;
 
-class CustomTypeTest extends BaseTest
+class CustomTypeTest extends BaseTestCase
 {
     public static function setUpBeforeClass(): void
     {

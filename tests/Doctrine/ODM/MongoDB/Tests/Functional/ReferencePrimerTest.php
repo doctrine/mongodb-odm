@@ -8,7 +8,7 @@ use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Documents\Account;
 use Documents\Agent;
@@ -37,7 +37,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 use function assert;
 use function func_get_args;
 
-class ReferencePrimerTest extends BaseTest
+class ReferencePrimerTest extends BaseTestCase
 {
     public function testPrimeReferencesShouldRequireReferenceMapping(): void
     {

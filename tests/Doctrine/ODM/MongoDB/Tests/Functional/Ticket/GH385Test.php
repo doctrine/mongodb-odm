@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 
-class GH385Test extends BaseTest
+class GH385Test extends BaseTestCase
 {
     public function testQueryBuilderShouldPrepareUnmappedFields(): void
     {

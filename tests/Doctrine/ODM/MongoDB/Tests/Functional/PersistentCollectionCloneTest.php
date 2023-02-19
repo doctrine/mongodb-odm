@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsGroup;
 use Documents\CmsUser;
 
 use function get_class;
 
-class PersistentCollectionCloneTest extends BaseTest
+class PersistentCollectionCloneTest extends BaseTestCase
 {
     private ?CmsUser $user1 = null;
 

@@ -7,11 +7,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function assert;
 
-class GH1418Test extends BaseTest
+class GH1418Test extends BaseTestCase
 {
     public function testManualHydrateAndMerge(): void
     {

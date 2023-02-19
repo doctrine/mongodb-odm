@@ -18,7 +18,7 @@ use MongoDB\BSON\ObjectId;
 
 use const DOCTRINE_MONGODB_DATABASE;
 
-class DocumentRepositoryTest extends BaseTest
+class DocumentRepositoryTest extends BaseTestCase
 {
     public function testMatchingAcceptsCriteriaWithNullWhereExpression(): void
     {

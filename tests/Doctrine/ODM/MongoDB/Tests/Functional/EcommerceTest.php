@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\Ecommerce\Currency;
 use Documents\Ecommerce\Money;
 use Documents\Ecommerce\Option;
 use Documents\Ecommerce\StockItem;
 
-class EcommerceTest extends BaseTest
+class EcommerceTest extends BaseTestCase
 {
     public function setUp(): void
     {

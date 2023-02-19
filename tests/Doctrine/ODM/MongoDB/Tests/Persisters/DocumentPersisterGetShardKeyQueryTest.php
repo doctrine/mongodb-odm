@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
@@ -15,7 +15,7 @@ use ReflectionMethod;
 
 use function get_class;
 
-class DocumentPersisterGetShardKeyQueryTest extends BaseTest
+class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
 {
     public function testGetShardKeyQueryScalars(): void
     {

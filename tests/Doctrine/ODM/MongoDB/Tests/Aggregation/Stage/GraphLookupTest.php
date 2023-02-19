@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\GraphLookup;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\GraphLookup\Airport;
 use Documents\GraphLookup\Employee;
 use Documents\GraphLookup\ReportingHierarchy;
@@ -20,7 +20,7 @@ use Documents\User;
 use function array_merge;
 use function count;
 
-class GraphLookupTest extends BaseTest
+class GraphLookupTest extends BaseTestCase
 {
     use AggregationTestTrait;
 

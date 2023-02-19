@@ -6,12 +6,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 
 use function assert;
 
-class UpsertTest extends BaseTest
+class UpsertTest extends BaseTestCase
 {
     /**
      * Tests for "MongoCursorException: Cannot apply $push/$pushAll modifier to non-array" error.

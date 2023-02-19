@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Documents\File;
 use Documents\ProfileNotify;
@@ -21,7 +21,7 @@ use stdClass;
 use function assert;
 use function get_class;
 
-class CustomCollectionsTest extends BaseTest
+class CustomCollectionsTest extends BaseTestCase
 {
     public function testMappingNamespaceIsAdded(): void
     {

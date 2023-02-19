@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Article;
 
-class MODM88Test extends BaseTest
+class MODM88Test extends BaseTestCase
 {
     public function testTest(): void
     {

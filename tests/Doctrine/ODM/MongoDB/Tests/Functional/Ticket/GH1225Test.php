@@ -7,11 +7,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function get_class;
 
-class GH1225Test extends BaseTest
+class GH1225Test extends BaseTestCase
 {
     public function testRemoveAddEmbeddedDocToExistingDocumentWithPreUpdateHook(): void
     {

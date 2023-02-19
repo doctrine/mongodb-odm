@@ -37,7 +37,7 @@ use stdClass;
 
 use function get_class;
 
-class DocumentManagerTest extends BaseTest
+class DocumentManagerTest extends BaseTestCase
 {
     public function testCustomRepository(): void
     {

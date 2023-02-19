@@ -6,10 +6,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\Driver\Exception\BulkWriteException;
 
-class IndexesTest extends BaseTest
+class IndexesTest extends BaseTestCase
 {
     /** @param class-string $class */
     private function uniqueTest(string $class): void

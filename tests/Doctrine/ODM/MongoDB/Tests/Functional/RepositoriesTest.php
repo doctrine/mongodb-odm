@@ -6,10 +6,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 
-class RepositoriesTest extends BaseTest
+class RepositoriesTest extends BaseTestCase
 {
     private User $user;
 

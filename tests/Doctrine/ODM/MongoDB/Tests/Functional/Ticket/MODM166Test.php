@@ -6,14 +6,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Phonenumber;
 use Documents\User;
 
 use function get_class;
 use function sort;
 
-class MODM166Test extends BaseTest
+class MODM166Test extends BaseTestCase
 {
     private MODM166EventListener $listener;
 

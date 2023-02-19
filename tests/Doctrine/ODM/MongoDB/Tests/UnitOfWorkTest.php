@@ -31,7 +31,7 @@ use function get_class;
 use function spl_object_hash;
 use function sprintf;
 
-class UnitOfWorkTest extends BaseTest
+class UnitOfWorkTest extends BaseTestCase
 {
     public function testIsDocumentScheduled(): void
     {

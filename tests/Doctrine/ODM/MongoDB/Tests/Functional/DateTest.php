@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
@@ -15,7 +15,7 @@ use function time;
 
 use const PHP_INT_SIZE;
 
-class DateTest extends BaseTest
+class DateTest extends BaseTestCase
 {
     public function testDates(): void
     {

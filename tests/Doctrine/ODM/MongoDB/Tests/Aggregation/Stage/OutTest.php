@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Sharded\ShardedUser;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 
-class OutTest extends BaseTest
+class OutTest extends BaseTestCase
 {
     public function testOutStageWithClassName(): void
     {

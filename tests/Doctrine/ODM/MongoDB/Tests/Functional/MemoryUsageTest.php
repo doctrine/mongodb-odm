@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
 
@@ -18,7 +18,7 @@ use function round;
 use function sprintf;
 
 /** @group performance */
-class MemoryUsageTest extends BaseTest
+class MemoryUsageTest extends BaseTestCase
 {
     /**
      * Output for jwage "Memory increased by 14.09 kb"

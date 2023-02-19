@@ -17,7 +17,7 @@ use function touch;
 use function unlink;
 
 /** @group DDC-1418 */
-abstract class AbstractDriverTest extends TestCase
+abstract class AbstractDriverTestCase extends TestCase
 {
     protected string $dir;
 

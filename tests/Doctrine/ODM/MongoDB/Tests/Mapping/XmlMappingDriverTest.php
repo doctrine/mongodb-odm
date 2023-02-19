@@ -16,7 +16,7 @@ use function get_class;
 
 use const DIRECTORY_SEPARATOR;
 
-class XmlMappingDriverTest extends AbstractMappingDriverTest
+class XmlMappingDriverTest extends AbstractMappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {

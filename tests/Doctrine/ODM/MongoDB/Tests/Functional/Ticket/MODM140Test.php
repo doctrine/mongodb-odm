@@ -7,12 +7,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Functional\EmbeddedTestLevel0;
 use Documents\Functional\EmbeddedTestLevel1;
 use Documents\Functional\EmbeddedTestLevel2;
 
-class MODM140Test extends BaseTest
+class MODM140Test extends BaseTestCase
 {
     public function testInsertingNestedEmbeddedCollections(): void
     {

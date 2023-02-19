@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Group;
 use Documents\Phonenumber;
 use Documents\User;
 
-class GH909Test extends BaseTest
+class GH909Test extends BaseTestCase
 {
     public function testManyReferenceAddAndPersist(): void
     {

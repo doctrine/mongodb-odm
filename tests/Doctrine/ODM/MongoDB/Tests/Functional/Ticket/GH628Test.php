@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class GH628Test extends BaseTest
+class GH628Test extends BaseTestCase
 {
     public function testQueryBuilderShouldOnlyPrepareFirstPartOfRawFields(): void
     {

@@ -6,11 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 
-class EmbeddedIdTest extends BaseTest
+class EmbeddedIdTest extends BaseTestCase
 {
     public function testEmbeddedIdsAreGenerated(): void
     {

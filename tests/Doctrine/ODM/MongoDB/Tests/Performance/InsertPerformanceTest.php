@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ODM\MongoDB\Performance;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsUser;
 
 use function gc_collect_cycles;
@@ -14,7 +14,7 @@ use function microtime;
 use const PHP_EOL;
 
 /** @group performance */
-class InsertPerformanceTest extends BaseTest
+class InsertPerformanceTest extends BaseTestCase
 {
     /**
      * [jwage: 10000 objects in ~4 seconds]

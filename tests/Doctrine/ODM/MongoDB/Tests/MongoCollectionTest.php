@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Documents\File;
 
-class MongoCollectionTest extends BaseTest
+class MongoCollectionTest extends BaseTestCase
 {
     public function testGridFSEmptyResult(): void
     {

@@ -48,7 +48,7 @@ use function MongoDB\BSON\toPHP;
  * @psalm-import-type IndexMapping from ClassMetadata
  * @psalm-import-type IndexOptions from ClassMetadata
  */
-class SchemaManagerTest extends BaseTest
+class SchemaManagerTest extends BaseTestCase
 {
     /** @psalm-var list<class-string> */
     private array $indexedClasses = [

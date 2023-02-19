@@ -13,7 +13,7 @@ use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Issue;
 use Documents\User;
 use InvalidArgumentException;
@@ -24,7 +24,7 @@ use MongoDB\BSON\UTCDateTime;
 use function get_class;
 use function time;
 
-class LockTest extends BaseTest
+class LockTest extends BaseTestCase
 {
     public function testOptimisticLockIntSetInitialVersion(): void
     {

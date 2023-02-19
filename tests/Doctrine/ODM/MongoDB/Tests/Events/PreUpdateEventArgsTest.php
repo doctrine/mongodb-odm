@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Article;
 use Documents\Book;
 use Documents\Chapter;
@@ -16,7 +16,7 @@ use PHPUnit\Framework\Assert;
 use function get_class;
 use function in_array;
 
-class PreUpdateEventArgsTest extends BaseTest
+class PreUpdateEventArgsTest extends BaseTestCase
 {
     public function testChangeSetIsUpdated(): void
     {

@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
 /** @requires PHP >= 8.0 */
-class AttributeDriverTest extends AbstractAnnotationDriverTest
+class AttributeDriverTest extends AbstractAnnotationDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {

@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class DatabasesTest extends BaseTest
+class DatabasesTest extends BaseTestCase
 {
     public function testCustomDatabase(): void
     {
