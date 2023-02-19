@@ -200,12 +200,19 @@ use const PHP_VERSION_ID;
  * @psalm-type IndexKeys = array<string, mixed>
  * @psalm-type IndexOptions = array{
  *      background?: bool,
- *      unique?: bool,
+ *      bits?: int,
+ *      default_language?: string,
+ *      expireAfterSeconds?: int,
+ *      language_override?: string,
+ *      min?: float,
+ *      max?: float,
  *      name?: string,
  *      partialFilterExpression?: mixed[],
  *      sparse?: bool,
- *      expireAfterSeconds?: int,
  *      storageEngine?: mixed[],
+ *      textIndexVersion?: int,
+ *      unique?: bool,
+ *      weights?: array{string, int},
  * }
  * @psalm-type IndexMapping = array{
  *      keys: IndexKeys,

@@ -144,6 +144,11 @@ parameters:
             count: 2
             path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
+        -
+            message: "#^Parameter \\#2 \\$options of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:addIndex\\(\\) expects array\\{background\\?\\: bool, bits\\?\\: int, default_language\\?\\: string, expireAfterSeconds\\?\\: int, language_override\\?\\: string, min\\?\\: float, max\\?\\: float, name\\?\\: string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\|bool\\|float\\|int\\|string\\|null\\> given\\.$#"
+            count: 1
+            path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
+
         # This is handled by a try-catch block
         -
             message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
@@ -188,7 +193,7 @@ parameters:
             path: tests
 
         -
-            message: "#^Parameter \\#4 \\$query of class Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Query constructor expects array\\{distinct\\?\\: string, hint\\?\\: array\\<string, \\-1\\|1\\>\\|string, limit\\?\\: int, multiple\\?\\: bool, new\\?\\: bool, newObj\\?\\: array\\<string, mixed\\>, query\\?\\: array\\<string, mixed\\>, readPreference\\?\\: MongoDB\\\\Driver\\\\ReadPreference, \\.\\.\\.\\}, array\\{type\\: \\-1\\} given\\.$#"
+            message: "#^Parameter \\#4 \\$query of class Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Query constructor expects array\\{distinct\\?\\: string, hint\\?\\: array\\<string, \\-1\\|1\\>\\|string, limit\\?\\: int, maxTimeMS\\?\\: int, multiple\\?\\: bool, new\\?\\: bool, newObj\\?\\: array\\<string, mixed\\>, query\\?\\: array\\<string, mixed\\>, \\.\\.\\.\\}, array\\{type\\: \\-1\\} given\\.$#"
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
 
