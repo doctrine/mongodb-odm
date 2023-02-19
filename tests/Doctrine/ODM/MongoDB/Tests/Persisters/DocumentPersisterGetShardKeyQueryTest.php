@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 use MongoDB\BSON\Binary;
@@ -14,7 +13,6 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use ReflectionMethod;
 
-use function assert;
 use function get_class;
 
 class DocumentPersisterGetShardKeyQueryTest extends BaseTest

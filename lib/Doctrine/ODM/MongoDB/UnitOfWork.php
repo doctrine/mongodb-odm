@@ -1953,7 +1953,7 @@ final class UnitOfWork implements PropertyChangedListener
                             if ($this->getDocumentState($other) === self::STATE_DETACHED) {
                                 $targetDocument = $assoc2['targetDocument'] ?? get_class($other);
                                 $targetClass    = $this->dm->getClassMetadata($targetDocument);
-                                $relatedId = $targetClass->getIdentifierObject($other);
+                                $relatedId      = $targetClass->getIdentifierObject($other);
 
                                 $current = $prop->getValue($managedCopy);
                                 if ($current !== null) {
