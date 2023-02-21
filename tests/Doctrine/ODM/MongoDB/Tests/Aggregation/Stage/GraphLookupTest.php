@@ -15,7 +15,6 @@ use Documents\GraphLookup\Airport;
 use Documents\GraphLookup\Employee;
 use Documents\GraphLookup\ReportingHierarchy;
 use Documents\GraphLookup\Traveller;
-use Documents\Sharded\ShardedOne;
 use Documents\User;
 
 use function array_merge;
@@ -45,7 +44,7 @@ class GraphLookupTest extends BaseTest
                     'restrictSearchWithMatch' => (object) [],
                 ],
             ],
-            $graphLookupStage->getExpression()
+            $graphLookupStage->getExpression(),
         );
     }
 
@@ -71,7 +70,7 @@ class GraphLookupTest extends BaseTest
                     ],
                 ],
             ],
-            $builder->getPipeline()
+            $builder->getPipeline(),
         );
     }
 
@@ -104,7 +103,7 @@ class GraphLookupTest extends BaseTest
                     ],
                 ],
             ],
-            $builder->getPipeline()
+            $builder->getPipeline(),
         );
     }
 
@@ -148,6 +147,9 @@ class GraphLookupTest extends BaseTest
     }
 
     /**
+     * @param Closure(Builder): GraphLookup $addGraphLookupStage
+     * @param array<string, string>         $expectedFields
+     *
      * @dataProvider provideEmployeeAggregations
      */
     public function testGraphLookupWithEmployees(Closure $addGraphLookupStage, array $expectedFields): void
@@ -218,6 +220,9 @@ class GraphLookupTest extends BaseTest
     }
 
     /**
+     * @param Closure(Builder): GraphLookup $addGraphLookupStage
+     * @param array<string, string>         $expectedFields
+     *
      * @dataProvider provideTravellerAggregations
      */
     public function testGraphLookupWithTraveller(Closure $addGraphLookupStage, array $expectedFields): void
@@ -244,15 +249,6 @@ class GraphLookupTest extends BaseTest
         $result = $builder->execute()->toArray();
 
         self::assertCount(3, $result);
-    }
-
-    public function testGraphLookupToShardedCollectionThrowsException(): void
-    {
-        $builder = $this->dm->createAggregationBuilder(User::class);
-
-        $this->expectException(MappingException::class);
-        $builder
-            ->graphLookup(ShardedOne::class);
     }
 
     public function testGraphLookupWithUnmappedFields(): void

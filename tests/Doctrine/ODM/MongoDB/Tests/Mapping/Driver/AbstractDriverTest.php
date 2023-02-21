@@ -235,14 +235,14 @@ abstract class AbstractDriverTest extends TestCase
                 'postPersist' => ['doStuffOnPostPersist', 'doOtherStuffOnPostPersist'],
                 'prePersist' => ['doStuffOnPrePersist'],
             ],
-            $classMetadata->lifecycleCallbacks
+            $classMetadata->lifecycleCallbacks,
         );
 
         self::assertEquals(
             [
                 'doStuffOnAlsoLoad' => ['unmappedField'],
             ],
-            $classMetadata->alsoLoadMethods
+            $classMetadata->alsoLoadMethods,
         );
 
         $classMetadata = new ClassMetadata(EmbeddedDocument::class);

@@ -22,16 +22,10 @@ use function str_replace;
  */
 abstract class Type
 {
-    public const ID = 'id';
-    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
-    public const INTID    = 'int_id';
-    public const CUSTOMID = 'custom_id';
-    public const BOOL     = 'bool';
-    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::BOOL instead */
-    public const BOOLEAN = 'boolean';
-    public const INT     = 'int';
-    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
-    public const INTEGER            = 'integer';
+    public const ID                 = 'id';
+    public const CUSTOMID           = 'custom_id';
+    public const BOOL               = 'bool';
+    public const INT                = 'int';
     public const FLOAT              = 'float';
     public const STRING             = 'string';
     public const DATE               = 'date';
@@ -51,14 +45,23 @@ abstract class Type
     public const RAW                = 'raw';
     public const DECIMAL128         = 'decimal128';
 
+    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
+    public const INTID = 'int_id';
+
+    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
+    public const INTEGER = 'integer';
+
+    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::BOOL instead */
+    public const BOOLEAN = 'boolean';
+
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
-    private static $typeObjects = [];
+    private static array $typeObjects = [];
 
     /**
      * @var string[] The map of supported doctrine mapping types.
      * @psalm-var array<string, class-string>
      */
-    private static $typesMap = [
+    private static array $typesMap = [
         self::ID => Types\IdType::class,
         self::INTID => Types\IntIdType::class,
         self::CUSTOMID => Types\CustomIdType::class,
@@ -254,9 +257,7 @@ abstract class Type
         return self::$typesMap;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function __toString()
     {
         $e         = explode('\\', static::class);

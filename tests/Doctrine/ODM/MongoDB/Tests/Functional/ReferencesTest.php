@@ -392,7 +392,7 @@ class ReferencesTest extends BaseTest
                 '$set' => [
                     'referenceOne.$id' => ['identifier' => 2],
                 ],
-            ]
+            ],
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
@@ -400,7 +400,7 @@ class ReferencesTest extends BaseTest
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier ' .
-            '{"identifier":2} could not be found.'
+            '{"identifier":2} could not be found.',
         );
         $test->referenceOne->initializeProxy();
     }
@@ -424,7 +424,7 @@ class ReferencesTest extends BaseTest
             ['_id' => new ObjectId($user->getId())],
             [
                 '$set' => ['profile.$id' => $invalidId],
-            ]
+            ],
         );
 
         $user    = $this->dm->find(get_class($user), $user->getId());
@@ -432,7 +432,7 @@ class ReferencesTest extends BaseTest
         self::assertInstanceOf(LazyLoadingInterface::class, $profile);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
-            'The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.'
+            'The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.',
         );
         $profile->initializeProxy();
     }
@@ -456,7 +456,7 @@ class ReferencesTest extends BaseTest
             ['_id' => new ObjectId($test->id)],
             [
                 '$set' => ['referenceOne.$id' => $invalidBinData],
-            ]
+            ],
         );
 
         $test = $this->dm->find(get_class($test), $test->id);
@@ -464,7 +464,7 @@ class ReferencesTest extends BaseTest
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier ' .
-            '"testbindata" could not be found.'
+            '"testbindata" could not be found.',
         );
         $test->referenceOne->initializeProxy();
     }
@@ -488,7 +488,7 @@ class ReferencesTest extends BaseTest
             ['_id' => new ObjectId($user->getId())],
             [
                 '$set' => ['profile.$id' => $invalidId],
-            ]
+            ],
         );
 
         $user    = $this->dm->find(get_class($user), $user->getId());
@@ -568,8 +568,7 @@ class DocumentWithMongoBinDataId
 
 class DocumentNotFoundListener
 {
-    /** @var Closure */
-    private $closure;
+    private Closure $closure;
 
     public function __construct(Closure $closure)
     {

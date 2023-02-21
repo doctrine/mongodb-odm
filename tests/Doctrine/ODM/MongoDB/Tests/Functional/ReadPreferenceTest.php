@@ -13,6 +13,7 @@ use Documents\User;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\WriteConcern;
 
+/** @psalm-type ReadPreferenceTagShape = array{dc?: string, usage?: string} */
 class ReadPreferenceTest extends BaseTest
 {
     public function setUp(): void
@@ -43,6 +44,8 @@ class ReadPreferenceTest extends BaseTest
     }
 
     /**
+     * @psalm-param ReadPreferenceTagShape[] $tags
+     *
      * @dataProvider provideReadPreferenceHints
      */
     public function testHintIsSetOnQuery(int $readPreference, array $tags = []): void
@@ -100,6 +103,7 @@ class ReadPreferenceTest extends BaseTest
         $this->assertReadPreferenceHint(ReadPreference::RP_SECONDARY, $query->getQuery()['readPreference']);
     }
 
+    /** @psalm-param ReadPreferenceTagShape[] $tags */
     private function assertReadPreferenceHint(int $mode, ReadPreference $readPreference, array $tags = []): void
     {
         self::assertInstanceOf(ReadPreference::class, $readPreference);

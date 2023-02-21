@@ -18,9 +18,7 @@ use function get_class;
 
 class GH852Test extends BaseTest
 {
-    /**
-     * @dataProvider provideIdGenerators
-     */
+    /** @dataProvider provideIdGenerators */
     public function testA(Closure $idGenerator): void
     {
         $parent       = new GH852Document();
@@ -104,14 +102,10 @@ class GH852Test extends BaseTest
 
         return [
             [
-                static function ($id) {
-                    return ['foo' => $id];
-                },
+                static fn ($id) => ['foo' => $id],
             ],
             [
-                static function ($id) use ($binDataType) {
-                    return new Binary($id, $binDataType);
-                },
+                static fn ($id) => new Binary($id, $binDataType),
             ],
         ];
     }

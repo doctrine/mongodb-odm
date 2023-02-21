@@ -31,9 +31,7 @@ final class Metadata extends AbstractField
     /** @var string|null */
     public $defaultDiscriminatorValue;
 
-    /**
-     * @param array<string, class-string>|null $discriminatorMap
-     */
+    /** @param array<string, class-string>|null $discriminatorMap */
     public function __construct(
         bool $nullable = false,
         array $options = [],

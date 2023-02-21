@@ -48,7 +48,7 @@ class PersistentCollectionTest extends BaseTest
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage(
             'No DocumentManager is associated with this PersistentCollection, ' .
-            'please set one using setDocumentManager method.'
+            'please set one using setDocumentManager method.',
         );
         $unserialized->getTypeClass();
     }
@@ -65,7 +65,7 @@ class PersistentCollectionTest extends BaseTest
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage(
             'No mapping is associated with this PersistentCollection, ' .
-            'please set one using setOwner method.'
+            'please set one using setOwner method.',
         );
         $unserialized->getTypeClass();
     }
@@ -133,8 +133,8 @@ class PersistentCollectionTest extends BaseTest
     }
 
     /**
-     * @param array $expected
-     * @param array $snapshot
+     * @param stdClass[] $expected
+     * @param stdClass[] $snapshot
      *
      * @dataProvider dataGetDeletedDocuments
      */
@@ -207,8 +207,8 @@ class PersistentCollectionTest extends BaseTest
     }
 
     /**
-     * @param array $expected
-     * @param array $snapshot
+     * @param stdClass[] $expected
+     * @param stdClass[] $snapshot
      *
      * @dataProvider dataGetInsertedDocuments
      */
@@ -333,9 +333,7 @@ class PersistentCollectionTest extends BaseTest
         self::assertTrue($pcoll->isEmpty());
     }
 
-    /**
-     * @return Collection<int, object>&MockObject
-     */
+    /** @return Collection<int, object>&MockObject */
     private function getMockCollection()
     {
         return $this->createMock(Collection::class);

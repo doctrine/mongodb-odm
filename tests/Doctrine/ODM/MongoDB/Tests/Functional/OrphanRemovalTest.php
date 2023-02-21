@@ -282,9 +282,7 @@ class OrphanRemovalTest extends BaseTest
         self::assertNull($this->getProfileRepository()->find($profile2->id), 'Profile 2 should have been removed');
     }
 
-    /**
-     * @return DocumentRepository<OrphanRemovalUser>
-     */
+    /** @return DocumentRepository<OrphanRemovalUser> */
     private function getUserRepository(): DocumentRepository
     {
         $repository = $this->dm->getRepository(OrphanRemovalUser::class);
@@ -294,9 +292,7 @@ class OrphanRemovalTest extends BaseTest
         return $repository;
     }
 
-    /**
-     * @return DocumentRepository<OrphanRemovalProfile>
-     */
+    /** @return DocumentRepository<OrphanRemovalProfile> */
     private function getProfileRepository(): DocumentRepository
     {
         $repository = $this->dm->getRepository(OrphanRemovalProfile::class);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
@@ -13,8 +14,7 @@ use function get_class;
 
 class MODM90Test extends BaseTest
 {
-    /** @var MODM90EventListener */
-    private $listener;
+    private MODM90EventListener $listener;
 
     private function getDocumentManager(): ?DocumentManager
     {
@@ -80,6 +80,7 @@ class MODM90EventListener
     /** @var array<string, class-string[]> */
     public $called = [];
 
+    /** @param array{LifecycleEventArgs} $args */
     public function __call(string $method, array $args): void
     {
         $document                = $args[0]->getDocument();

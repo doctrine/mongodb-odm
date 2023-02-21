@@ -12,8 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class MODM67Test extends BaseTest
 {
-    /** @var MODM67TestEventListener */
-    private $listener;
+    private MODM67TestEventListener $listener;
 
     private function getDocumentManager(): ?DocumentManager
     {
@@ -108,9 +107,7 @@ class MODM67TestEventListener
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class MODM67DerivedClass
 {
     /**
@@ -128,9 +125,7 @@ class MODM67DerivedClass
     public $embedOne;
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class MODM67EmbeddedObject
 {
     /**

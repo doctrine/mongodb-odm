@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
@@ -14,14 +13,9 @@ use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 
 class ResolveTargetDocumentListenerTest extends BaseTest
 {
-    /** @var DocumentManager */
-    protected $dm;
+    protected ResolveTargetDocumentListener $listener;
 
-    /** @var ResolveTargetDocumentListener */
-    protected $listener;
-
-    /** @var ClassMetadataFactory */
-    private $factory;
+    private ClassMetadataFactory $factory;
 
     public function setUp(): void
     {
@@ -38,13 +32,13 @@ class ResolveTargetDocumentListenerTest extends BaseTest
         $this->listener->addResolveTargetDocument(
             ResolveTargetInterface::class,
             ResolveTargetDocument::class,
-            []
+            [],
         );
 
         $this->listener->addResolveTargetDocument(
             TargetInterface::class,
             TargetDocument::class,
-            []
+            [],
         );
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);
@@ -83,9 +77,7 @@ class ResolveTargetDocumentListenerTest extends BaseTest
 
 interface ResolveTargetInterface
 {
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getId();
 }
 
@@ -97,9 +89,7 @@ abstract class AbstractResolveTarget implements ResolveTargetInterface
 {
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTargetInterface
 {
     /**
@@ -143,9 +133,7 @@ class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTarg
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class TargetDocument implements TargetInterface
 {
     /**

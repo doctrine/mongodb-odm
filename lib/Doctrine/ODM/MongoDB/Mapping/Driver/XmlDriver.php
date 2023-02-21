@@ -71,9 +71,7 @@ class XmlDriver extends FileDriver
         ],
     ];
 
-    /**
-     * @param string|null $fileExtension
-     */
+    /** @param string|null $fileExtension */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         parent::__construct($locator, $fileExtension);
@@ -91,7 +89,7 @@ class XmlDriver extends FileDriver
             }
         } elseif ($xmlRoot->getName() === 'mapped-superclass') {
             $metadata->setCustomRepositoryClass(
-                isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null
+                isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null,
             );
             $metadata->isMappedSuperclass = true;
         } elseif ($xmlRoot->getName() === 'embedded-document') {
@@ -382,9 +380,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function addEmbedMapping(ClassMetadata $class, SimpleXMLElement $embed, string $type): void
     {
         $attributes      = $embed->attributes();
@@ -429,9 +425,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function addReferenceMapping(ClassMetadata $class, ?SimpleXMLElement $reference, string $type): void
     {
         $cascade = array_keys((array) $reference->cascade);
@@ -512,9 +506,7 @@ class XmlDriver extends FileDriver
         $this->addFieldMapping($class, $mapping);
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function addIndex(ClassMetadata $class, SimpleXMLElement $xmlIndex): void
     {
         $attributes = $xmlIndex->attributes();
@@ -577,9 +569,7 @@ class XmlDriver extends FileDriver
         $class->addIndex($keys, $options);
     }
 
-    /**
-     * @return array<string, array<string, mixed>|scalar|null>
-     */
+    /** @return array<string, array<string, mixed>|scalar|null> */
     private function getPartialFilterExpression(SimpleXMLElement $fields): array
     {
         $partialFilterExpression = [];
@@ -638,9 +628,7 @@ class XmlDriver extends FileDriver
         return preg_match('/^[-]?\d+$/', $value) ? (int) $value : (float) $value;
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function setShardKey(ClassMetadata $class, SimpleXMLElement $xmlShardkey): void
     {
         $attributes = $xmlShardkey->attributes();
@@ -733,19 +721,13 @@ class XmlDriver extends FileDriver
         }
     }
 
-    /**
-     * @param LibXMLError[] $xmlErrors
-     */
+    /** @param LibXMLError[] $xmlErrors */
     private function formatErrors(array $xmlErrors): string
     {
-        return implode("\n", array_map(static function (LibXMLError $error): string {
-            return sprintf('Line %d:%d: %s', $error->line, $error->column, $error->message);
-        }, $xmlErrors));
+        return implode("\n", array_map(static fn (LibXMLError $error): string => sprintf('Line %d:%d: %s', $error->line, $error->column, $error->message), $xmlErrors));
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function addGridFSMappings(ClassMetadata $class, SimpleXMLElement $xmlRoot): void
     {
         if (! $class->isFile) {

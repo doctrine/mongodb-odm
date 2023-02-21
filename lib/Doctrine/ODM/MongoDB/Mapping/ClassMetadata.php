@@ -8,6 +8,7 @@ use BackedEnum;
 use BadMethodCallException;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\IdGenerator;
@@ -197,7 +198,15 @@ use const PHP_VERSION_ID;
  *      alsoLoadFields?: list<string>,
  * }
  * @psalm-type IndexKeys = array<string, mixed>
- * @psalm-type IndexOptions = array<string, mixed>
+ * @psalm-type IndexOptions = array{
+ *      background?: bool,
+ *      unique?: bool,
+ *      name?: string,
+ *      partialFilterExpression?: mixed[],
+ *      sparse?: bool,
+ *      expireAfterSeconds?: int,
+ *      storageEngine?: mixed[],
+ * }
  * @psalm-type IndexMapping = array{
  *      keys: IndexKeys,
  *      options: IndexOptions
@@ -467,10 +476,8 @@ use const PHP_VERSION_ID;
 
     /**
      * Determines how strictly MongoDB applies the validation rules to existing documents during an update.
-     *
-     * @var string
      */
-    private $validationLevel = self::SCHEMA_VALIDATION_LEVEL_STRICT;
+    private string $validationLevel = self::SCHEMA_VALIDATION_LEVEL_STRICT;
 
     /**
      * READ-ONLY: The name of the document class.
@@ -656,10 +663,8 @@ use const PHP_VERSION_ID;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a database view.
-     *
-     * @var bool
      */
-    private $isView = false;
+    private bool $isView = false;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a gridFS file
@@ -727,11 +732,9 @@ use const PHP_VERSION_ID;
      */
     public $isReadOnly;
 
-    /** @var InstantiatorInterface */
-    private $instantiator;
+    private InstantiatorInterface $instantiator;
 
-    /** @var ReflectionService */
-    private $reflectionService;
+    private ReflectionService $reflectionService;
 
     /**
      * @var string|null
@@ -802,9 +805,7 @@ use const PHP_VERSION_ID;
         return $this->reflClass;
     }
 
-    /**
-     * @param string $fieldName
-     */
+    /** @param string $fieldName */
     public function isIdentifier($fieldName): bool
     {
         return $this->identifier === $fieldName;
@@ -842,9 +843,7 @@ use const PHP_VERSION_ID;
         return [$this->identifier];
     }
 
-    /**
-     * @param string $fieldName
-     */
+    /** @param string $fieldName */
     public function hasField($fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
@@ -1208,9 +1207,7 @@ use const PHP_VERSION_ID;
         ];
     }
 
-    /**
-     * @psalm-return ShardKey
-     */
+    /** @psalm-return ShardKey */
     public function getShardKey(): array
     {
         return $this->shardKey;
@@ -1283,9 +1280,7 @@ use const PHP_VERSION_ID;
         $this->writeConcern = $writeConcern;
     }
 
-    /**
-     * @return int|string|null
-     */
+    /** @return int|string|null */
     public function getWriteConcern()
     {
         return $this->writeConcern;
@@ -1352,9 +1347,7 @@ use const PHP_VERSION_ID;
         return $this->reflFields[$name];
     }
 
-    /**
-     * @psalm-return class-string<T>
-     */
+    /** @psalm-return class-string<T> */
     public function getName(): string
     {
         return $this->name;
@@ -1851,9 +1844,7 @@ use const PHP_VERSION_ID;
     {
         return array_filter(
             $this->associationMappings,
-            static function ($assoc) {
-                return ! empty($assoc['embedded']);
-            }
+            static fn ($assoc) => ! empty($assoc['embedded'])
         );
     }
 
@@ -2085,9 +2076,7 @@ use const PHP_VERSION_ID;
         return $this->isView;
     }
 
-    /**
-     * @psalm-param class-string $rootClass
-     */
+    /** @psalm-param class-string $rootClass */
     public function markViewOf(string $rootClass): void
     {
         $this->isView    = true;
@@ -2104,9 +2093,7 @@ use const PHP_VERSION_ID;
         return array_keys($this->associationMappings);
     }
 
-    /**
-     * @param string $fieldName
-     */
+    /** @param string $fieldName */
     public function getTypeOfField($fieldName): ?string
     {
         return isset($this->fieldMappings[$fieldName]) ?
@@ -2145,17 +2132,13 @@ use const PHP_VERSION_ID;
         return $this->associationMappings[$assocName]['collectionClass'];
     }
 
-    /**
-     * @param string $assocName
-     */
+    /** @param string $assocName */
     public function isAssociationInverseSide($assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
-    /**
-     * @param string $assocName
-     */
+    /** @param string $assocName */
     public function getAssociationMappedByTargetField($assocName)
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
@@ -2206,7 +2189,7 @@ use const PHP_VERSION_ID;
 
         if (! empty($mapping['collectionClass'])) {
             $rColl = new ReflectionClass($mapping['collectionClass']);
-            if (! $rColl->implementsInterface('Doctrine\\Common\\Collections\\Collection')) {
+            if (! $rColl->implementsInterface(Collection::class)) {
                 throw MappingException::collectionClassDoesNotImplementCommonInterface($this->name, $mapping['fieldName'], $mapping['collectionClass']);
             }
         }
@@ -2295,7 +2278,7 @@ use const PHP_VERSION_ID;
                 '2.2',
                 'Mapping both "targetDocument" and "discriminatorMap" on field "%s" in class "%s" is deprecated. Only one of them can be used at a time',
                 $mapping['fieldName'],
-                $this->name
+                $this->name,
             );
         }
 
@@ -2375,7 +2358,7 @@ use const PHP_VERSION_ID;
                 '2.1',
                 'The "%s" mapping type is deprecated. Use "%s" instead.',
                 $mapping['type'],
-                $deprecatedTypes[$mapping['type']]
+                $deprecatedTypes[$mapping['type']],
             );
         }
 
@@ -2556,9 +2539,7 @@ use const PHP_VERSION_ID;
         return in_array($name, self::ALLOWED_GRIDFS_FIELDS, true);
     }
 
-    /**
-     * @psalm-param FieldMapping $mapping
-     */
+    /** @psalm-param FieldMapping $mapping */
     private function typeRequirementsAreMet(array $mapping): void
     {
         if ($mapping['type'] === Type::DECIMAL128 && ! extension_loaded('bcmath')) {
@@ -2566,9 +2547,7 @@ use const PHP_VERSION_ID;
         }
     }
 
-    /**
-     * @psalm-param FieldMapping $mapping
-     */
+    /** @psalm-param FieldMapping $mapping */
     private function checkDuplicateMapping(array $mapping): void
     {
         if ($mapping['notSaved'] ?? false) {
@@ -2597,8 +2576,7 @@ use const PHP_VERSION_ID;
 
     private function isTypedProperty(string $name): bool
     {
-        return PHP_VERSION_ID >= 70400
-            && $this->reflClass->hasProperty($name)
+        return $this->reflClass->hasProperty($name)
             && $this->reflClass->getProperty($name)->hasType();
     }
 

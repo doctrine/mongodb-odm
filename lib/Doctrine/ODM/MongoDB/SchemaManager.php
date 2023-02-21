@@ -54,11 +54,9 @@ final class SchemaManager
         'name',
     ];
 
-    /** @var DocumentManager */
-    protected $dm;
+    protected DocumentManager $dm;
 
-    /** @var ClassMetadataFactory */
-    protected $metadataFactory;
+    protected ClassMetadataFactory $metadataFactory;
 
     public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
     {
@@ -384,7 +382,7 @@ final class SchemaManager
                 'validationAction' => $class->getValidationAction(),
                 'validationLevel' => $class->getValidationLevel(),
             ],
-            $this->getWriteOptions($maxTimeMs, $writeConcern)
+            $this->getWriteOptions($maxTimeMs, $writeConcern),
         );
     }
 
@@ -473,7 +471,7 @@ final class SchemaManager
 
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
-            $this->getWriteOptions($maxTimeMs, $writeConcern, $options)
+            $this->getWriteOptions($maxTimeMs, $writeConcern, $options),
         );
     }
 
@@ -549,9 +547,7 @@ final class SchemaManager
         $this->dm->getDocumentDatabase($documentName)->drop($this->getWriteOptions($maxTimeMs, $writeConcern));
     }
 
-    /**
-     * @psalm-param IndexMapping $documentIndex
-     */
+    /** @psalm-param IndexMapping $documentIndex */
     public function isMongoIndexEquivalentToDocumentIndex(IndexInfo $mongoIndex, array $documentIndex): bool
     {
         return $this->isEquivalentIndexKeys($mongoIndex, $documentIndex) && $this->isEquivalentIndexOptions($mongoIndex, $documentIndex);
@@ -576,9 +572,7 @@ final class SchemaManager
         if (isset($mongoIndexKeys['_fts']) && $mongoIndexKeys['_fts'] === 'text') {
             unset($mongoIndexKeys['_fts'], $mongoIndexKeys['_ftsx']);
 
-            $documentIndexKeys = array_filter($documentIndexKeys, static function ($type) {
-                return $type !== 'text';
-            });
+            $documentIndexKeys = array_filter($documentIndexKeys, static fn ($type) => $type !== 'text');
         }
 
         /* Avoid a strict equality check of the arrays here. The numeric type returned
@@ -591,9 +585,7 @@ final class SchemaManager
             $mongoIndexKeys == $documentIndexKeys;
     }
 
-    /**
-     * @psalm-param IndexMapping $documentIndex
-     */
+    /** @psalm-param IndexMapping $documentIndex */
     private function hasTextIndexesAtSamePosition(IndexInfo $mongoIndex, array $documentIndex): bool
     {
         $mongoIndexKeys    = $mongoIndex['key'];
@@ -807,9 +799,7 @@ final class SchemaManager
         }
     }
 
-    /**
-     * @psalm-param class-string $documentName
-     */
+    /** @psalm-param class-string $documentName */
     private function runShardCollectionCommand(string $documentName, ?WriteConcern $writeConcern = null): void
     {
         $class    = $this->dm->getClassMetadata($documentName);
@@ -839,23 +829,19 @@ final class SchemaManager
                     'shardCollection' => $dbName . '.' . $class->getCollection(),
                     'key'             => $shardKeyPart,
                 ],
-                $this->getWriteOptions(null, $writeConcern)
-            )
+                $this->getWriteOptions(null, $writeConcern),
+            ),
         );
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function ensureGridFSIndexes(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $this->ensureChunksIndex($class, $maxTimeMs, $writeConcern, $background);
         $this->ensureFilesIndex($class, $maxTimeMs, $writeConcern, $background);
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function ensureChunksIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $chunksCollection = $this->dm->getDocumentBucket($class->getName())->getChunksCollection();
@@ -867,13 +853,11 @@ final class SchemaManager
 
         $chunksCollection->createIndex(
             self::GRIDFS_FILE_COLLECTION_INDEX,
-            $this->getWriteOptions($maxTimeMs, $writeConcern, ['unique' => true, 'background' => $background])
+            $this->getWriteOptions($maxTimeMs, $writeConcern, ['unique' => true, 'background' => $background]),
         );
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function ensureFilesIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $filesCollection = $this->dm->getDocumentCollection($class->getName());
@@ -886,9 +870,7 @@ final class SchemaManager
         $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX, $this->getWriteOptions($maxTimeMs, $writeConcern, ['background' => $background]));
     }
 
-    /**
-     * @psalm-param class-string $documentName
-     */
+    /** @psalm-param class-string $documentName */
     private function collectionIsSharded(string $documentName): bool
     {
         $class = $this->dm->getClassMetadata($documentName);

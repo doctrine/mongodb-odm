@@ -36,9 +36,7 @@ class MODM52Test extends BaseTest
     }
 }
 
-/**
- * @ODM\MappedSuperClass
- */
+/** @ODM\MappedSuperClass */
 class MODM52Container
 {
     /**
@@ -55,9 +53,7 @@ class MODM52Container
      */
     public $items = [];
 
-    /**
-     * @param array<MODM52Embedded>|null $items
-     */
+    /** @param array<MODM52Embedded>|null $items */
     public function __construct(?array $items = null, ?string $value = null)
     {
         if ($items) {
@@ -67,9 +63,7 @@ class MODM52Container
         $this->value = $value;
     }
 
-    /**
-     * @return Collection<int, MODM52Embedded>|array<MODM52Embedded>
-     */
+    /** @return Collection<int, MODM52Embedded>|array<MODM52Embedded> */
     public function getItems()
     {
         return $this->items;

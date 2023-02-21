@@ -19,23 +19,19 @@ use function assert;
 
 final class Aggregation implements IteratorAggregate
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var ClassMetadata|null */
-    private $classMetadata;
+    private ?ClassMetadata $classMetadata;
 
-    /** @var Collection */
-    private $collection;
+    private Collection $collection;
 
     /** @var array<string, mixed> */
-    private $pipeline;
+    private array $pipeline;
 
     /** @var array<string, mixed> */
-    private $options;
+    private array $options;
 
-    /** @var bool */
-    private $rewindable;
+    private bool $rewindable;
 
     /**
      * @param array<string, mixed> $pipeline

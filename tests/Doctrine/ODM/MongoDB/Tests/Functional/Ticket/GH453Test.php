@@ -120,15 +120,9 @@ class GH453Test extends BaseTest
             new GH453EmbeddedDocument(),
             new GH453EmbeddedDocument(),
         ]);
-        $colSet      = $colPush->map(static function ($v) {
-            return clone $v;
-        });
-        $colSetArray = $colPush->map(static function ($v) {
-            return clone $v;
-        });
-        $colAddToSet = $colPush->map(static function ($v) {
-            return clone $v;
-        });
+        $colSet      = $colPush->map(static fn ($v) => clone $v);
+        $colSetArray = $colPush->map(static fn ($v) => clone $v);
+        $colAddToSet = $colPush->map(static fn ($v) => clone $v);
 
         $doc                    = new GH453Document();
         $doc->embedManyPush     = $colPush;
@@ -170,15 +164,9 @@ class GH453Test extends BaseTest
             new GH453ReferencedDocument(),
             new GH453ReferencedDocument(),
         ]);
-        $colSet      = $colPush->map(static function ($v) {
-            return clone $v;
-        });
-        $colSetArray = $colPush->map(static function ($v) {
-            return clone $v;
-        });
-        $colAddToSet = $colPush->map(static function ($v) {
-            return clone $v;
-        });
+        $colSet      = $colPush->map(static fn ($v) => clone $v);
+        $colSetArray = $colPush->map(static fn ($v) => clone $v);
+        $colAddToSet = $colPush->map(static fn ($v) => clone $v);
 
         $dm = $this->dm;
 
@@ -240,25 +228,19 @@ class GH453Test extends BaseTest
         $this->assertBsonArray($doc->id, 'referenceManyAddToSet');
     }
 
-    /**
-     * @param mixed $documentId
-     */
+    /** @param mixed $documentId */
     private function assertBsonArray($documentId, string $fieldName): void
     {
         $this->assertBsonType(4, $documentId, $fieldName);
     }
 
-    /**
-     * @param mixed $documentId
-     */
+    /** @param mixed $documentId */
     private function assertBsonObject($documentId, string $fieldName): void
     {
         $this->assertBsonType(3, $documentId, $fieldName);
     }
 
-    /**
-     * @param mixed $documentId
-     */
+    /** @param mixed $documentId */
     private function assertBsonType(int $bsonType, $documentId, string $fieldName): void
     {
         $criteria = ['_id' => $documentId];

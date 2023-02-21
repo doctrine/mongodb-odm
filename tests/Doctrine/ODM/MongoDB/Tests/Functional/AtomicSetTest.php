@@ -26,8 +26,7 @@ use function get_class;
  */
 class AtomicSetTest extends BaseTest
 {
-    /** @var CommandLogger */
-    private $logger;
+    private CommandLogger $logger;
 
     public function setUp(): void
     {
@@ -549,9 +548,7 @@ class AtomicSetTest extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class AtomicSetUser
 {
     /**
@@ -628,9 +625,7 @@ class AtomicSetUser
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class AtomicSetInception
 {
     /**

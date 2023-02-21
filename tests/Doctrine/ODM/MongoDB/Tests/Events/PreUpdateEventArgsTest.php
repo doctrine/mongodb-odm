@@ -75,8 +75,9 @@ class ChangeSetIsUpdatedListener
 class CollectionsAreInChangeSetListener
 {
     /** @var list<class-string> */
-    private $allowed = [Book::class, Chapter::class];
+    private array $allowed = [Book::class, Chapter::class];
 
+    /** @param list<class-string> $allowed */
     public function checkOnly(array $allowed): void
     {
         $this->allowed = $allowed;
@@ -86,13 +87,13 @@ class CollectionsAreInChangeSetListener
     {
         switch (get_class($e->getDocument())) {
             case Book::class:
-                if (in_array(Book::class, $this->allowed)) {
+                if (in_array(Book::class, $this->allowed, true)) {
                     Assert::assertTrue($e->hasChangedField('chapters'));
                 }
 
                 break;
             case Chapter::class:
-                if (in_array(Chapter::class, $this->allowed)) {
+                if (in_array(Chapter::class, $this->allowed, true)) {
                     Assert::assertTrue($e->hasChangedField('pages'));
                 }
 

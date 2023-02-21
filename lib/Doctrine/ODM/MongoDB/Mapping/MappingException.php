@@ -103,7 +103,7 @@ final class MappingException extends BaseMappingException
             "Can not map class '%s' as %s because it was already mapped as %s.",
             $className,
             (new ReflectionObject($offending))->getShortName(),
-            (new ReflectionObject($mappedAs))->getShortName()
+            (new ReflectionObject($mappedAs))->getShortName(),
         ));
     }
 
@@ -258,7 +258,7 @@ final class MappingException extends BaseMappingException
             'Invalid repository class "%s" for mapped class "%s". It must be an instance of "%s".',
             $repositoryClass,
             $className,
-            $expectedRepositoryClass
+            $expectedRepositoryClass,
         ));
     }
 
@@ -288,7 +288,7 @@ final class MappingException extends BaseMappingException
             'Attempting to map a non-enum type %s as an enum: %s::%s',
             $enumType,
             $className,
-            $fieldName
+            $fieldName,
         ));
     }
 
@@ -298,7 +298,7 @@ final class MappingException extends BaseMappingException
             'Attempting to map a non-backed enum %s: %s::%s',
             $enumType,
             $className,
-            $fieldName
+            $fieldName,
         ));
     }
 }

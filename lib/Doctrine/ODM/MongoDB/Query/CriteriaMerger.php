@@ -26,9 +26,7 @@ final class CriteriaMerger
      */
     public function merge(...$criterias): array
     {
-        $nonEmptyCriterias = array_values(array_filter($criterias, static function (array $criteria) {
-            return ! empty($criteria);
-        }));
+        $nonEmptyCriterias = array_values(array_filter($criterias, static fn (array $criteria) => ! empty($criteria)));
 
         switch (count($nonEmptyCriterias)) {
             case 0:

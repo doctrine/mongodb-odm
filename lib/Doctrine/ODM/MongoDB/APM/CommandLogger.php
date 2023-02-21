@@ -16,13 +16,12 @@ use function MongoDB\Driver\Monitoring\removeSubscriber;
 final class CommandLogger implements Countable, CommandLoggerInterface
 {
     /** @var Command[] */
-    private $commands = [];
+    private array $commands = [];
 
     /** @var CommandStartedEvent[] */
-    private $startedCommands = [];
+    private array $startedCommands = [];
 
-    /** @var bool */
-    private $registered = false;
+    private bool $registered = false;
 
     public function register(): void
     {
@@ -79,9 +78,7 @@ final class CommandLogger implements Countable, CommandLoggerInterface
         return count($this->commands);
     }
 
-    /**
-     * @return Command[]
-     */
+    /** @return Command[] */
     public function getAll(): array
     {
         return $this->commands;

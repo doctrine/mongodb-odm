@@ -18,20 +18,21 @@ use RuntimeException;
 
 class QueryExpressionVisitorTest extends BaseTest
 {
-    /** @var Builder */
-    private $queryBuilder;
+    private Builder $queryBuilder;
 
-    /** @var QueryExpressionVisitor */
-    private $visitor;
+    private QueryExpressionVisitor $visitor;
 
     public function setUp(): void
     {
         parent::setUp();
+
         $this->queryBuilder = $this->dm->createQueryBuilder(Bar::class);
         $this->visitor      = new QueryExpressionVisitor($this->queryBuilder);
     }
 
     /**
+     * @param array<string, mixed> $expectedQuery
+     *
      * @dataProvider provideComparisons
      */
     public function testWalkComparison(Comparison $comparison, array $expectedQuery): void
@@ -74,7 +75,7 @@ class QueryExpressionVisitorTest extends BaseTest
         $compositeExpr = $builder->andX(
             $builder->eq('a', 1),
             $builder->neq('a', 2),
-            $builder->eq('b', 3)
+            $builder->eq('b', 3),
         );
 
         $expectedQuery = [

@@ -16,14 +16,13 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 final class PostCollectionLoadEventArgs extends ManagerEventArgs
 {
     /** @var PersistentCollectionInterface<TKey, T> */
-    private $collection;
+    private PersistentCollectionInterface $collection;
 
-    /**
-     * @param PersistentCollectionInterface<TKey, T> $collection
-     */
+    /** @param PersistentCollectionInterface<TKey, T> $collection */
     public function __construct(PersistentCollectionInterface $collection, DocumentManager $dm)
     {
         parent::__construct($dm);
+
         $this->collection = $collection;
     }
 

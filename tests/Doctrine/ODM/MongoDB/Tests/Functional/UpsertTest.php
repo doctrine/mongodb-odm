@@ -82,7 +82,7 @@ class UpsertTest extends BaseTest
                 'nullableReferenceOne' => null,
                 'nullableEmbedOne' => null,
             ],
-            $result
+            $result,
         );
     }
 }

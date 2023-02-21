@@ -12,6 +12,7 @@ class ReferenceDiscriminatorsTest extends BaseTest
     public function setUp(): void
     {
         parent::setUp();
+
         $this->dm->getSchemaManager()->ensureDocumentIndexes(CommentableAction::class);
         $this->dm->getSchemaManager()->ensureDocumentIndexes(GroupMainActivityStreamItem::class);
         $this->dm->getSchemaManager()->ensureDocumentIndexes(GroupMembersActivityStreamItem::class);
@@ -134,16 +135,19 @@ class CommentableAction extends Action
     /**
      * @ODM\Field(type="collection") *
      *
-     * @var array
+     * @var string[]
      */
     protected $comments = [];
 
+    /** @param string[] $comments */
     public function __construct(string $type, array $comments = [])
     {
         parent::__construct($type);
+
         $this->comments = $comments;
     }
 
+    /** @return string[] */
     public function getComments(): array
     {
         return $this->comments;
@@ -199,6 +203,7 @@ abstract class GroupActivityStreamItem extends ActivityStreamItem
     public function __construct(Action $action, string $groupId)
     {
         parent::__construct($action);
+
         $this->groupId = $groupId;
     }
 
@@ -234,6 +239,7 @@ abstract class UserActivityStreamItem extends ActivityStreamItem
     public function __construct(Action $action, string $userId)
     {
         parent::__construct($action);
+
         $this->userId = $userId;
     }
 

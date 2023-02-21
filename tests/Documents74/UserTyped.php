@@ -8,9 +8,7 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document()
- */
+/** @ODM\Document() */
 #[ODM\Document]
 class UserTyped
 {
@@ -30,7 +28,11 @@ class UserTyped
     #[ODM\Field]
     public DateTimeImmutable $dateTimeImmutable;
 
-    /** @ODM\Field */
+    /**
+     * @ODM\Field
+     *
+     * @var mixed[]
+     */
     #[ODM\Field]
     public array $array;
 
@@ -46,11 +48,19 @@ class UserTyped
     #[ODM\Field]
     public int $int;
 
-    /** @ODM\EmbedMany  */
+    /**
+     * @ODM\EmbedMany
+     *
+     * @var CustomCollection<array-key, object>
+     */
     #[ODM\EmbedMany]
     public CustomCollection $embedMany;
 
-    /** @ODM\ReferenceMany  */
+    /**
+     * @ODM\ReferenceMany
+     *
+     * @var CustomCollection<array-key, object>
+     */
     #[ODM\ReferenceMany]
     public CustomCollection $referenceMany;
 }

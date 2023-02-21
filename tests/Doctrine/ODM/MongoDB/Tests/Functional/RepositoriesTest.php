@@ -11,11 +11,10 @@ use Documents\User;
 
 class RepositoriesTest extends BaseTest
 {
-    /** @var User */
-    private $user;
+    private User $user;
 
     /** @var DocumentRepository<User> */
-    private $repository;
+    private DocumentRepository $repository;
 
     public function setUp(): void
     {

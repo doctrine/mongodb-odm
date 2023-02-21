@@ -11,8 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\MatchStage as BaseMatchStage;
 
 class MatchStage extends BaseMatchStage
 {
-    /** @var GraphLookup */
-    private $graphLookup;
+    private GraphLookup $graphLookup;
 
     public function __construct(Builder $builder, GraphLookup $graphLookup)
     {

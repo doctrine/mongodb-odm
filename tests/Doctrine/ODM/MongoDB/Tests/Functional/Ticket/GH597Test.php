@@ -110,7 +110,7 @@ class GH597Test extends BaseTest
     /**
      * Asserts that raw document matches expected document.
      *
-     * @param array $expected
+     * @param array<string, mixed> $expected
      */
     private function assertPostDocument(array $expected, GH597Post $post): void
     {
@@ -155,17 +155,13 @@ class GH597Post
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, GH597Comment>
-     */
+    /** @return Collection<int, GH597Comment> */
     public function getComments(): Collection
     {
         return $this->comments;
     }
 
-    /**
-     * @return Collection<int, GH597ReferenceMany>
-     */
+    /** @return Collection<int, GH597ReferenceMany> */
     public function getReferenceMany(): Collection
     {
         return $this->referenceMany;

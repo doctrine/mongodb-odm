@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Exception;
 use Generator;
+use Iterator;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -110,6 +111,77 @@ class CachingIteratorTest extends TestCase
         self::assertSame([1, 2, 3], $iterator->toArray());
     }
 
+    public function testCount(): void
+    {
+        $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
+        $this->assertCount(3, $iterator);
+    }
+
+    public function testCountAfterPartialIteration(): void
+    {
+        $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
+
+        $iterator->rewind();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(0, $iterator->key());
+        $this->assertSame(1, $iterator->current());
+
+        $iterator->next();
+        $this->assertCount(3, $iterator);
+    }
+
+    public function testCountWithEmptySet(): void
+    {
+        $iterator = new CachingIterator($this->getTraversable([]));
+        $this->assertCount(0, $iterator);
+    }
+
+    /**
+     * This protects against iterators that return valid keys on invalid
+     * positions, which was the case in ext-mongodb until PHPC-1748 was fixed.
+     */
+    public function testWithWrongIterator(): void
+    {
+        $nestedIterator = new class implements Iterator {
+            private int $i = 0;
+
+            public function current(): int
+            {
+                return $this->i;
+            }
+
+            public function next(): void
+            {
+                $this->i++;
+            }
+
+            public function key(): int
+            {
+                return $this->i;
+            }
+
+            public function valid(): bool
+            {
+                return $this->i === 0;
+            }
+
+            public function rewind(): void
+            {
+                $this->i = 0;
+            }
+        };
+
+        $iterator = new CachingIterator($nestedIterator);
+        $this->assertCount(1, $iterator);
+    }
+
+    /**
+     * @param T[] $items
+     *
+     * @return Generator<T>
+     *
+     * @template T
+     */
     private function getTraversable(array $items): Generator
     {
         foreach ($items as $item) {
@@ -117,6 +189,11 @@ class CachingIteratorTest extends TestCase
         }
     }
 
+    /**
+     * @param array<mixed|Exception> $items
+     *
+     * @return Generator<mixed>
+     */
     private function getTraversableThatThrows(array $items): Generator
     {
         foreach ($items as $item) {

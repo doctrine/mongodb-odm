@@ -16,6 +16,8 @@ use function is_numeric;
 use function is_string;
 use function json_decode;
 
+use const JSON_THROW_ON_ERROR;
+
 /**
  * Command to query mongodb and inspect the outputted results from your document classes.
  */
@@ -61,15 +63,13 @@ class QueryCommand extends Console\Command\Command
                 'The number of documents to return.'
             ),
         ])
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Execute a query and output the results.
 EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $query = $input->getArgument('query');
@@ -77,7 +77,7 @@ EOT
 
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         $qb = $dm->getRepository($input->getArgument('class'))->createQueryBuilder();
-        $qb->setQueryArray((array) json_decode($query));
+        $qb->setQueryArray((array) json_decode($query, null, 512, JSON_THROW_ON_ERROR));
         $qb->hydrate((bool) $input->getOption('hydrate'));
 
         $skip = $input->getOption('skip');

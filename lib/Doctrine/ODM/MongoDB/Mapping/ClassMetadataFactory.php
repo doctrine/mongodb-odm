@@ -47,16 +47,16 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected $cacheSalt = '$MONGODBODMCLASSMETADATA';
 
     /** @var DocumentManager The DocumentManager instance */
-    private $dm;
+    private DocumentManager $dm;
 
     /** @var Configuration The Configuration instance */
-    private $config;
+    private Configuration $config;
 
     /** @var MappingDriver The used metadata driver. */
-    private $driver;
+    private MappingDriver $driver;
 
     /** @var EventManager The event manager instance */
-    private $evm;
+    private EventManager $evm;
 
     public function setDocumentManager(DocumentManager $dm): void
     {
@@ -84,9 +84,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->initialized = true;
     }
 
-    /**
-     * @param string $className
-     */
+    /** @param string $className */
     protected function onNotFoundMetadata($className)
     {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
@@ -131,9 +129,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
         return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument && ! $class->isView();
     }
 
-    /**
-     * @param bool $rootEntityFound
-     */
+    /** @param bool $rootEntityFound */
     protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []): void
     {
         assert($class instanceof ClassMetadata);
@@ -202,12 +198,10 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $class->setParentClasses($nonSuperclassParents);
 
-        if (! $this->evm->hasListeners(Events::loadClassMetadata)) {
-            return;
-        }
-
-        $eventArgs = new LoadClassMetadataEventArgs($class, $this->dm);
-        $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+        $this->evm->dispatchEvent(
+            Events::loadClassMetadata,
+            new LoadClassMetadataEventArgs($class, $this->dm),
+        );
 
         // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
         if ($class->isChangeTrackingNotify()) {
@@ -215,7 +209,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
                 'doctrine/mongodb-odm',
                 '2.4',
                 'NOTIFY tracking policy used in class "%s" is deprecated. Please use DEFERRED_EXPLICIT instead.',
-                $class->name
+                $class->name,
             );
         }
     }
@@ -379,7 +373,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $subClass->setShardKey(
             $parentClass->shardKey['keys'],
-            $parentClass->shardKey['options']
+            $parentClass->shardKey['options'],
         );
     }
 }

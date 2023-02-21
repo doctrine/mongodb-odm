@@ -17,17 +17,14 @@ use function array_map;
 class Facet extends Stage
 {
     /** @var Builder[] */
-    private $pipelines = [];
+    private array $pipelines = [];
 
-    /** @var string */
-    private $field;
+    private string $field;
 
     public function getExpression(): array
     {
         return [
-            '$facet' => array_map(static function (Builder $builder) {
-                return $builder->getPipeline(false);
-            }, $this->pipelines),
+            '$facet' => array_map(static fn (Builder $builder) => $builder->getPipeline(false), $this->pipelines),
         ];
     }
 
@@ -48,7 +45,8 @@ class Facet extends Stage
      */
     public function pipeline($builder): self
     {
-        if (! $this->field) {
+        /** @psalm-suppress RedundantPropertyInitializationCheck because the property might not be set yet */
+        if (! isset($this->field)) {
             throw new LogicException(__METHOD__ . ' requires you set a current field using field().');
         }
 

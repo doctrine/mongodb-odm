@@ -23,11 +23,9 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
      *
      * @var class-string|null
      */
-    private $entityClass;
+    private ?string $entityClass;
 
-    /**
-     * @param class-string|null $entityClass
-     */
+    /** @param class-string|null $entityClass */
     public function __construct($objectManager, $entityClass = null)
     {
         if (method_exists(parent::class, 'getEntityClass') && $entityClass !== null) {
@@ -39,7 +37,7 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
                     '2.4',
                     'Passing $entityClass argument to %s::%s() is deprecated and will not be supported in Doctrine ODM 3.0.',
                     self::class,
-                    __METHOD__
+                    __METHOD__,
                 );
             }
 
@@ -65,7 +63,7 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
             'doctrine/mongodb-odm',
             '2.4',
             'Calling %s() is deprecated and will not be supported in Doctrine ODM 3.0.',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->entityClass;
@@ -82,15 +80,13 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
             'doctrine/mongodb-odm',
             '2.4',
             'Calling %s() is deprecated and will not be supported in Doctrine ODM 3.0.',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->entityClass !== null;
     }
 
-    /**
-     * @deprecated no replacement planned
-     */
+    /** @deprecated no replacement planned */
     public function clearsAllEntities(): bool
     {
         if (method_exists(parent::class, 'clearsAllEntities')) {
@@ -101,7 +97,7 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
             'doctrine/mongodb-odm',
             '2.4',
             'Calling %s() is deprecated and will not be supported in Doctrine ODM 3.0.',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->entityClass !== null;
@@ -122,7 +118,7 @@ final class OnClearEventArgs extends BaseOnClearEventArgs
             'doctrine/mongodb-odm',
             '2.4',
             'Calling %s() is deprecated and will not be supported in Doctrine ODM 3.0.',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->entityClass;

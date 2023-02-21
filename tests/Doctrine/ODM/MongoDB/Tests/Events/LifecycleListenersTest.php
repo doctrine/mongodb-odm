@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Events;
 use BadMethodCallException;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -18,8 +19,7 @@ use function get_class;
 
 class LifecycleListenersTest extends BaseTest
 {
-    /** @var MyEventListener */
-    private $listener;
+    private MyEventListener $listener;
 
     private function getDocumentManager(): ?DocumentManager
     {
@@ -223,8 +223,9 @@ class LifecycleListenersTest extends BaseTest
 class MyEventListener
 {
     /** @psalm-var array<string, list<class-string>> */
-    public $called = [];
+    public array $called = [];
 
+    /** @param array{LifecycleEventArgs} $args */
     public function __call(string $method, array $args): void
     {
         $document                = $args[0]->getDocument();
@@ -239,12 +240,9 @@ class MyEventListener
  */
 class PostCollectionLoadEventListener
 {
-    /** @var int */
-    private $at = 0;
+    private int $at = 0;
 
-    /**
-     * @param PostCollectionLoadEventArgs<int, TestEmbeddedDocument> $e
-     */
+    /** @param PostCollectionLoadEventArgs<int, TestEmbeddedDocument> $e */
     public function postCollectionLoad(PostCollectionLoadEventArgs $e): void
     {
         switch ($this->at++) {
@@ -349,9 +347,7 @@ class TestProfile
     public $image;
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class Image
 {
     /**
@@ -374,9 +370,7 @@ class Image
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class Thumbnail
 {
     /**

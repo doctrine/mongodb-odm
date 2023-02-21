@@ -120,6 +120,11 @@ class UnrewindableIteratorTest extends TestCase
         $iterator->toArray();
     }
 
+    /**
+     * @param list<mixed> $items
+     *
+     * @return Generator<mixed>
+     */
     private function getTraversable(array $items): Generator
     {
         foreach ($items as $item) {
@@ -127,6 +132,11 @@ class UnrewindableIteratorTest extends TestCase
         }
     }
 
+    /**
+     * @param array<mixed|Exception> $items
+     *
+     * @return Generator<mixed>
+     */
     private function getTraversableThatThrows(array $items): Generator
     {
         foreach ($items as $item) {

@@ -35,9 +35,7 @@ class ClassMetadataLoadEventTest extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class LoadEventTestDocument
 {
     /**

@@ -18,7 +18,8 @@ class OperatorTest extends BaseTest
     use AggregationOperatorsProviderTrait;
 
     /**
-     * @param Closure|array $args
+     * @param array<string, mixed>           $expected
+     * @param Closure(Expr): mixed[]|mixed[] $args
      *
      * @dataProvider provideExpressionOperators
      */
@@ -50,7 +51,7 @@ class OperatorTest extends BaseTest
                     'dayOfWeek' => ['$dayOfWeek' => '$dateField'],
                 ],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 
@@ -75,7 +76,7 @@ class OperatorTest extends BaseTest
                     'default' => ['$concat' => ['$numElements', ' elements given']],
                 ],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 

@@ -22,11 +22,9 @@ use function ucfirst;
 class CreateCommand extends AbstractCommand
 {
     /** @var string[] */
-    private $createOrder = [self::COLLECTION, self::INDEX];
+    private array $createOrder = [self::COLLECTION, self::INDEX];
 
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function configure()
     {
         parent::configure();
@@ -40,14 +38,10 @@ class CreateCommand extends AbstractCommand
             ->setDescription('Create databases, collections and indexes for your documents');
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $create = array_filter($this->createOrder, static function (string $option) use ($input): bool {
-            return (bool) $input->getOption($option);
-        });
+        $create = array_filter($this->createOrder, static fn (string $option): bool => (bool) $input->getOption($option));
 
         // Default to the full creation order if no options were specified
         $create = empty($create) ? $this->createOrder : $create;
@@ -111,9 +105,7 @@ class CreateCommand extends AbstractCommand
         $sm->ensureIndexes($maxTimeMs, $writeConcern, $background);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function processDocumentProxy(SchemaManager $sm, string $document)
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
@@ -122,9 +114,7 @@ class CreateCommand extends AbstractCommand
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function processProxy(SchemaManager $sm)
     {
         $metadatas = $this->getMetadataFactory()->getAllMetadata();

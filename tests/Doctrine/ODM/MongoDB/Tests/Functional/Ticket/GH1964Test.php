@@ -24,9 +24,7 @@ class GH1964Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH1964Document
 {
     /**

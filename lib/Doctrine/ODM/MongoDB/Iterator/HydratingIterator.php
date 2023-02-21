@@ -19,30 +19,28 @@ use Traversable;
  *
  * @psalm-import-type Hints from UnitOfWork
  *
- * @template TValue
  * @template TDocument of object
- * @template-implements Iterator<TValue>
+ * @template-implements Iterator<TDocument>
  */
 final class HydratingIterator implements Iterator
 {
-    /** @var Generator<mixed, TValue>|null */
+    /** @var Generator<mixed, array<string, mixed>>|null */
     private $iterator;
 
-    /** @var UnitOfWork */
-    private $unitOfWork;
+    private UnitOfWork $unitOfWork;
 
     /** @var ClassMetadata<TDocument> */
-    private $class;
+    private ClassMetadata $class;
 
     /**
      * @var array<int, mixed>
      * @psalm-var Hints
      */
-    private $unitOfWorkHints;
+    private array $unitOfWorkHints;
 
     /**
-     * @param Traversable<mixed, TValue> $traversable
-     * @param ClassMetadata<TDocument>   $class
+     * @param Traversable<mixed, array<string, mixed>> $traversable
+     * @param ClassMetadata<TDocument>                 $class
      * @psalm-param Hints $unitOfWorkHints
      */
     public function __construct(Traversable $traversable, UnitOfWork $unitOfWork, ClassMetadata $class, array $unitOfWorkHints = [])
@@ -58,51 +56,39 @@ final class HydratingIterator implements Iterator
         $this->iterator = null;
     }
 
-    /**
-     * @return TDocument|null
-     */
+    /** @return TDocument|null */
     #[ReturnTypeWillChange]
     public function current()
     {
         return $this->hydrate($this->getIterator()->current());
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     #[ReturnTypeWillChange]
     public function key()
     {
         return $this->getIterator()->key();
     }
 
-    /**
-     * @see http://php.net/iterator.next
-     */
+    /** @see http://php.net/iterator.next */
     public function next(): void
     {
         $this->getIterator()->next();
     }
 
-    /**
-     * @see http://php.net/iterator.rewind
-     */
+    /** @see http://php.net/iterator.rewind */
     public function rewind(): void
     {
         $this->getIterator()->rewind();
     }
 
-    /**
-     * @see http://php.net/iterator.valid
-     */
+    /** @see http://php.net/iterator.valid */
     public function valid(): bool
     {
         return $this->key() !== null;
     }
 
-    /**
-     * @return Generator<mixed, TValue>
-     */
+    /** @return Generator<mixed, array<string, mixed>> */
     private function getIterator(): Generator
     {
         if ($this->iterator === null) {
@@ -123,9 +109,9 @@ final class HydratingIterator implements Iterator
     }
 
     /**
-     * @param Traversable<mixed, TValue> $traversable
+     * @param Traversable<mixed, array<string, mixed>> $traversable
      *
-     * @return Generator<mixed, TValue>
+     * @return Generator<mixed, array<string, mixed>>
      */
     private function wrapTraversable(Traversable $traversable): Generator
     {

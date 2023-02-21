@@ -16,24 +16,20 @@ use function unserialize;
 
 class ValidateCommand extends Command
 {
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function configure()
     {
         $this
             ->setName('odm:schema:validate')
             ->setDescription('Validates if document mapping stays the same after serializing into cache.')
             ->setDefinition([])
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 Validates if document mapping stays the same after serializing into cache.
 EOT
             );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();

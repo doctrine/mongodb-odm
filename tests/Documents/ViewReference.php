@@ -68,17 +68,13 @@ class ViewReference
         return $this->referenceOneViewMappedBy;
     }
 
-    /**
-     * @return Collection<int, UserName>
-     */
+    /** @return Collection<int, UserName> */
     public function getReferenceManyView(): Collection
     {
         return $this->referenceManyView;
     }
 
-    /**
-     * @return Collection<int, UserName>
-     */
+    /** @return Collection<int, UserName> */
     public function getReferenceManyViewMappedBy(): Collection
     {
         return $this->referenceManyViewMappedBy;

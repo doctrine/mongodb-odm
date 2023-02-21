@@ -120,9 +120,7 @@ abstract class HasLifecycleCallbacksSuper
     /** @var string[] */
     public $invoked = [];
 
-    /**
-     * @ODM\PrePersist
-     */
+    /** @ODM\PrePersist */
     public function prePersist(): void
     {
         $this->invoked[] = 'super';
@@ -142,9 +140,7 @@ abstract class HasLifecycleCallbacksSuperAnnotated
     /** @var string[] */
     public $invoked = [];
 
-    /**
-     * @ODM\PrePersist
-     */
+    /** @ODM\PrePersist */
     public function prePersist(): void
     {
         $this->invoked[] = 'super';
@@ -174,9 +170,7 @@ class HasLifecycleCallbacksSubAnnotatedExtendsSuperAnnotated extends HasLifecycl
 /** @ODM\Document */
 class HasLifecycleCallbacksSubOverrideExtendsSuper extends HasLifecycleCallbacksSuper
 {
-    /**
-     * @ODM\PrePersist
-     */
+    /** @ODM\PrePersist */
     public function prePersist(): void
     {
         $this->invoked[] = 'sub';
@@ -186,9 +180,7 @@ class HasLifecycleCallbacksSubOverrideExtendsSuper extends HasLifecycleCallbacks
 /** @ODM\Document */
 class HasLifecycleCallbacksSubOverrideExtendsSuperAnnotated extends HasLifecycleCallbacksSuperAnnotated
 {
-    /**
-     * @ODM\PrePersist
-     */
+    /** @ODM\PrePersist */
     public function prePersist(): void
     {
         $this->invoked[] = 'sub';
@@ -198,9 +190,7 @@ class HasLifecycleCallbacksSubOverrideExtendsSuperAnnotated extends HasLifecycle
 /** @ODM\Document @ODM\HasLifecycleCallbacks */
 class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuper extends HasLifecycleCallbacksSuper
 {
-    /**
-     * @ODM\PrePersist
-     */
+    /** @ODM\PrePersist */
     public function prePersist(): void
     {
         $this->invoked[] = 'sub';
@@ -210,9 +200,7 @@ class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuper extends HasLifecycle
 /** @ODM\Document @ODM\HasLifecycleCallbacks */
 class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuperAnnotated extends HasLifecycleCallbacksSuperAnnotated
 {
-    /**
-     * @ODM\PrePersist
-     */
+    /** @ODM\PrePersist */
     public function prePersist(): void
     {
         $this->invoked[] = 'sub';

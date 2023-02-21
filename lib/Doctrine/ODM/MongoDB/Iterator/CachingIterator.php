@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Iterator;
 
+use Countable;
 use Generator;
 use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 
+use function count;
 use function current;
 use function key;
 use function next;
@@ -26,19 +28,17 @@ use function reset;
  * @template TValue
  * @template-implements Iterator<TValue>
  */
-final class CachingIterator implements Iterator
+final class CachingIterator implements Countable, Iterator
 {
     /** @var array<mixed, TValue> */
-    private $items = [];
+    private array $items = [];
 
     /** @var Generator<mixed, TValue>|null */
-    private $iterator;
+    private ?Generator $iterator;
 
-    /** @var bool */
-    private $iteratorAdvanced = false;
+    private bool $iteratorAdvanced = false;
 
-    /** @var bool */
-    private $iteratorExhausted = false;
+    private bool $iteratorExhausted = false;
 
     /**
      * Initialize the iterator and stores the first item in the cache. This
@@ -55,6 +55,14 @@ final class CachingIterator implements Iterator
         $this->storeCurrentItem();
     }
 
+    /** @see https://php.net/countable.count */
+    public function count(): int
+    {
+        $this->exhaustIterator();
+
+        return count($this->items);
+    }
+
     public function __destruct()
     {
         $this->iterator = null;
@@ -67,27 +75,21 @@ final class CachingIterator implements Iterator
         return $this->items;
     }
 
-    /**
-     * @return TValue|false
-     */
+    /** @return TValue|false */
     #[ReturnTypeWillChange]
     public function current()
     {
         return current($this->items);
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     #[ReturnTypeWillChange]
     public function key()
     {
         return key($this->items);
     }
 
-    /**
-     * @see http://php.net/iterator.next
-     */
+    /** @see http://php.net/iterator.next */
     public function next(): void
     {
         if (! $this->iteratorExhausted) {
@@ -98,9 +100,7 @@ final class CachingIterator implements Iterator
         next($this->items);
     }
 
-    /**
-     * @see http://php.net/iterator.rewind
-     */
+    /** @see http://php.net/iterator.rewind */
     public function rewind(): void
     {
         /* If the iterator has advanced, exhaust it now so that future iteration
@@ -113,9 +113,7 @@ final class CachingIterator implements Iterator
         reset($this->items);
     }
 
-    /**
-     * @see http://php.net/iterator.valid
-     */
+    /** @see http://php.net/iterator.valid */
     public function valid(): bool
     {
         return $this->key() !== null;
@@ -133,9 +131,7 @@ final class CachingIterator implements Iterator
         $this->iterator = null;
     }
 
-    /**
-     * @return Generator<mixed, TValue>
-     */
+    /** @return Generator<mixed, TValue> */
     private function getIterator(): Generator
     {
         if ($this->iterator === null) {

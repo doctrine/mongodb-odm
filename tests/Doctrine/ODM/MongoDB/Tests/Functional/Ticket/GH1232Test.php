@@ -6,15 +6,16 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+use function assert;
+
 class GH1232Test extends BaseTest
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testRemoveDoesNotCauseErrors(): void
     {
         $post = new GH1232Post();
@@ -87,22 +88,22 @@ class GH1232Comment
     public $post;
 }
 
-/**
- * @template-extends DocumentRepository<GH1232Comment>
- */
+/** @template-extends DocumentRepository<GH1232Comment> */
 class GH1232CommentRepository extends DocumentRepository
 {
-    /**
-     * @return array|int|object|null
-     */
+    /** @return Iterator<GH1232Comment> */
     public function getLongComments(GH1232Post $post)
     {
-        return $this
+        $comments = $this
             ->createQueryBuilder()
             ->field('post')
             ->references($post)
             ->sort('_id', 'asc')
             ->getQuery()
             ->execute();
+
+        assert($comments instanceof Iterator);
+
+        return $comments;
     }
 }

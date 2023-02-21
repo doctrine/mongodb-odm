@@ -102,9 +102,7 @@ abstract class ParentDocument
     /** @var Collection<int, ChildDocument>|array<ChildDocument> */
     protected $embeddedChildren;
 
-    /**
-     * @param array{0: ChildDocument, 1: ChildDocument} $children
-     */
+    /** @param array{0: ChildDocument, 1: ChildDocument} $children */
     public function __construct(array $children)
     {
         $this->referencedChild    = $children[0];
@@ -123,9 +121,7 @@ abstract class ParentDocument
         return $this->referencedChild;
     }
 
-    /**
-     * @return Collection<int, ChildDocument>|array<ChildDocument>
-     */
+    /** @return Collection<int, ChildDocument>|array<ChildDocument> */
     public function getReferencedChildren()
     {
         return $this->referencedChildren;
@@ -136,9 +132,7 @@ abstract class ParentDocument
         return $this->embeddedChild;
     }
 
-    /**
-     * @return Collection<int, ChildDocument>|array<ChildDocument>
-     */
+    /** @return Collection<int, ChildDocument>|array<ChildDocument> */
     public function getEmbeddedChildren()
     {
         return $this->embeddedChildren;
@@ -278,6 +272,7 @@ class ChildDocumentWithDiscriminatorComplex extends ChildDocumentWithDiscriminat
     public function __construct(string $type, string $value)
     {
         parent::__construct($type);
+
         $this->value = $value;
     }
 

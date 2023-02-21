@@ -25,13 +25,11 @@ use function count;
 final class StaticProxyFactory implements ProxyFactory
 {
     /** @var UnitOfWork The UnitOfWork this factory is bound to. */
-    private $uow;
+    private UnitOfWork $uow;
 
-    /** @var LifecycleEventManager */
-    private $lifecycleEventManager;
+    private LifecycleEventManager $lifecycleEventManager;
 
-    /** @var LazyLoadingGhostFactory */
-    private $proxyFactory;
+    private LazyLoadingGhostFactory $proxyFactory;
 
     public function __construct(DocumentManager $documentManager)
     {
@@ -51,7 +49,7 @@ final class StaticProxyFactory implements ProxyFactory
                 $this->createInitializer($metadata, $documentPersister),
                 [
                     'skippedProperties' => $this->skippedFieldsFqns($metadata),
-                ]
+                ],
             );
 
         $metadata->setIdentifierValue($ghostObject, $identifier);
@@ -61,22 +59,17 @@ final class StaticProxyFactory implements ProxyFactory
 
     public function generateProxyClasses(array $classes): int
     {
-        $concreteClasses = array_filter($classes, static function (ClassMetadata $metadata): bool {
-            return ! ($metadata->isMappedSuperclass || $metadata->isQueryResultDocument || $metadata->getReflectionClass()->isAbstract());
-        });
+        $concreteClasses = array_filter($classes, static fn (ClassMetadata $metadata): bool => ! ($metadata->isMappedSuperclass || $metadata->isQueryResultDocument || $metadata->getReflectionClass()->isAbstract()));
 
         foreach ($concreteClasses as $metadata) {
             $this
                 ->proxyFactory
                 ->createProxy(
                     $metadata->getName(),
-                    static function (): bool {
-                        // empty closure, serves its purpose, for now
-                        return true;
-                    },
+                    static fn (): bool => true, // empty closure, serves its purpose, for now
                     [
                         'skippedProperties' => $this->skippedFieldsFqns($metadata),
-                    ]
+                    ],
                 );
         }
 

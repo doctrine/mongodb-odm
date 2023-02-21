@@ -44,14 +44,11 @@ use function strpos;
  */
 final class CollectionPersister
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var PersistenceBuilder */
-    private $pb;
+    private PersistenceBuilder $pb;
 
-    /** @var UnitOfWork */
-    private $uow;
+    private UnitOfWork $uow;
 
     public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
     {
@@ -176,7 +173,7 @@ final class CollectionPersister
             $mapping                   = $coll->getMapping();
             $setData                   = $this->pb->prepareAssociatedCollectionValue(
                 $coll,
-                CollectionHelper::usesSet($mapping['strategy'])
+                CollectionHelper::usesSet($mapping['strategy']),
             );
             $setPayload[$propertyPath] = $setData;
         }
@@ -308,7 +305,7 @@ final class CollectionPersister
                 $pushAllPaths,
                 $pushAllPathCollMap,
                 $diffsMap,
-                $options
+                $options,
             );
         }
 
@@ -321,7 +318,7 @@ final class CollectionPersister
             $addToSetPaths,
             $addToSetPathCollMap,
             $diffsMap,
-            $options
+            $options,
         );
     }
 
@@ -396,14 +393,10 @@ final class CollectionPersister
     {
         $mapping = $coll->getMapping();
         if (isset($mapping['embedded'])) {
-            return function ($v) use ($mapping) {
-                return $this->pb->prepareEmbeddedDocumentValue($mapping, $v);
-            };
+            return fn ($v) => $this->pb->prepareEmbeddedDocumentValue($mapping, $v);
         }
 
-        return function ($v) use ($mapping) {
-            return $this->pb->prepareReferencedDocumentValue($mapping, $v);
-        };
+        return fn ($v) => $this->pb->prepareReferencedDocumentValue($mapping, $v);
     }
 
     /**

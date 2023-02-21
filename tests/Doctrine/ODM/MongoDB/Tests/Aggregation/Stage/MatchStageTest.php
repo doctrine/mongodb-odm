@@ -39,9 +39,7 @@ class MatchStageTest extends BaseTest
         self::assertSame([['$match' => ['someField' => 'someValue']]], $builder->getPipeline());
     }
 
-    /**
-     * @dataProvider provideProxiedExprMethods
-     */
+    /** @dataProvider provideProxiedExprMethods */
     public function testProxiedExprMethods(string $method, array $args = []): void
     {
         $expr = $this->getMockQueryExpr();
@@ -114,17 +112,13 @@ class MatchStageTest extends BaseTest
                     'createdAt' => ['$lte' => $mongoDate],
                 ],
             ],
-            $stage->getExpression()
+            $stage->getExpression(),
         );
     }
 
-    /**
-     * @return MockObject&Geometry
-     */
+    /** @return MockObject&Geometry */
     private function getMockGeometry()
     {
-        return $this->getMockBuilder(Geometry::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Geometry::class);
     }
 }

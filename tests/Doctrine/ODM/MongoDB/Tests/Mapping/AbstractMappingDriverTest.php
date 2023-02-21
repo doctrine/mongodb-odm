@@ -200,9 +200,6 @@ abstract class AbstractMappingDriverTest extends BaseTest
         return $class;
     }
 
-    /**
-     * @requires PHP >= 7.4
-     */
     public function testFieldTypeFromReflection(): void
     {
         $class = $this->dm->getClassMetadata(UserTyped::class);
@@ -422,9 +419,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         /* Sort indexes by their first fieldname. This is necessary since the
          * index registration order may differ among drivers.
          */
-        self::assertTrue(usort($indexes, static function (array $a, array $b) {
-            return strcmp(key($a['keys']), key($b['keys']));
-        }));
+        self::assertTrue(usort($indexes, static fn (array $a, array $b) => strcmp(key($a['keys']), key($b['keys']))));
 
         self::assertTrue(isset($indexes[0]['keys']['createdAt']));
         self::assertEquals(1, $indexes[0]['keys']['createdAt']);
@@ -534,7 +529,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'Field "bar" in class "Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverDuplicateDatabaseName" ' .
-            'is mapped to field "baz" in the database, but that name is already in use by field "foo".'
+            'is mapped to field "baz" in the database, but that name is already in use by field "foo".',
         );
         $this->dm->getClassMetadata(AbstractMappingDriverDuplicateDatabaseName::class);
     }
@@ -555,7 +550,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
             'Invalid repository class "%s" for mapped class "%s". It must be an instance of "%s".',
             DocumentRepository::class,
             AbstractMappingDriverViewWithoutRepository::class,
-            ViewRepository::class
+            ViewRepository::class,
         ));
 
         $this->dm->getRepository(AbstractMappingDriverViewWithoutRepository::class);
@@ -568,7 +563,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
             'Invalid repository class "%s" for mapped class "%s". It must be an instance of "%s".',
             DocumentRepository::class,
             AbstractMappingDriverViewWithWrongRepository::class,
-            ViewRepository::class
+            ViewRepository::class,
         ));
 
         $this->dm->getRepository(AbstractMappingDriverViewWithWrongRepository::class);
@@ -579,7 +574,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(sprintf(
             'Class "%s" mapped as view without must have a root class.',
-            AbstractMappingDriverViewWithoutRootClass::class
+            AbstractMappingDriverViewWithoutRootClass::class,
         ));
 
         $this->dm->getClassMetadata(AbstractMappingDriverViewWithoutRootClass::class);
@@ -591,7 +586,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         $this->expectExceptionMessage(sprintf(
             'Root class "%s" for view "%s" could not be found.',
             'Doctrine\ODM\MongoDB\LolNo',
-            AbstractMappingDriverViewWithNonExistingRootClass::class
+            AbstractMappingDriverViewWithNonExistingRootClass::class,
         ));
 
         $this->dm->getClassMetadata(AbstractMappingDriverViewWithNonExistingRootClass::class);
@@ -637,9 +632,7 @@ abstract class AbstractMappingDriverTest extends BaseTest
         ], $metadata->fieldMappings['name']);
     }
 
-    /**
-     * @requires PHP 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumType(): void
     {
         $metadata = $this->dm->getClassMetadata(Card::class);
@@ -803,33 +796,25 @@ class AbstractMappingDriverUser
     #[ODM\Field(type: 'collection')]
     public $roles = [];
 
-    /**
-     * @ODM\PrePersist
-     */
+    /** @ODM\PrePersist */
     #[ODM\PrePersist]
     public function doStuffOnPrePersist(): void
     {
     }
 
-    /**
-     * @ODM\PrePersist
-     */
+    /** @ODM\PrePersist */
     #[ODM\PrePersist]
     public function doOtherStuffOnPrePersistToo(): void
     {
     }
 
-    /**
-     * @ODM\PostPersist
-     */
+    /** @ODM\PostPersist */
     #[ODM\PostPersist]
     public function doStuffOnPostPersist(): void
     {
     }
 
-    /**
-     * @param ClassMetadata<AbstractMappingDriverUser> $metadata
-     */
+    /** @param ClassMetadata<AbstractMappingDriverUser> $metadata */
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
@@ -923,9 +908,7 @@ class AbstractMappingDriverUser
     }
 }
 
-/**
- * @template-extends ArrayCollection<int, Phonenumber>
- */
+/** @template-extends ArrayCollection<int, Phonenumber> */
 class PhonenumberCollection extends ArrayCollection
 {
 }
@@ -956,9 +939,7 @@ class InvalidMappingDocument
     public $id;
 }
 
-/**
- * @ODM\File(chunkSizeBytes=12345)
- */
+/** @ODM\File(chunkSizeBytes=12345) */
 #[ODM\File(chunkSizeBytes: 12345)]
 class AbstractMappingDriverFile
 {
@@ -1022,9 +1003,7 @@ class AbstractMappingDriverFileMetadata
     public $contentType;
 }
 
-/**
- * @ODM\File(repositoryClass=AbstractMappingDriverGridFSRepository::class)
- */
+/** @ODM\File(repositoryClass=AbstractMappingDriverGridFSRepository::class) */
 #[ODM\File(repositoryClass: AbstractMappingDriverGridFSRepository::class)]
 class AbstractMappingDriverFileWithCustomRepository
 {
@@ -1037,9 +1016,7 @@ class AbstractMappingDriverFileWithCustomRepository
     public $id;
 }
 
-/**
- * @template-extends DefaultGridFSRepository<AbstractMappingDriverFileWithCustomRepository>
- */
+/** @template-extends DefaultGridFSRepository<AbstractMappingDriverFileWithCustomRepository> */
 class AbstractMappingDriverGridFSRepository extends DefaultGridFSRepository
 {
 }
@@ -1065,9 +1042,7 @@ class AbstractMappingDriverSuperClass
     protected $override;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 #[ODM\Document]
 class AbstractMappingDriverDuplicateDatabaseName extends AbstractMappingDriverSuperClass
 {
@@ -1096,9 +1071,7 @@ class AbstractMappingDriverDuplicateDatabaseName extends AbstractMappingDriverSu
     public $bar;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 #[ODM\Document]
 class AbstractMappingDriverDuplicateDatabaseNameNotSaved extends AbstractMappingDriverSuperClass
 {
@@ -1127,9 +1100,7 @@ class AbstractMappingDriverDuplicateDatabaseNameNotSaved extends AbstractMapping
     public $bar;
 }
 
-/**
- * @ODM\View(rootClass=AbstractMappingDriverUser::class)
- */
+/** @ODM\View(rootClass=AbstractMappingDriverUser::class) */
 #[ODM\View(rootClass: AbstractMappingDriverUser::class)]
 class AbstractMappingDriverViewWithoutRepository
 {
@@ -1150,9 +1121,7 @@ class AbstractMappingDriverViewWithoutRepository
     public $name;
 }
 
-/**
- * @ODM\View(repositoryClass=DocumentRepository::class, rootClass=AbstractMappingDriverUser::class)
- */
+/** @ODM\View(repositoryClass=DocumentRepository::class, rootClass=AbstractMappingDriverUser::class) */
 #[ODM\View(repositoryClass: DocumentRepository::class, rootClass: AbstractMappingDriverUser::class)]
 class AbstractMappingDriverViewWithWrongRepository
 {
@@ -1173,9 +1142,7 @@ class AbstractMappingDriverViewWithWrongRepository
     public $name;
 }
 
-/**
- * @ODM\View(repositoryClass=AbstractMappingDriverViewRepository::class)
- */
+/** @ODM\View(repositoryClass=AbstractMappingDriverViewRepository::class) */
 #[ODM\View(repositoryClass: AbstractMappingDriverViewRepository::class)]
 class AbstractMappingDriverViewWithoutRootClass
 {
@@ -1196,9 +1163,7 @@ class AbstractMappingDriverViewWithoutRootClass
     public $name;
 }
 
-/**
- * @ODM\View(repositoryClass=AbstractMappingDriverViewRepository::class, rootClass="Doctrine\ODM\MongoDB\LolNo")
- */
+/** @ODM\View(repositoryClass=AbstractMappingDriverViewRepository::class, rootClass="Doctrine\ODM\MongoDB\LolNo") */
 #[ODM\View(repositoryClass: AbstractMappingDriverViewRepository::class, rootClass: 'Doctrine\ODM\MongoDB\LolNo')]
 class AbstractMappingDriverViewWithNonExistingRootClass
 {

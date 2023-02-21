@@ -12,14 +12,11 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Unwind extends Stage
 {
-    /** @var string */
-    private $fieldName;
+    private string $fieldName;
 
-    /** @var string */
-    private $includeArrayIndex;
+    private ?string $includeArrayIndex = null;
 
-    /** @var bool */
-    private $preserveNullAndEmptyArrays = false;
+    private bool $preserveNullAndEmptyArrays = false;
 
     public function __construct(Builder $builder, string $fieldName)
     {

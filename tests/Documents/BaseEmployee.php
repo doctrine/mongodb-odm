@@ -90,6 +90,7 @@ abstract class BaseEmployee
         return $this;
     }
 
+    /** @return string[] */
     public function getNotes(): array
     {
         return $this->notes;

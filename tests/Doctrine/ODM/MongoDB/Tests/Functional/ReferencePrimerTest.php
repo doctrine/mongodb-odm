@@ -69,9 +69,7 @@ class ReferencePrimerTest extends BaseTest
             ->toArray();
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testFieldPrimingCanBeToggled(): void
     {
         $this->dm->createQueryBuilder(User::class)
@@ -480,22 +478,22 @@ class ReferencePrimerTest extends BaseTest
             new Option(
                 'Lens1',
                 new Money(75.00, new Currency('USD', 1)),
-                new StockItem('Filter1', new Money(50.00, new Currency('USD', 1)), 1)
-            )
+                new StockItem('Filter1', new Money(50.00, new Currency('USD', 1)), 1),
+            ),
         );
         $product->addOption(
             new Option(
                 'Lens2',
                 new Money(120.00, new Currency('USD', 1)),
-                new StockItem('Filter2', new Money(100.00, new Currency('USD', 1)), 1)
-            )
+                new StockItem('Filter2', new Money(100.00, new Currency('USD', 1)), 1),
+            ),
         );
         $product->addOption(
             new Option(
                 'Lens3',
                 new Money(180.00, new Currency('USD', 1)),
-                new StockItem('Filter3', new Money(0.01, new Currency('USD', 1)), 1)
-            )
+                new StockItem('Filter3', new Money(0.01, new Currency('USD', 1)), 1),
+            ),
         );
 
         $this->dm->persist($product);

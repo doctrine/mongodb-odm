@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
@@ -19,8 +20,7 @@ use function get_class;
 
 class CommitImprovementTest extends BaseTest
 {
-    /** @var CommandLogger */
-    private $logger;
+    private CommandLogger $logger;
 
     public function setUp(): void
     {
@@ -149,10 +149,9 @@ class CommitImprovementTest extends BaseTest
 class PhonenumberMachine implements EventSubscriber
 {
     /** @var string[] */
-    private $numbers = ['12345678', '87654321'];
+    private array $numbers = ['12345678', '87654321'];
 
-    /** @var int */
-    private $numberId = 0;
+    private int $numberId = 0;
 
     public function getSubscribedEvents(): array
     {
@@ -162,6 +161,7 @@ class PhonenumberMachine implements EventSubscriber
         ];
     }
 
+    /** @param array{LifecycleEventArgs} $args */
     public function __call(string $eventName, array $args): void
     {
         $document = $args[0]->getDocument();
@@ -183,7 +183,7 @@ class PhonenumberMachine implements EventSubscriber
         $dm = $args[0]->getDocumentManager();
         $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet(
             $dm->getClassMetadata(get_class($document)),
-            $document
+            $document,
         );
     }
 }

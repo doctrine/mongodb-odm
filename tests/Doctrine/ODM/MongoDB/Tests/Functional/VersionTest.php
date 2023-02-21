@@ -44,9 +44,7 @@ class VersionTest extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class VersionedDocument
 {
     /**
@@ -84,9 +82,7 @@ class VersionedDocument
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class VersionedEmbeddedDocument
 {
     /**

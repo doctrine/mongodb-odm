@@ -14,17 +14,16 @@ use function floor;
 use function gc_collect_cycles;
 use function log;
 use function memory_get_usage;
-use function pow;
 use function round;
 use function sprintf;
 
-/**
- * @group performance
- */
+/** @group performance */
 class MemoryUsageTest extends BaseTest
 {
     /**
      * Output for jwage "Memory increased by 14.09 kb"
+     *
+     * @doesNotPerformAssertions
      */
     public function testMemoryUsage(): void
     {
@@ -57,13 +56,11 @@ class MemoryUsageTest extends BaseTest
         echo sprintf('Memory increased by %s', $this->formatMemory($increase));
     }
 
-    /**
-     * @param int|float $size
-     */
+    /** @param int|float $size */
     private function formatMemory($size): string
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
 
-        return round($size / pow(1024, ($i = (int) floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
+        return round($size / 1024 ** ($i = (int) floor(log($size, 1024))), 2) . ' ' . $unit[$i];
     }
 }

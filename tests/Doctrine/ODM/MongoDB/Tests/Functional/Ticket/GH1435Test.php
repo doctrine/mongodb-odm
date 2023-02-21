@@ -67,9 +67,7 @@ class GH1435Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document()
- */
+/** @ODM\Document() */
 class GH1435Document
 {
     /**
@@ -87,9 +85,7 @@ class GH1435Document
     public $name;
 }
 
-/**
- * @ODM\Document()
- */
+/** @ODM\Document() */
 class GH1435DocumentIncrement
 {
     /**

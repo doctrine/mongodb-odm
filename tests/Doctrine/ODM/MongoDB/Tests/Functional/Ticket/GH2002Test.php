@@ -14,6 +14,8 @@ use function sprintf;
 class GH2002Test extends BaseTest
 {
     /**
+     * @param array<string, mixed> $expectedReference
+     *
      * @dataProvider getValidReferenceData
      */
     public function testBuildingReferenceCreatesCorrectStructure(array $expectedReference, object $document): void
@@ -58,9 +60,7 @@ class GH2002Test extends BaseTest
         ];
     }
 
-    /**
-     * @dataProvider getInvalidReferenceData
-     */
+    /** @dataProvider getInvalidReferenceData */
     public function testBuildingReferenceForUnlistedClassCausesException(string $expectedExceptionMessage, object $document): void
     {
         $this->dm->persist($document);
@@ -115,16 +115,12 @@ class GH2002DocumentA
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2002DocumentB extends GH2002DocumentA
 {
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2002ReferenceWithoutTargetDocument
 {
     /**
@@ -147,9 +143,7 @@ class GH2002ReferenceWithoutTargetDocument
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2002ReferenceWithoutTargetDocumentWithDiscriminatorField
 {
     /**
@@ -172,9 +166,7 @@ class GH2002ReferenceWithoutTargetDocumentWithDiscriminatorField
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2002ReferenceWithDiscriminatorField
 {
     /**
@@ -197,9 +189,7 @@ class GH2002ReferenceWithDiscriminatorField
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2002ReferenceWithPartialDiscriminatorMap
 {
     /**
@@ -250,9 +240,7 @@ class GH2002DocumentWithDiscriminatorMapA
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2002DocumentWithDiscriminatorMapB extends GH2002DocumentWithDiscriminatorMapA
 {
 }

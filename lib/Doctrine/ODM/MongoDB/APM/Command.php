@@ -13,8 +13,7 @@ use Throwable;
 
 final class Command
 {
-    /** @var CommandStartedEvent */
-    private $startedEvent;
+    private CommandStartedEvent $startedEvent;
 
     /** @var CommandSucceededEvent|CommandFailedEvent */
     private $finishedEvent;
@@ -45,9 +44,7 @@ final class Command
         return $instance;
     }
 
-    /**
-     * @param CommandSucceededEvent|CommandFailedEvent $finishedEvent
-     */
+    /** @param CommandSucceededEvent|CommandFailedEvent $finishedEvent */
     private static function checkRequestIds(CommandStartedEvent $startedEvent, $finishedEvent): void
     {
         if ($startedEvent->getRequestId() !== $finishedEvent->getRequestId()) {

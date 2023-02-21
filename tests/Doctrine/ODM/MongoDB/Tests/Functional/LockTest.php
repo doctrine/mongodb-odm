@@ -285,9 +285,7 @@ class LockTest extends BaseTest
         $this->dm->flush();
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testLockVersionedDocument(): void
     {
         $article        = new LockInt();
@@ -532,7 +530,7 @@ class LockTest extends BaseTest
         // simulate another request updating document in the meantime
         $this->dm->getDocumentCollection(LockInt::class)->updateOne(
             ['_id' => new ObjectId($d->id)],
-            ['$set' => ['version' => 2]]
+            ['$set' => ['version' => 2]],
         );
 
         $d->issues->add(new Issue('oops', 'version mismatch'));
@@ -552,7 +550,7 @@ class LockTest extends BaseTest
         // simulate another request updating document in the meantime
         $this->dm->getDocumentCollection(LockInt::class)->updateOne(
             ['_id' => new ObjectId($d->id)],
-            ['$set' => ['version' => 2]]
+            ['$set' => ['version' => 2]],
         );
 
         self::assertInstanceOf(PersistentCollectionInterface::class, $d->issues);
@@ -601,9 +599,7 @@ abstract class AbstractVersionBase
         $this->title  = $title;
     }
 
-    /**
-     * @return ObjectId|string|null
-     */
+    /** @return ObjectId|string|null */
     public function getId()
     {
         return $this->id;
@@ -614,9 +610,7 @@ abstract class AbstractVersionBase
         return $this->title;
     }
 
-    /**
-     * @return int|string|DateTime|DateTimeImmutable|null
-     */
+    /** @return int|string|DateTime|DateTimeImmutable|null */
     public function getVersion()
     {
         return $this->version;

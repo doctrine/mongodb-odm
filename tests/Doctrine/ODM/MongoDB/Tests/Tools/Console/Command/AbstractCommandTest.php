@@ -21,7 +21,7 @@ abstract class AbstractCommandTest extends BaseTest
         $helperSet   = new HelperSet(
             [
                 'dm' => new DocumentManagerHelper($this->dm),
-            ]
+            ],
         );
         $application = new Application('Doctrine MongoDB ODM');
         $application->setHelperSet($helperSet);
@@ -31,6 +31,7 @@ abstract class AbstractCommandTest extends BaseTest
     public function tearDown(): void
     {
         parent::tearDown();
+
         unset($this->application);
     }
 }

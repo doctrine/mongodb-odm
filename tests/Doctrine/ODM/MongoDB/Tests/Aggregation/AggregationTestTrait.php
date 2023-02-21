@@ -17,23 +17,15 @@ trait AggregationTestTrait
         return new Builder($this->dm, $documentName);
     }
 
-    /**
-     * @return MockObject|AggregationExpr
-     */
+    /** @return MockObject|AggregationExpr */
     protected function getMockAggregationExpr()
     {
-        return $this->getMockBuilder(AggregationExpr::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(AggregationExpr::class);
     }
 
-    /**
-     * @return MockObject|QueryExpr
-     */
+    /** @return MockObject|QueryExpr */
     protected function getMockQueryExpr()
     {
-        return $this->getMockBuilder(QueryExpr::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(QueryExpr::class);
     }
 }

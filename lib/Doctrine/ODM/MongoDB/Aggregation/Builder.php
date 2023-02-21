@@ -34,36 +34,26 @@ class Builder
 {
     /**
      * The DocumentManager instance for this query
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The ClassMetadata instance.
-     *
-     * @var ClassMetadata
      */
-    private $class;
+    private ClassMetadata $class;
 
-    /**
-     * @var string
-     * @psalm-var class-string
-     */
-    private $hydrationClass;
+    /** @psalm-var class-string */
+    private ?string $hydrationClass = null;
 
     /**
      * The Collection instance.
-     *
-     * @var Collection
      */
-    private $collection;
+    private Collection $collection;
 
     /** @var Stage[] */
-    private $stages = [];
+    private array $stages = [];
 
-    /** @var bool */
-    private $rewindable = true;
+    private bool $rewindable = true;
 
     /**
      * Create a new aggregation builder.
@@ -184,7 +174,7 @@ class Builder
             '2.2',
             'Using "%s" is deprecated. Please use "%s::getAggregation()" instead.',
             __METHOD__,
-            self::class
+            self::class,
         );
 
         return $this->getAggregation($options)->getIterator();
@@ -272,15 +262,13 @@ class Builder
             throw new TypeError(sprintf(
                 'Argument 1 passed to %s must be of the type bool, %s given',
                 __METHOD__,
-                gettype($applyFilters)
+                gettype($applyFilters),
             ));
         }
 
         $pipeline = array_map(
-            static function (Stage $stage) {
-                return $stage->getExpression();
-            },
-            $this->stages
+            static fn (Stage $stage) => $stage->getExpression(),
+            $this->stages,
         );
 
         if ($this->getStage(0) instanceof Stage\IndexStats) {

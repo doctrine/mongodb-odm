@@ -203,7 +203,7 @@ class ExprTest extends BaseTest
         self::assertEquals(
             ['profile.$id' => $profile->getProfileId()],
             $expr->getQuery(),
-            '->references() uses just $id if a targetDocument is set'
+            '->references() uses just $id if a targetDocument is set',
         );
     }
 
@@ -223,7 +223,7 @@ class ExprTest extends BaseTest
                 'referenceToAnything.$ref' => 'Profile',
             ],
             $expr->getQuery(),
-            '->references() uses all keys if no targetDocument is set'
+            '->references() uses all keys if no targetDocument is set',
         );
     }
 
@@ -242,7 +242,7 @@ class ExprTest extends BaseTest
                 'referenceToAnythingWithoutDb.$ref' => 'Profile',
             ],
             $expr->getQuery(),
-            '->references() uses some keys if storeAs=dbRef is set'
+            '->references() uses some keys if storeAs=dbRef is set',
         );
     }
 
@@ -409,7 +409,8 @@ class ExprTest extends BaseTest
     }
 
     /**
-     * @param mixed $point
+     * @param Point|array<string, mixed> $point
+     * @param array<string, mixed>       $expected
      *
      * @dataProvider provideGeoJsonPoint
      */
@@ -430,7 +431,8 @@ class ExprTest extends BaseTest
     }
 
     /**
-     * @param mixed $point
+     * @param Point|array<string, mixed> $point
+     * @param array<string, mixed>       $expected
      *
      * @dataProvider provideGeoJsonPoint
      */
@@ -544,7 +546,8 @@ class ExprTest extends BaseTest
     }
 
     /**
-     * @param mixed $geometry
+     * @param Polygon|array<string, array<string, mixed>> $geometry
+     * @param array<string, mixed>                        $expected
      *
      * @dataProvider provideGeoJsonPolygon
      */
@@ -572,7 +575,8 @@ class ExprTest extends BaseTest
     }
 
     /**
-     * @param mixed $geometry
+     * @param Polygon|array<string, array<string, mixed>> $geometry
+     * @param array<string, mixed>                        $expected
      *
      * @dataProvider provideGeoJsonPolygon
      */
@@ -700,13 +704,13 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $json
+     *
      * @return MockObject&Point
      */
     private function getMockPoint(array $json)
     {
-        $point = $this->getMockBuilder(Point::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $point = $this->createMock(Point::class);
 
         $point->expects($this->once())
             ->method('jsonSerialize')
@@ -716,13 +720,13 @@ class ExprTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $json
+     *
      * @return MockObject&Polygon
      */
     private function getMockPolygon(array $json)
     {
-        $point = $this->getMockBuilder(Polygon::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $point = $this->createMock(Polygon::class);
 
         $point->expects($this->once())
             ->method('jsonSerialize')

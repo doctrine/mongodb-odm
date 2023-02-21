@@ -20,9 +20,7 @@ final class PersistentCollection implements PersistentCollectionInterface
     /** @use PersistentCollectionTrait<TKey, T> */
     use PersistentCollectionTrait;
 
-    /**
-     * @param BaseCollection<TKey, T> $coll
-     */
+    /** @param BaseCollection<TKey, T> $coll */
     public function __construct(BaseCollection $coll, DocumentManager $dm, UnitOfWork $uow)
     {
         $this->coll = $coll;

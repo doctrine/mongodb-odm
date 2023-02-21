@@ -97,7 +97,7 @@ class BucketTest extends BaseTest
                     ],
                 ],
             ],
-            $builder->getPipeline()
+            $builder->getPipeline(),
         );
     }
 }

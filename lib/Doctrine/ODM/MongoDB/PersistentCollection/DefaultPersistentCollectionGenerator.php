@@ -45,17 +45,13 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
 {
     /**
      * The namespace that contains all persistent collection classes.
-     *
-     * @var string
      */
-    private $collectionNamespace;
+    private string $collectionNamespace;
 
     /**
      * The directory that contains all persistent collection classes.
-     *
-     * @var string
      */
-    private $collectionDir;
+    private string $collectionDir;
 
     public function __construct(string $collectionDir, string $collectionNs)
     {
@@ -113,9 +109,7 @@ final class DefaultPersistentCollectionGenerator implements PersistentCollection
         return $className;
     }
 
-    /**
-     * @param string|false $fileName Filename to write collection class code or false to eval it.
-     */
+    /** @param string|false $fileName Filename to write collection class code or false to eval it. */
     private function generateCollectionClass(string $for, string $targetFqcn, $fileName): void
     {
         $exploded  = explode('\\', $targetFqcn);
@@ -154,7 +148,7 @@ class $class extends \\$for implements \\Doctrine\\ODM\\MongoDB\\PersistentColle
 
 CODE;
         $rc        = new ReflectionClass($for);
-        $rt        = new ReflectionClass('Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionTrait');
+        $rt        = new ReflectionClass(PersistentCollectionTrait::class);
         foreach ($rc->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             if (
                 $rt->hasMethod($method->name) ||
@@ -281,7 +275,7 @@ CODE;
 
                 return $name . '$' . $parameter->name;
             },
-            $parameters
+            $parameters,
         );
     }
 
@@ -302,19 +296,15 @@ CODE;
     ): string {
         if ($type instanceof ReflectionUnionType) {
             return implode('|', array_map(
-                function (ReflectionType $unionedType) use ($method, $parameter) {
-                    return $this->formatType($unionedType, $method, $parameter);
-                },
-                $type->getTypes()
+                fn (ReflectionType $unionedType) => $this->formatType($unionedType, $method, $parameter),
+                $type->getTypes(),
             ));
         }
 
         if ($type instanceof ReflectionIntersectionType) {
             return implode('&', array_map(
-                function (ReflectionType $intersectedType) use ($method, $parameter) {
-                    return $this->formatType($intersectedType, $method, $parameter);
-                },
-                $type->getTypes()
+                fn (ReflectionType $intersectedType) => $this->formatType($intersectedType, $method, $parameter),
+                $type->getTypes(),
             ));
         }
 
@@ -339,13 +329,13 @@ CODE;
                 throw PersistentCollectionException::invalidParameterTypeHint(
                     $method->getDeclaringClass()->getName(),
                     $method->getName(),
-                    $parameter->getName()
+                    $parameter->getName(),
                 );
             }
 
             throw PersistentCollectionException::invalidReturnTypeHint(
                 $method->getDeclaringClass()->getName(),
-                $method->getName()
+                $method->getName(),
             );
         }
 

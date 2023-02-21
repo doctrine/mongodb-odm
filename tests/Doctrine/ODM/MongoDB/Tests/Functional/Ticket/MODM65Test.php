@@ -29,9 +29,7 @@ class MODM65Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document(collection="modm65_users")
- */
+/** @ODM\Document(collection="modm65_users") */
 class MODM65User
 {
     /**
@@ -54,9 +52,7 @@ class MODM65User
     public $socialNetworkUser;
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class MODM65SocialNetworkUser
 {
     /**

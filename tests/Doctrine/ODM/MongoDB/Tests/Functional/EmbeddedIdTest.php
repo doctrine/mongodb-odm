@@ -40,7 +40,7 @@ class EmbeddedIdTest extends BaseTest
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             'Doctrine\ODM\MongoDB\Tests\Functional\DefaultIdStrategyNoneEmbeddedDocument uses NONE identifier ' .
-            'generation strategy but no identifier was provided when persisting.'
+            'generation strategy but no identifier was provided when persisting.',
         );
         $this->dm->persist($user);
     }
@@ -53,7 +53,7 @@ class EmbeddedIdTest extends BaseTest
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             'Doctrine\ODM\MongoDB\Tests\Functional\DefaultIdStrategyNoneEmbeddedDocument uses NONE identifier ' .
-            'generation strategy but no identifier was provided when persisting.'
+            'generation strategy but no identifier was provided when persisting.',
         );
         $this->dm->persist($user);
     }

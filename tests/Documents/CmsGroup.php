@@ -7,9 +7,7 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class CmsGroup
 {
     /**
@@ -48,9 +46,7 @@ class CmsGroup
         $this->users[] = $user;
     }
 
-    /**
-     * @return Collection<int, CmsUser>
-     */
+    /** @return Collection<int, CmsUser> */
     public function getUsers(): Collection
     {
         return $this->users;

@@ -18,8 +18,7 @@ abstract class AbstractOutput extends Stage
     /** @var Stage\AbstractBucket */
     protected $bucket;
 
-    /** @var Expr */
-    private $expr;
+    private Expr $expr;
 
     public function __construct(Builder $builder, Stage\AbstractBucket $bucket)
     {

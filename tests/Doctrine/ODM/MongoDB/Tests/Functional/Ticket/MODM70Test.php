@@ -31,9 +31,7 @@ class MODM70Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Avatar
 {
     /**
@@ -67,9 +65,7 @@ class Avatar
      */
     protected $avatarParts;
 
-    /**
-     * @param AvatarPart[] $avatarParts
-     */
+    /** @param AvatarPart[] $avatarParts */
     public function __construct(string $name, int $sex, ?array $avatarParts = null)
     {
         $this->name        = $name;
@@ -102,9 +98,7 @@ class Avatar
         $this->sex = $sex;
     }
 
-    /**
-     * @return Collection<int, AvatarPart>|array<AvatarPart>|null
-     */
+    /** @return Collection<int, AvatarPart>|array<AvatarPart>|null */
     public function getAvatarParts()
     {
         return $this->avatarParts;
@@ -115,9 +109,7 @@ class Avatar
         $this->avatarParts[] = $part;
     }
 
-    /**
-     * @param AvatarPart[] $parts
-     */
+    /** @param AvatarPart[] $parts */
     public function setAvatarParts(array $parts): void
     {
         $this->avatarParts = $parts;
@@ -134,9 +126,7 @@ class Avatar
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class AvatarPart
 {
     /**

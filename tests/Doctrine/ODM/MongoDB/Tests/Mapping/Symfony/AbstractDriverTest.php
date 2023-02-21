@@ -16,13 +16,10 @@ use function sys_get_temp_dir;
 use function touch;
 use function unlink;
 
-/**
- * @group DDC-1418
- */
+/** @group DDC-1418 */
 abstract class AbstractDriverTest extends TestCase
 {
-    /** @var string */
-    protected $dir;
+    protected string $dir;
 
     public function testFindMappingFile(): void
     {
@@ -93,6 +90,8 @@ abstract class AbstractDriverTest extends TestCase
     abstract protected function getFileExtension(): string;
 
     /**
+     * @param string[] $paths
+     *
      * @return FileDriver
      */
     abstract protected function getDriver(array $paths = []);

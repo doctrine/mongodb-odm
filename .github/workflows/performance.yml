@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.3"
+          - "7.4"
 
     services:
       mongodb:
@@ -60,6 +60,5 @@ jobs:
           name: composer.lock
           path: composer.lock
 
-      # https://github.com/doctrine/.github/issues/3
-      - name: "Run PHP_CodeSniffer"
+      - name: "Run PHPBench"
         run: "vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate"

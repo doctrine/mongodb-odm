@@ -8,12 +8,14 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+/** @psalm-import-type SortShape from Sort */
 class SortTest extends BaseTest
 {
     use AggregationTestTrait;
 
     /**
      * @param string|array<string, string> $field
+     * @psalm-param SortShape $expectedSort
      *
      * @dataProvider provideSortOptions
      */
@@ -26,6 +28,7 @@ class SortTest extends BaseTest
 
     /**
      * @param string|array<string, string> $field
+     * @psalm-param SortShape $expectedSort
      *
      * @dataProvider provideSortOptions
      */

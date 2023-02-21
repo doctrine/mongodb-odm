@@ -16,15 +16,13 @@ class GH850Test extends BaseTest
         $this->dm->persist($d);
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            'Expected object, found "" in Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH850Document::refs'
+            'Expected object, found "" in Doctrine\ODM\MongoDB\Tests\Functional\Ticket\GH850Document::refs',
         );
         $this->dm->flush();
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH850Document
 {
     /**

@@ -143,9 +143,6 @@ class ClassMetadataTest extends BaseTest
         self::assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
     }
 
-    /**
-     * @requires PHP >= 7.4
-     */
     public function testFieldTypeFromReflection(): void
     {
         $cm = new ClassMetadata(UserTyped::class);
@@ -185,9 +182,7 @@ class ClassMetadataTest extends BaseTest
         self::assertEquals(CustomCollection::class, $cm->getAssociationCollectionClass('referenceMany'));
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumTypeFromReflection(): void
     {
         $cm = new ClassMetadata(Card::class);
@@ -208,9 +203,7 @@ class ClassMetadataTest extends BaseTest
         self::assertFalse($cm->isNullable('nullableSuit'));
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumReflectionPropertySerialization(): void
     {
         $cm = new ClassMetadata(Card::class);
@@ -224,23 +217,19 @@ class ClassMetadataTest extends BaseTest
         self::assertInstanceOf(EnumReflectionProperty::class, $cm->reflFields['suit']);
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumTypeFromReflectionMustBeBacked(): void
     {
         $cm = new ClassMetadata(Card::class);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-backed enum Documents81\SuitNonBacked: Documents81\Card::suitNonBacked'
+            'Attempting to map a non-backed enum Documents81\SuitNonBacked: Documents81\Card::suitNonBacked',
         );
         $cm->mapField(['fieldName' => 'suitNonBacked']);
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumTypeMustPointToAnEnum(): void
     {
         $object = new class {
@@ -252,7 +241,7 @@ class ClassMetadataTest extends BaseTest
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-enum type Documents81\Card as an enum: '
+            'Attempting to map a non-enum type Documents81\Card as an enum: ',
         );
         $cm->mapField([
             'fieldName' => 'enum',
@@ -260,9 +249,7 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testEnumTypeMustPointToABackedEnum(): void
     {
         $object = new class {
@@ -274,7 +261,7 @@ class ClassMetadataTest extends BaseTest
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-backed enum Documents81\SuitNonBacked: '
+            'Attempting to map a non-backed enum Documents81\SuitNonBacked: ',
         );
         $cm->mapField([
             'fieldName' => 'enum',
@@ -282,9 +269,7 @@ class ClassMetadataTest extends BaseTest
         ]);
     }
 
-    /**
-     * @group DDC-115
-     */
+    /** @group DDC-115 */
     public function testMapAssocationInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
@@ -305,7 +290,7 @@ class ClassMetadataTest extends BaseTest
             [
                 'fieldName' => 'groups',
                 'targetDocument' => CmsGroup::class,
-            ]
+            ],
         );
 
         $assoc = $cm->fieldMappings['groups'];
@@ -319,15 +304,13 @@ class ClassMetadataTest extends BaseTest
             [
                 'fieldName' => 'groups',
                 'targetDocument' => null,
-            ]
+            ],
         );
 
         self::assertNull($cm->getAssociationTargetClass('groups'));
     }
 
-    /**
-     * @group DDC-115
-     */
+    /** @group DDC-115 */
     public function testSetDiscriminatorMapInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
@@ -339,9 +322,7 @@ class ClassMetadataTest extends BaseTest
         self::assertEquals(DoctrineGlobal_User::class, $cm->discriminatorMap['foo']);
     }
 
-    /**
-     * @group DDC-115
-     */
+    /** @group DDC-115 */
     public function testSetSubClassesInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
@@ -481,7 +462,7 @@ class ClassMetadataTest extends BaseTest
         self::assertEquals(
             ClassMetadata::DEFAULT_DISCRIMINATOR_FIELD,
             $mapping['discriminatorField'],
-            'Default discriminator field is set for associations without targetDocument and discriminatorField options'
+            'Default discriminator field is set for associations without targetDocument and discriminatorField options',
         );
 
         $mapping = $cm->getFieldMapping('assocWithTargetDocument');
@@ -489,7 +470,7 @@ class ClassMetadataTest extends BaseTest
         self::assertArrayNotHasKey(
             'discriminatorField',
             $mapping,
-            'Default discriminator field is not set for associations with targetDocument option'
+            'Default discriminator field is not set for associations with targetDocument option',
         );
 
         $mapping = $cm->getFieldMapping('assocWithDiscriminatorField');
@@ -497,7 +478,7 @@ class ClassMetadataTest extends BaseTest
         self::assertEquals(
             'type',
             $mapping['discriminatorField'],
-            'Default discriminator field is not set for associations with discriminatorField option'
+            'Default discriminator field is not set for associations with discriminatorField option',
         );
     }
 
@@ -606,7 +587,7 @@ class ClassMetadataTest extends BaseTest
         $class = new ClassMetadata(EmbedWithCascadeTest::class);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Cascade on Doctrine\ODM\MongoDB\Tests\Mapping\EmbedWithCascadeTest::address is not allowed.'
+            'Cascade on Doctrine\ODM\MongoDB\Tests\Mapping\EmbedWithCascadeTest::address is not allowed.',
         );
         $class->mapOneEmbedded([
             'fieldName' => 'address',
@@ -692,7 +673,7 @@ class ClassMetadataTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             '\'repositoryMethod\' used on \'assoc\' in class \'stdClass\' can not be combined with skip, ' .
-            'limit or sort.'
+            'limit or sort.',
         );
         $cm->mapField([
             'fieldName' => 'assoc',
@@ -764,6 +745,8 @@ class ClassMetadataTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed> $config
+     *
      * @dataProvider provideOwningAndInversedRefsNeedTargetDocument
      */
     public function testOwningAndInversedRefsNeedTargetDocument(array $config): void
@@ -826,7 +809,7 @@ class ClassMetadataTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'ReferenceMany\'s sort can not be used with addToSet and pushAll strategies, ' .
-            'pushAll used in stdClass::ref'
+            'pushAll used in stdClass::ref',
         );
         $cm->mapField([
             'fieldName' => 'ref',
@@ -1002,9 +985,7 @@ class ClassMetadataTest extends BaseTest
     }
 }
 
-/**
- * @template-extends DocumentRepository<self>
- */
+/** @template-extends DocumentRepository<self> */
 class TestCustomRepositoryClass extends DocumentRepository
 {
 }

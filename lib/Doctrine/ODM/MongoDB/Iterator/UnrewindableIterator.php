@@ -24,10 +24,9 @@ use function sprintf;
 final class UnrewindableIterator implements Iterator
 {
     /** @var Generator<mixed, TValue>|null */
-    private $iterator;
+    private ?Generator $iterator;
 
-    /** @var bool */
-    private $iteratorAdvanced = false;
+    private bool $iteratorAdvanced = false;
 
     /**
      * Initialize the iterator. This effectively rewinds the Traversable and
@@ -59,18 +58,14 @@ final class UnrewindableIterator implements Iterator
         return iterator_to_array($toArray());
     }
 
-    /**
-     * @return TValue|null
-     */
+    /** @return TValue|null */
     #[ReturnTypeWillChange]
     public function current()
     {
         return $this->getIterator()->current();
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     #[ReturnTypeWillChange]
     public function key()
     {
@@ -81,9 +76,7 @@ final class UnrewindableIterator implements Iterator
         return null;
     }
 
-    /**
-     * @see http://php.net/iterator.next
-     */
+    /** @see http://php.net/iterator.next */
     public function next(): void
     {
         if (! $this->iterator) {
@@ -93,17 +86,13 @@ final class UnrewindableIterator implements Iterator
         $this->iterator->next();
     }
 
-    /**
-     * @see http://php.net/iterator.rewind
-     */
+    /** @see http://php.net/iterator.rewind */
     public function rewind(): void
     {
         $this->preventRewinding(__METHOD__);
     }
 
-    /**
-     * @see http://php.net/iterator.valid
-     */
+    /** @see http://php.net/iterator.valid */
     public function valid(): bool
     {
         return $this->key() !== null;
@@ -114,14 +103,12 @@ final class UnrewindableIterator implements Iterator
         if ($this->iteratorAdvanced) {
             throw new LogicException(sprintf(
                 'Cannot call %s for iterator that already yielded results',
-                $method
+                $method,
             ));
         }
     }
 
-    /**
-     * @return Generator<mixed, TValue>
-     */
+    /** @return Generator<mixed, TValue> */
     private function getIterator(): Generator
     {
         if ($this->iterator === null) {

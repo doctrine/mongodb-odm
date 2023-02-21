@@ -17,8 +17,7 @@ use function get_class;
 
 class CollectionPersisterTest extends BaseTest
 {
-    /** @var CommandLogger */
-    private $logger;
+    private CommandLogger $logger;
 
     public function setUp(): void
     {
@@ -66,7 +65,7 @@ class CollectionPersisterTest extends BaseTest
         $persister->delete(
             $user,
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
-            []
+            [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
@@ -79,7 +78,7 @@ class CollectionPersisterTest extends BaseTest
         $persister->delete(
             $user,
             [$user->categories[0]->children, $user->categories[1]->children],
-            []
+            [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
@@ -101,7 +100,7 @@ class CollectionPersisterTest extends BaseTest
         $persister->delete(
             $user,
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
-            []
+            [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
@@ -118,7 +117,7 @@ class CollectionPersisterTest extends BaseTest
         $persister->delete(
             $user,
             [$firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories],
-            []
+            [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
@@ -187,7 +186,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed'
+            'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed',
         );
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -202,7 +201,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed'
+            'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed',
         );
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -263,7 +262,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Insertion of embedded-many collection of one document requires no additional queries'
+            'Insertion of embedded-many collection of one document requires no additional queries',
         );
 
         $doc = $this->dm->getDocumentCollection(CollectionPersisterPost::class)->findOne(['post' => 'postA']);
@@ -290,7 +289,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed'
+            'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed',
         );
 
         $doc = $this->dm->getDocumentCollection(CollectionPersisterPost::class)->findOne(['post' => 'postA']);
@@ -316,7 +315,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed'
+            'Modification of embedded-many collection of one document requires one query since no existing collection elements was removed',
         );
 
         $doc = $this->dm->getDocumentCollection(CollectionPersisterPost::class)->findOne(['post' => 'postA']);
@@ -339,7 +338,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Modification of embedded-many collection of one document requires one query since collection, from which element was removed, have "set" store strategy.'
+            'Modification of embedded-many collection of one document requires one query since collection, from which element was removed, have "set" store strategy.',
         );
 
         $doc = $this->dm->getDocumentCollection(CollectionPersisterPost::class)->findOne(['post' => 'postA']);
@@ -381,7 +380,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Insertion of embedded-many collections of one document by "set" strategy requires no additional queries'
+            'Insertion of embedded-many collections of one document by "set" strategy requires no additional queries',
         );
 
         $structure->set->clear();
@@ -393,7 +392,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Modification of embedded-many collections of one document by "set" strategy requires one query'
+            'Modification of embedded-many collections of one document by "set" strategy requires one query',
         );
 
         self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
@@ -412,7 +411,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Insertion of embedded-many collections of one document by "setArray" strategy requires no additional queries'
+            'Insertion of embedded-many collections of one document by "setArray" strategy requires no additional queries',
         );
 
         $structure->setArray->clear();
@@ -424,7 +423,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Modification of embedded-many collections of one document by "setArray" strategy requires one query'
+            'Modification of embedded-many collections of one document by "setArray" strategy requires one query',
         );
 
         self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
@@ -443,7 +442,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             2,
             $this->logger,
-            'Insertion of embedded-many collections of one document by "addToSet" strategy requires one additional query'
+            'Insertion of embedded-many collections of one document by "addToSet" strategy requires one additional query',
         );
 
         $structure->addToSet->clear();
@@ -455,7 +454,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             2,
             $this->logger,
-            'Modification of embedded-many collections of one document by "addToSet" strategy requires two queries'
+            'Modification of embedded-many collections of one document by "addToSet" strategy requires two queries',
         );
 
         self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
@@ -474,7 +473,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Insertion of embedded-many collections of one document by "pushAll" strategy requires no additional queries'
+            'Insertion of embedded-many collections of one document by "pushAll" strategy requires no additional queries',
         );
 
         $structure->pushAll->add(new CollectionPersisterNestedStructure('nested5'));
@@ -486,7 +485,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             2,
             $this->logger,
-            'Modification of embedded-many collections of one document by "pushAll" strategy requires two queries'
+            'Modification of embedded-many collections of one document by "pushAll" strategy requires two queries',
         );
 
         self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
@@ -504,7 +503,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Insertion of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires no additional queries'
+            'Insertion of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires no additional queries',
         );
 
         $structure->set->remove(0);
@@ -520,7 +519,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             4,
             $this->logger,
-            'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries'
+            'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries',
         );
 
         self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
@@ -544,7 +543,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             1,
             $this->logger,
-            'Insertion of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires no additional queries'
+            'Insertion of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires no additional queries',
         );
 
         $structure->set->remove(0);
@@ -560,7 +559,7 @@ class CollectionPersisterTest extends BaseTest
         self::assertCount(
             5,
             $this->logger,
-            'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries'
+            'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries',
         );
 
         self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));

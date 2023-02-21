@@ -41,9 +41,7 @@ class ProjectTest extends BaseTest
         self::assertSame([['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]]], $builder->getPipeline());
     }
 
-    /**
-     * @dataProvider provideAccumulators
-     */
+    /** @dataProvider provideAccumulators */
     public function testAccumulatorsWithMultipleArguments(string $operator): void
     {
         $projectStage = new Project($this->getTestAggregationBuilder());
@@ -58,12 +56,12 @@ class ProjectTest extends BaseTest
     {
         $operators = ['avg', 'max', 'min', 'stdDevPop', 'stdDevSamp', 'sum'];
 
-        return array_combine($operators, array_map(static function ($operator) {
-            return [$operator];
-        }, $operators));
+        return array_combine($operators, array_map(static fn ($operator) => [$operator], $operators));
     }
 
     /**
+     * @param string[] $args
+     *
      * @dataProvider provideProxiedExprMethods
      */
     public function testProxiedExprMethods(string $method, array $args = []): void
@@ -85,9 +83,7 @@ class ProjectTest extends BaseTest
         self::assertSame($stage, $stage->$method(...$args));
     }
 
-    /**
-     * @return array<array{string, string[]}>
-     */
+    /** @return array<array{string, string[]}> */
     public static function provideProxiedExprMethods(): array
     {
         return [

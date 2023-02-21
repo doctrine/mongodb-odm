@@ -49,7 +49,7 @@ class BuilderTest extends BaseTest
                 'featureFull.$id' => new ObjectId($f->id),
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q1['query']
+            $q1['query'],
         );
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
@@ -61,7 +61,7 @@ class BuilderTest extends BaseTest
                 'featureSimple' => new ObjectId($f->id),
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q2['query']
+            $q2['query'],
         );
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
@@ -74,7 +74,7 @@ class BuilderTest extends BaseTest
                 'featurePartial.$ref' => 'Feature',
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q3['query']
+            $q3['query'],
         );
     }
 
@@ -86,7 +86,7 @@ class BuilderTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'No mapping found for field \'nope\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ParentClass\' nor ' .
-            'its descendants.'
+            'its descendants.',
         );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('nope')->references($f)
@@ -101,7 +101,7 @@ class BuilderTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'Reference mapping for field \'conflict\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildA\' ' .
-            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.'
+            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.',
         );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('conflict')->references($f)
@@ -124,7 +124,7 @@ class BuilderTest extends BaseTest
                 ],
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q1['query']
+            $q1['query'],
         );
 
         $q2 = $this->dm->createQueryBuilder(ParentClass::class)
@@ -136,7 +136,7 @@ class BuilderTest extends BaseTest
                 'featureSimpleMany' => new ObjectId($f->id),
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q2['query']
+            $q2['query'],
         );
 
         $q3 = $this->dm->createQueryBuilder(ParentClass::class)
@@ -153,7 +153,7 @@ class BuilderTest extends BaseTest
                 ],
                 'type' => ['$in' => ['ca', 'cb', 'cc']],
             ],
-            $q3['query']
+            $q3['query'],
         );
     }
 
@@ -165,7 +165,7 @@ class BuilderTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'No mapping found for field \'nope\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ParentClass\' nor ' .
-            'its descendants.'
+            'its descendants.',
         );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('nope')->includesReferenceTo($f)
@@ -180,7 +180,7 @@ class BuilderTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'Reference mapping for field \'conflictMany\' in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildA\' ' .
-            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.'
+            'conflicts with one mapped in class \'Doctrine\ODM\MongoDB\Tests\Query\ChildB\'.',
         );
         $this->dm->createQueryBuilder(ParentClass::class)
             ->field('conflictMany')->includesReferenceTo($f)
@@ -473,9 +473,7 @@ class BuilderTest extends BaseTest
         self::assertCount(1, $qb->getQueryArray());
     }
 
-    /**
-     * @dataProvider provideProxiedExprMethods
-     */
+    /** @dataProvider provideProxiedExprMethods */
     public function testProxiedExprMethods(string $method, array $args = []): void
     {
         $expr = $this->getMockExpr();
@@ -567,6 +565,8 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param string[] $args
+     *
      * @dataProvider provideSelectProjections
      */
     public function testSelect(array $args, array $expected): void
@@ -583,6 +583,8 @@ class BuilderTest extends BaseTest
     }
 
     /**
+     * @param string[] $args
+     *
      * @dataProvider provideExcludeProjections
      */
     public function testExclude(array $args, array $expected): void
@@ -753,9 +755,7 @@ class BuilderTest extends BaseTest
         self::assertEquals(['score' => ['$meta' => 'textScore']], $qb->debug('sort'));
     }
 
-    /**
-     * @dataProvider provideCurrentDateOptions
-     */
+    /** @dataProvider provideCurrentDateOptions */
     public function testCurrentDateUpdateQuery(string $type): void
     {
         $qb = $this->getTestQueryBuilder()
@@ -858,34 +858,26 @@ class BuilderTest extends BaseTest
         return new Builder($this->dm, User::class);
     }
 
-    /**
-     * @return MockObject&Expr
-     */
+    /** @return MockObject&Expr */
     private function getMockExpr()
     {
-        return $this->getMockBuilder(Expr::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Expr::class);
     }
 
-    /**
-     * @return MockObject&Geometry
-     */
+    /** @return MockObject&Geometry */
     private function getMockGeometry()
     {
-        return $this->getMockBuilder(Geometry::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Geometry::class);
     }
 
     /**
+     * @param array<string, mixed> $json
+     *
      * @return MockObject&Point
      */
     private function getMockPoint(array $json)
     {
-        $point = $this->getMockBuilder(Point::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $point = $this->createMock(Point::class);
 
         $point->expects($this->once())
             ->method('jsonSerialize')
@@ -911,9 +903,7 @@ class ParentClass
     public $id;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ChildA extends ParentClass
 {
     /**
@@ -945,9 +935,7 @@ class ChildA extends ParentClass
     public $conflictMany;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ChildB extends ParentClass
 {
     /**
@@ -979,9 +967,7 @@ class ChildB extends ParentClass
     public $conflictMany;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ChildC extends ParentClass
 {
     /**

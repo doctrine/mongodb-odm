@@ -9,9 +9,6 @@ use Documents74\GH2310Container;
 use Documents74\GH2310Embedded;
 use MongoDB\BSON\ObjectId;
 
-/**
- * @requires PHP 7.4
- */
 class GH2310Test extends BaseTest
 {
     public function testFindWithNullableEmbeddedAfterUpsert(): void

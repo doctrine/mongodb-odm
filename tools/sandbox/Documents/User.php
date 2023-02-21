@@ -110,9 +110,7 @@ class User
         $this->phonenumbers[] = $phonenumber;
     }
 
-    /**
-     * @return Collection<int, Phonenumber>
-     */
+    /** @return Collection<int, Phonenumber> */
     public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;

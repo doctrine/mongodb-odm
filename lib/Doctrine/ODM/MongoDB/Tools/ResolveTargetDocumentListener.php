@@ -24,11 +24,8 @@ use function ltrim;
  */
 class ResolveTargetDocumentListener implements EventSubscriber
 {
-    /**
-     * @var array
-     * @psalm-var array<class-string, array{targetDocument: class-string}>
-     */
-    private $resolveTargetDocuments = [];
+    /** @psalm-var array<class-string, array{targetDocument: class-string}> */
+    private array $resolveTargetDocuments = [];
 
     public function getSubscribedEvents()
     {
@@ -49,9 +46,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
         $this->resolveTargetDocuments[$this->getRealClassName($originalDocument)] = $mapping;
     }
 
-    /**
-     * @psalm-return class-string
-     */
+    /** @psalm-return class-string */
     private function getRealClassName(string $className): string
     {
         return ltrim($className, '\\');
@@ -71,7 +66,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
         $args->setFoundMetadata(
             $args
                 ->getDocumentManager()
-                ->getClassMetadata($this->resolveTargetDocuments[$args->getClassName()]['targetDocument'])
+                ->getClassMetadata($this->resolveTargetDocuments[$args->getClassName()]['targetDocument']),
         );
     }
 

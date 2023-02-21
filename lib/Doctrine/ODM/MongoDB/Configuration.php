@@ -83,7 +83,6 @@ class Configuration
     /**
      * Array of attributes for this configuration instance.
      *
-     * @var array
      * @psalm-var array{
      *      autoGenerateHydratorClasses?: self::AUTOGENERATE_*,
      *      autoGeneratePersistentCollectionClasses?: self::AUTOGENERATE_*,
@@ -108,16 +107,13 @@ class Configuration
      *      repositoryFactory?: RepositoryFactory
      * }
      */
-    private $attributes = [];
+    private array $attributes = [];
 
-    /** @var CacheItemPoolInterface|null */
-    private $metadataCache;
+    private ?CacheItemPoolInterface $metadataCache = null;
 
-    /** @var ProxyManagerConfiguration */
-    private $proxyManagerConfiguration;
+    private ProxyManagerConfiguration $proxyManagerConfiguration;
 
-    /** @var int */
-    private $autoGenerateProxyClasses = self::AUTOGENERATE_EVAL;
+    private int $autoGenerateProxyClasses = self::AUTOGENERATE_EVAL;
 
     public function __construct()
     {
@@ -144,7 +140,7 @@ class Configuration
             'doctrine/mongodb-odm',
             '2.3',
             'Document short namespace aliases such as "%s" are deprecated, use ::class constant instead.',
-            $documentNamespaceAlias
+            $documentNamespaceAlias,
         );
 
         if (! isset($this->attributes['documentNamespaces'][$documentNamespaceAlias])) {
@@ -212,7 +208,7 @@ class Configuration
             '2.2',
             'Using "%s" is deprecated. Please use "%s::getMetadataCache" instead.',
             __METHOD__,
-            self::class
+            self::class,
         );
 
         return $this->attributes['metadataCacheImpl'] ?? null;
@@ -225,7 +221,7 @@ class Configuration
             '2.2',
             'Using "%s" is deprecated. Please use "%s::setMetadataCache" instead.',
             __METHOD__,
-            self::class
+            self::class,
         );
 
         $this->attributes['metadataCacheImpl'] = $cacheImpl;
@@ -289,7 +285,7 @@ class Configuration
         switch ($mode) {
             case self::AUTOGENERATE_FILE_NOT_EXISTS:
                 $proxyManagerConfig->setGeneratorStrategy(new FileWriterGeneratorStrategy(
-                    new FileLocator($proxyManagerConfig->getProxiesTargetDir())
+                    new FileLocator($proxyManagerConfig->getProxiesTargetDir()),
                 ));
 
                 break;
@@ -413,17 +409,13 @@ class Configuration
         return $this->attributes['defaultDB'] ?? null;
     }
 
-    /**
-     * @psalm-param class-string<ClassMetadataFactory> $cmfName
-     */
+    /** @psalm-param class-string<ClassMetadataFactory> $cmfName */
     public function setClassMetadataFactoryName(string $cmfName): void
     {
         $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 
-    /**
-     * @psalm-return class-string<ClassMetadataFactory>
-     */
+    /** @psalm-return class-string<ClassMetadataFactory> */
     public function getClassMetadataFactoryName(): string
     {
         if (! isset($this->attributes['classMetadataFactoryName'])) {
@@ -433,9 +425,7 @@ class Configuration
         return $this->attributes['classMetadataFactoryName'];
     }
 
-    /**
-     * @psalm-return CommitOptions
-     */
+    /** @psalm-return CommitOptions */
     public function getDefaultCommitOptions(): array
     {
         if (! isset($this->attributes['defaultCommitOptions'])) {
@@ -445,9 +435,7 @@ class Configuration
         return $this->attributes['defaultCommitOptions'];
     }
 
-    /**
-     * @psalm-param CommitOptions $defaultCommitOptions
-     */
+    /** @psalm-param CommitOptions $defaultCommitOptions */
     public function setDefaultCommitOptions(array $defaultCommitOptions): void
     {
         $this->attributes['defaultCommitOptions'] = $defaultCommitOptions;
@@ -467,9 +455,7 @@ class Configuration
         ];
     }
 
-    /**
-     * @psalm-return class-string|null
-     */
+    /** @psalm-return class-string|null */
     public function getFilterClassName(string $name): ?string
     {
         return isset($this->attributes['filters'][$name])
@@ -477,9 +463,7 @@ class Configuration
             : null;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function getFilterParameters(string $name): array
     {
         return isset($this->attributes['filters'][$name])
@@ -503,9 +487,7 @@ class Configuration
         $this->attributes['defaultDocumentRepositoryClassName'] = $className;
     }
 
-    /**
-     * @psalm-return class-string<ObjectRepository<object>>
-     */
+    /** @psalm-return class-string<ObjectRepository<object>> */
     public function getDefaultDocumentRepositoryClassName(): string
     {
         return $this->attributes['defaultDocumentRepositoryClassName'] ?? DocumentRepository::class;
@@ -527,9 +509,7 @@ class Configuration
         $this->attributes['defaultGridFSRepositoryClassName'] = $className;
     }
 
-    /**
-     * @psalm-return class-string<GridFSRepository<object>>
-     */
+    /** @psalm-return class-string<GridFSRepository<object>> */
     public function getDefaultGridFSRepositoryClassName(): string
     {
         return $this->attributes['defaultGridFSRepositoryClassName'] ?? DefaultGridFSRepository::class;
@@ -577,7 +557,7 @@ class Configuration
 
             $this->attributes['persistentCollectionGenerator'] = new DefaultPersistentCollectionGenerator(
                 $this->getPersistentCollectionDir(),
-                $this->getPersistentCollectionNamespace()
+                $this->getPersistentCollectionNamespace(),
             );
         }
 

@@ -17,9 +17,7 @@ use function getenv;
 use function in_array;
 use function iterator_to_array;
 
-/**
- * @BeforeMethods({"initDocumentManager", "clearDatabase"})
- */
+/** @BeforeMethods({"initDocumentManager", "clearDatabase"}) */
 abstract class BaseBench
 {
     public const DATABASE_NAME           = 'doctrine_odm_performance';
@@ -50,7 +48,7 @@ abstract class BaseBench
         $client = new Client(
             getenv('DOCTRINE_MONGODB_SERVER') ?: self::DEFAULT_MONGODB_SERVER,
             [],
-            ['typeMap' => ['root' => 'array', 'document' => 'array']]
+            ['typeMap' => ['root' => 'array', 'document' => 'array']],
         );
 
         self::$documentManager = DocumentManager::create($client, $config);

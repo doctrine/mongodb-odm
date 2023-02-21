@@ -17,10 +17,9 @@ use function sort;
 class FilterTest extends BaseTest
 {
     /** @var array<string, ObjectId|string|null> */
-    private $ids;
+    private array $ids;
 
-    /** @var FilterCollection */
-    private $fc;
+    private FilterCollection $fc;
 
     public function setUp(): void
     {

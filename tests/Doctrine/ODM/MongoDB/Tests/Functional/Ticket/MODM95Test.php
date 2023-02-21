@@ -8,9 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
-use Traversable;
-
-use function is_array;
 
 class MODM95Test extends BaseTest
 {
@@ -69,24 +66,10 @@ class MODM95TestDocument
         $this->embeddedDocuments = new ArrayCollection();
     }
 
-    /**
-     * Sets children
-     *
-     * If $images is not an array or Traversable object, this method will simply
-     * clear the images collection property.  If any elements in the parameter
-     * are not an Image object, this method will attempt to convert them to one
-     * by mapping array indexes (size URL's are required, cropMetadata is not).
-     * Any invalid elements will be ignored.
-     *
-     * @param array|Traversable $embeddedDocuments
-     */
-    public function setEmbeddedDocuments($embeddedDocuments): void
+    /** @param iterable<MODM95TestEmbeddedDocument> $embeddedDocuments */
+    public function setEmbeddedDocuments(iterable $embeddedDocuments): void
     {
         $this->embeddedDocuments->clear();
-
-        if (! (is_array($embeddedDocuments) || $embeddedDocuments instanceof Traversable)) {
-            return;
-        }
 
         foreach ($embeddedDocuments as $embeddedDocument) {
             $this->embeddedDocuments->add($embeddedDocument);

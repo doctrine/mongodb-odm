@@ -11,32 +11,34 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
+use InvalidArgumentException;
 
 /**
  * Fluent interface for building aggregation pipelines.
  */
 class Lookup extends Stage
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ClassMetadata $class;
 
-    /** @var ClassMetadata */
-    private $targetClass;
+    private ?ClassMetadata $targetClass = null;
 
-    /** @var string */
-    private $from;
+    private string $from;
 
-    /** @var string */
-    private $localField;
+    private ?string $localField = null;
 
-    /** @var string */
-    private $foreignField;
+    private ?string $foreignField = null;
 
-    /** @var string */
-    private $as;
+    private ?string $as = null;
+
+    /** @var array<string, string>|null */
+    private ?array $let = null;
+
+    /** @var Builder|array<array<string, mixed>>|null */
+    private $pipeline = null;
+
+    private bool $excludeLocalAndForeignField = false;
 
     public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
     {
@@ -64,8 +66,6 @@ class Lookup extends Stage
 
     /**
      * Specifies the collection or field name in the same database to perform the join with.
-     *
-     * The from collection cannot be sharded.
      */
     public function from(string $from): self
     {
@@ -87,10 +87,6 @@ class Lookup extends Stage
             return $this;
         }
 
-        if ($this->targetClass->isSharded()) {
-            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
-        }
-
         $this->from = $this->targetClass->getCollection();
 
         return $this;
@@ -98,14 +94,31 @@ class Lookup extends Stage
 
     public function getExpression(): array
     {
-        return [
+        $expression = [
             '$lookup' => [
                 'from' => $this->from,
-                'localField' => $this->localField,
-                'foreignField' => $this->foreignField,
                 'as' => $this->as,
             ],
         ];
+
+        if (! $this->excludeLocalAndForeignField) {
+            $expression['$lookup']['localField']   = $this->localField;
+            $expression['$lookup']['foreignField'] = $this->foreignField;
+        }
+
+        if (! empty($this->let)) {
+            $expression['$lookup']['let'] = $this->let;
+        }
+
+        if ($this->pipeline !== null) {
+            if ($this->pipeline instanceof Builder) {
+                $expression['$lookup']['pipeline'] = $this->pipeline->getPipeline(false);
+            } else {
+                $expression['$lookup']['pipeline'] = $this->pipeline;
+            }
+        }
+
+        return $expression;
     }
 
     /**
@@ -138,6 +151,58 @@ class Lookup extends Stage
         return $this;
     }
 
+    /**
+     * Optional. Specifies variables to use in the pipeline stages.
+     *
+     * Use the variable expressions to access the fields from
+     * the joined collection's documents that are input to the pipeline.
+     *
+     * @param array<string, string> $let
+     */
+    public function let(array $let): self
+    {
+        $this->let = $let;
+
+        return $this;
+    }
+
+    /**
+     * Specifies the pipeline to run on the joined collection.
+     *
+     * The pipeline determines the resulting documents from the joined collection.
+     * To return all documents, specify an empty pipeline [].
+     *
+     * The pipeline cannot directly access the joined document fields.
+     * Instead, define variables for the joined document fields using the let option
+     * and then reference the variables in the pipeline stages.
+     *
+     * @param Builder|Stage|array<array<string, mixed>> $pipeline
+     */
+    public function pipeline($pipeline): self
+    {
+        if ($pipeline instanceof Stage) {
+            $this->pipeline = $pipeline->builder;
+        } else {
+            $this->pipeline = $pipeline;
+        }
+
+        if ($this->builder === $this->pipeline) {
+            throw new InvalidArgumentException('Cannot use the same Builder instance for $lookup pipeline.');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Excludes localField and foreignField from an expression.
+     */
+    public function excludeLocalAndForeignField(): self
+    {
+        $this->excludeLocalAndForeignField = true;
+
+        return $this;
+    }
+
     protected function prepareFieldName(string $fieldName, ?ClassMetadata $class = null): string
     {
         if (! $class) {
@@ -147,9 +212,7 @@ class Lookup extends Stage
         return $this->getDocumentPersister($class)->prepareFieldName($fieldName);
     }
 
-    /**
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function fromReference(string $fieldName): self
     {
         if (! $this->class->hasReference($fieldName)) {
@@ -158,9 +221,6 @@ class Lookup extends Stage
 
         $referenceMapping  = $this->class->getFieldMapping($fieldName);
         $this->targetClass = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
-        if ($this->targetClass->isSharded()) {
-            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
-        }
 
         $this->from = $this->targetClass->getCollection();
 

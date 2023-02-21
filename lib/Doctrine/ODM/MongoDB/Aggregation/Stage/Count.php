@@ -12,8 +12,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Count extends Stage
 {
-    /** @var string */
-    private $fieldName;
+    private string $fieldName;
 
     public function __construct(Builder $builder, string $fieldName)
     {

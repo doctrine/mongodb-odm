@@ -15,9 +15,7 @@ use PhpBench\Benchmark\Metadata\Annotations\Warmup;
 
 final class StoreDocumentBench extends BaseBench
 {
-    /**
-     * @Warmup(2)
-     */
+    /** @Warmup(2) */
     public function benchStoreDocument(): void
     {
         $user = new User();
@@ -29,9 +27,7 @@ final class StoreDocumentBench extends BaseBench
         $this->getDocumentManager()->clear();
     }
 
-    /**
-     * @Warmup(2)
-     */
+    /** @Warmup(2) */
     public function benchStoreDocumentWithEmbedOne(): void
     {
         $address = new Address();
@@ -48,9 +44,7 @@ final class StoreDocumentBench extends BaseBench
         $this->getDocumentManager()->clear();
     }
 
-    /**
-     * @Warmup(2)
-     */
+    /** @Warmup(2) */
     public function benchStoreDocumentWithEmbedMany(): void
     {
         $user = new User();
@@ -64,9 +58,7 @@ final class StoreDocumentBench extends BaseBench
         $this->getDocumentManager()->clear();
     }
 
-    /**
-     * @Warmup(2)
-     */
+    /** @Warmup(2) */
     public function benchStoreDocumentWithReferenceOne(): void
     {
         $account = new Account();
@@ -82,9 +74,7 @@ final class StoreDocumentBench extends BaseBench
         $this->getDocumentManager()->clear();
     }
 
-    /**
-     * @Warmup(2)
-     */
+    /** @Warmup(2) */
     public function benchStoreDocumentWithReferenceMany(): void
     {
         $group1 = new Group('One');

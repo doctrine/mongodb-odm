@@ -5,9 +5,7 @@ declare(strict_types=1);
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class DoctrineGlobal_Article
 {
     /**
@@ -46,9 +44,7 @@ class DoctrineGlobal_Article
     protected $editor;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class DoctrineGlobal_User
 {
     /**

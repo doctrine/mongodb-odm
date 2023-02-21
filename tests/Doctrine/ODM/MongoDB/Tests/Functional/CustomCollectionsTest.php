@@ -44,7 +44,7 @@ class CustomCollectionsTest extends BaseTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'stdClass used as custom collection class for stdClass::assoc has to implement ' .
-            'Doctrine\Common\Collections\Collection interface.'
+            'Doctrine\Common\Collections\Collection interface.',
         );
         $cm->mapField([
             'fieldName' => 'assoc',
@@ -60,7 +60,7 @@ class CustomCollectionsTest extends BaseTest
         $pcoll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create(
             $this->dm,
             ClassMetadataTestUtil::getFieldMapping(['collectionClass' => MyEmbedsCollection::class]),
-            $coll
+            $coll,
         );
         self::assertInstanceOf(PersistentCollectionInterface::class, $pcoll);
         self::assertInstanceOf(MyEmbedsCollection::class, $pcoll);
@@ -174,9 +174,6 @@ class CustomCollectionsTest extends BaseTest
         self::assertEquals($f1->getId(), $profile->getImages()[1]->getId());
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testMethodWithVoidReturnType(): void
     {
         $d = new DocumentWithCustomCollection();
@@ -184,13 +181,12 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->flush();
 
         $d = $this->dm->find(get_class($d), $d->id);
+        self::assertInstanceOf(MyEmbedsCollection::class, $d->coll);
         $d->coll->nothingReally();
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class DocumentWithCustomCollection
 {
     /**
@@ -250,9 +246,7 @@ class DocumentWithCustomCollection
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class EmbeddedDocumentInCustomCollection
 {
     /**
@@ -283,24 +277,16 @@ class EmbeddedDocumentInCustomCollection
  */
 class MyEmbedsCollection extends ArrayCollection
 {
-    /**
-     * @return MyEmbedsCollection<TKey, TElement>
-     */
+    /** @return MyEmbedsCollection<TKey, TElement> */
     public function getByName(string $name): MyEmbedsCollection
     {
-        return $this->filter(static function ($item) use ($name) {
-            return $item->name === $name;
-        });
+        return $this->filter(static fn ($item) => $item->name === $name);
     }
 
-    /**
-     * @return MyEmbedsCollection<TKey, TElement>
-     */
+    /** @return MyEmbedsCollection<TKey, TElement> */
     public function getEnabled(): MyEmbedsCollection
     {
-        return $this->filter(static function ($item) {
-            return $item->enabled;
-        });
+        return $this->filter(static fn ($item) => $item->enabled);
     }
 
     public function move(int $i, int $j): void
@@ -322,13 +308,9 @@ class MyEmbedsCollection extends ArrayCollection
  */
 class MyDocumentsCollection extends ArrayCollection
 {
-    /**
-     * @return MyDocumentsCollection<TKey, TElement>
-     */
+    /** @return MyDocumentsCollection<TKey, TElement> */
     public function havingEmbeds(): MyDocumentsCollection
     {
-        return $this->filter(static function ($item) {
-            return $item->coll->count();
-        });
+        return $this->filter(static fn ($item) => $item->coll->count());
     }
 }

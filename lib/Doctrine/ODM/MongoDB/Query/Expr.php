@@ -40,7 +40,7 @@ class Expr
     /**
      * The query criteria array.
      *
-     * @var array<string, mixed>
+     * @var array<string, mixed>|mixed
      */
     private $query = [];
 
@@ -52,28 +52,22 @@ class Expr
      *
      * @var array<string, mixed>
      */
-    private $newObj = [];
+    private array $newObj = [];
 
     /**
      * The current field we are operating on.
-     *
-     * @var string|null
      */
-    private $currentField;
+    private ?string $currentField = null;
 
     /**
      * The DocumentManager instance for this query
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The ClassMetadata instance for the document being queried
-     *
-     * @var ClassMetadata
      */
-    private $class;
+    private ?ClassMetadata $class = null;
 
     public function __construct(DocumentManager $dm)
     {
@@ -97,7 +91,7 @@ class Expr
 
         $this->query['$and'] = array_merge(
             $this->query['$and'],
-            func_get_args()
+            func_get_args(),
         );
 
         return $this;
@@ -120,7 +114,7 @@ class Expr
 
         $this->query['$nor'] = array_merge(
             $this->query['$nor'],
-            func_get_args()
+            func_get_args(),
         );
 
         return $this;
@@ -143,7 +137,7 @@ class Expr
 
         $this->query['$or'] = array_merge(
             $this->query['$or'],
-            func_get_args()
+            func_get_args(),
         );
 
         return $this;
@@ -1026,7 +1020,7 @@ class Expr
         if ($valueOrExpression instanceof Expr) {
             $valueOrExpression = array_merge(
                 ['$each' => []],
-                $valueOrExpression->getQuery()
+                $valueOrExpression->getQuery(),
             );
         }
 
@@ -1254,9 +1248,7 @@ class Expr
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 
-        return $this->operator('$sort', array_map(function ($order) {
-            return $this->normalizeSortOrder($order);
-        }, $fields));
+        return $this->operator('$sort', array_map(fn ($order) => $this->normalizeSortOrder($order), $fields));
     }
 
     /**
@@ -1361,9 +1353,7 @@ class Expr
         }
     }
 
-    /**
-     * @param int|string $order
-     */
+    /** @param int|string $order */
     private function normalizeSortOrder($order): int
     {
         if (is_string($order)) {

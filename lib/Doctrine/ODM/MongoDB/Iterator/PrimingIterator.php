@@ -21,25 +21,23 @@ use function iterator_to_array;
 final class PrimingIterator implements Iterator
 {
     /** @var \Iterator<mixed, TValue> */
-    private $iterator;
+    private \Iterator $iterator;
 
     /** @var ClassMetadata<TDocument> */
-    private $class;
+    private ClassMetadata $class;
 
-    /** @var ReferencePrimer */
-    private $referencePrimer;
+    private ReferencePrimer $referencePrimer;
 
     /** @var array<string, callable|true|null> */
-    private $primers;
+    private array $primers;
 
     /**
      * @var array<int, mixed>
      * @psalm-var Hints
      */
-    private $unitOfWorkHints;
+    private array $unitOfWorkHints;
 
-    /** @var bool */
-    private $referencesPrimed = false;
+    private bool $referencesPrimed = false;
 
     /**
      * @param \Iterator<mixed, TValue>          $iterator
@@ -61,9 +59,7 @@ final class PrimingIterator implements Iterator
         return iterator_to_array($this);
     }
 
-    /**
-     * @return TValue|null
-     */
+    /** @return TValue|null */
     #[ReturnTypeWillChange]
     public function current()
     {
@@ -77,9 +73,7 @@ final class PrimingIterator implements Iterator
         $this->iterator->next();
     }
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     #[ReturnTypeWillChange]
     public function key()
     {

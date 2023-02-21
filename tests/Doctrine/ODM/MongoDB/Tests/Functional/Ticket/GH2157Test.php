@@ -24,12 +24,12 @@ class GH2157Test extends BaseTest
                 ->field('count')
                 ->pipeline(
                     $this->dm->createAggregationBuilder(GH2157FirstType::class)
-                        ->count('count')
+                        ->count('count'),
                 )
                 ->field('limitedResults')
                 ->pipeline(
                     $this->dm->createAggregationBuilder(GH2157FirstType::class)
-                        ->limit(2)
+                        ->limit(2),
                 )
             ->execute()->toArray();
 
@@ -54,16 +54,12 @@ abstract class GH2157Abstract
     protected $id;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2157FirstType extends GH2157Abstract
 {
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH2157SecondType extends GH2157Abstract
 {
 }

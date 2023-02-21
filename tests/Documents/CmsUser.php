@@ -8,9 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 #[ODM\Document]
 class CmsUser
 {
@@ -110,9 +108,7 @@ class CmsUser
         $phone->setUser($this);
     }
 
-    /**
-     * @return Collection<int, CmsPhonenumber>
-     */
+    /** @return Collection<int, CmsPhonenumber> */
     public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
@@ -130,9 +126,7 @@ class CmsUser
         $group->addUser($this);
     }
 
-    /**
-     * @return Collection<int, CmsGroup>
-     */
+    /** @return Collection<int, CmsGroup> */
     public function getGroups(): Collection
     {
         return $this->groups;

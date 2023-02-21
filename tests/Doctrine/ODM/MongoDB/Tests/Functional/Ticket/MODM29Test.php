@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
+use function assert;
+
 class MODM29Test extends BaseTest
 {
     public function testTest(): void
@@ -25,7 +27,9 @@ class MODM29Test extends BaseTest
         $this->dm->persist($doc);
         $this->dm->flush();
 
+        assert(isset($collection[0], $collection[1], $collection[2]));
         // place element '0' after '1'
+        /** @var ArrayCollection<int, MODM29Embedded> $collection */
         $collection = new ArrayCollection([
             $collection[1],
             $collection[0],
@@ -68,25 +72,19 @@ class MODM29Doc
      */
     protected $collection;
 
-    /**
-     * @param Collection<int, MODM29Embedded> $c
-     */
+    /** @param Collection<int, MODM29Embedded> $c */
     public function __construct(Collection $c)
     {
         $this->set($c);
     }
 
-    /**
-     * @param Collection<int, MODM29Embedded> $c
-     */
+    /** @param Collection<int, MODM29Embedded> $c */
     public function set(Collection $c): void
     {
         $this->collection = $c;
     }
 
-    /**
-     * @return Collection<int, MODM29Embedded>
-     */
+    /** @return Collection<int, MODM29Embedded> */
     public function get(): Collection
     {
         return $this->collection;

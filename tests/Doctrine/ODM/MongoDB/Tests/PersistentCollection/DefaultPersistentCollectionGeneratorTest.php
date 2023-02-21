@@ -13,15 +13,15 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
  */
 class DefaultPersistentCollectionGeneratorTest extends BaseTest
 {
-    /** @var DefaultPersistentCollectionGenerator */
-    private $generator;
+    private DefaultPersistentCollectionGenerator $generator;
 
     public function setUp(): void
     {
         parent::setUp();
+
         $this->generator = new DefaultPersistentCollectionGenerator(
             $this->dm->getConfiguration()->getPersistentCollectionDir(),
-            $this->dm->getConfiguration()->getPersistentCollectionNamespace()
+            $this->dm->getConfiguration()->getPersistentCollectionNamespace(),
         );
     }
 
@@ -46,9 +46,7 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
         self::assertInstanceOf(CollWithNullableReturnType::class, $coll);
     }
 
-    /**
-     * @requires PHP 8.0
-     */
+    /** @requires PHP >= 8.0 */
     public function testPHP80Types(): void
     {
         $class = $this->generator->loadClass(CollWithPHP80Types::class, Configuration::AUTOGENERATE_EVAL);
@@ -56,9 +54,7 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
         self::assertInstanceOf(CollWithPHP80Types::class, $coll);
     }
 
-    /**
-     * @requires PHP 8.1
-     */
+    /** @requires PHP >= 8.1 */
     public function testPHP81Types(): void
     {
         $class = $this->generator->loadClass(CollWithPHP81Types::class, Configuration::AUTOGENERATE_EVAL);

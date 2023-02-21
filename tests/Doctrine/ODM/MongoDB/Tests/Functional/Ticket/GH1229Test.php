@@ -41,9 +41,7 @@ class GH1229Test extends BaseTest
         $this->secondParentId = $secondParent->id;
     }
 
-    /**
-     * @group m
-     */
+    /** @group m */
     public function testMethodAWithoutClone(): void
     {
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
@@ -89,9 +87,7 @@ class GH1229Test extends BaseTest
         self::assertInstanceOf(GH1229ChildTypeB::CLASSNAME, $children[1]);
     }
 
-    /**
-     * @group m
-     */
+    /** @group m */
     public function testMethodAWithClone(): void
     {
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
@@ -156,9 +152,7 @@ class GH1229Parent
         $this->children = new ArrayCollection();
     }
 
-    /**
-     * @return GH1229Child[]
-     */
+    /** @return GH1229Child[] */
     public function getChildren(): array
     {
         return $this->children->toArray();
@@ -217,9 +211,7 @@ class GH1229Child
         return $this->order;
     }
 
-    /**
-     * @return $this
-     */
+    /** @return $this */
     public function setOrder(int $order): self
     {
         $this->order = $order;

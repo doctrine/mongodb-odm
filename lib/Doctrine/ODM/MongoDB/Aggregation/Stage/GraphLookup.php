@@ -20,43 +20,31 @@ use function is_array;
 use function is_string;
 use function substr;
 
-/**
- * @psalm-import-type FieldMapping from ClassMetadata
- */
+/** @psalm-import-type FieldMapping from ClassMetadata */
 class GraphLookup extends Stage
 {
-    /** @var string|null */
-    private $from;
+    private ?string $from;
 
     /** @var string|Expr|mixed[]|null */
     private $startWith;
 
-    /** @var string|null */
-    private $connectFromField;
+    private ?string $connectFromField = null;
 
-    /** @var string|null */
-    private $connectToField;
+    private ?string $connectToField = null;
 
-    /** @var string|null */
-    private $as;
+    private ?string $as = null;
 
-    /** @var int|null */
-    private $maxDepth;
+    private ?int $maxDepth = null;
 
-    /** @var string|null */
-    private $depthField;
+    private ?string $depthField = null;
 
-    /** @var Stage\GraphLookup\MatchStage */
-    private $restrictSearchWithMatch;
+    private Stage\GraphLookup\MatchStage $restrictSearchWithMatch;
 
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ClassMetadata $class;
 
-    /** @var ClassMetadata|null */
-    private $targetClass;
+    private ?ClassMetadata $targetClass = null;
 
     /**
      * @param string $from Target collection for the $graphLookup operation to
@@ -148,9 +136,6 @@ class GraphLookup extends Stage
      * Target collection for the $graphLookup operation to search, recursively
      * matching the connectFromField to the connectToField.
      *
-     * The from collection cannot be sharded and must be in the same database as
-     * any other collections used in the operation.
-     *
      * @psalm-param class-string|string $from
      */
     public function from(string $from): self
@@ -171,10 +156,6 @@ class GraphLookup extends Stage
             $this->from = $from;
 
             return $this;
-        }
-
-        if ($this->targetClass->isSharded()) {
-            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
         }
 
         $this->from = $this->targetClass->getCollection();
@@ -242,9 +223,7 @@ class GraphLookup extends Stage
         return $this;
     }
 
-    /**
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function fromReference(string $fieldName): self
     {
         if (! $this->class->hasReference($fieldName)) {
@@ -253,9 +232,6 @@ class GraphLookup extends Stage
 
         $referenceMapping  = $this->class->getFieldMapping($fieldName);
         $this->targetClass = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
-        if ($this->targetClass->isSharded()) {
-            throw MappingException::cannotUseShardedCollectionInLookupStages($this->targetClass->name);
-        }
 
         $this->from = $this->targetClass->getCollection();
 
@@ -311,9 +287,7 @@ class GraphLookup extends Stage
         return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
     }
 
-    /**
-     * @psalm-param FieldMapping $mapping
-     */
+    /** @psalm-param FieldMapping $mapping */
     private function getReferencedFieldName(string $fieldName, array $mapping): string
     {
         if (! $this->targetClass) {

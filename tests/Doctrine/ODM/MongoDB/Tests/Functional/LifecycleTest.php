@@ -115,9 +115,7 @@ class ParentObject
         $this->childEmbedded->setName('changed');
     }
 
-    /**
-     * @return Collection<int, ChildObject>|array<ChildObject>
-     */
+    /** @return Collection<int, ChildObject>|array<ChildObject> */
     public function getChildren()
     {
         return $this->children;

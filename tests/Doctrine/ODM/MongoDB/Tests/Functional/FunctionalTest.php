@@ -52,28 +52,16 @@ use MongoDB\BSON\ObjectId;
 
 use function assert;
 use function bcscale;
-use function bcsqrt;
-use function min;
-use function strlen;
-use function version_compare;
-
-use const PHP_VERSION;
 
 class FunctionalTest extends BaseTest
 {
-    /** @var int */
-    private $initialScale;
+    private int $initialScale;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        if (version_compare('7.3.0', PHP_VERSION, '<=')) {
-            $this->initialScale = bcscale(2);
-        } else {
-            $this->initialScale = min(0, strlen(bcsqrt('2')) - 2);
-            bcscale(2);
-        }
+        $this->initialScale = bcscale(2);
     }
 
     public function tearDown(): void

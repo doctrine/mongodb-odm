@@ -102,7 +102,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
                     'doctrine/mongodb-odm',
                     '2.2',
                     'The "@Indexes" annotation used in class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" annotations on the class.',
-                    $className
+                    $className,
                 );
                 $value = $annot->value;
                 foreach (is_array($value) ? $value : [$value] as $index) {
@@ -205,7 +205,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
                 '2.2',
                 'The "indexes" parameter in the "%s" annotation for class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" annotations on the class.',
                 $className,
-                get_class($documentAnnot)
+                get_class($documentAnnot),
             );
 
             foreach ($documentAnnot->indexes as $index) {
@@ -371,7 +371,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
             'doctrine/mongodb-odm',
             '2.4',
             '%s is deprecated with no replacement',
-            __METHOD__
+            __METHOD__,
         );
 
         return $this->reader;

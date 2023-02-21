@@ -40,9 +40,7 @@ class GH944Test extends BaseTest
     }
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class GH944Document
 {
     /**
@@ -76,9 +74,7 @@ class GH944Document
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class GH944Embedded
 {
     /**

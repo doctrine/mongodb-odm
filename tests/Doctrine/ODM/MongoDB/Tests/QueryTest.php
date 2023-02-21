@@ -578,14 +578,10 @@ class QueryTest extends BaseTest
         iterator_to_array($iterator);
     }
 
-    /**
-     * @return MockObject&Collection
-     */
+    /** @return MockObject&Collection */
     private function getMockCollection()
     {
-        return $this->getMockBuilder(Collection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Collection::class);
     }
 }
 

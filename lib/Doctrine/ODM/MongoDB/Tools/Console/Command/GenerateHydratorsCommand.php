@@ -50,15 +50,13 @@ class GenerateHydratorsCommand extends Console\Command\Command
                 'The path to generate your hydrator classes. If none is provided, it will attempt to grab from configuration.'
             ),
         ])
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Generates hydrator classes for document classes.
 EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $filter = $input->getOption('filter');

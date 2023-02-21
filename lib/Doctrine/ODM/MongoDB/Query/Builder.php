@@ -35,17 +35,13 @@ class Builder
 {
     /**
      * The DocumentManager instance for this query
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The ClassMetadata instance.
-     *
-     * @var ClassMetadata
      */
-    private $class;
+    private ClassMetadata $class;
 
     /**
      * The current field we are operating on.
@@ -57,41 +53,32 @@ class Builder
 
     /**
      * Whether or not to hydrate the data to documents.
-     *
-     * @var bool
      */
-    private $hydrate = true;
+    private bool $hydrate = true;
 
     /**
      * Whether or not to refresh the data for documents that are already in the identity map.
-     *
-     * @var bool
      */
-    private $refresh = false;
+    private bool $refresh = false;
 
     /**
      * Array of primer Closure instances.
      *
      * @var array<string, true|callable>
      */
-    private $primers = [];
+    private array $primers = [];
 
     /**
      * Whether or not to register documents in UnitOfWork.
-     *
-     * @var bool
      */
-    private $readOnly = false;
+    private bool $readOnly = false;
 
-    /** @var bool */
-    private $rewindable = true;
+    private bool $rewindable = true;
 
     /**
      * The Collection instance.
-     *
-     * @var Collection
      */
-    private $collection;
+    private Collection $collection;
 
     /**
      * Array containing the query data.
@@ -106,10 +93,8 @@ class Builder
      *
      * This object includes the query criteria and the "new object" used for
      * insert and update queries.
-     *
-     * @var Expr $expr
      */
-    private $expr;
+    private Expr $expr;
 
     /**
      * Construct a Builder
@@ -704,9 +689,7 @@ class Builder
                 $this->hydrate && $this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION
                 && ! isset($query['select'][$this->class->discriminatorField])
             ) {
-                $includeMode = 0 < count(array_filter($query['select'], static function ($mode) {
-                    return $mode === 1;
-                }));
+                $includeMode = 0 < count(array_filter($query['select'], static fn ($mode) => $mode === 1));
                 if ($includeMode) {
                     $query['select'][$this->class->discriminatorField] = 1;
                 }
@@ -731,7 +714,7 @@ class Builder
             $this->refresh,
             $this->primers,
             $this->readOnly,
-            $this->rewindable
+            $this->rewindable,
         );
     }
 

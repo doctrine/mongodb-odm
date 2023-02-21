@@ -16,7 +16,7 @@ class InvalidValueExceptionTest extends TestCase
         $t = Type::getType('collection');
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage(
-            'Collection type requires value of type array or null, Doctrine\Common\Collections\ArrayCollection given'
+            'Collection type requires value of type array or null, Doctrine\Common\Collections\ArrayCollection given',
         );
         $t->convertToDatabaseValue(new ArrayCollection());
     }
@@ -34,7 +34,7 @@ class InvalidValueExceptionTest extends TestCase
         $t = Type::getType('hash');
         $this->expectException(MongoDBException::class);
         $this->expectExceptionMessage(
-            'Hash type requires value of type array or null, Doctrine\Common\Collections\ArrayCollection given'
+            'Hash type requires value of type array or null, Doctrine\Common\Collections\ArrayCollection given',
         );
         $t->convertToDatabaseValue(new ArrayCollection());
     }

@@ -46,7 +46,7 @@ class GH971Test extends BaseTest
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             'Upsert query that is to be performed on discriminated document does not have single discriminator. ' .
-            'Either not use base class or set \'type\' field manually.'
+            'Either not use base class or set \'type\' field manually.',
         );
         $this->dm->createQueryBuilder(Bicycle::class)
             ->findAndUpdate()
@@ -101,23 +101,17 @@ class Vehicle
     public $features;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Car extends Vehicle
 {
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Bicycle extends Vehicle
 {
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class Tandem extends Bicycle
 {
 }

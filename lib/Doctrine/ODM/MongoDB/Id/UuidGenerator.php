@@ -9,9 +9,9 @@ use Exception;
 
 use function chr;
 use function hexdec;
-use function mt_rand;
 use function php_uname;
 use function preg_match;
+use function random_int;
 use function sha1;
 use function sprintf;
 use function str_replace;
@@ -25,10 +25,8 @@ final class UuidGenerator extends AbstractIdGenerator
 {
     /**
      * A unique environment value to salt each UUID with.
-     *
-     * @var string
      */
-    protected $salt = null;
+    protected ?string $salt = null;
 
     /**
      * Used to set the salt that will be applied to each id
@@ -41,9 +39,9 @@ final class UuidGenerator extends AbstractIdGenerator
     /**
      * Returns the current salt value
      *
-     * @return string $salt The current salt
+     * @return string|null The current salt
      */
-    public function getSalt(): string
+    public function getSalt(): ?string
     {
         return $this->salt;
     }
@@ -82,21 +80,21 @@ final class UuidGenerator extends AbstractIdGenerator
         return sprintf(
             '%04x%04x%04x%04x%04x%04x%04x%04x',
             // 32 bits for "time_low"
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
+            random_int(0, 0xffff),
+            random_int(0, 0xffff),
             // 16 bits for "time_mid"
-            mt_rand(0, 0xffff),
+            random_int(0, 0xffff),
             // 16 bits for "time_hi_and_version",
             // four most significant bits holds version number 4
-            mt_rand(0, 0x0fff) | 0x4000,
+            random_int(0, 0x0fff) | 0x4000,
             // 16 bits, 8 bits for "clk_seq_hi_res",
             // 8 bits for "clk_seq_low",
             // two most significant bits holds zero and one for variant DCE1.1
-            mt_rand(0, 0x3fff) | 0x8000,
+            random_int(0, 0x3fff) | 0x8000,
             // 48 bits for "node"
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff)
+            random_int(0, 0xffff),
+            random_int(0, 0xffff),
+            random_int(0, 0xffff),
         );
     }
 
@@ -139,7 +137,7 @@ final class UuidGenerator extends AbstractIdGenerator
             // two most significant bits holds zero and one for variant DCE1.1
             (hexdec(substr($hash, 16, 4)) & 0x3fff) | 0x8000,
             // 48 bits for "node"
-            substr($hash, 20, 12)
+            substr($hash, 20, 12),
         );
     }
 }

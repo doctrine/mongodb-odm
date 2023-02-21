@@ -44,57 +44,42 @@ final class HydratorFactory
 {
     /**
      * The DocumentManager this factory is bound to.
-     *
-     * @var DocumentManager
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
-     *
-     * @var UnitOfWork
      */
-    private $unitOfWork;
+    private ?UnitOfWork $unitOfWork = null;
 
     /**
      * The EventManager associated with this Hydrator
-     *
-     * @var EventManager
      */
-    private $evm;
+    private EventManager $evm;
 
     /**
      * Which algorithm to use to automatically (re)generate hydrator classes.
-     *
-     * @var int
      */
-    private $autoGenerate;
+    private int $autoGenerate;
 
     /**
      * The namespace that contains all hydrator classes.
-     *
-     * @var string|null
      */
-    private $hydratorNamespace;
+    private ?string $hydratorNamespace;
 
     /**
      * The directory that contains all hydrator classes.
-     *
-     * @var string
      */
-    private $hydratorDir;
+    private string $hydratorDir;
 
     /**
      * Array of instantiated document hydrators.
      *
-     * @var array
      * @psalm-var array<class-string, HydratorInterface>
      */
-    private $hydrators = [];
+    private array $hydrators = [];
 
-    /**
-     * @throws HydratorException
-     */
+    /** @throws HydratorException */
     public function __construct(DocumentManager $dm, EventManager $evm, ?string $hydratorDir, ?string $hydratorNs, int $autoGenerate)
     {
         if (! $hydratorDir) {
@@ -187,9 +172,7 @@ final class HydratorFactory
         }
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     */
+    /** @param ClassMetadata<object> $class */
     private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, ?string $fileName): void
     {
         $code = '';
@@ -207,28 +190,28 @@ final class HydratorFactory
 
 EOF
                         ,
-                        $mapping['name']
+                        $mapping['name'],
                     );
                 }
             }
 
             if ($mapping['type'] === 'date') {
                 $code .= sprintf(
-                    <<<EOF
+                    <<<'EOF'
 
         /** @Field(type="date") */
-        if (isset(\$data['%1\$s'])) {
-            \$value = \$data['%1\$s'];
-            %3\$s
-            \$this->class->reflFields['%2\$s']->setValue(\$document, clone \$return);
-            \$hydratedData['%2\$s'] = \$return;
+        if (isset($data['%1$s'])) {
+            $value = $data['%1$s'];
+            %3$s
+            $this->class->reflFields['%2$s']->setValue($document, clone $return);
+            $hydratedData['%2$s'] = $return;
         }
 
 EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP()
+                    Type::getType($mapping['type'])->closureToPHP(),
                 );
             } elseif (! isset($mapping['association'])) {
                 $code .= sprintf(
@@ -251,141 +234,141 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP()
+                    Type::getType($mapping['type'])->closureToPHP(),
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 $code .= sprintf(
-                    <<<EOF
+                    <<<'EOF'
 
         /** @ReferenceOne */
-        if (isset(\$data['%1\$s']) || (! empty(\$this->class->fieldMappings['%2\$s']['nullable']) && array_key_exists('%1\$s', \$data))) {
-            \$return = \$data['%1\$s'];
-            if (\$return !== null) {
-                if (\$this->class->fieldMappings['%2\$s']['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID && ! is_array(\$return)) {
-                    throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$return));
+        if (isset($data['%1$s']) || (! empty($this->class->fieldMappings['%2$s']['nullable']) && array_key_exists('%1$s', $data))) {
+            $return = $data['%1$s'];
+            if ($return !== null) {
+                if ($this->class->fieldMappings['%2$s']['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID && ! is_array($return)) {
+                    throw HydratorException::associationTypeMismatch('%3$s', '%1$s', 'array', gettype($return));
                 }
 
-                \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$return);
-                \$identifier = ClassMetadata::getReferenceId(\$return, \$this->class->fieldMappings['%2\$s']['storeAs']);
-                \$targetMetadata = \$this->dm->getClassMetadata(\$className);
-                \$id = \$targetMetadata->getPHPIdentifierValue(\$identifier);
-                \$return = \$this->dm->getReference(\$className, \$id);
+                $className = $this->unitOfWork->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $return);
+                $identifier = ClassMetadata::getReferenceId($return, $this->class->fieldMappings['%2$s']['storeAs']);
+                $targetMetadata = $this->dm->getClassMetadata($className);
+                $id = $targetMetadata->getPHPIdentifierValue($identifier);
+                $return = $this->dm->getReference($className, $id);
             }
 
-            \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
-            \$hydratedData['%2\$s'] = \$return;
+            $this->class->reflFields['%2$s']->setValue($document, $return);
+            $hydratedData['%2$s'] = $return;
         }
 
 EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    $class->getName()
+                    $class->getName(),
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isInverseSide']) {
                 if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
                     $code .= sprintf(
-                        <<<EOF
+                        <<<'EOF'
 
-        \$className = \$this->class->fieldMappings['%2\$s']['targetDocument'];
-        \$return = \$this->dm->getRepository(\$className)->%3\$s(\$document);
-        \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
-        \$hydratedData['%2\$s'] = \$return;
+        $className = $this->class->fieldMappings['%2$s']['targetDocument'];
+        $return = $this->dm->getRepository($className)->%3$s($document);
+        $this->class->reflFields['%2$s']->setValue($document, $return);
+        $hydratedData['%2$s'] = $return;
 
 EOF
                         ,
                         $mapping['name'],
                         $mapping['fieldName'],
-                        $mapping['repositoryMethod']
+                        $mapping['repositoryMethod'],
                     );
                 } else {
                     $code .= sprintf(
-                        <<<EOF
+                        <<<'EOF'
 
-        \$mapping = \$this->class->fieldMappings['%2\$s'];
-        \$className = \$mapping['targetDocument'];
-        \$targetClass = \$this->dm->getClassMetadata(\$mapping['targetDocument']);
-        \$mappedByMapping = \$targetClass->fieldMappings[\$mapping['mappedBy']];
-        \$mappedByFieldName = ClassMetadata::getReferenceFieldName(\$mappedByMapping['storeAs'], \$mapping['mappedBy']);
-        \$criteria = array_merge(
-            array(\$mappedByFieldName => \$data['_id']),
-            isset(\$this->class->fieldMappings['%2\$s']['criteria']) ? \$this->class->fieldMappings['%2\$s']['criteria'] : array()
+        $mapping = $this->class->fieldMappings['%2$s'];
+        $className = $mapping['targetDocument'];
+        $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
+        $mappedByMapping = $targetClass->fieldMappings[$mapping['mappedBy']];
+        $mappedByFieldName = ClassMetadata::getReferenceFieldName($mappedByMapping['storeAs'], $mapping['mappedBy']);
+        $criteria = array_merge(
+            array($mappedByFieldName => $data['_id']),
+            isset($this->class->fieldMappings['%2$s']['criteria']) ? $this->class->fieldMappings['%2$s']['criteria'] : array()
         );
-        \$sort = isset(\$this->class->fieldMappings['%2\$s']['sort']) ? \$this->class->fieldMappings['%2\$s']['sort'] : array();
-        \$return = \$this->unitOfWork->getDocumentPersister(\$className)->load(\$criteria, null, array(), 0, \$sort);
-        \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
-        \$hydratedData['%2\$s'] = \$return;
+        $sort = isset($this->class->fieldMappings['%2$s']['sort']) ? $this->class->fieldMappings['%2$s']['sort'] : array();
+        $return = $this->unitOfWork->getDocumentPersister($className)->load($criteria, null, array(), 0, $sort);
+        $this->class->reflFields['%2$s']->setValue($document, $return);
+        $hydratedData['%2$s'] = $return;
 
 EOF
                         ,
                         $mapping['name'],
-                        $mapping['fieldName']
+                        $mapping['fieldName'],
                     );
                 }
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY || $mapping['association'] === ClassMetadata::EMBED_MANY) {
                 $code .= sprintf(
-                    <<<EOF
+                    <<<'EOF'
 
         /** @Many */
-        \$mongoData = isset(\$data['%1\$s']) ? \$data['%1\$s'] : null;
+        $mongoData = isset($data['%1$s']) ? $data['%1$s'] : null;
 
-        if (\$mongoData !== null && ! is_array(\$mongoData)) {
-            throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$mongoData));
+        if ($mongoData !== null && ! is_array($mongoData)) {
+            throw HydratorException::associationTypeMismatch('%3$s', '%1$s', 'array', gettype($mongoData));
         }
 
-        \$return = \$this->dm->getConfiguration()->getPersistentCollectionFactory()->create(\$this->dm, \$this->class->fieldMappings['%2\$s']);
-        \$return->setHints(\$hints);
-        \$return->setOwner(\$document, \$this->class->fieldMappings['%2\$s']);
-        \$return->setInitialized(false);
-        if (\$mongoData) {
-            \$return->setMongoData(\$mongoData);
+        $return = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create($this->dm, $this->class->fieldMappings['%2$s']);
+        $return->setHints($hints);
+        $return->setOwner($document, $this->class->fieldMappings['%2$s']);
+        $return->setInitialized(false);
+        if ($mongoData) {
+            $return->setMongoData($mongoData);
         }
-        \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
-        \$hydratedData['%2\$s'] = \$return;
+        $this->class->reflFields['%2$s']->setValue($document, $return);
+        $hydratedData['%2$s'] = $return;
 
 EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    $class->getName()
+                    $class->getName(),
                 );
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 $code .= sprintf(
-                    <<<EOF
+                    <<<'EOF'
 
         /** @EmbedOne */
-        if (isset(\$data['%1\$s']) || (! empty(\$this->class->fieldMappings['%2\$s']['nullable']) && array_key_exists('%1\$s', \$data))) {
-            \$return = \$data['%1\$s'];
-            if (\$return !== null) {
-                \$embeddedDocument = \$return;
+        if (isset($data['%1$s']) || (! empty($this->class->fieldMappings['%2$s']['nullable']) && array_key_exists('%1$s', $data))) {
+            $return = $data['%1$s'];
+            if ($return !== null) {
+                $embeddedDocument = $return;
 
-                if (! is_array(\$embeddedDocument)) {
-                    throw HydratorException::associationTypeMismatch('%3\$s', '%1\$s', 'array', gettype(\$embeddedDocument));
+                if (! is_array($embeddedDocument)) {
+                    throw HydratorException::associationTypeMismatch('%3$s', '%1$s', 'array', gettype($embeddedDocument));
                 }
         
-                \$className = \$this->unitOfWork->getClassNameForAssociation(\$this->class->fieldMappings['%2\$s'], \$embeddedDocument);
-                \$embeddedMetadata = \$this->dm->getClassMetadata(\$className);
-                \$return = \$embeddedMetadata->newInstance();
+                $className = $this->unitOfWork->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $embeddedDocument);
+                $embeddedMetadata = $this->dm->getClassMetadata($className);
+                $return = $embeddedMetadata->newInstance();
 
-                \$this->unitOfWork->setParentAssociation(\$return, \$this->class->fieldMappings['%2\$s'], \$document, '%1\$s');
+                $this->unitOfWork->setParentAssociation($return, $this->class->fieldMappings['%2$s'], $document, '%1$s');
 
-                \$embeddedData = \$this->dm->getHydratorFactory()->hydrate(\$return, \$embeddedDocument, \$hints);
-                \$embeddedId = \$embeddedMetadata->identifier && isset(\$embeddedData[\$embeddedMetadata->identifier]) ? \$embeddedData[\$embeddedMetadata->identifier] : null;
+                $embeddedData = $this->dm->getHydratorFactory()->hydrate($return, $embeddedDocument, $hints);
+                $embeddedId = $embeddedMetadata->identifier && isset($embeddedData[$embeddedMetadata->identifier]) ? $embeddedData[$embeddedMetadata->identifier] : null;
 
-                if (empty(\$hints[Query::HINT_READ_ONLY])) {
-                    \$this->unitOfWork->registerManaged(\$return, \$embeddedId, \$embeddedData);
+                if (empty($hints[Query::HINT_READ_ONLY])) {
+                    $this->unitOfWork->registerManaged($return, $embeddedId, $embeddedData);
                 }
             }
 
-            \$this->class->reflFields['%2\$s']->setValue(\$document, \$return);
-            \$hydratedData['%2\$s'] = \$return;
+            $this->class->reflFields['%2$s']->setValue($document, $return);
+            $hydratedData['%2$s'] = $return;
         }
 
 EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    $class->getName()
+                    $class->getName(),
                 );
             }
         }
@@ -428,7 +411,7 @@ class $hydratorClassName implements HydratorInterface
 }
 EOF
             ,
-            $code
+            $code,
         );
 
         if ($fileName === null) {
@@ -472,9 +455,7 @@ EOF
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
 
-        if ($this->evm->hasListeners(Events::preLoad)) {
-            $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
-        }
+        $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
 
         // alsoLoadMethods may transform the document before hydration
         if (! empty($metadata->alsoLoadMethods)) {
@@ -511,9 +492,7 @@ EOF
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document, [new LifecycleEventArgs($document, $this->dm)]);
         }
 
-        if ($this->evm->hasListeners(Events::postLoad)) {
-            $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
-        }
+        $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
 
         return $data;
     }

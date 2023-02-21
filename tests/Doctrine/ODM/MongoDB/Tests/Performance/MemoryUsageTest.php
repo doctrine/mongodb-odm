@@ -14,19 +14,18 @@ use function floor;
 use function gc_collect_cycles;
 use function log;
 use function memory_get_usage;
-use function pow;
 use function round;
 use function sprintf;
 
 use const PHP_EOL;
 
-/**
- * @group performance
- */
+/** @group performance */
 class MemoryUsageTest extends BaseTest
 {
     /**
      * [jwage: Memory increased by 14.09 kb]
+     *
+     * @doesNotPerformAssertions
      */
     public function testMemoryUsage(): void
     {
@@ -63,6 +62,6 @@ class MemoryUsageTest extends BaseTest
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
 
-        return round($size / pow(1024, ($i = (int) floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
+        return round($size / 1024 ** ($i = (int) floor(log($size, 1024))), 2) . ' ' . $unit[$i];
     }
 }

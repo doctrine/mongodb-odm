@@ -82,53 +82,40 @@ use function trigger_deprecation;
  */
 final class DocumentPersister
 {
-    /** @var PersistenceBuilder */
-    private $pb;
+    private PersistenceBuilder $pb;
 
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var UnitOfWork */
-    private $uow;
+    private UnitOfWork $uow;
 
-    /**
-     * @var ClassMetadata
-     * @psalm-var ClassMetadata<T>
-     */
-    private $class;
+    /** @psalm-var ClassMetadata<T> */
+    private ClassMetadata $class;
 
-    /** @var Collection|null */
-    private $collection;
+    private ?Collection $collection = null;
 
-    /** @var Bucket|null */
-    private $bucket;
+    private ?Bucket $bucket = null;
 
     /**
      * Array of queued inserts for the persister to insert.
      *
      * @var array<string, object>
      */
-    private $queuedInserts = [];
+    private array $queuedInserts = [];
 
     /**
      * Array of queued inserts for the persister to insert.
      *
      * @var array<string, object>
      */
-    private $queuedUpserts = [];
+    private array $queuedUpserts = [];
 
-    /** @var CriteriaMerger */
-    private $cm;
+    private CriteriaMerger $cm;
 
-    /** @var CollectionPersister */
-    private $cp;
+    private CollectionPersister $cp;
 
-    /** @var HydratorFactory */
-    private $hydratorFactory;
+    private HydratorFactory $hydratorFactory;
 
-    /**
-     * @psalm-param ClassMetadata<T> $class
-     */
+    /** @psalm-param ClassMetadata<T> $class */
     public function __construct(
         PersistenceBuilder $pb,
         DocumentManager $dm,
@@ -158,9 +145,7 @@ final class DocumentPersister
         $this->bucket = $dm->getDocumentBucket($class->name);
     }
 
-    /**
-     * @return array<string, object>
-     */
+    /** @return array<string, object> */
     public function getInserts(): array
     {
         return $this->queuedInserts;
@@ -180,9 +165,7 @@ final class DocumentPersister
         $this->queuedInserts[spl_object_hash($document)] = $document;
     }
 
-    /**
-     * @return array<string, object>
-     */
+    /** @return array<string, object> */
     public function getUpserts(): array
     {
         return $this->queuedUpserts;
@@ -599,7 +582,7 @@ final class DocumentPersister
                     $key,
                     $data[$mapping['fieldName']],
                     $mapping,
-                    false
+                    false,
                 );
                 foreach ($reference as $keyValue) {
                     $shardKeyQueryPart[$keyValue[0]] = $keyValue[1];
@@ -796,7 +779,7 @@ final class DocumentPersister
             $criteria        = $this->cm->merge(
                 ['_id' => ['$in' => array_values($ids)]],
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
-                $mapping['criteria'] ?? []
+                $mapping['criteria'] ?? [],
             );
             $criteria        = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
 
@@ -864,7 +847,7 @@ final class DocumentPersister
         $criteria = $this->cm->merge(
             [$mappedByFieldName => $ownerClass->getIdentifierObject($owner)],
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
-            $mapping['criteria'] ?? []
+            $mapping['criteria'] ?? [],
         );
         $criteria = $this->uow->getDocumentPersister($mapping['targetDocument'])->prepareQueryOrNewObj($criteria);
         $qb       = $this->dm->createQueryBuilder($mapping['targetDocument'])
@@ -1145,7 +1128,7 @@ final class DocumentPersister
 
         if (! Type::hasType($typeName)) {
             throw new InvalidArgumentException(
-                sprintf('Mapping type "%s" does not exist', $typeName)
+                sprintf('Mapping type "%s" does not exist', $typeName),
             );
         }
 
@@ -1176,7 +1159,7 @@ final class DocumentPersister
      */
     private function prepareQueryElement(string $fieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false): array
     {
-        $class = $class ?? $this->class;
+        $class ??= $this->class;
 
         // @todo Consider inlining calls to ClassMetadata methods
 
@@ -1511,9 +1494,7 @@ final class DocumentPersister
         return $discriminatorValues;
     }
 
-    /**
-     * @param array<string, mixed> $options
-     */
+    /** @param array<string, mixed> $options */
     private function handleCollections(object $document, array $options): void
     {
         // Collection deletions (deletions of complete collections)
@@ -1610,7 +1591,7 @@ final class DocumentPersister
                 'doctrine/mongodb-odm',
                 '2.2',
                 'The "w" option as commit option is deprecated, please pass "%s" object in "writeConcern" option.',
-                WriteConcern::class
+                WriteConcern::class,
             );
             $writeOptions['writeConcern'] = new WriteConcern($writeOptions['w']);
             unset($writeOptions['w']);
@@ -1662,10 +1643,8 @@ final class DocumentPersister
         }
 
         return array_map(
-            static function ($key) use ($reference, $fieldName) {
-                return [$fieldName . '.' . $key, $reference[$key]];
-            },
-            array_keys($keys)
+            static fn ($key) => [$fieldName . '.' . $key, $reference[$key]],
+            array_keys($keys),
         );
     }
 }

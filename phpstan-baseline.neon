@@ -58,10 +58,11 @@ parameters:
             count: 1
             path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
 
+        # Support for doctrine/collections v1
         -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:writeOptions\\(\\) should return PHPUnit\\\\Framework\\\\Constraint\\\\Constraint but returns PHPUnit\\\\Framework\\\\Constraint\\\\ArraySubset\\.$#"
+            message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:add\(\) with return type void returns true but should not return anything\.$#'
             count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
+            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
         # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
         -
@@ -226,13 +227,13 @@ parameters:
             count: 2
             path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
 
-        # it loads an empty class ReflectionEnum of ReflectionEnumPolyfill.php file from laminas/laminas-code, see https://github.com/phpstan/phpstan/issues/7290
         -
-            message: "#^Call to an undefined method ReflectionEnum\\:\\:isBacked\\(\\)\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+            message: "#has parameter \\$[^\\s]+ with no value type specified in iterable type array\\.$#"
+            count: 6
+            path: tests/*
 
+        # cannot know that Command::getHelper('documentManager') returns a DocumentManagerHelper
         -
-            message: "#^Call to an undefined method ReflectionEnum\\:\\:getBackingType\\(\\)\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+            message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
+            count: 7
+            path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/*

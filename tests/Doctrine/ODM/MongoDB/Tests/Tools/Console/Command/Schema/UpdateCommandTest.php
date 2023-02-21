@@ -26,7 +26,7 @@ class UpdateCommandTest extends AbstractCommandTest
         $this->application->addCommands(
             [
                 new UpdateCommand(),
-            ]
+            ],
         );
         $command       = $this->application->find('odm:schema:update');
         $commandTester = new CommandTester($command);
@@ -38,6 +38,7 @@ class UpdateCommandTest extends AbstractCommandTest
     public function tearDown(): void
     {
         parent::tearDown();
+
         unset($this->command);
         unset($this->commandTester);
     }
@@ -47,7 +48,7 @@ class UpdateCommandTest extends AbstractCommandTest
         $this->commandTester->execute(
             [
                 '--class' => SchemaValidated::class,
-            ]
+            ],
         );
         $output = $this->commandTester->getDisplay();
         self::assertStringContainsString('Updated validation for Documents\SchemaValidated', $output);
@@ -59,7 +60,7 @@ class UpdateCommandTest extends AbstractCommandTest
             [
                 '--class' => SchemaValidated::class,
                 '--disable-validators' => true,
-            ]
+            ],
         );
         $output = $this->commandTester->getDisplay();
         self::assertStringNotContainsString('Updated validation for Documents\SchemaValidated', $output);

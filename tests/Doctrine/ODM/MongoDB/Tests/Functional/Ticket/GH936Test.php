@@ -65,7 +65,7 @@ class GH936Document
 class GH936Listener
 {
     /** @var object[] */
-    public $removed = [];
+    public array $removed = [];
 
     public function postRemove(LifecycleEventArgs $args): void
     {

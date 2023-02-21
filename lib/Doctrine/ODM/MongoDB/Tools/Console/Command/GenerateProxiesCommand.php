@@ -49,15 +49,13 @@ class GenerateProxiesCommand extends Console\Command\Command
                 'A string pattern used to match documents that should be processed.'
             ),
         ])
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Generates proxy classes for document classes.
 EOT
         );
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $filter = $input->getOption('filter');
@@ -66,9 +64,7 @@ EOT
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         assert($dm instanceof DocumentManager);
 
-        $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static function (ClassMetadata $classMetadata): bool {
-            return ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument;
-        });
+        $metadatas = array_filter($dm->getMetadataFactory()->getAllMetadata(), static fn (ClassMetadata $classMetadata): bool => ! $classMetadata->isEmbeddedDocument && ! $classMetadata->isMappedSuperclass && ! $classMetadata->isQueryResultDocument);
         $metadatas = MetadataFilter::filter($metadatas, $filter);
         $destPath  = $dm->getConfiguration()->getProxyDir();
 

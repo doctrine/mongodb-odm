@@ -7,9 +7,7 @@ namespace Documents\Ecommerce;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use InvalidArgumentException;
 
-/**
- * @ODM\EmbeddedDocument()
- */
+/** @ODM\EmbeddedDocument() */
 class Option
 {
     /**
@@ -56,9 +54,7 @@ class Option
         return $this->name;
     }
 
-    /**
-     * @return float|Money
-     */
+    /** @return float|Money */
     public function getPrice(?bool $object = false)
     {
         if ($object === true) {

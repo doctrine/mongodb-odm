@@ -11,12 +11,12 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 class ShardKeyInheritanceMappingTest extends BaseTest
 {
-    /** @var ClassMetadataFactory */
-    private $factory;
+    private ClassMetadataFactory $factory;
 
     public function setUp(): void
     {
         parent::setUp();
+
         $this->factory = new ClassMetadataFactory();
         $this->factory->setDocumentManager($this->dm);
         $this->factory->setConfiguration($this->dm->getConfiguration());
@@ -102,9 +102,7 @@ class ShardedSingleCollInheritance1
     private $id;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ShardedSingleCollInheritance2 extends ShardedSingleCollInheritance1
 {
 }
@@ -132,9 +130,7 @@ class ShardedCollectionPerClass1
     private $id;
 }
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ShardedCollectionPerClass2 extends ShardedCollectionPerClass1
 {
 }

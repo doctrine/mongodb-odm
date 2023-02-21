@@ -12,9 +12,7 @@ use function array_map;
 use function array_search;
 use function in_array;
 
-/**
- * @ODM\Document
- */
+/** @ODM\Document */
 class ConfigurableProduct
 {
     /**
@@ -67,17 +65,13 @@ class ConfigurableProduct
         return $this;
     }
 
-    /**
-     * @return Collection<int, Option>|array<Option>
-     */
+    /** @return Collection<int, Option>|array<Option> */
     public function getOptions()
     {
         return $this->options;
     }
 
-    /**
-     * @param string|Option $name
-     */
+    /** @param string|Option $name */
     public function addOption($name, ?Money $price = null, ?StockItem $item = null): void
     {
         if (! $name instanceof Option) {
@@ -151,18 +145,14 @@ class ConfigurableProduct
         return null;
     }
 
-    /**
-     * @return Money|float|null
-     */
+    /** @return Money|float|null */
     public function getPrice()
     {
         return isset($this->selectedOption) ?
             $this->selectedOption->getPrice() : null;
     }
 
-    /**
-     * @return StockItem[]
-     */
+    /** @return StockItem[] */
     protected function getStockItems(): array
     {
         return array_map(static function ($option) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
+use BadMethodCallException;
 use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -22,6 +23,7 @@ use function array_values;
 use function count;
 use function get_class;
 use function is_object;
+use function method_exists;
 
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
@@ -247,9 +249,7 @@ trait PersistentCollectionTrait
         return array_udiff_assoc(
             $this->snapshot,
             $this->coll->toArray(),
-            static function ($a, $b) {
-                return $a === $b ? 0 : 1;
-            }
+            static fn ($a, $b) => $a === $b ? 0 : 1,
         );
     }
 
@@ -267,9 +267,7 @@ trait PersistentCollectionTrait
         return array_udiff_assoc(
             $this->coll->toArray(),
             $this->snapshot,
-            static function ($a, $b) {
-                return $a === $b ? 0 : 1;
-            }
+            static fn ($a, $b) => $a === $b ? 0 : 1,
         );
     }
 
@@ -359,9 +357,7 @@ trait PersistentCollectionTrait
         return $this->coll->containsKey($key);
     }
 
-    /**
-     * @template TMaybeContained
-     */
+    /** @template TMaybeContained */
     public function contains($element)
     {
         $this->initialize();
@@ -409,9 +405,7 @@ trait PersistentCollectionTrait
         return $this->coll->getValues();
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     #[ReturnTypeWillChange]
     public function count()
     {
@@ -741,5 +735,37 @@ trait PersistentCollectionTrait
     {
         return $this->owner && $this->dm && ! empty($this->mapping['isOwningSide'])
             && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify();
+    }
+
+    /**
+     * @psalm-param Closure(TKey, T):bool $p
+     *
+     * @psalm-return T|null
+     */
+    public function findFirst(Closure $p)
+    {
+        if (! method_exists($this->coll, 'findFirst')) {
+            throw new BadMethodCallException('findFirst() is only available since doctrine/collections v2');
+        }
+
+        return $this->coll->findFirst($p);
+    }
+
+    /**
+     * @psalm-param Closure(TReturn|TInitial|null, T):(TInitial|TReturn) $func
+     * @psalm-param TInitial|null $initial
+     *
+     * @psalm-return TReturn|TInitial|null
+     *
+     * @psalm-template TReturn
+     * @psalm-template TInitial
+     */
+    public function reduce(Closure $func, $initial = null)
+    {
+        if (! method_exists($this->coll, 'reduce')) {
+            throw new BadMethodCallException('reduce() is only available since doctrine/collections v2');
+        }
+
+        return $this->coll->reduce($func, $initial);
     }
 }

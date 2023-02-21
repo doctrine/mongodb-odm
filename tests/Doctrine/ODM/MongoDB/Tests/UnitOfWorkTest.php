@@ -156,13 +156,11 @@ class UnitOfWorkTest extends BaseTest
         self::assertEquals([$mappingD, $c, 'b.c.d'], $this->uow->getParentAssociation($d));
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testPreUpdateTriggeredWithEmptyChangeset(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
-            new PreUpdateListenerMock()
+            new PreUpdateListenerMock(),
         );
         $user           = new ForumUser();
         $user->username = '12345';
@@ -249,6 +247,9 @@ class UnitOfWorkTest extends BaseTest
     }
 
     /**
+     * @param array<string, mixed>|null $origData
+     * @param array<string, mixed>|null $updateData
+     *
      * @dataProvider getScheduleForUpdateWithArraysTests
      */
     public function testScheduleForUpdateWithArrays(?array $origData, ?array $updateData, bool $shouldInUpdate): void
@@ -527,7 +528,7 @@ class UnitOfWorkTest extends BaseTest
     public function testCommitsInProgressIsUpdatedOnException(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
-            new ExceptionThrowingListenerMock()
+            new ExceptionThrowingListenerMock(),
         );
         $user           = new ForumUser();
         $user->username = '12345';
@@ -537,10 +538,8 @@ class UnitOfWorkTest extends BaseTest
         try {
             $this->dm->flush();
         } catch (Throwable $exception) {
-            $getCommitsInProgress = Closure::bind(function (UnitOfWork $unitOfWork) {
-                /** @psalm-suppress InaccessibleProperty */
-                return $unitOfWork->commitsInProgress;
-            }, $this->dm->getUnitOfWork(), UnitOfWork::class);
+            $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => /** @psalm-suppress InaccessibleProperty */
+$unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
 
             self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
 
@@ -625,17 +624,13 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->data = $data;
     }
 
-    /**
-     * @return Collection<int, NotifyChangedRelatedItem>
-     */
+    /** @return Collection<int, NotifyChangedRelatedItem> */
     public function getItems(): Collection
     {
         return $this->items;
     }
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public function setTransient($value): void
     {
         if ($value === $this->transient) {
@@ -714,10 +709,11 @@ class ArrayTest
     /**
      * @ODM\Field(type="hash")
      *
-     * @var array<array-key, mixed>|null
+     * @var array<string, mixed>|null
      */
     public $data;
 
+    /** @param array<string, mixed>|null $data */
     public function __construct(?array $data)
     {
         $this->data = $data;

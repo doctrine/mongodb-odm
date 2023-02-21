@@ -14,15 +14,13 @@ final class DocumentNotFoundEventArgs extends LifecycleEventArgs
     /** @var mixed */
     private $identifier;
 
-    /** @var bool */
-    private $disableException = false;
+    private bool $disableException = false;
 
-    /**
-     * @param mixed $identifier
-     */
+    /** @param mixed $identifier */
     public function __construct(object $document, DocumentManager $dm, $identifier)
     {
         parent::__construct($document, $dm);
+
         $this->identifier = $identifier;
     }
 

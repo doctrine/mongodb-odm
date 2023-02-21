@@ -11,9 +11,7 @@ use MongoDB\BSON\UTCDateTime;
 use function array_search;
 use function in_array;
 
-/**
- * @ODM\Document(collection="articles")
- */
+/** @ODM\Document(collection="articles") */
 class Article
 {
     /**
@@ -76,17 +74,13 @@ class Article
         $this->body = $body;
     }
 
-    /**
-     * @return DateTimeInterface|UTCDateTime|string|null
-     */
+    /** @return DateTimeInterface|UTCDateTime|string|null */
     public function getCreatedAt()
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param DateTimeInterface|UTCDateTime|string|null $createdAt
-     */
+    /** @param DateTimeInterface|UTCDateTime|string|null $createdAt */
     public function setCreatedAt($createdAt): void
     {
         $this->createdAt = $createdAt;
@@ -106,6 +100,7 @@ class Article
         unset($this->tags[array_search($tag, $this->tags)]);
     }
 
+    /** @return int[] */
     public function getTags(): array
     {
         return $this->tags;

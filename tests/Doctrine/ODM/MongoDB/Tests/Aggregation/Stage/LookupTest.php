@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsComment;
 use Documents\ReferenceUser;
-use Documents\Sharded\ShardedOne;
 use Documents\SimpleReferenceUser;
 use Documents\User;
+use InvalidArgumentException;
 
 class LookupTest extends BaseTest
 {
     public function setUp(): void
     {
         parent::setUp();
+
         $this->insertTestData();
     }
 
@@ -45,6 +45,151 @@ class LookupTest extends BaseTest
         self::assertCount(1, $result);
         self::assertCount(1, $result[0]['user']);
         self::assertSame('alcaeus', $result[0]['user'][0]['username']);
+    }
+
+    public function testLookupStageWithPipelineAsArray(): void
+    {
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $builder
+            ->lookup('user')
+            ->excludeLocalAndForeignField()
+            ->alias('user')
+            ->let(['name' => '$username'])
+            ->pipeline([
+                [
+                    '$match' => ['username' => 'alcaeus'],
+                ],
+                [
+                    '$project' => [
+                        '_id' => 0,
+                        'username' => 1,
+                    ],
+                ],
+            ]);
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'as' => 'user',
+                    'let' => ['name' => '$username'],
+                    'pipeline' => [
+                        [
+                            '$match' => ['username' => 'alcaeus'],
+                        ],
+                        [
+                            '$project' => [
+                                '_id' => 0,
+                                'username' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
+    public function testLookupStageWithPipelineAsStage(): void
+    {
+        $builder               = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $lookupPipelineBuilder = $this->dm->createAggregationBuilder(User::class);
+        $builder
+            ->lookup('user')
+            ->excludeLocalAndForeignField()
+            ->alias('user')
+            ->let(['name' => '$username'])
+            ->pipeline(
+                $lookupPipelineBuilder
+                    ->match()
+                        ->field('username')->equals('alcaeus')
+                ->project()
+                ->includeFields(['username'])
+                ->excludeFields(['_id']),
+            );
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'as' => 'user',
+                    'let' => ['name' => '$username'],
+                    'pipeline' => [
+                        [
+                            '$match' => ['username' => 'alcaeus'],
+                        ],
+                        [
+                            '$project' => [
+                                '_id' => 0,
+                                'username' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
+    public function testLookupThrowsExceptionUsingSameBuilderForPipeline(): void
+    {
+        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $builder
+            ->lookup('user')
+            ->excludeLocalAndForeignField()
+            ->alias('user')
+            ->let(['name' => '$username'])
+            ->pipeline(
+                $builder
+                    ->match()
+                        ->field('username')->equals('alcaeus'),
+            );
+    }
+
+    public function testLookupStageWithPipelineAndLocalForeignFields(): void
+    {
+        $builder               = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $lookupPipelineBuilder = $this->dm->createAggregationBuilder(User::class);
+        $builder
+            ->lookup('user')
+            ->alias('user')
+            ->let(['name' => '$username'])
+            ->pipeline(
+                $lookupPipelineBuilder->match()->field('username')->equals('alcaeus')
+                    ->project()
+                    ->includeFields(['username'])
+                    ->excludeFields(['_id']),
+            );
+
+        $expectedPipeline = [
+            [
+                '$lookup' => [
+                    'from' => 'users',
+                    'as' => 'user',
+                    'localField' => 'userId',
+                    'foreignField' => '_id',
+                    'let' => ['name' => '$username'],
+                    'pipeline' => [
+                        [
+                            '$match' => ['username' => 'alcaeus'],
+                        ],
+                        [
+                            '$project' => [
+                                '_id' => 0,
+                                'username' => 1,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
     public function testLookupStageWithFieldNameTranslation(): void
@@ -189,34 +334,6 @@ class LookupTest extends BaseTest
         self::assertSame('malarzm', $result[1]['users'][0]['username']);
     }
 
-    public function testLookupStageReferenceManyWithoutUnwindMongoDB34(): void
-    {
-        $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
-        $builder
-            ->lookup('users')
-                ->alias('users');
-
-        $expectedPipeline = [
-            [
-                '$lookup' => [
-                    'from' => 'users',
-                    'localField' => 'users',
-                    'foreignField' => '_id',
-                    'as' => 'users',
-                ],
-            ],
-        ];
-
-        self::assertEquals($expectedPipeline, $builder->getPipeline());
-
-        $result = $builder->execute()->toArray();
-
-        self::assertCount(1, $result);
-        self::assertCount(2, $result[0]['users']);
-        self::assertSame('alcaeus', $result[0]['users'][0]['username']);
-        self::assertSame('malarzm', $result[0]['users'][1]['username']);
-    }
-
     public function testLookupStageReferenceOneInverse(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
@@ -343,26 +460,6 @@ class LookupTest extends BaseTest
 
         self::assertCount(1, $result);
         self::assertCount(1, $result[0]['embeddedReferenceManyInverse']);
-    }
-
-    public function testLookupToShardedCollectionThrowsException(): void
-    {
-        $builder = $this->dm->createAggregationBuilder(User::class);
-
-        $this->expectException(MappingException::class);
-        $builder
-            ->lookup(ShardedOne::class)
-                ->localField('id')
-                ->foreignField('id');
-    }
-
-    public function testLookupToShardedReferenceThrowsException(): void
-    {
-        $builder = $this->dm->createAggregationBuilder(ShardedOne::class);
-
-        $this->expectException(MappingException::class);
-        $builder
-            ->lookup('user');
     }
 
     private function insertTestData(): void

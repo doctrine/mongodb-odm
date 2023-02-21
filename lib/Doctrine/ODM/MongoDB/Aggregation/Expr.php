@@ -25,24 +25,20 @@ use function substr;
  */
 class Expr
 {
-    /** @var DocumentManager */
-    private $dm;
+    private DocumentManager $dm;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ClassMetadata $class;
 
     /** @var array<string, mixed> */
-    private $expr = [];
+    private array $expr = [];
 
     /**
      * The current field we are operating on.
-     *
-     * @var string
      */
-    private $currentField;
+    private ?string $currentField = null;
 
     /** @var array{case: mixed|self, then?: mixed|self}|null */
-    private $switchBranch;
+    private ?array $switchBranch = null;
 
     public function __construct(DocumentManager $dm, ClassMetadataInterface $class)
     {
@@ -318,9 +314,7 @@ class Expr
     public static function convertExpression($expression)
     {
         if (is_array($expression)) {
-            return array_map(static function ($expression) {
-                return static::convertExpression($expression);
-            }, $expression);
+            return array_map(static fn ($expression) => static::convertExpression($expression), $expression);
         }
 
         if ($expression instanceof self) {
@@ -537,9 +531,7 @@ class Expr
         return $this->operator('$floor', $number);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function getExpression(): array
     {
         return $this->expr;
@@ -1608,9 +1600,7 @@ class Expr
         }
     }
 
-    /**
-     * @throws BadMethodCallException If there is no current switch operator.
-     */
+    /** @throws BadMethodCallException If there is no current switch operator. */
     private function requiresSwitchStatement(?string $method = null): void
     {
         $message = ($method ?: 'This method') . ' requires a valid switch statement (call switch() first).';

@@ -15,12 +15,12 @@ use function unserialize;
 
 class BasicInheritanceMappingTest extends BaseTest
 {
-    /** @var ClassMetadataFactory */
-    private $factory;
+    private ClassMetadataFactory $factory;
 
     public function setUp(): void
     {
         parent::setUp();
+
         $this->factory = new ClassMetadataFactory();
         $this->factory->setDocumentManager($this->dm);
         $this->factory->setConfiguration($this->dm->getConfiguration());
@@ -61,9 +61,7 @@ class BasicInheritanceMappingTest extends BaseTest
         self::assertTrue(isset($class->fieldMappings['mappedRelated1']));
     }
 
-    /**
-     * @group DDC-388
-     */
+    /** @group DDC-388 */
     public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);
@@ -183,9 +181,7 @@ class GridFSParentClass
     private $id;
 }
 
-/**
- * @ODM\File
- */
+/** @ODM\File */
 class GridFSChildClass extends GridFSParentClass
 {
     /**

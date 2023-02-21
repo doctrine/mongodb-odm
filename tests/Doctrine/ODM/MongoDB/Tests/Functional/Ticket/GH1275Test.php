@@ -17,9 +17,7 @@ class GH1275Test extends BaseTest
 {
     public function testResortAtomicCollectionsFlipItems(): void
     {
-        $getNameCallback = static function (Item $item) {
-            return $item->name;
-        };
+        $getNameCallback = static fn (Item $item) => $item->name;
 
         $container = new Container();
         $this->dm->persist($container);
@@ -40,7 +38,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Two', 'Number Three'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->flip(1, 2);
@@ -52,15 +50,13 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Three', 'Number Two'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
     }
 
     public function testResortAtomicCollections(): void
     {
-        $getNameCallback = static function (Item $item) {
-            return $item->name;
-        };
+        $getNameCallback = static fn (Item $item) => $item->name;
 
         $container = new Container();
         $this->dm->persist($container);
@@ -81,7 +77,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Two', 'Number Three'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemOne, -1);
@@ -91,7 +87,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Two', 'Number Three'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemOne, 1);
@@ -101,7 +97,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number Two', 'Number One', 'Number Three'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemTwo, 2);
@@ -111,7 +107,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Three', 'Number Two'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemTwo, 2);
@@ -121,7 +117,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number One', 'Number Three', 'Number Two'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         $container->move($itemThree, -1);
@@ -131,7 +127,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['Number Three', 'Number One', 'Number Two'],
-            array_map($getNameCallback, $container->items->toArray())
+            array_map($getNameCallback, $container->items->toArray()),
         );
 
         self::assertCount(3, $container->items);
@@ -149,14 +145,10 @@ class GH1275Test extends BaseTest
         ];
     }
 
-    /**
-     * @dataProvider getCollectionStrategies
-     */
+    /** @dataProvider getCollectionStrategies */
     public function testResortEmbedManyCollection(string $strategy): void
     {
-        $getNameCallback = static function (Element $element) {
-            return $element->name;
-        };
+        $getNameCallback = static fn (Element $element) => $element->name;
 
         $container = new Container();
         $container->$strategy->add(new Element('one'));
@@ -169,7 +161,7 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['one', 'two', 'three'],
-            array_map($getNameCallback, $container->$strategy->toArray())
+            array_map($getNameCallback, $container->$strategy->toArray()),
         );
 
         $two   = $container->$strategy->get(1);
@@ -183,14 +175,12 @@ class GH1275Test extends BaseTest
 
         self::assertSame(
             ['one', 'three', 'two'],
-            array_map($getNameCallback, $container->$strategy->toArray())
+            array_map($getNameCallback, $container->$strategy->toArray()),
         );
     }
 }
 
-/**
- * @ODM\Document(collection="item")
- */
+/** @ODM\Document(collection="item") */
 class Item
 {
     /**
@@ -217,9 +207,7 @@ class Item
     }
 }
 
-/**
- * @ODM\EmbeddedDocument
- */
+/** @ODM\EmbeddedDocument */
 class Element
 {
     /**
@@ -242,9 +230,7 @@ class Element
     }
 }
 
-/**
- * @ODM\Document(collection="container")
- */
+/** @ODM\Document(collection="container") */
 class Container
 {
     /**
