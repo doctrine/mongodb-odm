@@ -37,7 +37,7 @@ jobs:
           - dependencies: "lowest"
             php-version: "7.2"
             mongodb-version: "3.6"
-            driver-version: "1.5.0"
+            driver-version: "1.10.0"
             topology: "server"
           - topology: "sharded_cluster"
             php-version: "8.0"
