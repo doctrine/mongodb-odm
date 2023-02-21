@@ -12,7 +12,7 @@ env:
 jobs:
   phpunit:
     name: "PHPUnit"
-    runs-on: "ubuntu-18.04"
+    runs-on: "ubuntu-20.04"
 
     strategy:
       matrix:
@@ -25,7 +25,6 @@ jobs:
           - "6.0"
           - "5.0"
           - "4.4"
-          - "4.2"
         driver-version:
           - "stable"
         topology:
@@ -35,7 +34,7 @@ jobs:
         include:
           - dependencies: "lowest"
             php-version: "7.4"
-            mongodb-version: "3.6"
+            mongodb-version: "4.4"
             driver-version: "1.11.0"
             topology: "server"
           - topology: "sharded_cluster"
