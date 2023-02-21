@@ -22,7 +22,7 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "ext-mongodb": "^1.5",
+        "ext-mongodb": "^1.11",
         "doctrine/annotations": "^1.12 || ^2.0",
         "doctrine/cache": "^1.11 || ^2.0",
         "doctrine/collections": "^1.5 || ^2.0",
