@@ -14,6 +14,7 @@ use Documents\FileMetadata;
 use Documents\FileWithoutChunkSize;
 use Documents\FileWithoutMetadata;
 use Documents\User;
+use MongoDB\BSON\ObjectId;
 
 use function assert;
 use function fclose;
@@ -40,6 +41,29 @@ class DefaultGridFSRepositoryTest extends BaseTest
         self::assertInstanceOf(File::class, $file);
 
         self::assertSame('somefile.txt', $file->getFilename());
+        self::assertSame(8, $file->getLength());
+        self::assertSame(12345, $file->getChunkSize());
+        self::assertEqualsWithDelta(new DateTime(), $file->getUploadDate(), 1);
+        self::assertNull($file->getMetadata());
+    }
+
+    public function testOpenUploadStreamUsesIdFromOptions(): void
+    {
+        $uploadOptions     = new UploadOptions();
+        $uploadOptions->id = new ObjectId('1234567890abcdef12345678');
+
+        $uploadStream = $this->getRepository()->openUploadStream('somefile.txt', $uploadOptions);
+        self::assertIsResource($uploadStream);
+
+        fwrite($uploadStream, 'contents');
+        fclose($uploadStream);
+
+        $file = $this->getRepository()->findOneBy(['filename' => 'somefile.txt']);
+        assert($file instanceof File);
+        self::assertInstanceOf(File::class, $file);
+
+        self::assertSame('somefile.txt', $file->getFilename());
+        self::assertSame('1234567890abcdef12345678', $file->getId());
         self::assertSame(8, $file->getLength());
         self::assertSame(12345, $file->getChunkSize());
         self::assertEqualsWithDelta(new DateTime(), $file->getUploadDate(), 1);
