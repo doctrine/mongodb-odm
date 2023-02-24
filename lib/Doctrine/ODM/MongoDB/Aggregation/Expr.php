@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\GenericOperatorsInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
@@ -23,7 +24,7 @@ use function substr;
 /**
  * Fluent interface for building aggregation pipelines.
  */
-class Expr
+class Expr implements GenericOperatorsInterface
 {
     private DocumentManager $dm;
 
@@ -1788,10 +1789,10 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/round/
      *
-     * @param mixed|self $number
-     * @param mixed|self $place
+     * @param mixed|self      $number
+     * @param mixed|self|null $place
      */
-    public function round($number, $place): self
+    public function round($number, $place = null): self
     {
         return $this->operator('$round', [$number, $place]);
     }
