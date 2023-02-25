@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use GeoJson\Geometry\Geometry;
@@ -30,6 +31,7 @@ use function strtolower;
  * Query builder for ODM.
  *
  * @psalm-import-type QueryShape from Query
+ * @psalm-import-type SortMetaKeywords from Sort
  */
 class Builder
 {
@@ -1486,6 +1488,8 @@ class Builder
      * if the field is not already set in the projection.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/projection/meta/#sort
+     *
+     * @psalm-param SortMetaKeywords $metaDataKeyword
      */
     public function sortMeta(string $fieldName, string $metaDataKeyword): self
     {

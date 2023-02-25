@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 use MongoDB\BSON\Binary;
@@ -14,7 +13,6 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use ReflectionMethod;
 
-use function assert;
 use function get_class;
 
 class DocumentPersisterGetShardKeyQueryTest extends BaseTest
@@ -28,7 +26,6 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $o->float  = 1.2;
 
         $persister = $this->uow->getDocumentPersister(get_class($o));
-        assert($persister instanceof DocumentPersister);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
@@ -47,7 +44,6 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $o->date = new DateTime();
 
         $persister = $this->uow->getDocumentPersister(get_class($o));
-        assert($persister instanceof DocumentPersister);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
@@ -74,7 +70,6 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $o->identifier = new ObjectId();
 
         $persister = $this->uow->getDocumentPersister(get_class($o));
-        assert($persister instanceof DocumentPersister);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
@@ -94,7 +89,6 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTest
         $this->dm->persist($o->reference);
 
         $persister = $this->uow->getDocumentPersister(get_class($o));
-        assert($persister instanceof DocumentPersister);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);

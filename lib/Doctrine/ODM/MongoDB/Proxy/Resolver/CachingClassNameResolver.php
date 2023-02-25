@@ -11,7 +11,7 @@ final class CachingClassNameResolver implements ClassNameResolver, ProxyClassNam
 {
     private ProxyClassNameResolver $resolver;
 
-    /** @var array<string, string> */
+    /** @var array<class-string, string> */
     private array $resolvedNames = [];
 
     public function __construct(ProxyClassNameResolver $resolver)

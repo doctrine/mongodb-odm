@@ -37,9 +37,7 @@ use function ucfirst;
  *
  * @internal
  *
- * @method list<ClassMetadata> getAllMetadata()
- * @method ClassMetadata[] getLoadedMetadata()
- * @method ClassMetadata getMetadataFor($className)
+ * @template-extends AbstractClassMetadataFactory<ClassMetadata>
  */
 final class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
