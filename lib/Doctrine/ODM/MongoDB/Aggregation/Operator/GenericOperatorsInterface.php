@@ -2,30 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
+namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
-use Doctrine\ODM\MongoDB\Aggregation\Operator\GenericOperatorsInterface;
-use Doctrine\ODM\MongoDB\Aggregation\Stage;
-
-use function func_get_args;
 
 /**
- * Fluent interface for adding operators to aggregation stages.
+ * Interface containing all operators available in most pipeline stages.
+ * This interface can be used for type hinting, but must not be implemented by
+ * users. Methods WILL be added to the public API in future minor versions.
+ *
+ * @internal
  */
-abstract class Operator extends Stage implements GenericOperatorsInterface
+interface GenericOperatorsInterface
 {
-    /** @var Expr */
-    protected $expr;
-
-    public function __construct(Builder $builder)
-    {
-        parent::__construct($builder);
-
-        $this->expr = $builder->expr();
-    }
-
     /**
      * Returns the absolute value of a number.
      *
@@ -33,18 +22,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/abs/
-     * @see Expr::abs
      *
      * @param mixed|Expr $number
-     *
-     * @return static
      */
-    public function abs($number): self
-    {
-        $this->expr->abs($number);
-
-        return $this;
-    }
+    public function abs($number): self;
 
     /**
      * Returns the inverse cosine (arc cosine) of a value in radians.
@@ -53,12 +34,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function acos($expression): self
-    {
-        $this->expr->acos($expression);
-
-        return $this;
-    }
+    public function acos($expression): self;
 
     /**
      * Returns the inverse hyperbolic cosine (hyperbolic arc cosine) of a value in radians.
@@ -67,71 +43,43 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function acosh($expression): self
-    {
-        $this->expr->acosh($expression);
-
-        return $this;
-    }
+    public function acosh($expression): self;
 
     /**
      * Adds numbers together or adds numbers and a date. If one of the arguments
      * is a date, $add treats the other arguments as milliseconds to add to the
      * date.
      *
-     * The arguments can be any valid expression as long as they resolve to either all numbers or to numbers and a date.
+     * The arguments can be any valid expression as long as they resolve to
+     * either all numbers or to numbers and a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/add/
-     * @see Expr::add
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
-     *
-     * @return static
      */
-    public function add($expression1, $expression2, ...$expressions): self
-    {
-        $this->expr->add(...func_get_args());
-
-        return $this;
-    }
+    public function add($expression1, $expression2, ...$expressions): self;
 
     /**
-     * Add one or more $and clauses to the current expression.
+     * Adds one or more $and clauses to the current expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/and/
-     * @see Expr::addAnd
      *
-     * @param mixed[]|Expr $expression
-     * @param mixed[]|Expr ...$expressions
-     *
-     * @return static
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions): self
-    {
-        $this->expr->addAnd(...func_get_args());
-
-        return $this;
-    }
+    public function addAnd($expression, ...$expressions): self;
 
     /**
-     * Add one or more $or clauses to the current expression.
+     * Adds one or more $or clause to the current expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/or/
-     * @see Expr::addOr
      *
-     * @param mixed[]|Expr $expression
-     * @param mixed[]|Expr ...$expressions
-     *
-     * @return static
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions): self
-    {
-        $this->expr->addOr(...func_get_args());
-
-        return $this;
-    }
+    public function addOr($expression, ...$expressions): self;
 
     /**
      * Evaluates an array as a set and returns true if no element in the array
@@ -140,18 +88,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The expression must resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/allElementsTrue/
-     * @see Expr::allElementsTrue
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function allElementsTrue($expression): self
-    {
-        $this->expr->allElementsTrue($expression);
-
-        return $this;
-    }
+    public function allElementsTrue($expression): self;
 
     /**
      * Evaluates an array as a set and returns true if any of the elements are
@@ -160,18 +100,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The expression must resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/anyElementTrue/
-     * @see Expr::anyElementTrue
      *
      * @param mixed[]|Expr $expression
-     *
-     * @return static
      */
-    public function anyElementTrue($expression): self
-    {
-        $this->expr->anyElementTrue($expression);
-
-        return $this;
-    }
+    public function anyElementTrue($expression): self;
 
     /**
      * Returns the element at the specified array index.
@@ -182,19 +114,11 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * to an integer.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/arrayElemAt/
-     * @see Expr::arrayElemAt
      *
      * @param mixed|Expr $array
      * @param mixed|Expr $index
-     *
-     * @return static
      */
-    public function arrayElemAt($array, $index): self
-    {
-        $this->expr->arrayElemAt($array, $index);
-
-        return $this;
-    }
+    public function arrayElemAt($array, $index): self;
 
     /**
      * Converts an array into a single document.
@@ -203,26 +127,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $array
      */
-    public function arrayToObject($array): self
-    {
-        $this->expr->arrayToObject($array);
-
-        return $this;
-    }
-
-    /**
-     * Returns the inverse tangent (arc tangent) of a value in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan/
-     *
-     * @param mixed|Expr $expression
-     */
-    public function atan($expression): self
-    {
-        $this->expr->atan($expression);
-
-        return $this;
-    }
+    public function arrayToObject($array): self;
 
     /**
      * Returns the inverse sin (arc sine) of a value in radians.
@@ -231,12 +136,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function asin($expression): self
-    {
-        $this->expr->asin($expression);
-
-        return $this;
-    }
+    public function asin($expression): self;
 
     /**
      * Returns the inverse hyperbolic sine (hyperbolic arc sine) of a value in radians.
@@ -245,12 +145,16 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function asinh($expression): self
-    {
-        $this->expr->asinh($expression);
+    public function asinh($expression): self;
 
-        return $this;
-    }
+    /**
+     * Returns the inverse tangent (arc tangent) of a value in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan/
+     *
+     * @param mixed|Expr $expression
+     */
+    public function atan($expression): self;
 
     /**
      * Returns the inverse tangent (arc tangent) of y / x in radians, where y and x are the first and second values passed to the expression respectively.
@@ -260,12 +164,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      */
-    public function atan2($expression1, $expression2): self
-    {
-        $this->expr->atan2($expression1, $expression2);
-
-        return $this;
-    }
+    public function atan2($expression1, $expression2): self;
 
     /**
      * Returns the inverse hyperbolic tangent (hyperbolic arc tangent) of a value in radians.
@@ -274,12 +173,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function atanh($expression): self
-    {
-        $this->expr->atanh($expression);
-
-        return $this;
-    }
+    public function atanh($expression): self;
 
     /**
      * Adds a case statement for a branch of the $switch operator.
@@ -290,12 +184,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function case($expression): self
-    {
-        $this->expr->case($expression);
-
-        return $this;
-    }
+    public function case($expression): self;
 
     /**
      * Returns the smallest integer greater than or equal to the specified number.
@@ -304,18 +193,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ceil/
-     * @see Expr::ceil
      *
      * @param mixed|Expr $number
-     *
-     * @return static
      */
-    public function ceil($number): self
-    {
-        $this->expr->ceil($number);
-
-        return $this;
-    }
+    public function ceil($number): self;
 
     /**
      * Compares two values and returns:
@@ -324,19 +205,11 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * 0 if the two values are equivalent.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cmp/
-     * @see Expr::cmp
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function cmp($expression1, $expression2): self
-    {
-        $this->expr->cmp($expression1, $expression2);
-
-        return $this;
-    }
+    public function cmp($expression1, $expression2): self;
 
     /**
      * Concatenates strings and returns the concatenated string.
@@ -346,20 +219,12 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * that is missing, $concat returns null.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/concat/
-     * @see Expr::concat
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
-     *
-     * @return static
      */
-    public function concat($expression1, $expression2, ...$expressions): self
-    {
-        $this->expr->concat(...func_get_args());
-
-        return $this;
-    }
+    public function concat($expression1, $expression2, ...$expressions): self;
 
     /**
      * Concatenates arrays to return the concatenated array.
@@ -368,20 +233,12 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/concatArrays/
-     * @see Expr::concatArrays
      *
      * @param mixed|Expr $array1
      * @param mixed|Expr $array2
      * @param mixed|Expr ...$arrays Additional expressions
-     *
-     * @return static
      */
-    public function concatArrays($array1, $array2, ...$arrays): self
-    {
-        $this->expr->concatArrays(...func_get_args());
-
-        return $this;
-    }
+    public function concatArrays($array1, $array2, ...$arrays): self;
 
     /**
      * Evaluates a boolean expression to return one of the two specified return
@@ -390,20 +247,12 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cond/
-     * @see Expr::cond
      *
      * @param mixed|Expr $if
      * @param mixed|Expr $then
      * @param mixed|Expr $else
-     *
-     * @return static
      */
-    public function cond($if, $then, $else): self
-    {
-        $this->expr->cond($if, $then, $else);
-
-        return $this;
-    }
+    public function cond($if, $then, $else): self;
 
     /**
      * Converts a value to a specified type.
@@ -415,12 +264,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @param mixed|Expr|null $onError
      * @param mixed|Expr|null $onNull
      */
-    public function convert($input, $to, $onError = null, $onNull = null): self
-    {
-        $this->expr->convert($input, $to, $onError, $onNull);
-
-        return $this;
-    }
+    public function convert($input, $to, $onError = null, $onNull = null): self;
 
     /**
      * Returns the cosine of a value that is measured in radians.
@@ -429,12 +273,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function cos($expression): self
-    {
-        $this->expr->cos($expression);
-
-        return $this;
-    }
+    public function cos($expression): self;
 
     /**
      * Returns the hyperbolic cosine of a value that is measured in radians.
@@ -443,12 +282,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function cosh($expression): self
-    {
-        $this->expr->cosh($expression);
-
-        return $this;
-    }
+    public function cosh($expression): self;
 
     /**
      * Converts a date object to a string according to a user-specified format.
@@ -458,19 +292,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The date argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateToString/
-     * @see Expr::dateToString
      *
-     * @param string     $format
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function dateToString($format, $expression): self
-    {
-        $this->expr->dateToString($format, $expression);
-
-        return $this;
-    }
+    public function dateToString(string $format, $expression): self;
 
     /**
      * Returns the day of the month for a date as a number between 1 and 31.
@@ -478,18 +303,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfMonth/
-     * @see Expr::dayOfMonth
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function dayOfMonth($expression): self
-    {
-        $this->expr->dayOfMonth($expression);
-
-        return $this;
-    }
+    public function dayOfMonth($expression): self;
 
     /**
      * Returns the day of the week for a date as a number between 1 (Sunday) and
@@ -498,18 +315,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfWeek/
-     * @see Expr::dayOfWeek
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function dayOfWeek($expression): self
-    {
-        $this->expr->dayOfWeek($expression);
-
-        return $this;
-    }
+    public function dayOfWeek($expression): self;
 
     /**
      * Returns the day of the year for a date as a number between 1 and 366.
@@ -517,18 +326,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfYear/
-     * @see Expr::dayOfYear
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function dayOfYear($expression): self
-    {
-        $this->expr->dayOfYear($expression);
-
-        return $this;
-    }
+    public function dayOfYear($expression): self;
 
     /**
      * Adds a default statement for the current $switch operator.
@@ -541,12 +342,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function default($expression): self
-    {
-        $this->expr->default($expression);
-
-        return $this;
-    }
+    public function default($expression): self;
 
     /**
      * Converts a value from degrees to radians.
@@ -555,12 +351,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function degreesToRadians($expression): self
-    {
-        $this->expr->degreesToRadians($expression);
-
-        return $this;
-    }
+    public function degreesToRadians($expression): self;
 
     /**
      * Divides one number by another and returns the result. The first argument
@@ -569,37 +360,21 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as the resolve to numbers.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/divide/
-     * @see Expr::divide
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function divide($expression1, $expression2): self
-    {
-        $this->expr->divide($expression1, $expression2);
-
-        return $this;
-    }
+    public function divide($expression1, $expression2): self;
 
     /**
-     * Compares two values and returns whether they are equivalent.
+     * Compares two values and returns whether the are equivalent.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/eq/
-     * @see Expr::eq
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function eq($expression1, $expression2): self
-    {
-        $this->expr->eq($expression1, $expression2);
-
-        return $this;
-    }
+    public function eq($expression1, $expression2): self;
 
     /**
      * Raises Euler’s number to the specified exponent and returns the result.
@@ -608,49 +383,28 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/exp/
-     * @see Expr::exp
      *
      * @param mixed|Expr $exponent
-     *
-     * @return static
      */
-    public function exp($exponent): self
-    {
-        $this->expr->exp($exponent);
-
-        return $this;
-    }
+    public function exp($exponent): self;
 
     /**
-     * Used to use an expression as field value. Can be any expression
+     * Allows any expression to be used as a field value.
      *
      * @see https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
-     * @see Expr::expression
      *
      * @param mixed|Expr $value
      *
-     * @return static
+     * @return self
      */
-    public function expression($value)
-    {
-        $this->expr->expression($value);
-
-        return $this;
-    }
+    public function expression($value);
 
     /**
      * Set the current field for building the expression.
      *
-     * @see Expr::field
-     *
-     * @return static
+     * @return self
      */
-    public function field(string $fieldName)
-    {
-        $this->expr->field($fieldName);
-
-        return $this;
-    }
+    public function field(string $fieldName);
 
     /**
      * Selects a subset of the array to return based on the specified condition.
@@ -659,20 +413,12 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * returned elements are in the original order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/filter/
-     * @see Expr::filter
      *
      * @param mixed|Expr $input
      * @param mixed|Expr $as
      * @param mixed|Expr $cond
-     *
-     * @return static
      */
-    public function filter($input, $as, $cond): self
-    {
-        $this->expr->filter($input, $as, $cond);
-
-        return $this;
-    }
+    public function filter($input, $as, $cond): self;
 
     /**
      * Returns the value that results from applying an expression to the first
@@ -683,12 +429,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function first($expression): self
-    {
-        $this->expr->first($expression);
-
-        return $this;
-    }
+    public function first($expression): self;
 
     /**
      * Returns the largest integer less than or equal to the specified number.
@@ -697,58 +438,36 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/floor/
-     * @see Expr::floor
      *
      * @param mixed|Expr $number
-     *
-     * @return static
      */
-    public function floor($number): self
-    {
-        $this->expr->floor($number);
-
-        return $this;
-    }
+    public function floor($number): self;
 
     /**
      * Compares two values and returns:
      * true when the first value is greater than the second value.
-     * false when the first value is less than or equivalent to the second value.
+     * false when the first value is less than or equivalent to the second
+     * value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/gt/
-     * @see Expr::gt
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function gt($expression1, $expression2): self
-    {
-        $this->expr->gt($expression1, $expression2);
-
-        return $this;
-    }
+    public function gt($expression1, $expression2): self;
 
     /**
      * Compares two values and returns:
-     * true when the first value is greater than or equivalent to the second value.
+     * true when the first value is greater than or equivalent to the second
+     * value.
      * false when the first value is less than the second value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/gte/
-     * @see Expr::gte
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function gte($expression1, $expression2): self
-    {
-        $this->expr->gte($expression1, $expression2);
-
-        return $this;
-    }
+    public function gte($expression1, $expression2): self;
 
     /**
      * Returns the hour portion of a date as a number between 0 and 23.
@@ -756,103 +475,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/hour/
-     * @see Expr::hour
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function hour($expression): self
-    {
-        $this->expr->hour($expression);
-
-        return $this;
-    }
-
-    /**
-     * Returns a boolean indicating whether a specified value is in an array.
-     *
-     * Unlike the $in query operator, the aggregation $in operator does not
-     * support matching by regular expressions.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/in/
-     * @see Expr::in
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr $arrayExpression
-     *
-     * @return static
-     */
-    public function in($expression, $arrayExpression): self
-    {
-        $this->expr->in($expression, $arrayExpression);
-
-        return $this;
-    }
-
-    /**
-     * Searches an array for an occurrence of a specified value and returns the
-     * array index (zero-based) of the first occurrence. If the value is not
-     * found, returns -1.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfArray/
-     * @see Expr::indexOfArray
-     *
-     * @param mixed|Expr $arrayExpression  Can be any valid expression as long as it resolves to an array.
-     * @param mixed|Expr $searchExpression Can be any valid expression.
-     * @param mixed|Expr $start            Optional. An integer, or a number that can be represented as integers (such as 2.0), that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     * @param mixed|Expr $end              An integer, or a number that can be represented as integers (such as 2.0), that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     *
-     * @return static
-     */
-    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): self
-    {
-        $this->expr->indexOfArray($arrayExpression, $searchExpression, $start, $end);
-
-        return $this;
-    }
-
-    /**
-     * Searches a string for an occurrence of a substring and returns the UTF-8
-     * byte index (zero-based) of the first occurrence. If the substring is not
-     * found, returns -1.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfBytes/
-     *
-     * @param mixed|Expr      $stringExpression    Can be any valid expression as long as it resolves to a string.
-     * @param mixed|Expr      $substringExpression Can be any valid expression as long as it resolves to a string.
-     * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     *
-     * @return static
-     */
-    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self
-    {
-        $this->expr->indexOfBytes($stringExpression, $substringExpression, $start, $end);
-
-        return $this;
-    }
-
-    /**
-     * Searches a string for an occurrence of a substring and returns the UTF-8
-     * code point index (zero-based) of the first occurrence. If the substring is
-     * not found, returns -1.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfCP/
-     *
-     * @param mixed|Expr      $stringExpression    Can be any valid expression as long as it resolves to a string.
-     * @param mixed|Expr      $substringExpression Can be any valid expression as long as it resolves to a string.
-     * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     *
-     * @return static
-     */
-    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self
-    {
-        $this->expr->indexOfCP($stringExpression, $substringExpression, $start, $end);
-
-        return $this;
-    }
+    public function hour($expression): self;
 
     /**
      * Evaluates an expression and returns the value of the expression if the
@@ -863,19 +489,66 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ifNull/
-     * @see Expr::ifNull
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $replacementExpression
-     *
-     * @return static
      */
-    public function ifNull($expression, $replacementExpression): self
-    {
-        $this->expr->ifNull($expression, $replacementExpression);
+    public function ifNull($expression, $replacementExpression): self;
 
-        return $this;
-    }
+    /**
+     * Returns a boolean indicating whether a specified value is in an array.
+     *
+     * Unlike the $in query operator, the aggregation $in operator does not
+     * support matching by regular expressions.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/in/
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr $arrayExpression
+     */
+    public function in($expression, $arrayExpression): self;
+
+    /**
+     * Searches an array for an occurrence of a specified value and returns the
+     * array index (zero-based) of the first occurrence. If the value is not
+     * found, returns -1.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfArray/
+     *
+     * @param mixed|Expr $arrayExpression  can be any valid expression as long as it resolves to an array
+     * @param mixed|Expr $searchExpression can be any valid expression
+     * @param mixed|Expr $start            Optional. An integer, or a number that can be represented as integers (such as 2.0), that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     * @param mixed|Expr $end              An integer, or a number that can be represented as integers (such as 2.0), that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     */
+    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): self;
+
+    /**
+     * Searches a string for an occurrence of a substring and returns the UTF-8
+     * byte index (zero-based) of the first occurrence. If the substring is not
+     * found, returns -1.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfBytes/
+     *
+     * @param mixed|Expr      $stringExpression    can be any valid expression as long as it resolves to a string
+     * @param mixed|Expr      $substringExpression can be any valid expression as long as it resolves to a string
+     * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     */
+    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self;
+
+    /**
+     * Searches a string for an occurrence of a substring and returns the UTF-8
+     * code point index (zero-based) of the first occurrence. If the substring is
+     * not found, returns -1.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfCP/
+     *
+     * @param mixed|Expr      $stringExpression    can be any valid expression as long as it resolves to a string
+     * @param mixed|Expr      $substringExpression can be any valid expression as long as it resolves to a string
+     * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     */
+    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self;
 
     /**
      * Determines if the operand is an array. Returns a boolean.
@@ -883,18 +556,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The <expression> can be any valid expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isArray/
-     * @see Expr::isArray
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function isArray($expression): self
-    {
-        $this->expr->isArray($expression);
-
-        return $this;
-    }
+    public function isArray($expression): self;
 
     /**
      * Returns boolean true if the specified expression resolves to an integer, decimal, double, or long.
@@ -904,12 +569,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function isNumber($expression): self
-    {
-        $this->expr->isNumber($expression);
-
-        return $this;
-    }
+    public function isNumber($expression): self;
 
     /**
      * Returns the weekday number in ISO 8601 format, ranging from 1 (for Monday)
@@ -920,15 +580,8 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoDayOfWeek/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function isoDayOfWeek($expression): self
-    {
-        $this->expr->isoDayOfWeek($expression);
-
-        return $this;
-    }
+    public function isoDayOfWeek($expression): self;
 
     /**
      * Returns the week number in ISO 8601 format, ranging from 1 to 53.
@@ -941,15 +594,8 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function isoWeek($expression): self
-    {
-        $this->expr->isoWeek($expression);
-
-        return $this;
-    }
+    public function isoWeek($expression): self;
 
     /**
      * Returns the year number in ISO 8601 format.
@@ -962,15 +608,8 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function isoWeekYear($expression): self
-    {
-        $this->expr->isoWeekYear($expression);
-
-        return $this;
-    }
+    public function isoWeekYear($expression): self;
 
     /**
      * Returns the value that results from applying an expression to the last
@@ -981,49 +620,28 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function last($expression): self
-    {
-        $this->expr->last($expression);
-
-        return $this;
-    }
+    public function last($expression): self;
 
     /**
      * Binds variables for use in the specified expression, and returns the
      * result of the expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/let/
-     * @see Expr::let
      *
      * @param mixed|Expr $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
-     * @param mixed|Expr $in   The expression to evaluate.
-     *
-     * @return static
+     * @param mixed|Expr $in   the expression to evaluate
      */
-    public function let($vars, $in): self
-    {
-        $this->expr->let($vars, $in);
-
-        return $this;
-    }
+    public function let($vars, $in): self;
 
     /**
      * Returns a value without parsing. Use for values that the aggregation
      * pipeline may interpret as an expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/literal/
-     * @see Expr::literal
      *
      * @param mixed|Expr $value
-     *
-     * @return static
      */
-    public function literal($value): self
-    {
-        $this->expr->literal($value);
-
-        return $this;
-    }
+    public function literal($value): self;
 
     /**
      * Calculates the natural logarithm ln (i.e loge) of a number and returns
@@ -1033,18 +651,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * resolves to a non-negative number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log/
-     * @see Expr::ln
      *
      * @param mixed|Expr $number
-     *
-     * @return static
      */
-    public function ln($number): self
-    {
-        $this->expr->ln($number);
-
-        return $this;
-    }
+    public function ln($number): self;
 
     /**
      * Calculates the log of a number in the specified base and returns the
@@ -1056,61 +666,36 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * to a positive number greater than 1.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log/
-     * @see Expr::log
      *
      * @param mixed|Expr $number
      * @param mixed|Expr $base
-     *
-     * @return static
      */
-    public function log($number, $base): self
-    {
-        $this->expr->log($number, $base);
-
-        return $this;
-    }
+    public function log($number, $base): self;
 
     /**
      * Calculates the log base 10 of a number and returns the result as a double.
      *
      * The <number> expression can be any valid expression as long as it
      * resolves to a non-negative number.
-     * The <base> expression can be any valid expression as long as it resolves
-     * to a positive number greater than 1.
      *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log/
-     * @see Expr::log10
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log10/
      *
      * @param mixed|Expr $number
-     *
-     * @return static
      */
-    public function log10($number): self
-    {
-        $this->expr->log10($number);
-
-        return $this;
-    }
+    public function log10($number): self;
 
     /**
      * Compares two values and returns:
      * true when the first value is less than the second value.
-     * false when the first value is greater than or equivalent to the second value.
+     * false when the first value is greater than or equivalent to the second
+     * value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lt/
-     * @see Expr::lt
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function lt($expression1, $expression2): self
-    {
-        $this->expr->lt($expression1, $expression2);
-
-        return $this;
-    }
+    public function lt($expression1, $expression2): self;
 
     /**
      * Compares two values and returns:
@@ -1118,19 +703,11 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * false when the first value is greater than the second value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lte/
-     * @see Expr::lte
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function lte($expression1, $expression2): self
-    {
-        $this->expr->lte($expression1, $expression2);
-
-        return $this;
-    }
+    public function lte($expression1, $expression2): self;
 
     /**
      * Removes whitespace characters, including null, or the specified characters from
@@ -1141,49 +718,28 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @param mixed|Expr $input
      * @param mixed|Expr $chars
      */
-    public function ltrim($input, $chars = null): self
-    {
-        $this->expr->ltrim($input, $chars);
-
-        return $this;
-    }
+    public function ltrim($input, $chars = null): self;
 
     /**
      * Applies an expression to each item in an array and returns an array with
      * the applied results.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/map/
-     * @see Expr::map
      *
-     * @param mixed|Expr $input An expression that resolves to an array.
+     * @param mixed|Expr $input an expression that resolves to an array
      * @param string     $as    The variable name for the items in the input array. The in expression accesses each item in the input array by this variable.
      * @param mixed|Expr $in    The expression to apply to each item in the input array. The expression accesses the item by its variable name.
-     *
-     * @return static
      */
-    public function map($input, $as, $in): self
-    {
-        $this->expr->map($input, $as, $in);
-
-        return $this;
-    }
+    public function map($input, $as, $in): self;
 
     /**
      * Returns the metadata associated with a document in a pipeline operations.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/meta/
-     * @see Expr::meta
      *
      * @param mixed|Expr $metaDataKeyword
-     *
-     * @return static
      */
-    public function meta($metaDataKeyword): self
-    {
-        $this->expr->meta($metaDataKeyword);
-
-        return $this;
-    }
+    public function meta($metaDataKeyword): self;
 
     /**
      * Returns the millisecond portion of a date as an integer between 0 and 999.
@@ -1191,18 +747,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/millisecond/
-     * @see Expr::millisecond
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function millisecond($expression): self
-    {
-        $this->expr->millisecond($expression);
-
-        return $this;
-    }
+    public function millisecond($expression): self;
 
     /**
      * Returns the minute portion of a date as a number between 0 and 59.
@@ -1210,18 +758,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/minute/
-     * @see Expr::minute
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function minute($expression): self
-    {
-        $this->expr->minute($expression);
-
-        return $this;
-    }
+    public function minute($expression): self;
 
     /**
      * Divides one number by another and returns the remainder. The first
@@ -1230,19 +770,11 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as they resolve to numbers.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/mod/
-     * @see Expr::mod
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function mod($expression1, $expression2): self
-    {
-        $this->expr->mod($expression1, $expression2);
-
-        return $this;
-    }
+    public function mod($expression1, $expression2): self;
 
     /**
      * Returns the month of a date as a number between 1 and 12.
@@ -1250,18 +782,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/month/
-     * @see Expr::month
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function month($expression): self
-    {
-        $this->expr->month($expression);
-
-        return $this;
-    }
+    public function month($expression): self;
 
     /**
      * Multiplies numbers together and returns the result.
@@ -1269,20 +793,12 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as they resolve to numbers.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/multiply/
-     * @see Expr::multiply
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
-     *
-     * @return static
      */
-    public function multiply($expression1, $expression2, ...$expressions): self
-    {
-        $this->expr->multiply(...func_get_args());
-
-        return $this;
-    }
+    public function multiply($expression1, $expression2, ...$expressions): self;
 
     /**
      * Compares two values and returns:
@@ -1290,36 +806,20 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * false when the values are equivalent.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ne/
-     * @see Expr::ne
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function ne($expression1, $expression2): self
-    {
-        $this->expr->ne($expression1, $expression2);
-
-        return $this;
-    }
+    public function ne($expression1, $expression2): self;
 
     /**
      * Evaluates a boolean and returns the opposite boolean value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/not/
-     * @see Expr::not
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function not($expression): self
-    {
-        $this->expr->not($expression);
-
-        return $this;
-    }
+    public function not($expression): self;
 
     /**
      * Converts a document to an array. The return array contains an element for each field/value pair
@@ -1332,12 +832,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $object
      */
-    public function objectToArray($object): self
-    {
-        $this->expr->objectToArray($object);
-
-        return $this;
-    }
+    public function objectToArray($object): self;
 
     /**
      * Raises a number to the specified exponent and returns the result.
@@ -1348,19 +843,20 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/pow/
-     * @see Expr::pow
      *
      * @param mixed|Expr $number
      * @param mixed|Expr $exponent
-     *
-     * @return static
      */
-    public function pow($number, $exponent): self
-    {
-        $this->expr->pow($number, $exponent);
+    public function pow($number, $exponent): self;
 
-        return $this;
-    }
+    /**
+     * Converts a value from radians to degrees.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/radiansToDegrees/
+     *
+     * @param mixed|Expr $expression
+     */
+    public function radiansToDegrees($expression): self;
 
     /**
      * Returns an array whose elements are a generated sequence of numbers.
@@ -1368,73 +864,34 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * $range generates the sequence from the specified starting number by successively incrementing the starting number by the specified step value up to but not including the end point.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/range/
-     * @see Expr::range
      *
      * @param mixed|Expr $start An integer that specifies the start of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $end   An integer that specifies the exclusive upper limit of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $step  Optional. An integer that specifies the increment value. Can be any valid expression that resolves to a non-zero integer. Defaults to 1.
-     *
-     * @return static
      */
-    public function range($start, $end, $step = 1): self
-    {
-        $this->expr->range($start, $end, $step);
-
-        return $this;
-    }
+    public function range($start, $end, $step = 1): self;
 
     /**
      * Applies an expression to each element in an array and combines them into
      * a single value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/reduce/
-     * @see Expr::reduce
      *
-     * @param mixed|Expr $input        Can be any valid expression that resolves to an array.
-     * @param mixed|Expr $initialValue The initial cumulative value set before in is applied to the first element of the input array.
+     * @param mixed|Expr $input        can be any valid expression that resolves to an array
+     * @param mixed|Expr $initialValue the initial cumulative value set before in is applied to the first element of the input array
      * @param mixed|Expr $in           A valid expression that $reduce applies to each element in the input array in left-to-right order. Wrap the input value with $reverseArray to yield the equivalent of applying the combining expression from right-to-left.
-     *
-     * @return static
      */
-    public function reduce($input, $initialValue, $in): self
-    {
-        $this->expr->reduce($input, $initialValue, $in);
-
-        return $this;
-    }
+    public function reduce($input, $initialValue, $in): self;
 
     /**
      * Accepts an array expression as an argument and returns an array with the
      * elements in reverse order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/reverseArray/
-     * @see Expr::reverseArray
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function reverseArray($expression): self
-    {
-        $this->expr->reverseArray($expression);
-
-        return $this;
-    }
-
-    /**
-     * Removes whitespace characters, including null, or the specified characters from the end of a string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/rtrim/
-     *
-     * @param mixed|Expr $input
-     * @param mixed|Expr $chars
-     */
-    public function rtrim($input, $chars = null): self
-    {
-        $this->expr->rtrim($input, $chars);
-
-        return $this;
-    }
+    public function reverseArray($expression): self;
 
     /**
      * Rounds a number to a whole integer or to a specified decimal place.
@@ -1447,26 +904,17 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @param mixed|Expr      $number
      * @param mixed|Expr|null $place
      */
-    public function round($number, $place = null): self
-    {
-        $this->expr->round($number, $place);
-
-        return $this;
-    }
+    public function round($number, $place = null): self;
 
     /**
-     * Converts a value from radians to degrees.
+     * Removes whitespace characters, including null, or the specified characters from the end of a string.
      *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/radiansToDegrees/
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/rtrim/
      *
-     * @param mixed|Expr $expression
+     * @param mixed|Expr $input
+     * @param mixed|Expr $chars
      */
-    public function radiansToDegrees($expression): self
-    {
-        $this->expr->radiansToDegrees($expression);
-
-        return $this;
-    }
+    public function rtrim($input, $chars = null): self;
 
     /**
      * Returns the second portion of a date as a number between 0 and 59, but
@@ -1475,18 +923,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/second/
-     * @see Expr::second
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function second($expression): self
-    {
-        $this->expr->second($expression);
-
-        return $this;
-    }
+    public function second($expression): self;
 
     /**
      * Takes two sets and returns an array containing the elements that only
@@ -1495,19 +935,11 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as they each resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setDifference/
-     * @see Expr::setDifference
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function setDifference($expression1, $expression2): self
-    {
-        $this->expr->setDifference($expression1, $expression2);
-
-        return $this;
-    }
+    public function setDifference($expression1, $expression2): self;
 
     /**
      * Compares two or more arrays and returns true if they have the same
@@ -1516,20 +948,12 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as they each resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setEquals/
-     * @see Expr::setEquals
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
-     *
-     * @return static
      */
-    public function setEquals($expression1, $expression2, ...$expressions): self
-    {
-        $this->expr->setEquals(...func_get_args());
-
-        return $this;
-    }
+    public function setEquals($expression1, $expression2, ...$expressions): self;
 
     /**
      * Takes two or more arrays and returns an array that contains the elements
@@ -1538,42 +962,25 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as they each resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setIntersection/
-     * @see Expr::setIntersection
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
-     *
-     * @return static
      */
-    public function setIntersection($expression1, $expression2, ...$expressions): self
-    {
-        $this->expr->setIntersection(...func_get_args());
-
-        return $this;
-    }
+    public function setIntersection($expression1, $expression2, ...$expressions): self;
 
     /**
      * Takes two arrays and returns true when the first array is a subset of the
-     * second, including when the first array equals the second array, and false
-     * otherwise.
+     * second, including when the first array equals the second array, and false otherwise.
      *
      * The arguments can be any valid expression as long as they each resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setIsSubset/
-     * @see Expr::setIsSubset
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function setIsSubset($expression1, $expression2): self
-    {
-        $this->expr->setIsSubset($expression1, $expression2);
-
-        return $this;
-    }
+    public function setIsSubset($expression1, $expression2): self;
 
     /**
      * Takes two or more arrays and returns an array containing the elements
@@ -1582,20 +989,12 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as they each resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setUnion/
-     * @see Expr::setUnion
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
-     *
-     * @return static
      */
-    public function setUnion($expression1, $expression2, ...$expressions): self
-    {
-        $this->expr->setUnion(...func_get_args());
-
-        return $this;
-    }
+    public function setUnion($expression1, $expression2, ...$expressions): self;
 
     /**
      * Returns the sine of a value that is measured in radians.
@@ -1604,12 +1003,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function sin($expression): self
-    {
-        $this->expr->sin($expression);
-
-        return $this;
-    }
+    public function sin($expression): self;
 
     /**
      * Returns the hyperbolic sine of a value that is measured in radians.
@@ -1618,12 +1012,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function sinh($expression): self
-    {
-        $this->expr->sinh($expression);
-
-        return $this;
-    }
+    public function sinh($expression): self;
 
     /**
      * Counts and returns the total the number of items in an array.
@@ -1631,37 +1020,21 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/size/
-     * @see Expr::size
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function size($expression): self
-    {
-        $this->expr->size($expression);
-
-        return $this;
-    }
+    public function size($expression): self;
 
     /**
      * Returns a subset of an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/slice/
-     * @see Expr::slice
      *
      * @param mixed|Expr      $array
      * @param mixed|Expr      $n
      * @param mixed|Expr|null $position
-     *
-     * @return static
      */
-    public function slice($array, $n, $position = null): self
-    {
-        $this->expr->slice($array, $n, $position);
-
-        return $this;
-    }
+    public function slice($array, $n, $position = null): self;
 
     /**
      * Divides a string into an array of substrings based on a delimiter.
@@ -1674,15 +1047,8 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $string    The string to be split. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $delimiter The delimiter to use when splitting the string expression. Can be any valid expression as long as it resolves to a string.
-     *
-     * @return static
      */
-    public function split($string, $delimiter): self
-    {
-        $this->expr->split($string, $delimiter);
-
-        return $this;
-    }
+    public function split($string, $delimiter): self;
 
     /**
      * Calculates the square root of a positive number and returns the result as
@@ -1692,18 +1058,28 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * non-negative number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sqrt/
-     * @see Expr::sqrt
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function sqrt($expression): self
-    {
-        $this->expr->sqrt($expression);
+    public function sqrt($expression): self;
 
-        return $this;
-    }
+    /**
+     * Returns the number of UTF-8 encoded bytes in the specified string.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenBytes/
+     *
+     * @param mixed|Expr $string
+     */
+    public function strLenBytes($string): self;
+
+    /**
+     * Returns the number of UTF-8 code points in the specified string.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenCP/
+     *
+     * @param mixed|Expr $string
+     */
+    public function strLenCP($string): self;
 
     /**
      * Performs case-insensitive comparison of two strings. Returns
@@ -1714,51 +1090,11 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as they resolve to strings.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strcasecmp/
-     * @see Expr::strcasecmp
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function strcasecmp($expression1, $expression2): self
-    {
-        $this->expr->strcasecmp($expression1, $expression2);
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of UTF-8 encoded bytes in the specified string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenBytes/
-     *
-     * @param mixed|Expr $string
-     *
-     * @return static
-     */
-    public function strLenBytes($string): self
-    {
-        $this->expr->strLenBytes($string);
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of UTF-8 code points in the specified string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenCP/
-     *
-     * @param mixed|Expr $string
-     *
-     * @return static
-     */
-    public function strLenCP($string): self
-    {
-        $this->expr->strLenCP($string);
-
-        return $this;
-    }
+    public function strcasecmp($expression1, $expression2): self;
 
     /**
      * Returns a substring of a string, starting at a specified index position
@@ -1767,20 +1103,12 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as long as the first argument resolves to a string, and the second and third arguments resolve to integers.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/substr/
-     * @see Expr::substr
      *
      * @param mixed|Expr $string
      * @param mixed|Expr $start
      * @param mixed|Expr $length
-     *
-     * @return static
      */
-    public function substr($string, $start, $length): self
-    {
-        $this->expr->substr($string, $start, $length);
-
-        return $this;
-    }
+    public function substr($string, $start, $length): self;
 
     /**
      * Returns the substring of a string.
@@ -1793,16 +1121,9 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     * @param mixed|Expr $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     *
-     * @return static
+     * @param mixed|Expr $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
      */
-    public function substrBytes($string, $start, $count): self
-    {
-        $this->expr->substrBytes($string, $start, $count);
-
-        return $this;
-    }
+    public function substrBytes($string, $start, $count): self;
 
     /**
      * Returns the substring of a string.
@@ -1815,16 +1136,9 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     * @param mixed|Expr $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     *
-     * @return static
+     * @param mixed|Expr $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
      */
-    public function substrCP($string, $start, $count): self
-    {
-        $this->expr->substrCP($string, $start, $count);
-
-        return $this;
-    }
+    public function substrCP($string, $start, $count): self;
 
     /**
      * Subtracts two numbers to return the difference. The second argument is
@@ -1833,19 +1147,11 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The arguments can be any valid expression as long as they resolve to numbers and/or dates.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/subtract/
-     * @see Expr::subtract
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function subtract($expression1, $expression2): self
-    {
-        $this->expr->subtract($expression1, $expression2);
-
-        return $this;
-    }
+    public function subtract($expression1, $expression2): self;
 
     /**
      * Evaluates a series of case expressions. When it finds an expression which
@@ -1855,12 +1161,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * To add statements, use the {@link case()}, {@link then()} and
      * {@link default()} methods.
      */
-    public function switch(): self
-    {
-        $this->expr->switch();
-
-        return $this;
-    }
+    public function switch(): self;
 
     /**
      * Returns the tangent of a value that is measured in radians.
@@ -1869,12 +1170,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function tan($expression): self
-    {
-        $this->expr->tan($expression);
-
-        return $this;
-    }
+    public function tan($expression): self;
 
     /**
      * Returns the hyperbolic tangent of a value that is measured in radians.
@@ -1883,12 +1179,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function tanh($expression): self
-    {
-        $this->expr->tanh($expression);
-
-        return $this;
-    }
+    public function tanh($expression): self;
 
     /**
      * Adds a case statement for the current branch of the $switch operator.
@@ -1898,12 +1189,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function then($expression): self
-    {
-        $this->expr->then($expression);
-
-        return $this;
-    }
+    public function then($expression): self;
 
     /**
      * Converts value to a boolean.
@@ -1912,12 +1198,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function toBool($expression): self
-    {
-        $this->expr->toBool($expression);
-
-        return $this;
-    }
+    public function toBool($expression): self;
 
     /**
      * Converts value to a Date.
@@ -1926,12 +1207,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function toDate($expression): self
-    {
-        $this->expr->toDate($expression);
-
-        return $this;
-    }
+    public function toDate($expression): self;
 
     /**
      * Converts value to a Decimal128.
@@ -1940,12 +1216,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function toDecimal($expression): self
-    {
-        $this->expr->toDecimal($expression);
-
-        return $this;
-    }
+    public function toDecimal($expression): self;
 
     /**
      * Converts value to a double.
@@ -1954,12 +1225,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function toDouble($expression): self
-    {
-        $this->expr->toDouble($expression);
-
-        return $this;
-    }
+    public function toDouble($expression): self;
 
     /**
      * Converts value to an integer.
@@ -1968,12 +1234,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function toInt($expression): self
-    {
-        $this->expr->toInt($expression);
-
-        return $this;
-    }
+    public function toInt($expression): self;
 
     /**
      * Converts value to a long.
@@ -1982,12 +1243,18 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function toLong($expression): self
-    {
-        $this->expr->toLong($expression);
+    public function toLong($expression): self;
 
-        return $this;
-    }
+    /**
+     * Converts a string to lowercase, returning the result.
+     *
+     * The argument can be any expression as long as it resolves to a string.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toLower/
+     *
+     * @param mixed|Expr $expression
+     */
+    public function toLower($expression): self;
 
     /**
      * Converts value to an ObjectId.
@@ -1996,12 +1263,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function toObjectId($expression): self
-    {
-        $this->expr->toObjectId($expression);
-
-        return $this;
-    }
+    public function toObjectId($expression): self;
 
     /**
      * Converts value to a string.
@@ -2010,31 +1272,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      *
      * @param mixed|Expr $expression
      */
-    public function toString($expression): self
-    {
-        $this->expr->toString($expression);
-
-        return $this;
-    }
-
-    /**
-     * Converts a string to lowercase, returning the result.
-     *
-     * The argument can be any expression as long as it resolves to a string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toLower/
-     * @see Expr::toLower
-     *
-     * @param mixed|Expr $expression
-     *
-     * @return static
-     */
-    public function toLower($expression): self
-    {
-        $this->expr->toLower($expression);
-
-        return $this;
-    }
+    public function toString($expression): self;
 
     /**
      * Converts a string to uppercase, returning the result.
@@ -2042,18 +1280,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a string.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toUpper/
-     * @see Expr::toUpper
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function toUpper($expression): self
-    {
-        $this->expr->toUpper($expression);
-
-        return $this;
-    }
+    public function toUpper($expression): self;
 
     /**
      * Removes whitespace characters, including null, or the specified characters from
@@ -2064,12 +1294,7 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @param mixed|Expr      $input
      * @param mixed|Expr|null $chars
      */
-    public function trim($input, $chars = null): self
-    {
-        $this->expr->trim($input, $chars);
-
-        return $this;
-    }
+    public function trim($input, $chars = null): self;
 
     /**
      * Truncates a number to its integer.
@@ -2078,18 +1303,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/trunc/
-     * @see Expr::trunc
      *
      * @param mixed|Expr $number
-     *
-     * @return static
      */
-    public function trunc($number): self
-    {
-        $this->expr->trunc($number);
-
-        return $this;
-    }
+    public function trunc($number): self;
 
     /**
      * Returns a string that specifies the BSON type of the argument.
@@ -2099,15 +1316,8 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/type/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function type($expression): self
-    {
-        $this->expr->type($expression);
-
-        return $this;
-    }
+    public function type($expression): self;
 
     /**
      * Returns the week of the year for a date as a number between 0 and 53.
@@ -2115,18 +1325,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/week/
-     * @see Expr::week
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function week($expression): self
-    {
-        $this->expr->week($expression);
-
-        return $this;
-    }
+    public function week($expression): self;
 
     /**
      * Returns the year portion of a date.
@@ -2134,18 +1336,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * The argument can be any expression as long as it resolves to a date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/year/
-     * @see Expr::year
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function year($expression): self
-    {
-        $this->expr->year($expression);
-
-        return $this;
-    }
+    public function year($expression): self;
 
     /**
      * Transposes an array of input arrays so that the first element of the
@@ -2153,18 +1347,10 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * input array, the first element of the second input array, etc.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/zip/
-     * @see Expr::zip
      *
      * @param mixed|Expr      $inputs           An array of expressions that resolve to arrays. The elements of these input arrays combine to form the arrays of the output array.
-     * @param bool|null       $useLongestLength A boolean which specifies whether the length of the longest array determines the number of arrays in the output array.
+     * @param bool|null       $useLongestLength a boolean which specifies whether the length of the longest array determines the number of arrays in the output array
      * @param mixed|Expr|null $defaults         An array of default element values to use if the input arrays have different lengths. You must specify useLongestLength: true along with this field, or else $zip will return an error.
-     *
-     * @return static
      */
-    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self
-    {
-        $this->expr->zip($inputs, $useLongestLength, $defaults);
-
-        return $this;
-    }
+    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self;
 }

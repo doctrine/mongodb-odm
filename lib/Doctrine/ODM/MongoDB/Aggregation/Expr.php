@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\GenericOperatorsInterface;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
@@ -23,7 +24,7 @@ use function substr;
 /**
  * Fluent interface for building aggregation pipelines.
  */
-class Expr
+class Expr implements GenericOperatorsInterface
 {
     private DocumentManager $dm;
 
@@ -299,7 +300,7 @@ class Expr
     }
 
     /**
-     * Converts an expression object into an array, recursing into nested items
+     * Converts an expression object into an array, recursing into nested items.
      *
      * For expression objects, it calls getExpression on the expression object.
      * For arrays, it recursively calls itself for each array item. Other values
@@ -452,7 +453,7 @@ class Expr
     }
 
     /**
-     * Returns a new expression object
+     * Returns a new expression object.
      */
     public function expr(): self
     {
@@ -624,8 +625,8 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfArray/
      *
-     * @param mixed|self $arrayExpression  Can be any valid expression as long as it resolves to an array.
-     * @param mixed|self $searchExpression Can be any valid expression.
+     * @param mixed|self $arrayExpression  can be any valid expression as long as it resolves to an array
+     * @param mixed|self $searchExpression can be any valid expression
      * @param mixed|self $start            Optional. An integer, or a number that can be represented as integers (such as 2.0), that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param mixed|self $end              An integer, or a number that can be represented as integers (such as 2.0), that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      */
@@ -650,8 +651,8 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfBytes/
      *
-     * @param mixed|self      $stringExpression    Can be any valid expression as long as it resolves to a string.
-     * @param mixed|self      $substringExpression Can be any valid expression as long as it resolves to a string.
+     * @param mixed|self      $stringExpression    can be any valid expression as long as it resolves to a string
+     * @param mixed|self      $substringExpression can be any valid expression as long as it resolves to a string
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      */
@@ -676,8 +677,8 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfCP/
      *
-     * @param mixed|self      $stringExpression    Can be any valid expression as long as it resolves to a string.
-     * @param mixed|self      $substringExpression Can be any valid expression as long as it resolves to a string.
+     * @param mixed|self      $stringExpression    can be any valid expression as long as it resolves to a string
+     * @param mixed|self      $substringExpression can be any valid expression as long as it resolves to a string
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      */
@@ -779,7 +780,7 @@ class Expr
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/let/
      *
      * @param mixed|self $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
-     * @param mixed|self $in   The expression to evaluate.
+     * @param mixed|self $in   the expression to evaluate
      */
     public function let($vars, $in): self
     {
@@ -886,7 +887,7 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/map/
      *
-     * @param mixed|self $input An expression that resolves to an array.
+     * @param mixed|self $input an expression that resolves to an array
      * @param string     $as    The variable name for the items in the input array. The in expression accesses each item in the input array by this variable.
      * @param mixed|self $in    The expression to apply to each item in the input array. The expression accesses the item by its variable name.
      */
@@ -1087,8 +1088,8 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/reduce/
      *
-     * @param mixed|self $input        Can be any valid expression that resolves to an array.
-     * @param mixed|self $initialValue The initial cumulative value set before in is applied to the first element of the input array.
+     * @param mixed|self $input        can be any valid expression that resolves to an array
+     * @param mixed|self $initialValue the initial cumulative value set before in is applied to the first element of the input array
      * @param mixed|self $in           A valid expression that $reduce applies to each element in the input array in left-to-right order. Wrap the input value with $reverseArray to yield the equivalent of applying the combining expression from right-to-left.
      */
     public function reduce($input, $initialValue, $in): self
@@ -1376,7 +1377,7 @@ class Expr
      *
      * @param mixed|self $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|self $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     * @param mixed|self $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
+     * @param mixed|self $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
      */
     public function substrBytes($string, $start, $count): self
     {
@@ -1394,7 +1395,7 @@ class Expr
      *
      * @param mixed|self $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|self $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     * @param mixed|self $count  Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
+     * @param mixed|self $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
      */
     public function substrCP($string, $start, $count): self
     {
@@ -1432,6 +1433,78 @@ class Expr
     }
 
     /**
+     * Converts value to a boolean.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toBool/
+     *
+     * @param mixed|self $expression
+     */
+    public function toBool($expression): self
+    {
+        return $this->operator('$toBool', $expression);
+    }
+
+    /**
+     * Converts value to a Date.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDate/
+     *
+     * @param mixed|self $expression
+     */
+    public function toDate($expression): self
+    {
+        return $this->operator('$toDate', $expression);
+    }
+
+    /**
+     * Converts value to a Decimal128.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDecimal/
+     *
+     * @param mixed|self $expression
+     */
+    public function toDecimal($expression): self
+    {
+        return $this->operator('$toDecimal', $expression);
+    }
+
+    /**
+     * Converts value to a double.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDouble/
+     *
+     * @param mixed|self $expression
+     */
+    public function toDouble($expression): self
+    {
+        return $this->operator('$toDouble', $expression);
+    }
+
+    /**
+     * Converts value to an integer.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toInt/
+     *
+     * @param mixed|self $expression
+     */
+    public function toInt($expression): self
+    {
+        return $this->operator('$toInt', $expression);
+    }
+
+    /**
+     * Converts value to a long.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toLong/
+     *
+     * @param mixed|self $expression
+     */
+    public function toLong($expression): self
+    {
+        return $this->operator('$toLong', $expression);
+    }
+
+    /**
      * Converts a string to lowercase, returning the result.
      *
      * The argument can be any expression as long as it resolves to a string.
@@ -1443,6 +1516,30 @@ class Expr
     public function toLower($expression): self
     {
         return $this->operator('$toLower', $expression);
+    }
+
+    /**
+     * Converts value to an ObjectId.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toObjectId/
+     *
+     * @param mixed|self $expression
+     */
+    public function toObjectId($expression): self
+    {
+        return $this->operator('$toObjectId', $expression);
+    }
+
+    /**
+     * Converts value to a string.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toString/
+     *
+     * @param mixed|self $expression
+     */
+    public function toString($expression): self
+    {
+        return $this->operator('$toString', $expression);
     }
 
     /**
@@ -1524,7 +1621,7 @@ class Expr
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/zip/
      *
      * @param mixed|self      $inputs           An array of expressions that resolve to arrays. The elements of these input arrays combine to form the arrays of the output array.
-     * @param bool|null       $useLongestLength A boolean which specifies whether the length of the longest array determines the number of arrays in the output array.
+     * @param bool|null       $useLongestLength a boolean which specifies whether the length of the longest array determines the number of arrays in the output array
      * @param mixed|self|null $defaults         An array of default element values to use if the input arrays have different lengths. You must specify useLongestLength: true along with this field, or else $zip will return an error.
      */
     public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self
@@ -1591,7 +1688,7 @@ class Expr
     /**
      * Ensure that a current field has been set.
      *
-     * @throws LogicException If a current field has not been set.
+     * @throws LogicException if a current field has not been set.
      */
     private function requiresCurrentField(?string $method = null): void
     {
@@ -1600,7 +1697,7 @@ class Expr
         }
     }
 
-    /** @throws BadMethodCallException If there is no current switch operator. */
+    /** @throws BadMethodCallException if there is no current switch operator. */
     private function requiresSwitchStatement(?string $method = null): void
     {
         $message = ($method ?: 'This method') . ' requires a valid switch statement (call switch() first).';
@@ -1654,5 +1751,312 @@ class Expr
         $this->switchBranch = null;
 
         return $this;
+    }
+
+    /**
+     * Converts an array into a single document.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/arrayToObject/
+     *
+     * @param mixed|self $array
+     */
+    public function arrayToObject($array): self
+    {
+        return $this->operator('$arrayToObject', $array);
+    }
+
+    /**
+     * Converts a document to an array. The return array contains an element for each field/value pair
+     * in the original document. Each element in the return array is a document that contains
+     * two fields k and v:.
+     *      The k field contains the field name in the original document.
+     *      The v field contains the value of the field in the original document.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/objectToArray/
+     *
+     * @param mixed|self $object
+     */
+    public function objectToArray($object): self
+    {
+        return $this->operator('$objectToArray', $object);
+    }
+
+    /**
+     * Rounds a number to a whole integer or to a specified decimal place.
+     *
+     * The <number> argument can be any valid expression as long as it resolves
+     * to a number.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/round/
+     *
+     * @param mixed|self      $number
+     * @param mixed|self|null $place
+     */
+    public function round($number, $place = null): self
+    {
+        return $this->operator('$round', [$number, $place]);
+    }
+
+    /**
+     * Removes whitespace characters, including null, or the specified characters from
+     * the beginning and end of a string.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/trim/
+     *
+     * @param mixed|self $input
+     * @param mixed|self $chars
+     */
+    public function trim($input, $chars = null): self
+    {
+        return $this->operator('$trim', [$input, $chars]);
+    }
+
+    /**
+     * Removes whitespace characters, including null, or the specified characters from
+     * the beginning and end of a string.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ltrim/
+     *
+     * @param mixed|self $input
+     * @param mixed|self $chars
+     */
+    public function ltrim($input, $chars = null): self
+    {
+        return $this->operator('$ltrim', [$input, $chars]);
+    }
+
+    /**
+     * Removes whitespace characters, including null, or the specified characters from the end of a string.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/rtrim/
+     *
+     * @param mixed|self $input
+     * @param mixed|self $chars
+     */
+    public function rtrim($input, $chars = null): self
+    {
+        return $this->operator('$rtrim', [$input, $chars]);
+    }
+
+    /**
+     * Returns the sine of a value that is measured in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sin/
+     *
+     * @param mixed|self $expression
+     */
+    public function sin($expression): self
+    {
+        return $this->operator('$sin', $expression);
+    }
+
+    /**
+     * Returns the cosine of a value that is measured in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cos/
+     *
+     * @param mixed|self $expression
+     */
+    public function cos($expression): self
+    {
+        return $this->operator('$cos', $expression);
+    }
+
+    /**
+     * Returns the tangent of a value that is measured in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tan/
+     *
+     * @param mixed|self $expression
+     */
+    public function tan($expression): self
+    {
+        return $this->operator('$tan', $expression);
+    }
+
+    /**
+     * Returns the inverse sin (arc sine) of a value in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/asin/
+     *
+     * @param mixed|self $expression
+     */
+    public function asin($expression): self
+    {
+        return $this->operator('$asin', $expression);
+    }
+
+    /**
+     * Returns the inverse cosine (arc cosine) of a value in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/acos/
+     *
+     * @param mixed|self $expression
+     */
+    public function acos($expression): self
+    {
+        return $this->operator('$acos', $expression);
+    }
+
+    /**
+     * Returns the inverse tangent (arc tangent) of a value in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan/
+     *
+     * @param mixed|self $expression
+     */
+    public function atan($expression): self
+    {
+        return $this->operator('$atan', $expression);
+    }
+
+    /**
+     * Returns the inverse tangent (arc tangent) of y / x in radians, where y and x are the first and second values passed to the expression respectively.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan2/
+     *
+     * @param mixed|self $expression1
+     * @param mixed|self $expression2
+     */
+    public function atan2($expression1, $expression2): self
+    {
+        return $this->operator('$atan2', [$expression1, $expression2]);
+    }
+
+    /**
+     * Returns the inverse hyperbolic sine (hyperbolic arc sine) of a value in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/asinh/
+     *
+     * @param mixed|self $expression
+     */
+    public function asinh($expression): self
+    {
+        return $this->operator('$asinh', $expression);
+    }
+
+    /**
+     * Returns the inverse hyperbolic cosine (hyperbolic arc cosine) of a value in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/acosh/
+     *
+     * @param mixed|self $expression
+     */
+    public function acosh($expression): self
+    {
+        return $this->operator('$acosh', $expression);
+    }
+
+    /**
+     * Returns the inverse hyperbolic tangent (hyperbolic arc tangent) of a value in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atanh/
+     *
+     * @param mixed|self $expression
+     */
+    public function atanh($expression): self
+    {
+        return $this->operator('$atanh', $expression);
+    }
+
+    /**
+     * Returns the hyperbolic sine of a value that is measured in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sinh/
+     *
+     * @param mixed|self $expression
+     */
+    public function sinh($expression): self
+    {
+        return $this->operator('$sinh', $expression);
+    }
+
+    /**
+     * Returns the hyperbolic cosine of a value that is measured in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cosh/
+     *
+     * @param mixed|self $expression
+     */
+    public function cosh($expression): self
+    {
+        return $this->operator('$cosh', $expression);
+    }
+
+    /**
+     * Returns the hyperbolic tangent of a value that is measured in radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tanh/
+     *
+     * @param mixed|self $expression
+     */
+    public function tanh($expression): self
+    {
+        return $this->operator('$tanh', $expression);
+    }
+
+    /**
+     * Converts a value from degrees to radians.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/degreesToRadians/
+     *
+     * @param mixed|self $expression
+     */
+    public function degreesToRadians($expression): self
+    {
+        return $this->operator('$degreesToRadians', $expression);
+    }
+
+    /**
+     * Converts a value from radians to degrees.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/radiansToDegrees/
+     *
+     * @param mixed|self $expression
+     */
+    public function radiansToDegrees($expression): self
+    {
+        return $this->operator('$radiansToDegrees', $expression);
+    }
+
+    /**
+     * Converts a value to a specified type.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/convert/
+     *
+     * @param mixed|self      $input
+     * @param mixed|self      $to
+     * @param mixed|self|null $onError
+     * @param mixed|self|null $onNull
+     */
+    public function convert($input, $to, $onError = null, $onNull = null): self
+    {
+        $params = [
+            'input' => $input,
+            'to' => $to,
+        ];
+
+        if ($onError !== null) {
+            $params['onError'] = $onError;
+        }
+
+        if ($onNull !== null) {
+            $params['onNull'] = $onNull;
+        }
+
+        return $this->operator('$convert', $params);
+    }
+
+    /**
+     * Returns boolean true if the specified expression resolves to an integer, decimal, double, or long.
+     * Returns boolean false if the expression resolves to any other BSON type, null, or a missing field.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isNumber/
+     *
+     * @param mixed|self $expression
+     */
+    public function isNumber($expression): self
+    {
+        return $this->operator('$isNumber', $expression);
     }
 }

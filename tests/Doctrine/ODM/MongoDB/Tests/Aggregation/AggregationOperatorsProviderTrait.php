@@ -597,6 +597,146 @@ trait AggregationOperatorsProviderTrait
                 'operator' => 'zip',
                 'args' => [['$array1', '$array2'], true, ['a', 'b']],
             ],
+            'arrayToObject' => [
+                'expected' => ['$arrayToObject' => ['$array']],
+                'operator' => 'arrayToObject',
+                'args' => [['$array']],
+            ],
+            'objectToArray' => [
+                'expected' => ['$objectToArray' => ['$obj']],
+                'operator' => 'objectToArray',
+                'args' => [['$obj']],
+            ],
+            'round' => [
+                'expected' => ['$round' => ['$number', '$place']],
+                'operator' => 'round',
+                'args' => ['$number', '$place'],
+            ],
+            'ltrim' => [
+                'expected' => ['$ltrim' => ['$input', '$chars']],
+                'operator' => 'ltrim',
+                'args' => ['$input', '$chars'],
+            ],
+            'rtrim' => [
+                'expected' => ['$rtrim' => ['$input', '$chars']],
+                'operator' => 'rtrim',
+                'args' => ['$input', '$chars'],
+            ],
+            'trim' => [
+                'expected' => ['$trim' => ['$input', '$chars']],
+                'operator' => 'trim',
+                'args' => ['$input', '$chars'],
+            ],
+            'sin' => [
+                'expected' => ['$sin' => '$field'],
+                'operator' => 'sin',
+                'args' => ['$field'],
+            ],
+            'cos' => [
+                'expected' => ['$cos' => '$field'],
+                'operator' => 'cos',
+                'args' => ['$field'],
+            ],
+            'tan' => [
+                'expected' => ['$tan' => '$field'],
+                'operator' => 'tan',
+                'args' => ['$field'],
+            ],
+            'asin' => [
+                'expected' => ['$asin' => '$field'],
+                'operator' => 'asin',
+                'args' => ['$field'],
+            ],
+            'acos' => [
+                'expected' => ['$acos' => '$field'],
+                'operator' => 'acos',
+                'args' => ['$field'],
+            ],
+            'atan' => [
+                'expected' => ['$atan' => '$field'],
+                'operator' => 'atan',
+                'args' => ['$field'],
+            ],
+            'atan2' => [
+                'expected' => ['$atan2' => ['$expr1', '$expr2']],
+                'operator' => 'atan2',
+                'args' => ['$expr1', '$expr2'],
+            ],
+            'sinh' => [
+                'expected' => ['$sinh' => '$field'],
+                'operator' => 'sinh',
+                'args' => ['$field'],
+            ],
+            'cosh' => [
+                'expected' => ['$cosh' => '$field'],
+                'operator' => 'cosh',
+                'args' => ['$field'],
+            ],
+            'tanh' => [
+                'expected' => ['$tanh' => '$field'],
+                'operator' => 'tanh',
+                'args' => ['$field'],
+            ],
+            'degreesToRadians' => [
+                'expected' => ['$degreesToRadians' => '$field'],
+                'operator' => 'degreesToRadians',
+                'args' => ['$field'],
+            ],
+            'radiansToDegrees' => [
+                'expected' => ['$radiansToDegrees' => '$field'],
+                'operator' => 'radiansToDegrees',
+                'args' => ['$field'],
+            ],
+            'convert' => [
+                'expected' => ['$convert' => ['input' => '$field', 'to' => '$to']],
+                'operator' => 'convert',
+                'args' => ['$field', '$to', null, null],
+            ],
+            'isNumber' => [
+                'expected' => ['$isNumber' => '$field'],
+                'operator' => 'isNumber',
+                'args' => ['$field'],
+            ],
+            'toBool' => [
+                'expected' => ['$toBool' => '$field'],
+                'operator' => 'toBool',
+                'args' => ['$field'],
+            ],
+            'toDate' => [
+                'expected' => ['$toDate' => '$field'],
+                'operator' => 'toDate',
+                'args' => ['$field'],
+            ],
+            'toDecimal' => [
+                'expected' => ['$toDecimal' => '$field'],
+                'operator' => 'toDecimal',
+                'args' => ['$field'],
+            ],
+            'toDouble' => [
+                'expected' => ['$toDouble' => '$field'],
+                'operator' => 'toDouble',
+                'args' => ['$field'],
+            ],
+            'toInt' => [
+                'expected' => ['$toInt' => '$field'],
+                'operator' => 'toInt',
+                'args' => ['$field'],
+            ],
+            'toLong' => [
+                'expected' => ['$toLong' => '$field'],
+                'operator' => 'toLong',
+                'args' => ['$field'],
+            ],
+            'toObjectId' => [
+                'expected' => ['$toObjectId' => '$field'],
+                'operator' => 'toObjectId',
+                'args' => ['$field'],
+            ],
+            'toString' => [
+                'expected' => ['$toString' => '$field'],
+                'operator' => 'toString',
+                'args' => ['$field'],
+            ],
         ];
     }
 
