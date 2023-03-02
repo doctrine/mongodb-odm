@@ -38,6 +38,10 @@ use function ucfirst;
  * @internal
  *
  * @template-extends AbstractClassMetadataFactory<ClassMetadata>
+ *
+ * @method list<ClassMetadata> getAllMetadata()
+ * @method ClassMetadata[] getLoadedMetadata()
+ * @method ClassMetadata getMetadataFor($className)
  */
 final class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
