@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
 
 use function get_class;
 
-class BinDataTest extends BaseTest
+class BinDataTest extends BaseTestCase
 {
     /** @dataProvider provideData */
     public function testBinData(string $field, string $data, int $type): void

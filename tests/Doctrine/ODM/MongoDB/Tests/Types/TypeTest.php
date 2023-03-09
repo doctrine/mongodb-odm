@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Decimal128;
@@ -21,7 +21,7 @@ use function time;
 
 use const STR_PAD_LEFT;
 
-class TypeTest extends BaseTest
+class TypeTest extends BaseTestCase
 {
     /**
      * @param mixed $test

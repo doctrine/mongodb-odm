@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents74\TypedDocument;
 use Documents74\TypedEmbeddedDocument;
 use MongoDB\BSON\ObjectId;
 
 use function assert;
 
-class TypedPropertiesTest extends BaseTest
+class TypedPropertiesTest extends BaseTestCase
 {
     public function testPersistNew(): void
     {

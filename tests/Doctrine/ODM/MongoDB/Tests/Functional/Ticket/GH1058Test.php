@@ -7,14 +7,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Exception;
 use MongoDB\BSON\ObjectId;
 
 use function array_merge;
 use function get_class;
 
-class GH1058Test extends BaseTest
+class GH1058Test extends BaseTestCase
 {
     /** @doesNotPerformAssertions */
     public function testModifyingDuringOnFlushEventNewDocument(): void

@@ -6,11 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function array_search;
 
-class MODM70Test extends BaseTest
+class MODM70Test extends BaseTestCase
 {
     public function testTest(): void
     {

@@ -11,7 +11,7 @@ use Documents\User;
 
 use function get_class;
 
-class RepositoryFactoryTest extends BaseTest
+class RepositoryFactoryTest extends BaseTestCase
 {
     public function testRepositoryFactoryCanBeReplaced(): void
     {

@@ -8,13 +8,13 @@ use DateTime;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\MatchStage;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use GeoJson\Geometry\Geometry;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class MatchStageTest extends BaseTest
+class MatchStageTest extends BaseTestCase
 {
     use AggregationTestTrait;
 

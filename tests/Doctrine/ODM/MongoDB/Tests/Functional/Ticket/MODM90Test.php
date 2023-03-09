@@ -8,11 +8,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function get_class;
 
-class MODM90Test extends BaseTest
+class MODM90Test extends BaseTestCase
 {
     private MODM90EventListener $listener;
 

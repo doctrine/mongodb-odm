@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\Driver\Exception\BulkWriteException;
 
-class GH580Test extends BaseTest
+class GH580Test extends BaseTestCase
 {
     public function testDocumentPersisterShouldClearQueuedInsertsOnMongoException(): void
     {

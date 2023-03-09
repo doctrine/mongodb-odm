@@ -25,7 +25,7 @@ use function version_compare;
 use const DOCTRINE_MONGODB_DATABASE;
 use const DOCTRINE_MONGODB_SERVER;
 
-abstract class BaseTest extends TestCase
+abstract class BaseTestCase extends TestCase
 {
     protected ?DocumentManager $dm;
     protected UnitOfWork $uow;

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\BSON\ObjectId;
 
 use function get_class;
 
-class GH774Test extends BaseTest
+class GH774Test extends BaseTestCase
 {
     public function testUpsert(): void
     {

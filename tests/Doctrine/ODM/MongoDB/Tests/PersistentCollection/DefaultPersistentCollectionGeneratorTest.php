@@ -6,12 +6,12 @@ namespace Doctrine\ODM\MongoDB\Tests\PersistentCollection;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerator;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 /**
  * Tests aims to check if classes generated for various PHP versions are correct (i.e. parses).
  */
-class DefaultPersistentCollectionGeneratorTest extends BaseTest
+class DefaultPersistentCollectionGeneratorTest extends BaseTestCase
 {
     private DefaultPersistentCollectionGenerator $generator;
 

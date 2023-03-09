@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Documents\Article;
@@ -27,7 +27,7 @@ use function gettype;
 use function is_object;
 use function sprintf;
 
-class DocumentPersisterTest extends BaseTest
+class DocumentPersisterTest extends BaseTestCase
 {
     /** @var class-string<DocumentPersisterTestDocument> */
     private string $class;

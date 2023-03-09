@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Developer;
 use Documents\OtherSubProject;
 use Documents\Profile;
@@ -13,7 +13,7 @@ use Documents\SpecialUser;
 use Documents\SubProject;
 use Documents\User;
 
-class InheritanceTest extends BaseTest
+class InheritanceTest extends BaseTestCase
 {
     public function testCollectionPerClassInheritance(): void
     {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Sharded\ShardedByUser;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
@@ -13,7 +13,7 @@ use Documents\Sharded\ShardedOneWithDifferentKey;
 use function iterator_to_array;
 
 /** @group sharding */
-class EnsureShardingTest extends BaseTest
+class EnsureShardingTest extends BaseTestCase
 {
     public function setUp(): void
     {

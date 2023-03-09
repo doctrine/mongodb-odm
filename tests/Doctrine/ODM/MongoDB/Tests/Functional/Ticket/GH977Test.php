@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function get_class;
 
-class GH977Test extends BaseTest
+class GH977Test extends BaseTestCase
 {
     public function testAutoRecompute(): void
     {

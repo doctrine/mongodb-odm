@@ -12,12 +12,12 @@ use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use PHPUnit\Framework\Assert;
 
 use function get_class;
 
-class LifecycleListenersTest extends BaseTest
+class LifecycleListenersTest extends BaseTestCase
 {
     private MyEventListener $listener;
 

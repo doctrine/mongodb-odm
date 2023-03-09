@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\FriendUser;
 
 use function get_class;
 
-class FlushTest extends BaseTest
+class FlushTest extends BaseTestCase
 {
     /**
      * Given 3 users, userA userB userC

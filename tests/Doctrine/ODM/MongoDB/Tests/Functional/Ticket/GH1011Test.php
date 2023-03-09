@@ -8,9 +8,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class GH1011Test extends BaseTest
+class GH1011Test extends BaseTestCase
 {
     public function testClearCollection(): void
     {

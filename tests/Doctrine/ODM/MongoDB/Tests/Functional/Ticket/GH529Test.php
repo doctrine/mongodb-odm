@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 
 use function get_class;
 
-class GH529Test extends BaseTest
+class GH529Test extends BaseTestCase
 {
     public function testAutoIdWithConsistentValues(): void
     {

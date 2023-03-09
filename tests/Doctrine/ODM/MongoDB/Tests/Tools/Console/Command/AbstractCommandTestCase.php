@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Tools\Console\Command;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tools\Console\Helper\DocumentManagerHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 
-abstract class AbstractCommandTest extends BaseTest
+abstract class AbstractCommandTestCase extends BaseTestCase
 {
     /** @var Application */
     protected $application;

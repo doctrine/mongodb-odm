@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\GeoNear;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class GeoNearTest extends BaseTest
+class GeoNearTest extends BaseTestCase
 {
     use AggregationTestTrait;
 

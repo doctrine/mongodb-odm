@@ -10,13 +10,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 use function get_class;
 
-class GH852Test extends BaseTest
+class GH852Test extends BaseTestCase
 {
     /** @dataProvider provideIdGenerators */
     public function testA(Closure $idGenerator): void

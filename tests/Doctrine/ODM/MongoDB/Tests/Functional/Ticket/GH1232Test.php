@@ -9,11 +9,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function assert;
 
-class GH1232Test extends BaseTest
+class GH1232Test extends BaseTestCase
 {
     /** @doesNotPerformAssertions */
     public function testRemoveDoesNotCauseErrors(): void

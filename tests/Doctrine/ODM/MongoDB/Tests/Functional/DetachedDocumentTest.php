@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsArticle;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
@@ -14,7 +14,7 @@ use function assert;
 use function serialize;
 use function unserialize;
 
-class DetachedDocumentTest extends BaseTest
+class DetachedDocumentTest extends BaseTestCase
 {
     public function testSimpleDetachMerge(): void
     {

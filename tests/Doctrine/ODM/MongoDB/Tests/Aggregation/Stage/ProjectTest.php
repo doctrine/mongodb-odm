@@ -7,12 +7,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Project;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function array_combine;
 use function array_map;
 
-class ProjectTest extends BaseTest
+class ProjectTest extends BaseTestCase
 {
     use AggregationTestTrait;
 

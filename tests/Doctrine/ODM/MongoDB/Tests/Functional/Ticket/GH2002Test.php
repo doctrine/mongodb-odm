@@ -6,12 +6,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function get_class;
 use function sprintf;
 
-class GH2002Test extends BaseTest
+class GH2002Test extends BaseTestCase
 {
     /**
      * @param array<string, mixed> $expectedReference

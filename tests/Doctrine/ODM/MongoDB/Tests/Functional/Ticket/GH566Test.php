@@ -8,11 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function iterator_to_array;
 
-class GH566Test extends BaseTest
+class GH566Test extends BaseTestCase
 {
     public function testFoo(): void
     {

@@ -7,10 +7,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 use BadMethodCallException;
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use LogicException;
 
-class ExprTest extends BaseTest
+class ExprTest extends BaseTestCase
 {
     use AggregationOperatorsProviderTrait;
 

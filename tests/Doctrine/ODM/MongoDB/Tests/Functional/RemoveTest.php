@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Account;
 use Documents\BlogPost;
 use Documents\CmsArticle;
@@ -16,7 +16,7 @@ use Documents\Group;
 use Documents\Project;
 use Documents\User;
 
-class RemoveTest extends BaseTest
+class RemoveTest extends BaseTestCase
 {
     public function testRemove(): void
     {

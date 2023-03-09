@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
@@ -26,7 +26,7 @@ use function sprintf;
 use function ucfirst;
 use function unserialize;
 
-class IdTest extends BaseTest
+class IdTest extends BaseTestCase
 {
     public function testUuidId(): void
     {

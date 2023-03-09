@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Documents\Feature;
 use Documents\User;
@@ -26,7 +26,7 @@ use MongoDB\Driver\ReadPreference;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
 
-class BuilderTest extends BaseTest
+class BuilderTest extends BaseTestCase
 {
     public function testPrimeRequiresBooleanOrCallable(): void
     {

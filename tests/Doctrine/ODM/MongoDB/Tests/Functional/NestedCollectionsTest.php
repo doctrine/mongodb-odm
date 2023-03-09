@@ -7,13 +7,13 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 
 use function get_class;
 
-class NestedCollectionsTest extends BaseTest
+class NestedCollectionsTest extends BaseTestCase
 {
     /** @dataProvider provideStrategy */
     public function testStrategy(string $field): void

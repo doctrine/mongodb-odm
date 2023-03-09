@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsComment;
 
-class SortByCountTest extends BaseTest
+class SortByCountTest extends BaseTestCase
 {
     public function testFieldNameConversion(): void
     {

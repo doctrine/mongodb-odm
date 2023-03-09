@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\BlogPost;
 use Documents\BrowseNode;
 use Documents\Cart;
@@ -20,7 +20,7 @@ use function assert;
 use function get_class;
 use function strtotime;
 
-class OwningAndInverseReferencesTest extends BaseTest
+class OwningAndInverseReferencesTest extends BaseTestCase
 {
     public function testOneToOne(): void
     {

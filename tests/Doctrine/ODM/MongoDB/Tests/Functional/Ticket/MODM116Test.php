@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function array_values;
 use function get_class;
 
-class MODM116Test extends BaseTest
+class MODM116Test extends BaseTestCase
 {
     public function testIssue(): void
     {

@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Address;
 use Documents\Functional\EmbeddedTestLevel0;
 use Documents\Functional\EmbeddedTestLevel0b;
@@ -25,7 +25,7 @@ use MongoDB\BSON\ObjectId;
 use function assert;
 use function get_class;
 
-class EmbeddedTest extends BaseTest
+class EmbeddedTest extends BaseTestCase
 {
     public function testSetEmbeddedToNull(): void
     {

@@ -19,7 +19,7 @@ use function assert;
 use function serialize;
 use function unserialize;
 
-class PersistentCollectionTest extends BaseTest
+class PersistentCollectionTest extends BaseTestCase
 {
     public function testSlice(): void
     {

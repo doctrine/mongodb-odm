@@ -19,7 +19,7 @@ use TestDocuments\WildcardIndexDocument;
 use function MongoDB\BSON\fromJSON;
 use function MongoDB\BSON\toPHP;
 
-class XmlDriverTest extends AbstractDriverTest
+class XmlDriverTest extends AbstractDriverTestCase
 {
     public function setUp(): void
     {

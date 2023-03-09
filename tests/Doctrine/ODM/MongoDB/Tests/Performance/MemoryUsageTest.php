@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Performance;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
 
@@ -20,7 +20,7 @@ use function sprintf;
 use const PHP_EOL;
 
 /** @group performance */
-class MemoryUsageTest extends BaseTest
+class MemoryUsageTest extends BaseTestCase
 {
     /**
      * [jwage: Memory increased by 14.09 kb]

@@ -29,7 +29,7 @@ use function iterator_to_array;
 
 use const DOCTRINE_MONGODB_DATABASE;
 
-class QueryTest extends BaseTest
+class QueryTest extends BaseTestCase
 {
     public function testSelectAndSelectSliceOnSameField(): void
     {

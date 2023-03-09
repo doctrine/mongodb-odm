@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class DiscriminatorsDefaultValueTest extends BaseTest
+class DiscriminatorsDefaultValueTest extends BaseTestCase
 {
     public function setUp(): void
     {

@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Account;
 use Documents\Address;
 use Documents\Agent;
@@ -53,7 +53,7 @@ use MongoDB\BSON\ObjectId;
 use function assert;
 use function bcscale;
 
-class FunctionalTest extends BaseTest
+class FunctionalTest extends BaseTestCase
 {
     private int $initialScale;
 

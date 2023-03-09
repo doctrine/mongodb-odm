@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
@@ -29,7 +29,7 @@ use function sprintf;
 use function strcmp;
 use function usort;
 
-abstract class AbstractMappingDriverTest extends BaseTest
+abstract class AbstractMappingDriverTestCase extends BaseTestCase
 {
     abstract protected function loadDriver(): MappingDriver;
 

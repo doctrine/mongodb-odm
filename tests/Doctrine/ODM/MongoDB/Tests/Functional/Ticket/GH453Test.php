@@ -7,13 +7,13 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function array_values;
 use function get_class;
 use function sprintf;
 
-class GH453Test extends BaseTest
+class GH453Test extends BaseTestCase
 {
     public function testHashWithStringKeys(): void
     {

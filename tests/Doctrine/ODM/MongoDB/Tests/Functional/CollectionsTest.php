@@ -6,11 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Bars\Bar;
 use Documents\Bars\Location;
 
-class CollectionsTest extends BaseTest
+class CollectionsTest extends BaseTestCase
 {
     public function testCollections(): void
     {

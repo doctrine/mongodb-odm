@@ -15,7 +15,7 @@ use stdClass;
 
 use function get_class;
 
-abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
+abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTestCase
 {
     public function testFieldInheritance(): void
     {

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Account;
 use Documents\User;
 
-class PersistingTest extends BaseTest
+class PersistingTest extends BaseTestCase
 {
     public function testCascadeInsertUpdateAndRemove(): void
     {
