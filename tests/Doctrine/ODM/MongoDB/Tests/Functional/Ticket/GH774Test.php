@@ -30,7 +30,7 @@ class GH774Test extends BaseTestCase
         self::assertEquals('test', $thread->permalink);
     }
 
-    protected function createMetadataDriverImpl(): MappingDriver
+    protected static function createMetadataDriverImpl(): MappingDriver
     {
         return new XmlDriver(__DIR__ . '/GH774');
     }

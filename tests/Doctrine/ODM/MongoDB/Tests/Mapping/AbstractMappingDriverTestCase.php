@@ -31,11 +31,11 @@ use function usort;
 
 abstract class AbstractMappingDriverTestCase extends BaseTestCase
 {
-    abstract protected function loadDriver(): MappingDriver;
+    abstract protected static function loadDriver(): MappingDriver;
 
-    protected function createMetadataDriverImpl(): MappingDriver
+    protected static function createMetadataDriverImpl(): MappingDriver
     {
-        return $this->loadDriver();
+        return static::loadDriver();
     }
 
     /**

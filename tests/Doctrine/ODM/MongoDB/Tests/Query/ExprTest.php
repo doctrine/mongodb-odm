@@ -12,7 +12,6 @@ use Documents\User;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class ExprTest extends BaseTestCase
 {
@@ -399,12 +398,13 @@ class ExprTest extends BaseTestCase
 
     public function provideGeoJsonPoint(): array
     {
-        $json     = ['type' => 'Point', 'coordinates' => [1, 2]];
-        $expected = ['$geometry' => $json];
+        $coordinates = [1, 2];
+        $json        = ['type' => 'Point', 'coordinates' => $coordinates];
+        $expected    = ['$geometry' => $json];
 
         return [
             'array' => [$json, $expected],
-            'object' => [$this->getMockPoint($json), $expected],
+            'object' => [new Point($coordinates), $expected],
         ];
     }
 
@@ -561,16 +561,18 @@ class ExprTest extends BaseTestCase
 
     public function provideGeoJsonPolygon(): array
     {
+        $coordinates = [[[0, 0], [1, 1], [1, 0], [0, 0]]];
+
         $json = [
             'type' => 'Polygon',
-            'coordinates' => [[[0, 0], [1, 1], [1, 0], [0, 0]]],
+            'coordinates' => $coordinates,
         ];
 
         $expected = ['$geometry' => $json];
 
         return [
             'array' => [$json, $expected],
-            'object' => [$this->getMockPolygon($json), $expected],
+            'object' => [new Polygon($coordinates), $expected],
         ];
     }
 
@@ -701,37 +703,5 @@ class ExprTest extends BaseTestCase
         $expr->setClassMetadata($this->dm->getClassMetadata(User::class));
 
         return $expr;
-    }
-
-    /**
-     * @param array<string, mixed> $json
-     *
-     * @return MockObject&Point
-     */
-    private function getMockPoint(array $json)
-    {
-        $point = $this->createMock(Point::class);
-
-        $point->expects($this->once())
-            ->method('jsonSerialize')
-            ->willReturn($json);
-
-        return $point;
-    }
-
-    /**
-     * @param array<string, mixed> $json
-     *
-     * @return MockObject&Polygon
-     */
-    private function getMockPolygon(array $json)
-    {
-        $point = $this->createMock(Polygon::class);
-
-        $point->expects($this->once())
-            ->method('jsonSerialize')
-            ->willReturn($json);
-
-        return $point;
     }
 }
