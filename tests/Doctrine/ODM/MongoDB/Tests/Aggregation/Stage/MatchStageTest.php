@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use GeoJson\Geometry\Geometry;
 use MongoDB\BSON\UTCDateTime;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class MatchStageTest extends BaseTestCase
 {
@@ -77,19 +76,19 @@ class MatchStageTest extends BaseTestCase
             'type()' => ['type', [7]],
             'all()' => ['all', [['value1', 'value2']]],
             'mod()' => ['mod', [2, 0]],
-            'geoIntersects()' => ['geoIntersects', [$this->getMockGeometry()]],
-            'geoWithin()' => ['geoWithin', [$this->getMockGeometry()]],
+            'geoIntersects()' => ['geoIntersects', [self::createGeometry()]],
+            'geoWithin()' => ['geoWithin', [self::createGeometry()]],
             'geoWithinBox()' => ['geoWithinBox', [1, 2, 3, 4]],
             'geoWithinCenter()' => ['geoWithinCenter', [1, 2, 3]],
             'geoWithinCenterSphere()' => ['geoWithinCenterSphere', [1, 2, 3]],
             'geoWithinPolygon()' => ['geoWithinPolygon', [[0, 0], [1, 1], [1, 0]]],
             'addAnd() array' => ['addAnd', [[]]],
-            'addAnd() Expr' => ['addAnd', [$this->getMockQueryExpr()]],
+            'addAnd() Expr' => ['addAnd', [self::createExpr()]],
             'addOr() array' => ['addOr', [[]]],
-            'addOr() Expr' => ['addOr', [$this->getMockQueryExpr()]],
+            'addOr() Expr' => ['addOr', [self::createExpr()]],
             'addNor() array' => ['addNor', [[]]],
-            'addNor() Expr' => ['addNor', [$this->getMockQueryExpr()]],
-            'not()' => ['not', [$this->getMockQueryExpr()]],
+            'addNor() Expr' => ['addNor', [self::createExpr()]],
+            'not()' => ['not', [self::createExpr()]],
             'language()' => ['language', ['en']],
             'text()' => ['text', ['foo']],
         ];
@@ -116,9 +115,14 @@ class MatchStageTest extends BaseTestCase
         );
     }
 
-    /** @return MockObject&Geometry */
-    private function getMockGeometry()
+    private static function createGeometry(): Geometry
     {
-        return $this->createMock(Geometry::class);
+        return new class extends Geometry {
+        };
+    }
+
+    private static function createExpr(): Expr
+    {
+        return new Expr(static::createTestDocumentManager());
     }
 }

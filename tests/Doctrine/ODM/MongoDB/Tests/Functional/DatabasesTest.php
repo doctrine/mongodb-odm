@@ -20,7 +20,7 @@ class DatabasesTest extends BaseTestCase
         self::assertEquals('test_default', $this->dm->getDocumentDatabase(DefaultDatabaseTest::class)->getDatabaseName());
     }
 
-    protected function getConfiguration(): Configuration
+    protected static function getConfiguration(): Configuration
     {
         $config = parent::getConfiguration();
 

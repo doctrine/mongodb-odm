@@ -96,7 +96,7 @@ class EnumTest extends BaseTestCase
         self::assertSame(['_id' => 'C'], $qb->getQuery()->debug('query'));
     }
 
-    protected function createMetadataDriverImpl(): MappingDriver
+    protected static function createMetadataDriverImpl(): MappingDriver
     {
         return AttributeDriver::create(__DIR__ . '/../../../Documents');
     }

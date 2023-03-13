@@ -10,7 +10,7 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
 class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
 {
-    protected function loadDriver(): MappingDriver
+    protected static function loadDriver(): MappingDriver
     {
         $reader = new AnnotationReader();
 
