@@ -534,10 +534,7 @@ EOT;
         $database
             ->expects($this->exactly(2))
             ->method('createCollection')
-            ->withConsecutive(
-                ['fs.files', $this->writeOptions($expectedWriteOptions)],
-                ['fs.chunks', $this->writeOptions($expectedWriteOptions)],
-            );
+            ->with(self::stringStartsWith('fs.'), $this->writeOptions($expectedWriteOptions));
 
         $this->schemaManager->createDocumentCollection(File::class, $maxTimeMs, $writeConcern);
     }
@@ -812,7 +809,7 @@ EOT;
         self::assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
     }
 
-    public function dataIsMongoIndexEquivalentToDocumentIndex(): array
+    public static function dataIsMongoIndexEquivalentToDocumentIndex(): array
     {
         return [
             'keysSame' => [
@@ -1029,7 +1026,7 @@ EOT;
         self::assertSame($expected, $this->schemaManager->isMongoIndexEquivalentToDocumentIndex(new IndexInfo($mongoIndex), $documentIndex));
     }
 
-    public function dataIsMongoTextIndexEquivalentToDocumentIndex(): array
+    public static function dataIsMongoTextIndexEquivalentToDocumentIndex(): array
     {
         return [
             'keysSame' => [

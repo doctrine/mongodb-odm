@@ -396,7 +396,7 @@ class ExprTest extends BaseTestCase
         self::assertEquals(['$in' => [['x' => 1]], '$lt' => 2], $expr->getQuery());
     }
 
-    public function provideGeoJsonPoint(): array
+    public static function provideGeoJsonPoint(): array
     {
         $coordinates = [1, 2];
         $json        = ['type' => 'Point', 'coordinates' => $coordinates];
@@ -559,7 +559,7 @@ class ExprTest extends BaseTestCase
         self::assertEquals(['$geoIntersects' => $expected], $expr->getQuery());
     }
 
-    public function provideGeoJsonPolygon(): array
+    public static function provideGeoJsonPolygon(): array
     {
         $coordinates = [[[0, 0], [1, 1], [1, 0], [0, 0]]];
 

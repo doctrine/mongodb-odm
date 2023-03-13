@@ -167,7 +167,7 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         $annotationDriver->loadMetadataForClass(get_class($wrong), $cm);
     }
 
-    public function provideClassCanBeMappedByOneAbstractDocument(): ?Generator
+    public static function provideClassCanBeMappedByOneAbstractDocument(): ?Generator
     {
         yield [
             /**

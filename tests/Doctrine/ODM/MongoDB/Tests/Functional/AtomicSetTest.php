@@ -120,7 +120,7 @@ class AtomicSetTest extends BaseTestCase
         self::assertEmpty($user->phonenumbers);
     }
 
-    public function provideAtomicCollectionUnset(): array
+    public static function provideAtomicCollectionUnset(): array
     {
         return [
             [null],

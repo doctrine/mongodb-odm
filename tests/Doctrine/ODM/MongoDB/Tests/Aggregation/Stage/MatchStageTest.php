@@ -58,7 +58,7 @@ class MatchStageTest extends BaseTestCase
         self::assertSame($stage, $stage->$method(...$args));
     }
 
-    public function provideProxiedExprMethods(): array
+    public static function provideProxiedExprMethods(): array
     {
         return [
             'field()' => ['field', ['fieldName']],

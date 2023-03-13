@@ -120,7 +120,7 @@ class DocumentManagerTest extends BaseTestCase
         self::assertFalse($this->dm->isOpen());
     }
 
-    public function dataMethodsAffectedByNoObjectArguments(): array
+    public static function dataMethodsAffectedByNoObjectArguments(): array
     {
         return [
             ['persist'],
@@ -138,7 +138,7 @@ class DocumentManagerTest extends BaseTestCase
         $this->dm->$methodName(null);
     }
 
-    public function dataAffectedByErrorIfClosedException(): array
+    public static function dataAffectedByErrorIfClosedException(): array
     {
         return [
             ['flush'],

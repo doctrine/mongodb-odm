@@ -126,7 +126,7 @@ class DocumentPersisterTest extends BaseTestCase
         self::assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
     }
 
-    public function getTestPrepareFieldNameData(): array
+    public static function getTestPrepareFieldNameData(): array
     {
         return [
             ['name', 'dbName'],
@@ -256,7 +256,7 @@ class DocumentPersisterTest extends BaseTestCase
         );
     }
 
-    public function provideHashIdentifiers(): array
+    public static function provideHashIdentifiers(): array
     {
         return [
             [['key' => 'value']],

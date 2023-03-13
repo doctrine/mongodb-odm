@@ -193,7 +193,7 @@ class IdTest extends BaseTestCase
         self::assertSame($user2->id, $user2Id);
     }
 
-    public function provideEqualButNotIdenticalIds(): array
+    public static function provideEqualButNotIdenticalIds(): array
     {
         /* MongoDB allows comparisons between different numeric types, so we
          * cannot test integer and floating point values (e.g. 123 and 123.0).
@@ -251,7 +251,7 @@ class IdTest extends BaseTestCase
         self::assertEquals('changed', $object->test);
     }
 
-    public function getTestIdTypesAndStrategiesData(): array
+    public static function getTestIdTypesAndStrategiesData(): array
     {
         $identifier = new ObjectId();
 
@@ -326,7 +326,7 @@ class IdTest extends BaseTestCase
         self::assertEquals($expectedMongoBinDataType, $check['_id']->getType());
     }
 
-    public function getTestBinIdsData(): array
+    public static function getTestBinIdsData(): array
     {
         return [
             ['bin', 0, 'test-data'],

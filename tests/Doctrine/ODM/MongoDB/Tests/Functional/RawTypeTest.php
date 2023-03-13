@@ -30,7 +30,7 @@ class RawTypeTest extends BaseTestCase
         self::assertEquals($value, $result['raw']);
     }
 
-    public function getTestRawTypeData(): array
+    public static function getTestRawTypeData(): array
     {
         return [
             ['test'],

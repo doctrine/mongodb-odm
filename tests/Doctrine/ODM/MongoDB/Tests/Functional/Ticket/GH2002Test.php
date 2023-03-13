@@ -30,7 +30,7 @@ class GH2002Test extends BaseTestCase
         self::assertArraySubset($expectedReference, $data['parentDocument']);
     }
 
-    public function getValidReferenceData(): array
+    public static function getValidReferenceData(): array
     {
         return [
             'discriminatedDocument' => [
@@ -73,7 +73,7 @@ class GH2002Test extends BaseTestCase
         $this->dm->getUnitOfWork()->getPersistenceBuilder()->prepareInsertData($document);
     }
 
-    public function getInvalidReferenceData(): array
+    public static function getInvalidReferenceData(): array
     {
         return [
             'referenceWithPartialDiscriminatorMapUnlistedDocument' => [

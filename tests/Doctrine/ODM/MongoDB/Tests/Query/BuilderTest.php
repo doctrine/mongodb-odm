@@ -206,7 +206,7 @@ class BuilderTest extends BaseTestCase
         self::assertEquals($expected, $q1['newObj']['$addToSet'][$field]);
     }
 
-    public function provideArrayUpdateOperatorsOnReferenceMany(): Generator
+    public static function provideArrayUpdateOperatorsOnReferenceMany(): Generator
     {
         yield [ChildA::class, 'featureFullMany'];
         yield [ChildB::class, 'featureSimpleMany'];
@@ -232,7 +232,7 @@ class BuilderTest extends BaseTestCase
         self::assertEquals($expected, $q1['newObj']['$set'][$field]);
     }
 
-    public function provideArrayUpdateOperatorsOnReferenceOne(): Generator
+    public static function provideArrayUpdateOperatorsOnReferenceOne(): Generator
     {
         yield [ChildA::class, 'featureFull'];
         yield [ChildB::class, 'featureSimple'];
@@ -490,7 +490,7 @@ class BuilderTest extends BaseTestCase
         self::assertSame($qb, $qb->$method(...$args));
     }
 
-    public function provideProxiedExprMethods(): array
+    public static function provideProxiedExprMethods(): array
     {
         return [
             'field()' => ['field', ['fieldName']],
@@ -577,9 +577,9 @@ class BuilderTest extends BaseTestCase
         self::assertEquals($expected, $qb->debug('select'));
     }
 
-    public function provideSelectProjections(): array
+    public static function provideSelectProjections(): array
     {
-        return $this->provideProjections(true);
+        return self::provideProjections(true);
     }
 
     /**
@@ -595,9 +595,9 @@ class BuilderTest extends BaseTestCase
         self::assertEquals($expected, $qb->debug('select'));
     }
 
-    public function provideExcludeProjections(): array
+    public static function provideExcludeProjections(): array
     {
-        return $this->provideProjections(false);
+        return self::provideProjections(false);
     }
 
     /**
@@ -607,7 +607,7 @@ class BuilderTest extends BaseTestCase
      *
      * @return array
      */
-    private function provideProjections(bool $include): array
+    private static function provideProjections(bool $include): array
     {
         $project = $include ? 1 : 0;
 
@@ -713,7 +713,7 @@ class BuilderTest extends BaseTestCase
         self::assertEquals(['foo' => $expectedOrder], $qb->debug('sort'));
     }
 
-    public function provideSortOrders(): array
+    public static function provideSortOrders(): array
     {
         return [
             [1, 1],

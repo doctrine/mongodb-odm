@@ -33,7 +33,7 @@ class TypeTest extends BaseTestCase
         self::assertEquals($test, $type->convertToPHPValue($type->convertToDatabaseValue($test)));
     }
 
-    public function provideTypes(): array
+    public static function provideTypes(): array
     {
         return [
             'id' => [Type::getType(Type::ID), '507f1f77bcf86cd799439011'],
@@ -73,7 +73,7 @@ class TypeTest extends BaseTestCase
         self::assertEquals($test, $type->convertToDatabaseValue($test));
     }
 
-    public function provideTypesForIdempotent(): array
+    public static function provideTypesForIdempotent(): array
     {
         return [
             'id' => [Type::getType(Type::ID), new ObjectId()],

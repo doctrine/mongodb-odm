@@ -224,7 +224,7 @@ class PersistenceBuilderTest extends BaseTestCase
      *
      * @return array
      */
-    public function getDocumentsAndExpectedData(): array
+    public static function getDocumentsAndExpectedData(): array
     {
         return [
             [new ConfigurableProduct('Test Product'), ['name' => 'Test Product']],

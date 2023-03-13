@@ -685,7 +685,7 @@ class ClassMetadataTest extends BaseTestCase
         ]);
     }
 
-    public function provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(): Generator
+    public static function provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(): Generator
     {
         yield ['skip', 5];
         yield ['limit', 5];
@@ -763,7 +763,7 @@ class ClassMetadataTest extends BaseTestCase
         $cm->mapField($config);
     }
 
-    public function provideOwningAndInversedRefsNeedTargetDocument(): array
+    public static function provideOwningAndInversedRefsNeedTargetDocument(): array
     {
         return [
             [['type' => 'one', 'mappedBy' => 'post']],

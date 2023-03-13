@@ -87,7 +87,7 @@ class DateImmutableTypeTest extends TestCase
         $type->convertToDatabaseValue($value);
     }
 
-    public function provideInvalidDateValues(): array
+    public static function provideInvalidDateValues(): array
     {
         return [
             'array'  => [[]],
@@ -140,7 +140,7 @@ class DateImmutableTypeTest extends TestCase
         $this->assertTimestampEquals($output, $return);
     }
 
-    public function provideDatabaseToPHPValues(): array
+    public static function provideDatabaseToPHPValues(): array
     {
         $yesterday = strtotime('yesterday');
         $mongoDate = new UTCDateTime($yesterday * 1000);

@@ -96,7 +96,7 @@ class GH852Test extends BaseTestCase
         self::assertCount(4, $docs);
     }
 
-    public function provideIdGenerators(): array
+    public static function provideIdGenerators(): array
     {
         $binDataType = Binary::TYPE_GENERIC;
 
