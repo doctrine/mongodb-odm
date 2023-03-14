@@ -413,6 +413,18 @@ abstract class Stage
     }
 
     /**
+     * Performs a union of two collections. $unionWith combines pipeline results
+     * from two collections into a single result set. The stage outputs the
+     * combined result set (including duplicates) to the next stage.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/unionWith/
+     */
+    public function unionWith(string $collection): Stage\UnionWith
+    {
+        return $this->builder->unionWith($collection);
+    }
+
+    /**
      * Removes/excludes fields from documents.
      *
      * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/unset/

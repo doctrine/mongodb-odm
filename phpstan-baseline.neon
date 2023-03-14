@@ -157,6 +157,7 @@ parameters:
                 - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
                 - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
                 - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Out.php
+                - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
         # $this->mapping['targetDocument'] is class-string<T>
         -
