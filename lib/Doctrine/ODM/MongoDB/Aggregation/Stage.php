@@ -362,6 +362,19 @@ abstract class Stage
     }
 
     /**
+     * Adds new fields to documents. $set outputs documents that contain all
+     * existing fields from the input documents and newly added fields.
+     *
+     * The $set stage is an alias for $addFields.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/set/
+     */
+    public function set(): Stage\Set
+    {
+        return $this->builder->set();
+    }
+
+    /**
      * Skips over the specified number of documents that pass into the stage and
      * passes the remaining documents to the next stage in the pipeline.
      *
