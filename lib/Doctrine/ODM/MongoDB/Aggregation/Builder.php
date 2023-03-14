@@ -161,6 +161,19 @@ class Builder
     }
 
     /**
+     * Creates new documents in a sequence of documents where certain values in a field are missing.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/densify/
+     */
+    public function densify(string $fieldName): Stage\Densify
+    {
+        $stage = new Stage\Densify($this, $fieldName);
+        $this->addStage($stage);
+
+        return $stage;
+    }
+
+    /**
      * Executes the aggregation pipeline
      *
      * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.

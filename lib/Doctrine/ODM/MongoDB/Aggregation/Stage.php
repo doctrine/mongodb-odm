@@ -137,6 +137,16 @@ abstract class Stage
     }
 
     /**
+     * Creates new documents in a sequence of documents where certain values in a field are missing.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/densify/
+     */
+    public function densify(string $fieldName): Stage\Densify
+    {
+        return $this->builder->densify($fieldName);
+    }
+
+    /**
      * Processes multiple aggregation pipelines within a single stage on the
      * same set of input documents.
      *
