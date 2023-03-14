@@ -7,7 +7,7 @@
         failOnRisky="true"
         stopOnFailure="false"
         bootstrap="tests/bootstrap.php"
-        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+        xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
         cacheDirectory=".phpunit.cache"
 >
     <testsuites>
