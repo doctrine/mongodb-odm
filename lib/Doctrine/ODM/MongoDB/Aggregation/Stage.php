@@ -324,6 +324,24 @@ abstract class Stage
     }
 
     /**
+     * Replaces the input document with the specified document. The operation
+     * replaces all existing fields in the input document, including the _id
+     * field. With $replaceWith, you can promote an embedded document to the
+     * top-level. You can also specify a new document as the replacement.
+     *
+     * The $replaceWith stage is an alias for $replaceRoot.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/replaceWith/
+     *
+     * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
+     * resolves to a document.
+     */
+    public function replaceWith($expression = null): Stage\ReplaceWith
+    {
+        return $this->builder->replaceWith($expression);
+    }
+
+    /**
      * Controls if resulting iterator should be wrapped with CachingIterator.
      */
     public function rewindable(bool $rewindable = true): self
