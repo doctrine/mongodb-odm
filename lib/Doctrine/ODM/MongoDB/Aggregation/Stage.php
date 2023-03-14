@@ -263,6 +263,17 @@ abstract class Stage
     }
 
     /**
+     * Writes the results of the aggregation pipeline to a specified collection.
+     * The $merge operator must be the last stage in the pipeline.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/merge/
+     */
+    public function merge(): Stage\Merge
+    {
+        return $this->builder->merge();
+    }
+
+    /**
      * Takes the documents returned by the aggregation pipeline and writes them
      * to a specified collection. This must be the last stage in the pipeline.
      *

@@ -155,6 +155,7 @@ parameters:
             paths:
                 - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
                 - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
+                - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
                 - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Out.php
 
         # $this->mapping['targetDocument'] is class-string<T>
