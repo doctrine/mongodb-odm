@@ -159,6 +159,16 @@ abstract class Stage
     }
 
     /**
+     * Populates null and missing field values within documents.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/fill/
+     */
+    public function fill(): Stage\Fill
+    {
+        return $this->builder->fill();
+    }
+
+    /**
      * Outputs documents in order of nearest to farthest from a specified point.
      * You can only use this as the first stage of a pipeline.
      *

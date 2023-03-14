@@ -214,6 +214,19 @@ class Builder
     }
 
     /**
+     * Populates null and missing field values within documents.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/fill/
+     */
+    public function fill(): Stage\Fill
+    {
+        $stage = new Stage\Fill($this);
+        $this->addStage($stage);
+
+        return $stage;
+    }
+
+    /**
      * Outputs documents in order of nearest to farthest from a specified point.
      *
      * A GeoJSON point may be provided as the first and only argument for
