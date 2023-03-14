@@ -60,11 +60,10 @@ class MergeTest extends BaseTest
 
     public static function providePipeline(): Generator
     {
-        // TODO: use $unset once it has been added
         yield 'Array' => [
             'pipeline' => [
                 ['$set' => ['foo' => 'bar']],
-                ['$project' => ['bar' => false]],
+                ['$unset' => ['bar']],
             ],
         ];
 
@@ -73,8 +72,7 @@ class MergeTest extends BaseTest
                 $builder
                     ->set()
                         ->field('foo')->expression('bar')
-                    ->project()
-                        ->excludeFields(['bar']);
+                    ->unset('bar');
 
                 return $builder;
             },
@@ -104,7 +102,7 @@ class MergeTest extends BaseTest
                     'into' => 'someRandomCollectionName',
                     'whenMatched' => [
                         ['$set' => ['foo' => 'bar']],
-                        ['$project' => ['bar' => false]],
+                        ['$unset' => ['bar']],
                     ],
                 ],
             ],

@@ -413,6 +413,16 @@ abstract class Stage
     }
 
     /**
+     * Removes/excludes fields from documents.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/unset/
+     */
+    public function unset(string ...$fields): Stage\UnsetStage
+    {
+        return $this->builder->unset(...$fields);
+    }
+
+    /**
      * Deconstructs an array field from the input documents to output a document
      * for each element. Each output document is the input document with the
      * value of the array field replaced by the element.
