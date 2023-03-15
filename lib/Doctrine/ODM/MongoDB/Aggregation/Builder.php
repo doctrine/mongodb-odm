@@ -83,9 +83,8 @@ class Builder
     public function addFields(): Stage\AddFields
     {
         $stage = new Stage\AddFields($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -103,9 +102,8 @@ class Builder
     public function bucket(): Stage\Bucket
     {
         $stage = new Stage\Bucket($this, $this->dm, $this->class);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -125,9 +123,8 @@ class Builder
     public function bucketAuto(): Stage\BucketAuto
     {
         $stage = new Stage\BucketAuto($this, $this->dm, $this->class);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -141,9 +138,8 @@ class Builder
     public function collStats(): Stage\CollStats
     {
         $stage = new Stage\CollStats($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -155,9 +151,8 @@ class Builder
     public function count(string $fieldName): Stage\Count
     {
         $stage = new Stage\Count($this, $fieldName);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -168,9 +163,8 @@ class Builder
     public function densify(string $fieldName): Stage\Densify
     {
         $stage = new Stage\Densify($this, $fieldName);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -208,9 +202,8 @@ class Builder
     public function facet(): Stage\Facet
     {
         $stage = new Stage\Facet($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -221,9 +214,8 @@ class Builder
     public function fill(): Stage\Fill
     {
         $stage = new Stage\Fill($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -244,9 +236,8 @@ class Builder
     public function geoNear($x, $y = null): Stage\GeoNear
     {
         $stage = new Stage\GeoNear($this, $x, $y);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -347,9 +338,8 @@ class Builder
     public function graphLookup(string $from): Stage\GraphLookup
     {
         $stage = new Stage\GraphLookup($this, $from, $this->dm, $this->class);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -361,9 +351,8 @@ class Builder
     public function group(): Stage\Group
     {
         $stage = new Stage\Group($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -384,9 +373,8 @@ class Builder
     public function indexStats(): Stage\IndexStats
     {
         $stage = new Stage\IndexStats($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -397,9 +385,8 @@ class Builder
     public function limit(int $limit): Stage\Limit
     {
         $stage = new Stage\Limit($this, $limit);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -412,9 +399,8 @@ class Builder
     public function lookup(string $from): Stage\Lookup
     {
         $stage = new Stage\Lookup($this, $from, $this->dm, $this->class);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -426,9 +412,8 @@ class Builder
     public function match(): Stage\MatchStage
     {
         $stage = new Stage\MatchStage($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -451,9 +436,8 @@ class Builder
     public function merge(): Stage\Merge
     {
         $stage = new Stage\Merge($this, $this->dm);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -465,9 +449,8 @@ class Builder
     public function out(string $from): Stage\Out
     {
         $stage = new Stage\Out($this, $from, $this->dm);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -480,9 +463,8 @@ class Builder
     public function project(): Stage\Project
     {
         $stage = new Stage\Project($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -494,9 +476,8 @@ class Builder
     public function redact(): Stage\Redact
     {
         $stage = new Stage\Redact($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -513,9 +494,8 @@ class Builder
     public function replaceRoot($expression = null): Stage\ReplaceRoot
     {
         $stage = new Stage\ReplaceRoot($this, $this->dm, $this->class, $expression);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -534,9 +514,8 @@ class Builder
     public function replaceWith($expression = null): Stage\ReplaceWith
     {
         $stage = new Stage\ReplaceWith($this, $this->dm, $this->class, $expression);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -557,9 +536,8 @@ class Builder
     public function sample(int $size): Stage\Sample
     {
         $stage = new Stage\Sample($this, $size);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -573,9 +551,8 @@ class Builder
     public function set(): Stage\Set
     {
         $stage = new Stage\Set($this);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -587,9 +564,8 @@ class Builder
     public function skip(int $skip): Stage\Skip
     {
         $stage = new Stage\Skip($this, $skip);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -610,9 +586,8 @@ class Builder
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
         // fixme: move to sort stage
         $stage = new Stage\Sort($this, $this->getDocumentPersister()->prepareSort($fields));
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -624,9 +599,8 @@ class Builder
     public function sortByCount(string $expression): Stage\SortByCount
     {
         $stage = new Stage\SortByCount($this, $expression, $this->dm, $this->class);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -639,9 +613,8 @@ class Builder
     public function unionWith(string $collection): Stage\UnionWith
     {
         $stage = new Stage\UnionWith($this, $this->dm, $collection);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -652,9 +625,8 @@ class Builder
     public function unset(string ...$fields): Stage\UnsetStage
     {
         $stage = new Stage\UnsetStage($this, $this->getDocumentPersister(), ...$fields);
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
@@ -668,15 +640,18 @@ class Builder
     {
         // Fixme: move field name translation to stage
         $stage = new Stage\Unwind($this, $this->getDocumentPersister()->prepareFieldName($fieldName));
-        $this->addStage($stage);
 
-        return $stage;
+        return $this->addStage($stage);
     }
 
     /**
      * Allows adding an arbitrary stage to the pipeline
      *
-     * @return Stage The method returns the stage given as an argument
+     * @param T $stage
+     *
+     * @return T The method returns the stage given as an argument
+     *
+     * @template T of Stage
      */
     public function addStage(Stage $stage): Stage
     {
