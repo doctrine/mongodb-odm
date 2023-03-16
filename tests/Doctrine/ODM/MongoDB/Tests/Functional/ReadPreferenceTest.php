@@ -67,7 +67,7 @@ class ReadPreferenceTest extends BaseTestCase
         $this->assertReadPreferenceHint($readPreference, $groups->getHints()[Query::HINT_READ_PREFERENCE], $tags);
     }
 
-    public function provideReadPreferenceHints(): array
+    public static function provideReadPreferenceHints(): array
     {
         return [
             [ReadPreference::RP_PRIMARY, []],

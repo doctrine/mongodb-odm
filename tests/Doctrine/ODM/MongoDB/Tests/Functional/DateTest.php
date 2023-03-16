@@ -58,7 +58,7 @@ class DateTest extends BaseTestCase
         self::assertEmpty($changeset);
     }
 
-    public function provideEquivalentDates(): array
+    public static function provideEquivalentDates(): array
     {
         return [
             [new DateTime('1985-09-01 00:00:00'), new DateTime('1985-09-01 00:00:00')],

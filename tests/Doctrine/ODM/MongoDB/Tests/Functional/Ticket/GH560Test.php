@@ -87,7 +87,7 @@ class GH560Test extends BaseTestCase
         self::assertEquals($called, $listener->called);
     }
 
-    public function provideDocumentIds(): array
+    public static function provideDocumentIds(): array
     {
         return [
             [123456],

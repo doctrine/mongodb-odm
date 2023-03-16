@@ -437,7 +437,7 @@ class QueryTest extends BaseTestCase
         $query->getIterator();
     }
 
-    public function provideQueryTypesThatDoNotReturnAnIterator(): array
+    public static function provideQueryTypesThatDoNotReturnAnIterator(): array
     {
         return [
             [Query::TYPE_FIND_AND_UPDATE, 'findOneAndUpdate'],

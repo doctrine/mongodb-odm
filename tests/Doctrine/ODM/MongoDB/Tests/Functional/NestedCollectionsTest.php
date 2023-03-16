@@ -65,7 +65,7 @@ class NestedCollectionsTest extends BaseTestCase
         self::assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
 
-    public function provideStrategy(): array
+    public static function provideStrategy(): array
     {
         return [
             [ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET],

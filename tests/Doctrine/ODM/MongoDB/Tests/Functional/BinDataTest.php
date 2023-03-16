@@ -26,7 +26,7 @@ class BinDataTest extends BaseTestCase
         self::assertEquals($data, $check[$field]->getData());
     }
 
-    public function provideData(): array
+    public static function provideData(): array
     {
         return [
             ['bin', 'test', Binary::TYPE_GENERIC],

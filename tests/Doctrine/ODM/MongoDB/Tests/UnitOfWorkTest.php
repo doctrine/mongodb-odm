@@ -269,7 +269,7 @@ class UnitOfWorkTest extends BaseTestCase
         self::assertFalse($this->uow->isScheduledForUpdate($arrayTest));
     }
 
-    public function getScheduleForUpdateWithArraysTests(): array
+    public static function getScheduleForUpdateWithArraysTests(): array
     {
         return [
             [

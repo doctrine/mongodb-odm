@@ -52,7 +52,7 @@ class ProjectTest extends BaseTestCase
         self::assertSame(['$project' => ['something' => ['$' . $operator => ['$expression1', '$expression2']]]], $projectStage->getExpression());
     }
 
-    public function provideAccumulators(): array
+    public static function provideAccumulators(): array
     {
         $operators = ['avg', 'max', 'min', 'stdDevPop', 'stdDevSamp', 'sum'];
 

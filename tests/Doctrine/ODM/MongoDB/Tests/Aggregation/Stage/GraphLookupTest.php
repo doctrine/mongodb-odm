@@ -107,7 +107,7 @@ class GraphLookupTest extends BaseTestCase
         );
     }
 
-    public function provideEmployeeAggregations(): array
+    public static function provideEmployeeAggregations(): array
     {
         return [
             'owningSide' => [
@@ -185,7 +185,7 @@ class GraphLookupTest extends BaseTestCase
         }
     }
 
-    public function provideTravellerAggregations(): array
+    public static function provideTravellerAggregations(): array
     {
         return [
             'owningSide' => [

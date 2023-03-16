@@ -71,7 +71,7 @@ class FunctionalTest extends BaseTestCase
         bcscale($this->initialScale);
     }
 
-    public function provideUpsertObjects(): array
+    public static function provideUpsertObjects(): array
     {
         return [
             [UserUpsert::class, new ObjectId('4f18f593acee41d724000005'), 'user'],

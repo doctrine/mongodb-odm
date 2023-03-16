@@ -43,7 +43,7 @@ class QueryExpressionVisitorTest extends BaseTestCase
         self::assertEquals($expectedQuery, $expr->getQuery());
     }
 
-    public function provideComparisons(): array
+    public static function provideComparisons(): array
     {
         $builder = new ExpressionBuilder();
 
