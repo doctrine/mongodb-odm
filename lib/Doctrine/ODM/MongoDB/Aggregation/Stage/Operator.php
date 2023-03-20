@@ -6,15 +6,44 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
-use Doctrine\ODM\MongoDB\Aggregation\Operator\GenericOperatorsInterface;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\AccumulatorOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ArithmeticOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ArrayOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\BooleanOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ConditionalOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\DataSizeOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\DateOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\MiscOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ObjectOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\SetOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\StringOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\TimestampOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\TrigonometryOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\TypeOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use function func_get_args;
 
 /**
  * Fluent interface for adding operators to aggregation stages.
+ *
+ * @internal
  */
-abstract class Operator extends Stage implements GenericOperatorsInterface
+abstract class Operator extends Stage implements
+    AccumulatorOperators,
+    ArithmeticOperators,
+    ArrayOperators,
+    BooleanOperators,
+    ConditionalOperators,
+    DataSizeOperators,
+    DateOperators,
+    MiscOperators,
+    ObjectOperators,
+    SetOperators,
+    StringOperators,
+    TimestampOperators,
+    TrigonometryOperators,
+    TypeOperators
 {
     /** @var Expr */
     protected $expr;
@@ -154,6 +183,22 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     }
 
     /**
+     * Adds one or more $and clauses to the current expression.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/and/
+     * @see Expr::and
+     *
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
+     */
+    public function and($expression, ...$expressions): self
+    {
+        $this->expr->and($expression, ...$expressions);
+
+        return $this;
+    }
+
+    /**
      * Evaluates an array as a set and returns true if any of the elements are
      * true and false otherwise. An empty array returns false.
      *
@@ -277,6 +322,51 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     public function atanh($expression): self
     {
         $this->expr->atanh($expression);
+
+        return $this;
+    }
+
+    /**
+     * Returns the average value of numeric values. Ignores non-numeric values.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/avg/
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
+    public function avg($expression, ...$expressions): self
+    {
+        $this->expr->avg(...func_get_args());
+
+        return $this;
+    }
+
+    /**
+     * Returns the size of a given string or binary data value's content in bytes.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/binarySize/
+     * @see Expr::binarySize
+     *
+     * @param mixed|Expr $expression
+     */
+    public function binarySize($expression): self
+    {
+        $this->expr->binarySize($expression);
+
+        return $this;
+    }
+
+    /**
+     * Returns the size in bytes of a given document (i.e. bsontype Object) when encoded as BSON.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bsonSize/
+     * @see Expr::bsonSize
+     *
+     * @param mixed|Expr $expression
+     */
+    public function bsonSize($expression): self
+    {
+        $this->expr->bsonSize($expression);
 
         return $this;
     }
@@ -451,6 +541,124 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     }
 
     /**
+     * Increments a Date object by a specified number of time units
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateAdd/
+     * @see Expr::dateAdd
+     *
+     * @param mixed|Expr $startDate
+     * @param mixed|Expr $unit
+     * @param mixed|Expr $amount
+     * @param mixed|Expr $timezone
+     */
+    public function dateAdd($startDate, $unit, $amount, $timezone = null): self
+    {
+        $this->expr->dateAdd($startDate, $unit, $amount, $timezone);
+
+        return $this;
+    }
+
+    /**
+     * Returns the difference between two dates
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateDiff/
+     * @see Expr::dateDiff
+     *
+     * @param mixed|Expr $startDate
+     * @param mixed|Expr $endDate
+     * @param mixed|Expr $unit
+     * @param mixed|Expr $timezone
+     * @param mixed|Expr $startOfWeek
+     */
+    public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): self
+    {
+        $this->expr->dateDiff($startDate, $endDate, $unit, $timezone, $startOfWeek);
+
+        return $this;
+    }
+
+    /**
+     * Constructs and returns a Date object given the date's constituent properties
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateFromParts/
+     * @see Expr::dateFromParts
+     *
+     * @param mixed|Expr $year
+     * @param mixed|Expr $isoWeekYear
+     * @param mixed|Expr $month
+     * @param mixed|Expr $isoWeek
+     * @param mixed|Expr $day
+     * @param mixed|Expr $isoDayOfWeek
+     * @param mixed|Expr $hour
+     * @param mixed|Expr $minute
+     * @param mixed|Expr $second
+     * @param mixed|Expr $millisecond
+     * @param mixed|Expr $timezone
+     */
+    public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): self
+    {
+        $this->expr->dateFromParts($year, $isoWeekYear, $month, $isoWeek, $day, $isoDayOfWeek, $hour, $minute, $second, $millisecond, $timezone);
+
+        return $this;
+    }
+
+    /**
+     * Converts a date/time string to a date object.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateFromString/
+     * @see Expr::dateFromString
+     *
+     * @param mixed|Expr $dateString
+     * @param mixed|Expr $format
+     * @param mixed|Expr $timezone
+     * @param mixed|Expr $onError
+     * @param mixed|Expr $onNull
+     *
+     * @return static
+     */
+    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): self
+    {
+        $this->expr->dateFromString($dateString, $format, $timezone, $onError, $onNull);
+
+        return $this;
+    }
+
+    /**
+     * Decrements a Date object by a specified number of time units
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateSubtract/
+     * @see Expr::dateSubtract
+     *
+     * @param mixed|Expr $startDate
+     * @param mixed|Expr $unit
+     * @param mixed|Expr $amount
+     * @param mixed|Expr $timezone
+     */
+    public function dateSubtract($startDate, $unit, $amount, $timezone = null): self
+    {
+        $this->expr->dateSubtract($startDate, $unit, $amount, $timezone);
+
+        return $this;
+    }
+
+    /**
+     * Returns a document that contains the constituent parts of a given BSON Date value as individual properties. The properties returned are year, month, day, hour, minute, second and millisecond.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateToParts/
+     * @see Expr::dateToParts
+     *
+     * @param mixed|Expr $date
+     * @param mixed|Expr $timezone
+     * @param mixed|Expr $iso8601
+     */
+    public function dateToParts($date, $timezone = null, $iso8601 = null): self
+    {
+        $this->expr->dateToParts($date, $timezone, $iso8601);
+
+        return $this;
+    }
+
+    /**
      * Converts a date object to a string according to a user-specified format.
      *
      * The format string can be any string literal, containing 0 or more format
@@ -460,14 +668,34 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateToString/
      * @see Expr::dateToString
      *
-     * @param string     $format
      * @param mixed|Expr $expression
+     * @param mixed|Expr $timezone
+     * @param mixed|Expr $onNull
      *
      * @return static
      */
-    public function dateToString($format, $expression): self
+    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): self
     {
-        $this->expr->dateToString($format, $expression);
+        $this->expr->dateToString($format, $expression, $timezone, $onNull);
+
+        return $this;
+    }
+
+    /**
+     * Truncates a date.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateTrunc/
+     * @see Expr::dateTrunc
+     *
+     * @param mixed|Expr $date
+     * @param mixed|Expr $unit
+     * @param mixed|Expr $binSize
+     * @param mixed|Expr $timezone
+     * @param mixed|Expr $startOfWeek
+     */
+    public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): self
+    {
+        $this->expr->dateTrunc($date, $unit, $binSize, $timezone, $startOfWeek);
 
         return $this;
     }
@@ -691,6 +919,22 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     }
 
     /**
+     * Returns a specified number of elements from the beginning of an array. Distinct from the $firstN accumulator.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/firstN-array-element/
+     * @see Expr::firstN
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr $n
+     */
+    public function firstN($expression, $n): self
+    {
+        $this->expr->firstN($expression, $n);
+
+        return $this;
+    }
+
+    /**
      * Returns the largest integer less than or equal to the specified number.
      *
      * The <number> expression can be any valid expression as long as it
@@ -706,6 +950,22 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     public function floor($number): self
     {
         $this->expr->floor($number);
+
+        return $this;
+    }
+
+    /**
+     * Returns the value of a specified field from a document. If you don't specify an object, $getField returns the value of the field from $$CURRENT.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/getField/
+     * @see Expr::getField
+     *
+     * @param mixed|Expr $field
+     * @param mixed|Expr $input
+     */
+    public function getField($field, $input = null): self
+    {
+        $this->expr->getField($field, $input);
 
         return $this;
     }
@@ -989,6 +1249,22 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     }
 
     /**
+     * Returns a specified number of elements from the end of an array. Distinct from the $lastN accumulator.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lastN-array-element/
+     * @see Expr::lastN
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr $n
+     */
+    public function lastN($expression, $n): self
+    {
+        $this->expr->lastN($expression, $n);
+
+        return $this;
+    }
+
+    /**
      * Binds variables for use in the specified expression, and returns the
      * result of the expression.
      *
@@ -1169,6 +1445,55 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     }
 
     /**
+     * Returns the maximum value of numeric values.
+     *
+     * $max compares both value and type, using the BSON comparison order for
+     * values of different types.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/max/
+     * @see Expr::max
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
+    public function max($expression, ...$expressions): self
+    {
+        $this->expr->max($expression, ...$expressions);
+
+        return $this;
+    }
+
+    /**
+     * Returns the n largest values in an array. Distinct from the $maxN accumulator.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/maxN/
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr $n
+     */
+    public function maxN($expression, $n): self
+    {
+        $this->expr->maxN($expression, $n);
+
+        return $this;
+    }
+
+    /**
+     * Combines multiple documents into a single document.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/mergeObjects/
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
+    public function mergeObjects($expression, ...$expressions): self
+    {
+        $this->expr->mergeObjects($expression, ...$expressions);
+
+        return $this;
+    }
+
+    /**
      * Returns the metadata associated with a document in a pipeline operations.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/meta/
@@ -1200,6 +1525,41 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     public function millisecond($expression): self
     {
         $this->expr->millisecond($expression);
+
+        return $this;
+    }
+
+    /**
+     * Returns the minimum value of numeric values.
+     *
+     * $min compares both value and type, using the BSON comparison order for
+     * values of different types.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/min/
+     * @see Expr::min
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
+    public function min($expression, ...$expressions): self
+    {
+        $this->expr->min($expression, ...$expressions);
+
+        return $this;
+    }
+
+    /**
+     * Returns the n smallest values in an array. Distinct from the $minN accumulator.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/minN/
+     * @see Expr::minN
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr $n
+     */
+    public function minN($expression, $n): self
+    {
+        $this->expr->minN($expression, $n);
 
         return $this;
     }
@@ -1340,6 +1700,22 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     }
 
     /**
+     * Adds one or more $or clause to the current expression.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/or/
+     * @see Expr::or
+     *
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
+     */
+    public function or($expression, ...$expressions): self
+    {
+        $this->expr->or($expression, ...$expressions);
+
+        return $this;
+    }
+
+    /**
      * Raises a number to the specified exponent and returns the result.
      *
      * The <number> expression can be any valid expression as long as it
@@ -1399,6 +1775,88 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     public function reduce($input, $initialValue, $in): self
     {
         $this->expr->reduce($input, $initialValue, $in);
+
+        return $this;
+    }
+
+    /**
+     * Provides regular expression (regex) pattern matching capability in
+     * aggregation expressions.
+     *
+     * If a match is found, returns a document that contains information on the
+     * first match. If a match is not found, returns null.
+     *
+     * @param mixed|Expr  $input
+     * @param mixed|Expr  $regex
+     * @param string|null $options
+     */
+    public function regexFind($input, $regex, $options = null): self
+    {
+        $this->expr->regexFind($input, $regex, $options);
+
+        return $this;
+    }
+
+    /**
+     * Provides regular expression (regex) pattern matching capability in
+     * aggregation expressions.
+     *
+     * The operator returns an array of documents that contains information on
+     * each match. If a match is not found, returns an empty array.
+     *
+     * @param mixed|Expr  $input
+     * @param mixed|Expr  $regex
+     * @param string|null $options
+     */
+    public function regexFindAll($input, $regex, $options = null): self
+    {
+        $this->expr->regexFindAll($input, $regex, $options);
+
+        return $this;
+    }
+
+    /**
+     * Performs a regular expression (regex) pattern matching and returns true
+     * if a match exists.
+     *
+     * @param mixed|Expr  $input
+     * @param mixed|Expr  $regex
+     * @param string|null $options
+     */
+    public function regexMatch($input, $regex, $options = null): self
+    {
+        $this->expr->regexMatch($input, $regex, $options);
+
+        return $this;
+    }
+
+    /**
+     * Replaces all instances of a search string in an input string with a
+     * replacement string.
+     *
+     * @param mixed|Expr $input
+     * @param mixed|Expr $find
+     * @param mixed|Expr $replacement
+     */
+    public function replaceAll($input, $find, $replacement): self
+    {
+        $this->expr->replaceAll($input, $find, $replacement);
+
+        return $this;
+    }
+
+    /**
+     * Replaces the first instance of a search string in an input string with a
+     * replacement string. If no occurrences are found, it evaluates to the
+     * input string.
+     *
+     * @param mixed|Expr $input
+     * @param mixed|Expr $find
+     * @param mixed|Expr $replacement
+     */
+    public function replaceOne($input, $find, $replacement): self
+    {
+        $this->expr->replaceOne($input, $find, $replacement);
 
         return $this;
     }
@@ -1469,6 +1927,32 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     }
 
     /**
+     * Returns a random float between 0 and 1 each time it is called.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/rand/
+     * @see Expr::rand
+     */
+    public function rand(): self
+    {
+        $this->expr->rand();
+
+        return $this;
+    }
+
+    /**
+     * Matches a random selection of input documents. The number of documents selected approximates the sample rate expressed as a percentage of the total number of documents.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sampleRate/
+     * @see Expr::sampleRate
+     */
+    public function sampleRate(float $rate): self
+    {
+        $this->expr->sampleRate($rate);
+
+        return $this;
+    }
+
+    /**
      * Returns the second portion of a date as a number between 0 and 59, but
      * can be 60 to account for leap seconds.
      *
@@ -1527,6 +2011,23 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     public function setEquals($expression1, $expression2, ...$expressions): self
     {
         $this->expr->setEquals(...func_get_args());
+
+        return $this;
+    }
+
+    /**
+     * Adds, updates, or removes a specified field in a document.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setField/
+     * @see Expr::setField
+     *
+     * @param mixed|Expr $field
+     * @param mixed|Expr $input
+     * @param mixed|Expr $value
+     */
+    public function setField($field, $input, $value): self
+    {
+        $this->expr->setField($field, $input, $value);
 
         return $this;
     }
@@ -1664,6 +2165,22 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     }
 
     /**
+     * Sorts an array based on its elements. The sort order is user specified.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sortArray/
+     * @see Expr::sortArray
+     *
+     * @param mixed|Expr                $input
+     * @param array<string, int|string> $sortBy
+     */
+    public function sortArray($input, $sortBy): self
+    {
+        $this->expr->sortArray($input, $sortBy);
+
+        return $this;
+    }
+
+    /**
      * Divides a string into an array of substrings based on a delimiter.
      *
      * $split removes the delimiter and returns the resulting substrings as
@@ -1701,6 +2218,43 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     public function sqrt($expression): self
     {
         $this->expr->sqrt($expression);
+
+        return $this;
+    }
+
+    /**
+     * Calculates the population standard deviation of the input values. Use if
+     * the values encompass the entire population of data you want to represent
+     * and do not wish to generalize about a larger population. $stdDevPop
+     * ignores non-numeric values.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevPop/
+     * @see Expr::stdDevPop
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
+    public function stdDevPop($expression, ...$expressions): self
+    {
+        $this->expr->stdDevPop($expression, ...$expressions);
+
+        return $this;
+    }
+
+    /**
+     * Calculates the sample standard deviation of the input values. Use if the
+     * values encompass a sample of a population of data from which to
+     * generalize about the population. $stdDevSamp ignores non-numeric values.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevSamp/
+     * @see Expr::stdDevSamp
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
+    public function stdDevSamp($expression, ...$expressions): self
+    {
+        $this->expr->stdDevSamp($expression, ...$expressions);
 
         return $this;
     }
@@ -1843,6 +2397,22 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     public function subtract($expression1, $expression2): self
     {
         $this->expr->subtract($expression1, $expression2);
+
+        return $this;
+    }
+
+    /**
+     * Calculates the collective sum of numeric values. Ignores non-numeric values.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sum/
+     * @see Expr::sum
+     *
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
+    public function sum($expression, ...$expressions): self
+    {
+        $this->expr->sum($expression, ...$expressions);
 
         return $this;
     }
@@ -2087,6 +2657,36 @@ abstract class Operator extends Stage implements GenericOperatorsInterface
     public function trunc($number): self
     {
         $this->expr->trunc($number);
+
+        return $this;
+    }
+
+    /**
+     * Returns the incrementing ordinal from a timestamp as a long.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tsIncrement/
+     * @see Expr::tsIncrement
+     *
+     * @param mixed|Expr $expression
+     */
+    public function tsIncrement($expression): self
+    {
+        $this->expr->tsIncrement($expression);
+
+        return $this;
+    }
+
+    /**
+     * Returns the seconds from a timestamp as a long.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tsSecond/
+     * @see Expr::tsSecond
+     *
+     * @param mixed|Expr $expression
+     */
+    public function tsSecond($expression): self
+    {
+        $this->expr->tsSecond($expression);
 
         return $this;
     }

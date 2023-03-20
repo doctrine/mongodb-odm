@@ -21,7 +21,21 @@ class OperatorTest extends BaseTest
      * @param array<string, mixed>           $expected
      * @param Closure(Expr): mixed[]|mixed[] $args
      *
-     * @dataProvider provideExpressionOperators
+     * @dataProvider provideAccumulatorExpressionOperators
+     * @dataProvider provideArithmeticExpressionOperators
+     * @dataProvider provideArrayExpressionOperators
+     * @dataProvider provideBooleanExpressionOperators
+     * @dataProvider provideComparisonExpressionOperators
+     * @dataProvider provideConditionalExpressionOperators
+     * @dataProvider provideDataSizeExpressionOperators
+     * @dataProvider provideDateExpressionOperators
+     * @dataProvider provideMiscExpressionOperators
+     * @dataProvider provideObjectExpressionOperators
+     * @dataProvider provideSetExpressionOperators
+     * @dataProvider provideStringExpressionOperators
+     * @dataProvider provideTimestampExpressionOperators
+     * @dataProvider provideTrigonometryExpressionOperators
+     * @dataProvider provideTypeExpressionOperators
      */
     public function testProxiedExpressionOperators(array $expected, string $operator, $args): void
     {

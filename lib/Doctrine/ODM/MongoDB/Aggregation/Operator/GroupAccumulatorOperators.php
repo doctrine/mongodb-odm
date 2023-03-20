@@ -39,7 +39,7 @@ interface GroupAccumulatorOperators extends CustomOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bottom/
      *
-     * @param mixed|expr                $output
+     * @param mixed|Expr                $output
      * @param array<string, int|string> $sortBy
      */
     public function bottom($output, $sortBy): self;
@@ -49,9 +49,9 @@ interface GroupAccumulatorOperators extends CustomOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bottomN/
      *
-     * @param mixed|expr                $output
+     * @param mixed|Expr                $output
      * @param array<string, int|string> $sortBy
-     * @param mixed|expr                $n
+     * @param mixed|Expr                $n
      */
     public function bottomN($output, $sortBy, $n): self;
 
@@ -196,7 +196,7 @@ interface GroupAccumulatorOperators extends CustomOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/top/
      *
-     * @param mixed|expr                $output
+     * @param mixed|Expr                $output
      * @param array<string, int|string> $sortBy
      */
     public function top($output, $sortBy): self;
@@ -206,9 +206,9 @@ interface GroupAccumulatorOperators extends CustomOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/topN/
      *
-     * @param mixed|expr                $output
+     * @param mixed|Expr                $output
      * @param array<string, int|string> $sortBy
-     * @param mixed|expr                $n
+     * @param mixed|Expr                $n
      */
     public function topN($output, $sortBy, $n): self;
 }

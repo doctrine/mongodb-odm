@@ -5,27 +5,64 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use BadMethodCallException;
-use Doctrine\ODM\MongoDB\Aggregation\Operator\GenericOperatorsInterface;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\AccumulatorOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ArithmeticOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ArrayOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\BooleanOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ConditionalOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\CustomOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\DataSizeOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\DateOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\GroupAccumulatorOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\MiscOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ObjectOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\SetOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\StringOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\TimestampOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\TrigonometryOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\TypeOperators;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
 use LogicException;
+use MongoDB\BSON\Javascript;
 
+use function array_filter;
 use function array_map;
 use function array_merge;
+use function count;
 use function func_get_args;
+use function in_array;
 use function is_array;
 use function is_string;
 use function sprintf;
 use function substr;
+
+use const ARRAY_FILTER_USE_BOTH;
 
 /**
  * Fluent interface for building aggregation pipelines.
  *
  * @psalm-type OperatorExpression = array<string, mixed>|object
  */
-class Expr implements GenericOperatorsInterface
+class Expr implements
+    AccumulatorOperators,
+    ArithmeticOperators,
+    ArrayOperators,
+    BooleanOperators,
+    ConditionalOperators,
+    CustomOperators,
+    DataSizeOperators,
+    DateOperators,
+    GroupAccumulatorOperators,
+    MiscOperators,
+    ObjectOperators,
+    SetOperators,
+    StringOperators,
+    TimestampOperators,
+    TrigonometryOperators,
+    TypeOperators
 {
     /** @var array<string, mixed> */
     private array $expr = [];
@@ -58,6 +95,38 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Defines a custom accumulator operator.
+     *
+     * Accumulators are operators that maintain their state (e.g. totals,
+     * maximums, minimums, and related data) as documents progress through the
+     * pipeline. Use the $accumulator operator to execute your own JavaScript
+     * functions to implement behavior not supported by the MongoDB Query
+     * Language.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/accumulator/
+     *
+     * @param string|Javascript $init
+     * @param mixed|self        $initArgs
+     * @param string|Javascript $accumulate
+     * @param mixed|self        $accumulateArgs
+     * @param string|Javascript $merge
+     * @param string|Javascript $finalize
+     * @param string            $lang
+     */
+    public function accumulator($init, $initArgs, $accumulate, $accumulateArgs, $merge, $finalize = null, $lang = 'js'): self
+    {
+        return $this->operator('$accumulator', $this->filterOptionalNullArguments([
+            'init' => $init,
+            'initArgs' => $initArgs,
+            'accumulate' => $accumulate,
+            'accumulateArgs' => $accumulateArgs,
+            'merge' => $merge,
+            'finalize' => $finalize,
+            'lang' => $lang,
+        ], ['initArgs', 'finalize']));
+    }
+
+    /**
      * Adds numbers together or adds numbers and a date. If one of the arguments
      * is a date, $add treats the other arguments as milliseconds to add to the
      * date.
@@ -79,6 +148,8 @@ class Expr implements GenericOperatorsInterface
     /**
      * Adds one or more $and clauses to the current expression.
      *
+     * @deprecated Use and() instead
+     *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/and/
      *
      * @param array<string, mixed>|self $expression
@@ -97,6 +168,8 @@ class Expr implements GenericOperatorsInterface
 
     /**
      * Adds one or more $or clause to the current expression.
+     *
+     * @deprecated Use or() instead
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/or/
      *
@@ -146,6 +219,19 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Adds one or more $and clauses to the current expression.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/and/
+     *
+     * @param array<string, mixed>|self $expression
+     * @param array<string, mixed>|self ...$expressions
+     */
+    public function and($expression, ...$expressions): self
+    {
+        return $this->operator('$and', func_get_args());
+    }
+
+    /**
      * Evaluates an array as a set and returns true if any of the elements are
      * true and false otherwise. An empty array returns false.
      *
@@ -186,10 +272,62 @@ class Expr implements GenericOperatorsInterface
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/avg/
      *
      * @param mixed|self $expression
+     * @param mixed|self ...$expressions
      */
-    public function avg($expression): self
+    public function avg($expression, ...$expressions): self
     {
-        return $this->operator('$avg', $expression);
+        return $this->accumulatorOperator('$avg', $expression, ...$expressions);
+    }
+
+    /**
+     * Returns the size of a given string or binary data value's content in bytes.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/binarySize/
+     *
+     * @param mixed|self $expression
+     */
+    public function binarySize($expression): self
+    {
+        return $this->operator('$binarySize', $expression);
+    }
+
+    /**
+     * Returns the bottom element within a group according to the specified sort order.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bottom/
+     *
+     * @param mixed|self                $output
+     * @param array<string, int|string> $sortBy
+     */
+    public function bottom($output, $sortBy): self
+    {
+        return $this->operator('$bottom', ['output' => $output, 'sortBy' => $sortBy]);
+    }
+
+    /**
+     * Returns the n bottom elements within a group according to the specified sort order.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bottomN/
+     *
+     * @param mixed|self                $output
+     * @param array<string, int|string> $sortBy
+     * @param mixed|self                $n
+     */
+    public function bottomN($output, $sortBy, $n): self
+    {
+        return $this->operator('$bottomN', ['output' => $output, 'sortBy' => $sortBy, 'n' => $n]);
+    }
+
+    /**
+     * Returns the size in bytes of a given document (i.e. bsontype Object) when encoded as BSON.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bsonSize/
+     *
+     * @param mixed|self $expression
+     */
+    public function bsonSize($expression): self
+    {
+        return $this->operator('$bsonSize', $expression);
     }
 
     /**
@@ -320,6 +458,175 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Returns the number of documents in a group.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/count/
+     */
+    public function countDocuments(): self
+    {
+        return $this->operator('$count', []);
+    }
+
+    /**
+     * Increments a Date object by a specified number of time units
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateAdd/
+     *
+     * @param mixed|self $startDate
+     * @param mixed|self $unit
+     * @param mixed|self $amount
+     * @param mixed|self $timezone
+     */
+    public function dateAdd($startDate, $unit, $amount, $timezone = null): self
+    {
+        return $this->operator('$dateAdd', $this->filterOptionalNullArguments([
+            'startDate' => $startDate,
+            'unit' => $unit,
+            'amount' => $amount,
+            'timezone' => $timezone,
+        ], ['timezone']));
+    }
+
+    /**
+     * Returns the difference between two dates
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateDiff/
+     *
+     * @param mixed|self $startDate
+     * @param mixed|self $endDate
+     * @param mixed|self $unit
+     * @param mixed|self $timezone
+     * @param mixed|self $startOfWeek
+     */
+    public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): self
+    {
+        return $this->operator('$dateDiff', $this->filterOptionalNullArguments([
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'unit' => $unit,
+            'timezone' => $timezone,
+            'startOfWeek' => $startOfWeek,
+        ], ['timezone', 'startOfWeek']));
+    }
+
+    /**
+     * Constructs and returns a Date object given the date's constituent properties
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateFromParts/
+     *
+     * @param mixed|self $year
+     * @param mixed|self $isoWeekYear
+     * @param mixed|self $month
+     * @param mixed|self $isoWeek
+     * @param mixed|self $day
+     * @param mixed|self $isoDayOfWeek
+     * @param mixed|self $hour
+     * @param mixed|self $minute
+     * @param mixed|self $second
+     * @param mixed|self $millisecond
+     * @param mixed|self $timezone
+     */
+    public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): self
+    {
+        return $this->operator('$dateFromParts', $this->filterOptionalNullArguments([
+            'year' => $year,
+            'isoWeekYear' => $isoWeekYear,
+            'month' => $month,
+            'isoWeek' => $isoWeek,
+            'day' => $day,
+            'isoDayOfWeek' => $isoDayOfWeek,
+            'hour' => $hour,
+            'minute' => $minute,
+            'second' => $second,
+            'millisecond' => $millisecond,
+            'timezone' => $timezone,
+        ], [
+            'year',
+            'isoWeekYear',
+            'month',
+            'isoWeek',
+            'day',
+            'isoDayOfWeek',
+            'hour',
+            'minute',
+            'second',
+            'millisecond',
+            'timezone',
+        ]));
+    }
+
+    /**
+     * Converts a date/time string to a date object.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateFromString/
+     *
+     * @param mixed|self $dateString
+     * @param mixed|self $format
+     * @param mixed|self $timezone
+     * @param mixed|self $onError
+     * @param mixed|self $onNull
+     */
+    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): self
+    {
+        return $this->operator(
+            '$dateFromString',
+            $this->filterOptionalNullArguments(
+                [
+                    'dateString' => $dateString,
+                    'format' => $format,
+                    'timezone' => $timezone,
+                    'onError' => $onError,
+                    'onNull' => $onNull,
+                ],
+                [
+                    'format',
+                    'timezone',
+                    'onError',
+                    'onNull',
+                ],
+            ),
+        );
+    }
+
+    /**
+     * Decrements a Date object by a specified number of time units
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateSubtract/
+     *
+     * @param mixed|self $startDate
+     * @param mixed|self $unit
+     * @param mixed|self $amount
+     * @param mixed|self $timezone
+     */
+    public function dateSubtract($startDate, $unit, $amount, $timezone = null): self
+    {
+        return $this->operator('$dateSubtract', $this->filterOptionalNullArguments([
+            'startDate' => $startDate,
+            'unit' => $unit,
+            'amount' => $amount,
+            'timezone' => $timezone,
+        ], ['timezone']));
+    }
+
+    /**
+     * Returns a document that contains the constituent parts of a given BSON Date value as individual properties. The properties returned are year, month, day, hour, minute, second and millisecond.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateToParts/
+     *
+     * @param mixed|self $date
+     * @param mixed|self $timezone
+     * @param mixed|self $iso8601
+     */
+    public function dateToParts($date, $timezone = null, $iso8601 = null): self
+    {
+        return $this->operator('$dateToParts', $this->filterOptionalNullArguments([
+            'date' => $date,
+            'timezone' => $timezone,
+            'iso8601' => $iso8601,
+        ], ['timezone', 'iso8601']));
+    }
+
+    /**
      * Converts a date object to a string according to a user-specified format.
      *
      * The format string can be any string literal, containing 0 or more format
@@ -328,11 +635,40 @@ class Expr implements GenericOperatorsInterface
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateToString/
      *
-     * @param mixed|self $expression
+     * @param mixed|self      $expression
+     * @param mixed|self|null $timezone
+     * @param mixed|self|null $onNull
      */
-    public function dateToString(string $format, $expression): self
+    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): self
     {
-        return $this->operator('$dateToString', ['format' => $format, 'date' => $expression]);
+        return $this->operator('$dateToString', $this->filterOptionalNullArguments([
+            'date' => $expression,
+            'format' => $format,
+            'timezone' => $timezone,
+            'onNull' => $onNull,
+        ], ['timezone', 'onNull']));
+    }
+
+    /**
+     * Truncates a date.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateTrunc/
+     *
+     * @param mixed|self $date
+     * @param mixed|self $unit
+     * @param mixed|self $binSize
+     * @param mixed|self $timezone
+     * @param mixed|self $startOfWeek
+     */
+    public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): self
+    {
+        return $this->operator('$dateTrunc', $this->filterOptionalNullArguments([
+            'date' => $date,
+            'unit' => $unit,
+            'binSize' => $binSize,
+            'timezone' => $timezone,
+            'startOfWeek' => $startOfWeek,
+        ], ['binSize', 'timezone', 'startOfWeek']));
     }
 
     /**
@@ -515,6 +851,39 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Returns a specified number of elements from the beginning of an array. Distinct from the $firstN accumulator.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/firstN-array-element/
+     *
+     * @param mixed|self $expression
+     * @param mixed|self $n
+     */
+    public function firstN($expression, $n): self
+    {
+        return $this->operator('$firstN', [
+            'input' => $expression,
+            'n' => $n,
+        ]);
+    }
+
+    /**
+     * Defines a custom aggregation function or expression in JavaScript.
+     *
+     * You can use the $function operator to define custom functions to
+     * implement behavior not supported by the MongoDB Query Language.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/function/
+     *
+     * @param string|Javascript $body
+     * @param mixed|self        $args
+     * @param string            $lang
+     */
+    public function function($body, $args, $lang = 'js'): self
+    {
+        return $this->operator('$function', ['body' => $body, 'args' => $args, 'lang' => $lang]);
+    }
+
+    /**
      * Returns the largest integer less than or equal to the specified number.
      *
      * The <number> expression can be any valid expression as long as it
@@ -533,6 +902,22 @@ class Expr implements GenericOperatorsInterface
     public function getExpression(): array
     {
         return $this->expr;
+    }
+
+    /**
+     * Returns the value of a specified field from a document. If you don't specify an object, $getField returns the value of the field from $$CURRENT.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/getField/
+     *
+     * @param mixed|self $field
+     * @param mixed|self $input
+     */
+    public function getField($field, $input = null): self
+    {
+        return $this->operator('$getField', $this->filterOptionalNullArguments([
+            'field' => $field,
+            'input' => $input,
+        ], ['input']));
     }
 
     /**
@@ -771,6 +1156,22 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Returns a specified number of elements from the end of an array. Distinct from the $lastN accumulator.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lastN-array-element/
+     *
+     * @param mixed|self $expression
+     * @param mixed|self $n
+     */
+    public function lastN($expression, $n): self
+    {
+        return $this->operator('$lastN', [
+            'input' => $expression,
+            'n' => $n,
+        ]);
+    }
+
+    /**
      * Binds variables for use in the specified expression, and returns the
      * result of the expression.
      *
@@ -900,10 +1301,38 @@ class Expr implements GenericOperatorsInterface
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/max/
      *
      * @param mixed|self $expression
+     * @param mixed|self $expressions
      */
-    public function max($expression): self
+    public function max($expression, ...$expressions): self
     {
-        return $this->operator('$max', $expression);
+        return $this->accumulatorOperator('$max', $expression, ...$expressions);
+    }
+
+    /**
+     * Returns the n largest values in an array. Distinct from the $maxN accumulator.
+     *
+     * @param mixed|self $expression
+     * @param mixed|self $n
+     */
+    public function maxN($expression, $n): self
+    {
+        return $this->operator('$maxN', [
+            'input' => $expression,
+            'n' => $n,
+        ]);
+    }
+
+    /**
+     * Combines multiple documents into a single document.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/mergeObjects/
+     *
+     * @param mixed|self $expression
+     * @param mixed|self ...$expressions
+     */
+    public function mergeObjects($expression, ...$expressions): self
+    {
+        return $this->accumulatorOperator('$mergeObjects', $expression, ...$expressions);
     }
 
     /**
@@ -939,10 +1368,25 @@ class Expr implements GenericOperatorsInterface
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/min/
      *
      * @param mixed|self $expression
+     * @param mixed|self $expressions
      */
-    public function min($expression): self
+    public function min($expression, ...$expressions): self
     {
-        return $this->operator('$min', $expression);
+        return $this->accumulatorOperator('$min', $expression, ...$expressions);
+    }
+
+    /**
+     * Returns the n smallest values in an array. Distinct from the $minN accumulator.
+     *
+     * @param mixed|self $expression
+     * @param mixed|self $n
+     */
+    public function minN($expression, $n): self
+    {
+        return $this->operator('$minN', [
+            'input' => $expression,
+            'n' => $n,
+        ]);
     }
 
     /**
@@ -1064,6 +1508,16 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Returns a random float between 0 and 1 each time it is called.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/rand/
+     */
+    public function rand(): self
+    {
+        return $this->operator('$rand', []);
+    }
+
+    /**
      * Returns an array whose elements are a generated sequence of numbers.
      *
      * $range generates the sequence from the specified starting number by successively incrementing the starting number by the specified step value up to but not including the end point.
@@ -1105,6 +1559,16 @@ class Expr implements GenericOperatorsInterface
     public function reverseArray($expression): self
     {
         return $this->operator('$reverseArray', $expression);
+    }
+
+    /**
+     * Matches a random selection of input documents. The number of documents selected approximates the sample rate expressed as a percentage of the total number of documents.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sampleRate/
+     */
+    public function sampleRate(float $rate): self
+    {
+        return $this->operator('$sampleRate', $rate);
     }
 
     /**
@@ -1153,6 +1617,20 @@ class Expr implements GenericOperatorsInterface
     public function setEquals($expression1, $expression2, ...$expressions): self
     {
         return $this->operator('$setEquals', func_get_args());
+    }
+
+    /**
+     * Adds, updates, or removes a specified field in a document.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setField/
+     *
+     * @param mixed|self $field
+     * @param mixed|self $input
+     * @param mixed|self $value
+     */
+    public function setField($field, $input, $value): self
+    {
+        return $this->operator('$setField', ['field' => $field, 'input' => $input, 'value' => $value]);
     }
 
     /**
@@ -1238,6 +1716,22 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Sorts an array based on its elements. The sort order is user specified.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sortArray/
+     *
+     * @param mixed|self                $input
+     * @param array<string, int|string> $sortBy
+     */
+    public function sortArray($input, $sortBy): self
+    {
+        return $this->operator('$sortArray', [
+            'input' => $input,
+            'sortBy' => $sortBy,
+        ]);
+    }
+
+    /**
      * Divides a string into an array of substrings based on a delimiter.
      *
      * $split removes the delimiter and returns the resulting substrings as
@@ -1277,14 +1771,12 @@ class Expr implements GenericOperatorsInterface
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevPop/
      *
-     * @param mixed|self $expression1
+     * @param mixed|self $expression
      * @param mixed|self ...$expressions Additional samples
      */
-    public function stdDevPop($expression1, ...$expressions): self
+    public function stdDevPop($expression, ...$expressions): self
     {
-        $expression = empty($expressions) ? $expression1 : func_get_args();
-
-        return $this->operator('$stdDevPop', $expression);
+        return $this->accumulatorOperator('$stdDevPop', $expression, ...$expressions);
     }
 
     /**
@@ -1294,14 +1786,12 @@ class Expr implements GenericOperatorsInterface
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevSamp/
      *
-     * @param mixed|self $expression1
+     * @param mixed|self $expression
      * @param mixed|self ...$expressions Additional samples
      */
-    public function stdDevSamp($expression1, ...$expressions): self
+    public function stdDevSamp($expression, ...$expressions): self
     {
-        $expression = empty($expressions) ? $expression1 : func_get_args();
-
-        return $this->operator('$stdDevSamp', $expression);
+        return $this->accumulatorOperator('$stdDevSamp', $expression, ...$expressions);
     }
 
     /**
@@ -1423,10 +1913,11 @@ class Expr implements GenericOperatorsInterface
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sum/
      *
      * @param mixed|self $expression
+     * @param mixed|self $expressions
      */
-    public function sum($expression): self
+    public function sum($expression, ...$expressions): self
     {
-        return $this->operator('$sum', $expression);
+        return $this->accumulatorOperator('$sum', $expression, ...$expressions);
     }
 
     /**
@@ -1528,6 +2019,33 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Returns the top element within a group according to the specified sort order.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/top/
+     *
+     * @param mixed|self                $output
+     * @param array<string, int|string> $sortBy
+     */
+    public function top($output, $sortBy): self
+    {
+        return $this->operator('$top', ['output' => $output, 'sortBy' => $sortBy]);
+    }
+
+    /**
+     * Returns the n top elements within a group according to the specified sort order.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/topN/
+     *
+     * @param mixed|self                $output
+     * @param array<string, int|string> $sortBy
+     * @param mixed|self                $n
+     */
+    public function topN($output, $sortBy, $n): self
+    {
+        return $this->operator('$topN', ['output' => $output, 'sortBy' => $sortBy, 'n' => $n]);
+    }
+
+    /**
      * Converts value to a string.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toString/
@@ -1566,6 +2084,26 @@ class Expr implements GenericOperatorsInterface
     public function trunc($number): self
     {
         return $this->operator('$trunc', $number);
+    }
+
+    /**
+     * Returns the incrementing ordinal from a timestamp as a long.
+     *
+     * @param mixed|self $expression
+     */
+    public function tsIncrement($expression): self
+    {
+        return $this->operator('$tsIncrement', $expression);
+    }
+
+    /**
+     * Returns the seconds from a timestamp as a long.
+     *
+     * @param mixed|self $expression
+     */
+    public function tsSecond($expression): self
+    {
+        return $this->operator('$tsSecond', $expression);
     }
 
     /**
@@ -1636,6 +2174,22 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Wrapper for accumulator operators that exist in forms with one and multiple arguments
+     *
+     * @see Expr::operator()
+     *
+     * @param mixed|self ...$expressions
+     */
+    private function accumulatorOperator(string $operator, ...$expressions): self
+    {
+        if (count($expressions) === 1) {
+            return $this->operator($operator, $expressions[0]);
+        }
+
+        return $this->operator($operator, $expressions);
+    }
+
+    /**
      * @param mixed|self $expression
      *
      * @return mixed
@@ -1669,7 +2223,7 @@ class Expr implements GenericOperatorsInterface
      * If there is a current field, the operator will be set on it; otherwise,
      * the operator is set at the top level of the query.
      *
-     * @param mixed[]|self $expression
+     * @param mixed|mixed[]|self $expression
      */
     private function operator(string $operator, $expression): self
     {
@@ -1680,6 +2234,19 @@ class Expr implements GenericOperatorsInterface
         }
 
         return $this;
+    }
+
+    /**
+     * Adds one or more $or clause to the current expression.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/or/
+     *
+     * @param array<string, mixed>|self $expression
+     * @param array<string, mixed>|self ...$expressions
+     */
+    public function or($expression, ...$expressions): self
+    {
+        return $this->operator('$or', func_get_args());
     }
 
     /** @throws BadMethodCallException if there is no current switch operator. */
@@ -1764,6 +2331,98 @@ class Expr implements GenericOperatorsInterface
     public function objectToArray($object): self
     {
         return $this->operator('$objectToArray', $object);
+    }
+
+    /**
+     * Provides regular expression (regex) pattern matching capability in
+     * aggregation expressions.
+     *
+     * If a match is found, returns a document that contains information on the
+     * first match. If a match is not found, returns null.
+     *
+     * @param mixed|self  $input
+     * @param mixed|self  $regex
+     * @param string|null $options
+     */
+    public function regexFind($input, $regex, $options = null): self
+    {
+        return $this->operator('$regexFind', $this->filterOptionalNullArguments([
+            'input' => $input,
+            'regex' => $regex,
+            'options' => $options,
+        ], ['options']));
+    }
+
+    /**
+     * Provides regular expression (regex) pattern matching capability in
+     * aggregation expressions.
+     *
+     * The operator returns an array of documents that contains information on
+     * each match. If a match is not found, returns an empty array.
+     *
+     * @param mixed|self  $input
+     * @param mixed|self  $regex
+     * @param string|null $options
+     */
+    public function regexFindAll($input, $regex, $options = null): self
+    {
+        return $this->operator('$regexFindAll', $this->filterOptionalNullArguments([
+            'input' => $input,
+            'regex' => $regex,
+            'options' => $options,
+        ], ['options']));
+    }
+
+    /**
+     * Performs a regular expression (regex) pattern matching and returns true
+     * if a match exists.
+     *
+     * @param mixed|self  $input
+     * @param mixed|self  $regex
+     * @param string|null $options
+     */
+    public function regexMatch($input, $regex, $options = null): self
+    {
+        return $this->operator('$regexMatch', $this->filterOptionalNullArguments([
+            'input' => $input,
+            'regex' => $regex,
+            'options' => $options,
+        ], ['options']));
+    }
+
+    /**
+     * Replaces all instances of a search string in an input string with a
+     * replacement string.
+     *
+     * @param mixed|self $input
+     * @param mixed|self $find
+     * @param mixed|self $replacement
+     */
+    public function replaceAll($input, $find, $replacement): self
+    {
+        return $this->operator('$replaceAll', [
+            'input' => $input,
+            'find' => $find,
+            'replacement' => $replacement,
+        ]);
+    }
+
+    /**
+     * Replaces the first instance of a search string in an input string with a
+     * replacement string. If no occurrences are found, it evaluates to the
+     * input string.
+     *
+     * @param mixed|self $input
+     * @param mixed|self $find
+     * @param mixed|self $replacement
+     */
+    public function replaceOne($input, $find, $replacement): self
+    {
+        return $this->operator('$replaceOne', [
+            'input' => $input,
+            'find' => $find,
+            'replacement' => $replacement,
+        ]);
     }
 
     /**
@@ -2016,20 +2675,12 @@ class Expr implements GenericOperatorsInterface
      */
     public function convert($input, $to, $onError = null, $onNull = null): self
     {
-        $params = [
+        return $this->operator('$convert', $this->filterOptionalNullArguments([
             'input' => $input,
             'to' => $to,
-        ];
-
-        if ($onError !== null) {
-            $params['onError'] = $onError;
-        }
-
-        if ($onNull !== null) {
-            $params['onNull'] = $onNull;
-        }
-
-        return $this->operator('$convert', $params);
+            'onError' => $onError,
+            'onNull' => $onNull,
+        ], ['onError', 'onNull']));
     }
 
     /**
@@ -2043,5 +2694,24 @@ class Expr implements GenericOperatorsInterface
     public function isNumber($expression): self
     {
         return $this->operator('$isNumber', $expression);
+    }
+
+    /**
+     * @param array<string, mixed> $args
+     * @param list<string>         $optionalArgNames
+     *
+     * @return array<string, mixed>
+     */
+    private function filterOptionalNullArguments(array $args, array $optionalArgNames): array
+    {
+        return array_filter(
+            $args,
+            /**
+             * @param mixed $value
+             * @param array-key $key
+             */
+            static fn ($value, $key): bool => ! in_array($key, $optionalArgNames) || $value !== null,
+            ARRAY_FILTER_USE_BOTH,
+        );
     }
 }

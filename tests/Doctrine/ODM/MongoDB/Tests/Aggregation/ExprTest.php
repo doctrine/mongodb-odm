@@ -18,7 +18,23 @@ class ExprTest extends BaseTest
      * @param array<string, string>          $expected
      * @param Closure(Expr): mixed[]|mixed[] $args
      *
-     * @dataProvider provideAllOperators
+     * @dataProvider provideAccumulatorExpressionOperators
+     * @dataProvider provideArithmeticExpressionOperators
+     * @dataProvider provideArrayExpressionOperators
+     * @dataProvider provideBooleanExpressionOperators
+     * @dataProvider provideComparisonExpressionOperators
+     * @dataProvider provideConditionalExpressionOperators
+     * @dataProvider provideCustomExpressionOperators
+     * @dataProvider provideDataSizeExpressionOperators
+     * @dataProvider provideDateExpressionOperators
+     * @dataProvider provideGroupAccumulatorExpressionOperators
+     * @dataProvider provideMiscExpressionOperators
+     * @dataProvider provideObjectExpressionOperators
+     * @dataProvider provideSetExpressionOperators
+     * @dataProvider provideStringExpressionOperators
+     * @dataProvider provideTimestampExpressionOperators
+     * @dataProvider provideTrigonometryExpressionOperators
+     * @dataProvider provideTypeExpressionOperators
      */
     public function testGenericOperator(array $expected, string $operator, $args): void
     {
@@ -33,7 +49,23 @@ class ExprTest extends BaseTest
      * @param array<string, string>          $expected
      * @param Closure(Expr): mixed[]|mixed[] $args
      *
-     * @dataProvider provideAllOperators
+     * @dataProvider provideAccumulatorExpressionOperators
+     * @dataProvider provideArithmeticExpressionOperators
+     * @dataProvider provideArrayExpressionOperators
+     * @dataProvider provideBooleanExpressionOperators
+     * @dataProvider provideComparisonExpressionOperators
+     * @dataProvider provideConditionalExpressionOperators
+     * @dataProvider provideCustomExpressionOperators
+     * @dataProvider provideDataSizeExpressionOperators
+     * @dataProvider provideDateExpressionOperators
+     * @dataProvider provideGroupAccumulatorExpressionOperators
+     * @dataProvider provideMiscExpressionOperators
+     * @dataProvider provideObjectExpressionOperators
+     * @dataProvider provideSetExpressionOperators
+     * @dataProvider provideStringExpressionOperators
+     * @dataProvider provideTimestampExpressionOperators
+     * @dataProvider provideTrigonometryExpressionOperators
+     * @dataProvider provideTypeExpressionOperators
      */
     public function testGenericOperatorWithField(array $expected, string $operator, $args): void
     {
