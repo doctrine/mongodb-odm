@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
+use Doctrine\ODM\MongoDB\Aggregation\Expr;
+
 /**
  * Fluent interface for adding a $project stage to an aggregation pipeline.
  *

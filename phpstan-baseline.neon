@@ -86,6 +86,11 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Out.php
 
 		-
+			message: "#^Cannot import type alias OperatorExpression\\: class Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Expr does not exist\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Project.php
+
+		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWithStageExpression\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
@@ -296,9 +301,14 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/FacetTest.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\MatchStageTest\\:\\:testProxiedExprMethods\\(\\) has parameter \\$args with no value type specified in iterable type array\\.$#"
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\ProjectTest\\:\\:testAccumulatorsWithMultipleArguments\\(\\) has parameter \\$args with no type specified\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/MatchStageTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/ProjectTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\ProjectTest\\:\\:testAccumulatorsWithMultipleArguments\\(\\) has parameter \\$expected with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/ProjectTest.php
 
 		-
 			message: "#^Constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
