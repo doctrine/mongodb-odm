@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\Mapping\MappingException;
@@ -31,7 +32,7 @@ class Merge extends Stage
     /** @var list<string> */
     private array $on = [];
 
-    /** @var array<string, string> */
+    /** @var array<string, mixed|Expr> */
     private array $let = [];
 
     /**
@@ -104,7 +105,7 @@ class Merge extends Stage
      * Use the variable expressions to access the fields from
      * the joined collection's documents that are input to the pipeline.
      *
-     * @param array<string, string> $let
+     * @param array<string, mixed|Expr> $let
      */
     public function let(array $let): self
     {
