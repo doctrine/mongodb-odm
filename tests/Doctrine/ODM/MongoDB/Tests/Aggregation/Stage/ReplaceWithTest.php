@@ -17,7 +17,7 @@ class ReplaceWithTest extends BaseTest
         $builder = $this->dm->createAggregationBuilder(User::class);
 
         $dateTime  = new DateTimeImmutable('2000-01-01T00:00Z');
-        $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
+        $mongoDate = new UTCDateTime($dateTime);
         $stage     = $builder
             ->replaceWith()
                 ->field('isToday')
@@ -38,7 +38,7 @@ class ReplaceWithTest extends BaseTest
         $builder = $this->dm->createAggregationBuilder(User::class);
 
         $dateTime  = new DateTimeImmutable('2000-01-01T00:00Z');
-        $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
+        $mongoDate = new UTCDateTime($dateTime);
         $stage     = $builder
             ->replaceWith(
                 $builder->expr()
