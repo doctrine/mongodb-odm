@@ -35,7 +35,7 @@ class Merge extends Stage
     private array $let = [];
 
     /**
-     * @var string|array|Builder
+     * @var string|array|Builder|Stage
      * @psalm-var WhenMatchedParam
      */
     private $whenMatched;
