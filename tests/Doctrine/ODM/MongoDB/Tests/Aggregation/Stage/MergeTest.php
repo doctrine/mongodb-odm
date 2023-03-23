@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 use Generator;
+use InvalidArgumentException;
 
 use function is_callable;
 
@@ -109,5 +110,20 @@ class MergeTest extends BaseTest
         ];
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
+    }
+
+    public function testStageWithReusedPipeline(): void
+    {
+        $builder  = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
+        $setStage = $builder->set()
+            ->field('foo')->expression('bar');
+
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('Cannot use the same Builder instance for $merge whenMatched pipeline.');
+
+        $builder
+            ->merge()
+                ->into('someRandomCollectionName')
+                ->whenMatched($setStage);
     }
 }
