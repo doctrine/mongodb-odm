@@ -12,14 +12,14 @@ class UnwindTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testUnwindStage(): void
+    public function testStage(): void
     {
         $unwindStage = new Unwind($this->getTestAggregationBuilder(), 'fieldName');
 
         self::assertSame(['$unwind' => 'fieldName'], $unwindStage->getExpression());
     }
 
-    public function testUnwindStageWithNewFields(): void
+    public function testStageWithNewFields(): void
     {
         $unwindStage = new Unwind($this->getTestAggregationBuilder(), 'fieldName');
         $unwindStage
@@ -29,7 +29,7 @@ class UnwindTest extends BaseTest
         self::assertSame(['$unwind' => ['path' => 'fieldName', 'includeArrayIndex' => 'index', 'preserveNullAndEmptyArrays' => true]], $unwindStage->getExpression());
     }
 
-    public function testUnwindFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->unwind('fieldName');

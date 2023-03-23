@@ -12,7 +12,7 @@ class FillTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testFillStage(): void
+    public function testStage(): void
     {
         $fillStage = new Fill($this->getTestAggregationBuilder());
         $fillStage
@@ -39,7 +39,7 @@ class FillTest extends BaseTest
         );
     }
 
-    public function testCountFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->fill()

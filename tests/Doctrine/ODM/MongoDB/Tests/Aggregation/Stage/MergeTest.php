@@ -14,7 +14,7 @@ use function is_callable;
 
 class MergeTest extends BaseTest
 {
-    public function testMergeStageWithClassName(): void
+    public function testStageWithClassName(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -36,7 +36,7 @@ class MergeTest extends BaseTest
         self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testMergeStageWithCollectionName(): void
+    public function testStageWithCollectionName(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -84,7 +84,7 @@ class MergeTest extends BaseTest
      *
      * @dataProvider providePipeline
      */
-    public function testMergeStageWithPipeline($pipeline): void
+    public function testStageWithPipeline($pipeline): void
     {
         if (is_callable($pipeline)) {
             $pipeline = $pipeline($this->dm->createAggregationBuilder(SimpleReferenceUser::class));

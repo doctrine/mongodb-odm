@@ -15,7 +15,7 @@ class BucketTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testBucketStage(): void
+    public function testStage(): void
     {
         $bucketStage = new Bucket($this->getTestAggregationBuilder(), $this->dm, new ClassMetadata(User::class));
         $bucketStage
@@ -36,7 +36,7 @@ class BucketTest extends BaseTest
         ], $bucketStage->getExpression());
     }
 
-    public function testBucketFromBuilder(): void
+    public function testBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->bucket()
@@ -59,7 +59,7 @@ class BucketTest extends BaseTest
         ], $builder->getPipeline());
     }
 
-    public function testBucketSkipsUndefinedProperties(): void
+    public function testSkipsUndefinedProperties(): void
     {
         $bucketStage = new Bucket($this->getTestAggregationBuilder(), $this->dm, new ClassMetadata(User::class));
         $bucketStage

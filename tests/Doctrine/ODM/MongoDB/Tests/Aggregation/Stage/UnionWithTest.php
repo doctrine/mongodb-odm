@@ -10,7 +10,7 @@ use Documents\User;
 
 class UnionWithTest extends BaseTest
 {
-    public function testUnionWithStageWithClassName(): void
+    public function testStageWithClassName(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -23,7 +23,7 @@ class UnionWithTest extends BaseTest
         self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testUnionWithStageWithCollectionName(): void
+    public function testStageWithCollectionName(): void
     {
         $unionBuilder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $unionBuilder->match()

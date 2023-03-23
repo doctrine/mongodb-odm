@@ -70,7 +70,7 @@ class GroupTest extends BaseTest
         ];
     }
 
-    public function testGroupStage(): void
+    public function testStage(): void
     {
         $groupStage = new Group($this->getTestAggregationBuilder());
         $groupStage
@@ -82,7 +82,7 @@ class GroupTest extends BaseTest
         self::assertSame(['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]], $groupStage->getExpression());
     }
 
-    public function testGroupFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder
@@ -95,7 +95,7 @@ class GroupTest extends BaseTest
         self::assertSame([['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]]], $builder->getPipeline());
     }
 
-    public function testGroupWithOperatorInId(): void
+    public function testWithOperatorInId(): void
     {
         $groupStage = new Group($this->getTestAggregationBuilder());
         $groupStage

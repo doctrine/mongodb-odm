@@ -12,14 +12,14 @@ class CollStatsTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testCollStatsStage(): void
+    public function testStage(): void
     {
         $collStatsStage = new CollStats($this->getTestAggregationBuilder());
 
         self::assertSame(['$collStats' => []], $collStatsStage->getExpression());
     }
 
-    public function testCollStatsStageWithLatencyStats(): void
+    public function testStageWithLatencyStats(): void
     {
         $collStatsStage = new CollStats($this->getTestAggregationBuilder());
         $collStatsStage->showLatencyStats();
@@ -27,7 +27,7 @@ class CollStatsTest extends BaseTest
         self::assertSame(['$collStats' => ['latencyStats' => ['histograms' => false]]], $collStatsStage->getExpression());
     }
 
-    public function testCollStatsStageWithLatencyStatsHistograms(): void
+    public function testStageWithLatencyStatsHistograms(): void
     {
         $collStatsStage = new CollStats($this->getTestAggregationBuilder());
         $collStatsStage->showLatencyStats(true);
@@ -35,7 +35,7 @@ class CollStatsTest extends BaseTest
         self::assertSame(['$collStats' => ['latencyStats' => ['histograms' => true]]], $collStatsStage->getExpression());
     }
 
-    public function testCollStatsStageWithStorageStats(): void
+    public function testStageWithStorageStats(): void
     {
         $collStatsStage = new CollStats($this->getTestAggregationBuilder());
         $collStatsStage->showStorageStats();
@@ -43,7 +43,7 @@ class CollStatsTest extends BaseTest
         self::assertSame(['$collStats' => ['storageStats' => []]], $collStatsStage->getExpression());
     }
 
-    public function testCollStatsFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->collStats()

@@ -12,7 +12,7 @@ class DensifyTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testDensifyStage(): void
+    public function testStage(): void
     {
         $densifyStage = new Densify($this->getTestAggregationBuilder(), 'someField');
         $densifyStage
@@ -34,7 +34,7 @@ class DensifyTest extends BaseTest
         );
     }
 
-    public function testCountFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->densify('someField');

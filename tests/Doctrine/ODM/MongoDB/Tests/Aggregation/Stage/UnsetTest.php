@@ -13,7 +13,7 @@ class UnsetTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testUnsetStage(): void
+    public function testStage(): void
     {
         $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister(User::class);
         $unsetStage        = new UnsetStage($this->getTestAggregationBuilder(), $documentPersister, 'id', 'foo', 'bar');
@@ -21,7 +21,7 @@ class UnsetTest extends BaseTest
         self::assertSame(['$unset' => ['_id', 'foo', 'bar']], $unsetStage->getExpression());
     }
 
-    public function testLimitFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->unset('id', 'foo', 'bar');

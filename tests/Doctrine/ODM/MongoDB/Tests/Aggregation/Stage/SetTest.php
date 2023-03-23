@@ -12,7 +12,7 @@ class SetTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testSetStage(): void
+    public function testStage(): void
     {
         $setStage = new Set($this->getTestAggregationBuilder());
         $setStage
@@ -22,7 +22,7 @@ class SetTest extends BaseTest
         self::assertSame(['$set' => ['product' => ['$multiply' => ['$field', 5]]]], $setStage->getExpression());
     }
 
-    public function testProjectFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder

@@ -12,7 +12,7 @@ use Documents\User;
 
 class OutTest extends BaseTest
 {
-    public function testOutStageWithClassName(): void
+    public function testStageWithClassName(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -25,7 +25,7 @@ class OutTest extends BaseTest
         self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testOutStageWithCollectionName(): void
+    public function testStageWithCollectionName(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $builder
@@ -38,7 +38,7 @@ class OutTest extends BaseTest
         self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testOutStageWithShardedClassName(): void
+    public function testStageWithShardedClassName(): void
     {
         $builder = $this->dm->createAggregationBuilder(SimpleReferenceUser::class);
         $this->expectException(MappingException::class);
