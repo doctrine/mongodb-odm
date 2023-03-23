@@ -44,6 +44,30 @@ class FillTest extends BaseTest
         );
     }
 
+    public function testStageWithExpressionAsPartition(): void
+    {
+        $builder   = $this->getTestAggregationBuilder();
+        $fillStage = new Fill($builder);
+        $fillStage
+            ->partitionBy($builder->expr()->year('$field'))
+            ->sortBy('field1', 1)
+            ->output()
+                ->field('foo')->locf();
+
+        self::assertEquals(
+            [
+                '$fill' => (object) [
+                    'partitionBy' => ['$year' => '$field'],
+                    'sortBy' => (object) ['field1' => 1],
+                    'output' => (object) [
+                        'foo' => ['method' => 'locf'],
+                    ],
+                ],
+            ],
+            $fillStage->getExpression(),
+        );
+    }
+
     public function testStageWithComplexSort(): void
     {
         $fillStage = new Fill($this->getTestAggregationBuilder());

@@ -86,7 +86,9 @@ class Fill extends Stage
         $params = (object) [];
 
         if ($this->partitionBy) {
-            $params->partitionBy = $this->partitionBy;
+            $params->partitionBy = $this->partitionBy instanceof Expr
+                ? $this->partitionBy->getExpression()
+                : $this->partitionBy;
         }
 
         if ($this->partitionByFields) {
