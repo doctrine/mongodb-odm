@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+use MongoDB\BSON\UTCDateTime;
 
 use function array_values;
 
@@ -36,8 +37,8 @@ class Densify extends Stage
     }
 
     /**
-     * @param array{0: int, 1: int}|string $bounds
-     * @param int|float                    $step
+     * @param array{0: int|float|UTCDateTime, 1: int|float|UTCDateTime}|string $bounds
+     * @param int|float                                                        $step
      */
     public function range($bounds, $step, string $unit = ''): self
     {

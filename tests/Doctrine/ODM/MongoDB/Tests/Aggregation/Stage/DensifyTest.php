@@ -34,6 +34,51 @@ class DensifyTest extends BaseTest
         );
     }
 
+    public function testStageWithPartialBounds(): void
+    {
+        $densifyStage = new Densify($this->getTestAggregationBuilder(), 'someField');
+        $densifyStage
+            ->partitionByFields('field1', 'field2')
+            ->range([1.5, 2.5], 0.1);
+
+        self::assertEquals(
+            [
+                '$densify' => (object) [
+                    'field' => 'someField',
+                    'partitionByFields' => ['field1', 'field2'],
+                    'range' => (object) [
+                        'bounds' => [1.5, 2.5],
+                        'step' => 0.1,
+                    ],
+                ],
+            ],
+            $densifyStage->getExpression(),
+        );
+    }
+
+    public function testStageWithRangeUnit(): void
+    {
+        $densifyStage = new Densify($this->getTestAggregationBuilder(), 'someField');
+        $densifyStage
+            ->partitionByFields('field1', 'field2')
+            ->range('full', 1, 'minute');
+
+        self::assertEquals(
+            [
+                '$densify' => (object) [
+                    'field' => 'someField',
+                    'partitionByFields' => ['field1', 'field2'],
+                    'range' => (object) [
+                        'bounds' => 'full',
+                        'step' => 1,
+                        'unit' => 'minute',
+                    ],
+                ],
+            ],
+            $densifyStage->getExpression(),
+        );
+    }
+
     public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
