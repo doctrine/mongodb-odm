@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Fill;
 use LogicException;
 
 use function func_get_args;
+use function sprintf;
 
 /**
  * Fluent builder for output param of $fill stage
@@ -100,10 +101,10 @@ class Output extends Fill
      *
      * @throws LogicException if a current field has not been set.
      */
-    private function requiresCurrentField(?string $method = null): void
+    private function requiresCurrentField(string $method): void
     {
         if (! $this->currentField) {
-            throw new LogicException(($method ?: 'This method') . ' requires you set a current field using field().');
+            throw new LogicException(sprintf('%s requires setting a current field using field().', $method));
         }
     }
 }

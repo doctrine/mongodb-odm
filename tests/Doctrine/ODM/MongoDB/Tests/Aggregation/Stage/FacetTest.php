@@ -62,7 +62,7 @@ class FacetTest extends BaseTest
         $facetStage = new Facet($this->getTestAggregationBuilder());
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('requires you set a current field using field().');
+        $this->expectExceptionMessage('requires setting a current field using field().');
         $facetStage->pipeline($this->getTestAggregationBuilder());
     }
 
