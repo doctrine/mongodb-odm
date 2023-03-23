@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Fill\Output;
 
+use function array_values;
 use function is_array;
 use function is_string;
 use function strtolower;
@@ -46,7 +47,7 @@ class Fill extends Stage
 
     public function partitionByFields(string ...$fields): self
     {
-        $this->partitionByFields = $fields;
+        $this->partitionByFields = array_values($fields);
 
         return $this;
     }

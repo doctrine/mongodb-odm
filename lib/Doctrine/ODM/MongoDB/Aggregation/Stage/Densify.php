@@ -7,6 +7,8 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
+use function array_values;
+
 /**
  * Fluent interface for adding a $densify stage to an aggregation pipeline.
  */
@@ -28,7 +30,7 @@ class Densify extends Stage
 
     public function partitionByFields(string ...$fields): self
     {
-        $this->partitionByFields = $fields;
+        $this->partitionByFields = array_values($fields);
 
         return $this;
     }
