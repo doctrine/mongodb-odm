@@ -23,7 +23,7 @@ class UnionWith extends Stage
 
     /**
      * @var array|Builder|null
-     * @psalm-var Pipeline|null
+     * @psalm-var ?Pipeline
      */
     private $pipeline = null;
 
