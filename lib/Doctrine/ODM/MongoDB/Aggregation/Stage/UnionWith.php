@@ -13,7 +13,14 @@ use InvalidArgumentException;
 /**
  * Fluent interface for adding a $unionWith stage to an aggregation pipeline.
  *
- * @psalm-type Pipeline = Builder|Stage|list<array<string, mixed>>
+ * @psalm-import-type PipelineExpression from Builder
+ * @psalm-type PipelineParamType = array|Builder|Stage|PipelineExpression
+ * @psalm-type UnionWithStageExpression = array{
+ *     '$unionWith': object{
+ *         coll: string,
+ *         pipeline?: PipelineExpression,
+ *     }
+ * }
  */
 class UnionWith extends Stage
 {
@@ -23,7 +30,7 @@ class UnionWith extends Stage
 
     /**
      * @var array|Builder|null
-     * @psalm-var ?Pipeline
+     * @psalm-var ?PipelineParamType
      */
     private $pipeline = null;
 
@@ -43,7 +50,7 @@ class UnionWith extends Stage
 
     /**
      * @param array|Builder|Stage $pipeline
-     * @psalm-param Pipeline $pipeline
+     * @psalm-param PipelineParamType $pipeline
      */
     public function pipeline($pipeline): self
     {
@@ -60,6 +67,7 @@ class UnionWith extends Stage
         return $this;
     }
 
+    /** @psalm-return UnionWithStageExpression */
     public function getExpression(): array
     {
         $params = (object) ['coll' => $this->collection];

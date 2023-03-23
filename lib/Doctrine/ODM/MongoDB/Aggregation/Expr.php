@@ -24,6 +24,8 @@ use function substr;
 
 /**
  * Fluent interface for building aggregation pipelines.
+ *
+ * @psalm-type OperatorExpression = array<string, mixed>|object
  */
 class Expr implements GenericOperatorsInterface
 {

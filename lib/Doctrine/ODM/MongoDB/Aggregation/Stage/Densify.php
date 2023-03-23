@@ -12,6 +12,20 @@ use function array_values;
 
 /**
  * Fluent interface for adding a $densify stage to an aggregation pipeline.
+ *
+ * @psalm-type BoundsType = 'full'|'partition'|array{0: int|float|UTCDateTime, 1: int|float|UTCDateTime}
+ * @psalm-type UnitType = 'year'|'month'|'week'|'day'|'hour'|'minute'|'second'|'millisecond'
+ * @psalm-type DensifyStageExpression = array{
+ *     '$densify': object{
+ *         field: string,
+ *         partitionByFields?: list<string>,
+ *         range?: object{
+ *             bounds: BoundsType,
+ *             step: int|float,
+ *             unit?: UnitType
+ *         }
+ *     }
+ * }
  */
 class Densify extends Stage
 {
@@ -37,8 +51,10 @@ class Densify extends Stage
     }
 
     /**
-     * @param array{0: int|float|UTCDateTime, 1: int|float|UTCDateTime}|string $bounds
-     * @param int|float                                                        $step
+     * @param array|string $bounds
+     * @param int|float    $step
+     * @psalm-param BoundsType  $bounds
+     * @psalm-param ''|UnitType $unit
      */
     public function range($bounds, $step, string $unit = ''): self
     {
@@ -54,6 +70,7 @@ class Densify extends Stage
         return $this;
     }
 
+    /** @psalm-return DensifyStageExpression */
     public function getExpression(): array
     {
         $params = (object) ['field' => $this->field];

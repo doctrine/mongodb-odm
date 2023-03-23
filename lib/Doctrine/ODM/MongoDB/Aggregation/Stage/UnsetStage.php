@@ -13,6 +13,8 @@ use function array_values;
 
 /**
  * Fluent interface for adding an $unset stage to an aggregation pipeline.
+ *
+ * @psalm-type UnsetStageExpression = array{'$unset': list<string>}
  */
 class UnsetStage extends Stage
 {
@@ -29,6 +31,7 @@ class UnsetStage extends Stage
         $this->fields            = array_values($fields);
     }
 
+    /** @return UnsetStageExpression */
     public function getExpression(): array
     {
         return [

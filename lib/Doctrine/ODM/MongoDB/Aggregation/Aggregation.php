@@ -17,6 +17,7 @@ use MongoDB\Driver\Cursor;
 use function array_merge;
 use function assert;
 
+/** @psalm-import-type PipelineExpression from Builder */
 final class Aggregation implements IteratorAggregate
 {
     private DocumentManager $dm;
@@ -25,7 +26,10 @@ final class Aggregation implements IteratorAggregate
 
     private Collection $collection;
 
-    /** @var array<string, mixed> */
+    /**
+     * @var array<string, mixed>
+     * @psalm-var PipelineExpression
+     */
     private array $pipeline;
 
     /** @var array<string, mixed> */
@@ -36,6 +40,7 @@ final class Aggregation implements IteratorAggregate
     /**
      * @param array<string, mixed> $pipeline
      * @param array<string, mixed> $options
+     * @psalm-param PipelineExpression $pipeline
      */
     public function __construct(DocumentManager $dm, ?ClassMetadata $classMetadata, Collection $collection, array $pipeline, array $options = [], bool $rewindable = true)
     {

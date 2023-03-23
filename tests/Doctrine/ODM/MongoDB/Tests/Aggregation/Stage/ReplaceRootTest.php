@@ -26,7 +26,7 @@ class ReplaceRootTest extends BaseTest
         self::assertEquals(
             [
                 '$replaceRoot' => [
-                    'newRoot' => (object) [
+                    'newRoot' => [
                         'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
                     ],
                 ],
@@ -51,7 +51,7 @@ class ReplaceRootTest extends BaseTest
         self::assertEquals(
             [
                 '$replaceRoot' => [
-                    'newRoot' => (object) [
+                    'newRoot' => [
                         'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
                     ],
                 ],
@@ -72,7 +72,7 @@ class ReplaceRootTest extends BaseTest
         self::assertEquals(
             [
                 '$replaceRoot' => [
-                    'newRoot' => (object) [
+                    'newRoot' => [
                         'someField' => ['$concat' => ['$ip', 'foo']],
                     ],
                 ],

@@ -5,11 +5,6 @@
       <code>IteratorAggregate</code>
     </MissingTemplateParam>
   </file>
-  <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php">
-    <InvalidArgument>
-      <code>$fields</code>
-    </InvalidArgument>
-  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Configuration.php">
     <TypeDoesNotContainType>
       <code><![CDATA[$reflectionClass->implementsInterface(GridFSRepository::class)]]></code>

@@ -9,6 +9,8 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 
 /**
  * Fluent interface for adding a $group stage to an aggregation pipeline.
+ *
+ * @psalm-type GroupStageExpression = array{'$group': array<string, mixed>}
  */
 class Group extends Operator
 {
@@ -22,6 +24,7 @@ class Group extends Operator
         $this->expr = $builder->expr();
     }
 
+    /** @psalm-return GroupStageExpression */
     public function getExpression(): array
     {
         return [

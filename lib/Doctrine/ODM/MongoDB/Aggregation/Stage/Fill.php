@@ -17,7 +17,18 @@ use function strtolower;
 /**
  * Fluent interface for adding a $fill stage to an aggregation pipeline.
  *
- * @psalm-type SortShape = array<string, int|string>
+ * @psalm-import-type SortDirectionKeywords from Sort
+ * @psalm-import-type OperatorExpression from Expr
+ * @psalm-type SortDirection = int|SortDirectionKeywords
+ * @psalm-type SortShape = array<string, SortDirection>
+ * @psalm-type FillStageExpression = array{
+ *     '$fill': array{
+ *         partitionBy?: string|OperatorExpression,
+ *         partitionByFields?: list<string>,
+ *         sortBy?: SortShape,
+ *         output?: array,
+ *     }
+ * }
  */
 class Fill extends Stage
 {
@@ -56,6 +67,7 @@ class Fill extends Stage
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
      * @param int|string                       $order     Field order (if one field is specified)
      * @psalm-param SortShape|string           $fieldName
+     * @psalm-param SortDirection|null         $order
      */
     public function sortBy($fieldName, $order = null): self
     {

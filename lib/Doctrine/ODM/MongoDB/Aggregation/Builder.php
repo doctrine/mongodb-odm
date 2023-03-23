@@ -29,6 +29,8 @@ use function trigger_deprecation;
  * Fluent interface for building aggregation pipelines.
  *
  * @psalm-import-type SortShape from Sort
+ * @psalm-import-type StageExpression from Stage
+ * @psalm-type PipelineExpression = list<StageExpression>
  */
 class Builder
 {
@@ -269,6 +271,7 @@ class Builder
      * given.
      *
      * @return array<array<string, mixed>>
+     * @psalm-return PipelineExpression
      */
     // phpcs:enable Squiz.Commenting.FunctionComment.ExtraParamComment
     public function getPipeline(/* bool $applyFilters = true */): array

@@ -295,7 +295,7 @@ class BuilderTest extends BaseTest
             ],
             [
                 '$replaceRoot' => [
-                    'newRoot' => (object) [
+                    'newRoot' => [
                         'isToday' => [
                             '$eq' => ['$createdAt', new UTCDateTime($dateTime)],
                         ],

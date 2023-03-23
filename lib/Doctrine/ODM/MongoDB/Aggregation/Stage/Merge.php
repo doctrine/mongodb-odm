@@ -16,8 +16,20 @@ use function count;
 use function is_array;
 
 /**
+ * @psalm-import-type PipelineExpression from Builder
  * @psalm-type OutputCollection = string|array{db: string, coll: string}
- * @psalm-type WhenMatchedParam = Builder|Stage|string|list<array<string, mixed>>
+ * @psalm-type WhenMatchedType = 'replace'|'keepExisting'|'merge'|'fail'|PipelineExpression
+ * @psalm-type WhenMatchedParamType = Builder|Stage|WhenMatchedType
+ * @psalm-type WhenNotMatchedType = 'insert'|'discard'|'fail'
+ * @psalm-type MergeStageExpression = array{
+ *     '$merge': object{
+ *         into: OutputCollection,
+ *         on?: string|list<string>,
+ *         let?: array<string, mixed|Expr>,
+ *         whenMatched?: WhenMatchedType,
+ *         whenNotMatched?: WhenNotMatchedType,
+ *     }
+ * }
  */
 class Merge extends Stage
 {
@@ -37,7 +49,7 @@ class Merge extends Stage
 
     /**
      * @var string|array|Builder|Stage
-     * @psalm-var WhenMatchedParam
+     * @psalm-var WhenMatchedParamType
      */
     private $whenMatched;
 
@@ -50,6 +62,7 @@ class Merge extends Stage
         $this->dm = $documentManager;
     }
 
+    /** @psalm-return MergeStageExpression */
     public function getExpression(): array
     {
         $params = (object) [
@@ -123,7 +136,7 @@ class Merge extends Stage
 
     /**
      * @param string|array|Builder|Stage $whenMatched
-     * @psalm-param WhenMatchedParam $whenMatched
+     * @psalm-param WhenMatchedParamType $whenMatched
      */
     public function whenMatched($whenMatched): self
     {

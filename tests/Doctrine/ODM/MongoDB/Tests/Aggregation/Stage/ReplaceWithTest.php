@@ -25,7 +25,7 @@ class ReplaceWithTest extends BaseTest
 
         self::assertEquals(
             [
-                '$replaceWith' => (object) [
+                '$replaceWith' => [
                     'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
                 ],
             ],
@@ -48,7 +48,7 @@ class ReplaceWithTest extends BaseTest
 
         self::assertEquals(
             [
-                '$replaceWith' => (object) [
+                '$replaceWith' => [
                     'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
                 ],
             ],
@@ -67,7 +67,7 @@ class ReplaceWithTest extends BaseTest
 
         self::assertEquals(
             [
-                '$replaceWith' => (object) [
+                '$replaceWith' => [
                     'someField' => ['$concat' => ['$ip', 'foo']],
                 ],
             ],

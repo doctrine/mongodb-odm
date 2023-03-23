@@ -13,6 +13,9 @@ use function array_map;
 
 /**
  * Fluent interface for adding a $facet stage to an aggregation pipeline.
+ *
+ * @psalm-import-type PipelineExpression from Builder
+ * @psalm-type FacetStageExpression = array{'$facet': array<string, PipelineExpression>}
  */
 class Facet extends Stage
 {
