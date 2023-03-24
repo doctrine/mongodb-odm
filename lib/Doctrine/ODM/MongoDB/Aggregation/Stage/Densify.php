@@ -19,9 +19,9 @@ use function array_values;
  *     '$densify': object{
  *         field: string,
  *         partitionByFields?: list<string>,
- *         range?: object{
- *             bounds: BoundsType,
- *             step: int|float,
+ *         range: object{
+ *             bounds?: BoundsType,
+ *             step?: int|float,
  *             unit?: UnitType
  *         }
  *     }
@@ -34,13 +34,14 @@ class Densify extends Stage
     /** @var array<string> */
     private array $partitionByFields = [];
 
-    private ?object $range = null;
+    private object $range;
 
     public function __construct(Builder $builder, string $fieldName)
     {
         parent::__construct($builder);
 
         $this->field = $fieldName;
+        $this->range = (object) [];
     }
 
     public function partitionByFields(string ...$fields): self
@@ -73,14 +74,13 @@ class Densify extends Stage
     /** @psalm-return DensifyStageExpression */
     public function getExpression(): array
     {
-        $params = (object) ['field' => $this->field];
+        $params = (object) [
+            'field' => $this->field,
+            'range' => $this->range,
+        ];
 
         if ($this->partitionByFields) {
             $params->partitionByFields = $this->partitionByFields;
-        }
-
-        if ($this->range) {
-            $params->range = $this->range;
         }
 
         return ['$densify' => $params];

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Fill;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
+use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Fill;
 use LogicException;
 
@@ -17,7 +18,7 @@ use function sprintf;
  *
  * @psalm-import-type SortShape from Fill
  */
-class Output extends Fill
+class Output extends Stage
 {
     private Fill $fill;
 

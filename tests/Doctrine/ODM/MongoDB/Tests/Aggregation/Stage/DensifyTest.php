@@ -82,8 +82,24 @@ class DensifyTest extends BaseTest
     public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
-        $builder->densify('someField');
+        $builder
+            ->densify('someField')
+            ->range('full', 1, 'minute');
 
-        self::assertEquals([['$densify' => (object) ['field' => 'someField']]], $builder->getPipeline());
+        self::assertEquals(
+            [
+                [
+                    '$densify' => (object) [
+                        'field' => 'someField',
+                        'range' => (object) [
+                            'bounds' => 'full',
+                            'step' => 1,
+                            'unit' => 'minute',
+                        ],
+                    ],
+                ],
+            ],
+            $builder->getPipeline(),
+        );
     }
 }

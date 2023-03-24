@@ -26,7 +26,7 @@ use function strtolower;
  *         partitionBy?: string|OperatorExpression,
  *         partitionByFields?: list<string>,
  *         sortBy?: SortShape,
- *         output?: array,
+ *         output: array,
  *     }
  * }
  */
@@ -41,11 +41,13 @@ class Fill extends Stage
     /** @var array<string, int> */
     private array $sortBy = [];
 
-    private ?Output $output = null;
+    private Output $output;
 
     public function __construct(Builder $builder)
     {
         parent::__construct($builder);
+
+        $this->output = new Output($this->builder, $this);
     }
 
     /** @param mixed|Expr $expression */
@@ -86,16 +88,14 @@ class Fill extends Stage
 
     public function output(): Output
     {
-        if (! $this->output) {
-            $this->output = new Output($this->builder, $this);
-        }
-
         return $this->output;
     }
 
     public function getExpression(): array
     {
-        $params = (object) [];
+        $params = (object) [
+            'output' => (object) $this->output->getExpression(),
+        ];
 
         if ($this->partitionBy) {
             $params->partitionBy = $this->partitionBy instanceof Expr
@@ -109,10 +109,6 @@ class Fill extends Stage
 
         if ($this->sortBy) {
             $params->sortBy = (object) $this->sortBy;
-        }
-
-        if ($this->output) {
-            $params->output = (object) $this->output->getExpression();
         }
 
         return ['$fill' => $params];
