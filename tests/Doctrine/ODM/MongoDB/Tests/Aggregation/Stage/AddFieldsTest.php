@@ -12,7 +12,7 @@ class AddFieldsTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testAddFieldsStage(): void
+    public function testStage(): void
     {
         $addFieldsStage = new AddFields($this->getTestAggregationBuilder());
         $addFieldsStage
@@ -22,7 +22,7 @@ class AddFieldsTest extends BaseTest
         self::assertSame(['$addFields' => ['product' => ['$multiply' => ['$field', 5]]]], $addFieldsStage->getExpression());
     }
 
-    public function testProjectFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder

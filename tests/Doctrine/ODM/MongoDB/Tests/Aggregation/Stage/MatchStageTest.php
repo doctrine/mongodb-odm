@@ -18,7 +18,7 @@ class MatchStageTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testMatchStage(): void
+    public function testStage(): void
     {
         $matchStage = new MatchStage($this->getTestAggregationBuilder());
         $matchStage
@@ -28,7 +28,7 @@ class MatchStageTest extends BaseTest
         self::assertSame(['$match' => ['someField' => 'someValue']], $matchStage->getExpression());
     }
 
-    public function testMatchFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder

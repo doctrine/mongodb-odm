@@ -9,6 +9,14 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $unwind stage to an aggregation pipeline.
+ *
+ * @psalm-type UnwindStageExpression = array{
+ *     '$unwind': string|array{
+ *         path: string,
+ *         includeArrayIndex?: string,
+ *         preserveNullAndEmptyArrays?: bool,
+ *     }
+ * }
  */
 class Unwind extends Stage
 {
@@ -25,6 +33,7 @@ class Unwind extends Stage
         $this->fieldName = $fieldName;
     }
 
+    /** @psalm-return UnwindStageExpression */
     public function getExpression(): array
     {
         // Fallback behavior for MongoDB < 3.2
@@ -36,12 +45,12 @@ class Unwind extends Stage
 
         $unwind = ['path' => $this->fieldName];
 
-        foreach (['includeArrayIndex', 'preserveNullAndEmptyArrays'] as $option) {
-            if (! $this->$option) {
-                continue;
-            }
+        if ($this->includeArrayIndex) {
+            $unwind['includeArrayIndex'] = $this->includeArrayIndex;
+        }
 
-            $unwind[$option] = $this->$option;
+        if ($this->preserveNullAndEmptyArrays) {
+            $unwind['preserveNullAndEmptyArrays'] = $this->preserveNullAndEmptyArrays;
         }
 
         return ['$unwind' => $unwind];

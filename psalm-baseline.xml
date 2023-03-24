@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.6.0@e784128902dfe01d489c4123d69918a9f3c1eac5">
+<files psalm-version="5.8.0@9cf4f60a333f779ad3bc704a555920e81d4fdcda">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php">
     <MissingTemplateParam>
       <code>IteratorAggregate</code>
     </MissingTemplateParam>
   </file>
-  <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php">
-    <InvalidArgument>
-      <code>$fields</code>
-    </InvalidArgument>
-  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Configuration.php">
     <TypeDoesNotContainType>
-      <code>$reflectionClass-&gt;implementsInterface(GridFSRepository::class)</code>
-      <code>$reflectionClass-&gt;implementsInterface(ObjectRepository::class)</code>
+      <code><![CDATA[$reflectionClass->implementsInterface(GridFSRepository::class)]]></code>
+      <code><![CDATA[$reflectionClass->implementsInterface(ObjectRepository::class)]]></code>
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/DocumentManager.php">
@@ -33,7 +28,7 @@
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php">
     <ImplementedReturnTypeMismatch>
-      <code>array&lt;string|null&gt;</code>
+      <code><![CDATA[array<string|null>]]></code>
     </ImplementedReturnTypeMismatch>
     <InvalidArgument>
       <code>$mapping</code>
@@ -43,29 +38,29 @@
       <code>$mapping</code>
     </InvalidArgument>
     <InvalidArrayOffset>
-      <code>[$this-&gt;identifier =&gt; $this-&gt;getIdentifierValue($object)]</code>
+      <code><![CDATA[[$this->identifier => $this->getIdentifierValue($object)]]]></code>
     </InvalidArrayOffset>
     <InvalidPropertyAssignmentValue>
-      <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;fieldMappings</code>
+      <code><![CDATA[$this->associationMappings]]></code>
+      <code><![CDATA[$this->associationMappings]]></code>
+      <code><![CDATA[$this->fieldMappings]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
       <code>$mapping</code>
-      <code>array_filter(
-            $this-&gt;associationMappings,
-            static fn ($assoc) =&gt; ! empty($assoc['embedded'])
-        )</code>
+      <code><![CDATA[array_filter(
+            $this->associationMappings,
+            static fn ($assoc) => ! empty($assoc['embedded'])
+        )]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>FieldMapping</code>
       <code>FieldMappingConfig</code>
-      <code>array&lt;string, FieldMapping&gt;</code>
+      <code><![CDATA[array<string, FieldMapping>]]></code>
     </InvalidReturnType>
     <LessSpecificImplementedReturnType>
       <code>array</code>
-      <code>array&lt;string|null&gt;</code>
+      <code><![CDATA[array<string|null>]]></code>
     </LessSpecificImplementedReturnType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php">
@@ -84,64 +79,64 @@
       <code>$options</code>
     </InvalidArgument>
     <NoInterfaceProperties>
-      <code>$xmlRoot-&gt;field</code>
-      <code>$xmlRoot-&gt;id</code>
-      <code>$xmlRoot-&gt;{'also-load-methods'}</code>
-      <code>$xmlRoot-&gt;{'default-discriminator-value'}</code>
-      <code>$xmlRoot-&gt;{'discriminator-field'}</code>
-      <code>$xmlRoot-&gt;{'discriminator-map'}</code>
-      <code>$xmlRoot-&gt;{'embed-many'}</code>
-      <code>$xmlRoot-&gt;{'embed-one'}</code>
-      <code>$xmlRoot-&gt;{'indexes'}</code>
-      <code>$xmlRoot-&gt;{'lifecycle-callbacks'}</code>
-      <code>$xmlRoot-&gt;{'read-preference'}</code>
-      <code>$xmlRoot-&gt;{'reference-many'}</code>
-      <code>$xmlRoot-&gt;{'reference-one'}</code>
-      <code>$xmlRoot-&gt;{'schema-validation'}</code>
-      <code>$xmlRoot-&gt;{'shard-key'}</code>
+      <code><![CDATA[$xmlRoot->field]]></code>
+      <code><![CDATA[$xmlRoot->id]]></code>
+      <code><![CDATA[$xmlRoot->{'also-load-methods'}]]></code>
+      <code><![CDATA[$xmlRoot->{'default-discriminator-value'}]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-field'}]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
+      <code><![CDATA[$xmlRoot->{'embed-many'}]]></code>
+      <code><![CDATA[$xmlRoot->{'embed-one'}]]></code>
+      <code><![CDATA[$xmlRoot->{'indexes'}]]></code>
+      <code><![CDATA[$xmlRoot->{'lifecycle-callbacks'}]]></code>
+      <code><![CDATA[$xmlRoot->{'read-preference'}]]></code>
+      <code><![CDATA[$xmlRoot->{'reference-many'}]]></code>
+      <code><![CDATA[$xmlRoot->{'reference-one'}]]></code>
+      <code><![CDATA[$xmlRoot->{'schema-validation'}]]></code>
+      <code><![CDATA[$xmlRoot->{'shard-key'}]]></code>
     </NoInterfaceProperties>
     <RedundantCast>
-      <code>(bool) $mapping['background']</code>
-      <code>(bool) $mapping['sparse']</code>
-      <code>(bool) $mapping['unique']</code>
-      <code>(string) $mapping['index-name']</code>
+      <code><![CDATA[(bool) $mapping['background']]]></code>
+      <code><![CDATA[(bool) $mapping['sparse']]]></code>
+      <code><![CDATA[(bool) $mapping['unique']]]></code>
+      <code><![CDATA[(string) $mapping['index-name']]]></code>
     </RedundantCast>
     <RedundantCondition>
       <code>assert($attributes instanceof SimpleXMLElement)</code>
-      <code>isset($xmlRoot-&gt;field)</code>
-      <code>isset($xmlRoot-&gt;id)</code>
-      <code>isset($xmlRoot-&gt;{'default-discriminator-value'})</code>
-      <code>isset($xmlRoot-&gt;{'discriminator-field'})</code>
-      <code>isset($xmlRoot-&gt;{'discriminator-map'})</code>
-      <code>isset($xmlRoot-&gt;{'embed-many'})</code>
-      <code>isset($xmlRoot-&gt;{'embed-one'})</code>
-      <code>isset($xmlRoot-&gt;{'indexes'})</code>
-      <code>isset($xmlRoot-&gt;{'lifecycle-callbacks'})</code>
-      <code>isset($xmlRoot-&gt;{'read-preference'})</code>
-      <code>isset($xmlRoot-&gt;{'reference-many'})</code>
-      <code>isset($xmlRoot-&gt;{'reference-one'})</code>
-      <code>isset($xmlRoot-&gt;{'schema-validation'})</code>
-      <code>isset($xmlRoot-&gt;{'shard-key'})</code>
+      <code><![CDATA[isset($xmlRoot->field)]]></code>
+      <code><![CDATA[isset($xmlRoot->id)]]></code>
+      <code><![CDATA[isset($xmlRoot->{'default-discriminator-value'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'discriminator-field'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'discriminator-map'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'embed-many'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'embed-one'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'indexes'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'lifecycle-callbacks'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'read-preference'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'reference-many'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'reference-one'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'schema-validation'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'shard-key'})]]></code>
     </RedundantCondition>
     <TypeDoesNotContainType>
-      <code>$xmlRoot-&gt;getName() === 'document'</code>
-      <code>$xmlRoot-&gt;getName() === 'embedded-document'</code>
-      <code>$xmlRoot-&gt;getName() === 'gridfs-file'</code>
-      <code>$xmlRoot-&gt;getName() === 'mapped-superclass'</code>
-      <code>$xmlRoot-&gt;getName() === 'query-result-document'</code>
-      <code>$xmlRoot-&gt;getName() === 'view'</code>
-      <code>isset($xmlRoot-&gt;{'also-load-methods'})</code>
+      <code><![CDATA[$xmlRoot->getName() === 'document']]></code>
+      <code><![CDATA[$xmlRoot->getName() === 'embedded-document']]></code>
+      <code><![CDATA[$xmlRoot->getName() === 'gridfs-file']]></code>
+      <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
+      <code><![CDATA[$xmlRoot->getName() === 'query-result-document']]></code>
+      <code><![CDATA[$xmlRoot->getName() === 'view']]></code>
+      <code><![CDATA[isset($xmlRoot->{'also-load-methods'})]]></code>
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/PersistentCollection/AbstractPersistentCollectionFactory.php">
     <InvalidArgument>
-      <code>new PersistentCollection($coll, $dm, $dm-&gt;getUnitOfWork())</code>
-      <code>new PersistentCollection($coll, $dm, $dm-&gt;getUnitOfWork())</code>
+      <code><![CDATA[new PersistentCollection($coll, $dm, $dm->getUnitOfWork())]]></code>
+      <code><![CDATA[new PersistentCollection($coll, $dm, $dm->getUnitOfWork())]]></code>
     </InvalidArgument>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/PersistentCollection/PersistentCollectionTrait.php">
     <RedundantCondition>
-      <code>is_object($this-&gt;coll)</code>
+      <code><![CDATA[is_object($this->coll)]]></code>
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php">
@@ -151,7 +146,7 @@
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Proxy/Resolver/CachingClassNameResolver.php">
     <InvalidPropertyAssignmentValue>
-      <code>$this-&gt;resolvedNames</code>
+      <code><![CDATA[$this->resolvedNames]]></code>
     </InvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Proxy/Resolver/ProxyManagerClassNameResolver.php">
@@ -164,10 +159,10 @@
       <code>$query</code>
     </InvalidArgument>
     <InvalidPropertyAssignmentValue>
-      <code>$this-&gt;query</code>
-      <code>$this-&gt;query</code>
-      <code>$this-&gt;query</code>
-      <code>$this-&gt;query</code>
+      <code><![CDATA[$this->query]]></code>
+      <code><![CDATA[$this->query]]></code>
+      <code><![CDATA[$this->query]]></code>
+      <code><![CDATA[$this->query]]></code>
     </InvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Query/Query.php">
@@ -253,17 +248,22 @@
       <code>$mapping</code>
     </InvalidArgument>
     <InvalidPropertyAssignmentValue>
-      <code>$this-&gt;parentAssociations</code>
+      <code><![CDATA[$this->parentAssociations]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$divided</code>
     </InvalidReturnStatement>
     <InvalidReturnType>
-      <code>array&lt;class-string, array{0: ClassMetadata&lt;object&gt;, 1: array&lt;string, object&gt;}&gt;</code>
+      <code><![CDATA[array<class-string, array{0: ClassMetadata<object>, 1: array<string, object>}>]]></code>
     </InvalidReturnType>
     <NullableReturnStatement>
-      <code>$mapping['targetDocument']</code>
+      <code><![CDATA[$mapping['targetDocument']]]></code>
     </NullableReturnStatement>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/UnsetTest.php">
+    <InvalidArgument>
+      <code>$documentPersister</code>
+    </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/ClassMetadataTestUtil.php">
     <InvalidReturnStatement>
@@ -275,12 +275,12 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/DocumentManagerTest.php">
     <InvalidArgument>
-      <code>$class-&gt;associationMappings['ref']</code>
-      <code>$class-&gt;associationMappings['ref1']</code>
-      <code>$class-&gt;associationMappings['ref2']</code>
-      <code>$class-&gt;associationMappings['ref3']</code>
-      <code>$class-&gt;associationMappings['ref4']</code>
-      <code>['storeAs' =&gt; ClassMetadata::REFERENCE_STORE_AS_DB_REF]</code>
+      <code><![CDATA[$class->associationMappings['ref']]]></code>
+      <code><![CDATA[$class->associationMappings['ref1']]]></code>
+      <code><![CDATA[$class->associationMappings['ref2']]]></code>
+      <code><![CDATA[$class->associationMappings['ref3']]]></code>
+      <code><![CDATA[$class->associationMappings['ref4']]]></code>
+      <code><![CDATA[['storeAs' => ClassMetadata::REFERENCE_STORE_AS_DB_REF]]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php">
@@ -290,9 +290,9 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/CollectionPersisterTest.php">
     <InvalidArgument>
-      <code>[$user-&gt;categories[0]-&gt;children, $user-&gt;categories[1]-&gt;children]</code>
-      <code>[$user-&gt;categories[0]-&gt;children[0]-&gt;children, $user-&gt;categories[0]-&gt;children[1]-&gt;children]</code>
-      <code>[$user-&gt;categories[0]-&gt;children[0]-&gt;children, $user-&gt;categories[0]-&gt;children[1]-&gt;children]</code>
+      <code><![CDATA[[$user->categories[0]->children, $user->categories[1]->children]]]></code>
+      <code><![CDATA[[$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children]]]></code>
+      <code><![CDATA[[$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children]]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomCollectionsTest.php">
@@ -310,14 +310,14 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/ReferenceEmbeddedDocumentsTest.php">
     <InvalidArgument>
-      <code>new ArrayCollection([
+      <code><![CDATA[new ArrayCollection([
             new Issue('Issue #1', 'Issue #1 on Sub Project #1'),
             new Issue('Issue #2', 'Issue #2 on Sub Project #1'),
-        ])</code>
-      <code>new ArrayCollection([
+        ])]]></code>
+      <code><![CDATA[new ArrayCollection([
             new Issue('Issue #1', 'Issue #1 on Sub Project #2'),
             new Issue('Issue #2', 'Issue #2 on Sub Project #2'),
-        ])</code>
+        ])]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/RepositoriesTest.php">
@@ -327,12 +327,12 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/ShardKeyTest.php">
     <InvalidArgument>
-      <code>['upsert' =&gt; true]</code>
+      <code><![CDATA[['upsert' => true]]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1011Test.php">
     <InvalidArgument>
-      <code>$doc-&gt;embeds</code>
+      <code><![CDATA[$doc->embeds]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH245Test.php">
@@ -366,11 +366,11 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH597Test.php">
     <InvalidPropertyAssignmentValue>
-      <code>new ArrayCollection([
+      <code><![CDATA[new ArrayCollection([
             new GH597Comment('Comment 1'),
             new GH597Comment('Comment 2'),
             new GH597Comment('Comment 3'),
-        ])</code>
+        ])]]></code>
       <code>new ArrayCollection([$referenceMany1, $referenceMany2])</code>
     </InvalidPropertyAssignmentValue>
   </file>
@@ -384,29 +384,29 @@
       <code>DocumentManager</code>
     </InvalidNullableReturnType>
     <NullableReturnStatement>
-      <code>$this-&gt;dm</code>
+      <code><![CDATA[$this->dm]]></code>
     </NullableReturnStatement>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php">
     <InvalidArgument>
       <code>$config</code>
       <code>$mapping</code>
-      <code>[
-            'fieldName' =&gt; 'assoc',
-            'reference' =&gt; true,
-            'type' =&gt; 'many',
-            'targetDocument' =&gt; 'stdClass',
-            'repositoryMethod' =&gt; 'fetch',
-            $prop =&gt; $value,
-        ]</code>
-      <code>[
-            'fieldName' =&gt; 'enum',
-            'enumType' =&gt; Card::class,
-        ]</code>
-      <code>[
-            'fieldName' =&gt; 'enum',
-            'enumType' =&gt; SuitNonBacked::class,
-        ]</code>
+      <code><![CDATA[[
+            'fieldName' => 'assoc',
+            'reference' => true,
+            'type' => 'many',
+            'targetDocument' => 'stdClass',
+            'repositoryMethod' => 'fetch',
+            $prop => $value,
+        ]]]></code>
+      <code><![CDATA[[
+            'fieldName' => 'enum',
+            'enumType' => Card::class,
+        ]]]></code>
+      <code><![CDATA[[
+            'fieldName' => 'enum',
+            'enumType' => SuitNonBacked::class,
+        ]]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php">
@@ -416,7 +416,7 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php">
     <InvalidArgument>
-      <code>['type' =&gt; -1]</code>
+      <code><![CDATA[['type' => -1]]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php">

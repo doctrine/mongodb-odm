@@ -16,7 +16,7 @@ class ProjectTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testProjectStage(): void
+    public function testStage(): void
     {
         $projectStage = new Project($this->getTestAggregationBuilder());
         $projectStage
@@ -28,7 +28,7 @@ class ProjectTest extends BaseTest
         self::assertSame(['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]], $projectStage->getExpression());
     }
 
-    public function testProjectFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder

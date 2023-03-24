@@ -1,244 +1,876 @@
 parameters:
-    ignoreErrors:
-        # Adding a parameter would be BC-break
-        -
-            message: "#^PHPDoc tag @param references unknown parameter\\: \\$applyFilters$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
+	ignoreErrors:
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Builder\\:\\:getPipeline\\(\\) should return array\\<int, non\\-empty\\-array\\<non\\-empty\\-string, mixed\\>\\|object\\> but returns array\\<array\\<string, mixed\\>\\>\\.$#"
+			count: 2
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
 
-        # Making classes final as suggested would be a BC-break
-        -
-            message: "#^Unsafe usage of new static\\(\\)\\.$#"
-            paths:
-                 - lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
-                 - lib/Doctrine/ODM/MongoDB/DocumentManager.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Builder\\:\\:getPipeline\\(\\) should return array\\<int, non\\-empty\\-array\\<non\\-empty\\-string, mixed\\>\\|object\\> but returns non\\-empty\\-array\\<array\\<string, mixed\\>\\>\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
 
-        # This cannot be solved the way it is, see https://github.com/vimeo/psalm/issues/5788
-        -
-            message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
+		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$applyFilters$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
 
-        # The limit option in GeoNear has been removed in MongoDB 4.2 in favor of $limit stage
-        -
-            message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
 
-        -
-            message: "#DOCTRINE_MONGODB_DATABASE not found\\.$#"
-            paths:
-                - tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
-                - tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
-                - tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php
-                - tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\AbstractReplace\\:\\:getReplaceExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/AbstractReplace.php
 
-        -
-            message: "#DOCTRINE_MONGODB_SERVER not found\\.$#"
-            paths:
-                - tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Densify\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\DensifyStageExpression\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
 
-        -
-            message: "#^Parameter \\#1 \\$builder of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Facet\\:\\:pipeline\\(\\) expects Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Builder\\|Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage, stdClass given\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/FacetTest.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Densify\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
 
-        -
-            message: "#^Expression \"\\$groups\\[0\\]\" on a separate line does not do anything\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FunctionalTest.php
+		-
+			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\DensifyStageExpression is incompatible with native type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
 
-        -
-            message: "#^Unreachable statement \\- code above always terminates\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
+		-
+			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php
 
-        -
-            message: "#^Parameter \\#1 \\$primer of method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Builder\\:\\:prime\\(\\) expects bool\\|\\(callable\\(\\)\\: mixed\\), 1 given\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
+		-
+			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
 
-        # Support for doctrine/collections v1
-        -
-            message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:add\(\) with return type void returns true but should not return anything\.$#'
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Lookup\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\LookupStageExpression\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
-        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
-        -
-            message: "#^Access to offset '.+' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
-            count: 12
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Lookup\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
-        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
-        -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getMapping\\(\\) should return array\\{type\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\} but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\LookupStageExpression is incompatible with native type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
-        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
-        -
-            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$mapping has unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping as its type\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
-        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
-        -
-            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$mapping \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\) does not accept array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|int\\|string\\|null\\>\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\MergeStageExpression\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
-        # That statement is never reached because DateTimeInterface is either DateTimeImmutable or DateTime
-        -
-            message: "#^Unreachable statement \\- code above always terminates\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Types/DateImmutableType.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
-        # These classes are not final
-        -
-            message: "#^Unsafe call to private method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Expr\\:\\:convertExpression\\(\\) through static::\\.$#"
-            count: 3
-            path: lib/Doctrine/ODM/MongoDB/Query/Expr.php
+		-
+			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\MergeStageExpression is incompatible with native type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
-        -
-            message: "#^Unsafe call to private method Doctrine\\\\ODM\\\\MongoDB\\\\Types\\\\DateType\\:\\:craftDateTime\\(\\) through static::\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Types/DateType.php
+		-
+			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
-        # False positive, the exception is thrown
-        -
-            message: "#^Dead catch \\- MongoDB\\\\Driver\\\\Exception\\\\BulkWriteException is never thrown in the try block\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
+		-
+			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Out.php
 
-        # Properties are not covariant
-        -
-            message: "#^PHPDoc type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithDiscriminator\\:\\:\\$embeddedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$embeddedChildren\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWithStageExpression\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
-        -
-            message: "#^PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithDiscriminator\\:\\:\\$referencedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$referencedChildren\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
-        -
-            message: "#^PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithoutDiscriminator\\:\\:\\$embeddedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$embeddedChildren\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:pipeline\\(\\) has parameter \\$pipeline with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
-        -
-            message: "#^PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithoutDiscriminator\\:\\:\\$referencedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$referencedChildren\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+		-
+			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWithStageExpression is incompatible with native type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
-        # Collection elements cannot be covariant, see https://github.com/doctrine/collections/pull/220
-        -
-            message: "#^Parameter \\#2 \\$projects of class Documents\\\\Developer constructor expects Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Documents\\\\Project\\>\\|null, Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<int, Documents\\\\SubProject\\> given\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:\\$pipeline type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
-        # When iterating over SimpleXMLElement, we cannot know the key values
-        -
-            message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array#"
-            count: 2
-            path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
+		-
+			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
-        -
-            message: "#^Parameter \\#2 \\$options of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:addIndex\\(\\) expects array\\{background\\?\\: bool, bits\\?\\: int, default_language\\?\\: string, expireAfterSeconds\\?\\: int, language_override\\?\\: string, min\\?\\: float, max\\?\\: float, name\\?\\: string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\|bool\\|float\\|int\\|string\\|null\\> given\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
+		-
+			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
 
-        # This is handled by a try-catch block
-        -
-            message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
-            paths:
-                - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
-                - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
-                - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Out.php
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
 
-        # $this->mapping['targetDocument'] is class-string<T>
-        -
-            message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^Method Doctrine\\\\Persistence\\\\Event\\\\OnClearEventArgs\\<Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\>\\:\\:__construct\\(\\) invoked with 2 parameters, 1 required\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Event/OnClearEventArgs.php
 
-        # complains about types for arguments we do not use/care
-        -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Proxy\\\\Factory\\\\StaticProxyFactory\\:\\:createInitializer\\(\\) should return Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<TDocument of object\\>&TDocument of object\\=, string\\=, array\\<string, mixed\\>\\=, Closure\\|null\\=, array\\<string, mixed\\>\\=\\)\\: bool but returns Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface, string, array, mixed, array\\)\\: true\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/StaticProxyFactory.php
+		-
+			message: "#^Parameter \\#1 \\$initializer of method ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<object\\>\\:\\:setProxyInitializer\\(\\) expects \\(Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<object\\>\\=, string\\=, array\\<string, mixed\\>\\=, Closure\\|null\\=, array\\<string, mixed\\>\\=\\)\\: bool\\)\\|null, Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface, string, array, mixed, array\\)\\: true given\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Hydrator/HydratorFactory.php
 
-        -
-            message: "#^Parameter \\#1 \\$initializer of method ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<object\\>\\:\\:setProxyInitializer\\(\\) expects \\(Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<object\\>\\=, string\\=, array\\<string, mixed\\>\\=, Closure\\|null\\=, array\\<string, mixed\\>\\=\\)\\: bool\\)\\|null, Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface, string, array, mixed, array\\)\\: true given\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Hydrator/HydratorFactory.php
+		-
+			message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\<int\\|string, non\\-empty\\-array\\<int, string\\>\\|bool\\|string\\> given\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
-        # compatibility layer for doctrine/persistence ^2.4 || ^3.0
-        -
-            message: "#.*#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/Event/OnClearEventArgs
+		-
+			message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, non\\-empty\\-array\\<string, array\\<string, string\\>\\|string\\|true\\> given\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
-        -
-            message: "#Property .+ is never written, only read.#"
-            path: tests
+		-
+			message: "#^Parameter \\#2 \\$options of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:addIndex\\(\\) expects array\\{background\\?\\: bool, bits\\?\\: int, default_language\\?\\: string, expireAfterSeconds\\?\\: int, language_override\\?\\: string, min\\?\\: float, max\\?\\: float, name\\?\\: string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\|bool\\|float\\|int\\|string\\|null\\> given\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
-        -
-            message: "#Property .+ is never read, only written.#"
-            path: tests
+		-
+			message: "#^Access to offset 'embedded' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        -
-            message: "#Property .+ is unused.#"
-            path: tests
+		-
+			message: "#^Access to offset 'isOwningSide' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
+			count: 3
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        -
-            message: "#^Parameter \\#4 \\$query of class Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Query constructor expects array\\{distinct\\?\\: string, hint\\?\\: array\\<string, \\-1\\|1\\>\\|string, limit\\?\\: int, maxTimeMS\\?\\: int, multiple\\?\\: bool, new\\?\\: bool, newObj\\?\\: array\\<string, mixed\\>, query\\?\\: array\\<string, mixed\\>, \\.\\.\\.\\}, array\\{type\\: \\-1\\} given\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+		-
+			message: "#^Access to offset 'orphanRemoval' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        -
-            message: "#^Parameter \\#2 \\$referenceMapping of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:createReference\\(\\) expects array\\{type\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\}, array\\{storeAs\\: 'dbRef'\\} given\\.$#"
-            count: 1
-            path: tests/Doctrine/ODM/MongoDB/Tests/DocumentManagerTest.php
+		-
+			message: "#^Access to offset 'reference' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
-        -
-            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$hints \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\) does not accept default value of type array\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^Access to offset 'strategy' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
+			count: 4
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
-        -
-            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$hints has unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints as its type\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^Access to offset 'targetDocument' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
+			count: 2
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
-        -
-            message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$hints \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\) does not accept array\\<int, mixed\\>\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:add\\(\\) with return type void returns true but should not return anything\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        # import type in PHPStan does not work, see https://github.com/phpstan/phpstan/issues/5091
-        -
-            message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getHints\\(\\) should return array\\<int, mixed\\> but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\.$#"
-            count: 1
-            path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getHints\\(\\) should return array\\<int, mixed\\> but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        # breaking types expected by static analysis to check exceptions
-        -
-            message: "#.+mapField\\(\\) expects.+enumType\\: 'Documents81#"
-            count: 2
-            path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getMapping\\(\\) should return array\\{type\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\} but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        -
-            message: "#has parameter \\$[^\\s]+ with no value type specified in iterable type array\\.$#"
-            count: 6
-            path: tests/*
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$hints \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\) does not accept default value of type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
-        # cannot know that Command::getHelper('documentManager') returns a DocumentManagerHelper
-        -
-            message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
-            count: 7
-            path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/*
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$hints has unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints as its type\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$mapping has unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping as its type\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$hints \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\) does not accept array\\<int, mixed\\>\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$mapping \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\) does not accept array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|int\\|string\\|null\\>\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Proxy\\\\Factory\\\\StaticProxyFactory\\:\\:createInitializer\\(\\) should return Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<TDocument of object\\>&TDocument of object\\=, string\\=, array\\<string, mixed\\>\\=, Closure\\|null\\=, array\\<string, mixed\\>\\=\\)\\: bool but returns Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface, string, array, mixed, array\\)\\: true\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/StaticProxyFactory.php
+
+		-
+			message: "#^Unsafe call to private method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Expr\\:\\:convertExpression\\(\\) through static\\:\\:\\.$#"
+			count: 3
+			path: lib/Doctrine/ODM/MongoDB/Query/Expr.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/ClearCache/MetadataCommand.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GenerateHydratorsCommand.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GeneratePersistentCollectionsCommand.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GenerateProxiesCommand.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/QueryCommand.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/AbstractCommand.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/ValidateCommand.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Types/DateImmutableType.php
+
+		-
+			message: "#^Unsafe call to private method Doctrine\\\\ODM\\\\MongoDB\\\\Types\\\\DateType\\:\\:craftDateTime\\(\\) through static\\:\\:\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Types/DateType.php
+
+		-
+			message: "#^Parameter \\#1 \\$builder of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Facet\\:\\:pipeline\\(\\) expects Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Builder\\|Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage, stdClass given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/FacetTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\MatchStageTest\\:\\:testProxiedExprMethods\\(\\) has parameter \\$args with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/MatchStageTest.php
+
+		-
+			message: "#^Constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
+			count: 5
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+
+		-
+			message: "#^Constant DOCTRINE_MONGODB_SERVER not found\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTest\\:\\:assertArraySubset\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTest\\:\\:assertArraySubset\\(\\) has parameter \\$subset with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+
+		-
+			message: "#^Used constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+
+		-
+			message: "#^Used constant DOCTRINE_MONGODB_SERVER not found\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$referenceMapping of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:createReference\\(\\) expects array\\{type\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\}, array\\{storeAs\\: 'dbRef'\\} given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentManagerTest.php
+
+		-
+			message: "#^Constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$projects of class Documents\\\\Developer constructor expects Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Documents\\\\Project\\>\\|null, Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<int, Documents\\\\SubProject\\> given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
+
+		-
+			message: "#^Used constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\CustomDatabaseTest\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DatabasesTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\DefaultDatabaseTest\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DatabasesTest.php
+
+		-
+			message: "#^PHPDoc type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithDiscriminator\\:\\:\\$embeddedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$embeddedChildren\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+
+		-
+			message: "#^PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithDiscriminator\\:\\:\\$referencedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$referencedChildren\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+
+		-
+			message: "#^PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithoutDiscriminator\\:\\:\\$embeddedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$embeddedChildren\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+
+		-
+			message: "#^PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocumentWithDiscriminator\\> of property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocumentWithoutDiscriminator\\:\\:\\$referencedChildren is not covariant with PHPDoc type array\\<Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\>\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildDocument\\> of overridden property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentDocument\\:\\:\\$referencedChildren\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DiscriminatorsDefaultValueTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId\\:\\:\\$documentWithCustomId is never read, only written\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DocumentPersisterTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DocumentPersisterTest.php
+
+		-
+			message: "#^Expression \"\\$groups\\[0\\]\" on a separate line does not do anything\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FunctionalTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ChildObject\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/LifecycleTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\ParentObject\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/LifecycleTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Hierarchy\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/NestedDocumentsTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH1058PersistDocument\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1058Test.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH1058PersistDocument\\:\\:\\$value is never read, only written\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1058Test.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH1058UpsertDocument\\:\\:\\$value is never read, only written\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1058Test.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH1964Document\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1964Test.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH1990Document\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1990Test.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH1990Document\\:\\:\\$parent is never read, only written\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1990Test.php
+
+		-
+			message: "#^Dead catch \\- MongoDB\\\\Driver\\\\Exception\\\\BulkWriteException is never thrown in the try block\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH921Post\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH921Test.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH921User\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH921Test.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH999Document\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH999Test.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\MODM116Parent\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM116Test.php
+
+		-
+			message: "#^Constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
+			count: 2
+			path: tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php
+
+		-
+			message: "#^Used constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\AnnotationDriverTestSuper\\:\\:\\$private is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/AbstractAnnotationDriverTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\DocumentSubClass2\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\DocumentSubClass2\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\DocumentSubClass\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\DocumentSubClass\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\GridFSChildClass\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\GridFSParentClass\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\MappedSuperclassBase\\:\\:\\$mapped1 is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\MappedSuperclassBase\\:\\:\\$mapped2 is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\MappedSuperclassBase\\:\\:\\$mappedRelated1 is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\MappedSuperclassBase\\:\\:\\$transient is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\TransientBaseClass\\:\\:\\$transient1 is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\TransientBaseClass\\:\\:\\$transient2 is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\LoadEventTestDocument\\:\\:\\$about is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\LoadEventTestDocument\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\LoadEventTestDocument\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest\\.php\\:235\\>\\:\\:mapField\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\{fieldName\\: 'enum', enumType\\: 'Documents81\\\\\\\\Card'\\} given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest\\.php\\:255\\>\\:\\:mapField\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\{fieldName\\: 'enum', enumType\\: 'Documents81\\\\\\\\SuitNonBacked'\\} given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
+
+		-
+			message: "#^Property DoctrineGlobal_User\\:\\:\\$email is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php
+
+		-
+			message: "#^Property DoctrineGlobal_User\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php
+
+		-
+			message: "#^Property DoctrineGlobal_User\\:\\:\\$username is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\ShardedCollectionPerClass1\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\ShardedSingleCollInheritance1\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\ShardedSubclass\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\ShardedSuperclass\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Query\\\\BuilderTest\\:\\:testExclude\\(\\) has parameter \\$expected with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Query\\\\BuilderTest\\:\\:testProxiedExprMethods\\(\\) has parameter \\$args with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Query\\\\BuilderTest\\:\\:testSelect\\(\\) has parameter \\$expected with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$primer of method Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Builder\\:\\:prime\\(\\) expects bool\\|\\(callable\\(\\)\\: mixed\\), 1 given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
+
+		-
+			message: "#^Constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
+			count: 2
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
+			message: "#^Parameter \\#4 \\$query of class Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Query constructor expects array\\{distinct\\?\\: string, hint\\?\\: array\\<string, \\-1\\|1\\>\\|string, limit\\?\\: int, maxTimeMS\\?\\: int, multiple\\?\\: bool, new\\?\\: bool, newObj\\?\\: array\\<string, mixed\\>, query\\?\\: array\\<string, mixed\\>, \\.\\.\\.\\}, array\\{type\\: \\-1\\} given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
+			message: "#^Used constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Tools\\\\GH297\\\\User\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/GH297/User.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Tools\\\\ResolveTargetDocument\\:\\:\\$embedMany is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Tools\\\\ResolveTargetDocument\\:\\:\\$embedOne is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Tools\\\\ResolveTargetDocument\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Tools\\\\ResolveTargetDocument\\:\\:\\$refMany is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Tools\\\\ResolveTargetDocument\\:\\:\\$refOne is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Tools\\\\TargetDocument\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\ArrayTest\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/UnitOfWorkTest.php
+
+		-
+			message: "#^Property Documents\\\\Account\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Account.php
+
+		-
+			message: "#^Property Documents\\\\Address\\:\\:\\$test is unused\\.$#"
+			count: 1
+			path: tests/Documents/Address.php
+
+		-
+			message: "#^Property Documents\\\\Album\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Album.php
+
+		-
+			message: "#^Property Documents\\\\Article\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Article.php
+
+		-
+			message: "#^Property Documents\\\\Bars\\\\Bar\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Bars/Bar.php
+
+		-
+			message: "#^Property Documents\\\\Category\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Documents/Category.php
+
+		-
+			message: "#^Property Documents\\\\Developer\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Developer.php
+
+		-
+			message: "#^Property Documents\\\\Developer\\:\\:\\$name is never read, only written\\.$#"
+			count: 1
+			path: tests/Documents/Developer.php
+
+		-
+			message: "#^Property Documents\\\\Ecommerce\\\\StockItem\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Ecommerce/StockItem.php
+
+		-
+			message: "#^Property Documents\\\\Event\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Event.php
+
+		-
+			message: "#^Property Documents\\\\File\\:\\:\\$chunkSize is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/File.php
+
+		-
+			message: "#^Property Documents\\\\File\\:\\:\\$filename is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/File.php
+
+		-
+			message: "#^Property Documents\\\\File\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/File.php
+
+		-
+			message: "#^Property Documents\\\\File\\:\\:\\$length is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/File.php
+
+		-
+			message: "#^Property Documents\\\\File\\:\\:\\$uploadDate is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/File.php
+
+		-
+			message: "#^Property Documents\\\\FileWithoutChunkSize\\:\\:\\$chunkSize is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
+			message: "#^Property Documents\\\\FileWithoutChunkSize\\:\\:\\$filename is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
+			message: "#^Property Documents\\\\FileWithoutChunkSize\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
+			message: "#^Property Documents\\\\FileWithoutChunkSize\\:\\:\\$length is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
+			message: "#^Property Documents\\\\FileWithoutChunkSize\\:\\:\\$uploadDate is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
+			message: "#^Property Documents\\\\FileWithoutMetadata\\:\\:\\$filename is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/FileWithoutMetadata.php
+
+		-
+			message: "#^Property Documents\\\\FileWithoutMetadata\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/FileWithoutMetadata.php
+
+		-
+			message: "#^Property Documents\\\\Functional\\\\FavoritesUser\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Functional/FavoritesUser.php
+
+		-
+			message: "#^Property Documents\\\\Group\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Group.php
+
+		-
+			message: "#^Property Documents\\\\Message\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Message.php
+
+		-
+			message: "#^Property Documents\\\\ProfileNotify\\:\\:\\$profileId is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/ProfileNotify.php
+
+		-
+			message: "#^Property Documents\\\\Project\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Project.php
+
+		-
+			message: "#^Property Documents\\\\SchemaValidated\\:\\:\\$email is unused\\.$#"
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
+			message: "#^Property Documents\\\\SchemaValidated\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
+			message: "#^Property Documents\\\\SchemaValidated\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
+			message: "#^Property Documents\\\\SchemaValidated\\:\\:\\$phone is unused\\.$#"
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
+			message: "#^Property Documents\\\\SchemaValidated\\:\\:\\$status is unused\\.$#"
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
+			message: "#^Property Documents\\\\Task\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Task.php
+
+		-
+			message: "#^Property Documents\\\\Tournament\\\\Participant\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Tournament/Participant.php
+
+		-
+			message: "#^Property Documents\\\\Tournament\\\\Tournament\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/Tournament/Tournament.php
+
+		-
+			message: "#^Property Documents\\\\UserName\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/UserName.php
+
+		-
+			message: "#^Property Documents\\\\UserName\\:\\:\\$username is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/UserName.php
+
+		-
+			message: "#^Property Documents\\\\UserName\\:\\:\\$viewReference is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/UserName.php
+
+		-
+			message: "#^Property Documents\\\\ViewReference\\:\\:\\$referenceOneViewMappedBy is never written, only read\\.$#"
+			count: 1
+			path: tests/Documents/ViewReference.php

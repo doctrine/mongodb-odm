@@ -19,7 +19,7 @@ class SortTest extends BaseTest
      *
      * @dataProvider provideSortOptions
      */
-    public function testSortStage(array $expectedSort, $field, ?string $order = null): void
+    public function testStage(array $expectedSort, $field, ?string $order = null): void
     {
         $sortStage = new Sort($this->getTestAggregationBuilder(), $field, $order);
 
@@ -32,7 +32,7 @@ class SortTest extends BaseTest
      *
      * @dataProvider provideSortOptions
      */
-    public function testSortFromBuilder(array $expectedSort, $field, ?string $order = null): void
+    public function testFromBuilder(array $expectedSort, $field, ?string $order = null): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->sort($field, $order);

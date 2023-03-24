@@ -15,7 +15,7 @@ class FacetTest extends BaseTest
 {
     use AggregationTestTrait;
 
-    public function testFacetStage(): void
+    public function testStage(): void
     {
         $nestedBuilder = $this->getTestAggregationBuilder();
         $nestedBuilder->sortByCount('$tags');
@@ -35,7 +35,7 @@ class FacetTest extends BaseTest
         ], $facetStage->getExpression());
     }
 
-    public function testFacetFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $nestedBuilder = $this->getTestAggregationBuilder();
         $nestedBuilder->sortByCount('$tags');
@@ -57,17 +57,17 @@ class FacetTest extends BaseTest
         ], $builder->getPipeline());
     }
 
-    public function testFacetThrowsExceptionWithoutFieldName(): void
+    public function testThrowsExceptionWithoutFieldName(): void
     {
         $facetStage = new Facet($this->getTestAggregationBuilder());
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('requires you set a current field using field().');
+        $this->expectExceptionMessage('requires setting a current field using field().');
         $facetStage->pipeline($this->getTestAggregationBuilder());
     }
 
     /** @psalm-suppress InvalidArgument on purpose to throw exception */
-    public function testFacetThrowsExceptionOnInvalidPipeline(): void
+    public function testThrowsExceptionOnInvalidPipeline(): void
     {
         $facetStage = new Facet($this->getTestAggregationBuilder());
 

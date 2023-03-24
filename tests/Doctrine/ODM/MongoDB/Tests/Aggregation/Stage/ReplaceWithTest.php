@@ -10,7 +10,7 @@ use Documents\CmsComment;
 use Documents\User;
 use MongoDB\BSON\UTCDateTime;
 
-class ReplaceRootTest extends BaseTest
+class ReplaceWithTest extends BaseTest
 {
     public function testTypeConversion(): void
     {
@@ -19,16 +19,14 @@ class ReplaceRootTest extends BaseTest
         $dateTime  = new DateTimeImmutable('2000-01-01T00:00Z');
         $mongoDate = new UTCDateTime($dateTime);
         $stage     = $builder
-            ->replaceRoot()
+            ->replaceWith()
                 ->field('isToday')
                 ->eq('$createdAt', $dateTime);
 
         self::assertEquals(
             [
-                '$replaceRoot' => [
-                    'newRoot' => [
-                        'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
-                    ],
+                '$replaceWith' => [
+                    'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
                 ],
             ],
             $stage->getExpression(),
@@ -42,7 +40,7 @@ class ReplaceRootTest extends BaseTest
         $dateTime  = new DateTimeImmutable('2000-01-01T00:00Z');
         $mongoDate = new UTCDateTime($dateTime);
         $stage     = $builder
-            ->replaceRoot(
+            ->replaceWith(
                 $builder->expr()
                     ->field('isToday')
                     ->eq('$createdAt', $dateTime),
@@ -50,10 +48,8 @@ class ReplaceRootTest extends BaseTest
 
         self::assertEquals(
             [
-                '$replaceRoot' => [
-                    'newRoot' => [
-                        'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
-                    ],
+                '$replaceWith' => [
+                    'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
                 ],
             ],
             $stage->getExpression(),
@@ -65,16 +61,14 @@ class ReplaceRootTest extends BaseTest
         $builder = $this->dm->createAggregationBuilder(CmsComment::class);
 
         $stage = $builder
-            ->replaceRoot()
+            ->replaceWith()
                 ->field('someField')
                 ->concat('$authorIp', 'foo');
 
         self::assertEquals(
             [
-                '$replaceRoot' => [
-                    'newRoot' => [
-                        'someField' => ['$concat' => ['$ip', 'foo']],
-                    ],
+                '$replaceWith' => [
+                    'someField' => ['$concat' => ['$ip', 'foo']],
                 ],
             ],
             $stage->getExpression(),
@@ -86,12 +80,10 @@ class ReplaceRootTest extends BaseTest
         $builder = $this->dm->createAggregationBuilder(CmsComment::class);
 
         $stage = $builder
-            ->replaceRoot('$authorIp');
+            ->replaceWith('$authorIp');
 
         self::assertEquals(
-            [
-                '$replaceRoot' => ['newRoot' => '$ip'],
-            ],
+            ['$replaceWith' => '$ip'],
             $stage->getExpression(),
         );
     }

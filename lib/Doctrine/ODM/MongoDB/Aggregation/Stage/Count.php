@@ -9,6 +9,8 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $count stage to an aggregation pipeline.
+ *
+ * @psalm-type CountStageExpression = array{'$count': string}
  */
 class Count extends Stage
 {
@@ -21,6 +23,7 @@ class Count extends Stage
         $this->fieldName = $fieldName;
     }
 
+    /** @psalm-return CountStageExpression */
     public function getExpression(): array
     {
         return [

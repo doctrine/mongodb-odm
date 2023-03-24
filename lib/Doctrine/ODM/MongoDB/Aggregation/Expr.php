@@ -19,10 +19,13 @@ use function assert;
 use function func_get_args;
 use function is_array;
 use function is_string;
+use function sprintf;
 use function substr;
 
 /**
  * Fluent interface for building aggregation pipelines.
+ *
+ * @psalm-type OperatorExpression = array<string, mixed>|object
  */
 class Expr implements GenericOperatorsInterface
 {
@@ -469,7 +472,10 @@ class Expr implements GenericOperatorsInterface
      */
     public function expression($value): self
     {
-        $this->requiresCurrentField(__METHOD__);
+        if (! $this->currentField) {
+            throw new LogicException(sprintf('%s requires setting a current field using field().', __METHOD__));
+        }
+
         $this->expr[$this->currentField] = $this->ensureArray($value);
 
         return $this;
@@ -1683,18 +1689,6 @@ class Expr implements GenericOperatorsInterface
         }
 
         return $this;
-    }
-
-    /**
-     * Ensure that a current field has been set.
-     *
-     * @throws LogicException if a current field has not been set.
-     */
-    private function requiresCurrentField(?string $method = null): void
-    {
-        if (! $this->currentField) {
-            throw new LogicException(($method ?: 'This method') . ' requires you set a current field using field().');
-        }
     }
 
     /** @throws BadMethodCallException if there is no current switch operator. */

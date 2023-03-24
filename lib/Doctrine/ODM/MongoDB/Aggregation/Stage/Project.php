@@ -10,9 +10,13 @@ use function func_get_args;
 
 /**
  * Fluent interface for adding a $project stage to an aggregation pipeline.
+ *
+ * @psalm-import-type OperatorExpression from Expr
+ * @psalm-type ProjectStageExpression = array{'$project': array<string, OperatorExpression|mixed>}
  */
 class Project extends Operator
 {
+    /** @psalm-return ProjectStageExpression */
     public function getExpression(): array
     {
         return [
