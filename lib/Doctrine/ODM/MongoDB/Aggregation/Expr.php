@@ -115,15 +115,21 @@ class Expr implements
      */
     public function accumulator($init, $initArgs, $accumulate, $accumulateArgs, $merge, $finalize = null, $lang = 'js'): self
     {
-        return $this->operator('$accumulator', $this->filterOptionalNullArguments([
-            'init' => $init,
-            'initArgs' => $initArgs,
-            'accumulate' => $accumulate,
-            'accumulateArgs' => $accumulateArgs,
-            'merge' => $merge,
-            'finalize' => $finalize,
-            'lang' => $lang,
-        ], ['initArgs', 'finalize']));
+        return $this->operator(
+            '$accumulator',
+            $this->filterOptionalNullArguments(
+                [
+                    'init' => $init,
+                    'initArgs' => $initArgs,
+                    'accumulate' => $accumulate,
+                    'accumulateArgs' => $accumulateArgs,
+                    'merge' => $merge,
+                    'finalize' => $finalize,
+                    'lang' => $lang,
+                ],
+                ['initArgs', 'finalize'],
+            ),
+        );
     }
 
     /**
@@ -479,12 +485,18 @@ class Expr implements
      */
     public function dateAdd($startDate, $unit, $amount, $timezone = null): self
     {
-        return $this->operator('$dateAdd', $this->filterOptionalNullArguments([
-            'startDate' => $startDate,
-            'unit' => $unit,
-            'amount' => $amount,
-            'timezone' => $timezone,
-        ], ['timezone']));
+        return $this->operator(
+            '$dateAdd',
+            $this->filterOptionalNullArguments(
+                [
+                    'startDate' => $startDate,
+                    'unit' => $unit,
+                    'amount' => $amount,
+                    'timezone' => $timezone,
+                ],
+                ['timezone'],
+            ),
+        );
     }
 
     /**
@@ -500,13 +512,19 @@ class Expr implements
      */
     public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): self
     {
-        return $this->operator('$dateDiff', $this->filterOptionalNullArguments([
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'unit' => $unit,
-            'timezone' => $timezone,
-            'startOfWeek' => $startOfWeek,
-        ], ['timezone', 'startOfWeek']));
+        return $this->operator(
+            '$dateDiff',
+            $this->filterOptionalNullArguments(
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                    'unit' => $unit,
+                    'timezone' => $timezone,
+                    'startOfWeek' => $startOfWeek,
+                ],
+                ['timezone', 'startOfWeek'],
+            ),
+        );
     }
 
     /**
@@ -528,31 +546,37 @@ class Expr implements
      */
     public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): self
     {
-        return $this->operator('$dateFromParts', $this->filterOptionalNullArguments([
-            'year' => $year,
-            'isoWeekYear' => $isoWeekYear,
-            'month' => $month,
-            'isoWeek' => $isoWeek,
-            'day' => $day,
-            'isoDayOfWeek' => $isoDayOfWeek,
-            'hour' => $hour,
-            'minute' => $minute,
-            'second' => $second,
-            'millisecond' => $millisecond,
-            'timezone' => $timezone,
-        ], [
-            'year',
-            'isoWeekYear',
-            'month',
-            'isoWeek',
-            'day',
-            'isoDayOfWeek',
-            'hour',
-            'minute',
-            'second',
-            'millisecond',
-            'timezone',
-        ]));
+        return $this->operator(
+            '$dateFromParts',
+            $this->filterOptionalNullArguments(
+                [
+                    'year' => $year,
+                    'isoWeekYear' => $isoWeekYear,
+                    'month' => $month,
+                    'isoWeek' => $isoWeek,
+                    'day' => $day,
+                    'isoDayOfWeek' => $isoDayOfWeek,
+                    'hour' => $hour,
+                    'minute' => $minute,
+                    'second' => $second,
+                    'millisecond' => $millisecond,
+                    'timezone' => $timezone,
+                ],
+                [
+                    'year',
+                    'isoWeekYear',
+                    'month',
+                    'isoWeek',
+                    'day',
+                    'isoDayOfWeek',
+                    'hour',
+                    'minute',
+                    'second',
+                    'millisecond',
+                    'timezone',
+                ],
+            ),
+        );
     }
 
     /**
@@ -578,12 +602,7 @@ class Expr implements
                     'onError' => $onError,
                     'onNull' => $onNull,
                 ],
-                [
-                    'format',
-                    'timezone',
-                    'onError',
-                    'onNull',
-                ],
+                ['format', 'timezone', 'onError', 'onNull'],
             ),
         );
     }
@@ -600,12 +619,18 @@ class Expr implements
      */
     public function dateSubtract($startDate, $unit, $amount, $timezone = null): self
     {
-        return $this->operator('$dateSubtract', $this->filterOptionalNullArguments([
-            'startDate' => $startDate,
-            'unit' => $unit,
-            'amount' => $amount,
-            'timezone' => $timezone,
-        ], ['timezone']));
+        return $this->operator(
+            '$dateSubtract',
+            $this->filterOptionalNullArguments(
+                [
+                    'startDate' => $startDate,
+                    'unit' => $unit,
+                    'amount' => $amount,
+                    'timezone' => $timezone,
+                ],
+                ['timezone'],
+            ),
+        );
     }
 
     /**
@@ -619,11 +644,17 @@ class Expr implements
      */
     public function dateToParts($date, $timezone = null, $iso8601 = null): self
     {
-        return $this->operator('$dateToParts', $this->filterOptionalNullArguments([
-            'date' => $date,
-            'timezone' => $timezone,
-            'iso8601' => $iso8601,
-        ], ['timezone', 'iso8601']));
+        return $this->operator(
+            '$dateToParts',
+            $this->filterOptionalNullArguments(
+                [
+                    'date' => $date,
+                    'timezone' => $timezone,
+                    'iso8601' => $iso8601,
+                ],
+                ['timezone', 'iso8601'],
+            ),
+        );
     }
 
     /**
@@ -641,12 +672,18 @@ class Expr implements
      */
     public function dateToString(string $format, $expression, $timezone = null, $onNull = null): self
     {
-        return $this->operator('$dateToString', $this->filterOptionalNullArguments([
-            'date' => $expression,
-            'format' => $format,
-            'timezone' => $timezone,
-            'onNull' => $onNull,
-        ], ['timezone', 'onNull']));
+        return $this->operator(
+            '$dateToString',
+            $this->filterOptionalNullArguments(
+                [
+                    'date' => $expression,
+                    'format' => $format,
+                    'timezone' => $timezone,
+                    'onNull' => $onNull,
+                ],
+                ['timezone', 'onNull'],
+            ),
+        );
     }
 
     /**
@@ -662,13 +699,19 @@ class Expr implements
      */
     public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): self
     {
-        return $this->operator('$dateTrunc', $this->filterOptionalNullArguments([
-            'date' => $date,
-            'unit' => $unit,
-            'binSize' => $binSize,
-            'timezone' => $timezone,
-            'startOfWeek' => $startOfWeek,
-        ], ['binSize', 'timezone', 'startOfWeek']));
+        return $this->operator(
+            '$dateTrunc',
+            $this->filterOptionalNullArguments(
+                [
+                    'date' => $date,
+                    'unit' => $unit,
+                    'binSize' => $binSize,
+                    'timezone' => $timezone,
+                    'startOfWeek' => $startOfWeek,
+                ],
+                ['binSize', 'timezone', 'startOfWeek'],
+            ),
+        );
     }
 
     /**
@@ -914,10 +957,16 @@ class Expr implements
      */
     public function getField($field, $input = null): self
     {
-        return $this->operator('$getField', $this->filterOptionalNullArguments([
-            'field' => $field,
-            'input' => $input,
-        ], ['input']));
+        return $this->operator(
+            '$getField',
+            $this->filterOptionalNullArguments(
+                [
+                    'field' => $field,
+                    'input' => $input,
+                ],
+                ['input'],
+            ),
+        );
     }
 
     /**
@@ -2346,11 +2395,17 @@ class Expr implements
      */
     public function regexFind($input, $regex, $options = null): self
     {
-        return $this->operator('$regexFind', $this->filterOptionalNullArguments([
-            'input' => $input,
-            'regex' => $regex,
-            'options' => $options,
-        ], ['options']));
+        return $this->operator(
+            '$regexFind',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'regex' => $regex,
+                    'options' => $options,
+                ],
+                ['options'],
+            ),
+        );
     }
 
     /**
@@ -2366,11 +2421,17 @@ class Expr implements
      */
     public function regexFindAll($input, $regex, $options = null): self
     {
-        return $this->operator('$regexFindAll', $this->filterOptionalNullArguments([
-            'input' => $input,
-            'regex' => $regex,
-            'options' => $options,
-        ], ['options']));
+        return $this->operator(
+            '$regexFindAll',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'regex' => $regex,
+                    'options' => $options,
+                ],
+                ['options'],
+            ),
+        );
     }
 
     /**
@@ -2383,11 +2444,17 @@ class Expr implements
      */
     public function regexMatch($input, $regex, $options = null): self
     {
-        return $this->operator('$regexMatch', $this->filterOptionalNullArguments([
-            'input' => $input,
-            'regex' => $regex,
-            'options' => $options,
-        ], ['options']));
+        return $this->operator(
+            '$regexMatch',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'regex' => $regex,
+                    'options' => $options,
+                ],
+                ['options'],
+            ),
+        );
     }
 
     /**
@@ -2675,12 +2742,18 @@ class Expr implements
      */
     public function convert($input, $to, $onError = null, $onNull = null): self
     {
-        return $this->operator('$convert', $this->filterOptionalNullArguments([
-            'input' => $input,
-            'to' => $to,
-            'onError' => $onError,
-            'onNull' => $onNull,
-        ], ['onError', 'onNull']));
+        return $this->operator(
+            '$convert',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'to' => $to,
+                    'onError' => $onError,
+                    'onNull' => $onNull,
+                ],
+                ['onError', 'onNull'],
+            ),
+        );
     }
 
     /**
