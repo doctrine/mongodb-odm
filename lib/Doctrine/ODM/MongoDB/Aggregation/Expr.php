@@ -1103,6 +1103,8 @@ class Expr implements
      * @see Expr::operator()
      *
      * @param mixed|self ...$expressions
+     *
+     * @return static
      */
     private function accumulatorOperator(string $operator, ...$expressions): self
     {
@@ -1154,6 +1156,8 @@ class Expr implements
      * the operator is set at the top level of the query.
      *
      * @param mixed|mixed[]|self $expression
+     *
+     * @return static
      */
     private function operator(string $operator, $expression): self
     {
