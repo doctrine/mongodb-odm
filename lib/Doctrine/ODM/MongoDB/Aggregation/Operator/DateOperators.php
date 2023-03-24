@@ -17,7 +17,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 interface DateOperators
 {
     /**
-     * Increments a Date object by a specified number of time units
+     * Increments a date object by a specified number of time units
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateAdd/
      *
@@ -42,7 +42,7 @@ interface DateOperators
     public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): self;
 
     /**
-     * Constructs and returns a Date object given the date's constituent properties
+     * Constructs and returns a date object given the date's constituent properties
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateFromParts/
      *
@@ -74,7 +74,7 @@ interface DateOperators
     public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): self;
 
     /**
-     * Decrements a Date object by a specified number of time units
+     * Decrements a date object by a specified number of time units
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateSubtract/
      *

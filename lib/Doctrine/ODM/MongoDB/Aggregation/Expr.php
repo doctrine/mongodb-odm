@@ -474,7 +474,7 @@ class Expr implements
     }
 
     /**
-     * Increments a Date object by a specified number of time units
+     * Increments a date object by a specified number of time units
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateAdd/
      *
@@ -528,7 +528,7 @@ class Expr implements
     }
 
     /**
-     * Constructs and returns a Date object given the date's constituent properties
+     * Constructs and returns a date object given the date's constituent properties
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateFromParts/
      *
@@ -608,7 +608,7 @@ class Expr implements
     }
 
     /**
-     * Decrements a Date object by a specified number of time units
+     * Decrements a date object by a specified number of time units
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateSubtract/
      *
