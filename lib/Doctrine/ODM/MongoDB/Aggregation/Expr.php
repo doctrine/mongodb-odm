@@ -163,13 +163,13 @@ class Expr implements
     /** @return static */
     public function arrayElemAt($array, $index): self
     {
-        return $this->operator('$arrayElemAt', [$array, $index]);
+        return $this->operator('$arrayElemAt', func_get_args());
     }
 
     /** @return static */
     public function avg($expression, ...$expressions): self
     {
-        return $this->accumulatorOperator('$avg', $expression, ...$expressions);
+        return $this->accumulatorOperator('$avg', ...func_get_args());
     }
 
     /** @return static */
@@ -215,7 +215,7 @@ class Expr implements
     /** @return static */
     public function cmp($expression1, $expression2): self
     {
-        return $this->operator('$cmp', [$expression1, $expression2]);
+        return $this->operator('$cmp', func_get_args());
     }
 
     /** @return static */
@@ -447,13 +447,13 @@ class Expr implements
     /** @return static */
     public function divide($expression1, $expression2): self
     {
-        return $this->operator('$divide', [$expression1, $expression2]);
+        return $this->operator('$divide', func_get_args());
     }
 
     /** @return static */
     public function eq($expression1, $expression2): self
     {
-        return $this->operator('$eq', [$expression1, $expression2]);
+        return $this->operator('$eq', func_get_args());
     }
 
     /** @return static */
@@ -550,13 +550,13 @@ class Expr implements
     /** @return static */
     public function gt($expression1, $expression2): self
     {
-        return $this->operator('$gt', [$expression1, $expression2]);
+        return $this->operator('$gt', func_get_args());
     }
 
     /** @return static */
     public function gte($expression1, $expression2): self
     {
-        return $this->operator('$gte', [$expression1, $expression2]);
+        return $this->operator('$gte', func_get_args());
     }
 
     /** @return static */
@@ -568,13 +568,13 @@ class Expr implements
     /** @return static */
     public function ifNull($expression, $replacementExpression): self
     {
-        return $this->operator('$ifNull', [$expression, $replacementExpression]);
+        return $this->operator('$ifNull', func_get_args());
     }
 
     /** @return static */
     public function in($expression, $arrayExpression): self
     {
-        return $this->operator('$in', [$expression, $arrayExpression]);
+        return $this->operator('$in', func_get_args());
     }
 
     /** @return static */
@@ -682,7 +682,7 @@ class Expr implements
     /** @return static */
     public function log($number, $base): self
     {
-        return $this->operator('$log', [$number, $base]);
+        return $this->operator('$log', func_get_args());
     }
 
     /** @return static */
@@ -694,13 +694,13 @@ class Expr implements
     /** @return static */
     public function lt($expression1, $expression2): self
     {
-        return $this->operator('$lt', [$expression1, $expression2]);
+        return $this->operator('$lt', func_get_args());
     }
 
     /** @return static */
     public function lte($expression1, $expression2): self
     {
-        return $this->operator('$lte', [$expression1, $expression2]);
+        return $this->operator('$lte', func_get_args());
     }
 
     /** @return static */
@@ -712,7 +712,7 @@ class Expr implements
     /** @return static */
     public function max($expression, ...$expressions): self
     {
-        return $this->accumulatorOperator('$max', $expression, ...$expressions);
+        return $this->accumulatorOperator('$max', ...func_get_args());
     }
 
     /** @return static */
@@ -727,7 +727,7 @@ class Expr implements
     /** @return static */
     public function mergeObjects($expression, ...$expressions): self
     {
-        return $this->accumulatorOperator('$mergeObjects', $expression, ...$expressions);
+        return $this->accumulatorOperator('$mergeObjects', ...func_get_args());
     }
 
     /** @return static */
@@ -745,7 +745,7 @@ class Expr implements
     /** @return static */
     public function min($expression, ...$expressions): self
     {
-        return $this->accumulatorOperator('$min', $expression, ...$expressions);
+        return $this->accumulatorOperator('$min', ...func_get_args());
     }
 
     /** @return static */
@@ -766,7 +766,7 @@ class Expr implements
     /** @return static */
     public function mod($expression1, $expression2): self
     {
-        return $this->operator('$mod', [$expression1, $expression2]);
+        return $this->operator('$mod', func_get_args());
     }
 
     /** @return static */
@@ -784,7 +784,7 @@ class Expr implements
     /** @return static */
     public function ne($expression1, $expression2): self
     {
-        return $this->operator('$ne', [$expression1, $expression2]);
+        return $this->operator('$ne', func_get_args());
     }
 
     /** @return static */
@@ -796,7 +796,7 @@ class Expr implements
     /** @return static */
     public function pow($number, $exponent): self
     {
-        return $this->operator('$pow', [$number, $exponent]);
+        return $this->operator('$pow', func_get_args());
     }
 
     /** @return static */
@@ -814,7 +814,7 @@ class Expr implements
     /** @return static */
     public function range($start, $end, $step = 1): self
     {
-        return $this->operator('$range', [$start, $end, $step]);
+        return $this->operator('$range', func_get_args());
     }
 
     /** @return static */
@@ -844,7 +844,7 @@ class Expr implements
     /** @return static */
     public function setDifference($expression1, $expression2): self
     {
-        return $this->operator('$setDifference', [$expression1, $expression2]);
+        return $this->operator('$setDifference', func_get_args());
     }
 
     /** @return static */
@@ -868,7 +868,7 @@ class Expr implements
     /** @return static */
     public function setIsSubset($expression1, $expression2): self
     {
-        return $this->operator('$setIsSubset', [$expression1, $expression2]);
+        return $this->operator('$setIsSubset', func_get_args());
     }
 
     /** @return static */
@@ -887,10 +887,10 @@ class Expr implements
     public function slice($array, $n, $position = null): self
     {
         if ($position === null) {
-            return $this->operator('$slice', [$array, $n]);
+            return $this->operator('$slice', func_get_args());
         }
 
-        return $this->operator('$slice', [$array, $position, $n]);
+        return $this->operator('$slice', func_get_args());
     }
 
     /** @return static */
@@ -905,7 +905,7 @@ class Expr implements
     /** @return static */
     public function split($string, $delimiter): self
     {
-        return $this->operator('$split', [$string, $delimiter]);
+        return $this->operator('$split', func_get_args());
     }
 
     /** @return static */
@@ -917,19 +917,19 @@ class Expr implements
     /** @return static */
     public function stdDevPop($expression, ...$expressions): self
     {
-        return $this->accumulatorOperator('$stdDevPop', $expression, ...$expressions);
+        return $this->accumulatorOperator('$stdDevPop', ...func_get_args());
     }
 
     /** @return static */
     public function stdDevSamp($expression, ...$expressions): self
     {
-        return $this->accumulatorOperator('$stdDevSamp', $expression, ...$expressions);
+        return $this->accumulatorOperator('$stdDevSamp', ...func_get_args());
     }
 
     /** @return static */
     public function strcasecmp($expression1, $expression2): self
     {
-        return $this->operator('$strcasecmp', [$expression1, $expression2]);
+        return $this->operator('$strcasecmp', func_get_args());
     }
 
     /** @return static */
@@ -947,31 +947,31 @@ class Expr implements
     /** @return static */
     public function substr($string, $start, $length): self
     {
-        return $this->operator('$substr', [$string, $start, $length]);
+        return $this->operator('$substr', func_get_args());
     }
 
     /** @return static */
     public function substrBytes($string, $start, $count): self
     {
-        return $this->operator('$substrBytes', [$string, $start, $count]);
+        return $this->operator('$substrBytes', func_get_args());
     }
 
     /** @return static */
     public function substrCP($string, $start, $count): self
     {
-        return $this->operator('$substrCP', [$string, $start, $count]);
+        return $this->operator('$substrCP', func_get_args());
     }
 
     /** @return static */
     public function subtract($expression1, $expression2): self
     {
-        return $this->operator('$subtract', [$expression1, $expression2]);
+        return $this->operator('$subtract', func_get_args());
     }
 
     /** @return static */
     public function sum($expression, ...$expressions): self
     {
-        return $this->accumulatorOperator('$sum', $expression, ...$expressions);
+        return $this->accumulatorOperator('$sum', ...func_get_args());
     }
 
     /** @return static */
@@ -1301,25 +1301,25 @@ class Expr implements
     /** @return static */
     public function round($number, $place = null): self
     {
-        return $this->operator('$round', [$number, $place]);
+        return $this->operator('$round', func_get_args());
     }
 
     /** @return static */
     public function trim($input, $chars = null): self
     {
-        return $this->operator('$trim', [$input, $chars]);
+        return $this->operator('$trim', func_get_args());
     }
 
     /** @return static */
     public function ltrim($input, $chars = null): self
     {
-        return $this->operator('$ltrim', [$input, $chars]);
+        return $this->operator('$ltrim', func_get_args());
     }
 
     /** @return static */
     public function rtrim($input, $chars = null): self
     {
-        return $this->operator('$rtrim', [$input, $chars]);
+        return $this->operator('$rtrim', func_get_args());
     }
 
     /** @return static */
@@ -1361,7 +1361,7 @@ class Expr implements
     /** @return static */
     public function atan2($expression1, $expression2): self
     {
-        return $this->operator('$atan2', [$expression1, $expression2]);
+        return $this->operator('$atan2', func_get_args());
     }
 
     /** @return static */
