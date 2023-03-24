@@ -112,7 +112,16 @@ class Expr implements
         return $this->operator('$add', func_get_args());
     }
 
-    /** @return static */
+    /**
+     * Adds one or more $and clauses to the current expression.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/and/
+     *
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
+     *
+     * @return static
+     */
     public function addAnd($expression, ...$expressions): self
     {
         if (! isset($this->expr['$and'])) {
@@ -124,7 +133,16 @@ class Expr implements
         return $this;
     }
 
-    /** @return static */
+    /**
+     * Adds one or more $or clause to the current expression.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/or/
+     *
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
+     *
+     * @return static
+     */
     public function addOr($expression, ...$expressions): self
     {
         if (! isset($this->expr['$or'])) {
@@ -236,6 +254,19 @@ class Expr implements
         return $this->operator('$cond', ['if' => $if, 'then' => $then, 'else' => $else]);
     }
 
+    /**
+     * Converts an expression object into an array, recursing into nested items.
+     *
+     * For expression objects, it calls getExpression on the expression object.
+     * For arrays, it recursively calls itself for each array item. Other values
+     * are returned directly.
+     *
+     * @internal
+     *
+     * @param mixed|self $expression
+     *
+     * @return string|array<string, mixed>
+     */
     public static function convertExpression($expression)
     {
         if (is_array($expression)) {

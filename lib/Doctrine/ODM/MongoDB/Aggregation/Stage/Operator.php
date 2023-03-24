@@ -100,8 +100,6 @@ abstract class Operator extends Stage implements
      *
      * @return static
      */
-
-    /** @return static */
     public function addAnd($expression, ...$expressions): self
     {
         $this->expr->addAnd(...func_get_args());
@@ -120,8 +118,6 @@ abstract class Operator extends Stage implements
      *
      * @return static
      */
-
-    /** @return static */
     public function addOr($expression, ...$expressions): self
     {
         $this->expr->addOr(...func_get_args());

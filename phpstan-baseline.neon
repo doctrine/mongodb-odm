@@ -16,6 +16,41 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/AbstractReplace.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Bucket\\\\AbstractOutput\\:\\:avg\\(\\) has parameter \\$expressions with no type specified\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Bucket\\\\AbstractOutput\\:\\:max\\(\\) has parameter \\$expressions with no type specified\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Bucket\\\\AbstractOutput\\:\\:mergeObjects\\(\\) has parameter \\$expressions with no type specified\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Bucket\\\\AbstractOutput\\:\\:min\\(\\) has parameter \\$expressions with no type specified\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Bucket\\\\AbstractOutput\\:\\:stdDevPop\\(\\) has parameter \\$expressions with no type specified\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Bucket\\\\AbstractOutput\\:\\:stdDevSamp\\(\\) has parameter \\$expressions with no type specified\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Bucket\\\\AbstractOutput\\:\\:sum\\(\\) has parameter \\$expressions with no type specified\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
+
+		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Densify\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\DensifyStageExpression\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
@@ -84,11 +119,6 @@ parameters:
 			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Out.php
-
-		-
-			message: "#^Cannot import type alias OperatorExpression\\: class Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Expr does not exist\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Project.php
 
 		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWithStageExpression\\.$#"

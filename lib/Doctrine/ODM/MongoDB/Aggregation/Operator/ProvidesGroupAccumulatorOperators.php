@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 
 use function func_get_args;
 
+/** @internal */
 trait ProvidesGroupAccumulatorOperators
 {
     abstract protected function getExpr(): Expr;
