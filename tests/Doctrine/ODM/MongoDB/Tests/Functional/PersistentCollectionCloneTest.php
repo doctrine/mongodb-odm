@@ -9,8 +9,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\CmsGroup;
 use Documents\CmsUser;
 
-use function get_class;
-
 class PersistentCollectionCloneTest extends BaseTest
 {
     private ?CmsUser $user1 = null;
@@ -43,8 +41,8 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $this->user1 = $this->dm->find(get_class($user1), $user1->id);
-        $this->user2 = $this->dm->find(get_class($user1), $user2->id);
+        $this->user1 = $this->dm->find($user1::class, $user1->id);
+        $this->user2 = $this->dm->find($user1::class, $user2->id);
     }
 
     public function testClonePersistentCollectionAndReuse(): void
@@ -56,7 +54,7 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user1 = $this->dm->find(get_class($user1), $user1->id);
+        $user1 = $this->dm->find($user1::class, $user1->id);
 
         self::assertCount(2, $user1->groups);
     }
@@ -71,8 +69,8 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user1 = $this->dm->find(get_class($user1), $user1->id);
-        $user2 = $this->dm->find(get_class($user1), $user2->id);
+        $user1 = $this->dm->find($user1::class, $user1->id);
+        $user2 = $this->dm->find($user1::class, $user2->id);
 
         self::assertCount(2, $user1->groups);
         self::assertCount(2, $user2->groups);
@@ -92,8 +90,8 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user1 = $this->dm->find(get_class($user1), $user1->id);
-        $user2 = $this->dm->find(get_class($user1), $user2->id);
+        $user1 = $this->dm->find($user1::class, $user1->id);
+        $user2 = $this->dm->find($user1::class, $user2->id);
 
         self::assertCount(3, $user2->groups);
         self::assertCount(2, $user1->groups);
@@ -116,8 +114,8 @@ class PersistentCollectionCloneTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user1 = $this->dm->find(get_class($user1), $user1->id);
-        $user2 = $this->dm->find(get_class($user1), $user2->id);
+        $user1 = $this->dm->find($user1::class, $user1->id);
+        $user2 = $this->dm->find($user1::class, $user2->id);
 
         self::assertCount(3, $user2->groups);
         self::assertCount(3, $user1->groups);

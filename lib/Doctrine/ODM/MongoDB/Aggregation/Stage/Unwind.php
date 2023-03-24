@@ -20,17 +20,13 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Unwind extends Stage
 {
-    private string $fieldName;
-
     private ?string $includeArrayIndex = null;
 
     private bool $preserveNullAndEmptyArrays = false;
 
-    public function __construct(Builder $builder, string $fieldName)
+    public function __construct(Builder $builder, private string $fieldName)
     {
         parent::__construct($builder);
-
-        $this->fieldName = $fieldName;
     }
 
     /** @psalm-return UnwindStageExpression */

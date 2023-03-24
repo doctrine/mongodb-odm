@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
-use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use LogicException;
 
 use function array_map;
@@ -29,10 +28,6 @@ use function substr;
  */
 class Expr implements GenericOperatorsInterface
 {
-    private DocumentManager $dm;
-
-    private ClassMetadata $class;
-
     /** @var array<string, mixed> */
     private array $expr = [];
 
@@ -44,11 +39,9 @@ class Expr implements GenericOperatorsInterface
     /** @var array{case: mixed|self, then?: mixed|self}|null */
     private ?array $switchBranch = null;
 
-    public function __construct(DocumentManager $dm, ClassMetadataInterface $class)
+    public function __construct(private DocumentManager $dm, private ClassMetadata $class)
     {
         assert($class instanceof ClassMetadata);
-        $this->dm    = $dm;
-        $this->class = $class;
     }
 
     /**

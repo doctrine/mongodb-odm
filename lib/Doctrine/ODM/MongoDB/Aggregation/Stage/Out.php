@@ -19,19 +19,16 @@ use function is_array;
  */
 class Out extends Stage
 {
-    private DocumentManager $dm;
-
     /**
      * @var array|string
      * @psalm-var OutputCollection
      */
     private $out;
 
-    public function __construct(Builder $builder, string $collection, DocumentManager $documentManager)
+    public function __construct(Builder $builder, string $collection, private DocumentManager $dm)
     {
         parent::__construct($builder);
 
-        $this->dm = $documentManager;
         $this->out($collection);
     }
 
@@ -56,7 +53,7 @@ class Out extends Stage
 
         try {
             $class = $this->dm->getClassMetadata($collection);
-        } catch (BaseMappingException $e) {
+        } catch (BaseMappingException) {
             $this->out = $collection;
 
             return $this;

@@ -21,7 +21,6 @@ use MongoDB\BSON\UTCDateTime;
 
 use function array_values;
 use function assert;
-use function get_class;
 use function iterator_to_array;
 use function strtotime;
 
@@ -174,7 +173,7 @@ class QueryTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $results = $this->dm->createQueryBuilder(get_class($c1))
+        $results = $this->dm->createQueryBuilder($c1::class)
             ->distinct('authorIp')
             ->getQuery()
             ->execute();
@@ -380,7 +379,7 @@ class QueryTest extends BaseTest
         $query = $qb->getQuery();
         self::assertInstanceOf(IteratorAggregate::class, $query);
         foreach ($query as $article) {
-            self::assertEquals(Article::class, get_class($article));
+            self::assertEquals(Article::class, $article::class);
         }
     }
 

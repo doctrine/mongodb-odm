@@ -9,8 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-use function get_class;
-
 class GH1117Test extends BaseTest
 {
     public function testAddOnUninitializedCollection(): void
@@ -21,12 +19,12 @@ class GH1117Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
+        $doc = $this->dm->getRepository($doc::class)->find($doc->id);
         $doc->embeds->add(new GH1117EmbeddedDocument('two'));
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
+        $doc = $this->dm->getRepository($doc::class)->find($doc->id);
         self::assertCount(2, $doc->embeds);
         self::assertEquals('one', $doc->embeds[0]->value);
         self::assertEquals('two', $doc->embeds[1]->value);

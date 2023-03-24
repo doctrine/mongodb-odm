@@ -31,7 +31,7 @@ final class Field extends AbstractField
         array $options = [],
         ?string $strategy = null,
         bool $notSaved = false,
-        ?string $enumType = null
+        ?string $enumType = null,
     ) {
         parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
 

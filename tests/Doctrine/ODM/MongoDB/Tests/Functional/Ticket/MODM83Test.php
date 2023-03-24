@@ -10,8 +10,6 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-use function get_class;
-
 class MODM83Test extends BaseTest
 {
     private MODM83EventListener $listener;
@@ -67,7 +65,7 @@ class MODM83EventListener
     public function __call(string $method, array $args): void
     {
         $document                = $args[0]->getDocument();
-        $className               = get_class($document);
+        $className               = $document::class;
         $this->called[$method][] = $className;
     }
 }

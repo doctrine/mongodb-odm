@@ -24,27 +24,20 @@ use InvalidArgumentException;
  */
 class UnionWith extends Stage
 {
-    private DocumentManager $dm;
-
-    private string $collection;
-
     /**
      * @var array|Builder|null
      * @psalm-var ?PipelineParamType
      */
     private $pipeline = null;
 
-    public function __construct(Builder $builder, DocumentManager $documentManager, string $collection)
+    public function __construct(Builder $builder, private DocumentManager $dm, private string $collection)
     {
         parent::__construct($builder);
-
-        $this->dm = $documentManager;
 
         try {
             $class            = $this->dm->getClassMetadata($collection);
             $this->collection = $class->getCollection();
-        } catch (MappingException $e) {
-            $this->collection = $collection;
+        } catch (MappingException) {
         }
     }
 

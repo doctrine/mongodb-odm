@@ -18,7 +18,6 @@ use UnexpectedValueException;
 use function array_search;
 use function array_values;
 use function assert;
-use function get_class;
 
 /**
  * PersistenceBuilder builds the queries used by the persisters to update and insert
@@ -59,7 +58,7 @@ final class PersistenceBuilder
      */
     public function prepareInsertData($document)
     {
-        $class     = $this->dm->getClassMetadata(get_class($document));
+        $class     = $this->dm->getClassMetadata($document::class);
         $changeset = $this->uow->getDocumentChangeSet($document);
 
         $insertData = [];
@@ -124,7 +123,7 @@ final class PersistenceBuilder
      */
     public function prepareUpdateData($document)
     {
-        $class     = $this->dm->getClassMetadata(get_class($document));
+        $class     = $this->dm->getClassMetadata($document::class);
         $changeset = $this->uow->getDocumentChangeSet($document);
 
         $updateData = [];
@@ -234,7 +233,7 @@ final class PersistenceBuilder
      */
     public function prepareUpsertData($document)
     {
-        $class     = $this->dm->getClassMetadata(get_class($document));
+        $class     = $this->dm->getClassMetadata($document::class);
         $changeset = $this->uow->getDocumentChangeSet($document);
 
         $updateData = [];
@@ -356,7 +355,7 @@ final class PersistenceBuilder
     public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
     {
         $embeddedDocumentValue = [];
-        $class                 = $this->dm->getClassMetadata(get_class($embeddedDocument));
+        $class                 = $this->dm->getClassMetadata($embeddedDocument::class);
 
         foreach ($class->fieldMappings as $mapping) {
             // Skip notSaved fields

@@ -18,19 +18,10 @@ use function substr;
 
 abstract class AbstractReplace extends Operator
 {
-    /** @var string|mixed[]|Expr|null */
-    protected $expression;
-    protected DocumentManager $dm;
-    protected ClassMetadata $class;
-
     /** @param string|mixed[]|Expr|null $expression */
-    final public function __construct(Builder $builder, DocumentManager $documentManager, ClassMetadata $class, $expression = null)
+    final public function __construct(Builder $builder, protected DocumentManager $dm, protected ClassMetadata $class, protected $expression = null)
     {
         Operator::__construct($builder);
-
-        $this->dm         = $documentManager;
-        $this->class      = $class;
-        $this->expression = $expression;
     }
 
     private function getDocumentPersister(): DocumentPersister

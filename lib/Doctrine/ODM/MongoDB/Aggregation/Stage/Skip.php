@@ -14,13 +14,9 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Skip extends Stage
 {
-    private int $skip;
-
-    public function __construct(Builder $builder, int $skip)
+    public function __construct(Builder $builder, private int $skip)
     {
         parent::__construct($builder);
-
-        $this->skip = $skip;
     }
 
     /** @return SkipStageExpression */

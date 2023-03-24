@@ -10,7 +10,6 @@ use Documents\User;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 
-use function get_class;
 use function time;
 
 use const PHP_INT_SIZE;
@@ -51,7 +50,7 @@ class DateTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository(get_class($user))->findOneBy([]);
+        $user = $this->dm->getRepository($user::class)->findOneBy([]);
         $user->setCreatedAt($newValue);
         $this->dm->getUnitOfWork()->computeChangeSets();
         $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);
@@ -78,7 +77,7 @@ class DateTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository(get_class($user))->findOneBy([]);
+        $user = $this->dm->getRepository($user::class)->findOneBy([]);
         self::assertInstanceOf(DateTime::class, $user->getCreatedAt());
         $user->getCreatedAt()->setTimestamp(time() - 3600);
 

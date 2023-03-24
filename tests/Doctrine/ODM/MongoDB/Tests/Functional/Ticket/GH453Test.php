@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
 use function array_values;
-use function get_class;
 use function sprintf;
 
 class GH453Test extends BaseTest
@@ -29,7 +28,7 @@ class GH453Test extends BaseTest
         $this->assertBsonObjectAndValue($hash, $doc->id, 'hash');
 
         // Check that the value is hydrated properly
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc = $this->dm->find($doc::class, $doc->id);
 
         self::assertSame($hash, $doc->hash);
 
@@ -60,7 +59,7 @@ class GH453Test extends BaseTest
         $this->assertBsonObjectAndValue($hash, $doc->id, 'hash');
 
         // Check that the value is hydrated properly
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc = $this->dm->find($doc::class, $doc->id);
 
         self::assertSame($hash, $doc->hash);
 
@@ -93,7 +92,7 @@ class GH453Test extends BaseTest
         $this->assertBsonArrayAndValue($col, $doc->id, 'colSet');
 
         // Check that the value is hydrated properly
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc = $this->dm->find($doc::class, $doc->id);
 
         self::assertSame($col, $doc->colPush);
         self::assertSame($col, $doc->colSet);

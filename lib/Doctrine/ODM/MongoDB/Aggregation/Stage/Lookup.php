@@ -31,10 +31,6 @@ use InvalidArgumentException;
  */
 class Lookup extends Stage
 {
-    private DocumentManager $dm;
-
-    private ClassMetadata $class;
-
     private ?ClassMetadata $targetClass = null;
 
     private string $from;
@@ -56,12 +52,9 @@ class Lookup extends Stage
 
     private bool $excludeLocalAndForeignField = false;
 
-    public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $from, private DocumentManager $dm, private ClassMetadata $class)
     {
         parent::__construct($builder);
-
-        $this->dm    = $documentManager;
-        $this->class = $class;
 
         $this->from($from);
     }
@@ -97,7 +90,7 @@ class Lookup extends Stage
         // Check if mapped class with given name exists
         try {
             $this->targetClass = $this->dm->getClassMetadata($from);
-        } catch (BaseMappingException $e) {
+        } catch (BaseMappingException) {
             $this->from = $from;
 
             return $this;

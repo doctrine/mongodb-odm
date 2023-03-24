@@ -22,9 +22,7 @@ use MongoDB\Collection;
 use MongoDB\Driver\WriteConcern;
 use ReflectionProperty;
 
-use function get_class;
-use function gettype;
-use function is_object;
+use function get_debug_type;
 use function sprintf;
 
 class DocumentPersisterTest extends BaseTest
@@ -1082,7 +1080,7 @@ final class DocumentPersisterCustomIdType extends Type
                 'Expected "%s" or "%s", got "%s"',
                 DocumentPersisterCustomTypedId::class,
                 ObjectId::class,
-                is_object($value) ? get_class($value) : gettype($value),
+                get_debug_type($value),
             ),
         );
     }

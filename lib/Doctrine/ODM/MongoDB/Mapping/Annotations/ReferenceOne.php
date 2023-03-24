@@ -35,9 +35,6 @@ final class ReferenceOne extends AbstractField
     /** @var string|null */
     public $defaultDiscriminatorValue;
 
-    /** @var string[]|string|null */
-    public $cascade;
-
     /** @var bool|null */
     public $orphanRemoval;
 
@@ -80,7 +77,7 @@ final class ReferenceOne extends AbstractField
         ?string $discriminatorField = null,
         ?array $discriminatorMap = null,
         ?string $defaultDiscriminatorValue = null,
-        $cascade = null,
+        public $cascade = null,
         ?bool $orphanRemoval = null,
         ?string $inversedBy = null,
         ?string $mappedBy = null,
@@ -88,7 +85,7 @@ final class ReferenceOne extends AbstractField
         array $sort = [],
         array $criteria = [],
         ?int $limit = null,
-        ?int $skip = null
+        ?int $skip = null,
     ) {
         parent::__construct($name, ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
 
@@ -97,7 +94,6 @@ final class ReferenceOne extends AbstractField
         $this->discriminatorField        = $discriminatorField;
         $this->discriminatorMap          = $discriminatorMap;
         $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
-        $this->cascade                   = $cascade;
         $this->orphanRemoval             = $orphanRemoval;
         $this->inversedBy                = $inversedBy;
         $this->mappedBy                  = $mappedBy;

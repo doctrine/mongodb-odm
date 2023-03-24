@@ -14,13 +14,9 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Limit extends Stage
 {
-    private int $limit;
-
-    public function __construct(Builder $builder, int $limit)
+    public function __construct(Builder $builder, private int $limit)
     {
         parent::__construct($builder);
-
-        $this->limit = $limit;
     }
 
     /** @psalm-return LimitStageExpression */

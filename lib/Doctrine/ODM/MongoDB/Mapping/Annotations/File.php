@@ -34,9 +34,6 @@ final class File extends AbstractDocument
     /** @var string|null */
     public $shardKey;
 
-    /** @var string|int|null */
-    public $writeConcern;
-
     /** @var int|null */
     public $chunkSizeBytes;
 
@@ -51,8 +48,8 @@ final class File extends AbstractDocument
         array $indexes = [],
         bool $readOnly = false,
         ?string $shardKey = null,
-        $writeConcern = null,
-        ?int $chunkSizeBytes = null
+        public $writeConcern = null,
+        ?int $chunkSizeBytes = null,
     ) {
         $this->db              = $db;
         $this->bucketName      = $bucketName;
@@ -60,7 +57,6 @@ final class File extends AbstractDocument
         $this->indexes         = $indexes;
         $this->readOnly        = $readOnly;
         $this->shardKey        = $shardKey;
-        $this->writeConcern    = $writeConcern;
         $this->chunkSizeBytes  = $chunkSizeBytes;
     }
 }

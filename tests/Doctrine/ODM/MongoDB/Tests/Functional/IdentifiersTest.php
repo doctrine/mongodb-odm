@@ -26,7 +26,7 @@ class IdentifiersTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository(get_class($event))->find($event->getId());
+        $test = $this->dm->getRepository($event::class)->find($event->getId());
 
         $userTest = $test->getUser();
         self::assertEquals($user->getId(), $userTest->getId());
@@ -37,7 +37,7 @@ class IdentifiersTest extends BaseTest
 
         $class = $this->dm->getClassMetadata(get_class($test->getUser()));
 
-        $test = $this->dm->getRepository(get_class($event))->find($event->getId());
+        $test = $this->dm->getRepository($event::class)->find($event->getId());
         self::assertEquals($user->getId(), $class->getIdentifierValue($test->getUser()));
         self::assertEquals($user->getId(), $class->getFieldValue($test->getUser(), 'id'));
         self::assertInstanceOf(LazyLoadingInterface::class, $test->getUser());

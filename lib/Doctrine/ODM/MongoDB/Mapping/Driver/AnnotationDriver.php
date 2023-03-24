@@ -23,7 +23,6 @@ use function assert;
 use function class_exists;
 use function constant;
 use function count;
-use function get_class;
 use function interface_exists;
 use function is_array;
 use function MongoDB\BSON\fromJSON;
@@ -82,7 +81,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
 
         $documentAnnot = null;
         foreach ($classAnnotations as $annot) {
-            $classAnnotations[get_class($annot)] = $annot;
+            $classAnnotations[$annot::class] = $annot;
 
             if ($annot instanceof ODM\AbstractDocument) {
                 if ($documentAnnot !== null) {
@@ -205,7 +204,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
                 '2.2',
                 'The "indexes" parameter in the "%s" annotation for class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" annotations on the class.',
                 $className,
-                get_class($documentAnnot),
+                $documentAnnot::class,
             );
 
             foreach ($documentAnnot->indexes as $index) {

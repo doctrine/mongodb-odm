@@ -26,7 +26,6 @@ use ProxyManager\Proxy\GhostObjectInterface;
 use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function assert;
-use function get_class;
 
 class ReferencesTest extends BaseTest
 {
@@ -103,7 +102,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find(get_class($user), $user->getId());
+        $user = $this->dm->find($user::class, $user->getId());
         self::assertInstanceOf(GhostObjectInterface::class, $user->getProfileNotify());
         self::assertFalse($user->getProfileNotify()->isProxyInitialized());
 
@@ -111,7 +110,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
+        $profile = $this->dm->find($profile::class, $profile->getProfileId());
         self::assertEquals('Maciej', $profile->getFirstName());
         self::assertEquals('Malarz', $profile->getLastName());
     }
@@ -358,7 +357,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find(get_class($user), $user->getId());
+        $user = $this->dm->find($user::class, $user->getId());
 
         $groups = $user->getSortedAscGroups();
         self::assertEquals(2, $groups->count());
@@ -384,7 +383,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $collection = $this->dm->getDocumentCollection(get_class($test));
+        $collection = $this->dm->getDocumentCollection($test::class);
 
         $collection->updateOne(
             ['_id' => new ObjectId($test->id)],
@@ -395,7 +394,7 @@ class ReferencesTest extends BaseTest
             ],
         );
 
-        $test = $this->dm->find(get_class($test), $test->id);
+        $test = $this->dm->find($test::class, $test->id);
         self::assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
@@ -416,7 +415,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $collection = $this->dm->getDocumentCollection(get_class($user));
+        $collection = $this->dm->getDocumentCollection($user::class);
 
         $invalidId = new ObjectId('abcdefabcdefabcdefabcdef');
 
@@ -427,7 +426,7 @@ class ReferencesTest extends BaseTest
             ],
         );
 
-        $user    = $this->dm->find(get_class($user), $user->getId());
+        $user    = $this->dm->find($user::class, $user->getId());
         $profile = $user->getProfile();
         self::assertInstanceOf(LazyLoadingInterface::class, $profile);
         $this->expectException(DocumentNotFoundException::class);
@@ -448,7 +447,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $collection = $this->dm->getDocumentCollection(get_class($test));
+        $collection = $this->dm->getDocumentCollection($test::class);
 
         $invalidBinData = new Binary('testbindata', Binary::TYPE_OLD_BINARY);
 
@@ -459,7 +458,7 @@ class ReferencesTest extends BaseTest
             ],
         );
 
-        $test = $this->dm->find(get_class($test), $test->id);
+        $test = $this->dm->find($test::class, $test->id);
         self::assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
@@ -480,7 +479,7 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $collection = $this->dm->getDocumentCollection(get_class($user));
+        $collection = $this->dm->getDocumentCollection($user::class);
 
         $invalidId = new ObjectId('abcdefabcdefabcdefabcdef');
 
@@ -491,7 +490,7 @@ class ReferencesTest extends BaseTest
             ],
         );
 
-        $user    = $this->dm->find(get_class($user), $user->getId());
+        $user    = $this->dm->find($user::class, $user->getId());
         $profile = $user->getProfile();
 
         $closure = static function (DocumentNotFoundEventArgs $eventArgs) use ($profile) {
@@ -568,11 +567,8 @@ class DocumentWithMongoBinDataId
 
 class DocumentNotFoundListener
 {
-    private Closure $closure;
-
-    public function __construct(Closure $closure)
+    public function __construct(private Closure $closure)
     {
-        $this->closure = $closure;
     }
 
     public function documentNotFound(DocumentNotFoundEventArgs $eventArgs): void

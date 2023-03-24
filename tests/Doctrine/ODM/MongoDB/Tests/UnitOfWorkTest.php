@@ -27,7 +27,6 @@ use MongoDB\BSON\ObjectId;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Throwable;
 
-use function get_class;
 use function spl_object_hash;
 use function sprintf;
 
@@ -88,7 +87,7 @@ class UnitOfWorkTest extends BaseTest
     {
         $doc     = new UowCustomIdDocument();
         $doc->id = 'string';
-        $class   = $this->dm->getClassMetadata(get_class($doc));
+        $class   = $this->dm->getClassMetadata($doc::class);
         self::assertFalse($this->uow->isScheduledForInsert($doc));
         self::assertFalse($this->uow->isScheduledForUpsert($doc));
         $this->uow->scheduleForUpsert($class, $doc);
@@ -380,7 +379,7 @@ class UnitOfWorkTest extends BaseTest
 
         $this->uow->commit();
 
-        self::assertNotNull($this->dm->getRepository(get_class($user))->find($user->id));
+        self::assertNotNull($this->dm->getRepository($user::class)->find($user->id));
     }
 
     public function testRemovePersistedButNotFlushedDocument(): void
@@ -392,7 +391,7 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->remove($user);
         $this->uow->commit();
 
-        self::assertNull($this->dm->getRepository(get_class($user))->find($user->id));
+        self::assertNull($this->dm->getRepository($user::class)->find($user->id));
     }
 
     public function testPersistRemovedEmbeddedDocument(): void
@@ -403,7 +402,7 @@ class UnitOfWorkTest extends BaseTest
         $this->uow->commit();
         $this->uow->clear();
 
-        $test = $this->dm->getRepository(get_class($test))->find($test->id);
+        $test = $this->dm->getRepository($test::class)->find($test->id);
 
         $this->uow->remove($test);
 
@@ -537,7 +536,7 @@ class UnitOfWorkTest extends BaseTest
 
         try {
             $this->dm->flush();
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => /** @psalm-suppress InaccessibleProperty */
 $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
 

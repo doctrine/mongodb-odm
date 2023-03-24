@@ -33,8 +33,6 @@ use function is_array;
  */
 class Merge extends Stage
 {
-    private DocumentManager $dm;
-
     /**
      * @var string|array
      * @psalm-var OutputCollection
@@ -55,11 +53,9 @@ class Merge extends Stage
 
     private ?string $whenNotMatched = null;
 
-    public function __construct(Builder $builder, DocumentManager $documentManager)
+    public function __construct(Builder $builder, private DocumentManager $dm)
     {
         parent::__construct($builder);
-
-        $this->dm = $documentManager;
     }
 
     /** @psalm-return MergeStageExpression */
@@ -105,7 +101,7 @@ class Merge extends Stage
         try {
             $class      = $this->dm->getClassMetadata($collection);
             $this->into = $class->getCollection();
-        } catch (MappingException $e) {
+        } catch (MappingException) {
             $this->into = $collection;
         }
 

@@ -9,8 +9,6 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Documents\User;
 
-use function get_class;
-
 class MODM167Test extends BaseTest
 {
     private MODM167EventListener $listener;
@@ -34,7 +32,7 @@ class MODM167Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $repository = $this->dm->getRepository(get_class($test));
+        $repository = $this->dm->getRepository($test::class);
         $test       = $repository->find($test->getId());
 
         self::assertNull($test);

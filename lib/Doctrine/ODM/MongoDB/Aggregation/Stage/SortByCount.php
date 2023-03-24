@@ -21,11 +21,11 @@ class SortByCount extends Stage
      * prefix the field name with a dollar sign $ and enclose it in quotes.
      * The expression can not evaluate to an object.
      */
-    public function __construct(Builder $builder, string $fieldName, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $fieldName, DocumentManager $dm, ClassMetadata $class)
     {
         parent::__construct($builder);
 
-        $documentPersister = $documentManager->getUnitOfWork()->getDocumentPersister($class->name);
+        $documentPersister = $dm->getUnitOfWork()->getDocumentPersister($class->name);
         $this->fieldName   = '$' . $documentPersister->prepareFieldName(substr($fieldName, 1));
     }
 

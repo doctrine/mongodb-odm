@@ -16,22 +16,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
-use function get_class;
-
 /** @internal */
 final class LifecycleEventManager
 {
-    private DocumentManager $dm;
-
-    private EventManager $evm;
-
-    private UnitOfWork $uow;
-
-    public function __construct(DocumentManager $dm, UnitOfWork $uow, EventManager $evm)
+    public function __construct(private DocumentManager $dm, private UnitOfWork $uow, private EventManager $evm)
     {
-        $this->dm  = $dm;
-        $this->evm = $evm;
-        $this->uow = $uow;
     }
 
     /**
@@ -173,7 +162,7 @@ final class LifecycleEventManager
                     continue;
                 }
 
-                $this->preUpdate($this->dm->getClassMetadata(get_class($entry)), $entry);
+                $this->preUpdate($this->dm->getClassMetadata($entry::class), $entry);
             }
         }
     }
@@ -201,7 +190,7 @@ final class LifecycleEventManager
                     continue;
                 }
 
-                $entryClass = $this->dm->getClassMetadata(get_class($entry));
+                $entryClass = $this->dm->getClassMetadata($entry::class);
                 $event      = $this->uow->isScheduledForInsert($entry) ? Events::postPersist : Events::postUpdate;
                 $entryClass->invokeLifecycleCallbacks($event, $entry, [new LifecycleEventArgs($entry, $this->dm)]);
                 $this->dispatchEvent($entryClass, $event, new LifecycleEventArgs($entry, $this->dm));
@@ -229,7 +218,7 @@ final class LifecycleEventManager
 
             $values = $mapping['type'] === ClassMetadata::ONE ? [$value] : $value;
             foreach ($values as $embeddedDocument) {
-                $this->postPersist($this->dm->getClassMetadata(get_class($embeddedDocument)), $embeddedDocument);
+                $this->postPersist($this->dm->getClassMetadata($embeddedDocument::class), $embeddedDocument);
             }
         }
     }
