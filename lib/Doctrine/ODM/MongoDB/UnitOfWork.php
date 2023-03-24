@@ -2694,8 +2694,13 @@ final class UnitOfWork implements PropertyChangedListener
                 throw new UnexpectedValueException('Could not determine parent association for ' . $document::class);
             }
 
-            [, $document] = $parentAssociation;
-            $class        = $this->dm->getClassMetadata($document::class);
+            [, $parentDocument] = $parentAssociation;
+            if (! $parentDocument) {
+                throw new UnexpectedValueException('Could not determine parent association for ' . $document::class);
+            }
+
+            $document = $parentDocument;
+            $class    = $this->dm->getClassMetadata($document::class);
         }
 
         return $document;

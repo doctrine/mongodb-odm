@@ -102,9 +102,10 @@ class ReferencesTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find($user::class, $user->getId());
-        self::assertInstanceOf(GhostObjectInterface::class, $user->getProfileNotify());
-        self::assertFalse($user->getProfileNotify()->isProxyInitialized());
+        $user    = $this->dm->find($user::class, $user->getId());
+        $profile = $user->getProfileNotify();
+        self::assertInstanceOf(GhostObjectInterface::class, $profile);
+        self::assertFalse($profile->isProxyInitialized());
 
         $user->getProfileNotify()->setLastName('Malarz');
         $this->dm->flush();
