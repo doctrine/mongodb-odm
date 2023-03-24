@@ -46,8 +46,7 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTest
         self::assertInstanceOf(CollWithNullableReturnType::class, $coll);
     }
 
-    /** @requires PHP >= 8.0 */
-    public function testPHP80Types(): void
+        public function testPHP80Types(): void
     {
         $class = $this->generator->loadClass(CollWithPHP80Types::class, Configuration::AUTOGENERATE_EVAL);
         $coll  = new $class(new CollWithPHP80Types(), $this->dm, $this->uow);
