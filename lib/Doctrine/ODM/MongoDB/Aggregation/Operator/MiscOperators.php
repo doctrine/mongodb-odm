@@ -65,7 +65,9 @@ interface MiscOperators
     public function rand(): self;
 
     /**
-     * Matches a random selection of input documents. The number of documents selected approximates the sample rate expressed as a percentage of the total number of documents.
+     * Matches a random selection of input documents. The number of documents
+     * selected approximates the sample rate expressed as a percentage of the
+     * total number of documents.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sampleRate/
      */

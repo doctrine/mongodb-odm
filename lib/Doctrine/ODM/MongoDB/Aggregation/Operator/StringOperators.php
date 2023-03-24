@@ -75,8 +75,8 @@ interface StringOperators
 
     /**
      * Searches a string for an occurrence of a substring and returns the UTF-8
-     * code point index (zero-based) of the first occurrence. If the substring is
-     * not found, returns -1.
+     * code point index (zero-based) of the first occurrence. If the substring
+     * is not found, returns -1.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfCP/
      *
@@ -88,8 +88,8 @@ interface StringOperators
     public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self;
 
     /**
-     * Removes whitespace characters, including null, or the specified characters from
-     * the beginning and end of a string.
+     * Removes whitespace characters, including null, or the specified
+     * characters from the beginning and end of a string.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ltrim/
      *
@@ -156,7 +156,8 @@ interface StringOperators
     public function replaceOne($input, $find, $replacement): self;
 
     /**
-     * Removes whitespace characters, including null, or the specified characters from the end of a string.
+     * Removes whitespace characters, including null, or the specified
+     * characters from the end of a string.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/rtrim/
      *
@@ -203,7 +204,8 @@ interface StringOperators
      * 0 if the two strings are equal.
      * -1 if the first string is “less than” the second string.
      *
-     * The arguments can be any valid expression as long as they resolve to strings.
+     * The arguments can be any valid expression as long as they resolve to
+     * strings.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strcasecmp/
      *
@@ -216,7 +218,9 @@ interface StringOperators
      * Returns a substring of a string, starting at a specified index position
      * and including the specified number of characters. The index is zero-based.
      *
-     * The arguments can be any valid expression as long as long as the first argument resolves to a string, and the second and third arguments resolve to integers.
+     * The arguments can be any valid expression as long as long as the first
+     * argument resolves to a string, and the second and third arguments resolve
+     * to integers.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/substr/
      *
@@ -288,8 +292,8 @@ interface StringOperators
     public function toUpper($expression): self;
 
     /**
-     * Removes whitespace characters, including null, or the specified characters from
-     * the beginning and end of a string.
+     * Removes whitespace characters, including null, or the specified
+     * characters from the beginning and end of a string.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/trim/
      *

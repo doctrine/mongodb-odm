@@ -17,7 +17,9 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 interface ObjectOperators
 {
     /**
-     * Returns the value of a specified field from a document. If you don't specify an object, $getField returns the value of the field from $$CURRENT.
+     * Returns the value of a specified field from a document. If you don't
+     * specify an object, $getField returns the value of the field from
+     * $$CURRENT.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/getField/
      *
@@ -37,9 +39,9 @@ interface ObjectOperators
     public function mergeObjects($expression, ...$expressions): self;
 
     /**
-     * Converts a document to an array. The return array contains an element for each field/value pair
-     * in the original document. Each element in the return array is a document that contains
-     * two fields k and v:.
+     * Converts a document to an array. The return array contains an element for
+     * each field/value pair in the original document. Each element in the
+     * return array is a document that contains two fields k and v:
      *      The k field contains the field name in the original document.
      *      The v field contains the value of the field in the original document.
      *

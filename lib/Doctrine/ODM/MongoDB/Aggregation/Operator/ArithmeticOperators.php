@@ -45,7 +45,8 @@ interface ArithmeticOperators
     public function add($expression1, $expression2, ...$expressions): self;
 
     /**
-     * Returns the smallest integer greater than or equal to the specified number.
+     * Returns the smallest integer greater than or equal to the specified
+     * number.
      *
      * The <number> expression can be any valid expression as long as it
      * resolves to a number.
@@ -138,7 +139,8 @@ interface ArithmeticOperators
      * Divides one number by another and returns the remainder. The first
      * argument is divided by the second argument.
      *
-     * The arguments can be any valid expression as long as they resolve to numbers.
+     * The arguments can be any valid expression as long as they resolve to
+     * numbers.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/mod/
      *
@@ -150,7 +152,8 @@ interface ArithmeticOperators
     /**
      * Multiplies numbers together and returns the result.
      *
-     * The arguments can be any valid expression as long as they resolve to numbers.
+     * The arguments can be any valid expression as long as they resolve to
+     * numbers.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/multiply/
      *

@@ -8,7 +8,8 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use MongoDB\BSON\Javascript;
 
 /**
- * Interface containing all aggregation pipeline operators to define custom operators.
+ * Interface containing all aggregation pipeline operators to define custom
+ * operators.
  *
  * This interface can be used for type hinting, but must not be implemented by
  * users. Methods WILL be added to the public API in future minor versions.

@@ -35,7 +35,8 @@ interface GroupAccumulatorOperators extends CustomOperators
     public function avg($expression): self;
 
     /**
-     * Returns the bottom element within a group according to the specified sort order.
+     * Returns the bottom element within a group according to the specified sort
+     * order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bottom/
      *
@@ -45,7 +46,8 @@ interface GroupAccumulatorOperators extends CustomOperators
     public function bottom($output, $sortBy): self;
 
     /**
-     * Returns the n bottom elements within a group according to the specified sort order.
+     * Returns the n bottom elements within a group according to the specified
+     * sort order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bottomN/
      *
@@ -128,7 +130,8 @@ interface GroupAccumulatorOperators extends CustomOperators
     public function maxN($expression, $n): self;
 
     /**
-     * Returns a document created by combining the input documents for each group.
+     * Returns a document created by combining the input documents for each
+     * group.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/mergeObjects/
      *
@@ -183,7 +186,8 @@ interface GroupAccumulatorOperators extends CustomOperators
     public function stdDevSamp($expression): self;
 
     /**
-     * Calculates the collective sum of numeric values. Ignores non-numeric values.
+     * Calculates the collective sum of numeric values. Ignores non-numeric
+     * values.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sum/
      *
@@ -192,7 +196,8 @@ interface GroupAccumulatorOperators extends CustomOperators
     public function sum($expression): self;
 
     /**
-     * Returns the top element within a group according to the specified sort order.
+     * Returns the top element within a group according to the specified sort
+     * order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/top/
      *
@@ -202,7 +207,8 @@ interface GroupAccumulatorOperators extends CustomOperators
     public function top($output, $sortBy): self;
 
     /**
-     * Returns the n top elements within a group according to the specified sort order.
+     * Returns the n top elements within a group according to the specified sort
+     * order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/topN/
      *

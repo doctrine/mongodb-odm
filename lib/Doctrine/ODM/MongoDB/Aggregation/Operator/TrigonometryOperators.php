@@ -26,7 +26,8 @@ interface TrigonometryOperators
     public function acos($expression): self;
 
     /**
-     * Returns the inverse hyperbolic cosine (hyperbolic arc cosine) of a value in radians.
+     * Returns the inverse hyperbolic cosine (hyperbolic arc cosine) of a value
+     * in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/acosh/
      *
@@ -44,7 +45,8 @@ interface TrigonometryOperators
     public function asin($expression): self;
 
     /**
-     * Returns the inverse hyperbolic sine (hyperbolic arc sine) of a value in radians.
+     * Returns the inverse hyperbolic sine (hyperbolic arc sine) of a value in
+     * radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/asinh/
      *
@@ -62,7 +64,8 @@ interface TrigonometryOperators
     public function atan($expression): self;
 
     /**
-     * Returns the inverse tangent (arc tangent) of y / x in radians, where y and x are the first and second values passed to the expression respectively.
+     * Returns the inverse tangent (arc tangent) of y / x in radians, where y
+     * and x are the first and second values passed to the expression respectively.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan2/
      *
@@ -72,7 +75,8 @@ interface TrigonometryOperators
     public function atan2($expression1, $expression2): self;
 
     /**
-     * Returns the inverse hyperbolic tangent (hyperbolic arc tangent) of a value in radians.
+     * Returns the inverse hyperbolic tangent (hyperbolic arc tangent) of a
+     * value in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atanh/
      *

@@ -40,8 +40,9 @@ interface TypeOperators
     public function isArray($expression): self;
 
     /**
-     * Returns boolean true if the specified expression resolves to an integer, decimal, double, or long.
-     * Returns boolean false if the expression resolves to any other BSON type, null, or a missing field.
+     * Returns boolean true if the specified expression resolves to an integer,
+     * decimal, double, or long. Returns boolean false if the expression
+     * resolves to any other BSON type, null, or a missing field.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isNumber/
      *

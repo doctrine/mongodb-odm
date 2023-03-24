@@ -83,7 +83,8 @@ interface SetOperators
 
     /**
      * Takes two arrays and returns true when the first array is a subset of the
-     * second, including when the first array equals the second array, and false otherwise.
+     * second, including when the first array equals the second array, and false
+     * otherwise.
      *
      * The arguments can be any valid expression as long as they each resolve to an array.
      *
@@ -98,7 +99,8 @@ interface SetOperators
      * Takes two or more arrays and returns an array containing the elements
      * that appear in any input array.
      *
-     * The arguments can be any valid expression as long as they each resolve to an array.
+     * The arguments can be any valid expression as long as they each resolve to
+     * an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setUnion/
      *

@@ -86,7 +86,9 @@ interface DateOperators
     public function dateSubtract($startDate, $unit, $amount, $timezone = null): self;
 
     /**
-     * Returns a document that contains the constituent parts of a given BSON Date value as individual properties. The properties returned are year, month, day, hour, minute, second and millisecond.
+     * Returns a document that contains the constituent parts of a given BSON
+     * date value as individual properties. The properties returned are year,
+     * month, day, hour, minute, second and millisecond.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateToParts/
      *
@@ -170,8 +172,8 @@ interface DateOperators
     public function hour($expression): self;
 
     /**
-     * Returns the weekday number in ISO 8601 format, ranging from 1 (for Monday)
-     * to 7 (for Sunday).
+     * Returns the weekday number in ISO 8601 format, ranging from 1 (for
+     * Monday) to 7 (for Sunday).
      *
      * The argument can be any expression as long as it resolves to a date.
      *

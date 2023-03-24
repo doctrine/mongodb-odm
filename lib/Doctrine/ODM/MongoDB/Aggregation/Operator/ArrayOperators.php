@@ -69,7 +69,8 @@ interface ArrayOperators
     public function filter($input, $as, $cond): self;
 
     /**
-     * Returns the first array element. Distinct from the $first accumulator.
+     * Returns the first array element. Distinct from the $first group
+     * accumulator.
      *
      * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/first-array-element/
      *
@@ -78,7 +79,8 @@ interface ArrayOperators
     public function first($expression): self;
 
     /**
-     * Returns a specified number of elements from the beginning of an array. Distinct from the $firstN accumulator.
+     * Returns a specified number of elements from the beginning of an array.
+     * Distinct from the $firstN group accumulator.
      *
      * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/firstN-array-element/
      *
@@ -126,7 +128,7 @@ interface ArrayOperators
     public function isArray($expression): self;
 
     /**
-     * Returns the last array element. Distinct from the $last accumulator.
+     * Returns the last array element. Distinct from the $last group accumulator.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/last-array-element/
      *
@@ -135,7 +137,8 @@ interface ArrayOperators
     public function last($expression): self;
 
     /**
-     * Returns a specified number of elements from the end of an array. Distinct from the $lastN accumulator.
+     * Returns a specified number of elements from the end of an array. Distinct
+     * from the $lastN accumulator.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lastN-array-element/
      *
@@ -157,7 +160,8 @@ interface ArrayOperators
     public function map($input, $as, $in): self;
 
     /**
-     * Returns the n largest values in an array. Distinct from the $maxN accumulator.
+     * Returns the n largest values in an array. Distinct from the $maxN group
+     * accumulator.
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $n
@@ -165,7 +169,8 @@ interface ArrayOperators
     public function maxN($expression, $n): self;
 
     /**
-     * Returns the n smallest values in an array. Distinct from the $minN accumulator.
+     * Returns the n smallest values in an array. Distinct from the $minN group
+     * accumulator.
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $n
@@ -173,9 +178,9 @@ interface ArrayOperators
     public function minN($expression, $n): self;
 
     /**
-     * Converts a document to an array. The return array contains an element for each field/value pair
-     * in the original document. Each element in the return array is a document that contains
-     * two fields k and v:.
+     * Converts a document to an array. The return array contains an element for
+     * each field/value pair in the original document. Each element in the
+     * return array is a document that contains two fields k and v:.
      *      The k field contains the field name in the original document.
      *      The v field contains the value of the field in the original document.
      *
@@ -188,7 +193,9 @@ interface ArrayOperators
     /**
      * Returns an array whose elements are a generated sequence of numbers.
      *
-     * $range generates the sequence from the specified starting number by successively incrementing the starting number by the specified step value up to but not including the end point.
+     * $range generates the sequence from the specified starting number by
+     * successively incrementing the starting number by the specified step value
+     * up to but not including the end point.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/range/
      *
