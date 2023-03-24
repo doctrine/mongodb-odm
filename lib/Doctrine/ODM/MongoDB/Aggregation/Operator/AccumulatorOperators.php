@@ -23,10 +23,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
-     *
-     * @return static
      */
-    public function avg($expression, ...$expressions): self;
+    public function avg($expression, ...$expressions): static;
 
     /**
      * Returns the maximum value of numeric values.
@@ -38,10 +36,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
-     *
-     * @return static
      */
-    public function max($expression, ...$expressions): self;
+    public function max($expression, ...$expressions): static;
 
     /**
      * Returns the minimum value of numeric values.
@@ -53,10 +49,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
-     *
-     * @return static
      */
-    public function min($expression, ...$expressions): self;
+    public function min($expression, ...$expressions): static;
 
     /**
      * Calculates the population standard deviation of the input values. Use if
@@ -68,10 +62,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
-     *
-     * @return static
      */
-    public function stdDevPop($expression, ...$expressions): self;
+    public function stdDevPop($expression, ...$expressions): static;
 
     /**
      * Calculates the sample standard deviation of the input values. Use if the
@@ -82,10 +74,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
-     *
-     * @return static
      */
-    public function stdDevSamp($expression, ...$expressions): self;
+    public function stdDevSamp($expression, ...$expressions): static;
 
     /**
      * Calculates the collective sum of numeric values. Ignores non-numeric values.
@@ -94,8 +84,6 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
-     *
-     * @return static
      */
-    public function sum($expression, ...$expressions): self;
+    public function sum($expression, ...$expressions): static;
 }

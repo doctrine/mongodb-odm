@@ -361,7 +361,7 @@ class Builder
     /**
      * Set which class to use when hydrating results as document class instances.
      */
-    public function hydrate(?string $className): self
+    public function hydrate(?string $className): static
     {
         $this->hydrationClass = $className;
 
@@ -524,7 +524,7 @@ class Builder
     /**
      * Controls if resulting iterator should be wrapped with CachingIterator.
      */
-    public function rewindable(bool $rewindable = true): self
+    public function rewindable(bool $rewindable = true): static
     {
         $this->rewindable = $rewindable;
 

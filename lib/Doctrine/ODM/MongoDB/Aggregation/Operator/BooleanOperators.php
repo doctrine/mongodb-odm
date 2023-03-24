@@ -23,10 +23,8 @@ interface BooleanOperators
      *
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
-     *
-     * @return static
      */
-    public function and($expression, ...$expressions): self;
+    public function and($expression, ...$expressions): static;
 
     /**
      * Evaluates a boolean and returns the opposite boolean value.
@@ -34,10 +32,8 @@ interface BooleanOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/not/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function not($expression): self;
+    public function not($expression): static;
 
     /**
      * Adds one or more $or clause to the current expression.
@@ -46,8 +42,6 @@ interface BooleanOperators
      *
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
-     *
-     * @return static
      */
-    public function or($expression, ...$expressions): self;
+    public function or($expression, ...$expressions): static;
 }

@@ -36,10 +36,8 @@ interface CustomOperators
      * @param mixed|Expr|null        $initArgs
      * @param string|Javascript|null $finalize
      * @param string                 $lang
-     *
-     * @return static
      */
-    public function accumulator($init, $accumulate, $accumulateArgs, $merge, $initArgs = null, $finalize = null, $lang = 'js'): self;
+    public function accumulator($init, $accumulate, $accumulateArgs, $merge, $initArgs = null, $finalize = null, $lang = 'js'): static;
 
     /**
      * Defines a custom aggregation function or expression in JavaScript.
@@ -52,8 +50,6 @@ interface CustomOperators
      * @param string|Javascript $body
      * @param mixed|Expr        $args
      * @param string            $lang
-     *
-     * @return static
      */
-    public function function($body, $args, $lang = 'js'): self;
+    public function function($body, $args, $lang = 'js'): static;
 }

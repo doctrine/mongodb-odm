@@ -25,10 +25,8 @@ interface ObjectOperators
      *
      * @param mixed|Expr $field
      * @param mixed|Expr $input
-     *
-     * @return static
      */
-    public function getField($field, $input = null): self;
+    public function getField($field, $input = null): static;
 
     /**
      * Combines multiple documents into a single document.
@@ -37,10 +35,8 @@ interface ObjectOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
-     *
-     * @return static
      */
-    public function mergeObjects($expression, ...$expressions): self;
+    public function mergeObjects($expression, ...$expressions): static;
 
     /**
      * Converts a document to an array. The return array contains an element for
@@ -52,10 +48,8 @@ interface ObjectOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/objectToArray/
      *
      * @param mixed|Expr $object
-     *
-     * @return static
      */
-    public function objectToArray($object): self;
+    public function objectToArray($object): static;
 
     /**
      * Adds, updates, or removes a specified field in a document.
@@ -65,8 +59,6 @@ interface ObjectOperators
      * @param mixed|Expr $field
      * @param mixed|Expr $input
      * @param mixed|Expr $value
-     *
-     * @return static
      */
-    public function setField($field, $input, $value): self;
+    public function setField($field, $input, $value): static;
 }

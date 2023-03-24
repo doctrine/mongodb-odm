@@ -26,10 +26,8 @@ interface ConditionalOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function case($expression): self;
+    public function case($expression): static;
 
     /**
      * Evaluates a boolean expression to return one of the two specified return
@@ -42,10 +40,8 @@ interface ConditionalOperators
      * @param mixed|Expr $if
      * @param mixed|Expr $then
      * @param mixed|Expr $else
-     *
-     * @return static
      */
-    public function cond($if, $then, $else): self;
+    public function cond($if, $then, $else): static;
 
     /**
      * Adds a default statement for the current $switch operator.
@@ -59,10 +55,8 @@ interface ConditionalOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function default($expression): self;
+    public function default($expression): static;
 
     /**
      * Evaluates an expression and returns the value of the expression if the
@@ -76,10 +70,8 @@ interface ConditionalOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $replacementExpression
-     *
-     * @return static
      */
-    public function ifNull($expression, $replacementExpression): self;
+    public function ifNull($expression, $replacementExpression): static;
 
     /**
      * Evaluates a series of case expressions. When it finds an expression which
@@ -90,10 +82,8 @@ interface ConditionalOperators
      * {@link default()} methods.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
-     *
-     * @return static
      */
-    public function switch(): self;
+    public function switch(): static;
 
     /**
      * Adds a case statement for the current branch of the $switch operator.
@@ -104,8 +94,6 @@ interface ConditionalOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function then($expression): self;
+    public function then($expression): static;
 }

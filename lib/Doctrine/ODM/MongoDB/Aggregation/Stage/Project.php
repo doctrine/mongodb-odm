@@ -27,7 +27,7 @@ class Project extends Operator
      *
      * @param string[] $fields
      */
-    public function includeFields(array $fields): self
+    public function includeFields(array $fields): static
     {
         foreach ($fields as $fieldName) {
             $this->field($fieldName)->expression(true);
@@ -44,7 +44,7 @@ class Project extends Operator
      *
      * @param string[] $fields
      */
-    public function excludeFields(array $fields): self
+    public function excludeFields(array $fields): static
     {
         foreach ($fields as $fieldName) {
             $this->field($fieldName)->expression(false);

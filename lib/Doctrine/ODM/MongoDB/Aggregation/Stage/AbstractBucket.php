@@ -41,7 +41,7 @@ abstract class AbstractBucket extends Stage
      *
      * @param array<string, mixed>|Expr|string $expression
      */
-    public function groupBy($expression): self
+    public function groupBy($expression): static
     {
         $this->groupBy = $expression;
 

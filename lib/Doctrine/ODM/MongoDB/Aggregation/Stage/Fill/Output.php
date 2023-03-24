@@ -54,14 +54,14 @@ class Output extends Stage
     /**
      * Set the current field for building the expression.
      */
-    public function field(string $fieldName): self
+    public function field(string $fieldName): static
     {
         $this->currentField = $fieldName;
 
         return $this;
     }
 
-    public function linear(): self
+    public function linear(): static
     {
         $this->requiresCurrentField(__METHOD__);
         $this->output[$this->currentField] = ['method' => 'linear'];
@@ -69,7 +69,7 @@ class Output extends Stage
         return $this;
     }
 
-    public function locf(): self
+    public function locf(): static
     {
         $this->requiresCurrentField(__METHOD__);
         $this->output[$this->currentField] = ['method' => 'locf'];
@@ -78,7 +78,7 @@ class Output extends Stage
     }
 
     /** @param mixed|Expr $expression */
-    public function value($expression): self
+    public function value($expression): static
     {
         $this->requiresCurrentField(__METHOD__);
         $this->output[$this->currentField] = [

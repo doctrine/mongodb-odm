@@ -47,7 +47,7 @@ abstract class AbstractOutput extends Stage implements GroupAccumulatorOperators
      *
      * @return $this
      */
-    public function expression($value)
+    public function expression($value): static
     {
         $this->expr->expression($value);
 
@@ -63,7 +63,7 @@ abstract class AbstractOutput extends Stage implements GroupAccumulatorOperators
      *
      * @return $this
      */
-    public function field($fieldName)
+    public function field($fieldName): static
     {
         $this->expr->field($fieldName);
 

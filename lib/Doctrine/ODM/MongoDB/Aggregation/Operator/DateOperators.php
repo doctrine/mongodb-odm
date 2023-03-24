@@ -25,10 +25,8 @@ interface DateOperators
      * @param mixed|Expr $unit
      * @param mixed|Expr $amount
      * @param mixed|Expr $timezone
-     *
-     * @return static
      */
-    public function dateAdd($startDate, $unit, $amount, $timezone = null): self;
+    public function dateAdd($startDate, $unit, $amount, $timezone = null): static;
 
     /**
      * Returns the difference between two dates
@@ -40,10 +38,8 @@ interface DateOperators
      * @param mixed|Expr $unit
      * @param mixed|Expr $timezone
      * @param mixed|Expr $startOfWeek
-     *
-     * @return static
      */
-    public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): self;
+    public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): static;
 
     /**
      * Constructs and returns a date object given the date's constituent properties
@@ -61,10 +57,8 @@ interface DateOperators
      * @param mixed|Expr $second
      * @param mixed|Expr $millisecond
      * @param mixed|Expr $timezone
-     *
-     * @return static
      */
-    public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): self;
+    public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): static;
 
     /**
      * Converts a date/time string to a date object.
@@ -76,10 +70,8 @@ interface DateOperators
      * @param mixed|Expr $timezone
      * @param mixed|Expr $onError
      * @param mixed|Expr $onNull
-     *
-     * @return static
      */
-    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): self;
+    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): static;
 
     /**
      * Decrements a date object by a specified number of time units
@@ -90,10 +82,8 @@ interface DateOperators
      * @param mixed|Expr $unit
      * @param mixed|Expr $amount
      * @param mixed|Expr $timezone
-     *
-     * @return static
      */
-    public function dateSubtract($startDate, $unit, $amount, $timezone = null): self;
+    public function dateSubtract($startDate, $unit, $amount, $timezone = null): static;
 
     /**
      * Returns a document that contains the constituent parts of a given BSON
@@ -105,10 +95,8 @@ interface DateOperators
      * @param mixed|Expr $date
      * @param mixed|Expr $timezone
      * @param mixed|Expr $iso8601
-     *
-     * @return static
      */
-    public function dateToParts($date, $timezone = null, $iso8601 = null): self;
+    public function dateToParts($date, $timezone = null, $iso8601 = null): static;
 
     /**
      * Converts a date object to a string according to a user-specified format.
@@ -122,10 +110,8 @@ interface DateOperators
      * @param mixed|Expr      $expression
      * @param mixed|Expr|null $timezone
      * @param mixed|Expr|null $onNull
-     *
-     * @return static
      */
-    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): self;
+    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): static;
 
     /**
      * Truncates a date.
@@ -137,10 +123,8 @@ interface DateOperators
      * @param mixed|Expr $binSize
      * @param mixed|Expr $timezone
      * @param mixed|Expr $startOfWeek
-     *
-     * @return static
      */
-    public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): self;
+    public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): static;
 
     /**
      * Returns the day of the month for a date as a number between 1 and 31.
@@ -150,10 +134,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfMonth/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function dayOfMonth($expression): self;
+    public function dayOfMonth($expression): static;
 
     /**
      * Returns the day of the week for a date as a number between 1 (Sunday) and
@@ -164,10 +146,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfWeek/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function dayOfWeek($expression): self;
+    public function dayOfWeek($expression): static;
 
     /**
      * Returns the day of the year for a date as a number between 1 and 366.
@@ -177,10 +157,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfYear/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function dayOfYear($expression): self;
+    public function dayOfYear($expression): static;
 
     /**
      * Returns the hour portion of a date as a number between 0 and 23.
@@ -190,10 +168,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/hour/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function hour($expression): self;
+    public function hour($expression): static;
 
     /**
      * Returns the weekday number in ISO 8601 format, ranging from 1 (for
@@ -204,10 +180,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoDayOfWeek/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function isoDayOfWeek($expression): self;
+    public function isoDayOfWeek($expression): static;
 
     /**
      * Returns the week number in ISO 8601 format, ranging from 1 to 53.
@@ -220,10 +194,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function isoWeek($expression): self;
+    public function isoWeek($expression): static;
 
     /**
      * Returns the year number in ISO 8601 format.
@@ -236,10 +208,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function isoWeekYear($expression): self;
+    public function isoWeekYear($expression): static;
 
     /**
      * Returns the millisecond portion of a date as an integer between 0 and 999.
@@ -249,10 +219,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/millisecond/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function millisecond($expression): self;
+    public function millisecond($expression): static;
 
     /**
      * Returns the minute portion of a date as a number between 0 and 59.
@@ -262,10 +230,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/minute/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function minute($expression): self;
+    public function minute($expression): static;
 
     /**
      * Returns the month of a date as a number between 1 and 12.
@@ -275,10 +241,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/month/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function month($expression): self;
+    public function month($expression): static;
 
     /**
      * Returns the second portion of a date as a number between 0 and 59, but
@@ -289,10 +253,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/second/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function second($expression): self;
+    public function second($expression): static;
 
     /**
      * Converts value to a Date.
@@ -300,10 +262,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDate/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function toDate($expression): self;
+    public function toDate($expression): static;
 
     /**
      * Returns the week of the year for a date as a number between 0 and 53.
@@ -313,10 +273,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/week/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function week($expression): self;
+    public function week($expression): static;
 
     /**
      * Returns the year portion of a date.
@@ -326,8 +284,6 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/year/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function year($expression): self;
+    public function year($expression): static;
 }

@@ -66,7 +66,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
 
 		-
-			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
+			message: "#^Return type \\(static\\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\)\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php
 

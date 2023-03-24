@@ -22,10 +22,8 @@ interface TimestampOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tsIncrement/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function tsIncrement($expression): self;
+    public function tsIncrement($expression): static;
 
     /**
      * Returns the seconds from a timestamp as a long.
@@ -33,8 +31,6 @@ interface TimestampOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tsSecond/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function tsSecond($expression): self;
+    public function tsSecond($expression): static;
 }

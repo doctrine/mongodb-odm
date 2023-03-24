@@ -25,10 +25,8 @@ interface SetOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/allElementsTrue/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function allElementsTrue($expression): self;
+    public function allElementsTrue($expression): static;
 
     /**
      * Evaluates an array as a set and returns true if any of the elements are
@@ -39,10 +37,8 @@ interface SetOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/anyElementTrue/
      *
      * @param mixed[]|Expr $expression
-     *
-     * @return static
      */
-    public function anyElementTrue($expression): self;
+    public function anyElementTrue($expression): static;
 
     /**
      * Takes two sets and returns an array containing the elements that only
@@ -54,10 +50,8 @@ interface SetOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function setDifference($expression1, $expression2): self;
+    public function setDifference($expression1, $expression2): static;
 
     /**
      * Compares two or more arrays and returns true if they have the same
@@ -70,10 +64,8 @@ interface SetOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
-     *
-     * @return static
      */
-    public function setEquals($expression1, $expression2, ...$expressions): self;
+    public function setEquals($expression1, $expression2, ...$expressions): static;
 
     /**
      * Takes two or more arrays and returns an array that contains the elements
@@ -86,10 +78,8 @@ interface SetOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
-     *
-     * @return static
      */
-    public function setIntersection($expression1, $expression2, ...$expressions): self;
+    public function setIntersection($expression1, $expression2, ...$expressions): static;
 
     /**
      * Takes two arrays and returns true when the first array is a subset of the
@@ -102,10 +92,8 @@ interface SetOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function setIsSubset($expression1, $expression2): self;
+    public function setIsSubset($expression1, $expression2): static;
 
     /**
      * Takes two or more arrays and returns an array containing the elements
@@ -119,8 +107,6 @@ interface SetOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
-     *
-     * @return static
      */
-    public function setUnion($expression1, $expression2, ...$expressions): self;
+    public function setUnion($expression1, $expression2, ...$expressions): static;
 }

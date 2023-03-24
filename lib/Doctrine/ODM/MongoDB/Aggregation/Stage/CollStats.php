@@ -35,7 +35,7 @@ class CollStats extends Stage
     /**
      * Adds latency statistics to the return document.
      */
-    public function showLatencyStats(bool $histograms = false): self
+    public function showLatencyStats(bool $histograms = false): static
     {
         $this->latencyStats = $histograms ? self::LATENCY_STATS_HISTOGRAMS : self::LATENCY_STATS_SIMPLE;
 
@@ -45,7 +45,7 @@ class CollStats extends Stage
     /**
      * Adds storage statistics to the return document.
      */
-    public function showStorageStats(): self
+    public function showStorageStats(): static
     {
         $this->storageStats = true;
 

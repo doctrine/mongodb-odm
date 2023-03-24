@@ -34,7 +34,7 @@ class Facet extends Stage
     /**
      * Set the current field for building the pipeline stage.
      */
-    public function field(string $field): self
+    public function field(string $field): static
     {
         $this->field = $field;
 
@@ -46,7 +46,7 @@ class Facet extends Stage
      *
      * @param Builder|Stage $builder
      */
-    public function pipeline($builder): self
+    public function pipeline($builder): static
     {
         /** @psalm-suppress RedundantPropertyInitializationCheck because the property might not be set yet */
         if (! isset($this->field)) {

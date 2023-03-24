@@ -22,10 +22,8 @@ interface MiscOperators
      * @see https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
      *
      * @param mixed|Expr $value
-     *
-     * @return static
      */
-    public function expression($value);
+    public function expression($value): static;
 
     /**
      * Binds variables for use in the specified expression, and returns the
@@ -35,10 +33,8 @@ interface MiscOperators
      *
      * @param mixed|Expr $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
      * @param mixed|Expr $in   the expression to evaluate
-     *
-     * @return static
      */
-    public function let($vars, $in): self;
+    public function let($vars, $in): static;
 
     /**
      * Returns a value without parsing. Use for values that the aggregation
@@ -47,10 +43,8 @@ interface MiscOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/literal/
      *
      * @param mixed|Expr $value
-     *
-     * @return static
      */
-    public function literal($value): self;
+    public function literal($value): static;
 
     /**
      * Returns the metadata associated with a document in a pipeline operations.
@@ -58,19 +52,15 @@ interface MiscOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/meta/
      *
      * @param mixed|Expr $metaDataKeyword
-     *
-     * @return static
      */
-    public function meta($metaDataKeyword): self;
+    public function meta($metaDataKeyword): static;
 
     /**
      * Returns a random float between 0 and 1 each time it is called.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/rand/
-     *
-     * @return static
      */
-    public function rand(): self;
+    public function rand(): static;
 
     /**
      * Matches a random selection of input documents. The number of documents
@@ -78,8 +68,6 @@ interface MiscOperators
      * total number of documents.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sampleRate/
-     *
-     * @return static
      */
-    public function sampleRate(float $rate): self;
+    public function sampleRate(float $rate): static;
 }

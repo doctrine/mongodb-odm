@@ -26,10 +26,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function cmp($expression1, $expression2): self;
+    public function cmp($expression1, $expression2): static;
 
     /**
      * Compares two values and returns whether the are equivalent.
@@ -38,10 +36,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function eq($expression1, $expression2): self;
+    public function eq($expression1, $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -53,10 +49,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function gt($expression1, $expression2): self;
+    public function gt($expression1, $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -68,10 +62,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function gte($expression1, $expression2): self;
+    public function gte($expression1, $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -83,10 +75,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function lt($expression1, $expression2): self;
+    public function lt($expression1, $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -97,10 +87,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function lte($expression1, $expression2): self;
+    public function lte($expression1, $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -111,8 +99,6 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function ne($expression1, $expression2): self;
+    public function ne($expression1, $expression2): static;
 }

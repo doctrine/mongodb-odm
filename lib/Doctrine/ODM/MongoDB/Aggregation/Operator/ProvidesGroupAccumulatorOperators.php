@@ -13,176 +13,154 @@ trait ProvidesGroupAccumulatorOperators
 {
     abstract protected function getExpr(): Expr;
 
-    /** @return static */
-    public function accumulator($init, $accumulate, $accumulateArgs, $merge, $initArgs = null, $finalize = null, $lang = 'js'): self
+    public function accumulator($init, $accumulate, $accumulateArgs, $merge, $initArgs = null, $finalize = null, $lang = 'js'): static
     {
         $this->getExpr()->accumulator(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function addToSet($expression): self
+    public function addToSet($expression): static
     {
         $this->getExpr()->addToSet(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function avg($expression, ...$expressions): self
+    public function avg($expression, ...$expressions): static
     {
         $this->getExpr()->avg(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function bottom($output, $sortBy): self
+    public function bottom($output, $sortBy): static
     {
         $this->getExpr()->bottom(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function bottomN($output, $sortBy, $n): self
+    public function bottomN($output, $sortBy, $n): static
     {
         $this->getExpr()->bottomN(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function countDocuments(): self
+    public function countDocuments(): static
     {
         $this->getExpr()->countDocuments();
 
         return $this;
     }
 
-    /** @return static */
-    public function first($expression): self
+    public function first($expression): static
     {
         $this->getExpr()->first(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function firstN($expression, $n): self
+    public function firstN($expression, $n): static
     {
         $this->getExpr()->firstN(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function function($body, $args, $lang = 'js'): self
+    public function function($body, $args, $lang = 'js'): static
     {
         $this->getExpr()->function(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function last($expression): self
+    public function last($expression): static
     {
         $this->getExpr()->last(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function lastN($expression, $n): self
+    public function lastN($expression, $n): static
     {
         $this->getExpr()->lastN(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function max($expression, ...$expressions): self
+    public function max($expression, ...$expressions): static
     {
         $this->getExpr()->max(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function maxN($expression, $n): self
+    public function maxN($expression, $n): static
     {
         $this->getExpr()->maxN(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function mergeObjects($expression, ...$expressions): self
+    public function mergeObjects($expression, ...$expressions): static
     {
         $this->getExpr()->mergeObjects(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function min($expression, ...$expressions): self
+    public function min($expression, ...$expressions): static
     {
         $this->getExpr()->min(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function minN($expression, $n): self
+    public function minN($expression, $n): static
     {
         $this->getExpr()->minN(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function push($expression): self
+    public function push($expression): static
     {
         $this->getExpr()->push(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function stdDevPop($expression, ...$expressions): self
+    public function stdDevPop($expression, ...$expressions): static
     {
         $this->getExpr()->stdDevPop(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function stdDevSamp($expression, ...$expressions): self
+    public function stdDevSamp($expression, ...$expressions): static
     {
         $this->getExpr()->stdDevSamp(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function sum($expression, ...$expressions): self
+    public function sum($expression, ...$expressions): static
     {
         $this->getExpr()->sum(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function top($output, $sortBy): self
+    public function top($output, $sortBy): static
     {
         $this->getExpr()->top(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function topN($output, $sortBy, $n): self
+    public function topN($output, $sortBy, $n): static
     {
         $this->getExpr()->topN(...func_get_args());
 

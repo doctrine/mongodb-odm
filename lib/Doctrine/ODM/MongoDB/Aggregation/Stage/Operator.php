@@ -57,32 +57,28 @@ abstract class Operator extends Stage implements
         $this->expr = $builder->expr();
     }
 
-    /** @return static */
-    public function abs($number): self
+    public function abs($number): static
     {
         $this->expr->abs(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function acos($expression): self
+    public function acos($expression): static
     {
         $this->expr->acos(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function acosh($expression): self
+    public function acosh($expression): static
     {
         $this->expr->acosh(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function add($expression1, $expression2, ...$expressions): self
+    public function add($expression1, $expression2, ...$expressions): static
     {
         $this->expr->add(...func_get_args());
 
@@ -97,10 +93,8 @@ abstract class Operator extends Stage implements
      *
      * @param mixed[]|Expr $expression
      * @param mixed[]|Expr ...$expressions
-     *
-     * @return static
      */
-    public function addAnd($expression, ...$expressions): self
+    public function addAnd($expression, ...$expressions): static
     {
         $this->expr->addAnd(...func_get_args());
 
@@ -115,322 +109,281 @@ abstract class Operator extends Stage implements
      *
      * @param mixed[]|Expr $expression
      * @param mixed[]|Expr ...$expressions
-     *
-     * @return static
      */
-    public function addOr($expression, ...$expressions): self
+    public function addOr($expression, ...$expressions): static
     {
         $this->expr->addOr(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function allElementsTrue($expression): self
+    public function allElementsTrue($expression): static
     {
         $this->expr->allElementsTrue(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function and($expression, ...$expressions): self
+    public function and($expression, ...$expressions): static
     {
         $this->expr->and(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function anyElementTrue($expression): self
+    public function anyElementTrue($expression): static
     {
         $this->expr->anyElementTrue(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function arrayElemAt($array, $index): self
+    public function arrayElemAt($array, $index): static
     {
         $this->expr->arrayElemAt(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function arrayToObject($array): self
+    public function arrayToObject($array): static
     {
         $this->expr->arrayToObject(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function atan($expression): self
+    public function atan($expression): static
     {
         $this->expr->atan(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function asin($expression): self
+    public function asin($expression): static
     {
         $this->expr->asin(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function asinh($expression): self
+    public function asinh($expression): static
     {
         $this->expr->asinh(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function atan2($expression1, $expression2): self
+    public function atan2($expression1, $expression2): static
     {
         $this->expr->atan2(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function atanh($expression): self
+    public function atanh($expression): static
     {
         $this->expr->atanh(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function avg($expression, ...$expressions): self
+    public function avg($expression, ...$expressions): static
     {
         $this->expr->avg(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function binarySize($expression): self
+    public function binarySize($expression): static
     {
         $this->expr->binarySize(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function bsonSize($expression): self
+    public function bsonSize($expression): static
     {
         $this->expr->bsonSize(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function case($expression): self
+    public function case($expression): static
     {
         $this->expr->case(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function ceil($number): self
+    public function ceil($number): static
     {
         $this->expr->ceil(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function cmp($expression1, $expression2): self
+    public function cmp($expression1, $expression2): static
     {
         $this->expr->cmp(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function concat($expression1, $expression2, ...$expressions): self
+    public function concat($expression1, $expression2, ...$expressions): static
     {
         $this->expr->concat(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function concatArrays($array1, $array2, ...$arrays): self
+    public function concatArrays($array1, $array2, ...$arrays): static
     {
         $this->expr->concatArrays(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function cond($if, $then, $else): self
+    public function cond($if, $then, $else): static
     {
         $this->expr->cond(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function convert($input, $to, $onError = null, $onNull = null): self
+    public function convert($input, $to, $onError = null, $onNull = null): static
     {
         $this->expr->convert(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function cos($expression): self
+    public function cos($expression): static
     {
         $this->expr->cos(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function cosh($expression): self
+    public function cosh($expression): static
     {
         $this->expr->cosh(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dateAdd($startDate, $unit, $amount, $timezone = null): self
+    public function dateAdd($startDate, $unit, $amount, $timezone = null): static
     {
         $this->expr->dateAdd(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): self
+    public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): static
     {
         $this->expr->dateDiff(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): self
+    public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): static
     {
         $this->expr->dateFromParts(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): self
+    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): static
     {
         $this->expr->dateFromString(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dateSubtract($startDate, $unit, $amount, $timezone = null): self
+    public function dateSubtract($startDate, $unit, $amount, $timezone = null): static
     {
         $this->expr->dateSubtract(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dateToParts($date, $timezone = null, $iso8601 = null): self
+    public function dateToParts($date, $timezone = null, $iso8601 = null): static
     {
         $this->expr->dateToParts(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): self
+    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): static
     {
         $this->expr->dateToString(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): self
+    public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): static
     {
         $this->expr->dateTrunc(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dayOfMonth($expression): self
+    public function dayOfMonth($expression): static
     {
         $this->expr->dayOfMonth(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dayOfWeek($expression): self
+    public function dayOfWeek($expression): static
     {
         $this->expr->dayOfWeek(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function dayOfYear($expression): self
+    public function dayOfYear($expression): static
     {
         $this->expr->dayOfYear(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function default($expression): self
+    public function default($expression): static
     {
         $this->expr->default(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function degreesToRadians($expression): self
+    public function degreesToRadians($expression): static
     {
         $this->expr->degreesToRadians(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function divide($expression1, $expression2): self
+    public function divide($expression1, $expression2): static
     {
         $this->expr->divide(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function eq($expression1, $expression2): self
+    public function eq($expression1, $expression2): static
     {
         $this->expr->eq(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function exp($exponent): self
+    public function exp($exponent): static
     {
         $this->expr->exp(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function expression($value)
+    public function expression($value): static
     {
         $this->expr->expression(...func_get_args());
 
@@ -441,842 +394,736 @@ abstract class Operator extends Stage implements
      * Set the current field for building the expression.
      *
      * @see Expr::field
-     *
-     * @return static
      */
-    public function field(string $fieldName)
+    public function field(string $fieldName): static
     {
         $this->expr->field(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function filter($input, $as, $cond): self
+    public function filter($input, $as, $cond): static
     {
         $this->expr->filter(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function first($expression): self
+    public function first($expression): static
     {
         $this->expr->first(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function firstN($expression, $n): self
+    public function firstN($expression, $n): static
     {
         $this->expr->firstN(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function floor($number): self
+    public function floor($number): static
     {
         $this->expr->floor(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function getField($field, $input = null): self
+    public function getField($field, $input = null): static
     {
         $this->expr->getField(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function gt($expression1, $expression2): self
+    public function gt($expression1, $expression2): static
     {
         $this->expr->gt(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function gte($expression1, $expression2): self
+    public function gte($expression1, $expression2): static
     {
         $this->expr->gte(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function hour($expression): self
+    public function hour($expression): static
     {
         $this->expr->hour(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function in($expression, $arrayExpression): self
+    public function in($expression, $arrayExpression): static
     {
         $this->expr->in(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): self
+    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): static
     {
         $this->expr->indexOfArray(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self
+    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): static
     {
         $this->expr->indexOfBytes(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self
+    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): static
     {
         $this->expr->indexOfCP(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function ifNull($expression, $replacementExpression): self
+    public function ifNull($expression, $replacementExpression): static
     {
         $this->expr->ifNull(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function isArray($expression): self
+    public function isArray($expression): static
     {
         $this->expr->isArray(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function isNumber($expression): self
+    public function isNumber($expression): static
     {
         $this->expr->isNumber(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function isoDayOfWeek($expression): self
+    public function isoDayOfWeek($expression): static
     {
         $this->expr->isoDayOfWeek(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function isoWeek($expression): self
+    public function isoWeek($expression): static
     {
         $this->expr->isoWeek(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function isoWeekYear($expression): self
+    public function isoWeekYear($expression): static
     {
         $this->expr->isoWeekYear(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function last($expression): self
+    public function last($expression): static
     {
         $this->expr->last(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function lastN($expression, $n): self
+    public function lastN($expression, $n): static
     {
         $this->expr->lastN(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function let($vars, $in): self
+    public function let($vars, $in): static
     {
         $this->expr->let(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function literal($value): self
+    public function literal($value): static
     {
         $this->expr->literal(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function ln($number): self
+    public function ln($number): static
     {
         $this->expr->ln(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function log($number, $base): self
+    public function log($number, $base): static
     {
         $this->expr->log(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function log10($number): self
+    public function log10($number): static
     {
         $this->expr->log10(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function lt($expression1, $expression2): self
+    public function lt($expression1, $expression2): static
     {
         $this->expr->lt(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function lte($expression1, $expression2): self
+    public function lte($expression1, $expression2): static
     {
         $this->expr->lte(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function ltrim($input, $chars = null): self
+    public function ltrim($input, $chars = null): static
     {
         $this->expr->ltrim(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function map($input, $as, $in): self
+    public function map($input, $as, $in): static
     {
         $this->expr->map(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function max($expression, ...$expressions): self
+    public function max($expression, ...$expressions): static
     {
         $this->expr->max(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function maxN($expression, $n): self
+    public function maxN($expression, $n): static
     {
         $this->expr->maxN(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function mergeObjects($expression, ...$expressions): self
+    public function mergeObjects($expression, ...$expressions): static
     {
         $this->expr->mergeObjects(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function meta($metaDataKeyword): self
+    public function meta($metaDataKeyword): static
     {
         $this->expr->meta(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function millisecond($expression): self
+    public function millisecond($expression): static
     {
         $this->expr->millisecond(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function min($expression, ...$expressions): self
+    public function min($expression, ...$expressions): static
     {
         $this->expr->min(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function minN($expression, $n): self
+    public function minN($expression, $n): static
     {
         $this->expr->minN(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function minute($expression): self
+    public function minute($expression): static
     {
         $this->expr->minute(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function mod($expression1, $expression2): self
+    public function mod($expression1, $expression2): static
     {
         $this->expr->mod(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function month($expression): self
+    public function month($expression): static
     {
         $this->expr->month(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function multiply($expression1, $expression2, ...$expressions): self
+    public function multiply($expression1, $expression2, ...$expressions): static
     {
         $this->expr->multiply(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function ne($expression1, $expression2): self
+    public function ne($expression1, $expression2): static
     {
         $this->expr->ne(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function not($expression): self
+    public function not($expression): static
     {
         $this->expr->not(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function objectToArray($object): self
+    public function objectToArray($object): static
     {
         $this->expr->objectToArray(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function or($expression, ...$expressions): self
+    public function or($expression, ...$expressions): static
     {
         $this->expr->or(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function pow($number, $exponent): self
+    public function pow($number, $exponent): static
     {
         $this->expr->pow(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function range($start, $end, $step = 1): self
+    public function range($start, $end, $step = 1): static
     {
         $this->expr->range(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function reduce($input, $initialValue, $in): self
+    public function reduce($input, $initialValue, $in): static
     {
         $this->expr->reduce(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function regexFind($input, $regex, $options = null): self
+    public function regexFind($input, $regex, $options = null): static
     {
         $this->expr->regexFind(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function regexFindAll($input, $regex, $options = null): self
+    public function regexFindAll($input, $regex, $options = null): static
     {
         $this->expr->regexFindAll(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function regexMatch($input, $regex, $options = null): self
+    public function regexMatch($input, $regex, $options = null): static
     {
         $this->expr->regexMatch(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function replaceAll($input, $find, $replacement): self
+    public function replaceAll($input, $find, $replacement): static
     {
         $this->expr->replaceAll(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function replaceOne($input, $find, $replacement): self
+    public function replaceOne($input, $find, $replacement): static
     {
         $this->expr->replaceOne(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function reverseArray($expression): self
+    public function reverseArray($expression): static
     {
         $this->expr->reverseArray(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function rtrim($input, $chars = null): self
+    public function rtrim($input, $chars = null): static
     {
         $this->expr->rtrim(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function round($number, $place = null): self
+    public function round($number, $place = null): static
     {
         $this->expr->round(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function radiansToDegrees($expression): self
+    public function radiansToDegrees($expression): static
     {
         $this->expr->radiansToDegrees(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function rand(): self
+    public function rand(): static
     {
         $this->expr->rand();
 
         return $this;
     }
 
-    /** @return static */
-    public function sampleRate(float $rate): self
+    public function sampleRate(float $rate): static
     {
         $this->expr->sampleRate(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function second($expression): self
+    public function second($expression): static
     {
         $this->expr->second(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function setDifference($expression1, $expression2): self
+    public function setDifference($expression1, $expression2): static
     {
         $this->expr->setDifference(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function setEquals($expression1, $expression2, ...$expressions): self
+    public function setEquals($expression1, $expression2, ...$expressions): static
     {
         $this->expr->setEquals(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function setField($field, $input, $value): self
+    public function setField($field, $input, $value): static
     {
         $this->expr->setField(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function setIntersection($expression1, $expression2, ...$expressions): self
+    public function setIntersection($expression1, $expression2, ...$expressions): static
     {
         $this->expr->setIntersection(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function setIsSubset($expression1, $expression2): self
+    public function setIsSubset($expression1, $expression2): static
     {
         $this->expr->setIsSubset(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function setUnion($expression1, $expression2, ...$expressions): self
+    public function setUnion($expression1, $expression2, ...$expressions): static
     {
         $this->expr->setUnion(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function sin($expression): self
+    public function sin($expression): static
     {
         $this->expr->sin(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function sinh($expression): self
+    public function sinh($expression): static
     {
         $this->expr->sinh(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function size($expression): self
+    public function size($expression): static
     {
         $this->expr->size(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function slice($array, $n, $position = null): self
+    public function slice($array, $n, $position = null): static
     {
         $this->expr->slice(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function sortArray($input, $sortBy): self
+    public function sortArray($input, $sortBy): static
     {
         $this->expr->sortArray(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function split($string, $delimiter): self
+    public function split($string, $delimiter): static
     {
         $this->expr->split(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function sqrt($expression): self
+    public function sqrt($expression): static
     {
         $this->expr->sqrt(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function stdDevPop($expression, ...$expressions): self
+    public function stdDevPop($expression, ...$expressions): static
     {
         $this->expr->stdDevPop(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function stdDevSamp($expression, ...$expressions): self
+    public function stdDevSamp($expression, ...$expressions): static
     {
         $this->expr->stdDevSamp(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function strcasecmp($expression1, $expression2): self
+    public function strcasecmp($expression1, $expression2): static
     {
         $this->expr->strcasecmp(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function strLenBytes($string): self
+    public function strLenBytes($string): static
     {
         $this->expr->strLenBytes(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function strLenCP($string): self
+    public function strLenCP($string): static
     {
         $this->expr->strLenCP(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function substr($string, $start, $length): self
+    public function substr($string, $start, $length): static
     {
         $this->expr->substr(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function substrBytes($string, $start, $count): self
+    public function substrBytes($string, $start, $count): static
     {
         $this->expr->substrBytes(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function substrCP($string, $start, $count): self
+    public function substrCP($string, $start, $count): static
     {
         $this->expr->substrCP(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function subtract($expression1, $expression2): self
+    public function subtract($expression1, $expression2): static
     {
         $this->expr->subtract(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function sum($expression, ...$expressions): self
+    public function sum($expression, ...$expressions): static
     {
         $this->expr->sum(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function switch(): self
+    public function switch(): static
     {
         $this->expr->switch();
 
         return $this;
     }
 
-    /** @return static */
-    public function tan($expression): self
+    public function tan($expression): static
     {
         $this->expr->tan(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function tanh($expression): self
+    public function tanh($expression): static
     {
         $this->expr->tanh(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function then($expression): self
+    public function then($expression): static
     {
         $this->expr->then(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toBool($expression): self
+    public function toBool($expression): static
     {
         $this->expr->toBool(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toDate($expression): self
+    public function toDate($expression): static
     {
         $this->expr->toDate(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toDecimal($expression): self
+    public function toDecimal($expression): static
     {
         $this->expr->toDecimal(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toDouble($expression): self
+    public function toDouble($expression): static
     {
         $this->expr->toDouble(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toInt($expression): self
+    public function toInt($expression): static
     {
         $this->expr->toInt(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toLong($expression): self
+    public function toLong($expression): static
     {
         $this->expr->toLong(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toObjectId($expression): self
+    public function toObjectId($expression): static
     {
         $this->expr->toObjectId(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toString($expression): self
+    public function toString($expression): static
     {
         $this->expr->toString(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toLower($expression): self
+    public function toLower($expression): static
     {
         $this->expr->toLower(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function toUpper($expression): self
+    public function toUpper($expression): static
     {
         $this->expr->toUpper(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function trim($input, $chars = null): self
+    public function trim($input, $chars = null): static
     {
         $this->expr->trim(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function trunc($number): self
+    public function trunc($number): static
     {
         $this->expr->trunc(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function tsIncrement($expression): self
+    public function tsIncrement($expression): static
     {
         $this->expr->tsIncrement(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function tsSecond($expression): self
+    public function tsSecond($expression): static
     {
         $this->expr->tsSecond(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function type($expression): self
+    public function type($expression): static
     {
         $this->expr->type(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function week($expression): self
+    public function week($expression): static
     {
         $this->expr->week(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function year($expression): self
+    public function year($expression): static
     {
         $this->expr->year(...func_get_args());
 
         return $this;
     }
 
-    /** @return static */
-    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self
+    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): static
     {
         $this->expr->zip(...func_get_args());
 

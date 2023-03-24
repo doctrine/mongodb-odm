@@ -28,10 +28,8 @@ interface StringOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
-     *
-     * @return static
      */
-    public function concat($expression1, $expression2, ...$expressions): self;
+    public function concat($expression1, $expression2, ...$expressions): static;
 
     /**
      * Converts a date/time string to a date object.
@@ -43,10 +41,8 @@ interface StringOperators
      * @param mixed|Expr $timezone
      * @param mixed|Expr $onError
      * @param mixed|Expr $onNull
-     *
-     * @return static
      */
-    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): self;
+    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): static;
 
     /**
      * Converts a date object to a string according to a user-specified format.
@@ -60,10 +56,8 @@ interface StringOperators
      * @param mixed|Expr      $expression
      * @param mixed|Expr|null $timezone
      * @param mixed|Expr|null $onNull
-     *
-     * @return static
      */
-    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): self;
+    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): static;
 
     /**
      * Searches a string for an occurrence of a substring and returns the UTF-8
@@ -76,10 +70,8 @@ interface StringOperators
      * @param mixed|Expr      $substringExpression can be any valid expression as long as it resolves to a string
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     *
-     * @return static
      */
-    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self;
+    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): static;
 
     /**
      * Searches a string for an occurrence of a substring and returns the UTF-8
@@ -92,10 +84,8 @@ interface StringOperators
      * @param mixed|Expr      $substringExpression can be any valid expression as long as it resolves to a string
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     *
-     * @return static
      */
-    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self;
+    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): static;
 
     /**
      * Removes whitespace characters, including null, or the specified
@@ -105,10 +95,8 @@ interface StringOperators
      *
      * @param mixed|Expr $input
      * @param mixed|Expr $chars
-     *
-     * @return static
      */
-    public function ltrim($input, $chars = null): self;
+    public function ltrim($input, $chars = null): static;
 
     /**
      * Provides regular expression (regex) pattern matching capability in
@@ -122,10 +110,8 @@ interface StringOperators
      * @param mixed|Expr  $input
      * @param mixed|Expr  $regex
      * @param string|null $options
-     *
-     * @return static
      */
-    public function regexFind($input, $regex, $options = null): self;
+    public function regexFind($input, $regex, $options = null): static;
 
     /**
      * Provides regular expression (regex) pattern matching capability in
@@ -139,10 +125,8 @@ interface StringOperators
      * @param mixed|Expr  $input
      * @param mixed|Expr  $regex
      * @param string|null $options
-     *
-     * @return static
      */
-    public function regexFindAll($input, $regex, $options = null): self;
+    public function regexFindAll($input, $regex, $options = null): static;
 
     /**
      * Performs a regular expression (regex) pattern matching and returns true
@@ -153,10 +137,8 @@ interface StringOperators
      * @param mixed|Expr  $input
      * @param mixed|Expr  $regex
      * @param string|null $options
-     *
-     * @return static
      */
-    public function regexMatch($input, $regex, $options = null): self;
+    public function regexMatch($input, $regex, $options = null): static;
 
     /**
      * Replaces all instances of a search string in an input string with a
@@ -167,10 +149,8 @@ interface StringOperators
      * @param mixed|Expr $input
      * @param mixed|Expr $find
      * @param mixed|Expr $replacement
-     *
-     * @return static
      */
-    public function replaceAll($input, $find, $replacement): self;
+    public function replaceAll($input, $find, $replacement): static;
 
     /**
      * Replaces the first instance of a search string in an input string with a
@@ -182,10 +162,8 @@ interface StringOperators
      * @param mixed|Expr $input
      * @param mixed|Expr $find
      * @param mixed|Expr $replacement
-     *
-     * @return static
      */
-    public function replaceOne($input, $find, $replacement): self;
+    public function replaceOne($input, $find, $replacement): static;
 
     /**
      * Removes whitespace characters, including null, or the specified
@@ -195,10 +173,8 @@ interface StringOperators
      *
      * @param mixed|Expr $input
      * @param mixed|Expr $chars
-     *
-     * @return static
      */
-    public function rtrim($input, $chars = null): self;
+    public function rtrim($input, $chars = null): static;
 
     /**
      * Divides a string into an array of substrings based on a delimiter.
@@ -211,10 +187,8 @@ interface StringOperators
      *
      * @param mixed|Expr $string    The string to be split. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $delimiter The delimiter to use when splitting the string expression. Can be any valid expression as long as it resolves to a string.
-     *
-     * @return static
      */
-    public function split($string, $delimiter): self;
+    public function split($string, $delimiter): static;
 
     /**
      * Returns the number of UTF-8 encoded bytes in the specified string.
@@ -222,10 +196,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenBytes/
      *
      * @param mixed|Expr $string
-     *
-     * @return static
      */
-    public function strLenBytes($string): self;
+    public function strLenBytes($string): static;
 
     /**
      * Returns the number of UTF-8 code points in the specified string.
@@ -233,10 +205,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenCP/
      *
      * @param mixed|Expr $string
-     *
-     * @return static
      */
-    public function strLenCP($string): self;
+    public function strLenCP($string): static;
 
     /**
      * Performs case-insensitive comparison of two strings. Returns
@@ -251,10 +221,8 @@ interface StringOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
-     *
-     * @return static
      */
-    public function strcasecmp($expression1, $expression2): self;
+    public function strcasecmp($expression1, $expression2): static;
 
     /**
      * Returns a substring of a string, starting at a specified index position
@@ -269,10 +237,8 @@ interface StringOperators
      * @param mixed|Expr $string
      * @param mixed|Expr $start
      * @param mixed|Expr $length
-     *
-     * @return static
      */
-    public function substr($string, $start, $length): self;
+    public function substr($string, $start, $length): static;
 
     /**
      * Returns the substring of a string.
@@ -286,10 +252,8 @@ interface StringOperators
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      * @param mixed|Expr $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
-     *
-     * @return static
      */
-    public function substrBytes($string, $start, $count): self;
+    public function substrBytes($string, $start, $count): static;
 
     /**
      * Returns the substring of a string.
@@ -303,10 +267,8 @@ interface StringOperators
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      * @param mixed|Expr $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
-     *
-     * @return static
      */
-    public function substrCP($string, $start, $count): self;
+    public function substrCP($string, $start, $count): static;
 
     /**
      * Converts a string to lowercase, returning the result.
@@ -316,10 +278,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toLower/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function toLower($expression): self;
+    public function toLower($expression): static;
 
     /**
      * Converts value to a string.
@@ -327,10 +287,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toString/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function toString($expression): self;
+    public function toString($expression): static;
 
     /**
      * Converts a string to uppercase, returning the result.
@@ -340,10 +298,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toUpper/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function toUpper($expression): self;
+    public function toUpper($expression): static;
 
     /**
      * Removes whitespace characters, including null, or the specified
@@ -353,8 +309,6 @@ interface StringOperators
      *
      * @param mixed|Expr      $input
      * @param mixed|Expr|null $chars
-     *
-     * @return static
      */
-    public function trim($input, $chars = null): self;
+    public function trim($input, $chars = null): static;
 }

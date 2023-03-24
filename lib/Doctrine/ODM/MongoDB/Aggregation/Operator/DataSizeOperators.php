@@ -22,10 +22,8 @@ interface DataSizeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/binarySize/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function binarySize($expression): self;
+    public function binarySize($expression): static;
 
     /**
      * Returns the size in bytes of a given document (i.e. bsontype Object) when encoded as BSON.
@@ -33,8 +31,6 @@ interface DataSizeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bsonSize/
      *
      * @param mixed|Expr $expression
-     *
-     * @return static
      */
-    public function bsonSize($expression): self;
+    public function bsonSize($expression): static;
 }
