@@ -14,7 +14,7 @@ trait ProvidesGroupAccumulatorOperators
     abstract protected function getExpr(): Expr;
 
     /** @return static */
-    public function accumulator($init, $initArgs, $accumulate, $accumulateArgs, $merge, $finalize = null, $lang = 'js'): self
+    public function accumulator($init, $accumulate, $accumulateArgs, $merge, $initArgs = null, $finalize = null, $lang = 'js'): self
     {
         $this->getExpr()->accumulator(...func_get_args());
 

@@ -473,7 +473,6 @@ trait AggregationOperatorsProviderTrait
             'operator' => 'accumulator',
             'args' => [
                 'function() { return 0; }',
-                null,
                 'function(state, value) { return state + value; }',
                 ['$value'],
                 'function(state1, state2) { return state1 + state2; }',
@@ -495,10 +494,10 @@ trait AggregationOperatorsProviderTrait
             'operator' => 'accumulator',
             'args' => [
                 'function(initial) { return initial; }',
-                [1],
                 'function(state, value) { return state + value; }',
                 ['$value'],
                 'function(state1, state2) { return state1 + state2; }',
+                [1],
                 'function(state) { return state; }',
             ],
         ];

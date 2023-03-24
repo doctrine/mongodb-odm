@@ -87,7 +87,7 @@ class Expr implements
     }
 
     /** @return static */
-    public function accumulator($init, $initArgs, $accumulate, $accumulateArgs, $merge, $finalize = null, $lang = 'js'): self
+    public function accumulator($init, $accumulate, $accumulateArgs, $merge, $initArgs = null, $finalize = null, $lang = 'js'): self
     {
         return $this->operator(
             '$accumulator',
